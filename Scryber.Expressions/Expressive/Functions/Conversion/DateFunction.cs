@@ -13,7 +13,8 @@ namespace Scryber.Expressive.Functions.Conversion
 
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
-            this.ValidateParameterCount(parameters, -1, 1);
+            if (parameters.Length == 0)
+                return DateTime.Now;
 
             var objectToConvert = parameters[0].Evaluate(variables);
             

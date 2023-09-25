@@ -21,6 +21,10 @@ namespace Scryber.Options
 
         public List<BindingPrefixOption> Bindings { get; set; }
 
+
+        public ParserFactoryOption[] Parsers { get; set; }
+        
+
         public ParsingOptions()
         {
             MissingReferenceAction = ParserReferenceMissingAction.RaiseException;
@@ -63,6 +67,16 @@ namespace Scryber.Options
                                                     FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
+
+            Parsers = new ParserFactoryOption[] { };
+
+            //Parsers.Add(new ParserFactoryOption()
+            //{
+            //    MimeType = "text/xml",
+            //    FactoryType = "Scryber.Binding.BindingXPathExpressionFactory",
+            //    FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
+            //});
+
         }
 
         private System.Globalization.CultureInfo _defaultCulture;
@@ -199,6 +213,44 @@ namespace Scryber.Options
         {
             if(null == _factory)
                 _factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
+
+            return _factory;
+        }
+    }
+
+
+    public class ParserFactoryOption
+    {
+        /// <summary>
+        /// The mime-type the factory is for. 
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The Type name including namespace
+        /// e.g. Scryber.XPathBindingExpressionFactory
+        /// </summary>
+        public string FactoryType { get; set; }
+
+        /// <summary>
+        /// The full assembly name that has the type for the factory
+        /// e.g. Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe
+        /// </summary>
+        public string FactoryAssembly { get; set; }
+
+        /// <summary>
+        /// We store a local cached version of the factory.
+        /// </summary>
+        private IParserFactory _factory;
+
+        /// <summary>
+        /// Gets the factory instance that is specified by this options FactoryType and FactoryAssembly
+        /// </summary>
+        /// <returns></returns>
+        public IParserFactory GetFactory()
+        {
+            if (null == _factory)
+                _factory = Utilities.TypeHelper.GetInstance<IParserFactory>(this.FactoryType, this.FactoryAssembly, true);
 
             return _factory;
         }

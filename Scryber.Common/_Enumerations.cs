@@ -180,7 +180,8 @@ namespace Scryber
         Top,
         Middle,
         Bottom,
-        Justified
+        Baseline,
+
     }
 
     public enum TextFormat
@@ -384,6 +385,38 @@ namespace Scryber
         Custom
     }
 
+    public enum ParseSourceType
+    {
+        /// <summary>
+        /// Defines that the parser should treat the source as a full document from a file residing on the local file-system
+        /// </summary>
+        LocalFile,
+
+        /// <summary>
+        /// Defines a full document that has come from an embedded resource
+        /// </summary>
+        Resource,
+
+        /// <summary>
+        /// Defines that the parser should trat the source as a full document from a remore resource (e.g. Uri)
+        /// </summary>
+        RemoteFile,
+
+        /// <summary>
+        /// Defines that the parser should treat the content as a full document, built dymanically from code.
+        /// </summary>
+        DynamicContent,
+
+        /// <summary>
+        /// Defines that the parser should treat the content as a (optionally repeatable) fragment, not a whole document.
+        /// </summary>
+        Template,
+
+        /// <summary>
+        /// Does not define how the parser should treat the content, could be a document, fragment, or just some text. Not recommended for internally known parsers.
+        /// </summary>
+        Other
+    }
 
     public static class EnumParser
     {

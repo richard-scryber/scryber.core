@@ -4,23 +4,64 @@
     <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>5.1.0.2-beta</PackageVersion>
+    <PackageVersion>6.0.1.0-beta</PackageVersion>
     <Version>1.0.1-alpha</Version>
-    <Authors>richard@scryber.co.uk</Authors>
+    <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing, or just code it. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
-This framework is built entirely in .NET5 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
-    <Copyright>Richard Hewitson 2021</Copyright>
+This framework is built entirely in .NET6 and Net Standard 2.0 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+    <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
-    <PackageLicenseUrl>https://opensource.org/licenses/LGPL-3.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>5.1.0.2-beta
+    <PackageReleaseNotes>
+6.0.1.0-beta
+
+We now support html - in many of its flavours, through the HTMLAgilityPack
+
+Added parsing non-formal html documents and components from local and remote files (using the ParseHtml and ParseHtmlDocument on the Document class)
+Added the data-content and data-content-type attributes to visual components so that html and xhtml content can be data bound into pages.
+Added support for the hyphens css property and it's use in hypenating long text.
+
+6.0.0.16-beta
+
+Some Big additions and fixes
+
+Added support for the css counters (reset, increment and the counter(s) functions)
+Added support for css content properties
+Added support for css ::before and ::after selectors
+Added support for relative units in styles e.g. 30% and 0.5em - not supported in calc() with multiple units e.g calc(50% - 5px) will not work.
+
+A lot of layout tests to get everything working - precisely.
+
+
+6.0.0.14-beta
+
+Added support for transformations including css transform property.
+
+6.0.0.13-beta
+
+Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
+Checks added for support on thread culture in dates and numbers.
+
+6.0.0.10-beta
+
+Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions and templates too.
+Along with adding SoryBy, MaxOf, EachOf, SelectWhere collection functions.
+
+6.0.0.8-beta
+
+Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions
+
+Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
+Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
+
+5.1.0.2-beta
 
 A major new release with support for expressions using the handlebars syntax {{...}} 
 
@@ -61,8 +102,8 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet 5</PackageTags>
+    <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet_6</PackageTags>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
     <Title>Scryber MVC Extensions</Title>
@@ -71,16 +112,14 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-    <PackageReference Include="Scryber.Core" Version="6.0.0.4-beta" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+    <PackageReference Include="Scryber.Core" Version="6.0.1-beta" />
   </ItemGroup>
       
   <ItemGroup>
     <None Remove="Scryber.Core" />
+    <None Remove="SixLabors.ImageSharp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.txt" pack="true">
@@ -89,6 +128,9 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <None Include="..\ScyberLogo2_alpha_small.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
+      <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>
     

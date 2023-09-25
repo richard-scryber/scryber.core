@@ -179,10 +179,8 @@ namespace Scryber.PDF.Layout
                 this.StyleStack.Push(style);
 
 
-            Style full = this.Context.StyleStack.GetFullStyle(pg);
+            Style full = this.BuildFullStyle(pg);
 
-
-            
             LayoutPageWithStyle(pg, full);
 
 
@@ -211,6 +209,22 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected override Style BuildFullStyle(Component forComponent)
+        {
+            var full = this.FullStyle;
+            var pg = this.FullStyle.CreatePageSize();
+            var pos = this.FullStyle.CreatePostionOptions();
+            var txt = this.FullStyle.CreateTextOptions();
+            var fs = new Size(txt.GetZeroCharWidth(), txt.GetSize());
 
+            var docPage = forComponent as IDocumentPage;
+
+            if (forComponent is IDocumentPage documentPage)
+                return this.StyleStack.GetFullStyleForPage(documentPage, pg.Size, fs, Font.DefaultFontSize);                
+            else
+                return this.StyleStack.GetFullStyle(forComponent, pg.Size, pg.Size.Subtract(pos.Margins), fs, Font.DefaultFontSize);
+
+            
+        }
     }
 }

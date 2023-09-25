@@ -28,7 +28,10 @@ namespace Scryber
         Normal,
         Over,
         Down,
-        Root
+        Root,
+        Before,
+        After,
+        Unknown
     }
 
     public enum PaperOrientation
@@ -112,19 +115,7 @@ namespace Scryber
         SectionCountLabel
     }
 
-    public enum ListNumberingGroupStyle
-    {
-        None,
-        Decimals,
-        UppercaseRoman,
-        LowercaseRoman,
-        UppercaseLetters,
-        LowercaseLetters,
-        Bullet,
-        Labels
-        //[Obsolete("The labels and images are not currently supported", false)]
-        //Image
-    }
+    
 
     public enum TableRowRepeat
     {
@@ -140,4 +131,15 @@ namespace Scryber
         String,
         Component
     }
+
+
+    public enum TransformType
+    {
+        Translate,
+        Rotate,
+        Scale,
+        Skew,
+    }
+
+    
 }

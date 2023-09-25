@@ -1,0 +1,139 @@
+@page{
+  size: A4 landscape;
+}
+body {
+    padding: 0pt 0pt 0pt 0pt;
+    margin-right: 0pt;
+    background-color: #eee;
+}
+
+.branding{
+  color: #ccc;
+  opacity: 0.5;
+  position: absolute;
+  left: 20pt;
+  top: 20pt;
+  font-size: 30pt;
+}
+
+.branding-name{
+  padding-left: 5pt;
+}
+
+.title{
+  background-color: #006b6b;
+  height: 250pt;
+  padding: 30pt;
+  color: #ccc;
+  opacity: 0.5;
+  text-align: right;
+  vertical-align: bottom;
+  font-weight: 700;
+  font-size: 60pt;
+  line-height: 20pt
+}
+
+.title .cb-type{
+  font-size: 48;
+  opacity: 1;
+  color: white;
+  font-weight: 400;
+}
+.sub-title {
+    color: #ffffff;
+    border-bottom: 2px solid #fff;
+  background-color: #006b6b;
+  margin: 0pt;
+  padding: 10pt 15pt 5pt 10pt;
+  font-weight: 400;
+  font-style: normal;
+}
+
+a{
+  color: #00b6b6;
+}
+
+p {
+  font-size: 14pt;
+  margin: 10pt;
+}
+
+section p, section table, section div{
+  margin-left: 200pt;
+}
+
+table.expressions,
+dl.toc{
+  width: 100%;
+  margin: 20pt;
+}
+
+table.expressions td,
+dl.toc dt,
+dl.toc > dd {
+  padding: 4pt 8pt;
+  font-size: 12pt;
+}
+
+table.expressions td{
+  border-width: 0px;
+  border-bottom: 1px solid white;
+}
+
+table.legend{
+  position: absolute;
+  left: -170pt;
+  width: 140pt;
+  top:70pt;
+  font-size: 10pt;
+  border: solid 1px #aaa;
+}
+
+table.legend td{
+  border-color: white;
+}
+
+table.legend thead{
+  background-color: #ddd;
+}
+
+.name{
+  width: 25%;
+}
+
+.result{
+  text-align: right;
+  width: 18%;
+  border-left: 1px solid white;
+  background-color: #ddd;
+}
+
+.footnote{
+  font-size: 10pt;
+  font-style: normal;
+}
+
+footer{
+  margin: 0px;
+  background-color: #ddd;
+  border-top: 1px solid #006b6b;
+  padding: 10pt 20pt;
+  font-size: 10pt;
+}
+
+footer table.foot{
+  width:100%
+}
+
+footer table.foot td{
+  text-align: center;
+  border: none;
+}
+
+footer table.foot td.first{
+  text-align: left;
+}
+
+footer table.foot td.last{
+  text-align: right;
+}

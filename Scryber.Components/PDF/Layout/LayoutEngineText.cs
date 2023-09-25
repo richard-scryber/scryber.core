@@ -472,9 +472,11 @@ namespace Scryber.PDF.Layout
         {
             this.AssertCurrentLine();
             PDFLayoutLine line = this.CurrentLine;
-            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
             
+            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
 
+
+            
             line.AddRun(br);
 
             //The offset is from the start of the last text drawing operation 
@@ -487,13 +489,22 @@ namespace Scryber.PDF.Layout
             //br.Offset = new PDFSize(back, line.Height);
 
             //Updated
-            if (line.Height == Unit.Zero)
+            if (line.Height == Unit.Zero) //Empty line
                 line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
 
-            if (line.BaseLineOffset == 0 || this.TextRenderOptions.Leading.HasValue) //we don't have any begins or ends affecting the flow (or an explicit leading)
-                br.Offset = new Size(back, line.Height);
+            if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
+                br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);
             else
-                br.Offset = new Size(back, line.Height);
+            {
+                if (line.BaseLineOffset == 0) //we don't have any begins or ends affecting the flow
+                    br.NewLineOffset = new Size(back, line.Height);
+                else
+                {
+                    var h = line.GetLastTextHeight(this.TextRenderOptions.GetLineHeight());
+                    br.NewLineOffset = new Size(back, h); // line.Height);
+                }
+            }
+
             
 
             PDFLayoutRegion reg = line.Region;
@@ -513,6 +524,8 @@ namespace Scryber.PDF.Layout
             this.CurrentLineInset = inset;
 
         }
+
+        
 
         #endregion
 
@@ -557,8 +570,8 @@ namespace Scryber.PDF.Layout
             int fitted;
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
-
-            measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted);
+            char? appendChar;
+            measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted, out appendChar);
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -576,7 +589,7 @@ namespace Scryber.PDF.Layout
 
                 this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
 
-                measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted);
+                measured = this.MeasureString(availH, availW, proxy.Text, 0, out fitted, out appendChar);
 
                 this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -663,7 +676,7 @@ namespace Scryber.PDF.Layout
 
                 if (availH < lineheight)
                 {
-                    if (this.Position.OverflowAction != OverflowAction.Clip)
+                    if (this.IsInClippedRegion() == false) //.Position.OverflowAction != OverflowAction.Clip)
                     {
                         this.DoMoveToNextRegion(lineheight);
 
@@ -687,7 +700,8 @@ namespace Scryber.PDF.Layout
                 Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Measure);
 
                 int fitted;
-                measured =this.MeasureString(availH, availW, chars, offset, out fitted);
+                char? appendChar;
+                measured =this.MeasureString(availH, availW, chars, offset, out fitted, out appendChar);
 
                 Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Measure);
 
@@ -704,6 +718,10 @@ namespace Scryber.PDF.Layout
                 {
                     zeros.Reset();
                     string all = offset == 0 ? chars : chars.Substring(offset);
+
+                    if (appendChar.HasValue)
+                        all += appendChar.Value;
+
                     //if (offset == 0)
                         this.AddCharactersToCurrentLine(required, all);
                     //else
@@ -721,6 +739,9 @@ namespace Scryber.PDF.Layout
                     zeros.Reset();
 
                     string partial = chars.Substring(offset, fitted);
+                    if (appendChar.HasValue)
+                        partial += appendChar.Value;
+
                     this.AddCharactersToCurrentLine(required, partial);
                     //this.AddCharactersToCurrentLine(required, chars, offset, fitted);
                     this.AddSoftReturn(measured.Width);
@@ -736,6 +757,42 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of block that is clipped. This means we just continue with the layout
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInClippedRegion()
+        {
+            var block = this.CurrentLine.Region.GetParentBlock();
+            while (null != block)
+            {
+                if (block.Position.OverflowAction == OverflowAction.Clip
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                    return true;
+
+                block = block.GetParentBlock();
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInAbsoluteOrRelativeRegion()
+        {
+            var block = this.CurrentLine.Region.GetParentBlock();
+            while (null != block)
+            {
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative)
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                    return true;
+
+                block = block.GetParentBlock();
+            }
+            return false;
+        }
 
         #region private bool CanSplitOnWordsOnly()
 
@@ -824,13 +881,14 @@ namespace Scryber.PDF.Layout
         /// <param name="fitted"></param>
         /// <param name="availh">The available height in the current region</param>
         /// <returns></returns>
-        private Size MeasureString(Unit availh, Unit availw, string chars, int offset, out int fitted)
+        private Size MeasureString(Unit availh, Unit availw, string chars, int offset, out int fitted, out char? appendChar)
         {
             Size available = new Size(availw, availh);
             PDFTextRenderOptions opts = this.TextRenderOptions;
             
             Size measured;
-            measured = this.Context.Graphics.MeasureString(chars, offset, available, opts, out fitted);
+            
+            measured = this.Context.Graphics.MeasureString(chars, offset, available, opts, out fitted, out appendChar);
             return measured;
         }
 
@@ -936,6 +994,14 @@ namespace Scryber.PDF.Layout
             LayoutEngineBase engine = this.ParentEngine as LayoutEngineBase;
             if (null == engine)
                 throw new NullReferenceException("Parent engine was not the expected BlockLayoutEngine. A Hack that is needed for overflowing textual content");
+
+            else if (IsInAbsoluteOrRelativeRegion())
+            {
+                if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
+                    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
+
+                this.ContinueLayout = false;
+            }
             else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
                 if (!this.StartText())
@@ -946,7 +1012,7 @@ namespace Scryber.PDF.Layout
                 if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
                     this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full and cannot move to another region.");
 
-                if(null != region && IsEmptyText(region))
+                if (null != region && IsEmptyText(region))
                 {
                     if (region.Parent == block && block.Columns.Length == 1)
                         block.ExcludeFromOutput = true;

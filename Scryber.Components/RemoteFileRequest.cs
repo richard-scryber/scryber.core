@@ -38,12 +38,32 @@ namespace Scryber
         public Exception Error { get; private set; }
 
         public  object Result { get; set; }
+
         public bool IsCompleted { get; private set; }
+
+        public bool IsExecuting { get; private set; }
 
         public bool IsSuccessful { get; private set; }
         
         public TimeSpan CacheDuration { get; set; }
 
+        private string _stub = null;
+
+        public string StubFilePathForLog
+        {
+            get
+            {
+                if (this.FilePath.Length > 200)
+                {
+                    if (string.IsNullOrEmpty(_stub))
+                        _stub = this.FilePath.Substring(0, 100) + "..." + this.FilePath.Substring(this.FilePath.Length - 100);
+
+                    return _stub;
+                }
+                else
+                    return this.FilePath;
+            }
+        }
         public RemoteFileRequest(string type, string path, RemoteRequestCallback callback, IComponent owner = null, object args = null)
         {
             this.ResourceType = type ?? throw new ArgumentNullException(nameof(type));
@@ -52,13 +72,24 @@ namespace Scryber
             this.Owner = owner;
             this.Arguments = args;
             this.IsCompleted = false;
+            this.IsExecuting = false;
+            this.IsSuccessful = false;
             this.CacheDuration = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+        }
+
+        public void StartRequest()
+        {
+            if (this.IsExecuting)
+                throw new InvalidOperationException("This request is already executing");
+
+            this.IsExecuting = true;
         }
 
         public void CompleteRequest(object result, bool success, Exception error = null)
         {
             this.Result = result;
             this.IsCompleted = true;
+            this.IsExecuting = false;
             this.IsSuccessful = success;
             this.Error = error;
 

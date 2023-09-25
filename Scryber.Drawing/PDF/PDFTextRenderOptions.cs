@@ -82,7 +82,7 @@ namespace Scryber.PDF
         #region public PDFBrush Background {get;set;}
 
         private PDFBrush _bg;
-        
+
         /// <summary>
         /// Gets or sets the background brush for the lines of text
         /// </summary>
@@ -141,7 +141,7 @@ namespace Scryber.PDF
 
         #endregion
 
-        
+
 
         #region public double? WordSpacing {get;set;}
 
@@ -173,7 +173,7 @@ namespace Scryber.PDF
         #endregion
 
         #region public double? CharacterHScale {get;set;}
-        
+
         private double? _charHScale;
         /// <summary>
         /// Gets or sets (nullable) the horizontal scale for this text rendering
@@ -198,7 +198,7 @@ namespace Scryber.PDF
             get { return _txtdirection; }
             set
             {
-                if(value.HasValue)
+                if (value.HasValue)
                 {
                     if (value.Value != Scryber.TextDirection.LTR && value.Value != Scryber.TextDirection.RTL)
                         throw new NotSupportedException("The text direction " + value.Value.ToString() + " is not curently supported");
@@ -208,7 +208,7 @@ namespace Scryber.PDF
         }
 
         #endregion
-        
+
 
         #region public TextDecoration TextDecoration {get;set;}
 
@@ -236,6 +236,15 @@ namespace Scryber.PDF
         {
             get { return this._drawFromTop; }
             set { this._drawFromTop = value; }
+        }
+
+
+        private PDFHyphenationStrategy _hyphenation = null;
+
+        public PDFHyphenationStrategy HyphenationStrategy
+        {
+            get { return this._hyphenation; }
+            set { this._hyphenation = value; }
         }
 
         //
@@ -274,6 +283,14 @@ namespace Scryber.PDF
 
         #endregion
 
+        public Unit GetSize()
+        {
+            if (null != this.Font)
+                return this.Font.Size;
+            else
+                return Font.DefaultFontSize;
+        }
+
         #region public PDFUnit GetLineHeight()
 
         /// <summary>
@@ -292,10 +309,32 @@ namespace Scryber.PDF
 
         #endregion
 
+
+        public Unit GetZeroCharWidth()
+        {
+            if (null != this.Font.FontMetrics)
+                return this.Font.FontMetrics.ZeroWidth;
+            else
+                return this.Font.Size * 0.5;
+        }
+
         public Unit GetBaselineOffset()
         {
             if (null == this.Font)
                 return Unit.Zero;
+            else if (this.Leading.HasValue)
+            {
+                if (null != this.Font.FontMetrics)
+                {
+                    var ascent = this.Font.FontMetrics.Ascent;
+                    var size = ascent  + this.Font.FontMetrics.Descent;
+                    var space = this.Leading.Value - size;
+                    var halflead = space / 2.0;
+                    return halflead + ascent;
+                }
+                else
+                    return this.Font.Size * 0.75;
+            }
             else if (null != this.Font.FontMetrics)
                 return this.Font.FontMetrics.BaseLineOffset;
             else

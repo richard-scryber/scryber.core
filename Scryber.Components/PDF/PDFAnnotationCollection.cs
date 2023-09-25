@@ -23,7 +23,7 @@ using Scryber.PDF.Native;
 
 namespace Scryber.PDF
 {
-    internal class PDFAnnotationCollection : IArtefactCollection
+    public class PDFAnnotationCollection : IArtefactCollection
     {
         private List<PDFAnnotationEntry> _annots = new List<PDFAnnotationEntry>();
         private string _name;
@@ -32,6 +32,22 @@ namespace Scryber.PDF
         {
             get { return _name; }
         }
+
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        public int Count
+        {
+            get { return _annots.Count; }
+        }
+
+        public PDFAnnotationEntry this[int index]
+        {
+            get { return this._annots[index]; }
+        }
+
 
         internal PDFAnnotationCollection(string catalogname)
         {

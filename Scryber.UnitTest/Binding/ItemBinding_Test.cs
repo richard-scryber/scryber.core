@@ -148,6 +148,8 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+       
+
         /// <summary>
         /// Test for binding style values to parameters
         /// </summary>

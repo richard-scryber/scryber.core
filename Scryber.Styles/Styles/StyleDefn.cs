@@ -15,6 +15,7 @@
  *  along with Scryber source code in the COPYING.txt file.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
+#define COUNTERS_AND_PSEUDOCONTENT
 
 using System;
 using System.Collections.Generic;
@@ -127,7 +128,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public IComponent Parent {get;set;}
+        #region public IComponent Owner {get;set;}
 
         private IComponent _owner;
 
@@ -137,7 +138,9 @@ namespace Scryber.Styles
         public IComponent Owner
         {
             get { return _owner; }
-            set { _owner = value; }
+            set {
+                _owner = value;
+            }
         }
 
         #endregion
@@ -246,21 +249,52 @@ namespace Scryber.Styles
         /// <param name="style"></param>
         /// <param name="forComponent"></param>
         /// <param name="state"></param>
-        public override void MergeInto(Style style, IComponent forComponent, ComponentState state)
+        public override void MergeInto(Style style, IComponent forComponent)
         {
             int priority;
 
-            if (this.IsMatchedTo(forComponent, state, out priority))
+            if (this.IsMatchedTo(forComponent, ComponentState.Normal, out priority))
             {
                 if (this.HasVariables)
                     this.MergeVariables(style);
 
                 this.MergeInto(style, priority);
-                
             }
+
+#if COUNTERS_AND_PSEUDOCONTENT
+
+            else if(this.IsMatchedTo(forComponent, ComponentState.Over, out priority))
+            {
+                var stateStyle = style.GetStyleState(ComponentState.Over, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+                this.MergeInto(stateStyle, priority);
+
+            }
+            else if (this.IsMatchedTo(forComponent, ComponentState.After, out priority))
+            {
+                var stateStyle = style.GetStyleState(ComponentState.After, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+
+                this.MergeInto(stateStyle, priority);
+
+            }
+            else if (this.IsMatchedTo(forComponent, ComponentState.Before, out priority))
+            {
+                var stateStyle = style.GetStyleState(ComponentState.Before, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+
+                this.MergeInto(stateStyle, priority);
+
+            }
+
+#endif
+
         }
 
-        #endregion
+#endregion
 
         #region protected virtual void MergeVariables(Style style)
         

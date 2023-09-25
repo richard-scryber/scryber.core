@@ -66,14 +66,14 @@ namespace Scryber.Styles.Selectors
 
         #endregion
 
-        
+
 
         // parsing
 
         #region public static StyleMatcher Parse(string selector)
 
-        private static string[] _commaSplitter = new string[] {", "};
-        private static char[] _whitespaceSplitter = new char[] {' '};
+        private static char[] _commaSplitter =  new char[] { ',' };
+        private static char[] _whitespaceSplitter = new char[] { ' ' };
         
         public static StyleMatcher Parse(string selector)
         {
@@ -95,15 +95,16 @@ namespace Scryber.Styles.Selectors
 
             StringBuilder buffer = new StringBuilder();
 
-            var each = selector.Split(_commaSplitter, StringSplitOptions.RemoveEmptyEntries);
             
-            if (each.Length > 1)
+            
+            if (selector.IndexOf(_commaSplitter[0]) >= 0)
             {
+                var each = selector.Split(_commaSplitter);
                 StyleMatcher root = null;
 
                 foreach (var one in each)
                 {
-                    var all = one.Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
+                    var all = one.Trim().Split(_whitespaceSplitter, StringSplitOptions.RemoveEmptyEntries);
 
                     StylePlacement placement = StylePlacement.Any;
                     var parsed = ParseSelectorList(all, all.Length - 1, placement, buffer);
@@ -217,10 +218,12 @@ namespace Scryber.Styles.Selectors
                 }
                 else
                 {
-                    if (c == ':')
+                    //TODO: Improve this as we substring twice. Once here and once at the state parsing
+                    if (c == ':' && currIndex > 0 && IsKnownState(selector.Substring(currIndex).TrimEnd()))
                     {
                         stateIndex = currIndex;
                         statePreviousType = pt;
+                        break;
                     }
                     sb.Append(c);
                 }
@@ -253,9 +256,48 @@ namespace Scryber.Styles.Selectors
                 {
 
                 }
+                else
+                {
+                    var state = selector.Substring(stateIndex).TrimEnd();
+                    switch (state)
+                    {
+                        case ("::before"):
+                        case (":before"):
+                            appliedState = ComponentState.Before;
+                            break;
+                        case ("::after"):
+                        case (":after"):
+                            appliedState = ComponentState.After;
+                            break;
+                        case (":hover"):
+                            appliedState = ComponentState.Over;
+                            break;
+                        default:
+                            //Use the unknown state so it is not captured as part of the default style.
+                            appliedState = ComponentState.Unknown;
+                            break;
+                    }
+                }
+
             }
 
             return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };
+        }
+
+        private static bool IsKnownState(string stateValue)
+        {
+            if(!string.IsNullOrEmpty(stateValue))
+            {
+                if(string.Equals(stateValue, "::before")
+                    || string.Equals(stateValue, "::after")
+                    || string.Equals(stateValue, ":hover")
+                    || string.Equals(stateValue, ":before")
+                    || string.Equals(stateValue, ":after"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private enum ParsingType

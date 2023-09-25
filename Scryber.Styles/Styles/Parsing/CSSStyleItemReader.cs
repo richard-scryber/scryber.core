@@ -107,6 +107,11 @@ namespace Scryber.Styles.Parsing
         { }
 
 
+        public CSSStyleItemReader(string styles, int startIndex, int length)
+            : this(new StringEnumerator(styles, startIndex, length))
+        { }
+
+
         public CSSStyleItemReader(StringEnumerator stringEnumerator)
         {
             if (null == stringEnumerator)
@@ -189,7 +194,7 @@ namespace Scryber.Styles.Parsing
             }
             if (end > start)
             {
-                this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end - start) + 1);
+                this.Buffer.Append(this.InnerEnumerator.Substring(start, (end - start) + 1));
                 this._attr = this.Buffer.ToString().TrimEnd();
                 
                 return true;
@@ -251,7 +256,7 @@ namespace Scryber.Styles.Parsing
 
             if (end >= start)
             {
-                this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end-start) + 1);
+                this.Buffer.Append(this.InnerEnumerator.Substring(start, (end-start) + 1));
                 this._value = this.Buffer.ToString();
                 return true;
             }
@@ -305,7 +310,7 @@ namespace Scryber.Styles.Parsing
 
             if (end >= start)
             {
-                this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end - start) + 1);
+                this.Buffer.Append(this.InnerEnumerator.Substring(start, (end - start) + 1));
                 this._value = this.Buffer.ToString();
                 return true;
             }
@@ -386,7 +391,7 @@ namespace Scryber.Styles.Parsing
 
             if (end > start)
             {
-                this.Buffer.Append(this.InnerEnumerator.InnerString, start, (end - start) + 1);
+                this.Buffer.Append(this.InnerEnumerator.Substring(start, (end - start) + 1));
                 this._value = this.Buffer.ToString();
                 return true;
             }

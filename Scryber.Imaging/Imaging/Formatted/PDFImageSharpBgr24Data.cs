@@ -23,17 +23,34 @@ namespace Scryber.Imaging.Formatted
 
             int width = this.PixelWidth;
             long total = 0;
-            byte[] buffer = new byte[width * 3];
 
-            Span<byte> bufferSpan = new Span<byte>(buffer);
-
-            for (int r = 0; r < this.PixelHeight; r++)
+            //New v2 ImageSharp accessor pattern
+            this.PixelImage.ProcessPixelRows(accessor =>
             {
-                ReadOnlySpan<Bgr24> span = this.PixelImage.GetPixelRowSpan(r);
-                ops.ToRgb24Bytes(config, span, buffer, width);
-                writer.WriteRaw(buffer, 0, buffer.Length);
-                total += buffer.Length;
-            }
+
+                byte[] buffer = new byte[width * 3];
+
+                Span<byte> bufferSpan = new Span<byte>(buffer);
+                for (int r = 0; r < this.PixelHeight; r++)
+                {
+                    var span = accessor.GetRowSpan(r);
+                    ops.ToRgb24Bytes(config, span, bufferSpan, width);
+                    writer.WriteRaw(buffer, 0, buffer.Length);
+                    total += buffer.Length;
+                }
+
+            });
+
+            //byte[] buffer = new byte[width * 3];
+            //Span<byte> bufferSpan = new Span<byte>(buffer);
+
+            //for (int r = 0; r < this.PixelHeight; r++)
+            //{
+            //    ReadOnlySpan<Bgr24> span = this.PixelImage.GetPixelRowSpan(r);
+            //    ops.ToRgb24Bytes(config, span, buffer, width);
+            //    writer.WriteRaw(buffer, 0, buffer.Length);
+            //    total += buffer.Length;
+            //}
 
             return total;
         }

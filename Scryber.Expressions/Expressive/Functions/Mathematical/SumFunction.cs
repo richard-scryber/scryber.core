@@ -20,9 +20,9 @@ namespace Scryber.Expressive.Functions.Mathematical
             foreach (var value in parameters)
             {
                 object evaluatedValue = value.Evaluate(variables);
-                IEnumerable enumerable = evaluatedValue as IEnumerable;
+                IEnumerable enumerable;
 
-                if (enumerable != null)
+                if (Helpers.Collections.TryIsCollection(evaluatedValue, out enumerable))
                 {
                     object enumerableSum = 0;
                     foreach (var item in enumerable)
@@ -32,7 +32,7 @@ namespace Scryber.Expressive.Functions.Mathematical
                     }
                     evaluatedValue = enumerableSum;
                 }
-
+                
                 // When summing we don't want to bail out early with a null value.
                 result = Numbers.Add(result ?? 0, evaluatedValue ?? 0);
             }

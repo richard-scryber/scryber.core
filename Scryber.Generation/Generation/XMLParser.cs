@@ -24,6 +24,7 @@ using System.Xml;
 using System.Data.Common;
 
 using Scryber.Logging;
+using System.Text.RegularExpressions;
 
 namespace Scryber.Generation
 {
@@ -200,7 +201,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = new XmlHtmlEntityReader(stream, GetXmlSettings()))
+            using (XmlReader reader = new XmlHtmlEntityReader(stream))
             {
                 return Parse(source, reader, type);
             }
@@ -215,7 +216,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = new XmlHtmlEntityReader(reader, GetXmlSettings()))
+            using (XmlReader xreader = new XmlHtmlEntityReader(reader))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -237,6 +238,10 @@ namespace Scryber.Generation
             }
             catch(Exception ex)
             {
+                if (string.IsNullOrEmpty(source))
+                {
+                    source = "Dynamic";
+                }
                 throw new PDFParserException(string.Format(Errors.CouldNotParseSource, source, ex.Message), ex);
             }
         }
@@ -424,9 +429,16 @@ namespace Scryber.Generation
                 cdef = AssertGetClassDefinition(reader, out isremote);
             else if (!TryGetClassDefinition(reader, out cdef, out isremote))
             {
-                //No Class definition - so skip this element
-                SkipOverCurrentElement(reader);
-                return null;
+                if (isroot)
+                {
+                    throw new PDFParserException("The root element " + reader.LocalName + " with namespace " + reader.NamespaceURI + " could not be resolved. Check the validity of the supported namespaces");
+                }
+                else
+                {
+                    //No Class definition - so skip this element
+                    SkipOverCurrentElement(reader);
+                    return null;
+                }
             }
 
             this.CheckFrameworkIsSupported(reader, cdef, this.Mode);
@@ -1576,11 +1588,32 @@ namespace Scryber.Generation
             lit.ReaderFormat = format;
             arraydefn.AddToCollection(collection, lit);
 
+            if(format == TextFormat.XML)
+            {
+                expr = ReplaceBindingEntitiesNotInQuotes(expr);
+            }
             var cdef = this.AssertGetClassDefinition(this.Settings.TextLiteralType);
             var prop = cdef.Attributes["value"];
 
             GenerateBindingExpression(null, lit, cdef, prop, expr, factory);
 
+        }
+
+        private Dictionary<string, char> HtmlEntities = XmlHtmlEntityReader.DefaultKnownHTMLEntities;
+        private Regex bindingMatcher = new Regex("&(\\w{1,8});");
+
+        private string ReplaceBindingEntitiesNotInQuotes(string bindindExpr)
+        {
+            var replaced = bindingMatcher.Replace(bindindExpr, (amatch) =>
+            {
+                char found;
+                var toFind = amatch.Groups[1].Value;
+                if (HtmlEntities.TryGetValue(toFind, out found))
+                    return found.ToString();
+                else
+                    return amatch.Value;
+            });
+            return replaced;
         }
 
         private void AddTextString(string text, ParserArrayDefinition arraydefn, object collection, TextFormat format)

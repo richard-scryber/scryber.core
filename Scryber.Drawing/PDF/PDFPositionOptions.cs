@@ -126,12 +126,12 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the vertical alignment on any child content
         /// </summary>
-        public VerticalAlignment VAlign { get; set; }
+        public VerticalAlignment? VAlign { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal alignment on any child content
         /// </summary>
-        public HorizontalAlignment HAlign { get; set; }
+        public HorizontalAlignment? HAlign { get; set; }
 
         /// <summary>
         /// Gets or sets the column count in a block

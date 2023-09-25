@@ -31,7 +31,7 @@ namespace Scryber.Components
     /// </summary>
     [PDFParsableComponent("PageGroup")]
     [PDFRemoteParsableComponent("PageGroup-Ref")]
-    public class PageGroup : PageBase
+    public class PageGroup : PageBase, IDocumentPageContainer
     {
 
         #region  public IPDFTemplate ContinuationHeader {get;set;}
@@ -149,6 +149,40 @@ namespace Scryber.Components
 
         #endregion
 
+
+        IDocumentPage[] IDocumentPageContainer.AllPages
+        {
+            get
+            {
+                if (this.InnerContent.Count == 0)
+                    return Document.NoPagesArray;
+                else
+                {
+                    List<IDocumentPage> all = new List<IDocumentPage>(this.InnerContent.Count);
+                    this.DoExtractDocumentPages(all, this.InnerContent);
+                    return all.ToArray();
+                }
+            }
+        }
+
+        protected virtual void DoExtractDocumentPages(List<IDocumentPage> all, ComponentList contents)
+        {
+            for (var i = 0; i < contents.Count; i++)
+            {
+                var pb = contents[i];
+                if (pb is IDocumentPageContainer container)
+                    all.AddRange(container.AllPages);
+
+                else if (pb is IDocumentPage docPg)
+                    all.Add(docPg);
+
+                else if (pb is IInvisibleContainer invisible)
+                {
+                    var inner = invisible.Content;
+                    this.DoExtractDocumentPages(all, inner);
+                }
+            }
+        }
 
     }
 }

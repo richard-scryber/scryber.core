@@ -41,5 +41,11 @@ namespace Scryber.Text
         /// Matches both count and order of the EscapeStrings
         /// </summary>
         public static readonly string[] ReplaceStrings = new string[] { "\\\\", "\\(", "\\)" };
+
+
+        /// <summary>
+        /// The width of a line of text that is specified a not wrapping, for measurement.
+        /// </summary>
+        public static readonly int NoWrappingLineWidthPoints = 500000; //578 feet wide
     }
 }

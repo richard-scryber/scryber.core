@@ -34,9 +34,9 @@ namespace Scryber.Expressive.Expressions
                     {
                         throw new IndexOutOfRangeException("Could not extract the index of the array from the expression");
                     }
-                    
+
                 }
-                else if(rhs is IList list)
+                else if (lhsResult is IList list)
                 {
                     if (rhs is int index || int.TryParse(rhs.ToString(), out index))
                     {
@@ -47,9 +47,80 @@ namespace Scryber.Expressive.Expressions
                         throw new IndexOutOfRangeException("Could not extract the index of the list from the expression");
                     }
                 }
-                else if(rhs is IDictionary dict)
+                else if (lhsResult is IDictionary dict)
                 {
                     return DoGetDictionaryValue(dict, rhs.ToString());
+                }
+#if NET6_0
+
+                else if (lhsResult is System.Text.Json.JsonElement jele &&
+                    jele.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    System.Text.Json.JsonElement value;
+
+                    if (rhs is int index || int.TryParse(rhs.ToString(), out index))
+                    {
+                        value = jele[index];
+                    }
+                    else
+                        throw new NotSupportedException("The object indexing the array is not based on a number index");
+
+                    switch (value.ValueKind)
+                    {
+                        case System.Text.Json.JsonValueKind.Array:
+                        case System.Text.Json.JsonValueKind.Object:
+                            return value;
+                        case System.Text.Json.JsonValueKind.Null:
+                            return null;
+                        case System.Text.Json.JsonValueKind.False:
+                        case System.Text.Json.JsonValueKind.True:
+                            return value.GetBoolean();
+                        case System.Text.Json.JsonValueKind.Number:
+                            return value.GetDouble();
+                        default:
+                            return value.GetString();
+                    }
+                }
+#endif
+                else if (lhsResult is Newtonsoft.Json.Linq.JToken jobject &&
+                    jobject.Type == Newtonsoft.Json.Linq.JTokenType.Array)
+                {
+                    Newtonsoft.Json.Linq.JToken result;
+
+                    if (rhs is int index || int.TryParse(rhs.ToString(), out index))
+                    {
+                        result = ((Newtonsoft.Json.Linq.JArray)jobject)[index];
+                    }
+                    else
+                        throw new NotSupportedException("The object indexing the array is not based on a number index");
+
+                    switch (result.Type)
+                    {
+                        case Newtonsoft.Json.Linq.JTokenType.Array:
+                        case Newtonsoft.Json.Linq.JTokenType.Object:
+                            return result;
+                        case Newtonsoft.Json.Linq.JTokenType.Null:
+                        case Newtonsoft.Json.Linq.JTokenType.None:
+                            return null;
+                        case Newtonsoft.Json.Linq.JTokenType.Integer:
+                        case Newtonsoft.Json.Linq.JTokenType.Float:
+                            return ((double)result);
+                        case Newtonsoft.Json.Linq.JTokenType.Boolean:
+                            return ((bool)result);
+                        case Newtonsoft.Json.Linq.JTokenType.String:
+                        case Newtonsoft.Json.Linq.JTokenType.Uri:
+                            return ((string)result);
+                        case Newtonsoft.Json.Linq.JTokenType.Guid:
+                            return ((Guid)result);
+                        case Newtonsoft.Json.Linq.JTokenType.Date:
+                            return ((DateTime)result);
+                        case Newtonsoft.Json.Linq.JTokenType.Bytes:
+                            return ((byte[])result);
+                        case Newtonsoft.Json.Linq.JTokenType.TimeSpan:
+                            return ((TimeSpan)result);
+                        default:
+                            return result.ToString(Newtonsoft.Json.Formatting.None);
+                    }
                 }
                 else
                 {

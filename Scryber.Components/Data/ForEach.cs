@@ -193,7 +193,14 @@ namespace Scryber.Data
                     source.XPathNavData = (System.Xml.XPath.XPathNavigator)data;
                     data = source.Select(this.SelectPath, context);
                     dataSource = source;
-                }                    
+                }
+#if NET6_0
+                else if(data is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    data = jele.EnumerateArray();
+                }
+
+#endif
             }
             else if (this.HasAssignedDataSourceComponent(context, out dataSource))
             {

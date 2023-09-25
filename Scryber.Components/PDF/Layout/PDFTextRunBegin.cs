@@ -55,6 +55,13 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Gets the (up to) 3 rects that fully describe the calculated bounds for this text run begin to end - top line, block and end line.
+        /// </summary>
+        public Rect[] CalculatedBounds
+        {
+            get { return _caclulatedBounds; }
+        }
         
 
         #region public PDFTextRenderOptions TextRenderOptions
@@ -118,7 +125,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the start text cursor point within the page for this text
         /// </summary>
-        protected Size StartTextCursor
+        public Size StartTextCursor
         {
             get;
             private set;
@@ -362,7 +369,7 @@ namespace Scryber.PDF.Layout
             }
 
             //TODO:Add any backgrounds and borders based on the 3 rects in the calculated bounds.
-            FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
+            //FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
 
             bounds.X += this.LineInset;
 
@@ -501,7 +508,7 @@ namespace Scryber.PDF.Layout
                         else if (run is PDFTextRunNewLine)
                         {
                             PDFTextRunNewLine newline = (PDFTextRunNewLine)run;
-                            Size offset = newline.Offset;
+                            Size offset = newline.NewLineOffset;
                             if (null != newline.NextLineSpacer)
                             {
                                 Unit nextoffset = newline.NextLineSpacer.Width;

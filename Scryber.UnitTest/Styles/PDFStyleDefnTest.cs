@@ -234,9 +234,8 @@ namespace Scryber.Core.UnitTests.Styles
 
             //match applied type
             target.AppliedType = typeof(Scryber.Components.Label);
-            target.MergeInto(style, lbl, ComponentState.Normal);
+            target.MergeInto(style, lbl);
 
-            style.Flatten();
             Assert.AreEqual(Scryber.Drawing.StandardColors.Aqua, style.Background.Color);
 
             //non-matching applied type
@@ -244,7 +243,7 @@ namespace Scryber.Core.UnitTests.Styles
             style = new Style();
             style.Background.Color = Scryber.Drawing.StandardColors.Blue;
 
-            target.MergeInto(style, lbl, ComponentState.Normal);
+            target.MergeInto(style, lbl);
             Assert.AreEqual(Scryber.Drawing.StandardColors.Blue, style.Background.Color);
 
         }

@@ -111,17 +111,15 @@ namespace Scryber.Core.UnitTests.Styles
 
             Label lbl = new Label();
             lbl.ElementName = "Label";
-            ComponentState state = ComponentState.Normal;
+            
 
             Style style = new Style();
-            target.MergeInto(style, lbl, state);
-            style.Flatten();
+            target.MergeInto(style, lbl);
             Assert.IsFalse(style.HasValues);//no style class on the label
 
             lbl.StyleClass = "sea";
             style = new Style();
-            target.MergeInto(style, lbl, state);
-            style.Flatten();
+            target.MergeInto(style, lbl);
 
             Assert.AreEqual(StandardColors.Red, style.Border.Color); //from defn as higher priority
             Assert.AreEqual((Unit)10, style.Border.Width); // from defn (defn2 has no width)

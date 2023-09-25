@@ -124,7 +124,16 @@ namespace Scryber.Expressive
                             currentToken = new Token(")", -1, ExpressionTokenType.Parenthese);
                         }
 
-                        leftHandSide = op.BuildExpression(previousToken, new[] { leftHandSide, rightHandSide }, this.context);
+
+                        if (null == rightHandSide && (leftHandSide is CurrentDataExpression))
+                        {
+                            //if we are just a current data expression - do nothing. we are just a '.'
+                        }
+                        else
+                        {
+                            leftHandSide = op.BuildExpression(previousToken, new[] { leftHandSide, rightHandSide }, this.context);
+                        }
+
                     }
                     else
                     {

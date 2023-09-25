@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Expressions.Binary.Multiplicative;
+using Scryber.Expressive.Functions.Mathematical;
 
 namespace Scryber.Expressive.Operators.Multiplicative
 {

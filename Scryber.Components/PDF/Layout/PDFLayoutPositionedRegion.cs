@@ -66,7 +66,7 @@ namespace Scryber.PDF.Layout
         /// <param name="columnindex"></param>
         /// <param name="position"></param>
         public PDFLayoutPositionedRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, PDFPositionOptions position)
-            : base(block, owner, contentbounds, columnindex, position.HAlign, position.VAlign, position.PositionMode)
+            : base(block, owner, contentbounds, columnindex, position.HAlign ?? HorizontalAlignment.Left, position.VAlign ?? VerticalAlignment.Top, position.PositionMode)
         {
             this.PositionOptions = position;
         }

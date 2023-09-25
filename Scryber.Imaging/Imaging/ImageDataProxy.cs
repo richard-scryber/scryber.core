@@ -99,7 +99,14 @@ namespace Scryber.Imaging
         private void RequestCompleted(object sender, RequestCompletedEventArgs args)
         {
 			if (ReferenceEquals(args.Request, this._request))
-				this.EnsureFulfilled();
+			{
+				var log = (null != args.Raiser && null != args.Raiser.Document ? args.Raiser.Document.TraceLog : null);
+
+				if (null != log)
+					log.Add(TraceLevel.Verbose, "Image Proxy", "Marking the remote image request as complete for '" + _request.FilePath + "' and fulfilling");
+
+				this.EnsureFulfilled(log);
+			}
 			else
 				throw new PDFException("The reference should match the raised request");
         }
@@ -111,17 +118,20 @@ namespace Scryber.Imaging
 
         public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
-			this.EnsureFulfilled();
+			this.EnsureFulfilled(context.TraceLog);
 
 			if (null == _innerImage)
+			{
+				context.TraceLog.Add(TraceLevel.Error, "Image Proxy", "As no image data is assigned to the inner image for the proxy, no image data can be rendered. Returning null for the object reference");
 				return null;
+			}
 			else
 				return _innerImage.Render(name, filters, context, writer);
         }
 
         public override Size GetSize()
         {
-			this.EnsureFulfilled();
+			this.EnsureFulfilled(null);
 
             return base.GetSize();
         }
@@ -132,8 +142,9 @@ namespace Scryber.Imaging
 				this._innerImage.ResetFilterCache();
         }
 
+		private bool _logFulfilled = false;
 
-		private bool EnsureFulfilled()
+		private bool EnsureFulfilled(Logging.TraceLog log)
 		{
 			if (_request.IsCompleted)
 			{
@@ -144,16 +155,28 @@ namespace Scryber.Imaging
 						_innerImage = (ImageData)_request.Result;
 						this.SetPixelData(_innerImage);
 					}
-
+					if (null != log && !_logFulfilled)
+					{
+						log.Add(TraceLevel.Message, "Image Proxy", "Fulfilled the request for the remote image " + _request.FilePath + " and set the image data for the proxy ");
+						_logFulfilled = true;
+					}
 					return true;
 				}
 				else
 				{
-					this._innerImage = GetMissingImage();
+                    if (null != log)
+                        log.Add(TraceLevel.Warning, "Image Proxy", "Failed request for the remote image '" + _request.FilePath + "',  " + (null != _request.Error ? _request.Error.Message : "No Exception details"));
+
+                    this._innerImage = GetMissingImage();
 				}
 			}
 			else
-				this._innerImage = GetMissingImage();
+			{
+				if (null != log)
+					log.Add(TraceLevel.Warning, "Image Proxy", "The request for the remote image '" + _request.FilePath + "' was not completed at the time of needing");
+
+                this._innerImage = GetMissingImage();
+			}
 
 			return false;
 		}

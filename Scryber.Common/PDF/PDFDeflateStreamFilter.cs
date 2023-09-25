@@ -16,6 +16,9 @@
  * 
  */
 
+//#define USE_IO_COMPRESSION
+//#define ADD_ZIPBYTES
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,12 +71,44 @@ namespace Scryber.PDF
 
         public byte[] FilterStream(byte[] orig)
         {
+            System.IO.MemoryStream inputStream = null;
+            System.IO.Compression.DeflateStream compressor = null;
+            System.IO.MemoryStream outputStream = null;
+
             try
             {
                 byte[] output;
+
+#if USE_IO_COMPRESSION
+
+                inputStream = new System.IO.MemoryStream(orig);
+                outputStream = new System.IO.MemoryStream();
+
+#if ADD_ZIPBYTES
+                //Add the zip compression headers
+                outputStream.WriteByte((byte)0x78);
+                outputStream.WriteByte((byte)0x9c);
+#endif
+                WriteBytesToLog(orig, "Original data");
+
+                using (compressor = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionMode.Compress , true))
+                {
+                    inputStream.CopyTo(compressor);
+                }
+                compressor = null;
+
+                output = outputStream.ToArray();
+
+                WriteBytesToLog(output, "Compressed data");
+
+#else
+                //WriteBytesToLog(orig, "Original data");
+
                 PDFDeflateZLib zlib = new PDFDeflateZLib();
                 output = zlib.Compress(orig);
-                
+
+                //WriteBytesToLog(output, "Compressed data");
+#endif
                 //The ZLib algorithm will return null if there is no compression
                 if (null == output)
                     return orig;
@@ -84,6 +119,31 @@ namespace Scryber.PDF
             {
                 throw new PDFException(CommonErrors.CouldNotCompressStreamFilter, ex);
             }
+            finally
+            {
+                if (null != inputStream)
+                    inputStream.Dispose();
+                if (null != outputStream)
+                    outputStream.Dispose();
+                if (null != compressor)
+                    compressor.Dispose();
+
+                compressor = null;
+                outputStream = null;
+                inputStream = null;
+            }
+        }
+
+        private static void WriteBytesToLog(byte[] data, string name)
+        {
+            var sb = new StringBuilder();
+            for(var i = 0; i < data.Length; i++)
+            {
+                sb.Append(data[i]);
+                sb.Append(" ");
+            }
+
+            Console.WriteLine(name + ": " + sb.ToString());
         }
     }
 }

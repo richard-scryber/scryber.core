@@ -65,7 +65,7 @@ namespace Scryber
 
 
         /// <summary>
-        /// Forms a linked list of service providers. Aks the top to get a service, and if not fulfilled, asks the bottom
+        /// Forms a linked list of service providers. Asks the top to get a service, and if not fulfilled, asks the bottom
         /// </summary>
         private class FallBackServiceProvider : IServiceProvider
         {

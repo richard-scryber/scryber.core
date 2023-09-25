@@ -45,6 +45,12 @@ namespace Scryber.Text
         NoWrap
     }
 
+    public enum WordHyphenation
+    {
+        None,
+        Auto
+    }
+
     [Flags()]
     public enum TextDecoration
     {

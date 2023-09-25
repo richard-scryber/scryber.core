@@ -10,6 +10,7 @@ using Scryber.Expressive.Functions.Logical;
 using Scryber.Expressive.Functions.Mathematical;
 using Scryber.Expressive.Functions.Relational;
 using Scryber.Expressive.Functions.Statistical;
+using Scryber.Expressive.Functions.Coalesce;
 using Scryber.Expressive.Functions.String;
 using Scryber.Expressive.Functions.CSS;
 
@@ -28,13 +29,15 @@ namespace Scryber.Binding
         {
             _lock = new object();
             _all = new List<IFunction>();
-
+            //conversion
             _all.Add(new DateFunction());
             _all.Add(new DecimalFunction());
             _all.Add(new DoubleFunction());
             _all.Add(new IntegerFunction());
             _all.Add(new LongFunction());
             _all.Add(new StringFunction());
+            _all.Add(new BoolFunction());
+            _all.Add(new TypeOfFunction());
             // Date
             _all.Add(new AddDaysFunction());
             _all.Add(new AddHoursFunction());
@@ -75,8 +78,11 @@ namespace Scryber.Binding
             _all.Add(new SinFunction());
             _all.Add(new SqrtFunction());
             _all.Add(new SumFunction());
+            _all.Add(new SumOfFunction());
             _all.Add(new TanFunction());
             _all.Add(new TruncateFunction());
+            _all.Add(new RadiansFunction());
+            _all.Add(new DegreesFunction());
             // Mathematical Constants
             _all.Add(new EFunction());
             _all.Add(new PIFunction());
@@ -87,8 +93,18 @@ namespace Scryber.Binding
             // Relational
             _all.Add(new MaxFunction());
             _all.Add(new MinFunction());
+            _all.Add(new MinOfFunction());
+            _all.Add(new MaxOfFunction());
+            //coalesce
+            _all.Add(new EachFunction());
+            _all.Add(new EachOfFunction());
+            _all.Add(new SortByFunction());
+            _all.Add(new SelectWhereFunction());
+            //TODO: Add Merge, Splice
+
             // Statistical
             _all.Add(new AverageFunction());
+            _all.Add(new AverageOfFunction());
             _all.Add(new MeanFunction());
             _all.Add(new MedianFunction());
             _all.Add(new ModeFunction());
@@ -104,9 +120,14 @@ namespace Scryber.Binding
             _all.Add(new ConcatFunction());
             _all.Add(new IndexOfFunction());
             _all.Add(new JoinFunction());
+            _all.Add(new SplitFunction());
+            _all.Add(new ReplaceFunction());
+            //TODO: Add ToUpper, ToLower, Trim, TrimLeft and TrimRight functions
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());
+
+            _all.Add(new EvalFunction());
         }
 
         /// <summary>

@@ -73,6 +73,10 @@ namespace Scryber.Styles.Parsing.Typed
                     mode = PositionMode.Absolute;
                     return true;
 
+                case ("inline-block"):
+                    mode = PositionMode.InlineBlock;
+                    return true;
+
                 default:
                     return false;
             }

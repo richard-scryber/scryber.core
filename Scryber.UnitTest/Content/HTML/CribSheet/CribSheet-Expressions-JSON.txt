@@ -1,0 +1,19 @@
+{
+    "number": 20.9,
+    "int": 11,
+    "boolean": true,
+    "date": "12 June 2023 11:45:00",
+    "array": [10,11,12],
+    "color": "#330033",
+    "bg": "silver",
+    "padding": "20pt",
+    "items": [
+      {"name": "First Item", "index" : 1},
+      {"name": "Second Item", "index": 3},
+      {"name": "Third Item", "index": 2}
+    ],
+    "nested" : {
+      "p1" : "one",
+      "p2" : "two"
+    }
+}

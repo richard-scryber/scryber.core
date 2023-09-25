@@ -21,12 +21,13 @@ using Scryber.Svg.Components;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using Scryber.PDF.Resources;
-using NuGet.Frameworks;
 using Scryber.Expressive.Functions;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
 using Scryber.PDF.Secure;
+using System.Collections;
+
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -171,22 +172,21 @@ namespace Scryber.Core.UnitTests.Html
                 defn.Border.LineStyle = LineType.Solid;
 
                 doc.Styles.Add(defn);
-                
-                    
-                
+
                 using (var stream = DocStreams.GetOutputStream("HtmlFromSource.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }
             }
 
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
         public void HelloWorld()
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.xhtml");
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -196,7 +196,10 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
+
 
         [TestMethod()]
         public void MultipleImageReferences()
@@ -235,7 +238,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RemoteCssFileLoading()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
@@ -274,7 +277,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RemoteCssFileLoadingAsync()
         {
-            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/CSS/Include.css";
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
             var src = @"<?scryber append-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
@@ -312,6 +315,211 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
 
 
+            }
+        }
+
+        [TestMethod()]
+        public void RemoteCssFileLoadingCustomHandlerAsync()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
+            var src = @"<?scryber append-log='true' log-level='Verbose' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content</p>
+                            </body>
+
+                        </html>";
+
+            _remotefileRequestCalled = 0;
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsyncCustomLoading.pdf"))
+                {
+                    
+                    doc.RemoteFileRegistered += Doc_RemoteFileRegistered; 
+                    doc.LayoutComplete += DocumentParsing_Layout;
+
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+
+                    }).GetAwaiter().GetResult();
+
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+
+
+
+                Assert.IsTrue(_remotefileRequestCalled == 1, "Remote request was not run");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+
+            }
+        }
+
+        private int _remotefileRequestCalled = 0;
+
+        /// <summary>
+        /// This is outside of the main code to return the binary data for a remote file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Doc_RemoteFileRegistered(object sender, RemoteFileRequestEventArgs args)
+        {
+
+            _remotefileRequestCalled ++;
+            //Flag as executing
+            args.Request.StartRequest();
+            var doc = args.Request.Owner.Document;
+            doc.TraceLog.Add(TraceLevel.Message, "External Code", "Starting the request for the Remote file outside of the main code");
+
+            Task.Run(async () =>
+            {
+                using var client = new System.Net.Http.HttpClient();
+
+                var data = await client.GetByteArrayAsync(args.Request.FilePath);
+
+                System.Threading.Thread.Sleep(2000);
+
+                var ms = new MemoryStream(data);
+                doc.TraceLog.Add(TraceLevel.Message, "External Code", "Request for the Remote file was completed outside of the main code (including wait)");
+
+                args.Request.Callback(args.Request.Owner, args.Request, ms);
+                args.Request.CompleteRequest(ms, true);
+
+
+            });
+            
+            
+        }
+
+        [TestMethod()]
+        public void RemoteCssFileLoadingCustomImageHandlerAsync()
+        {
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
+            var imgsrc = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png"; //parameter for uniqueness
+
+            var src = @"<?scryber append-log='true' log-level='Verbose' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Html document title</title>
+                                <link href='" + path + @"' rel='stylesheet' />
+                            </head>
+
+                            <body class='grey' style='margin:20px;' >
+                                <p id='myPara' >This is a paragraph of content with an image below</p>
+                                <img src='" + imgsrc + @"' />
+                            </body>
+
+                        </html>";
+
+            _remoteImagefileRequestCalled = 0;
+
+            using (var sr = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
+
+                using (var stream = DocStreams.GetOutputStream("RemoteCssFileLoadingAsyncCustomImageLoading.pdf"))
+                {
+                    doc.CacheProvider = new Scryber.Caching.PDFNoCachingProvider();
+                    doc.RemoteFileRegistered += Doc_RemoteFileRegisteredForImages;
+                    doc.LayoutComplete += DocumentParsing_Layout;
+
+                    Task.Run(async () =>
+                    {
+                        await doc.SaveAsPDFAsync(stream);
+
+                    }).GetAwaiter().GetResult();
+
+                }
+
+
+                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+
+                Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
+
+
+
+
+                Assert.IsTrue(_remoteImagefileRequestCalled == 1, "Remote request was not run just once it bwas run " + _remoteImagefileRequestCalled + " times");
+
+                //This has been loaded from the remote file
+                Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
+                Assert.AreEqual(2, doc.SharedResources.Count, "The image was not loaded");
+                var found = false;
+
+                for(var i = 0; i < doc.SharedResources.Count; i++)
+                {
+                    var rsrc = doc.SharedResources[i];
+                    if (rsrc.ResourceKey == imgsrc)
+                    {
+                        found = true;
+                        var img = rsrc as PDFImageXObject;
+                        Assert.IsNotNull(img);
+                        //Just check the image size for validation it was loaded
+                        Assert.AreEqual(640, img.ImageData.PixelWidth, "Unexpected image width for the png");
+                        Assert.AreEqual(643, img.ImageData.PixelHeight, "Unexpected image height for the png");
+                    }
+                }
+
+                Assert.IsTrue(found, "The remote image was not found");
+            }
+        }
+
+        int _remoteImagefileRequestCalled = 0;
+
+        /// <summary>
+        /// This is outside of the main code to return the binary data for a remote file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Doc_RemoteFileRegisteredForImages(object sender, RemoteFileRequestEventArgs args)
+        {
+            if (args.Request.FilePath.EndsWith(".png"))
+            {
+                _remoteImagefileRequestCalled++;
+                //Flag as executing
+                args.Request.StartRequest();
+                var doc = args.Request.Owner.Document;
+                doc.TraceLog.Add(TraceLevel.Message, "External Code", "Starting the request for the Remote image file outside of the main code");
+
+                Task.Run(async () =>
+                {
+                    using var client = new System.Net.Http.HttpClient();
+
+                    var data = await client.GetByteArrayAsync(args.Request.FilePath);
+
+                    //System.Threading.Thread.Sleep(2000);
+
+                    var ms = new MemoryStream(data);
+                    doc.TraceLog.Add(TraceLevel.Message, "External Code", "Request for the Remote file was completed outside of the main code (including wait)");
+
+                    args.Request.Callback(args.Request.Owner, args.Request, ms);
+                    args.Request.CompleteRequest(ms, true);
+
+
+                });
+
+            }
+            else
+            {
+                //Do nothing here and it should be handled internally
             }
         }
 
@@ -1007,6 +1215,8 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1043,6 +1253,70 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
+        private class CodeTemplate : ITemplate
+        {
+            public string Content{
+                get;
+                private set;
+            }
+
+            public CodeTemplate(string content)
+            {
+                this.Content = content;
+            }
+
+            public IEnumerable<IComponent> Instantiate(int index, IComponent owner)
+            {
+                using (StringReader reader = new StringReader(this.Content))
+                    return new[] { Document.Parse(reader, ParseSourceType.DynamicContent) };
+            }
+        }
+
+
+        [TestMethod()]
+        public void HtmlPlaceholderFragments()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/BodyWithPlaceholder.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                var model = new
+                {
+                    HtmlContent = "<p id='p1'><span style='color: rgb(255,0,0);'>Lorem ipsum dolor sit amet, consectetur</span></p>"
+                    + "<p id='p2'><br/></p>"
+                    + "<p id='p3' ><span style='color: rgb(0,0 255);' ><span class='ql-cursor'></span>Vivamus sed tincidunt nisi.Vivamus elementum,</span></p>",
+                };
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("BodyWithPlaceholder.pdf"))
+                {
+                    doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+
+                var ph = doc.FindAComponentById("aPlaceholder") as PlaceHolder;
+                Assert.IsNotNull(ph);
+
+                Assert.AreEqual(1, ph.Contents.Count);
+                Assert.IsInstanceOfType(ph.Contents[0], typeof(Scryber.Data.TemplateInstance));
+
+                var instance = ph.Contents[0] as Scryber.Data.TemplateInstance;
+                Assert.AreEqual(3, instance.Content.Count);
+
+                var p = instance.FindAComponentById("p1");
+                Assert.IsNotNull(p);
+                p = instance.FindAComponentById("p2");
+                Assert.IsNotNull(p);
+                p = instance.FindAComponentById("p3");
+                Assert.IsNotNull(p);
+                
+            }
+
+        }
+
         [TestMethod()]
         public void HtmlLinksLocalAndRemote()
         {
@@ -1065,6 +1339,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
                 
             }
+
+            Assert.Inconclusive();
 
         }
 
@@ -1135,6 +1411,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
 
         }
 
@@ -1222,6 +1500,151 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(rsrc1, "The open sans font was not found");
         }
 
+
+        [TestMethod()]
+        public void FontFaceAveryLocal()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceAvery.html");
+
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+            using var stream = DocStreams.GetOutputStream("FontFace_AveryBusiness.pdf");
+            doc.SaveAsPDF(stream);
+
+            var style = doc.Styles[0] as StyleGroup;
+            Assert.IsNotNull(style);
+
+            Assert.AreEqual(4, style.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+            
+            //Should be AveryBusiness and Open Sans for the first 2
+            for (var i = 0; i < 2; i++)
+            {
+                var one = style.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                if (i == 0)
+                {
+                    Assert.AreEqual("AveryBusiness", one.FontFamily.ToString(), "The first font was not AveryBusiness");
+                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, one.FontStyle);
+                    Assert.AreEqual(400, one.FontWeight);
+                }
+                else if (i == 1)
+                {
+                    Assert.AreEqual("'Open Sans'", one.FontFamily.ToString(), "The second font was not Open Sans");
+                    Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, one.FontStyle);
+                    Assert.AreEqual(300, one.FontWeight);
+                }
+            }
+
+            
+            
+            var name = Font.GetFullName("AveryBusiness", 400, Scryber.Drawing.FontStyle.Regular);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name) as PDFFontResource;
+            Assert.IsNotNull(rsrc1);
+            Assert.AreEqual("Archive", rsrc1.Definition.WindowsName); //Taken from the font file name table
+
+            
+            name = Font.GetFullName("Open Sans", 300, Scryber.Drawing.FontStyle.Regular);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name) as PDFFontResource;
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
+            Assert.AreEqual("OpenSansLight", rsrc1.Definition.WindowsName); //Taken from the font file name table
+        }
+
+        [TestMethod()]
+        public void FontFaceBase64()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceBase64.html");
+
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+
+
+            using var stream = DocStreams.GetOutputStream("FontFaceBase64.pdf");
+            doc.SaveAsPDF(stream);
+
+            //Check the remote style link for Fraunces
+
+            var remote = doc.Styles[0] as StyleGroup;
+
+            Assert.IsNotNull(remote);
+            Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+            bool[] checks = new bool[4];
+            //Should be Italic 400 and 700 + Regular 400 and 700
+            for (var i = 0; i < 4; i++)
+            {
+                var one = remote.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+
+                if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                {
+                    if (one.FontWeight == 400)
+                        checks[0] = true;
+                    else if (one.FontWeight == 700)
+                        checks[1] = true;
+                }
+                else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                {
+                    if (one.FontWeight == 400)
+                        checks[2] = true;
+                    else if (one.FontWeight == 700)
+                        checks[3] = true;
+                }
+            }
+
+            Assert.IsTrue(checks[0], "No regular 400 weight");
+            Assert.IsTrue(checks[1], "No regular 700 weight");
+            Assert.IsTrue(checks[2], "No italic 400 weight");
+            Assert.IsTrue(checks[3], "No italic 700 weight");
+
+            //Check the local style groups for 2 fontface and 2 styles
+
+            var inline = doc.Styles[1] as StyleGroup;
+
+            Assert.IsNotNull(inline);
+            Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
+
+            var ffone = inline.Styles[0] as StyleFontFace;
+            Assert.IsNotNull(ffone);
+            Assert.AreEqual("Oswald", ffone.FontFamily.ToString(), "Inline @fontface was not Oswald");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(800, ffone.FontWeight, "Inline @fontface was not black");
+            Assert.IsNotNull(ffone.Source, "No source was set");
+
+
+            var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The oswald font was not found in the document");
+
+            var fftwo = inline.Styles[1] as StyleFontFace;
+            Assert.IsNotNull(fftwo);
+            Assert.AreEqual("'Open Sans'", fftwo.FontFamily.ToString(), "Inline @fontface was not 'Open Sans'");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, fftwo.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(300, fftwo.FontWeight, "Inline @fontface was not light");
+            Assert.IsNotNull(fftwo.Source, "No source was set");
+
+            name = Font.GetFullName(fftwo.FontFamily.FamilyName, fftwo.FontWeight, fftwo.FontStyle);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
+        }
+
         [TestMethod()]
         public async Task FontFaceAsync()
         {
@@ -1293,6 +1716,94 @@ namespace Scryber.Core.UnitTests.Html
             var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
             var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
             Assert.IsNotNull(rsrc1);
+
+            var fftwo = inline.Styles[1] as StyleFontFace;
+            Assert.IsNotNull(fftwo);
+            Assert.AreEqual("'Open Sans'", fftwo.FontFamily.ToString(), "Inline @fontface was not 'Open Sans'");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, fftwo.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(300, fftwo.FontWeight, "Inline @fontface was not light");
+            Assert.IsNotNull(fftwo.Source, "No source was set");
+
+            name = Font.GetFullName(fftwo.FontFamily.FamilyName, fftwo.FontWeight, fftwo.FontStyle);
+            rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The open sans font was not found");
+        }
+
+
+        [TestMethod()]
+        public async Task FontFaceBase64Async()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceBase64.html");
+
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+
+
+            using var stream = DocStreams.GetOutputStream("FontFaceBase64Async.pdf");
+            await doc.SaveAsPDFAsync(stream);
+
+            //Check the remote style link for Fraunces
+
+            var remote = doc.Styles[0] as StyleGroup;
+
+            Assert.IsNotNull(remote);
+            Assert.AreEqual(4, remote.Styles.Count, "4 fonts were NOT loaded from the remote source");
+
+            bool[] checks = new bool[4];
+            //Should be Italic 400 and 700 + Regular 400 and 700
+            for (var i = 0; i < 4; i++)
+            {
+                var one = remote.Styles[i] as StyleFontFace;
+                Assert.IsNotNull(one);
+                Assert.AreEqual("Fraunces", one.FontFamily.ToString(), "The font was not fraunces");
+
+                if (one.FontStyle == Scryber.Drawing.FontStyle.Regular)
+                {
+                    if (one.FontWeight == 400)
+                        checks[0] = true;
+                    else if (one.FontWeight == 700)
+                        checks[1] = true;
+                }
+                else if (one.FontStyle == Scryber.Drawing.FontStyle.Italic)
+                {
+                    if (one.FontWeight == 400)
+                        checks[2] = true;
+                    else if (one.FontWeight == 700)
+                        checks[3] = true;
+                }
+            }
+
+            Assert.IsTrue(checks[0], "No regular 400 weight");
+            Assert.IsTrue(checks[1], "No regular 700 weight");
+            Assert.IsTrue(checks[2], "No italic 400 weight");
+            Assert.IsTrue(checks[3], "No italic 700 weight");
+
+            //Check the local style groups for 2 fontface and 2 styles
+
+            var inline = doc.Styles[1] as StyleGroup;
+
+            Assert.IsNotNull(inline);
+            Assert.AreEqual(4, inline.Styles.Count, "4 styles were not defined locally");
+
+            var ffone = inline.Styles[0] as StyleFontFace;
+            Assert.IsNotNull(ffone);
+            Assert.AreEqual("Oswald", ffone.FontFamily.ToString(), "Inline @fontface was not Oswald");
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Regular, ffone.FontStyle, "Inline @fontface was not regular");
+            Assert.AreEqual(800, ffone.FontWeight, "Inline @fontface was not black");
+            Assert.IsNotNull(ffone.Source, "No source was set");
+            
+
+            var name = Font.GetFullName(ffone.FontFamily.FamilyName, ffone.FontWeight, ffone.FontStyle);
+            var rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
+            Assert.IsNotNull(rsrc1, "The oswald font was not found in the document");
 
             var fftwo = inline.Styles[1] as StyleFontFace;
             Assert.IsNotNull(fftwo);
@@ -1498,6 +2009,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1515,6 +2028,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
             
         }
 
@@ -1539,6 +2053,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1560,6 +2076,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1581,6 +2099,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1600,7 +2120,10 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+
+            Assert.Inconclusive();
         }
+
 
         [TestMethod()]
         public void FloatRight()
@@ -1620,6 +2143,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1643,6 +2167,165 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
+        }
+
+
+        [TestMethod()]
+        public void ArticlesWithCountersHtml()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/ArticleCounters.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                
+                doc.Params["title"] = "Hello World";
+
+                using (var stream = DocStreams.GetOutputStream("ArticleCounters.pdf"))
+                {
+                    doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+
+
+            Assert.IsNotNull(_layoutcontext);
+            var layout = _layoutcontext.DocumentLayout;
+            Assert.IsNotNull(layout);
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            Assert.AreEqual(3, layout.AllPages[0].ContentBlock.Columns[0].Contents.Count);
+
+            var article1 = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(article1);
+            Assert.AreEqual("PrimaryArticle", article1.Owner.ID);
+
+            var article2 = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(article2);
+            Assert.AreEqual("SecondArticle", article2.Owner.ID);
+
+            var divList = layout.AllPages[0].ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(divList);
+            Assert.AreEqual("list-counters", divList.Owner.ID);
+
+            //first article content
+
+            var headblock = article1.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1: ", "Top h1 of first outer article");
+
+            var innerArticle = article1.Columns[0].Contents[2] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1.1: ", "First inner h2 of first outer article");
+
+            innerArticle = article1.Columns[0].Contents[3] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "1.2: ", "Second inner h2 of first outer article");
+
+            //second article content
+
+            headblock = article2.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2: ", "Top h1 of second outer article");
+
+            innerArticle = article2.Columns[0].Contents[2] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2.1: ", "First inner h2 of second outer article");
+
+            innerArticle = article2.Columns[0].Contents[3] as PDFLayoutBlock;
+            headblock = innerArticle.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(headblock, "2.2: ", "Second inner h2 of second outer article");
+
+            //ordered list
+            var ol = divList.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            var item = ol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "1 ", "1 ");
+
+            item = ol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2 ", "2 ");
+
+            //inner ordered list
+            var iol = item.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            item = iol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.1 ", "2.1 ");
+
+            item = iol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.2 ", "2.2 ");
+
+            item = iol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.3 ", "2.3 ");
+
+            //inner inner ordered list
+            var iiol = item.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            var inner = iiol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.1 ", "2.3.1 ");
+
+            inner = iiol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.2 ", "2.3.2 ");
+
+            //second inner inner ordered list
+            iiol = item.Columns[0].Contents[2] as PDFLayoutBlock;
+
+            inner = iiol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.1 ", "2.3.1 ");
+
+            inner = iiol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.2 ", "2.3.2 ");
+
+            inner = iiol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(inner, "2.3.3 ", "2.3.2 ");
+
+            //back out to inner
+
+            item = iol.Columns[0].Contents[3] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2.4 ", "2.4 ");
+
+            //back out to the top
+            item = ol.Columns[0].Contents[2] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "3 ", "3 ");
+
+            item = ol.Columns[0].Contents[3] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "4 ", "4 ");
+
+            //and a new list at the bottom
+            ol = divList.Columns[0].Contents[2] as PDFLayoutBlock;
+            item = ol.Columns[0].Contents[0] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "1 ", "1 ");
+
+            item = ol.Columns[0].Contents[1] as PDFLayoutBlock;
+            AssertHasBeforeContent(item, "2 ", "2 ");
+
+        }
+
+        
+
+        private void AssertHasBeforeContent(PDFLayoutBlock itemblock, string pseudoContent, string itemName)
+        {
+            Assert.IsNotNull(itemblock, "The block for '" + itemName + "' was null");
+            Assert.IsTrue(itemblock.Columns[0].Contents.Count > 0, "The block for '" + itemName + "' has no content");
+            var line = itemblock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line, "The block for '" + itemName + "' first item was not a line");
+            //chars after inlinebegin and textbegin
+
+            var all = "";
+            for (var i = 0; i < line.Runs.Count; i++)
+            {
+                if (line.Runs[1] is PDFLayoutInlineBegin)
+                {
+                    all = "";
+                }
+                else if (line.Runs[i] is PDFTextRunCharacter chars)
+                {
+                    all += chars.Characters;
+                }
+                else if (line.Runs[i] is PDFLayoutInlineEnd)
+                    break;
+            }
+            Assert.AreEqual(pseudoContent, all, "The pseudo characters for '" + itemName + "' did not match");
         }
 
         [TestMethod()]
@@ -1662,6 +2345,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1682,6 +2367,8 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -1712,18 +2399,20 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
+
+            Assert.Inconclusive();
         }
 
 
         [TestMethod()]
         public void BasePath()
         {
-            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/Images/Toroid24.png";
+            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/Toroid24.png";
 
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
-                                <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/' />
+                                <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/' />
                                 <link rel='stylesheet' href='CSS/Include.css' media='print' />
                               </head>
                             <body class='grey' style='margin:20px;' >
@@ -1739,7 +2428,7 @@ namespace Scryber.Core.UnitTests.Html
                 doc.RenderOptions.AllowMissingImages = false; //Will error if the image is not found
                 
                 Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
-                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.Core.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
+                Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/", doc.LoadedSource, "Loaded Source is not correct");
                 
                 using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
                 {
@@ -1859,7 +2548,7 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 
                 Assert.AreEqual("Hello World", doc.Info.Title);
-
+                Assert.Inconclusive();
             }
         }
 
@@ -2015,6 +2704,8 @@ namespace Scryber.Core.UnitTests.Html
             
             using (var stream = DocStreams.GetOutputStream("OrderItemsTemplate.pdf"))
                 doc.SaveAsPDF(stream);
+
+            Assert.Inconclusive();
         }
 
         private class ToUpperFunction : IFunction
@@ -2063,6 +2754,7 @@ namespace Scryber.Core.UnitTests.Html
             {
                 title = "My title"
             };
+
             using (var sr = new System.IO.StringReader(src))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -2082,6 +2774,8 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual("HELLO MY TITLE", (pexpr.Contents[0] as TextLiteral).Text, "Expression text was not uppercased");
                 }
             }
+
+
         }
 
 
@@ -2217,6 +2911,8 @@ namespace Scryber.Core.UnitTests.Html
 
                 }
             }
+
+            Assert.Inconclusive();
         }
 
         private PDFLayoutDocument _layout;
@@ -2324,6 +3020,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
 
         }
 
@@ -2356,8 +3053,137 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
 
+            Assert.Inconclusive();
+        }
+
+
+
+        [TestMethod]
+        public void HahyesTest()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/HahyesTest.html");
+
+
+            using (var sr = new System.IO.StreamReader(path))
+            {
+                var text = sr.ReadToEnd();
+
+                using (var doc = HtmlParser.Parse(text, path, ParseSourceType.LocalFile))
+                {
+                    using (var stream = DocStreams.GetOutputStream("HahyesTest2.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+
+            }
+
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void HelloWorldFromBlazorTest()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>Hello World</title>
+</head>
+
+<body>
+    <h1 class='title'>Hello World</h1>
+</body>
+
+</html>";
+
+            using (var sr = new StringReader(src))
+            {
+                using (var doc = Document.ParseDocument(sr))
+                {
+                    using (var stream = DocStreams.GetOutputStream("HelloWorldBlazor.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    public static class HtmlParser
+    {
+        const string htmlXmlns = "http://www.w3.org/1999/xhtml";
+
+        private static  System.Text.RegularExpressions.Regex restoreHtmlEntities =
+            new System.Text.RegularExpressions.Regex("&amp;([^ ]{1,8});");
+
+        public static  Document Parse(string html, string path, ParseSourceType type, bool forceXHTMLNamespace = true)
+        {
+            //Use agility pack to load the html
+
+            HtmlAgilityPack.HtmlDocument adoc = new HtmlAgilityPack.HtmlDocument();
+            adoc.LoadHtml(html);
+
+
+            //make sure we have the namespace on the html node
+
+            var node = adoc.DocumentNode.SelectSingleNode("//html");
+            if (null == node)
+            {
+                throw new Scryber.PDFParserException("Cannot parse the html content as the root 'html' node could not be found");
+            }
+            else if (node.Attributes.Contains("xmlns") == false)
+                node.Attributes.Add("xmlns", htmlXmlns);
+            else
+            {
+                var xmlns = node.Attributes["xmlns"];
+                if (xmlns.Value != htmlXmlns)
+                {
+                    if (forceXHTMLNamespace)
+                        xmlns.Value = htmlXmlns;
+                    else
+                        throw new Scryber.PDFParserException("Cannot parse the html content as the namespace dose not match the xhtml namespace");
+                }
+            }
+
+            //output the document as xhtml
+
+            adoc.OptionOutputAsXml = true;
+            adoc.OptionPreserveXmlNamespaces = true;
+            adoc.OptionWriteEmptyNodes = true;
+            adoc.OptionAutoCloseOnEnd = true;
+
+            StringBuilder content = new StringBuilder();
+            using (var sw = new StringWriter(content))
+            {
+                using (var xml = new System.Xml.XmlTextWriter(sw))
+                    adoc.Save(xml);
+            }
+
+            var xhtml = content.ToString();
+
+
+            //HtmlAgilityPack will convert html entities such as &nbsp;
+            //to &amp;nbsp; so we need to convert back
+
+            var restored = restoreHtmlEntities.Replace(xhtml, (input) => {
+                //first is full string second should be the characters between the &amp; and trailing ;
+                var val = "&" + input.Groups[1].Value + ";"; 
+                return val;
+            });
+
+            //finally we can parse the xhtml
+
+            using (var sr = new StringReader(restored))
+            {
+                var doc = Document.ParseDocument(sr, path, type);
+
+                return doc;
+            }
 
         }
-        
     }
+    
 }

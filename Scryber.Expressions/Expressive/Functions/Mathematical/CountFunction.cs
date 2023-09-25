@@ -22,10 +22,11 @@ namespace Scryber.Expressive.Functions.Mathematical
             {
                 var increment = 1;
                 var evaluatedValue = value.Evaluate(variables);
+                IEnumerable ienum;
 
-                if (evaluatedValue is ICollection collection)
+                if (Helpers.Collections.TryIsCollection(evaluatedValue, out ienum) && ienum is ICollection col)
                 {
-                    increment = collection.Count;
+                    increment = col.Count;
                 }
 
                 count += increment;

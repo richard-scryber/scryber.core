@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Styles", "Scryber.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Generation", "Scryber.Generation\Scryber.Generation.csproj", "{82DC9DDF-DED3-472F-9822-CA3EB0017DF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components", "Scryber.Components\Scryber.Components.csproj", "{5FE37698-9469-427D-BB7B-BA4D7ECC5599}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Components", "Scryber.Components\Scryber.Components.csproj", "{5FE37698-9469-427D-BB7B-BA4D7ECC5599}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scryber.Components.Mvc", "Scryber.Components.Mvc\Scryber.Components.Mvc.csproj", "{B335EFBC-5BE1-4CAD-AD75-7075FA643EE2}"
 EndProject
@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		ScyberLogo2_alpha_small.png = ScyberLogo2_alpha_small.png
 		Directory.Build.props = Directory.Build.props
+		Scryber.Core.nuspec = Scryber.Core.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Expressive", "Scryber.Expressions\Scryber.Expressive.csproj", "{813BEF24-BA3B-4E9C-8BDC-CA5084B2162E}"

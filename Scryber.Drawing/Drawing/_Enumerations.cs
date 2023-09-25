@@ -55,17 +55,6 @@ namespace Scryber.Drawing
         //Reserved 0 for empty units
         Points = 0,
         Millimeters = 1,
-        Inches = 2
-    }
-
-    /// <summary>
-    /// Available page units
-    /// </summary>
-    public enum RelativeUnits
-    {
-        //Reserved 0 for empty units
-        Points = 0,
-        Millimeters = 1,
         Inches = 2,
         Pixel = 3,
         Percent = 4,
@@ -78,6 +67,8 @@ namespace Scryber.Drawing
         ViewPortMin = 11,
         ViewPortMax = 12
     }
+
+    
 
     
 
@@ -155,6 +146,20 @@ namespace Scryber.Drawing
         Regular = 0,
         Italic = 2,
         Oblique = 3
+    }
+
+    public enum ListNumberingGroupStyle
+    {
+        None,
+        Decimals,
+        UppercaseRoman,
+        LowercaseRoman,
+        UppercaseLetters,
+        LowercaseLetters,
+        Bullet,
+        Labels
+        //[Obsolete("The labels and images are not currently supported", false)]
+        //Image
     }
 
     public static class FontWeights
@@ -271,6 +276,11 @@ namespace Scryber.Drawing
         /// otherwise a new line will be created. Following elements will be appended to the same line
         /// </summary>
         Inline,
+
+        /// <summary>
+        /// A block that sits on the current line of either a fixed size, or taking the space up that it's internal contents need.
+        /// </summary>
+        InlineBlock,
 
         /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
@@ -457,6 +467,21 @@ namespace Scryber.Drawing
         FarthestSide,
         ClosestCorner,
         FarthestCorner
+    }
+
+
+    /// <summary>
+    /// The supported types of style content values
+    /// </summary>
+    public enum ContentDescriptorType
+    {
+        Text,
+        Image,
+        Gradient,
+        Counter,
+        Counters,
+        Attribute,
+        Quote
     }
 
 }

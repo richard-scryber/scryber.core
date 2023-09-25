@@ -85,6 +85,34 @@ namespace Scryber.Drawing
 
         #endregion
 
+        /// <summary>
+        /// Returns true if and only if all the units are zero
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                if (this._top.Value == 0.0 && this._left.Value == 0.0 && this._bottom == 0.0 && this._right == 0.0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if one or more of the units in this rect are relative units.
+        /// </summary>
+        public bool IsRelative
+        {
+            get
+            {
+                return this._top.IsRelative
+                    || this._left.IsRelative
+                    || this._bottom.IsRelative
+                    || this._right.IsRelative;
+            }
+        }
+
         #region SetAll(all)
 
         /// <summary>
@@ -226,23 +254,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public bool IsEmpty {get;}
-
-        /// <summary>
-        /// Returns true if this PDFThickness is Empty (all units are Zero)
-        /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return this._bottom == Unit.Zero
-                    && this._top == Unit.Zero
-                    && this._left == Unit.Zero
-                    && this._right == Unit.Zero;
-            }
-        }
-
-        #endregion
+        
 
         #region operator cast double
         
@@ -256,9 +268,23 @@ namespace Scryber.Drawing
             var unit = (Unit) value;
             return new Thickness(unit);
         }
-        
+
         #endregion
-        
+
+        #region operator cast double
+
+        /// <summary>
+        /// Returns a new thickness where all units are the value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static implicit operator Thickness(Unit value)
+        {
+            return new Thickness(value);
+        }
+
+        #endregion
+
         #region operator +, -
 
         public static Thickness operator +  (Thickness one, Thickness two)
@@ -305,10 +331,7 @@ namespace Scryber.Drawing
 
         #region IComparable<PDFThickness> Members
 
-        private Unit Total
-        {
-            get { return this.Top + this.Bottom + this.Left + this.Right; }
-        }
+        
         /// <summary>
         /// Compares this thickness to another thickness and returns true if they have the same values
         /// </summary>
@@ -316,11 +339,7 @@ namespace Scryber.Drawing
         /// <returns>True if they are the same</returns>
         public int CompareTo(Thickness other)
         {
-            
-            int comp = this.Total.CompareTo(other.Total);
-            if (comp != 0) return comp;
-            
-            comp = this.Top.CompareTo(other.Top);
+            var comp = this.Top.CompareTo(other.Top);
             if (comp != 0) return comp;
 
             comp = this.Bottom.CompareTo(other.Bottom);

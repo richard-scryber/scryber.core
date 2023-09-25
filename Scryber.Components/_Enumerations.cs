@@ -168,4 +168,12 @@ namespace Scryber
         Phased
     }
 
+
+    public enum DataContentAction
+    {
+        Append,
+        PrePend,
+        Replace
+    }
+
 }

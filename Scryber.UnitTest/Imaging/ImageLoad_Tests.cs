@@ -37,7 +37,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "Group.png");
+            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "group.png");
             path = io.Path.GetFullPath(path);
 
             if (!io.File.Exists(path))
@@ -117,7 +117,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(factory);
 
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages, "Group.png");
+            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages, "group.png");
             path = io.Path.GetFullPath(path);
 
             if (!io.File.Exists(path))
@@ -148,7 +148,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var xobj = doc.SharedResources[0] as PDFImageXObject;
             Assert.IsNotNull(xobj, "There was no image xObject in the document");
             Assert.IsTrue(xobj.Registered);
-            Assert.IsTrue(xobj.Source.EndsWith("Group.png"), "The source was expected to end with the name of the file");
+            Assert.IsTrue(xobj.Source.EndsWith("group.png"), "The source was expected to end with the name of the file");
             Assert.AreEqual(path, xobj.Source, "The source did not match the xObject source");
             var data = xobj.ImageData;
 

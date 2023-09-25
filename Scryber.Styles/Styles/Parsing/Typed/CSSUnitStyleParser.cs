@@ -10,8 +10,8 @@ namespace Scryber.Styles.Parsing.Typed
     {
 
 
-        public CSSUnitStyleParser(string styleItemKey, StyleKey<Scryber.Drawing.Unit> pdfAttr)
-            : base(styleItemKey, pdfAttr)
+        public CSSUnitStyleParser(string styleItemKey, StyleKey<Scryber.Drawing.Unit> attr)
+            : base(styleItemKey, attr)
         {
 
         }

@@ -126,6 +126,15 @@ namespace Scryber.Components
                 else
                     val = this.Value.ToString(this.FormatProvider);
             }
+            if (!string.IsNullOrEmpty(val))
+            {
+                if (val.IndexOf((char)8239) >= 0) //narrow non-breaking space
+                    val = val.Replace((char)8239, ' ');
+                if (val.IndexOf((char)8201) >= 0)   //thin space
+                    val = val.Replace((char)8201, ' ');
+                if (val.IndexOf((char)160) >= 0)  //non-breaking space
+                    val = val.Replace((char)160, ' ');
+            }
             return Scryber.Text.PDFTextReader.Create(val, TextFormat.Plain, false, context.TraceLog);
         }
 

@@ -17,6 +17,7 @@
  */
 
 #define REGISTER_CHARACTERS
+#define COUNTERS_AND_PSEUDOCONTENT
 
 using System;
 using System.Collections.Generic;
@@ -130,7 +131,7 @@ namespace Scryber.PDF.Layout
         #endregion
 
         #region public bool ContinueLayout {get;set;}
-        
+
         /// <summary>
         /// Returns false if we have come to the end of the available space and cannot continue. Inheritors can set this value
         /// </summary>
@@ -197,14 +198,16 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public virtual void Layout(PDFLayoutContext context, Style fullstyle)
+        public void Layout(PDFLayoutContext context, Style fullstyle)
         {
             this._context = context;
 
-            if(null != context.DocumentLayout && null != context.DocumentLayout.CurrentPage)
+            if (null != context.DocumentLayout && null != context.DocumentLayout.CurrentPage)
                 this._currentBlock = context.DocumentLayout.CurrentPage.CurrentBlock;
 
             this._style = fullstyle;
+
+
 
             StyleValue<PositionMode> found;
             if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value(this._style) == PositionMode.Invisible)
@@ -213,10 +216,125 @@ namespace Scryber.PDF.Layout
                     this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
             }
             else
+            {
+#if COUNTERS_AND_PSEUDOCONTENT
+
+                //counter updates for visible components before
+                Style before;
+                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.Before, out before))
+                    this.EnsureCounterUpdatesForStyle(before);
+
+                //counter updates for visible components on element
+
+                this.EnsureCounterUpdatesForStyle(fullstyle);
+
+
                 this.DoLayoutComponent();
+
+                //counter updates for visible components after
+
+                Style after;
+                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.After, out after))
+                    this.EnsureCounterUpdatesForStyle(after);
+
+#else
+                this.DoLayoutComponent();
+#endif
+
+            }
         }
 
-        #endregion
+#endregion
+
+
+
+        protected virtual void EnsureCounterUpdatesForStyle(Style style)
+        {
+            StyleValue<CounterStyleValue> reset;
+            StyleValue<CounterStyleValue> increment;
+
+            if (style.TryGetValue(StyleKeys.CounterResetKey, out reset))
+            {
+                var val = reset.Value(style);
+                while (null != val)
+                {
+                    this.ResetACounter(val, this.Component);
+                    val = val.Next;
+                }
+            }
+
+            if (style.TryGetValue(StyleKeys.CounterIncrementKey, out increment))
+            {
+                var val = increment.Value(style);
+                while (null != val)
+                {
+                    this.IncrementACounter(val, this.Component);
+                    val = val.Next;
+                }
+            }
+        }
+
+
+        protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
+        {
+            if (current.Type == ObjectTypes.OrderedList || current.Type == ObjectTypes.UnorderedList)
+            {
+                //ol and ul appear to be special cases where they always have the counter assigned on them
+                //there is no other way to traverse the hierarchy.
+
+                current.Counters.Reset(counter.Name, counter.Value);
+                return true;
+            }
+            else
+            {
+                var comp = current.Parent;
+                while (null != comp)
+                {
+                    int val;
+                    if (comp.HasCounters && comp.Counters.TryGetValue(counter.Name, out val))
+                    {
+                        comp.Counters.Reset(counter.Name, counter.Value);
+                        return true;
+                    }
+                    comp = comp.Parent; //move up the heirachy
+                }
+
+                if (resetIfNotFound)
+                {
+                    current.Counters.Reset(counter.Name, counter.Value);
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+
+        protected bool IncrementACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = false)
+        {
+            var comp = current;
+            while (null != comp)
+            {
+                int val;
+                if (comp.HasCounters && comp.Counters.TryGetValue(counter.Name, out val))
+                {
+                    comp.Counters.Increment(counter.Name, counter.Value);
+                    return true;
+                }
+                comp = comp.Parent; //move up the heirachy
+            }
+
+            if (resetIfNotFound)
+            {
+                current.Counters.Reset(counter.Name, 0);
+                current.Counters.Increment(counter.Name, counter.Value);
+                return true;
+            }
+            else
+                return false;
+
+        }
+
 
         //
         // abstract methods
@@ -254,10 +372,190 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="children"></param>
         /// <returns></returns>
-        private static bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
         {
             children = GetComponentChildren(parent);
+
+#if COUNTERS_AND_PSEUDOCONTENT
+
+            //Apply the ::before and ::after states as children
+            if (this.FullStyle.HasStates)
+            {
+                Style state;
+                StyleValue<ContentDescriptor> content;
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddBeforeContent(parent, children, state, content.Value(state));
+                }
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddAfterContent(parent, children, state, content.Value(state));
+                }
+            }
+
+#endif
             return null != children && children.Count > 0;
+
+        }
+
+        private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
+        {
+            Span span = new Span();
+            span.ID = parent.ID + "__before";
+            RemoveCountersFromStateStyle(before);
+            span.Style = before;
+
+            int index = 0;
+            while (null != value)
+            {
+                this.AddCssContentToList(span, value, span.Contents, index);
+
+                value = value.Next;
+                index++;
+            }
+            if (span.Contents.Count == 1 && span.Contents[0] is Image)
+            {
+                var img = span.Contents[0] as Image;
+                img.ID = parent.ID + "__before";
+                img.Style = before;
+                children.Insert(0, img);
+            }
+            else
+                children.Insert(0, span);
+
+
+        }
+
+        private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
+        {
+            Span span = new Span();
+            span.ID = parent.ID + "__after";
+            RemoveCountersFromStateStyle(after);
+            span.Style = after;
+
+
+            int index = 0;
+            while (null != value)
+            {
+                this.AddCssContentToList(span, value, span.Contents, index);
+
+                value = value.Next;
+                index++;
+            }
+            if (span.Contents.Count == 1 && span.Contents[0] is Image)
+            {
+                var img = span.Contents[0] as Image;
+                img.ID = parent.ID + "__after";
+                img.Style = after;
+                children.Add(img);
+            }
+            else
+                children.Add(span);
+
+
+        }
+
+        /// <summary>
+        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
+        /// then we do not want them to be executed again.
+        /// </summary>
+        /// <param name="style"></param>
+        protected void RemoveCountersFromStateStyle(Style style)
+        {
+            style.RemoveValue(StyleKeys.CounterResetKey);
+            style.RemoveValue(StyleKeys.CounterIncrementKey);
+        }
+
+
+        private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
+        {
+            bool added = false;
+            TextLiteral text;
+
+            switch (content.Type)
+            {
+                case ContentDescriptorType.Text:
+                    var txtContent = (ContentTextDescriptor)content;
+                    text = new TextLiteral(txtContent.Text);
+                    children.Add(text);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Gradient:
+                    var grad = (ContentGradientDescriptor)content;
+                    wrapper.Style.SetValue(StyleKeys.BgImgSrcKey, grad.Text);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Image:
+                    if (wrapper is Image)
+                    {
+                        (wrapper as Image).Source = (content as ContentImageDescriptor).Source;
+                    }
+                    else
+                    {
+                        var img = new Image();
+                        img.Source = (content as ContentImageDescriptor).Source;
+                        img.ElementName = "img";
+                        img.PositionMode = PositionMode.Inline;
+                        children.Add(img);
+                        added = !string.IsNullOrEmpty(img.Source);
+                    }
+                    break;
+
+                case ContentDescriptorType.Quote:
+                    text = new TextLiteral((content as ContentQuoteDescriptor).Chars);
+                    children.Add(text);
+                    added = true;
+                    break;
+
+                case ContentDescriptorType.Attribute:
+                    var defn = Scryber.Generation.ParserDefintionFactory.GetClassDefinition(wrapper.GetType());
+                    var attr = content as ContentAttributeDescriptor;
+                    if(defn.Attributes.TryGetPropertyDefinition(attr.Attribute, string.Empty, out var prop))
+                    {
+                        object val = prop.PropertyInfo.GetValue(wrapper);
+                        if(null != val)
+                        {
+                            text = new TextLiteral(val.ToString());
+                            children.Add(text);
+                            added = true;
+                        }
+                    }
+                    break;
+
+                case ContentDescriptorType.Counter:
+                    var counterDesc = content as ContentCounterDescriptor;
+                    var counterValue = counterDesc.GetContent(this.Component);
+                    if (!string.IsNullOrEmpty(counterValue))
+                    {
+                        text = new TextLiteral(counterValue);
+                        children.Add(text);
+                        added = true;
+                    }
+                    break;
+                case ContentDescriptorType.Counters:
+                    var countersDesc = content as ContentCountersDescriptor;
+                    var countersValue = countersDesc.GetContent(this.Component);
+                    if (!string.IsNullOrEmpty(countersValue))
+                    {
+                        text = new TextLiteral(countersValue);
+                        children.Add(text);
+                        added = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return added;
         }
 
         /// <summary>
@@ -348,7 +646,7 @@ namespace Scryber.PDF.Layout
                     if (null != applied)
                         this.StyleStack.Push(applied);
 
-                    full = this.StyleStack.GetFullStyle(comp);
+                    full = this.BuildFullStyle(comp);
 
                     Context.PerformanceMonitor.End(PerformanceMonitorType.Style_Build);
                 }
@@ -420,6 +718,28 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected virtual Style BuildFullStyle(Component forComponent)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+            var pgSize = page.Size;
+            var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
+            Size containerSize;
+            if (null != container)
+                containerSize = container.CurrentRegion.TotalBounds.Size;
+            else if (null != page.CurrentBlock)
+                containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
+            else
+                containerSize = page.Size;
+
+            var font = this.FullStyle.CreateTextOptions();
+
+            var fontSize = new Size(font.GetZeroCharWidth(), font.GetSize());
+
+            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+            return full;
+        }
+
+
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 
         /// <summary>
@@ -433,6 +753,14 @@ namespace Scryber.PDF.Layout
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
 
+            //var pg = this.Context.DocumentLayout.GetLayoutPage();
+            //var block = null == pg ? null : pg.LastOpenBlock();
+            //var font = this.Context.Graphics.CurrentFont;
+
+            //var pageSize = null == pg ? Size.Empty : pg.Size;
+            //var blockSize = block == null ? pageSize : block.AvailableBounds.Size;
+            //var fontSize = null == font ? Font.DefaultFontSize : font.Size;
+
             //Here we can set up any required regions and then do the layout for the explicit types
             //If we have style then check if are actually relatively or absolutely positioned
             if (IsStyled(comp))
@@ -444,6 +772,9 @@ namespace Scryber.PDF.Layout
 
                 else if (options.PositionMode == PositionMode.Relative)
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
+
+                else if (options.PositionMode == PositionMode.InlineBlock)
+                    positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
 
                 else if (options.FloatMode != FloatMode.None)
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
@@ -496,8 +827,21 @@ namespace Scryber.PDF.Layout
             //close any relative or absolute region
             if (null != positioned)
             {
+                if (positioned.IsClosed) //we have overflowed and need to get the latest.
+                    positioned = this.CurrentBlock.PositionedRegions.Last();
+
                 positioned.Close();
 
+                if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
+                    posReg.AssociatedRun.Close();
+
+                if (positioned.Contents.Count == 0 && positioned.Floats == null)
+                {
+                    if (Context.ShouldLogVerbose)
+                        Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "A positioned region was created but there is no content in the region (possible it does not fit), so removing it");
+                    positioned.ExcludeFromOutput = true;
+                    positioned.TotalBounds = Rect.Empty;
+                }
                 //If we are relative and we some transformations to apply
                 if (options != null && options.HasTransformation)
                 {
@@ -584,9 +928,9 @@ namespace Scryber.PDF.Layout
                 else if(pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
-                    bounds.X += pos.Margins.Left;
-                    bounds.Y += pos.Margins.Top;
-
+                    //bounds.X += pos.Margins.Left;
+                    //bounds.Y += pos.Margins.Top;
+                    bounds.Height = height;
                     positioned.TotalBounds = bounds;
                 }
             }
@@ -603,18 +947,19 @@ namespace Scryber.PDF.Layout
                 {
                     //HACK: The width of the image is being used explicitly for in positioning, so need to
                     //adjust back to the right size.
-                    if (pos.Width.HasValue && rightAlign)
-                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
+                    //if (pos.Width.HasValue && rightAlign)
+                    //    bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
                 }
                 else if (pos.Margins.IsEmpty == false)
                 {
                     height += pos.Margins.Top + pos.Margins.Bottom;
-                    bounds.X += pos.Margins.Left;
-                    bounds.Y += pos.Margins.Top;
+                    //bounds.X += pos.Margins.Left;
+                    //bounds.Y += pos.Margins.Top;
+                    bounds.Height = height;
                 }
             }
             positioned.TotalBounds = bounds;
-
+            positioned.HAlignment = HorizontalAlignment.Left;
             container.CurrentRegion.AddFloatingInset(pos.FloatMode, floatWidth, floatInset, offset, height);
             
         }
@@ -686,8 +1031,8 @@ namespace Scryber.PDF.Layout
             if (null == positioned)
                 throw new ArgumentNullException("positioned");
 
-            if (pos.PositionMode == PositionMode.Inline || pos.PositionMode == PositionMode.Absolute)
-                throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absoulute");
+            if (pos.PositionMode == PositionMode.Inline)
+                throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absolute");
 
             //Get the block that sits in the positioned region
             if (positioned.Contents == null || positioned.Contents.Count != 1)
@@ -712,6 +1057,8 @@ namespace Scryber.PDF.Layout
                     return;
                 }
             }
+
+            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.TransformMatrix.ToString() + " to the bounds for block " + relBlock.ToString());
 
             //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
 
@@ -771,7 +1118,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            PDFLayoutRegion rel = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion rel = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return rel;
         }
 
@@ -779,8 +1126,16 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return abs;
+        }
+
+        protected virtual PDFLayoutRegion BeginNewInlineBlockRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
+        {
+            PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
+            PDFLayoutBlock last = page.LastOpenBlock();
+            PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            return ib;
         }
 
 
@@ -813,7 +1168,8 @@ namespace Scryber.PDF.Layout
                 }
             }
             pos.Y = offsetY;
-            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full);
+            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
+            
             return floating;
         }
 
@@ -946,6 +1302,8 @@ namespace Scryber.PDF.Layout
         {
             if (linebreak is Component && !((Component)linebreak).Visible)
                 return;
+            const double DefaultLineLeading = 1.2;
+            const double DefaultFontSize = 16;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
@@ -960,9 +1318,26 @@ namespace Scryber.PDF.Layout
                     else if (txtopts.Font != null && txtopts.Font.FontMetrics != null)
                         height = txtopts.Font.FontMetrics.TotalLineHeight;
                     else if (txtopts.Font != null)
-                        height = txtopts.Font.Size;
+                        height = txtopts.Font.Size * DefaultLineLeading;
                     else
-                        height = 12;
+                        height = DefaultFontSize * DefaultLineLeading;
+
+                    bool newPage;
+
+                    if (region.AvailableHeight < height)
+                    {
+                        if (this.IsLastInClippedBlock(region))
+                        {
+                            //We are ok, as we are clipped. Just continue
+                        }
+                        else if (!this.MoveToNextRegion(height, ref region, ref block, out newPage))
+                        {
+                            this.ContinueLayout = false;
+                            return;
+                        }
+                    }
+
+
                     PDFLayoutLine line = region.BeginNewLine();
                     line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null));
                 }
@@ -971,6 +1346,7 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
 
 
         #region protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, PDFStyle style)
@@ -1016,7 +1392,30 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
-            
+
+            //Check the style content for an image source url
+            //and if set, then apply it first.
+
+            StyleValue<ContentDescriptor> value;
+
+            if(style.TryGetValue(StyleKeys.ContentTextKey, out value))
+            {
+                ContentDescriptor current = value.Value(style);
+                string imgUrl = null;
+                while(null != current)
+                {
+                    if (current.Type == ContentDescriptorType.Image)
+                        imgUrl = (current as ContentImageDescriptor).Source;
+                    current = current.Next;
+                }
+
+                if (!string.IsNullOrEmpty(imgUrl) && image is Image)
+                {
+                    (image as Image).Source = imgUrl;
+                    (image as Image).RegisterLayoutArtefacts(this.Context, style);                    
+                }
+            }
+
             Resources.PDFImageXObject imgx = image.GetImageObject(this.Context, style);
 
             if (null == imgx)
@@ -1177,6 +1576,20 @@ namespace Scryber.PDF.Layout
         // overflow methods
         //
 
+        protected bool IsLastInClippedBlock(PDFLayoutRegion container)
+        {
+            var parent = container.Parent as PDFLayoutBlock;
+
+            while (null != parent)
+            {
+                //We are on the last column and the overflow is set to clip
+                if (parent.CurrentRegion == parent.Columns[parent.Columns.Length - 1] && parent.Position.OverflowAction == OverflowAction.Clip)
+                    return true;
+
+                parent = parent.GetParentBlock();
+            }
+            return false;
+        }
 
         protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
         {
@@ -1243,10 +1656,6 @@ namespace Scryber.PDF.Layout
                             this.Context.TraceLog.End(TraceLevel.Debug, logCategory, "Current block " + current + " has another region it can flow into. Moving to this region");
 
                         this.PushBlockStackOntoNewRegion(reverseBlocks, tomove, current, currentRegion, ref region, ref block);
-                        //Because we have moved the current block onto a new page - we are back with the original region and block
-                        region = origRegion;
-                        block = origBlock;
-
                         newPage = false;
                         return true;
                     }
@@ -1380,13 +1789,13 @@ namespace Scryber.PDF.Layout
         /// <remarks>The base method returns false if the region is set as absolute or relative</remarks>
         protected virtual bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
         {
-            if (region.PositionMode == PositionMode.Absolute || region.PositionMode == PositionMode.Relative)
+            if (region.PositionMode == PositionMode.Absolute) // || region.PositionMode == PositionMode.Relative)
                 return false;
             else
                 return true;
         }
 
-        #endregion 
+        #endregion
 
         #region protected virtual void PushBlockStackOntoNewRegion(Stack<PDFLayoutBlock> stack, PDFLayoutBlock tomove, PDFLayoutBlock current, PDFLayoutRegion currentRegion, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
 

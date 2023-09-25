@@ -5,14 +5,55 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.0.5-beta</PackageVersion>
-    <Authors>richard@scryber.co.uk</Authors>
-    <Copyright>Richard Hewitson 2021</Copyright>
+    <PackageVersion>6.0.2.1-beta</PackageVersion>
+    <Authors>richard@paperworkday.com</Authors>
+    <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.2.1-beta
+Added fix for large inline images. Tested SaveAsPDFAsync.
+
+6.0.1.1-alfa
+Support for SaveAsPDFTimer, to check for asyncronous execution in a single threaded
+application - blazor (or windows forms?), using asyncronous loading of http requests for css images, fonts etc).
+
+6.0.1.0-beta
+
+We now support html - in many of its flavours, through the HTMLAgilityPack
+
+Added parsing non-formal html documents and components from local and remote files (using the ParseHtml and ParseHtmlDocument on the Document class)
+Added the data-content and data-content-type attributes to visual components so that html and xhtml content can be data bound into pages.
+Added support for the hyphens css property and it's use in hypenating long text.
+
+6.0.0.16-beta
+
+Some Big additions and fixes
+
+Added support for the css counters (reset, increment and the counter(s) functions)
+Added support for css content properties
+Added support for css ::before and ::after selectors
+Added support for relative units in styles e.g. 30% and 0.5em - not supported in calc() with multiple units e.g calc(50% - 5px) will not work.
+
+A lot of layout tests to get everything working - precisely.
+
+
+6.0.0.14-beta
+
+Added support for transformations including css transform property.
+
+6.0.0.12-beta
+
+Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
+Checks added for support on thread culture in dates and numbers.
+
+6.0.0.10-beta
+
+Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions and templates too.
+Along with adding SoryBy, MaxOf, EachOf, SelectWhere collection functions.
+
 6.0.0.5-beta
 
 Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
@@ -61,7 +102,7 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 5</Summary>
+    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
     <Title>Scryber</Title>
     <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
@@ -80,6 +121,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -102,6 +144,8 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Compile Remove="Data\SqlProviderCommand.cs" />
     <None Remove="Scryber.Styles" />
     <None Remove="Teronis.MSBuild.Packaging.ProjectBuildInPackage" />
+    <None Remove="SixLabors.ImageSharp" />
+    <None Remove="Options\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -115,20 +159,37 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Remove="Resources\scryber_NotFoundLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Styles.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Expressive.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Imaging\Scryber.Imaging.csproj" PrivateAssets="all">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Imaging.dll</IncludeAssets>
+        <IncludeAssets>SixLabors.ImageSharp.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Common.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Drawing\Scryber.Drawing.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Drawing.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj">
+        <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+        <IncludeAssets>Scryber.Generation.dll</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="Teronis.MSBuild.Packaging.ProjectBuildInPackage" Version="1.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -142,7 +203,7 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <None Include="readme.txt" Pack="true">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
-    <None Include="LICENSE.md" Pack="true" PackagePath="">
+    <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
   </ItemGroup>
@@ -153,5 +214,12 @@ This framework is built entirely in .NET6 supporting Blazor and is released unde
     <Folder Include="PDF\" />
     <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
+    <Folder Include="Options\" />
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
 </Project>

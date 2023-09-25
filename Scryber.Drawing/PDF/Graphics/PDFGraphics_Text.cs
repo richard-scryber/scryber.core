@@ -175,9 +175,10 @@ namespace Scryber.PDF.Graphics
         /// <returns></returns>
         /// <remarks>Uses the TTFFontFile if available, otherwise will default to using the GDI+ measure,
         /// which is slower but supports postscript fonts</remarks>
-        public Drawing.Size MeasureString(string chars, int startIndex, Drawing.Size available, PDFTextRenderOptions options, out int charsfitted)
+        public Drawing.Size MeasureString(string chars, int startIndex, Drawing.Size available, PDFTextRenderOptions options, out int charsfitted, out char? appendChar)
         {
-            
+            appendChar = null;
+
             PDFFontResource frsc = this.CurrentFontResource;
             Unit fsize = this.CurrentFont.Size;
 
@@ -189,10 +190,11 @@ namespace Scryber.PDF.Graphics
             if (defn.CanMeasureStrings)
             {
                 bool trimtoword = true;
+                
                 if (options.WrapText.HasValue)
                 {
                     if (options.WrapText == WordWrap.NoWrap)
-                        available.Width = new Unit(int.MaxValue, PageUnits.Points);
+                        available.Width = new Unit(Scryber.Text.TextConst.NoWrappingLineWidthPoints, PageUnits.Points);
                     else if (options.WrapText == WordWrap.Character)
                         trimtoword = false;
                 }
@@ -220,14 +222,42 @@ namespace Scryber.PDF.Graphics
                     hScale = options.CharacterHScale.Value;
                 }
                 if (complexSpacing)
+                {
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, wordSpace, charSpace, hScale, vertical, trimtoword, out charsfitted);
+
+                    //TODO: 
+                }
                 else
+                {
                     //TODO: Check if we can do this on the widths rather than the ttfile.
                     measured = defn.MeasureStringWidth(chars, startIndex, fsize.PointsValue, available.Width.PointsValue, trimtoword, out charsfitted);
 
+                    if (trimtoword == false && charsfitted > 0 && (startIndex + charsfitted < chars.Length))
+                    {
+                        var strategy = options.HyphenationStrategy;
+                        var opportunity = this.GetWordHypenation(chars, startIndex, charsfitted, strategy);
+
+                        if (opportunity.NewLength > 0)
+                        {
+                            var tomeasure = chars.Substring(startIndex, opportunity.NewLength);
+                            appendChar = opportunity.AppendHyphenCharacter;
+
+                            if (appendChar.HasValue)
+                                tomeasure += opportunity.AppendHyphenCharacter.Value;
+
+                            measured = defn.MeasureStringWidth(tomeasure, 0, fsize.PointsValue, (double)(int.MaxValue), true, out charsfitted);
+                        }
+                        charsfitted = opportunity.NewLength; //override anyway
+
+                    }
+                }
+
                 if (charsfitted > 0)
                     this.RegisterStringUse(chars, startIndex, charsfitted);
+
+                if (appendChar.HasValue)
+                    this.RegisterStringUse(appendChar.Value.ToString(), 0, 1);
             }
             else
             {
@@ -239,6 +269,14 @@ namespace Scryber.PDF.Graphics
             }
 
             return measured;
+        }
+
+        private HyphenationOpportunity GetWordHypenation(string chars, int startindex, int charsfitted, PDFHyphenationStrategy strategy)
+        {
+            if (null == strategy)
+                strategy = PDFHyphenationStrategy.Default;
+
+            return PDFHyphenationRule.HyphenateLine(strategy, chars, startindex, charsfitted);
         }
 
         private double GetLineLeft(Drawing.Size size, PDFTextRenderOptions options)
@@ -331,31 +369,34 @@ namespace Scryber.PDF.Graphics
 
             if (wordSpacingOffset.HasValue)
             {
-                if (null == this.CurrentFontResource || null == this.CurrentFontResource.Definition)
-                {
-                    this.Context.TraceLog.Add(TraceLevel.Warning, "Graphics", "Could not load the current font definition to set word spacing");
-                    return;
-                }
-                else
-                {
-                    FontDefinition defn = this.CurrentFontResource.Definition;
+                this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, wordSpacingOffset.Value.RealValue);
+                
+                //Removed with the use of the actual point size calculation
+                //if (null == this.CurrentFontResource || null == this.CurrentFontResource.Definition)
+                //{
+                //    this.Context.TraceLog.Add(TraceLevel.Warning, "Graphics", "Could not load the current font definition to set word spacing");
+                //    return;
+                //}
+                //else
+                //{
+                //    FontDefinition defn = this.CurrentFontResource.Definition;
 
-                    //calculate the required width of a space in PDF Text units
-                    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
+                //    //calculate the required width of a space in PDF Text units
+                //    double spaceOffsetPDFUnits = ((wordSpacingOffset.Value.PointsValue) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits) / fontSize.PointsValue;
 
-                    //caclulate the normal width of a space in PDF Text units
-                    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits;
+                //    //caclulate the normal width of a space in PDF Text units
+                //    double spaceWidthPDFUnits = (defn.SpaceWidthFontUnits / defn.FontUnitsPerEm) * (double)PDFOpenTypeFontDefinition.PDFGlyphUnits;
 
-                    //calculate the actual space size (normal width + offset) in PDFTextUnits
-                    double spaceActualPDFUnits = spaceWidthPDFUnits + spaceOffsetPDFUnits;
+                //    //calculate the actual space size (normal width + offset) in PDFTextUnits
+                //    double spaceActualPDFUnits = spaceWidthPDFUnits + spaceOffsetPDFUnits;
 
-                    //calculate the factor (1 = normal size, 2 = double size, etc)
-                    double spaceFactor = spaceActualPDFUnits / spaceWidthPDFUnits;
+                //    //calculate the factor (1 = normal size, 2 = double size, etc)
+                //    double spaceFactor = spaceActualPDFUnits / spaceWidthPDFUnits;
 
-                    this.CustomWordSpace = spaceActualPDFUnits;
+                //    this.CustomWordSpace = spaceActualPDFUnits;
 
-                    this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, (PDFReal)spaceFactor);
-                }
+                //    this.Writer.WriteOpCodeS(PDFOpCode.TxtWordSpacing, (PDFReal)spaceFactor);
+                //}
             }
         }
 
@@ -447,6 +488,14 @@ namespace Scryber.PDF.Graphics
 
             if (this.HasCustomWordSpace && chars.IndexOf(' ') > -1)
             {
+                //Getting weird spacing on justified so testing without this complexity.
+
+                string glyphs = this.CurrentFontResource.Widths.RegisterGlyphs(chars);
+                //this.CurrentFontResource.Widths.RegisterGlyphs(_stringCache, 0, _stringCache.Length);
+                this.Writer.WriteStringLiteralS(glyphs, this.CurrentFontResource.Encoding);
+                this.Writer.WriteOpCodeS(PDFOpCode.TxtPaint);
+                return;
+
                 //we have custom word spacing and there's at least one space in there space 
                 int pos = 0;
                 int nextspace = 0;

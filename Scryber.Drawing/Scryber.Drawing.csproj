@@ -18,7 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Scryber.Core.OpenType" Version="6.0.0.5-beta" />
   </ItemGroup>
   <ItemGroup>

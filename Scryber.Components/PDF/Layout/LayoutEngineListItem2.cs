@@ -114,7 +114,7 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            Thickness padding = Thickness.Empty();
+            Thickness margins = Thickness.Empty();
             Unit inset = Unit.Zero;
 
             //When laying out an item we inset the content by the required amount and then add a
@@ -124,17 +124,17 @@ namespace Scryber.PDF.Layout
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-                padding = position.Padding;
-                var left = padding.Left;
+                margins = position.Margins;
+                var left = margins.Left;
 
                 inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
                 var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
                 //Add the extra space for the list item number
-                padding.Left += inset + alley;
-                style.Padding.Left = padding.Left;
-                position.Padding = padding;
-
+                margins.Left += inset + alley;
+                style.Padding.Left = margins.Left;
+                position.Margins = margins;
+                
                 var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
                 this.LabelComponent = comp;
 
@@ -169,16 +169,22 @@ namespace Scryber.PDF.Layout
         {
             Panel panel = new Panel();
             panel.Width = label.NumberWidth;
+            panel.TextWrapping = Text.WordWrap.NoWrap;
+            panel.OverflowAction = OverflowAction.Clip;
+            panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
             panel.HorizontalAlignment = label.Alignment;
             panel.PositionMode = PositionMode.Relative;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
-            panel.OverflowSplit = OverflowSplit.Never;
+            //panel.Height = 20;
+            //panel.OverflowSplit = OverflowSplit.Never;
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
             panel.Contents.Add(label);
-
-            item.Contents.Insert(0, panel);
+            if (item.Contents.Count > 1)
+                item.Contents.Insert(1, panel);
+            else
+                item.Contents.Add(panel);
 
             return panel;
         }

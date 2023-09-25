@@ -16,6 +16,8 @@ using Scryber.Expressive.Operators;
 using System.Threading.Tasks;
 using System.Xml;
 using Scryber.Html;
+using Scryber.PDF.Layout;
+using System.IO;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -205,7 +207,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             var value = expression.Expression.Evaluate<double>();
 
-            Assert.AreEqual(Math.PI, value);
+            Assert.AreEqual(Math.Round(Math.PI, 10), value);
 
             str = "round(Pi, 3)";
             expression = factory.CreateBindingExpression(str, null);
@@ -279,6 +281,43 @@ namespace Scryber.Core.UnitTests.Binding
             public string function { get; set; }
             public string result { get; set; }
         }
+
+        [TestMethod]
+        public void CountInnerArray_Test()
+        {
+            var model = new
+            {
+                number = 20.7,
+                boolean = true,
+                array = new[] { 10.0, 11.0, 12.0 },
+                str = "#330033",
+                bg = "#AAA",
+                padding = "20pt",
+                items = new[]
+                    {
+                        new {name = "First Item", index = 0},
+                        new {name = "Second Item", index = 1},
+                        new {name = "Third Item", index = 2},
+                    }
+            };
+
+            var options = ExpressiveOptions.IgnoreCaseForParsing;
+            var fSet = new FunctionSet(options).AddDefaultFunctions();
+            var opSet = new OperatorSet(options).AddDefaultOperators();
+            var context = new Context(options, fSet, opSet);
+
+            Dictionary<string, object> vars = new Dictionary<string, object>();
+            vars.Add("model", model);
+
+            var func = "sum(model.array)";
+            //Assert.Inconclusive("Inner array declarations are not currently supported");
+
+            var expression = new Expression(func, context);
+            var value = expression.Evaluate(vars);
+
+            Assert.AreEqual(33.0, value, func + " did not evaluate correctly");
+        }
+
 
         [TestMethod]
         public void AllExpressions_Test()
@@ -371,20 +410,27 @@ namespace Scryber.Core.UnitTests.Binding
 
                 new FunctionTest() {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number < 21 && model.number > 20),'Outside','Between')", result = "Between"},
 
-                new FunctionTest() {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = DateTime.Parse("30/06/2021 11:00:00 AM").ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = DateTime.Parse("30 June 2021 11:00:00 AM").ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new FunctionTest() {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
-                new FunctionTest() {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "String", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean('')", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean('val')", result = "True"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(1)", result = "True"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(0.0)", result = "False"},
+                new FunctionTest() {grp = "Conversion Functions", name = "Boolean", function = "boolean(date())", result = "True"},
 
-                new FunctionTest() {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("10/07/2021 11:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("30/06/2021 21:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = DateTime.Parse("30/06/2021 11:00:02").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = DateTime.Parse("30/06/2021 11:40:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = DateTime.Parse("30/08/2021 11:00:00").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = DateTime.Parse("30/06/2021 11:01:40").ToString()},
-                new FunctionTest() {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = DateTime.Parse("30/06/3021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("10 July 2021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = DateTime.Parse("30 June 2021 21:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = DateTime.Parse("30 June 2021 11:00:02").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = DateTime.Parse("30 June 2021 11:40:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = DateTime.Parse("30 August 2021 11:00:00").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = DateTime.Parse("30 June 2021 11:01:40").ToString()},
+                new FunctionTest() {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = DateTime.Parse("30 June 3021 11:00:00").ToString()},
 
                 new FunctionTest() {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new FunctionTest() {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -409,6 +455,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Mathematical Functions", name = "Abs", function = "abs(-12) + abs(model.number)", result = "32.7"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Truncate", function = "truncate(Pi())", result = "3"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Truncate", function = "truncate(9.99999)", result = "9"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Round", function = "round(10.024)", result = Math.Round(10.024).ToString()},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Round", function = "round(Log10(30),3)", result = Math.Round(Math.Log10(30),3).ToString("#0.000")},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Sign", function = "sign(30)", result = "1"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Sign", function = "sign(-300)", result = "-1"},
@@ -418,9 +465,11 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Mathematical Functions", name = "ATan", function = "round(ATan(2.0),3)", result = "1.107"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Ceiling", function = "Ceiling(3.2)", result = "4"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Floor", function = "Floor(3.2)", result = "3"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ACos", function = "round(Cos(2.094),1)", result = "-0.5"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ASin", function = "round(Sin(-0.524),1)", result = "-0.5"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ATan", function = "round(Tan(1.107),1)", result = "2"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Cos", function = "round(Cos(2.094),1)", result = "-0.5"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Sin", function = "round(Sin(-0.524),1)", result = "-0.5"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Tan", function = "round(Tan(1.107),1)", result = "2"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Deg", function = "round(deg(Pi),4)", result = "180"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Rad", function = "round(rad(180),3)", result = "3.142"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "E", function = "round(E(),3)", result = "2.718"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Pi", function = "round(Pi,3)", result = "3.142"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Exp", function = "round(exp(3),3)", result = Math.Exp(3).ToString("#0.000")},
@@ -432,7 +481,9 @@ namespace Scryber.Core.UnitTests.Binding
 
 
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count", function = "count(12, 13, 14)", result = "3"},
+                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(model.array)", result = "3"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
+                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
@@ -445,6 +496,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
                 new FunctionTest() {grp = "String Functions", name = "Concat (with types)", function = "concat('numbers:',9, model.array)", result = "numbers:9101112"},
                 new FunctionTest() {grp = "String Functions", name = "Join", function = "join('-', 9, 12, 13)", result = "9-12-13"},
+                new FunctionTest() {grp = "String Functions", name = "Join", function = "join('-', model.array)", result = "10-11-12"},
                 new FunctionTest() {grp = "String Functions", name = "Join (with types)", function = "join(', ', 9, model.array, 13)", result = "9, 10, 11, 12, 13"},
                 new FunctionTest() {grp = "String Functions", name = "Contains", function = "contains('a string','str')", result = "True"},
                 new FunctionTest() {grp = "String Functions", name = "Contains", function = "contains('a string','l')", result = "False"},
@@ -609,6 +661,259 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual(5, list.Items.Count, "List counts were not correct");
             }
 
+
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void BindHtmlWithDoubleAmpersand()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <span>A simple string (&amp;&amp;)</span>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.Params["model"] = new
+            {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithDoubleAmpersand.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void BindHtmlWithEscapes()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <table class='expressions escaped'>
+      <tr>
+        <td>A simple string (&amp;&amp;)</td>
+        <td>A string with an inner {{model.number}} binding</td>
+      </tr>
+      <tr>
+        <td>Wrapped in escapes \{{ and after }}\ are ignored</td>
+        <td>Wrapped in span <span>{{</span> is ignored but not {{model.number}}</td>
+      </tr>
+      <tr>
+        <td>\{{model.number + 1}}\ ignored start</td>
+        <td>\{{model.number + 1}} binding start</td>
+      </tr>
+      <tr>
+        <td>Ignored end \{{model.number + 1}}\</td>
+        <td>Bound end {{model.number + 1}}\</td>
+      </tr>
+      <tr>
+        <td>Bound with space \ {{model.number + 1}} \</td>
+        <td>Bound with space  {{model.number + 1}} \</td>
+      </tr>
+      <tr>
+        <td>Ignored middle \{{concat('&lt;', model.number + 1, '&gt;')}}\ but not {{'\'' + string(model.number + 1) + '\''}} after</td>
+        <td>Bound middle {{model.number + 1}} but ignored end \{{model.number+2}}\</td>
+      </tr>
+    </table>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.Params["model"] = new
+            {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithEscapes.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void BindHtmlWithQuotesAndEncoding()
+        {
+            var withQuotes = @"<html>
+  <body>
+    <table class='expressions relational'>
+      <tr>
+        <td>if(model.number == 20.9 , ""Equal"", ""Not equal"")</td>
+        <td class='result'>{{if(model.number == 20.9 , ""Equal"", ""Not equal"")}}</td>
+      </tr>
+      <tr>
+        <td>Before &gt;(if(model.number == 20.9 , ""'Equal'"", ""Not 'equal'"")&lt; After</td>
+        <td class='result'>Before &gt;{{if(model.number == 20.9 , ""'Equal'"", ""Not 'equal'"")}}&lt; After</td>
+      </tr>
+      <tr>
+        <td>Before &gt; (if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"") &lt; After</td>
+        <td class='result'>Before &gt; {{if(model.number == 20.0 , ""'Equal'"", ""Not &apos;equal&apos;"")}} &lt; After</td>
+      </tr>
+      <tr>
+        <td>20.9 &lt; 20.9</td>
+        <td class='result'>{{20.9 &lt; 20.9}}</td>
+      </tr>
+      <tr>
+        <td>20.9 > 20.9</td>
+        <td class='result'>{{20.9 > 20.9}}</td>
+      </tr>
+    </table>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withQuotes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+
+            doc.Params["model"] = new {
+                number = 20.9
+            };
+
+            using (var stream = DocStreams.GetOutputStream("BindHtmlWithQuotes.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+            var pg = doc.Pages[0] as Page;
+            Assert.IsNotNull(pg);
+
+            var tbl = pg.Contents[0] as TableGrid;
+            Assert.IsNotNull(tbl) ;
+
+            TableCell cell;
+            TextLiteral lit;
+
+            //Row 0 cell 0
+
+            cell = tbl.Rows[0].Cells[0];
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual("if(model.number == 20.9 , &quot;Equal&quot;, &quot;Not equal&quot;)", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 0 cell 1
+            cell = tbl.Rows[0].Cells[1];
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+
+            Assert.AreEqual("Equal", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 1 cell 0
+
+            cell = tbl.Rows[1].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("Before &gt;(if(model.number == 20.9 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;)&lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 1 cell 1
+
+            cell = tbl.Rows[1].Cells[1] as TableCell;
+
+            //3 literals together Before > and 'Equal' and < After
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual(3, cell.Contents.Count);
+
+            Assert.AreEqual(@"Before &gt;", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[1] as TextLiteral;
+
+            Assert.AreEqual("'Equal'", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[2] as TextLiteral;
+
+            Assert.AreEqual("&lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 2 cell 0
+
+            cell = tbl.Rows[2].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("Before &gt; (if(model.number == 20.0 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;) &lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 2 cell 1
+
+            cell = tbl.Rows[2].Cells[1] as TableCell;
+
+            //3 literals together Before > and 'Equal' and < After
+            lit = cell.Contents[0] as TextLiteral;
+            Assert.AreEqual(3, cell.Contents.Count);
+
+            Assert.AreEqual(@"Before &gt; ", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[1] as TextLiteral;
+
+            Assert.AreEqual("Not 'equal'", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            lit = cell.Contents[2] as TextLiteral;
+
+            Assert.AreEqual(" &lt; After", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 3 cell 0
+
+            cell = tbl.Rows[3].Cells[0] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("20.9 &lt; 20.9", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+            //Row 3 cell 1
+
+            cell = tbl.Rows[3].Cells[1] as TableCell;
+            lit = cell.Contents[0] as TextLiteral;
+
+            Assert.AreEqual("False", lit.Text);
+            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+
+        }
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCribsheetExpressions_PerformanceTest()
+        {
+            var path = "../../../Content/HTML/CribSheet/";
+
+            var content = File.ReadAllText(path + "CribSheet-Expressions.txt");
+            Assert.IsNotNull(content);
+
+            var style = File.ReadAllText(path + "Cribsheet-Expressions-CSS.txt");
+            Assert.IsNotNull(style);
+
+            var json = File.ReadAllText(path + "CribSheet-Expressions-JSON.txt");
+            Assert.IsNotNull(json);
+
+            var model = System.Text.Json.JsonDocument.Parse(json);
+
+            using var sr = new StringReader(content);
+            var doc = Document.ParseHtmlDocument(sr) as Scryber.Html.Components.HTMLDocument;
+            //doc.CacheStyleIdentifiers = true;
+
+            Assert.IsNotNull(doc);
+
+            var css = new Scryber.Html.Components.HTMLStyle();
+            css.Contents = style;
+
+            doc.Head.Contents.Add(css);
+            doc.Params.Add("model", model.RootElement);
+
+            using (var stream = DocStreams.GetOutputStream("BindCribsheetExpressions.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
 
         }
 
@@ -894,11 +1199,13 @@ namespace Scryber.Core.UnitTests.Binding
                 padding = "20pt",
                 items = new[]
                     {
-                        new {name = "First Item", index = 0},
-                        new {name = "Second Item", index = 1},
-                        new {name = "Third Item", index = 2},
+                        new {name = "First Item", index = 0, group = "none"},
+                        new {name = "Second Item", index = 1, group = "one"},
+                        new {name = "Last Item", index = 2, group = "one" }
                     }
             };
+            var existCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 
             var functions = new[]
             {
@@ -973,20 +1280,20 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
                 //new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
 
-                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:00')", result = "30/06/2021 11:00:00"},
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01 AM"},
                 new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "10/07/2021 11:00:00"},
-                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "30/06/2021 21:00:00"},
-                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "30/06/2021 11:00:02"},
-                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "30/06/2021 11:40:00"},
-                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "30/08/2021 11:00:00"},
-                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "30/06/2021 11:01:40"},
-                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "30/06/3021 11:00:00"},
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00 PM"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02 AM"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00 AM"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40 AM"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00 AM"},
 
                 new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -1036,12 +1343,25 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Aggregate and Statistical Functions", name = "Count", function = "count(12, 13, 14)", result = "3"},
                 new {grp = "Aggregate and Statistical Functions", name = "Count (with array)", function = "count(12, model.array, model.items, 14)", result = "8"},
                 new {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
+                new {grp = "Aggregate and Statistical Functions", name = "SumOf", function = "sumOf(model.items, .index)", result = (0 + 1 + 2).ToString()},
                 new {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
+                new {grp = "Aggregate and Statistical Functions", name = "MaxOf", function = "MaxOf(model.items, .index)", result = "2"},
                 new {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
+                new {grp = "Aggregate and Statistical Functions", name = "MinOf", function = "MinOf(model.items, .index)", result = "0"},
                 new {grp = "Aggregate and Statistical Functions", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
+                new {grp = "Aggregate and Statistical Functions", name = "AverageOf", function = "AverageOf(model.items, .index)", result = "1"},
+                new {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
                 new {grp = "Aggregate and Statistical Functions", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
                 new {grp = "Aggregate and Statistical Functions", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
                 new {grp = "Aggregate and Statistical Functions", name = "Median", function = "Median(model.array,13,1)", result = "11"},
+
+                //Coalescing function
+                new {grp = "Coalescing Functions", name = "Join Each", function = "join(',',each(15,model.array,20), 30)", result = "15,10,11,12,20,30"},
+                new {grp = "Coalescing Functions", name = "Max Each", function = "Max(8, each(model.array))", result = "12"},
+                new {grp = "Coalescing Functions", name = "Join EachOf", function = "join(',', 8, eachof(model.items, .index))", result = "8,0,1,2"},
+                new {grp = "Coalescing Functions", name = "Sum EachOf", function = "sum(1, eachof(model.items, .index))", result = "4"},
+                new {grp = "Coalescing Functions", name = "Join EachOf SortBy", function = "join(',',eachOf(sortBy(model.items, .name, 'desc'), .index))", result = "1,2,0"}, //Second, Last, First
+                new {grp = "Coalescing Functions", name = "Join EachOf SelectWhere", function = "join(',',eachOf(selectWhere(model.items, .index > 0),.name))", result = "Second Item,Last Item"},
 
 
                 new {grp = "String Functions", name = "Concat", function = "concat('A string',' and another string')", result = "A string and another string"},
@@ -1103,7 +1423,7 @@ namespace Scryber.Core.UnitTests.Binding
                 grpindex++;
             }
 
-            src += @"           </table>
+            src += @"         </table>
                             </body>
                         </html>";
 
@@ -1147,10 +1467,488 @@ namespace Scryber.Core.UnitTests.Binding
                 }
             }
 
+            System.Threading.Thread.CurrentThread.CurrentCulture = existCulture;
+
+
+        }
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindCalcsWithCulture()
+        {
+            var origCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            var origUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
+            string src = @"<!DOCTYPE html>
+                                <?scryber parser-mode='strict' ?>
+                                <html xmlns='http://www.w3.org/1999/xhtml' >
+                                    <head>
+                                        <title>Binding Numbers with culture</title>
+                                    </head>
+
+                                    <body id='mainbody' style='padding:20px' >
+                                        <h2>{{culture.id}}</h2>
+                                        <dl>
+                                            <dt id='cultP1' >Number</dt>
+                                            <dd id='numP1' ><num value='{{culture.number}}' /></dd>
+                                            <dt id='cultP1' >Currency</dt>
+                                            <dd id='numP1' ><num data-format='C' value='{{culture.number}}' /></dd>
+                                            <dt id='cultP1' >Date</dt>
+                                            <dd id='numP1' ><time data-format='D' datetime='{{culture.date}}' /></dd>
+                                            <dt id='cultP1' >Time</dt>
+                                            <dd id='numP1' ><time data-format='T' datetime='{{culture.date}}' /></dd>
+                                        </dl>
+                                    </body>
+                                </html>";
+
+            var culture = "nl-NL";
+
+            var data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
             
+            var cultureNumber = "-3456,56";
+            var cultureCurrency = "€ -3.456,56";
+            var cutlureDate = "dinsdag 13 december 2022";
+            var cutlureTime = "22:45:59";
+
+            
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            culture = "fr-FR";
+            cultureNumber = "-3456,56";
+            cultureCurrency = "-3 456,56 €";
+            cutlureDate = "mardi 13 décembre 2022";
+            cutlureTime = "22:45:59";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            culture = "en-GB";
+            cultureNumber = "-3456.56";
+            cultureCurrency = "-£3,456.56";
+            cutlureDate = "Tuesday, 13 December 2022";
+            cutlureTime = "22:45:59";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            
+            culture = "en-US";
+            cultureNumber = "-3456.56";
+            cultureCurrency = "-$3,456.56";
+            cutlureDate = "Tuesday, December 13, 2022";
+            cutlureTime = "10:45:59 PM";
+
+            data = new
+            {
+                id = culture,
+                number = -3456.56,
+                date = new DateTime(2022, 12, 13, 22, 45, 59)
+            };
+
+            CreateAndAssertCultured(src, culture, data, culture, cultureNumber, cultureCurrency, cutlureDate, cutlureTime, "");
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = origCulture;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = origUICulture;
+
+        }
+
+        private PDFLayoutDocument _doc = null;
+
+        private void CreateAndAssertCultured(string src, string culture, object data, string cultureId, string cultureNumber, string cultureCurrency, string cultureDate, string cultureTime, string cultureExplicit)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+            using (var doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                doc.Params.Add("culture", data);
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithCulture_" + culture + ".pdf"))
+                {
+                    doc.LayoutComplete += CulturedDoc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    Assert.IsNotNull(_doc, "The document layout was not assigned");
+                    var body = _doc.AllPages[0];
+                    var list = body.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                    Assert.IsNotNull(list, "The definition list was not found");
+
+                    
+                    var numBlock = list.Columns[0].Contents[1] as PDFLayoutBlock;
+                    AssertCultureContent(numBlock, cultureNumber, "number", culture);
+
+                    var currencyBlock = list.Columns[0].Contents[3] as PDFLayoutBlock;
+                    AssertCultureContent(currencyBlock, cultureCurrency, "currency", culture);
+
+                    var dateBlock = list.Columns[0].Contents[5] as PDFLayoutBlock;
+                    AssertCultureContent(dateBlock, cultureDate, "date", culture);
+
+                    var timeBlock = list.Columns[0].Contents[7] as PDFLayoutBlock;
+                    AssertCultureContent(timeBlock, cultureTime, "time", culture);
+                }
+
+            }
+        }
+
+        private void AssertCultureContent(PDFLayoutBlock container, string text, string name, string culture)
+        {
+            var line = container.Columns[0].Contents[0] as PDFLayoutLine;
+            var span = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(span);
+            Assert.AreEqual(text, span.Characters, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
+        }
+
+        private void CulturedDoc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _doc = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+
+
+
+        [TestMethod]
+        public void ExpressionsWithJElement()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression JElement</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with JElement</h2>
+                                <table id='myTable' style='width:100%;font-size:10pt' >
+                                    <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Single Expression with function</td><td>concat('This is a ', value)</td><td>{{concat('This is a ', value)}}</td></tr>
+                                    <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
+                                    <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
+                                    <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
+                                    <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
+                                    <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td>Function With Coalesce</td><td>(join(',', eachOf(selectWhere(deeparray, .value > 1),.name)))</td><td>{{join(',', eachOf(selectWhere(deeparray, .value > 1),.name))}}</td></tr>
+                                    <tr><td colspan='3'>Bound Array</td></tr>
+                                    <template data-bind='{{deeparray}}'>
+                                        <tr>
+                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                        </tr>
+                                    </template>";
+
+            src += @" </table>
+                  </body>
+                </html>";
+
+            var json = @"{
+                       'value':'Single',
+                       'object': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithJElement.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                Assert.IsNotNull(table, "Could not find the table to loop over");
+
+
+                var literal = table.Rows[0].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Single", literal.Text, "The JElement single value failed");
+
+                literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("This is a Single", literal.Text, "The JElement function with value failed");
+
+                literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("DeepValue", literal.Text, "The JElement deep value failed");
+
+                literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("first item", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("2", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Deep deep down", literal.Text, "The JElement array value failed");
+
+                literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The JElement calculation failed");
+
+                literal = table.Rows[7].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("nothing", literal.Text, "The JElement non-existant property failed");
+
+                literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Number Two", literal.Text, "The JElement non-existant property failed");
+
+                literal = table.Rows[9].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "The coalescing function did not match");
+
+                //row count is 12 - first 10 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 13, "Not all rows in the array were bound");
+
+                var first = table.Rows[11];
+                var second = table.Rows[12];
+
+                literal = first.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");
+
+                literal = second.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "Second bound rows value was not correct");
+
+                var num = first.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("1", num.Value.ToString(), "First bound rows value was not correct");
+
+                num = second.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("2", num.Value.ToString(), "Second bound rows value was not correct");
+
+                literal = first.Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
+
+                literal = second.Cells[2].Contents[0] as TextLiteral;
+                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
+            }
+
+
+        }
+
+
+        [TestMethod]
+        public void ExpressionsWithNewtonsoft()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression Newtonsoft</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with Newtonsoft</h2>
+                                <table id='myTable' style='width:100%;font-size:10pt' >
+                                    <tr><td>Single Expression</td><td>value</td><td>{{value}}</td></tr>
+                                    <tr><td>Single Expression with function</td><td>concat('This is a ', value)</td><td>{{concat('This is a ', value)}}</td></tr>
+                                    <tr><td>Deep Expression</td><td>object.value</td><td>{{object.value}}</td></tr>
+                                    <tr><td>Array Expression</td><td>arrray[0]</td><td>{{array[0]}}</td></tr>
+                                    <tr><td>Deep Array Expression</td><td>deeparray[1].value</td><td>{{deeparray[1].value}}</td></tr>
+                                    <tr><td>Deepest Array Expression</td><td>deeparray[0].object.value</td><td>{{deeparray[0].object.value}}</td></tr>
+                                    <tr><td>Expression with calculation</td><td>1 - (integer(deeparray[1].value) + 10)</td><td>{{1 - (integer(deeparray[1].value) + 10)}}</td></tr>
+                                    <tr><td>Not found Expression</td><td>(deeparray[1].notset ?? 'nothing')</td><td>{{deeparray[1].notset ?? 'nothing'}}</td></tr>
+                                    <tr><td>Function and Expression</td><td>(concat('Number ',deeparray[1].name))</td><td>{{(concat('Number ',deeparray[1].name))}}</td></tr>
+                                    <tr><td>Function With Coalesce</td><td>(join(',', eachOf(selectWhere(deeparray, .value > 1),.name)))</td><td>{{join(',', eachOf(selectWhere(deeparray, .value > 1),.name))}}</td></tr>
+                                    <tr><td colspan='3'>Bound Array</td></tr>
+                                    <template data-bind='{{deeparray}}'>
+                                        <tr>
+                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                        </tr>
+                                    </template>";
+
+            src += @" </table>
+                  </body>
+                </html>";
+
+            var json = @"{
+                       'value':'Single',
+                       'object': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }".Replace('\'', '"'); //just easier with the @string
+
+            //Parse as a Linq.JObject
+            var parsed = Newtonsoft.Json.JsonConvert.DeserializeObject(json) as Newtonsoft.Json.Linq.JObject;
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                
+                foreach (var prop in parsed)
+                {
+                    doc.Params.Add(prop.Key, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_WithNewtonsoft.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var table = doc.FindAComponentById("myTable") as TableGrid;
+                Assert.IsNotNull(table, "Could not find the table to loop over");
+
+
+                var literal = table.Rows[0].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Single", literal.Text, "The Newtonsoft.JObject single value failed");
+
+                literal = table.Rows[1].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("This is a Single", literal.Text, "The Newtonsoft.JObject function with value failed");
+
+                literal = table.Rows[2].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("DeepValue", literal.Text, "The Newtonsoft.JObject deep value failed");
+
+                literal = table.Rows[3].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("first item", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[4].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("2", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[5].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Deep deep down", literal.Text, "The Newtonsoft.JObject array value failed");
+
+                literal = table.Rows[6].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("-11", literal.Text, "The Newtonsoft.JObject calculation failed");
+
+                literal = table.Rows[7].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("nothing", literal.Text, "The Newtonsoft.JObject non-existant property failed");
+
+                literal = table.Rows[8].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Number Two", literal.Text, "The Newtonsoft.JObject non-existant property failed");
+
+                literal = table.Rows[9].Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "The coalescing function did not match");
+
+                //row count is 12 - first 10 above + header row and 2 bound array rows
+                Assert.IsTrue(table.Rows.Count == 13, "Not all rows in the array were bound");
+
+
+                var first = table.Rows[11];
+                var second = table.Rows[12];
+
+                literal = first.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("One", literal.Text, "First bound rows value was not correct");
+
+                literal = second.Cells[0].Contents[0] as TextLiteral;
+                Assert.AreEqual("Two", literal.Text, "Second bound rows value was not correct");
+
+                var num = first.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("1", num.Value.ToString(), "First bound rows value was not correct");
+
+                num = second.Cells[1].Contents[0] as Number;
+                Assert.AreEqual("2", num.Value.ToString(), "Second bound rows value was not correct");
+
+                literal = first.Cells[2].Contents[0] as TextLiteral;
+                Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
+
+                literal = second.Cells[2].Contents[0] as TextLiteral;
+                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
+            }
+
+
+        }
+
+
+
+        [TestMethod]
+        public void ExpressionSelectWhereIndexor()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='innerContent' style='border: solid 1px green'>{{selectWhere(items.deeparray, .name == 'One')[0].value}}</p>
+                            </body>
+                        </html>";
+
+            var json = @"{
+                'items': {
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_SelectWhereIndexor.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("innerContent") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+
+                Assert.AreEqual(1, p.Contents.Count);
+                var lit = p.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                Assert.AreEqual("1", lit.Text);
+
+                
+
+            }
 
 
         }
 
     }
+
+
 }

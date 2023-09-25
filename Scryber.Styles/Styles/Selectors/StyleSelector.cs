@@ -74,7 +74,7 @@ namespace Scryber.Styles.Selectors
 
         #region public ComponentState AppliedState {get;set;}
 
-        private ComponentState _state;
+        private ComponentState _state = ComponentState.Normal;
 
         /// <summary>
         /// Not currently supported
@@ -220,7 +220,15 @@ namespace Scryber.Styles.Selectors
             // return false if it's not a match
             //otherwise return true at the end.
 
-            // fastest first - ID, Element, Class, Type
+            // fastest first - state, ID, Element, Class, Type
+
+            //If we are only for a specific state
+            if (this.AppliedState != ComponentState.Normal)
+            {
+                //and the state we are looking for is not us, then we don't match
+                if (state != this.AppliedState)
+                    return false;
+            }
 
             if (string.IsNullOrEmpty(this.AppliedID) == false)
             {
@@ -252,6 +260,8 @@ namespace Scryber.Styles.Selectors
                     return false;
             }
 
+            
+
             if (this.HasAncestor)
             {
                 var parentPriority = 0;
@@ -264,7 +274,7 @@ namespace Scryber.Styles.Selectors
                     if (null == parent)
                         return false;
 
-                    if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, state, out parentPriority))
+                    if (this.Ancestor.IsMatchedTo(parent as IStyledComponent, ComponentState.Normal, out parentPriority))
                     {
                         priority = this.Priority;
                         return true;
@@ -332,6 +342,24 @@ namespace Scryber.Styles.Selectors
             {
                 sb.Append("#");
                 sb.Append(this.AppliedID);
+            }
+
+            if(this.AppliedState != ComponentState.Normal)
+            {
+                switch(this.AppliedState)
+                {
+                    case (ComponentState.After):
+                        sb.Append("::after");
+                        break;
+                    case (ComponentState.Before):
+                        sb.Append("::before");
+                        break;
+                    case (ComponentState.Over):
+                        sb.Append(":hover");
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (this.Placement == StylePlacement.DirectParent)

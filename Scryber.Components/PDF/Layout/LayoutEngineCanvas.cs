@@ -123,7 +123,7 @@ namespace Scryber.PDF.Layout
             if (containerRegion.HasOpenItem == false)
                 containerRegion.BeginNewLine();
             //pos.Y = 200;
-            PDFLayoutRegion container = containerBlock.BeginNewPositionedRegion(newpos, this.DocumentLayout.CurrentPage, this.Component, this.FullStyle, false);
+            PDFLayoutRegion container = containerBlock.BeginNewPositionedRegion(newpos, this.DocumentLayout.CurrentPage, this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
 
             this.Line = containerRegion.CurrentItem as PDFLayoutLine;
 

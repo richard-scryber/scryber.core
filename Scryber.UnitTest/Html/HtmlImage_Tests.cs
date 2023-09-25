@@ -5,7 +5,8 @@ using Scryber.PDF.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.PDF;
-
+using Scryber.PDF.Layout;
+using Scryber.Drawing;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -117,7 +118,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void ImagePngLocalAbsoluteSource_Test()
         {
-            var path = GetLocalImagePath("Group.png");
+            var path = GetLocalImagePath("group.png");
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <img src='" + path + @"' alt='Group' />
@@ -231,7 +232,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImagePngLocalRelativeSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/Group.png";
+            var path = "Content/HTML/Images/group.png";
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <img src='" + path + @"' alt='Group' />
@@ -346,7 +347,7 @@ namespace Scryber.Core.UnitTests.Html
         public void ImagePngLocalBaseSource_Test()
         {
             var project = GetLocalProjectPath();
-            var path = "Content/HTML/Images/Group.png";
+            var path = "Content/HTML/Images/group.png";
             var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <base href='" + project + @"' />
@@ -421,6 +422,280 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
-        
+
+
+        /// <summary>
+        /// Loads a test image from creative suspects based on an issue raised with the
+        /// 6.0 beta 8 version of the library.
+        /// </summary>
+        [TestMethod]
+        public void CreativeSuspectsImageTest()
+        {
+
+            var path = "https://cf.creativesuspects.io/img/sad-face.png";
+            var project = "Creative Suspects test";
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+</head>
+<body style='padding:20pt;' >
+    <img src='" + path + @"' alt='Group' />
+</body>
+</html>";
+
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("CreativeSuspectsTest.pdf"))
+                    {
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+                        
+                        Assert.AreEqual(path, img.Source, "Image source was expected to be " + path);
+                        AssertPngImage(img, true, true);
+                    }
+
+                }
+            }
+        }
+
+        //
+        // Image sizing
+        //
+
+        /// <summary>
+        /// An image in the content with a relative path and a base path set in the template
+        /// (the path from the parser should be ignored)
+        /// </summary>
+        [TestMethod]
+        public void ImageSizeJpegNatural_Test()
+        {
+            var project = GetLocalProjectPath();
+            var path = "Content/HTML/Images/Group.jpg";
+
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+</head>
+<body style='padding:20pt;' >
+    <img id='naturalImage' src='" + path + @"' alt='Group' />
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, "http://ignored/path", ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ImageLocalNaturalSize.pdf"))
+                    {
+                        doc.LayoutComplete += Doc_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+                        AssertGroupImage(img);
+                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        AssertJpgImage(img);
+
+                        var page = _layout.AllPages[0];
+                        var line = page.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+                        Assert.AreEqual(1, line.Runs.Count);
+
+                        var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
+                        Assert.AreEqual(img.ImageData.DisplayWidth, imgLayout.Width);
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// An image in the content with a relative path and a base path set in the template
+        /// (the path from the parser should be ignored)
+        /// </summary>
+        [TestMethod]
+        public void ImageSizeJpegFixedWidth_Test()
+        {
+            var project = GetLocalProjectPath();
+            var path = "Content/HTML/Images/Group.jpg";
+            var width = new Unit(40, PageUnits.Points);
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+</head>
+<body style='padding:20pt;' >
+    <img id='fixedImage' style='width:" + width.ToString() + @"' src='" + path + @"' alt='Group' />
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, "http://ignored/path", ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ImageLocalFixedWidth.pdf"))
+                    {
+                        doc.LayoutComplete += Doc_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+                        AssertGroupImage(img);
+                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        AssertJpgImage(img);
+
+                        var page = _layout.AllPages[0];
+                        var line = page.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+                        Assert.AreEqual(1, line.Runs.Count);
+
+                        var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
+                        Assert.AreEqual(width, imgLayout.Width);
+
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// An image in the content with a relative path and a base path set in the template
+        /// (the path from the parser should be ignored)
+        /// </summary>
+        [TestMethod]
+        public void ImageSizeJpegFixedContainerWidth_Test()
+        {
+            var project = GetLocalProjectPath();
+            var path = "Content/HTML/Images/Group.jpg";
+            var width = new Unit(40, PageUnits.Points);
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+</head>
+<body style='padding:20pt;' >
+    <div style='width:" + width.ToString() + @"; border: solid 1px black;' >
+        <img id='containedImage'  src='" + path + @"' alt='Group' />
+    </div>
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, "http://ignored/path", ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ImageLocalFixedContainerWidth.pdf"))
+                    {
+                        doc.LayoutComplete += Doc_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+                        AssertGroupImage(img);
+                        Assert.AreEqual(project + path, img.Source, "Image source was expected to be " + path);
+                        AssertJpgImage(img);
+
+                        var page = _layout.AllPages[0];
+                        var div = page.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                        var line = div.Columns[0].Contents[0] as PDFLayoutLine;
+
+                        Assert.AreEqual(1, line.Runs.Count);
+
+                        var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
+                        Assert.AreEqual(width, imgLayout.Width);
+
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// An image in the content with a relative path and a base path set in the template
+        /// (the path from the parser should be ignored)
+        /// </summary>
+        [TestMethod]
+        public void ImageSizeJpegFixedWidthWithContent_Test()
+        {
+            var project = GetLocalProjectPath();
+            var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
+            var width = new Unit(40, PageUnits.Points);
+            var html = @"<?scryber append-log='true' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <base href='" + project + @"' />
+    <style>
+        .content{
+            content:url('" + path + @"');
+        }
+    </style>
+</head>
+<body style='padding:20pt;' >
+    <div style='width:" + width.ToString() + @"; border: solid 1px black;' >
+        <img class='content' />
+    </div>
+</body>
+</html>";
+
+            using (var sr = new System.IO.StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, "http://ignored/path", ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ImageLocalFixedWidthWithContent.pdf"))
+                    {
+                        doc.LayoutComplete += Doc_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+
+
+                        Assert.AreEqual(1, doc.SharedResources.Count);
+                        var one = doc.SharedResources[0];
+                        Assert.IsInstanceOfType(one, typeof(PDFImageXObject));
+                        var img = (PDFImageXObject)one;
+
+
+                        //AssertGroupImage(img);
+                        Assert.AreEqual(path, img.Source, "Image source was expected to be " + path);
+                        //AssertJpgImage(img);
+
+                        var page = _layout.AllPages[0];
+                        var div = page.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                        var line = div.Columns[0].Contents[0] as PDFLayoutLine;
+
+                        Assert.AreEqual(1, line.Runs.Count);
+
+                        var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
+                        Assert.AreEqual(width, imgLayout.Width);
+
+                    }
+
+                }
+            }
+        }
+
+
+        private PDF.Layout.PDFLayoutDocument _layout;
+
+
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+        }
     }
 }

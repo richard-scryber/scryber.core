@@ -85,6 +85,22 @@ namespace Scryber.Html.Components
         {
         }
 
+
+        public override string MapPath(string path)
+        {
+            //Override for data images as urls - where System.Uri.IsWellFormedUriString
+
+            if (!string.IsNullOrEmpty(path) && path.StartsWith("data:image/"))
+                return path;
+            else
+                return base.MapPath(path);
+        }
+
+        public override string MapPath(string source, out bool isfile)
+        {
+            return base.MapPath(source, out isfile);
+        }
+
     }
 
 }

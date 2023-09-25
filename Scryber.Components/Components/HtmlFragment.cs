@@ -248,7 +248,7 @@ namespace Scryber.Components
                 html = md.Transform(html);
                 
             }
-            HTMLParser parser = new HTMLParser(html, settings);
+            HTMLFragmentParser parser = new HTMLFragmentParser(html, settings);
 
             Stack<IComponent> route = new Stack<IComponent>();
 

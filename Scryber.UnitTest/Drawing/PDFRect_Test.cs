@@ -33,37 +33,6 @@ namespace Scryber.Core.UnitTests.Drawing
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
         /// <summary>
         ///A test for PDFRect Constructor
         ///</summary>
@@ -105,17 +74,64 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Drawing Structures")]
         public void PDFRectConstructor_Test2()
         {
-            double x = 10F; // TODO: Initialize to an appropriate value
-            double y = 20F; // TODO: Initialize to an appropriate value
-            double width = 30F; // TODO: Initialize to an appropriate value
-            double height = 40F; // TODO: Initialize to an appropriate value
+            double x = 10.0; 
+            double y = 20.0;
+            double width = 30.0;
+            double height = 40.0;
             Rect target = new Rect(x, y, width, height);
 
             Assert.AreEqual(x, target.X.PointsValue);
             Assert.AreEqual(y, target.Y.PointsValue);
             Assert.AreEqual(width, target.Width.PointsValue);
             Assert.AreEqual(height, target.Height.PointsValue);
+
         }
+
+        /// <summary>
+        ///A test for IsRelative
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void IsRelative_Test()
+        {
+            Rect target = new Rect(10, 20, 30, 40);
+            bool expected = false;
+            bool actual;
+
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+            target = new Rect(new Unit(20, PageUnits.ViewPortWidth), 30, 40, 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Rect(20, 30, 40, new Unit(50, PageUnits.ViewPortWidth));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Rect(20, 30, new Unit(40, PageUnits.ViewPortWidth), 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+            target = new Rect(20, new Unit(30, PageUnits.ViewPortWidth), 40, 50);
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+            target = new Rect(new Unit(20, PageUnits.ViewPortWidth), new Unit(30, PageUnits.ViewPortHeight), new Unit(40, PageUnits.ViewPortWidth), new Unit(50, PageUnits.ViewPortHeight));
+            expected = true;
+            actual = target.IsRelative;
+            Assert.AreEqual(expected, actual);
+
+
+        }
+
+
 
         /// <summary>
         ///A test for Clone

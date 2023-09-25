@@ -90,6 +90,16 @@ namespace Scryber.Html.Components
         [PDFParserIgnore()]
         public override PageList Pages { get { return base.Pages; } }
 
+        public HTMLDocument() : base()
+        {
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.FontSizeKey, Scryber.Drawing.Font.DefaultFontSize); //matches the HTML document
+            return style;
+        }
 
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {

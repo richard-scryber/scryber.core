@@ -10,7 +10,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("link")]
-    public class HTMLLink : Scryber.Components.Component, ITemplate
+    public class HTMLLink : Scryber.Components.Component, ITemplate, ILoadableComponent
     {
         internal enum HTMLLinkType
         {
@@ -103,7 +103,7 @@ namespace Scryber.Html.Components
 
         internal class LinkContentCSS : LinkContentBase
         {
-            private StyleGroup _parsedGroup = null;
+            private StyleRemoteGroup _parsedGroup = null;
             private StyleCollection _parsed;
 
             public LinkContentCSS(StyleCollection styles, string path, HTMLLink forLink) : base(HTMLLinkType.CSS, path, forLink)
@@ -127,7 +127,9 @@ namespace Scryber.Html.Components
 
                 if(null == _parsedGroup)
                 {
-                    _parsedGroup = new StyleGroup();
+                    _parsedGroup = new StyleRemoteGroup();
+                    _parsedGroup.LoadedSource = this.LoadedSource;
+                    _parsedGroup.LoadType = this.ForLink.LoadType;
                     _parsedGroup.Owner = this.ForLink;
 
                     foreach (var style in this._parsed)
@@ -407,59 +409,59 @@ namespace Scryber.Html.Components
             }
         }
 
-        protected virtual string DoLoadRemoteReference(string path, ContextBase context)
-        {
-            //TODO: Use the document for any client web requests.
-            //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
-            string content;
-            HttpClient client = null;
-            bool dispose = false;
+        //protected virtual string DoLoadRemoteReference(string path, ContextBase context)
+        //{
+        //    //TODO: Use the document for any client web requests.
+        //    //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
+        //    string content;
+        //    HttpClient client = null;
+        //    bool dispose = false;
 
-            try
-            {
-                this.LoadedSource = path;
-                client = this.GetServiceClient();
-                if (null == client)
-                {
-                    client = new HttpClient();
-                    dispose = true;
-                }
-                lock (context.Document)
-                {
-                    var task = client.GetStreamAsync(path);
-                    var awaiter = task.GetAwaiter();
+        //    try
+        //    {
+        //        this.LoadedSource = path;
+        //        client = this.GetServiceClient();
+        //        if (null == client)
+        //        {
+        //            client = new HttpClient();
+        //            dispose = true;
+        //        }
+        //        lock (context.Document)
+        //        {
+        //            var task = client.GetStreamAsync(path);
+        //            var awaiter = task.GetAwaiter();
 
 
-                    using (var response = task.Result)
-                        content = this.DoLoadReferenceResult(response, path, context);
-                }
+        //            using (var response = task.Result)
+        //                content = this.DoLoadReferenceResult(response, path, context);
+        //        }
 
-            }
-            catch (Exception ex)
-            {
-                content = string.Empty;
-                if (context.Conformance == ParserConformanceMode.Lax)
-                {
-                    context.TraceLog.Add(TraceLevel.Error, "HTML Link", "Could not load link href the response from '" + path + "'", ex);
-                }
-                else
-                    throw;
-            }
-            finally
-            {
-                if (null != client && dispose)
-                    client.Dispose();
-            }
-            return content;
-            
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        content = string.Empty;
+        //        if (context.Conformance == ParserConformanceMode.Lax)
+        //        {
+        //            context.TraceLog.Add(TraceLevel.Error, "HTML Link", "Could not load link href the response from '" + path + "'", ex);
+        //        }
+        //        else
+        //            throw;
+        //    }
+        //    finally
+        //    {
+        //        if (null != client && dispose)
+        //            client.Dispose();
+        //    }
+        //    return content;
 
-        private HttpClient GetServiceClient()
-        {
-            var client = Scryber.ServiceProvider.GetService<HttpClient>();
-            return client;
+        //}
 
-        }
+        //private HttpClient GetServiceClient()
+        //{
+        //    var client = Scryber.ServiceProvider.GetService<HttpClient>();
+        //    return client;
+
+        //}
 
         /// <summary>
         /// Forces the completion and loading of the remote result.

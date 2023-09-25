@@ -23,11 +23,7 @@ namespace Scryber.Expressive.Functions.Relational
                 result = Max(enumerableResult, context);
             }
 
-            // Null means we should bail out.
-            if (result is null)
-            {
-                return null;
-            }
+            
 
             // Skip the first item in the list as it has already been evaluated.
             foreach (var value in parameters.Skip(1))
@@ -66,7 +62,7 @@ namespace Scryber.Expressive.Functions.Relational
                 // Null means we should bail out.
                 if (item is null)
                 {
-                    return null;
+                    continue;
                 }
 
                 if (enumerableResult is null)

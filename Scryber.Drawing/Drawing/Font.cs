@@ -42,7 +42,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// The default font em size.
         /// </summary>
-        public static readonly double DefaultFontSize = 12.0;
+        public static readonly double DefaultFontSize = 16.0;
 
         //
         // properties

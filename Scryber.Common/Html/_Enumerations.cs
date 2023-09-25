@@ -148,6 +148,11 @@ namespace Scryber.Html
         public const string TextDecoration = "text-decoration";
         public const string TextDecorationLine = "text-decoration-line";
         public const string LetterSpacing = "letter-spacing";
+        public const string Hyphenation = "hyphens";
+        public const string HyphenationMinBefore = "hyphens-min-chars-before";
+        public const string HyphenationMinAfter = "hyphens-min-chars-after";
+        public const string HyphenationCharAppend = "hyphens-char-append";
+
         public const string WordSpacing = "word-spacing";
 
         public const string WhiteSpace = "white-space";
@@ -182,6 +187,12 @@ namespace Scryber.Html
         public const string StrokeDash = "stroke-dasharray";
         public const string StrokeLineCap = "stroke-linecap";
         public const string StrokeLineJoin = "stroke-linejoin";
+
+        public const string Transform = "transform";
+        public const string Content = "content";
+
+        public const string CounterReset = "counter-reset";
+        public const string CounterIncrement = "counter-increment";
 
     }
 

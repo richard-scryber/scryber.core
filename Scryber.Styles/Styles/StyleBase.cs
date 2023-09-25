@@ -243,13 +243,12 @@ namespace Scryber.Styles
         #region public virtual void MergeInto(PDFStyle style, Scryber.IPDFComponent Component, Scryber.ComponentState state)
 
         /// <summary>
-        /// Merges all the style values in this style into the provided style, based on the component and state.
+        /// Merges all the style values in this style into the provided style, based on the component.
         /// This will overwrite existing values in the provided style.
         /// </summary>
         /// <param name="style"></param>
         /// <param name="Component"></param>
-        /// <param name="state"></param>
-        public virtual void MergeInto(Style style, Scryber.IComponent Component, Scryber.ComponentState state)
+        public virtual void MergeInto(Style style, Scryber.IComponent Component)
         {
             this.MergeInto(style, 0);
         }
@@ -293,20 +292,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region public virtual PDFStyle Flatten()
-
-        /// <summary>
-        /// Returns a flat version of the PDFStyle. (In this case it is the same instance).
-        /// </summary>
-        /// <returns></returns>
-        public virtual Style Flatten()
-        {
-            //Does nothing in the new implementation
-            //As we are always flat.
-            return (Style)this;
-        }
-
-        #endregion
+        
 
         #region public void Clear()
 
@@ -362,7 +348,11 @@ namespace Scryber.Styles
         protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
             if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
-                this.EnsureBackgroundImage(context, this.GetValue(StyleKeys.BgImgSrcKey, ""));
+                this.EnsureCSSImage(context, StyleKeys.BgImgSrcKey, "background");
+            if (this.IsValueDefined(StyleKeys.FillImgSrcKey))
+                this.EnsureCSSImage(context, StyleKeys.FillImgSrcKey, "fill");
+            if (this.IsValueDefined(StyleKeys.ContentTextKey))
+                this.EnsureContentImage(context, this.GetValue(StyleKeys.ContentTextKey, null));
 
             if (includechildren && this.StyleItems.Count > 0)
             {
@@ -373,30 +363,65 @@ namespace Scryber.Styles
             }
         }
 
-        protected virtual void EnsureBackgroundImage(DataContext context, string source)
+        protected virtual void EnsureContentImage(DataContext context, ContentDescriptor descriptor)
         {
+            while(null != descriptor)
+            {
+                if (descriptor.Type == ContentDescriptorType.Image)
+                {
+                    var imgDesc = (descriptor as ContentImageDescriptor);
+                    var updated = this.EnsureCSSImage(context, imgDesc.Source, "content");
+                    imgDesc.Source = updated;
+                }
+
+                descriptor = descriptor.Next;
+            }
+        }
+
+        protected virtual void EnsureCSSImage(DataContext context, StyleKey<string> key, string type)
+        {
+            var source = this.GetValue(key, "");
+
+            var mapped = EnsureCSSImage(context, source, type);
+
+            this.SetValue(key, mapped);
+
+        }
+
+        protected virtual string EnsureCSSImage(DataContext context, string source, string type)
+        {
+            
+
             if(IsGradientImageSrc(source, out var desc))
             {
-                return;
+                return source;
             }
+            else if (IsDataImage(source))
+            {
+                return source;
+            }
+
+
+            var mapped = this.MapPath(source);
+
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Mapped path for '" + source + "' to '" + mapped + "'");
+
 
             IResourceRequester requester = context.Document as IResourceRequester;
             if(null == requester)
             {
-                context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load background images as the document does not support resource requests");
-                return;
+                context.TraceLog.Add(TraceLevel.Warning, "Styles", "Cannot pre-load " + type + " images as the document does not support resource requests");
+                return source;
             }
-
-            var mapped = this.MapPath(source);
-            if (context.ShouldLogVerbose)
-                context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Mapping path for '" + source + "' to '" + mapped + "'");
-
 
             //We just make sure the image is loaded
             var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
 
             if (context.ShouldLogMessage)
-                context.TraceLog.Add(TraceLevel.Message, "Styles", "Background image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+                context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+
+            return mapped;
         }
 
         #endregion
@@ -958,8 +983,8 @@ namespace Scryber.Styles
             StyleValue<VerticalAlignment> valign;
             if (this.TryGetValue(StyleKeys.PositionVAlignKey, out valign))
                 options.VAlign = valign.Value(this);
-            else
-                options.VAlign = Const.DefaultVerticalAlign;
+            //else
+            //   options.VAlign = Const.DefaultVerticalAlign;
 
             StyleValue<HorizontalAlignment> halign;
             StyleValue<TextDirection> direction;
@@ -1044,45 +1069,18 @@ namespace Scryber.Styles
             // transformations
 
             PDFTransformationMatrix transform = null;
+            
 
-            if (this.IsValueDefined(StyleKeys.TransformXOffsetKey) || this.IsValueDefined(StyleKeys.TransformYOffsetKey))
+            if (this.IsValueDefined(StyleKeys.TransformOperationKey))
             {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetTranslation(this.GetValue(StyleKeys.TransformXOffsetKey, 0.0F), this.GetValue(StyleKeys.TransformYOffsetKey, 0.0F));
+                TransformOperation op = this.GetValue(StyleKeys.TransformOperationKey, null);
+                transform = op.GetMatrix(MatrixOrder.Append);
 
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
+                if (transform.IsIdentity)
+                    transform = null; //identity will do nothing
 
-            if (this.IsValueDefined(StyleKeys.TransformRotateKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetRotation(this.GetValue(StyleKeys.TransformRotateKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
-
-            if (this.IsValueDefined(StyleKeys.TransformXScaleKey) || this.IsValueDefined(StyleKeys.TransformYScaleKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-                transform.SetScale(this.GetValue(StyleKeys.TransformXScaleKey, 0.0F), this.GetValue(StyleKeys.TransformYScaleKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
-            }
-
-            if (this.IsValueDefined(StyleKeys.TransformXSkewKey) || this.IsValueDefined(StyleKeys.TransformYSkewKey))
-            {
-                if (null == transform)
-                    transform = new PDFTransformationMatrix();
-
-                transform.SetSkew(this.GetValue(StyleKeys.TransformXSkewKey, 0.0F), this.GetValue(StyleKeys.TransformYSkewKey, 0.0F));
-
-                if (options.PositionMode != PositionMode.Absolute)
+                //otherwise make sure we are positioned as absolute or relative.
+                else if (options.PositionMode != PositionMode.Absolute)
                     options.PositionMode = PositionMode.Relative;
             }
 
@@ -1236,8 +1234,34 @@ namespace Scryber.Styles
                 options.CharacterSpacing = space.Value(this);
 
             StyleValue<Text.WordWrap> wrap;
+            StyleValue<Text.WordHyphenation> hyphen;
             if (this.TryGetValue(StyleKeys.TextWordWrapKey, out wrap))
+            {
                 options.WrapText = wrap.Value(this);
+
+                //Check the hypenation if and only if we can wrap text
+                if (options.WrapText != Text.WordWrap.NoWrap)
+                {
+                    if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+                    {
+                        options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                        if (options.WrapText == Text.WordWrap.Character)
+                        {
+                            options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                        }
+                    }
+                }
+            }
+            else if (this.TryGetValue(StyleKeys.TextWordHyphenation, out hyphen))
+            {
+                options.WrapText = (hyphen.Value(this) == Text.WordHyphenation.Auto) ? Text.WordWrap.Character : Text.WordWrap.Word;
+
+                if (options.WrapText == Text.WordWrap.Character)
+                {
+                    options.HyphenationStrategy = DoCreateHyphenationStrategy();
+                }
+            }
 
             StyleValue<double> hscale;
             if (this.TryGetValue(StyleKeys.TextHorizontalScaling, out hscale))
@@ -1260,6 +1284,29 @@ namespace Scryber.Styles
                 options.DrawTextFromTop = !frombase.Value(this);
 
             return options;
+        }
+
+        private PDFHyphenationStrategy DoCreateHyphenationStrategy()
+        {
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy();
+
+            StyleValue<int> min;
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out min))
+                strategy.MinCharsBeforeHyphen = min.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out min))
+                strategy.MinCharsAfterHyphen = min.Value(this);
+
+            StyleValue<char> c;
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out c))
+                strategy.HyphenAppend = c.Value(this);
+
+            if (this.TryGetValue(StyleKeys.TextHyphenationCharPrepend, out c))
+                strategy.HyphenPrepend = c.Value(this);
+
+            return strategy;
+
         }
 
         #endregion
@@ -1821,6 +1868,15 @@ namespace Scryber.Styles
                 descriptor = null;
                 return false;
             }
+        }
+
+
+        protected virtual bool IsDataImage(string value)
+        {
+            if (value.StartsWith("data:image/"))
+                return true;
+            else
+                return false;
         }
 
         #endregion

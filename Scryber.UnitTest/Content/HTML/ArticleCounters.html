@@ -1,0 +1,131 @@
+﻿<?scryber append-log=true ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Counters</title>
+    <style>
+        
+        body {
+           counter-reset: h1Num h2Num;
+           font-family: serif;
+           font-size: 16px;
+        }
+
+        ol {
+            margin-top: 16px;
+        }
+
+        ol ol {
+            margin-top : 0px;
+        }
+
+        h1, h2 {
+            margin-bottom: 10px;
+        }
+
+        article {
+            padding: 10px;
+            margin: 10px;
+            border: solid 1px black;
+        }
+
+        article > h1 {
+            counter-increment: h1Num;
+            counter-reset: h2Num;
+            font-size: 20px;
+        }
+
+        article > h2 {
+            font-size: 20px;
+            font-style: normal;
+        }
+
+        h1::before {
+            content: counter(h1Num) ": ";
+        }
+
+        h2::before {
+            counter-increment: h2Num;
+            content: counter(h1Num) "." counter(h2Num) ": ";
+        }
+
+        ol {
+            counter-reset: section; 
+            list-style-type: none;
+        }
+
+        li::before {
+            counter-increment: section; 
+            content: counters(section, ".") " "; 
+        }
+
+        /*
+        #list-counters {
+            page-break-before: always;
+        } */
+
+    </style>
+</head>
+<body style="padding:20pt">
+    <article id="PrimaryArticle">
+        <h1 id="top1">Top Level Article</h1>
+        <div>This is the main content of the top level article</div>
+        <article>
+            <h2 id="inner_title1">Inner article</h2>
+            <div>This is the content of the inner article</div>
+        </article>
+        <article>
+            <h2 id="inner_title2">Second Inner article</h2>
+            <div>This is the content of the inner article</div>
+        </article>
+    </article>
+    <article id="SecondArticle">
+        <h1>Top Level Article</h1>
+        <div>This is the main content of the second level article</div>
+        <article>
+            <h2>Inner article</h2>
+            <div>This is the content of the inner article</div>
+        </article>
+        <article>
+            <h2>Second Inner article</h2>
+            <div>This is the content of the inner article</div>
+        </article>
+    </article>
+
+    <div id="list-counters">
+        <span>List test</span>
+        <ol id="outerList">
+            <li>item</li>          <!-- 1     -->
+            <li>
+                item               <!-- 2     -->
+                <ol>
+                    <li>item</li>      <!-- 2.1   -->
+                    <li>item</li>      <!-- 2.2   -->
+                    <li>
+                        item           <!-- 2.3   -->
+                        <ol>
+                            <li>item</li>  <!-- 2.3.1 -->
+                            <li>item</li>  <!-- 2.3.2 -->
+                        </ol>
+                        <ol>
+                            <li>item</li>  <!-- 2.3.1 -->
+                            <li>item</li>  <!-- 2.3.2 -->
+                            <li>item</li>  <!-- 2.3.3 -->
+                        </ol>
+                    </li>
+                    <li>item</li>      <!-- 2.4   -->
+                </ol>
+            </li>
+            <li>item</li>          <!-- 3     -->
+            <li>item</li>          <!-- 4     -->
+        </ol>
+        <ol>
+            <li>item</li>          <!-- 1     -->
+            <li>item</li>          <!-- 2     -->
+        </ol>
+    </div>
+    <footer style="border-top:solid 1px red; padding:5px;">
+        Page <page />
+    </footer>
+</body>
+</html>

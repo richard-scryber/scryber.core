@@ -29,7 +29,7 @@ using Scryber.PDF.Layout;
 
 namespace Scryber.Components
 {
-    public abstract class PageBase : VisualComponent, IStyledComponent, IResourceContainer, IPDFViewPortComponent,
+    public abstract class PageBase : VisualComponent, IStyledComponent, IDocumentPage, IPDFViewPortComponent,
                                                   IRemoteComponent, IControlledComponent, INamingContainer, ITopAndTailedComponent
     {
 
@@ -155,6 +155,32 @@ namespace Scryber.Components
         {
             get { return this.Style.PageStyle.PaperSize; }
             set { this.Style.PageStyle.PaperSize = value; }
+        }
+
+        #endregion
+
+        #region public override Unit Width {get;set;}
+
+        /// <summary>
+        /// Overrides the default to set the pagestyle width 
+        /// </summary>
+        public override Unit Width
+        {
+            get => base.Style.PageStyle.Width;
+            set => base.Style.PageStyle.Width = value;
+        }
+
+        #endregion
+
+        #region public override Unit Height {get;set;}
+
+        /// <summary>
+        /// Overrides the default to set the pagestyle Height 
+        /// </summary>
+        public override Unit Height
+        {
+            get => base.Style.PageStyle.Height;
+            set => base.Style.PageStyle.Height = value;
         }
 
         #endregion
@@ -523,12 +549,12 @@ namespace Scryber.Components
 
         #region public override PDFGraphics CreateGraphics(PDFWriter writer, PDFStyleStack styles)
 
-        public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
-        {
-            Style full = styles.GetFullStyle(this);
-            PageSize size = full.CreatePageSize();
-            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
-        }
+        //public PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
+        //{
+        //    Style full = styles.GetFullStyle(this);
+        //    PageSize size = full.CreatePageSize();
+        //    return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, size.Size, context);
+        //}
 
         #endregion
 

@@ -40,6 +40,87 @@ namespace Scryber.Styles
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Style : StyleBase, IBindableComponent
     {
+        #region InnerClass - StateList
+
+        /// <summary>
+        /// A linked list of states with styles associated. Accessed via the Styles.GetState() method.
+        /// There can only ever be one entry for a specific state. 
+        /// </summary>
+        protected class StatedStyle
+        {
+            public ComponentState State
+            {
+                get;
+                private set;
+            }
+
+            public Style Style
+            {
+                get;
+                private set;
+            }
+
+            public StatedStyle Next
+            {
+                get;
+                private set;
+            }
+
+            public StatedStyle(ComponentState state, Style style)
+            {
+                this.State = state;
+                this.Style = style ?? throw new ArgumentNullException(nameof(style));
+                this.Next = null;
+            }
+
+            /// <summary>
+            /// Either merges the style into an existing style for that state, or adds the style onto the end of this linked list.
+            /// </summary>
+            /// <param name="forState"></param>
+            /// <param name="withStyle"></param>
+            /// <exception cref="ArgumentOutOfRangeException"></exception>
+            public virtual StatedStyle Apply(ComponentState forState, Style withStyle)
+            {
+                if (forState == this.State)
+                {
+                    withStyle.MergeInto(this.Style);
+                    return this;
+                }
+                else if (null == this.Next)
+                {
+                    this.Next = new StatedStyle(forState, withStyle);
+                    return this.Next;
+                }
+                else
+                    return this.Next.Apply(forState, withStyle);
+            }
+
+            public virtual StatedStyle Find(ComponentState state)
+            {
+                if (this.State == state)
+                    return this;
+                else if (null == this.Next)
+                    return null;
+                else
+                    return this.Next.Find(state);
+            }
+
+            /// <summary>
+            /// Creates a shallow clone of this StatedStyle and any linked StatedStyles
+            /// </summary>
+            /// <returns></returns>
+            public StatedStyle Clone()
+            {
+                var clone = new StatedStyle(this.State, this.Style);
+                if (null != this.Next)
+                    clone.Next = this.Next.Clone();
+
+                return clone;
+            }
+        }
+
+        #endregion
+
         #region public const string PDFStylesNamespace
 
         /// <summary>
@@ -148,7 +229,24 @@ namespace Scryber.Styles
 
         #endregion
 
-        // style accessort properties
+
+        #region protected StateList States {get;} + public bool HasStates {get;}
+
+        private StatedStyle _states = null;
+
+        protected virtual StatedStyle States
+        {
+            get { return _states; }
+        }
+
+        public bool HasStates
+        {
+            get { return null != _states; }
+        }
+
+        #endregion
+
+        // style accessor properties
 
         #region public PDFBackgroundStyle Background {get;}
 
@@ -1143,6 +1241,39 @@ namespace Scryber.Styles
         #endregion
 
 
+        #region public virtual PDFStyle Flatten()
+
+        /// <summary>
+        /// Returns a flat version of the PDFStyle, calculating any relative sizes to absolute.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        {
+            if (this.InheritedValues.Count > 0)
+            {
+                foreach (var key in this.InheritedValues.Keys)
+                {
+                    if (key.CanBeRelative)
+                    {
+                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
+                    }
+                }
+            }
+            if (this.DirectValues.Count > 0)
+            {
+                foreach (var key in this.DirectValues.Keys)
+                {
+                    if (key.CanBeRelative)
+                    {
+                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
+                    }
+                }
+            }
+            return this;
+        }
+
+        #endregion
+
         //
         // variables
         //
@@ -1164,6 +1295,73 @@ namespace Scryber.Styles
             _variables.Add(variable ?? throw new ArgumentNullException(nameof(variable)));
         }
 
+        //
+        // States
+        //
+
+        public Style GetStyleState(ComponentState state, bool create)
+        {
+            StatedStyle found = null;
+
+            if(this.HasStates)
+            {
+                found = this.States.Find(state);
+            }
+
+            if(null == found && create)
+            {
+                found = this.AppendStyleState(state, CreateStyleForState(state));
+
+            }
+            return null == found ? null : found.Style;
+        }
+
+        protected virtual StatedStyle AppendStyleState(ComponentState state, Style style)
+        {
+            StatedStyle found = null;
+            if (!this.HasStates)
+            {
+                this._states = new StatedStyle(state, style);
+                found = this._states;
+            }
+            else
+                found = this._states.Apply(state, style);
+
+            return found;
+        }
+
+        protected virtual Style CreateStyleForState(ComponentState state)
+        {
+            return new Style();
+        }
+
+
+        public bool TryGetStyleState(ComponentState state, out Style style)
+        {
+            if (this.HasStates)
+            {
+                StatedStyle stated = this.States.Find(state);
+                if(null != stated)
+                {
+                    style = stated.Style;
+                    return true; //We know Style property cannot be null.
+                }
+            }
+
+            style = null;
+            return false;
+        }
+
+        public bool CopyStatesFrom(Style other)
+        {
+            if (other.HasStates)
+            {
+                this._states = other.States.Clone();
+                return true;
+            }
+            else
+                return false;
+        }
 
         //
         // Parsing
