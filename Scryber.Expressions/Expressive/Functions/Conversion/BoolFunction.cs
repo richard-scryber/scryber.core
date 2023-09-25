@@ -112,6 +112,11 @@ namespace Scryber.Expressive.Functions.Conversion
                     default:
                         var s = (objectToConvert).ToString();
                         result = !string.IsNullOrEmpty(s);
+
+                        bool parsed;
+                        if (result && bool.TryParse(s, out parsed))
+                            result = parsed;
+
                         break;
                 }
 
