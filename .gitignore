@@ -402,4 +402,4 @@ ASALocalRun/
 .mfractor/
 
 # Local History for Visual Studio
-.localhistory/
+.localhistory/.DS_Store
