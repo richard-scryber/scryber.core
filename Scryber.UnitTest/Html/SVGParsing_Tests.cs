@@ -14,6 +14,7 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 using System.Xml.Schema;
 using Scryber.Svg.Components;
+using System.IO;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -139,6 +140,94 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 }
             }
+        }
+
+        [TestMethod]
+        public void SVGInsert()
+        {
+            var doc = new Document();
+            var pg1 = new Page();
+            doc.Pages.Add(pg1);
+
+            var svgString = @"
+            <svg xmlns=""http://www.w3.org/2000/svg"" style=""border:solid 1px black"" >
+                <rect x=""0pt"" y=""0pt"" width=""100pt"" height=""80pt"" fill=""lime"" ></rect>
+                <g id=""eye"" stroke=""black"" stroke-width=""2pt"" >
+                    <ellipse cx=""50pt"" cy=""40pt"" rx=""40pt"" ry=""20pt"" fill=""white""></ellipse>
+                    <circle cx=""50pt"" cy=""40pt"" r=""20pt"" fill=""#66F""></circle>
+                    <circle cx=""50pt"" cy=""40pt"" r=""10pt"" fill=""black""></circle>
+                    <line x1=""10"" x2=""90"" y1=""40"" y2=""40"" />
+                    <line x1=""50"" x2=""50"" y1=""20"" y2=""60"" />
+                </g>
+            </svg>";
+
+
+
+            //1. Explicit parsing of the content and adding to the page.
+            //Allows handling of any parsing errors independently of the document flow.
+            pg1.Contents.Add("The parsed component will be explicitly added after this.");
+            var icomp = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            pg1.Contents.Add(icomp as Component);
+            pg1.Contents.Add("This is after the parsed component");
+
+            //2. Appending the data content to the page
+            //Simply setting the DataContent to a string and the action as append.
+            var pg2 = new Page();
+            doc.Pages.Add(pg2);
+
+            pg2.Contents.Add("The SVG content will be appended to the page.");
+            pg2.DataContent = svgString;
+            pg2.DataContentAction = DataContentAction.Append;
+            pg2.Contents.Add(" Will still appear before the data content.");
+
+            
+            var pg3 = new Page();
+            doc.Pages.Add(pg3);
+
+            //3. Adding the content to an inner div (with some margins)
+            //Gives flexibility in positioning and document flow.
+            var div = new Div();
+            div.DataContent = svgString;
+
+            div.Margins = new Thickness(10);
+            pg3.Contents.Add("Before the div with the inner svg");
+            pg3.Contents.Add(div);
+            pg3.Contents.Add("After the div with the inner svg");
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGInserted.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+
+            if (null == layout)
+                throw new InvalidOperationException("Layout was not set");
+
+            Assert.AreEqual(3, pg1.Contents.Count);
+            var svg = pg1.Contents[1] as SVGCanvas;
+            Assert.IsNotNull(svg);
+
+            Assert.AreEqual(3, pg2.Contents.Count);
+            svg = pg2.Contents[2] as SVGCanvas;
+            Assert.IsNotNull(svg);
+
+            Assert.AreEqual(3, pg3.Contents.Count);
+            div = pg3.Contents[1] as Div;
+            Assert.IsNotNull(div);
+            Assert.AreEqual(1, div.Contents.Count);
+            svg = div.Contents[0] as SVGCanvas;
+            Assert.IsNotNull(svg);
+
+
+
+            
+
         }
 
     }
