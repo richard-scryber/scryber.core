@@ -124,7 +124,23 @@ namespace Scryber.Logging
             for (int i = 0; i < len; i++)
             {
                 PerformanceMonitorType type = (PerformanceMonitorType)i;
-                _entries[i] = new PerformanceMonitorEntry(type, recordMeasurements);
+                bool record = recordMeasurements && ShouldRecordMeasurements(type);
+                _entries[i] = new PerformanceMonitorEntry(type, record);
+            }
+        }
+
+        private static bool ShouldRecordMeasurements(PerformanceMonitorType type)
+        {
+            switch (type)
+            {
+                case (PerformanceMonitorType.Content_Overflow):
+                case (PerformanceMonitorType.Data_Load):
+                case (PerformanceMonitorType.Font_Load):
+                case (PerformanceMonitorType.Image_Load):
+                case (PerformanceMonitorType.Parse_Files):
+                    return true;
+                default:
+                    return false;
             }
         }
         
@@ -451,6 +467,7 @@ namespace Scryber.Logging
                     _measurements = new List<PerformanceMonitorMeasurement>();
                 }
                 count = _measurements.Count;
+                
                 _measurements.Add(item);
             }
             return count;

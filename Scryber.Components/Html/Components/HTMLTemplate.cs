@@ -50,9 +50,10 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("data-content")]
-        public string DataContent
+        public override string DataContent
         {
-            get; set;
+            get => base.DataContent;
+            set => base.DataContent = value;
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Scryber.Html.Components
 
         protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
-            if(null != this.DataContent)
+            if(!string.IsNullOrEmpty(this.DataContent))
             {
                 return this.GetDataContent(this.DataContent, context);
             }

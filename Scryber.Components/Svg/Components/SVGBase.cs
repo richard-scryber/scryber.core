@@ -114,6 +114,30 @@ namespace Scryber.Svg.Components
             set => base.FontSize = value;
         }
 
+        [PDFAttribute("transform")]
+        public string Transform
+        {
+            get
+            {
+                if (null == this.TransformOperation)
+                    return string.Empty;
+                else
+                {
+                    return this.TransformOperation.ToString();
+                }
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    this.RemoveTransformOperation();
+                }
+                else
+                {
+                    this.TransformOperation = TransformOperation.Parse(value, ' ');
+                }
+            }
+        }
         
 
         // font

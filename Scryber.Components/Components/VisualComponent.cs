@@ -1617,7 +1617,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the transform operation. NOTE setting will prepend the value onto the chain of any existing values. Set to null or use RemoveTransformOperation() to clear completely.
         /// </summary>
-        public TransformOperation TransformOperation
+        public virtual TransformOperation TransformOperation
         {
             get
             {

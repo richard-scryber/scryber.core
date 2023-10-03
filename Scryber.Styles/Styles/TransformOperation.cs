@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+
 namespace Scryber.Styles
 {
     /// <summary>
@@ -161,6 +163,250 @@ namespace Scryber.Styles
                     else
                         matrix.SetTranslation(this.Value1, this.Value2);
                     break;
+            }
+        }
+
+
+        //ToString and Parsing
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            this.ToString(sb);
+            return sb.ToString();
+        }
+
+        protected virtual void ToString(StringBuilder sb)
+        {
+            if(sb.Length > 0) { sb.Append(" "); }
+
+            switch (this.Type)
+            {
+                case TransformType.Rotate:
+                    sb.Append("rotate(");
+                    sb.Append(this.Value1);
+                    sb.Append(")");
+                    break;
+
+                case TransformType.Scale:
+                    sb.Append("scale(");
+                    if (IsSet(this.Value1))
+                        sb.Append(this.Value1);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(", ");
+                    if (IsSet(this.Value2))
+                        sb.Append(this.Value2);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(")");
+                    break;
+
+                case TransformType.Skew:
+                    sb.Append("skew(");
+                    if (IsSet(this.Value1))
+                        sb.Append(this.Value1);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(", ");
+                    if (IsSet(this.Value2))
+                        sb.Append(this.Value2);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(")");
+                    break;
+
+                case TransformType.Translate:
+                    sb.Append("translate(");
+                    if (IsSet(this.Value1))
+                        sb.Append(this.Value1);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(", ");
+                    if (IsSet(this.Value2))
+                        sb.Append(this.Value2);
+                    else
+                        sb.Append("1.0");
+
+                    sb.Append(")");
+                    break;
+
+                default:
+                    throw new PDFParserException("Could not understand the Transformation Type " + this.Type.ToString());
+            }
+
+            if(null != this.Next)
+            {
+                this.Next.ToString(sb);
+            }
+
+        }
+
+
+        public static TransformOperation Parse(string value, char separator = ',')
+        {
+            TransformType type;
+            TransformOperation operation = null;
+            TransformOperation first = null;
+            float value1 = TransformOperation.NotSetValue();
+            float value2 = TransformOperation.NotSetValue();
+
+            int valueCount;
+            int opLength;
+            bool useDegrees = false;
+            bool negative1 = false;
+            bool negative2 = false;
+
+            if (null == value)
+            {
+                operation = null;
+                return operation;
+            }
+
+            var str = value.ToString().Trim();
+
+            if (str.StartsWith("rotate("))
+            {
+                opLength = 7;
+                type = TransformType.Rotate;
+                useDegrees = true;
+                negative1 = true;
+                valueCount = 1;
+            }
+            else if (str.StartsWith("skew("))
+            {
+                opLength = 5;
+                type = TransformType.Skew;
+                useDegrees = true;
+                negative1 = true;
+                negative2 = true;
+                valueCount = 2;
+            }
+            else if (str.StartsWith("scale("))
+            {
+                opLength = 6;
+                type = TransformType.Scale;
+                useDegrees = false;
+                valueCount = 2;
+            }
+            else if (str.StartsWith("translate("))
+            {
+                opLength = 10;
+                type = TransformType.Translate;
+                useDegrees = false;
+                negative2 = true;
+                valueCount = 2;
+            }
+            else
+            {
+                throw new NotSupportedException("The transform operation " + str + " is not known or not currently supported");
+            }
+
+            var end = str.IndexOf(")", opLength);
+
+            if (end <= opLength + 1)
+            {
+                return null;
+            }
+
+            var values = str.Substring(opLength, end - opLength).Trim();
+            str = str.Substring(end + 1);
+
+            if (valueCount == 2)
+            {
+                var parts = values.Split(separator);
+                if (parts.Length != 2)
+                {
+                    operation = null;
+                    return operation;
+                }
+
+                if (useDegrees)
+                {
+                    value1 = GetDegreesValue(parts[0], negative1);
+                    value2 = GetDegreesValue(parts[1], negative2);
+                }
+                else
+                {
+                    value1 = GetUnitValue(parts[0], negative1);
+                    value2 = GetUnitValue(parts[1], negative2);
+                }
+
+                operation = new TransformOperation(type, value1, value2);
+                return operation;
+
+            }
+            else
+            {
+                if (useDegrees)
+                {
+                    value1 = GetDegreesValue(values, negative1);
+                }
+                else
+                {
+                    value1 = GetUnitValue(values, negative1);
+                }
+
+                operation = new TransformOperation(type, value1, TransformOperation.NotSetValue());
+                return operation;
+            }
+        }
+
+        private static float GetDegreesValue(string deg, bool negative)
+        {
+            deg = deg.Trim();
+            if (deg.EndsWith("deg"))
+            {
+                deg = deg.Substring(0, deg.Length - 3);
+                float value;
+                if (float.TryParse(deg, out value))
+                {
+                    if (negative)
+                        return -((float)(Math.PI / 180.0) * value);
+                    else
+                        return (float)(Math.PI / 180.0) * value;
+
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("Value " + deg + " could not be converted to degrees");
+        }
+
+        private static float GetUnitValue(string unit, bool negative)
+        {
+            Drawing.Unit parsed;
+            if (Drawing.Unit.TryParse(unit, out parsed))
+            {
+                if (negative)
+                    return -(float)parsed.PointsValue;
+                else
+                    return (float)parsed.PointsValue;
+            }
+
+            throw new ArgumentOutOfRangeException("Value " + unit + " could not be converted to unit value");
+        }
+
+        protected bool DoConvertFullWidth(StyleBase style, object value, out bool fullWidth)
+        {
+            if (null == value)
+            {
+                fullWidth = false;
+                return false;
+            }
+            else if (value.ToString() == "100%")
+            {
+                fullWidth = true;
+                return true;
+            }
+            else
+            {
+                fullWidth = false;
+                return false;
             }
         }
 
