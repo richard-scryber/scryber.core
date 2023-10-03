@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Html.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
-using Scryber.Styles.Parsing;
-
-using Scryber.PDF.Layout;
-using Scryber.PDF;
-using System.Xml.Schema;
 using Scryber.Svg.Components;
 using System.IO;
 
@@ -223,11 +214,42 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1, div.Contents.Count);
             svg = div.Contents[0] as SVGCanvas;
             Assert.IsNotNull(svg);
+        }
+        
+        /// <summary>
+        /// Test case for Issue #107
+        /// </summary>
+        [TestMethod]
+        public void SVGToComponentWithInvariantUnits()
+        {
+            var svgString = @"
+            <svg width=""1000"" height=""400"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""position:absolute;left:0;top:0;user-select:none"">
+              <rect width=""1000"" height=""400"" x=""0"" y=""0"" id=""0"" fill=""none"" fill-opacity=""1""></rect>
+              <g>
+                <path d=""M503.1463 120.0619L503.7363 105.0735L745 105.0735"" fill=""none"" stroke=""#5470c6""></path>
+                <path d=""M504.3059 279.884L505.1132 294.8623L649 294.8623"" fill=""none"" stroke=""#91cc75""></path>
+                <path d=""M488.3618 120.8511L417.7603 131.2324L291 131.2324"" fill=""none"" stroke=""#fac858""></path>
+                <path d=""M495.7775 120.1115L494.9857 105.1324L315 105.1324"" fill=""none"" stroke=""#ee6666""></path>
+                <path d=""M500 120A80 80 0 0 1 506.2878 120.2475L500 200Z"" fill=""#5470c6"" stroke=""#fff"" stroke-linejoin=""round""></path>
+                <path d=""M506.2878 120.2475A80 80 0 1 1 485.1759 121.3855L500 200Z"" fill=""#91cc75"" stroke=""#fff"" stroke-linejoin=""round""></path>
+                <path d=""M485.1759 121.3855A80 80 0 0 1 491.5667 120.4457L500 200Z"" fill=""#fac858"" stroke=""#fff"" stroke-linejoin=""round""></path>
+                <path d=""M491.5667 120.4457A80 80 0 0 1 500 120L500 200Z"" fill=""#ee6666"" stroke=""#fff"" stroke-linejoin=""round""></path>
+                <text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(750 294.8623)"" fill=""black"">Airplane</text>
+                <text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(250 131.2324)"" fill=""black"">Car</text>
+                <text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(250 105.1324)"" fill=""black"">Train</text>
+              </g>
+            </svg>";
 
-
-
-            
-
+            try
+            {
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                var svg = (Component)component;
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+            }
+            catch
+            {
+                Assert.Fail("Svg image has not been parsed");
+            }
         }
 
     }

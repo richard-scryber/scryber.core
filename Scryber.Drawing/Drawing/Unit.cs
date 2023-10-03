@@ -23,6 +23,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.CodeDom;
+using System.Globalization;
 
 namespace Scryber.Drawing
 {
@@ -876,12 +877,19 @@ namespace Scryber.Drawing
                 throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
 
             offset = end;
+
+            var valueForParsing = value.Substring(start, end - start);
             
-            double d;
-            if (double.TryParse(value.Substring(start, end - start), out d))
-                return d;
-            else
-                throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
+            if (double.TryParse(valueForParsing, out var d1))
+            {
+                return d1;
+            }
+            if (double.TryParse(valueForParsing, NumberStyles.Any, CultureInfo.InvariantCulture, out var d2))
+            {
+                return d2;
+            }
+            
+            throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
 
         }
 
