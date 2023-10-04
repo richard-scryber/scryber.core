@@ -243,7 +243,13 @@ namespace Scryber.Components
 
 
         
-
+        public void AddRange(IEnumerable<T> items)
+        {
+            if(null != items)
+            {
+                this.InnerList.AddRange(items);
+            }
+        }
         
 
         #region ICollection<T> Members

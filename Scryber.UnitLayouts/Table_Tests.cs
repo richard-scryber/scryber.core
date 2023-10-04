@@ -1569,5 +1569,52 @@ namespace Scryber.UnitLayouts
 
         }
 
+
+        public void TableFromCode()
+        {
+
+            var doc = new Document();
+            var pg = new Page();
+
+            var data = GetData();
+
+            var tbl = GenerateTableGrid(data);
+        }
+
+        private TableGrid GenerateTableGrid(string[][] data)
+        {
+
+            var grid = new TableGrid() { FullWidth = true };
+            grid.Rows.AddRange(data.Select(rowData => {
+                    var row = new TableRow();
+                    row.Cells.AddRange(rowData.Select(cellData => {
+                        var cell = new TableCell();
+                        cell.Contents.Add(cellData);
+                        return cell;
+                    }));
+                    return row;
+                }));
+            return grid;
+        }
+
+
+        private string[][] GetData()
+        {
+            var list = new List<string[]>();
+
+            for(var r = 0; r < 5; r++)
+            {
+                string[] inner = new string[5];
+                for(var c = 0; c < 5; c++)
+                {
+                    inner[c] = "Cell " + r + "." + c;
+                }
+
+                list.Add(inner);
+            }
+
+            return list.ToArray();
+        }
+
     }
 }

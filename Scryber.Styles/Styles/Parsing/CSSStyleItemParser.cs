@@ -220,7 +220,7 @@ namespace Scryber.Styles.Parsing
                 
                 if (unitLength > 0)
                 {
-                    if (double.TryParse(part.Substring(0, part.Length - unitLength), out parsed))
+                    if (double.TryParse(part.Substring(0, part.Length - unitLength), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsed))
                     {
                         unit = new Unit(parsed * factor, PageUnits.Points);
                         return true;
