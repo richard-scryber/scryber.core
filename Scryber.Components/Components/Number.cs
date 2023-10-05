@@ -36,11 +36,15 @@ namespace Scryber.Components
 
         #region public double Value { get; set; }
 
+        private double _val;
         /// <summary>
         /// Gets or sets the bindable double value for this number
         /// </summary>
         [PDFAttribute("value")]
-        public double Value { get; set; }
+        public double Value {
+            get { return _val; }
+            set { _val = value; }
+        }
 
         #endregion
 

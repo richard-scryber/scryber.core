@@ -648,7 +648,7 @@ namespace Scryber.Core.UnitTests.Html
             //TextBegin at 3
 
             var pnum = pLine.Runs[4] as PDFTextRunCharacter;
-            Assert.AreEqual("£10.10", pnum.Characters);
+            Assert.AreEqual((10.10).ToString("£#0.00"), pnum.Characters);
 
             //TextEnd at 5
             //TextBegin at 6
@@ -882,7 +882,7 @@ namespace Scryber.Core.UnitTests.Html
             //TextBegin at 3
 
             var pnum = pLine.Runs[4] as PDFTextRunCharacter;
-            Assert.AreEqual("£10.10", pnum.Characters);
+            Assert.AreEqual((10.10).ToString("£#0.00"), pnum.Characters);
 
             //TextEnd at 5
             //TextBegin at 6

@@ -934,13 +934,13 @@ namespace Scryber.Core.UnitTests.Html
 <body style='padding:20pt;' >
     <div id='wrapper' >
         <label id='label1' class='label num' for='num1' title='Label' >Label 1</label>
-        <num   id='num1'   style='padding:10pt;' class='num' value='10.0' data-format='C' /><br/>
-        <num   id='num2'   data-format='£#0.00' >11.0</num><br/>
-        <page  id='pg1'    style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
-        <page  id='pg2'    for='label1' property='total' /><br/>
-        <time  id='time1'  style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
-        <time  id='time2'  datetime='2021-11-14 12:04:59' />
-        <time  id='time3'  >2021-11-24 14:59:59.002</time>
+        <num   id='num1'  style='padding:10pt;' class='num' value='10.0' data-format='C' /><br/>
+        <num   id='num2'  data-format='£#0.00' >11.0</num><br/>
+        <page  id='pg1'   style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
+        <page  id='pg2'   for='label1' property='total' /><br/>
+        <time  id='time1' style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
+        <time  id='time2' datetime='2021-11-14 12:04:59' />
+        <time  id='time3' >2021-11-24 14:59:59.002</time>
     </div>
 </body>
 </html>";

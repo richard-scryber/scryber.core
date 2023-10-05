@@ -58,7 +58,7 @@ namespace Scryber.Drawing
                 if (deg.EndsWith("deg"))
                     deg = deg.Substring(0, deg.Length - 3);
 
-                if (!double.TryParse(deg, out angle))
+                if (!double.TryParse(deg, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out angle))
                     return false;
 
                 colorStopIndex = 1;

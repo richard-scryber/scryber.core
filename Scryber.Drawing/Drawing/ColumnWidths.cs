@@ -159,7 +159,16 @@ namespace Scryber.Drawing
             if (null == this._widths || this._widths.Length == 0)
                 return string.Empty;
             else
-                return "[" + string.Join(" ", _widths) + "]";
+            {
+                var s = "[";
+                for(var i = 0; i < _widths.Length; i++)
+                {
+                    if (i > 0)
+                        s += " ";
+                    s += _widths[i].ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                return s + "]";
+            }
         }
 
         public static Unit[] GetEqualColumnWidths(Unit available, Unit alley, int colCount)
@@ -204,11 +213,11 @@ namespace Scryber.Drawing
                     one = UndefinedWidth;
                 else if(all[i].EndsWith("%"))
                 {
-                    one = double.Parse(all[i].Substring(0, all[i].Length - 1));
+                    one = double.Parse(all[i].Substring(0, all[i].Length - 1), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
                     one = one / 100.0;
                 }
                 else
-                    one = double.Parse(all[i]);
+                    one = double.Parse(all[i], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture);
 
                 sum += one;
                 if (sum > 1.0)

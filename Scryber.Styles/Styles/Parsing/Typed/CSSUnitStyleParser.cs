@@ -49,7 +49,7 @@ namespace Scryber.Styles.Parsing.Typed
                 result = (Unit)value;
                 return true;
             }
-            else if (Unit.TryParse(value.ToString(), out result))
+            else if (TryConvertToUnit(value, out result))
                 return true;
             else
                 return false;

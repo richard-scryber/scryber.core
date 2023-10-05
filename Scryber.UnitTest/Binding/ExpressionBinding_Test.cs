@@ -355,7 +355,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Binary Operators", name = "Bitwise Left (<<) ", function = "11 << 2", result = "44"},
                 new FunctionTest() {grp = "Binary Operators", name = "Bitwise Right (>>) ", function = "11 >> 2", result = "2"},
 
-                new FunctionTest() {grp = "Binary Operators", name = "Null Coalesce ", function = "model.number ?? 4", result = "20.7"},
+                new FunctionTest() {grp = "Binary Operators", name = "Null Coalesce ", function = "model.number ?? 4", result = (20.7).ToString()},
                 new FunctionTest() {grp = "Binary Operators", name = "Null Coalesce ", function = "model.notset ?? 4", result = "4"},
                 new FunctionTest() {grp = "Binary Operators", name = "Null Coalesce ", function = "notset ?? 'empty'", result = "empty"},
 
@@ -452,7 +452,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Logical Functions", name = "In", function = "In(12,10.0,11.1,12.2)", result = "False"},
                 new FunctionTest() {grp = "Logical Functions", name = "In", function = "In(12,model.array)", result = "True"},
 
-                new FunctionTest() {grp = "Mathematical Functions", name = "Abs", function = "abs(-12) + abs(model.number)", result = "32.7"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Abs", function = "abs(-12) + abs(model.number)", result = (32.7).ToString()},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Truncate", function = "truncate(Pi())", result = "3"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Truncate", function = "truncate(9.99999)", result = "9"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Round", function = "round(10.024)", result = Math.Round(10.024).ToString()},
@@ -460,18 +460,18 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Mathematical Functions", name = "Sign", function = "sign(30)", result = "1"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Sign", function = "sign(-300)", result = "-1"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Sign", function = "sign(0)", result = "0"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ACos", function = "round(ACos(-0.5),3)", result = "2.094"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ASin", function = "round(ASin(-0.5),3)", result = "-0.524"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "ATan", function = "round(ATan(2.0),3)", result = "1.107"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "ACos", function = "round(ACos(-0.5),3)", result = (2.094).ToString()},
+                new FunctionTest() {grp = "Mathematical Functions", name = "ASin", function = "round(ASin(-0.5),3)", result = (-0.524).ToString()},
+                new FunctionTest() {grp = "Mathematical Functions", name = "ATan", function = "round(ATan(2.0),3)", result = (1.107).ToString()},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Ceiling", function = "Ceiling(3.2)", result = "4"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Floor", function = "Floor(3.2)", result = "3"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "Cos", function = "round(Cos(2.094),1)", result = "-0.5"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "Sin", function = "round(Sin(-0.524),1)", result = "-0.5"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Cos", function = "round(Cos(2.094),1)", result = (-0.5).ToString()},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Sin", function = "round(Sin(-0.524),1)", result = (-0.5).ToString()},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Tan", function = "round(Tan(1.107),1)", result = "2"},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Deg", function = "round(deg(Pi),4)", result = "180"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "Rad", function = "round(rad(180),3)", result = "3.142"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "E", function = "round(E(),3)", result = "2.718"},
-                new FunctionTest() {grp = "Mathematical Functions", name = "Pi", function = "round(Pi,3)", result = "3.142"},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Rad", function = "round(rad(180),3)", result = (3.142).ToString()},
+                new FunctionTest() {grp = "Mathematical Functions", name = "E", function = "round(E(),3)", result = (2.718).ToString()},
+                new FunctionTest() {grp = "Mathematical Functions", name = "Pi", function = "round(Pi,3)", result = (3.142).ToString()},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Exp", function = "round(exp(3),3)", result = Math.Exp(3).ToString("#0.000")},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Log10", function = "round(Log10(30),3)", result = Math.Log10(30).ToString("#0.000")},
                 new FunctionTest() {grp = "Mathematical Functions", name = "Log (base 5)", function = "round(Log(30,5),3)", result = Math.Log(30,5).ToString("#0.000")},
@@ -487,8 +487,8 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Sum", function = "sum(model.array,13,14)", result = (13 + 14 + 10 + 11 + 12 ).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Max", function = "Max(model.array,13,14)", result = "14"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Min", function = "Min(model.array,13,14)", result = "10"},
-                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Average", function = "Average(model.array,13,1)", result = "9.4"},
-                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Mean", function = "Mean(model.array,13,1)", result = "9.4"},
+                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Average", function = "Average(model.array,13,1)", result = (9.4).ToString()},
+                new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Mean", function = "Mean(model.array,13,1)", result = (9.4).ToString()},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Mode", function = "Mode(model.array,13,1)", result = "10"},
                 new FunctionTest() {grp = "Aggregate and Statistical Functions", name = "Median", function = "Median(model.array,13,1)", result = "11"},
 
@@ -1280,20 +1280,20 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
                 //new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
 
-                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01 AM"},
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01AM"},
                 new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00 AM"},
-                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00 PM"},
-                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02 AM"},
-                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00 AM"},
-                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00 AM"},
-                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40 AM"},
-                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00AM"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00PM"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02AM"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00AM"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00AM"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40AM"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00AM"},
 
                 new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -1555,7 +1555,7 @@ namespace Scryber.Core.UnitTests.Binding
             cultureNumber = "-3456.56";
             cultureCurrency = "-$3,456.56";
             cutlureDate = "Tuesday, December 13, 2022";
-            cutlureTime = "10:45:59 PM";
+            cutlureTime = "10:45:59PM";
 
             data = new
             {

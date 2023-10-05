@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Core.UnitTests.Mocks;
+using System.Globalization;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -94,7 +95,7 @@ namespace Scryber.Core.UnitTests.Binding
                             <doc:String-Param id='title' value='" + expectedString + @"' />
                             <doc:Int-Param id='int' value='" + expectedInt + @"' />
                             <doc:Guid-Param id='guid' value='" + expectedGuid + @"' />
-                            <doc:Double-Param id='double' value='" + expectedDouble + @"' />
+                            <doc:Double-Param id='double' value='" + expectedDouble.ToString(CultureInfo.InvariantCulture) + @"' />
                             <doc:Bool-Param id='bool' value='" + expectedBool + @"' />
                             <doc:Date-Param id='date' value='" + expectedDate + @"' />
                             <doc:Unit-Param id='unit' value='" + expectedUnit+ @"' />
@@ -111,7 +112,7 @@ namespace Scryber.Core.UnitTests.Binding
                                            styles:border-style='{@:enum}' text='{@:title}'></doc:Label>
                                 <doc:Date value='{@:date}' />
                                 <doc:Number value='{@:int}' styles:font-bold='{@:bool}' />
-                                <doc:Number value='{@:double}' />
+                                <doc:Number value='{@:double}'  />
                             </Content>
                         </doc:Section>
 

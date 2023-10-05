@@ -46,12 +46,12 @@ namespace Scryber.Styles.Parsing.Typed
                 spacing = Unit.Empty;
                 return false;
             }
-            else if(value is Unit unit)
+            else if (value is string && (value as string).Equals("normal", StringComparison.InvariantCultureIgnoreCase))
             {
-                spacing = unit;
+                spacing = NormalSpacing;
                 return true;
             }
-            else if(TryGetLetterSpacing(value.ToString(), out spacing))
+            else if (TryConvertToUnit(value, out spacing))
             {
                 return true;
             }

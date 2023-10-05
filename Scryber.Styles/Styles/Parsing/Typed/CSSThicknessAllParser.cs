@@ -197,6 +197,11 @@ namespace Scryber.Styles.Parsing.Typed
                 converted = unit;
                 return true;
             }
+            else if (value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return CSSThicknessValueParser.ParseThicknessValue(str, Unit.Zero, out converted);
+            }
             else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.Zero, out converted))
             {
                 return true;

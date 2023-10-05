@@ -6,6 +6,7 @@ using Scryber.Drawing;
 using Scryber.Html;
 using Scryber.Text;
 using Scryber.Styles.Parsing.Typed;
+using System.Globalization;
 
 namespace Scryber.Styles.Parsing
 {
@@ -187,6 +188,30 @@ namespace Scryber.Styles.Parsing
 
         #endregion
 
+        public static bool TryConvertToUnit(object value, out Unit converted)
+        {
+            if(value is Unit)
+            {
+                converted = (Unit)value;
+                return true;
+            }
+            else if(value is string)
+            {
+                return Unit.TryParse((string)value, out converted);
+            }
+            else if(value is IFormattable)
+            {
+                var formattable = value as IFormattable;
+                var str = formattable.ToString(null, CultureInfo.InvariantCulture);
+                return Unit.TryParse(str, out converted);
+            }
+            else
+            {
+                var str = value.ToString();
+                return Unit.TryParse(str, out converted);
+            }
+        }
+
         #region public static bool ParseCSSUnit(string part, out PDFUnit unit)
 
         /// <summary>
@@ -220,14 +245,14 @@ namespace Scryber.Styles.Parsing
                 
                 if (unitLength > 0)
                 {
-                    if (double.TryParse(part.Substring(0, part.Length - unitLength), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsed))
+                    if (double.TryParse(part.Substring(0, part.Length - unitLength), NumberStyles.Any, CultureInfo.InvariantCulture, out parsed))
                     {
                         unit = new Unit(parsed * factor, PageUnits.Points);
                         return true;
                     }
                 }
             }
-            else if (double.TryParse(part, out parsed))
+            else if (double.TryParse(part, NumberStyles.Any, CultureInfo.InvariantCulture, out parsed))
             {
                 unit = new Unit(parsed, PageUnits.Points);
                 return true;

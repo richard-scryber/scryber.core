@@ -2141,6 +2141,31 @@ body.grey div.reverse{
             }
         }
 
+        [TestMethod]
+        public void ParseCSSRealValue()
+        {
+            var cssReal = @"
+                :root{
+                    --val: 2.5;
+                    --unit: 12pt;
+                }
+
+                .other{
+                    height: calc(concat(--val, 'pt'));
+                    letter-spacing: calc(--unit / 5);
+                }";
+
+            var doc = BuildDocumentWithStyles(cssReal);
+            doc.StyleClass = "other";
+            var applied = doc.GetAppliedStyle();
+
+            var unit = applied.Size.Height;
+            Assert.AreEqual("2.5pt", unit.ToString());
+
+            unit = applied.Text.CharacterSpacing;
+            Assert.AreEqual("2.4pt", unit.ToString());
+        }
+
 
         [TestMethod]
         public void ParseCssAllVariableProperties()

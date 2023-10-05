@@ -205,7 +205,22 @@ namespace Scryber.Drawing
 
         public override string ToString()
         {
-            return this.Value.ToString() + GetUnitString(this.Units);
+            return this.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            return this.ToString(null, provider);
+        }
+
+        public string ToString(string format)
+        {
+            return this.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public string ToString(string format, IFormatProvider provider)
+        {
+            return this.Value.ToString(format, provider) + GetUnitString(this.Units);
         }
 
         private static string GetUnitString(PageUnits pageUnits)

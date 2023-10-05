@@ -51,7 +51,7 @@ namespace Scryber.Styles.Parsing.Typed
                 width = unit;
                 return true;
             }
-            else if(Unit.TryParse(value.ToString(), out width))
+            else if(TryConvertToUnit(value, out width))
             {
                 return true;
             }

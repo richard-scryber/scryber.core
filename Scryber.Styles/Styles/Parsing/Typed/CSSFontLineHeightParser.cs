@@ -50,6 +50,11 @@ namespace Scryber.Styles.Parsing.Typed
                 result = unit;
                 return true;
             }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return TryParseLineHeight(onStyle, str, out result);
+            }
             else if(TryParseLineHeight(onStyle, value.ToString(), out result))
             {
                 return true;
@@ -67,7 +72,7 @@ namespace Scryber.Styles.Parsing.Typed
             double proportional;
 
             //special case of a single double value - is proportional to the current font size if set.
-            if (double.TryParse(value, out proportional))
+            if (double.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out proportional))
             {
                 StyleValue<Unit> fsize;
                 if (onStyle.TryGetValue(StyleKeys.FontSizeKey, out fsize))

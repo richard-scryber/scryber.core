@@ -50,6 +50,11 @@ namespace Scryber.Styles.Parsing.Typed
                 found = unit;
                 return true;
             }
+            else if(value is IFormattable)
+            {
+                var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+                return ParseThicknessValue(str, this.AutoValue, out found);
+            }
             else if (ParseThicknessValue(value.ToString(), this.AutoValue, out found))
             {
                 return true;

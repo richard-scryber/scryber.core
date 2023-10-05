@@ -71,7 +71,8 @@ namespace Scryber.Html.Components
             if (!string.IsNullOrEmpty(this.Text))
             {
                 double parsed;
-                if (double.TryParse(this.Text, out parsed))
+                //TODO: Use the lang attribute when converting the number
+                if (double.TryParse(this.Text, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsed))
                 {
                     this.Value = parsed;
                     return base.CreateReader(context, fullstyle);

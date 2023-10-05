@@ -683,7 +683,7 @@ namespace Scryber.Drawing
                 if(vals.Length >= 4)
                 {
                     double op;
-                    if (double.TryParse(vals[3], out op) && op >= 0.0 && op <= 1.0)
+                    if (double.TryParse(vals[3], NumberStyles.Any, CultureInfo.InvariantCulture, out op) && op >= 0.0 && op <= 1.0)
                     {
                         opacity = op;
                     }
