@@ -6,6 +6,7 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Svg.Components;
 using System.IO;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -241,18 +242,95 @@ namespace Scryber.Core.UnitTests.Html
             </svg>";
 
 
-            Component svg = null;
+            SVGCanvas svg = null;
             try
             {
                 var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
-                svg = (Component)component;
+                svg = (SVGCanvas)component;
                 Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
             }
             catch
             {
                 Assert.Fail("Svg image has not been parsed");
             }
-            
+
+            var grp = svg.Contents[1] as SVGGroup;
+            Assert.IsNotNull(grp);
+
+            var path = grp.Contents[0] as SVGPath;
+            Assert.IsNotNull(path);
+            Assert.IsNotNull(path.PathData);
+            Assert.AreEqual(1, path.PathData.Paths.Count);
+
+            var opPath = path.PathData.Paths[0];
+            Assert.AreEqual(3, opPath.Operations.Count);
+
+            var opMove = opPath.Operations[0] as PathMoveData;
+            Assert.IsNotNull(opMove);
+            Assert.AreEqual(503.1463, opMove.MoveTo.X.PointsValue);
+            Assert.AreEqual(120.0619, opMove.MoveTo.Y.PointsValue);
+
+            var opLineTo = opPath.Operations[1] as PathLineData;
+            Assert.IsNotNull(opLineTo);
+            Assert.AreEqual(503.7363, opLineTo.LineTo.X.PointsValue);
+            Assert.AreEqual(105.0735, opLineTo.LineTo.Y.PointsValue);
+
+            opLineTo = opPath.Operations[2] as PathLineData;
+            Assert.IsNotNull(opLineTo);
+            Assert.AreEqual(745, opLineTo.LineTo.X.PointsValue);
+            Assert.AreEqual(105.0735, opLineTo.LineTo.Y.PointsValue);
+
+            var origCult = System.Threading.Thread.CurrentThread.CurrentCulture;
+            var origUICult = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
+            //
+            //Switch to the german culture
+            //
+
+            var german = System.Globalization.CultureInfo.CreateSpecificCulture("de-DE");
+            System.Threading.Thread.CurrentThread.CurrentCulture = german;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = german;
+
+
+            svg = null;
+            try
+            {
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                svg = (SVGCanvas)component;
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+            }
+            catch
+            {
+                Assert.Fail("Svg image has not been parsed");
+            }
+
+            grp = svg.Contents[1] as SVGGroup;
+            Assert.IsNotNull(grp);
+
+            path = grp.Contents[0] as SVGPath;
+            Assert.IsNotNull(path);
+            Assert.IsNotNull(path.PathData);
+            Assert.AreEqual(1, path.PathData.Paths.Count);
+
+            opPath = path.PathData.Paths[0];
+            Assert.AreEqual(3, opPath.Operations.Count);
+
+            opMove = opPath.Operations[0] as PathMoveData;
+            Assert.IsNotNull(opMove);
+            Assert.AreEqual(503.1463, opMove.MoveTo.X.PointsValue);
+            Assert.AreEqual(120.0619, opMove.MoveTo.Y.PointsValue);
+
+            opLineTo = opPath.Operations[1] as PathLineData;
+            Assert.IsNotNull(opLineTo);
+            Assert.AreEqual(503.7363, opLineTo.LineTo.X.PointsValue);
+            Assert.AreEqual(105.0735, opLineTo.LineTo.Y.PointsValue);
+
+            opLineTo = opPath.Operations[2] as PathLineData;
+            Assert.IsNotNull(opLineTo);
+            Assert.AreEqual(745, opLineTo.LineTo.X.PointsValue);
+            Assert.AreEqual(105.0735, opLineTo.LineTo.Y.PointsValue);
+
+
             var doc = new Document();
             var pg = new Page();
             doc.Pages.Add(pg);
@@ -269,6 +347,28 @@ namespace Scryber.Core.UnitTests.Html
                 };
                 doc.SaveAsPDF(stream);
             }
+
+            Assert.IsNotNull(layout);
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var first = layout.AllPages[0];
+            Assert.AreEqual(1, first.ContentBlock.Columns.Length);
+            var reg = first.ContentBlock.Columns[0];
+            Assert.AreEqual(1, reg.Contents.Count);
+            var line = reg.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+
+            var run = line.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(run);
+
+            var posReg = run.Region;
+            Assert.IsNotNull(posReg);
+
+            Assert.AreEqual(1, posReg.Contents.Count);
+            Assert.AreEqual(svg, posReg.Owner);
+
+            System.Threading.Thread.CurrentThread.CurrentUICulture = origUICult;
+            System.Threading.Thread.CurrentThread.CurrentCulture = origCult;
         }
 
     }

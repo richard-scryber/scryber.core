@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.3.0-beta</PackageVersion>
+    <PackageVersion>6.0.3.1-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
@@ -13,6 +13,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.3.1-beta
+Minor fix for transforming svg components (that do not have explict position values).
+
 6.0.3.0-beta
 Added fixes for parsing (x)html content on systems not running the english culture. All numeric values are expected to be in english decimal notation - e.g. 1,0234.56 for values in CSS, styles, svg etc.
 Unit testing works for non-english. May be a couple of values / options missed but hoping not.

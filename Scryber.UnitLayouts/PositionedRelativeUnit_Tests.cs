@@ -266,7 +266,7 @@ namespace Scryber.UnitLayouts
 
             
             //Check the dimensions for the region as transformed
-            Assert.AreEqual(310, posRegion.TotalBounds.Height);
+            Assert.AreEqual(480, posRegion.TotalBounds.Height);
             Assert.AreEqual(450, posRegion.TotalBounds.Width);
 
             var block = posRegion.Contents[0] as PDFLayoutBlock;

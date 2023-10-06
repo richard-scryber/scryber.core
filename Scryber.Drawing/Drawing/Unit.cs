@@ -894,15 +894,16 @@ namespace Scryber.Drawing
             offset = end;
 
             var valueForParsing = value.Substring(start, end - start);
-            
-            if (double.TryParse(valueForParsing, out var d1))
-            {
-                return d1;
-            }
+
             if (double.TryParse(valueForParsing, NumberStyles.Any, CultureInfo.InvariantCulture, out var d2))
             {
                 return d2;
             }
+            if (double.TryParse(valueForParsing, out var d1))
+            {
+                return d1;
+            }
+            
             
             throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
 

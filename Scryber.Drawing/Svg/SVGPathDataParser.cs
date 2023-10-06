@@ -551,7 +551,7 @@ namespace Scryber.Svg
                 RaiseError("No required argument found for pdf unit in '" + cmd + "' command");
                 return false;
             }
-            else if (double.TryParse(args[arrayIndex], out parsed) == false)
+            else if (double.TryParse(args[arrayIndex], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsed) == false)
             {
                 RaiseError("Could not parse the string '" + args[arrayIndex] + "' into a valid unit value");
                 return false;
