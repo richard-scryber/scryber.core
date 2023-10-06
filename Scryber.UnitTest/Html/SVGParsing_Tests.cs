@@ -240,15 +240,34 @@ namespace Scryber.Core.UnitTests.Html
               </g>
             </svg>";
 
+
+            Component svg = null;
             try
             {
                 var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
-                var svg = (Component)component;
+                svg = (Component)component;
                 Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
             }
             catch
             {
                 Assert.Fail("Svg image has not been parsed");
+            }
+            
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.PaperOrientation = PaperOrientation.Landscape;
+            pg.Contents.Add(svg);
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGInvariant.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
             }
         }
 

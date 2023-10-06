@@ -1100,7 +1100,7 @@ namespace Scryber.PDF.Layout
             {
                 //again if we have a y value add this.
                 yshift += pos.Y.Value;
-                height += pos.X.Value;
+                height += pos.Y.Value;
             }
 
             //Set the transformed offset of the block to xshift and yshift (which will be applied in the block rendering.
