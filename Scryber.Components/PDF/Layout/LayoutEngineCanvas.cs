@@ -44,36 +44,80 @@ namespace Scryber.PDF.Layout
         {
         }
 
-        
-        protected override void DoLayoutChildren()
+        protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
             PDFLayoutXObject canvas = null;
+            Size viewSize;
+            Unit? outputWidth = null;
+            Unit? outputHeight = null;
+
             if (position.ViewPort.HasValue)
             {
                 canvas = this.ApplyViewPort(position, position.ViewPort.Value);
+                viewSize = position.ViewPort.Value.Size;
+                outputWidth = position.Width;
+                outputHeight = position.Height;
+
+                position.Width = viewSize.Width;
+                position.Height = viewSize.Height;
             }
 
-            base.DoLayoutChildren();
+            base.DoLayoutBlockComponent(position, columnOptions);
 
-            if (null != canvas)
+            if(null != canvas)
             {
                 canvas.Close();
 
-                this.CloseCurrentLine();
-
                 canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
                 var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
+
                 var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
 
                 var size = new Size(canvas.Width, canvas.Height);
                 canvas.Matrix = CalculateMatrix(size, position.ViewPort.Value, ratio);
+
                 canvas.ClipRect = new Rect(position.X ?? Unit.Zero,
                                               position.Y ?? Unit.Zero,
                                               canvas.Width, canvas.Height);
                 this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
+
                 this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
+
+                position.Width = outputWidth;
+                position.Height = outputHeight;
             }
+        }
+
+
+        protected override void DoLayoutChildren()
+        {
+            //PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
+            //PDFLayoutXObject canvas = null;
+            //if (position.ViewPort.HasValue)
+            //{
+            //    canvas = this.ApplyViewPort(position, position.ViewPort.Value);
+            //}
+
+            base.DoLayoutChildren();
+
+            //if (null != canvas)
+            //{
+            //    canvas.Close();
+
+            //    this.CloseCurrentLine();
+
+            //    canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
+            //    var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
+            //    var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
+
+            //    var size = new Size(canvas.Width, canvas.Height);
+            //    canvas.Matrix = CalculateMatrix(size, position.ViewPort.Value, ratio);
+            //    canvas.ClipRect = new Rect(position.X ?? Unit.Zero,
+            //                                  position.Y ?? Unit.Zero,
+            //                                  canvas.Width, canvas.Height);
+            //    this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
+            //    this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
+            //}
         }
 
 
