@@ -371,5 +371,64 @@ namespace Scryber.Core.UnitTests.Html
             System.Threading.Thread.CurrentThread.CurrentCulture = origCult;
         }
 
+
+        [TestMethod]
+        public void SVGWithOverflowClipping()
+        {
+            var svgString = "";
+
+            try
+            {
+                var path = System.Environment.CurrentDirectory;
+                path = System.IO.Path.Combine(path, "../../../Content/SVG/Chart.svg");
+                svgString = System.IO.File.ReadAllText(path);
+
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                var svg = (SVGCanvas)component;
+
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+
+                using var doc = new Document()
+                {
+                    AppendTraceLog = false
+                };
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Diagnostic);
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                var pg = new Page();
+                doc.Pages.Add(pg);
+                pg.Contents.Add(svg);
+                svg.OverflowAction = OverflowAction.Clip;
+
+                foreach (VisualComponent item in svg.Contents)
+                {
+                    item.Style.Overflow.Action = OverflowAction.Clip;
+                }
+                var gStyle = new StyleDefn("g");
+                gStyle.Overflow.Action = OverflowAction.Clip;
+                
+                doc.Styles.Add(gStyle);
+                
+
+                PDF.Layout.PDFLayoutDocument layout = null;
+                //Output the document (including databinding the data content)
+                using (var stream = DocStreams.GetOutputStream("SVGViewboxOverflow.pdf"))
+                {
+                    doc.LayoutComplete += (sender, args) =>
+                    {
+                        layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                    };
+                    doc.SaveAsPDF(stream);
+                }
+            }
+            catch(Exception ex)
+            {
+                Assert.Fail("Svg image has not been parsed : " + ex);
+            }
+        }
+
     }
+
+
+
 }

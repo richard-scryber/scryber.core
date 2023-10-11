@@ -94,7 +94,10 @@ namespace Scryber.PDF.Layout
                 SVGAspectRatio.ApplyUniformStretching(matrix, available, view, ratio.Align);
             }
             else throw new ArgumentOutOfRangeException(nameof(ratio));
-            
+
+            if (this.Context.ShouldLogVerbose)
+                this.Context.TraceLog.Add(TraceLevel.Verbose, "Canvas", "Set the XObject transformation matrix to " + matrix.ToString());
+
             return matrix;
         }
 

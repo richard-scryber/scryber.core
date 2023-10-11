@@ -247,7 +247,10 @@ namespace Scryber.PDF.Layout
 #endregion
 
 
-
+        /// <summary>
+        /// Updates any counters on the style - either reset or increment
+        /// </summary>
+        /// <param name="style"></param>
         protected virtual void EnsureCounterUpdatesForStyle(Style style)
         {
             StyleValue<CounterStyleValue> reset;
@@ -275,6 +278,15 @@ namespace Scryber.PDF.Layout
         }
 
 
+        #region protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
+
+        /// <summary>
+        /// Resets a counter on a list item, or a component where the counter exists.
+        /// </summary>
+        /// <param name="counter">The counter to reset</param>
+        /// <param name="current">The current component for the counter</param>
+        /// <param name="resetIfNotFound">If true (default) then if the counter is not found in the component hierarchy, then it is set on the current component to the value</param>
+        /// <returns>True if a counter was reset</returns>
         protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
         {
             if (current.Type == ObjectTypes.OrderedList || current.Type == ObjectTypes.UnorderedList)
@@ -309,7 +321,17 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        #endregion
 
+        #region protected bool IncrementACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = false)
+
+        /// <summary>
+        /// Increments a counter on the current component, or a parent component where the counter is defined.
+        /// </summary>
+        /// <param name="counter">The counter (with name) to increment</param>
+        /// <param name="current">The current component the increment style is set on</param>
+        /// <param name="resetIfNotFound">If true then the counter will be reset and incremented on the current component if, and only if it is not found in the heirarchy. By default this is false.</param>
+        /// <returns>True if a counter was incremented</returns>
         protected bool IncrementACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = false)
         {
             var comp = current;
@@ -334,6 +356,8 @@ namespace Scryber.PDF.Layout
                 return false;
 
         }
+
+        #endregion
 
 
         //
@@ -2078,6 +2102,7 @@ namespace Scryber.PDF.Layout
 
                 linetoAddTo.AddComponentRun(component, total, border, content, total.Height, options, style);
                 //Close the current line because we are not inline
+
                 linetoAddTo.Region.CloseCurrentItem();
             }
             else

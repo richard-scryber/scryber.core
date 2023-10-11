@@ -149,7 +149,7 @@ namespace Scryber.Drawing
 
         public override string ToString()
         {
-            return $"[{Math.Round(_m11, 4)}, {Math.Round(_m12, 4)}, {Math.Round(_m21, 4)}, {Math.Round(_m22, 4)},{Math.Round(_dx, 4)},{Math.Round(_dy, 4)}]";
+            return $"[{Math.Round(_m11, 4)}, {Math.Round(_m12, 4)}, {Math.Round(_m21, 4)}, {Math.Round(_m22, 4)}, {Math.Round(_dx, 4)}, {Math.Round(_dy, 4)}]";
         }
 
         //operator methods

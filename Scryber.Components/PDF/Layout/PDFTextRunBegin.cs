@@ -395,6 +395,11 @@ namespace Scryber.PDF.Layout
             context.Graphics.SaveGraphicsState();
             context.Graphics.BeginText();
 
+            var block = this.GetParentBlock();
+
+            //if (null != block && block.Position != null && block.Position.TransformMatrix != null)
+            //    context.Graphics.SetTransformationMatrix(block.Position.TransformMatrix, true, false);
+
             context.Graphics.SetTextRenderOptions(this.TextRenderOptions, bounds);
             if (_hascustomspace && this.TextRenderOptions.CharacterSpacing.HasValue == false && this.TextRenderOptions.WordSpacing.HasValue == false)
                 context.Graphics.SetTextSpacing(this._wordspace, this._charspace, this.TextRenderOptions.Font.Size);

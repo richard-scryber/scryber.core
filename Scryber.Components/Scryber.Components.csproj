@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.3.1-beta</PackageVersion>
+    <PackageVersion>6.0.3.2-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
@@ -13,6 +13,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+6.0.3.2-beta
+Fix for prioritising parsing unit values in invariant culture on OS's set to non-invariant culture.
+
 6.0.3.1-beta
 Minor fix for transforming svg components (that do not have explict position values).
 
