@@ -156,7 +156,7 @@ namespace Scryber.PDF.Layout
             //update to new widths
             newpos.Width = viewPort.Width;
             newpos.Height = viewPort.Height;
-
+            
             //Set the style values to the viewport too. (and reset the cache)
 
             this.FullStyle.Size.Width = newpos.Width.Value;

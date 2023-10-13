@@ -79,7 +79,73 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod]
+        public void SVGSmileysXMidYMid()
+        {
+            //Set the width and the height of the svg output to 50x25 and scale the inner content to be centered, centered
 
+            var src = @"<svg xmlns=""http://www.w3.org/2000/svg""
+                        id=""smileyWrapper"" width=""50pt"" height=""25pt"" viewBox=""0 0 100 100""
+                        style=""background-color:#5555FF; display:inline;"" preserveAspectRatio=""xMidYMid"">
+            <path id=""smiley"" fill=""yellow"" stroke=""black"" stroke-width=""8pt"" stroke-linecap=""round"" stroke-linejoin=""round""
+                  d=""M50,10 A40,40,1,1,1,50,90 A40,40,1,1,1,50,10 M30,40 Q36,35,42,40 M58,40 Q64,35,70,40 M30,60 Q50,75,70,60 Q50,75,30,60"" />
+        </svg>";
+
+            using var sr = new StringReader(src);
+            var svg = Document.Parse(sr, ParseSourceType.DynamicContent) as Component;
+
+            using (var doc = new Document())
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                var pg = new Page();
+                doc.Pages.Add(pg);
+                pg.Style.OverlayGrid.ShowGrid = true;
+                pg.Style.OverlayGrid.GridSpacing = 25;
+                pg.Style.Text.Leading = 25;
+                pg.Style.Font.FontSize = 20;
+
+                var div = new Div()
+                {
+                    Margins = new Thickness(25),
+                    BorderColor = StandardColors.Aqua,
+                    BorderWidth = 1,
+                };
+                div.Contents.Add("Before the image");
+                div.Contents.Add(new Image() { Source = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png",
+                                               PositionMode = PositionMode.Inline, Height = 25 });
+                div.Contents.Add("After the image");
+                pg.Contents.Add(div);
+
+                div = new Div()
+                {
+                    Margins = new Thickness(25),
+                    BorderColor = StandardColors.Aqua,
+                    BorderWidth = 1,
+                };
+                div.Contents.Add("Before the SVG");
+                div.Contents.Add(svg);
+                div.Contents.Add("After the SVG");
+                pg.Contents.Add(div);
+
+                pg.Contents.Add("After the Div");
+                PDFLayoutDocument layout = null;
+
+                using (var stream = DocStreams.GetOutputStream("SVGSmileyXMidYMid.pdf"))
+                {
+                    doc.LayoutComplete += (sender, args) =>
+                    {
+                        layout = args.Context.GetLayout<PDFLayoutDocument>();
+                    };
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.IsNotNull(layout);
+
+            }
+
+        }
+
+        
         [TestMethod]
         public void SVGComponents()
         {

@@ -47,7 +47,10 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The total bounds of the component
         /// </summary>
-        public Rect TotalBounds { get; set; }
+        public Rect TotalBounds {
+            get;
+            set;
+        }
 
         #endregion
 

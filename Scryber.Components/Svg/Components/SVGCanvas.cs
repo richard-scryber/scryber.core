@@ -220,5 +220,44 @@ namespace Scryber.Svg.Components
             found = null;
             return false;
         }
+
+        protected override void DoInitChildren(InitContext context)
+        {
+            base.DoInitChildren(context);
+
+            if(null != this._definitions)
+            {
+                foreach (var item in this._definitions)
+                {
+                    item.Init(context);
+                }
+            }
+        }
+
+        protected override void DoLoadChildren(LoadContext context)
+        {
+            base.DoLoadChildren(context);
+
+            if( null != this._definitions)
+            {
+                foreach (var item in this._definitions)
+                {
+                    item.Load(context);
+                }
+            }
+        }
+
+        protected override void DoDataBindChildren(DataContext context)
+        {
+            base.DoDataBindChildren(context);
+
+            if (null != this._definitions)
+            {
+                foreach (var item in this._definitions)
+                {
+                    item.DataBind(context);
+                }
+            }
+        }
     }
 }

@@ -243,7 +243,9 @@ namespace Scryber.PDF.Layout
             bool updateSize = false;
             Size updated = block.Size;
 
-            
+            if (block.IsFormXObject)
+                return;
+
 
             if (block.Position.MinimumHeight.HasValue && block.Height < block.Position.MinimumHeight.Value)
             {

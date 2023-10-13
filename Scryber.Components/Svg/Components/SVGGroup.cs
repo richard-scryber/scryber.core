@@ -35,18 +35,18 @@ namespace Scryber.Svg.Components
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             var style = base.GetAppliedStyle(forComponent, baseStyle);
-            //style.Overflow.Action = Drawing.OverflowAction.Clip;
-            style.Overflow.Action = Drawing.OverflowAction.None;
+            style.Overflow.Action = Drawing.OverflowAction.Clip;
+            //style.Overflow.Action = Drawing.OverflowAction.None;
             //style.Overflow.Split = Drawing.OverflowSplit.Never;
             return style;
         }
 
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDF.PDFLayoutContext context, Style fullstyle)
         {
-            fullstyle.Overflow.Split = Drawing.OverflowSplit.Never;
-            fullstyle.Overflow.Action = Drawing.OverflowAction.None; 
+            //fullstyle.Overflow.Split = Drawing.OverflowSplit.Never;
+            //fullstyle.Overflow.Action = Drawing.OverflowAction.None; 
             //return new LayoutEnginePanel(this, parent);
-            return new LayoutEngineCanvas(this, parent);
+            return new LayoutEnginePanel(this, parent);
         }
     }
 }

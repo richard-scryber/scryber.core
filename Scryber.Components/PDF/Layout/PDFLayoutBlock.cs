@@ -773,7 +773,7 @@ namespace Scryber.PDF.Layout
             {
                 foreach (PDFLayoutPositionedRegion reg in this.PositionedRegions)
                 {
-                    if (reg.PositionMode == PositionMode.Relative || reg.PositionOptions.FloatMode != FloatMode.None)
+                    if ((reg.PositionMode == PositionMode.Relative && reg.AssociatedRun != null) || reg.PositionOptions.FloatMode != FloatMode.None)
                     {
                         Rect content = reg.TotalBounds;
                         Size bottomright = new Size(content.X + content.Width, content.Y + content.Height);

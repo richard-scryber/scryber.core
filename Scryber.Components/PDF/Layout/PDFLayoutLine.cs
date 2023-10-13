@@ -738,6 +738,12 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutXObject xobject = new PDFLayoutXObject(this, container, options, component);
             this.Runs.Add(xobject);
+
+            if(options.PositionMode == PositionMode.Inline || options.PositionMode == PositionMode.InlineBlock)
+            {
+                xobject.SetOffsetY(this.OffsetY);
+                xobject.SetOffsetX(this.Width);
+            }
             return xobject;
         }
 

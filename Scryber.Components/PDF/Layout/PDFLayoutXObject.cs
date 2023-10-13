@@ -47,6 +47,7 @@ namespace Scryber.PDF.Layout
 
         private Unit? _explicitH;
         private Unit? _explicitW;
+        private Unit? _xoffset;
 
         public override Unit Height
         {
@@ -99,6 +100,11 @@ namespace Scryber.PDF.Layout
         public PDFName OutPutName { get; set; }
 
 
+        public void SetOffsetX(Unit xoffset)
+        {
+            this._xoffset += xoffset;
+        }
+
         /// <summary>
         /// This will render the transformation matrix and then the XObject name operation.
         /// </summary>
@@ -114,6 +120,8 @@ namespace Scryber.PDF.Layout
 
 
                 var x = context.Offset.X.RealValue;
+                if (_xoffset.HasValue) { x += _xoffset.Value.RealValue; }
+
                 x = context.Graphics.GetXPosition(x);
 
                 var y = (context.Offset.Y + this.Height).RealValue;
