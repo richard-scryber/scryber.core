@@ -24,6 +24,29 @@ namespace Scryber.Svg.Components
         [PDFAttribute("y")]
         public override Unit Y { get => base.Y; set => base.Y = value; }
 
+
+        [PDFAttribute("text-anchor")]
+        public TextAnchor TextAnchor
+        {
+            get
+            {
+                StyleValue<TextAnchor> value;
+                if (this.Style.TryGetValue(StyleKeys.TextAnchorKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return TextAnchor.Start;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TextAnchorKey, value);
+            }
+        }
+
+        public void RemoveTextAnchor()
+        {
+            this.Style.RemoveValue(StyleKeys.TextAnchorKey);
+        }
+
         private TextLiteralList _inner;
 
         [PDFElement()]

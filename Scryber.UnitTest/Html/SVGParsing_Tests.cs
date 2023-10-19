@@ -225,7 +225,7 @@ namespace Scryber.Core.UnitTests.Html
         {
             var svgString = @"
             <svg width=""1000"" height=""400"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""position:absolute;left:0;top:0;user-select:none"">
-              <rect width=""1000"" height=""400"" x=""0"" y=""0"" id=""0"" fill=""none"" fill-opacity=""1""></rect>
+              <rect width=""1000"" height=""400"" x=""0"" y=""0"" id=""0"" fill=""red"" fill-opacity=""1""></rect>
               <g>
                 <path d=""M503.1463 120.0619L503.7363 105.0735L745 105.0735"" fill=""none"" stroke=""#5470c6""></path>
                 <path d=""M504.3059 279.884L505.1132 294.8623L649 294.8623"" fill=""none"" stroke=""#91cc75""></path>
@@ -424,6 +424,70 @@ namespace Scryber.Core.UnitTests.Html
             catch(Exception ex)
             {
                 Assert.Fail("Svg image has not been parsed : " + ex);
+            }
+        }
+
+        [TestMethod]
+        public void SVGTextAnchorOptions()
+        {
+            var svgString = @"
+            <svg width=""500"" height=""400""
+                xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full""
+                style=""position:absolute;left:10;top:10;user-select:none; border: solid 1px navy;"">
+                <rect width=""100"" height=""100"" x=""100"" y=""50"" id=""anchor-test"" fill=""blue"" fill-opacity=""1""></rect>
+                <path d=""M 250 0 L250 200"" fill=""none"" stroke=""#5470c6"" stroke-width=""2""></path>
+                <g>
+              
+                <text x=""250"" y=""50"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Start</text>
+              <text x=""250"" y=""80"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Middle</text>
+              <text x=""250"" y=""110"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">End</text>
+</g>
+            </svg>";
+
+
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+            Assert.IsNotNull(svg);
+
+            Assert.AreEqual(3, svg.Contents.Count);
+            var group = svg.Contents[2] as SVGGroup;
+            Assert.IsNotNull(group);
+
+            Assert.AreEqual(3, group.Contents.Count);
+            var txt = group.Contents[0] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
+
+            txt = group.Contents[1] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(TextAnchor.Middle, txt.TextAnchor);
+
+            txt = group.Contents[2] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
+
+            svg.OverflowAction = OverflowAction.Clip;
+            
+
+            using var doc = new Document();
+            doc.AppendTraceLog = true;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGTextAnchor.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
             }
         }
 

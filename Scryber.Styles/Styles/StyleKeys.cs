@@ -292,6 +292,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
+        public static readonly StyleKey<TextAnchor> TextAnchorKey = StyleKey.InternalCreateStyleValueKey<TextAnchor>((ObjectType)"txta", PositionItemKey);
+
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);

@@ -309,6 +309,27 @@ namespace Scryber.Drawing
 
     }
 
+    /// <summary>
+    /// Defines the location of the rendered character in a text block, based on the x value.
+    /// </summary>
+    public enum TextAnchor
+    {
+        /// <summary>
+        /// An x value defines the starting point of the rendered characters.
+        /// </summary>
+        Start,
+
+        /// <summary>
+        /// An x value defines the middle point of the rendered characters.
+        /// </summary>
+        Middle,
+
+        /// <summary>
+        /// An x value defines the end point of the rendered characters.
+        /// </summary>
+        End
+    }
+
     public enum OverflowAction
     {
         /// <summary>
