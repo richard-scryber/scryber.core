@@ -455,6 +455,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(group);
 
             Assert.AreEqual(4, group.Contents.Count);
+
             var txt = group.Contents[0] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
@@ -476,7 +477,7 @@ namespace Scryber.Core.UnitTests.Html
             
 
             using var doc = new Document();
-            doc.AppendTraceLog = true;
+            doc.AppendTraceLog = false;
             doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
