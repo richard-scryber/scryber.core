@@ -434,14 +434,15 @@ namespace Scryber.Core.UnitTests.Html
             <svg width=""500"" height=""400""
                 xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full""
                 style=""position:absolute;left:10;top:10;user-select:none; border: solid 1px navy;"">
-                <rect width=""100"" height=""100"" x=""100"" y=""50"" id=""anchor-test"" fill=""blue"" fill-opacity=""1""></rect>
-                <path d=""M 250 0 L250 200"" fill=""none"" stroke=""#5470c6"" stroke-width=""2""></path>
+                <path d=""M 100 50 L400 50 M 100 80 L 400 80 M 100 110 L 400 110 M 100 140 L 400 140"" fill=""none"" stroke=""#5470c6"" stroke-width=""0.5""></path>
+                <path d=""M 250 0 L250 200"" fill=""none"" stroke=""#5470c6"" stroke-width=""0.5""></path>
                 <g>
               
-                <text x=""250"" y=""50"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Start</text>
-              <text x=""250"" y=""80"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Middle</text>
-              <text x=""250"" y=""110"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">End</text>
-</g>
+                  <text x=""250"" y=""50"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Start</text>
+                  <text x=""250"" y=""80"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">Middle</text>
+                  <text x=""250"" y=""110"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" fill=""black"">End</text>
+                  <text x=""250"" y=""140"" style=""font-size:12px;font-family:sans-serif;text-anchor:middle"" fill=""black"">CSS Middle</text>
+                </g>
             </svg>";
 
 
@@ -453,7 +454,7 @@ namespace Scryber.Core.UnitTests.Html
             var group = svg.Contents[2] as SVGGroup;
             Assert.IsNotNull(group);
 
-            Assert.AreEqual(3, group.Contents.Count);
+            Assert.AreEqual(4, group.Contents.Count);
             var txt = group.Contents[0] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
@@ -465,6 +466,11 @@ namespace Scryber.Core.UnitTests.Html
             txt = group.Contents[2] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
+
+            //Set via CSS
+            txt = group.Contents[3] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(TextAnchor.Middle, txt.TextAnchor);
 
             svg.OverflowAction = OverflowAction.Clip;
             

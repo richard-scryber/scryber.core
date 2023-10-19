@@ -292,8 +292,7 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
-        public static readonly StyleKey<TextAnchor> TextAnchorKey = StyleKey.InternalCreateStyleValueKey<TextAnchor>((ObjectType)"txta", PositionItemKey);
-
+        
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);
@@ -384,6 +383,8 @@ namespace Scryber.Styles
         public static readonly StyleKey<char> TextHyphenationCharAppend = StyleKey.InternalCreateStyleValueKey<char>((ObjectType)"chrb", TextItemKey);
 
         public static readonly StyleKey<char> TextHyphenationCharPrepend = StyleKey.InternalCreateStyleValueKey<char>((ObjectType)"chra", TextItemKey);
+
+        public static readonly StyleKey<TextAnchor> TextAnchorKey = StyleKey.InternalCreateStyleValueKey<TextAnchor>((ObjectType)"txta", TextItemKey);
 
         //List
 
