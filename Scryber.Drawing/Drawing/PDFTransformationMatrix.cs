@@ -41,6 +41,8 @@ namespace Scryber.Drawing
             get { return _matrix.IsIdentity; }
         }
 
+        public MatrixTransformTypes Transformations {  get { return _matrix.TransformTypes; } }
+
         public PDFTransformationMatrix()
         {
             _matrix = Scryber.Drawing.Matrix2D.Identity;
@@ -58,7 +60,6 @@ namespace Scryber.Drawing
         {
             this._matrix = matrix;
         }
-
         
 
         public void SetTranslation(Unit offsetX, Unit offsetY)

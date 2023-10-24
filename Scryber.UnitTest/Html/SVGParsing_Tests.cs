@@ -498,8 +498,65 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+
+        [TestMethod]
+        public void SVGTextAnchorChart()
+        {
+            var svgString = @"
+            <svg width=""951"" height=""752"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 951 752"">
+<rect width=""951"" height=""752"" x=""0"" y=""0"" id=""0"" fill=""none""></rect>
+<polyline points=""214.9 112.4 227.9 104.9 242.9 104.9"" fill=""none"" stroke=""#5470c6""></polyline>
+<polyline points=""173.3 221.3 177.9 235.6 192.9 235.6"" fill=""none"" stroke=""#91cc75""></polyline>
+<polyline points=""87 190.7 74.4 198.8 59.4 198.8"" fill=""none"" stroke=""#fac858""></polyline>
+<polyline points=""83.8 114.8 70.5 107.8 55.5 107.8"" fill=""none"" stroke=""#ee6666""></polyline>
+<polyline points=""127.9 78.3 123.4 64 108.4 64"" fill=""none"" stroke=""#73c0de""></polyline>
+<path d=""M150 75A75 75 0 0 1 215.0266 187.3702L150 150Z"" fill=""rgb(84,112,198)""></path>
+<path d=""M215.0266 187.3702A75 75 0 0 1 119.5358 218.5342L150 150Z"" fill=""#91cc75""></path>
+<path d=""M119.5358 218.5342A75 75 0 0 1 75.0011 149.5882L150 150Z"" fill=""rgb(250,200,88)""></path>
+<path d=""M75.0011 149.5882A75 75 0 0 1 107.7157 88.0562L150 150Z"" fill=""#ee6666""></path>
+<path d=""M107.7157 88.0562A75 75 0 0 1 150 75L150 150Z"" fill=""#73c0de""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(247.8973 104.9222)"" fill=""black"">Sear...</text>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(197.9226 235.5589)"" fill=""black"">Direct</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(54.4 198.8328)"" fill=""black"">Email</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(50.5333 107.7502)"" fill=""black"">Unio...</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" transform=""translate(103.4475 64.006)"" fill=""black"">Video Ads</text>
+</svg>";
+
+
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+            Assert.IsNotNull(svg);
+
+            
+
+            svg.OverflowAction = OverflowAction.Clip;
+
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGTextAnchorChart.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+        }
+
     }
 
-
-
 }
+
+
+
