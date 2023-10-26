@@ -33,7 +33,7 @@ namespace Scryber.Svg.Components
 
         protected override void OnPreLayout(LayoutContext context)
         {
-            Rect rect = GetBounds();
+            Rect rect = GetRectBounds();
 
             this.X = rect.X;
             this.Y = rect.Y;
