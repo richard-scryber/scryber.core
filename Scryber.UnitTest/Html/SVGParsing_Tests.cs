@@ -500,6 +500,134 @@ namespace Scryber.Core.UnitTests.Html
 
 
         [TestMethod]
+        public void SVGTextDominantBaselineOptions()
+        {
+            var svgString = @"<svg
+                              width=""400""
+                              height=""550""
+                              viewBox=""0 0 400 550""
+                              xmlns=""http://www.w3.org/2000/svg"">
+                              <!-- Materialization of anchors -->
+                              <path
+                                d=""M60,20 L60,470
+                                       M30,20 L400,20
+                                       M30,70 L400,70
+                                       M30,120 L400,120
+                                       M30,170 L400,170
+                                       M30,220 L400,220
+                                       M30,270 L400,270
+	                               M30,320 L400,320
+                                       M30,370 L400,370
+                                       M30,420 L400,420
+                                       M30,470 L400,470
+	                               ""
+                                stroke=""grey"" />
+
+                              <!-- Anchors in action -->
+                              <text dominant-baseline=""auto"" x=""70"" y=""20"">auto</text>
+                              <text dominant-baseline=""middle"" x=""70"" y=""70"">middle</text>
+                              <text dominant-baseline=""central"" x=""70"" y=""120"">central</text>
+                              <text dominant-baseline=""hanging"" x=""70"" y=""170"">hanging</text>
+                              <text dominant-baseline=""mathematical"" x=""70"" y=""220"">mathematical</text>
+                              <text dominant-baseline=""text-top"" x=""70"" y=""270"" >text-top</text>
+                              <text dominant-baseline=""ideographic"" x=""70"" y=""320"">ideographic</text>
+                              <text dominant-baseline=""alphabetic"" x=""70"" y=""370"">alphabetic</text>
+                              <text dominant-baseline=""text-after-edge"" x=""70"" y=""420"">text-after-edge</text>
+                              <text dominant-baseline=""text-before-edge"" x=""70"" y=""470"" >text-before-edge</text>
+
+                              <!-- Materialization of anchors -->
+                              <circle cx=""60"" cy=""20"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""70"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""120"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""170"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""220"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""270"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""320"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""370"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""420"" r=""3"" fill=""red"" />
+                              <circle cx=""60"" cy=""470"" r=""3"" fill=""red"" />
+
+                              <style>
+                                <![CDATA[
+                                  body{ padding: 20px}
+                                  text {
+                                    font: bold 30px Verdana, Helvetica, Arial, sans-serif;
+                                  }
+                                  ]]>
+                              </style>
+                            </svg>";
+
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual(21, svg.Contents.Count);
+
+            var txt = svg.Contents[1] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
+
+            txt = svg.Contents[2] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
+
+            txt = svg.Contents[3] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[4] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
+
+            txt = svg.Contents[5] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
+
+            txt = svg.Contents[6] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
+
+            txt = svg.Contents[7] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
+
+            txt = svg.Contents[8] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Alphabetic, txt.DominantBaseline);
+
+            txt = svg.Contents[9] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
+
+            txt = svg.Contents[10] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
+
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGTextDominantBaseline.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+
+
+        [TestMethod]
         public void SVGTextAnchorChart()
         {
             var svgString = @"
@@ -516,10 +644,10 @@ namespace Scryber.Core.UnitTests.Html
 <path d=""M75.0011 149.5882A75 75 0 0 1 107.7157 88.0562L150 150Z"" fill=""#ee6666""></path>
 <path d=""M107.7157 88.0562A75 75 0 0 1 150 75L150 150Z"" fill=""#73c0de""></path>
 <text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(247.8973 104.9222)"" fill=""black"">Sear...</text>
-<text dominant-baseline=""text-top"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(197.9226 235.5589)"" fill=""black"">Direct</text>
-<text dominant-baseline=""hanging"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(54.4 198.8328)"" fill=""black"">Email</text>
-<text dominant-baseline=""auto"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(50.5333 107.7502)"" fill=""black"">Unio...</text>
-<text dominant-baseline=""text-after-edge"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" transform=""translate(103.4475 64.006)"" fill=""black"">Video Ads</text>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(197.9226 235.5589)"" fill=""black"">Direct</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(54.4 198.8328)"" fill=""black"">Email</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(50.5333 107.7502)"" fill=""black"">Unio...</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" transform=""translate(103.4475 64.006)"" fill=""black"">Video Ads</text>
 </svg>";
 
 
@@ -538,25 +666,25 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             txt = svg.Contents[13] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             txt = svg.Contents[14] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             txt = svg.Contents[15] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             svg.OverflowAction = OverflowAction.Clip;
 
