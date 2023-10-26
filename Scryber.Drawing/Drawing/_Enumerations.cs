@@ -310,7 +310,7 @@ namespace Scryber.Drawing
     }
 
     /// <summary>
-    /// Defines the location of the rendered character in a text block, based on the x value.
+    /// Defines the location of the rendered character in an SVG text block, based on the x value.
     /// </summary>
     public enum TextAnchor
     {
@@ -328,6 +328,65 @@ namespace Scryber.Drawing
         /// An x value defines the end point of the rendered characters.
         /// </summary>
         End
+    }
+
+    /// <summary>
+    /// Defines the baseline adjustment of the rendered characters in an SVG Textblock.
+    /// Such that the vertical offset of the characters can ge set for a specific y position.
+    /// </summary>
+    public enum DominantBaseline
+    {
+        /// <summary>
+        /// Allows the rendering engine to align the baseline for a set of characters as it wishes. Defaults to TextTop
+        /// </summary>
+        Auto,
+
+        /// <summary>
+        /// Aligns the text position
+        /// as per the baseline of a font with descenders below the the y position.
+        /// </summary>
+        Text_Top,
+
+        /// <summary>
+        /// Aligns the text to the middle of the lowercase x character height, based on the y position and the font size.
+        /// </summary>
+        Middle,
+
+        /// <summary>
+        /// Aligns the text to the middle of the uppercase M character height, based on the y position and the font size.
+        /// </summary>
+        Central,
+
+        /// <summary>
+        /// Aligns the text to the top of the uppercase M character height, based on the y position and the font size.
+        /// </summary>
+        Hanging,
+
+        /// <summary>
+        /// Aligns the text to the top of the lowercase x character height, based on the y position and the font size.
+        /// </summary>
+        Mathematical,
+
+        /// <summary>
+        /// Aligns the text to the bottom of the lowercase y descender, based on the y position and the font size
+        /// </summary>
+        Ideographic,
+
+        /// <summary>
+        /// As per text top
+        /// </summary>
+        Alphabetic,
+
+        /// <summary>
+        /// Aligns the text to its font bounding box with characters above the y position based on the font size.
+        /// </summary>
+        Text_After_Edge,
+
+        /// <summary>
+        /// Aligns the text to its font bounding box with characters below the y position 
+        /// </summary>
+        Text_Before_Edge
+
     }
 
     public enum OverflowAction

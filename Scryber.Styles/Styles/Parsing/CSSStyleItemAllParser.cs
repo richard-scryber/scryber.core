@@ -201,6 +201,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.HyphenationMinAfter, new CSSHyphensMinAfterParser());
             all.Add(CSSStyleItems.HyphenationCharAppend, new CSSHyphensCharAppendParser());
             all.Add(CSSStyleItems.TextAnchorType, new CSSTextAnchorParser());
+            all.Add(CSSStyleItems.DominantBaselineType, new CSSDominantBaselineParser());
 
             all.Add(CSSStyleItems.WhiteSpace, new CSSWhiteSpaceParser());
             all.Add(CSSStyleItems.OverflowX, new CSSOverflowXParser());
