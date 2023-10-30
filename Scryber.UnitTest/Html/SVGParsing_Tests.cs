@@ -611,7 +611,10 @@ namespace Scryber.Core.UnitTests.Html
             var pg = new Page();
             doc.Pages.Add(pg);
             pg.Contents.Add(svg);
-
+            //pg.FontFamily = new FontSelector("serif");
+            pg.Margins = new Thickness(20, 0, 0, 0);
+            pg.FontSize = 24;
+            pg.FontWeight = 700;
 
             PDF.Layout.PDFLayoutDocument layout = null;
             //Output the document (including databinding the data content)
@@ -696,6 +699,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var pg = new Page();
             doc.Pages.Add(pg);
+            pg.Margins = new Thickness(20, 0, 0, 0);
             pg.Contents.Add(svg);
 
 
