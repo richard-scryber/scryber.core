@@ -545,7 +545,7 @@ namespace Scryber.Core.UnitTests.Html
                               <circle cx=""60"" cy=""320"" r=""3"" fill=""red"" />
                               <circle cx=""60"" cy=""370"" r=""3"" fill=""red"" />
                               <circle cx=""60"" cy=""420"" r=""3"" fill=""red"" />
-                              <circle cx=""60"" cy=""470"" r=""3"" fill=""red"" />
+                              
 
                               <style>
                                 <![CDATA[
@@ -555,12 +555,14 @@ namespace Scryber.Core.UnitTests.Html
                                   }
                                   ]]>
                               </style>
+
+                              <circle cx=""60"" cy=""470"" r=""3"" fill=""red"" />
                             </svg>";
 
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
-            Assert.AreEqual(21, svg.Contents.Count);
+            Assert.AreEqual(22, svg.Contents.Count);
 
             var txt = svg.Contents[1] as SVGText;
             Assert.IsNotNull(txt);
@@ -613,7 +615,7 @@ namespace Scryber.Core.UnitTests.Html
             pg.Contents.Add(svg);
             //pg.FontFamily = new FontSelector("serif");
             pg.Margins = new Thickness(20, 0, 0, 0);
-            pg.FontSize = 24;
+            pg.FontSize = 10;
             pg.FontWeight = 700;
 
             PDF.Layout.PDFLayoutDocument layout = null;
@@ -699,7 +701,6 @@ namespace Scryber.Core.UnitTests.Html
 
             var pg = new Page();
             doc.Pages.Add(pg);
-            pg.Margins = new Thickness(20, 0, 0, 0);
             pg.Contents.Add(svg);
 
 
