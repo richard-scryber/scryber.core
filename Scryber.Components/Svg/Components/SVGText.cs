@@ -22,7 +22,10 @@ namespace Scryber.Svg.Components
         public override Unit X { get => base.X; set => base.X = value; }
 
         [PDFAttribute("y")]
-        public override Unit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y {
+            get => base.Y;
+            set => base.Y = value;
+        }
 
 
         [PDFAttribute("text-anchor")]

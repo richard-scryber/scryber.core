@@ -196,11 +196,6 @@ namespace Scryber.PDF.Layout
 
                 pos.Y = y;
 
-                full.Position.Y = y;
-
-
-                if (full is StyleFull)
-                    (full as StyleFull).ClearFullRefs();
             }
         }
 

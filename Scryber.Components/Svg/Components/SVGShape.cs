@@ -11,8 +11,6 @@ namespace Scryber.Svg.Components
     public abstract class SVGShape : SVGBase, IGraphicPathComponent, IPDFRenderComponent
     {
 
-
-
         public SVGShape(ObjectType type)
             : base(type)
         {
@@ -52,6 +50,14 @@ namespace Scryber.Svg.Components
 
             if (null != this.Path)
             {
+                var transform = fullstyle.GetValue(StyleKeys.TransformOperationKey, null);
+                if(transform != null)
+                {
+                    var matrix = transform.GetMatrix(MatrixOrder.Append);
+                    graphics.SaveGraphicsState();
+                    graphics.SetTransformationMatrix(matrix, false, true);
+                }
+
                 PDFBrush brush = fullstyle.CreateFillBrush();
                 PDFPen pen = fullstyle.CreateStrokePen();
 
@@ -64,7 +70,8 @@ namespace Scryber.Svg.Components
                 else if (null != pen)
                     graphics.DrawPath(pen, context.Offset, this.Path);
 
-
+                if (null != transform)
+                    graphics.RestoreGraphicsState();
             }
             return null;
         }

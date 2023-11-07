@@ -716,6 +716,267 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod]
+        public void SVGTextPositionAndTranslate()
+        {
+            var svgString = @"
+            <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
+<g><text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" x=""50"" y=""50"" transform=""translate(100 100)"" fill=""#6E7079"">At 50 + 100</text>
+</g></svg>";
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+
+            svg.OverflowAction = OverflowAction.Clip;
+
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 50;
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGTextPositionAndTranslate.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        public void SVGCirclePositionAndTranslate()
+        {
+            var svgString = @"
+            <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
+<g><circle cx=""50"" cy=""50"" style=""font-size:12px;font-family:sans-serif;"" r=""10"" transform=""translate(100 100)"" fill=""#6E7079""></circle>
+</g></svg>";
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+
+            svg.OverflowAction = OverflowAction.Clip;
+
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 50;
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGCirclePositionAndTranslate.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+        }
+
+        [TestMethod]
+        public void SVGLineChart()
+        {
+            var svgString = @"
+            <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
+
+<rect width=""498"" height=""305"" x=""0"" y=""0"" id=""0"" fill=""none""></rect>
+<!-- Axes -->
+<path d=""M52.9693 276.5L478.08 276.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 240.5L478.08 240.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 204.5L478.08 204.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 168.5L478.08 168.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 132.5L478.08 132.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 96.5L478.08 96.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 60.5L478.08 60.5"" fill=""none"" stroke=""#E0E6F1""></path>
+<path d=""M52.9693 276.5L478.08 276.5"" fill=""none"" stroke=""#6E7079"" stroke-linecap=""round""></path>
+<path d=""M53.5 275.85L53.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M124.5 275.85L124.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M194.5 275.85L194.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M265.5 275.85L265.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M336.5 275.85L336.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M407.5 275.85L407.5 280.85"" fill=""none"" stroke=""#6E7079""></path>
+<path d=""M478.5 275.85L478.5 280.85"" fill=""none"" stroke=""#6E7079""></path> 
+<!-- Labels -->
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 275.85)"" fill=""#6E7079"">0</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 239.875)"" fill=""#6E7079"">500</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 203.9)"" fill=""#6E7079"">1,000</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 167.925)"" fill=""#6E7079"">1,500</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 131.95)"" fill=""#6E7079"">2,000</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 95.975)"" fill=""#6E7079"">2,500</text>
+<text dominant-baseline=""central"" text-anchor=""end"" style=""font-size:12px;font-family:sans-serif;"" transform=""translate(44.9693 60)"" fill=""#6E7079"">3,000</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(52.9693 283.85)"" fill=""#6E7079"">Mon</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(123.8211 283.85)"" fill=""#6E7079"">Tue</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(194.6729 283.85)"" fill=""#6E7079"">Wed</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(265.5246 283.85)"" fill=""#6E7079"">Thu</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(336.3764 283.85)"" fill=""#6E7079"">Fri</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(407.2282 283.85)"" fill=""#6E7079"">Sat</text>
+<text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" y=""6"" transform=""translate(478.08 283.85)"" fill=""#6E7079"">Sun</text>
+<!-- Data lines -->
+<g clip-path=""url(#zr0-c0)"">
+<path d=""M52.9693 267.216L123.8211 266.3526L194.6729 268.583L265.5247 266.2087L336.3764 269.3745L407.2282 259.3015L478.08 260.7405"" fill=""none"" stroke=""rgb(84,112,198)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
+</g>
+<g clip-path=""url(#zr0-c1)"">
+<path d=""M52.9693 251.387L123.8211 253.2577L194.6729 254.8406L265.5247 249.3724L336.3764 248.509L407.2282 235.558L478.08 238.436"" fill=""none"" stroke=""rgb(145,204,117)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
+</g>
+<g clip-path=""url(#zr0-c2)"">
+<path d=""M52.9693 240.5945L123.8211 236.5653L194.6729 240.3786L265.5247 238.2921L336.3764 234.8385L407.2282 211.8145L478.08 208.9365"" fill=""none"" stroke=""rgb(250,200,88)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
+</g>
+<g clip-path=""url(#zr0-c3)"">
+<path d=""M52.9693 217.5705L123.8211 212.6779L194.6729 218.7217L265.5247 214.2608L336.3764 206.778L407.2282 188.071L478.08 185.9125"" fill=""none"" stroke=""rgb(238,102,102)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
+</g>
+<g clip-path=""url(#zr0-c4)"">
+<path d=""M52.9693 158.5715L123.8211 145.6205L194.6729 153.8947L265.5247 147.0595L336.3764 113.9625L407.2282 92.3775L478.08 90.9385"" fill=""none"" stroke=""rgb(115,192,222)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
+</g> 
+<!-- Data circles -->
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 52.9693 267.216)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 123.8211 266.3526)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 194.6729 268.583)"" fill=""rgb(255,255,255)"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 265.5247,266.2087)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,269.3745)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,259.3015)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,260.7405)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,251.387)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,253.2577)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,254.8406)"" fill=""rgb(255,255,255)"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,249.3724)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,248.509)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,235.558)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,238.436)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,240.5945)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,236.5653)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,240.3786)"" fill=""rgb(255,255,255)"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,238.2921)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,234.8385)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,211.8145)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,208.9365)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,217.5705)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,212.6779)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,218.7217)"" fill=""rgb(255,255,255)"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,214.2608)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,206.778)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,188.071)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,185.9125)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,158.5715)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,145.6205)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,153.8947)"" fill=""rgb(255,255,255)"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,147.0595)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,113.9625)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,92.3775)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,90.9385)"" fill=""#fff"" stroke=""#73c0de""></path> 
+<!-- Legend  -->
+<path d=""M-5 -5l454.9199 0l0 23.2l-454.9199 0Z"" transform=""translate(26.54 5)"" fill=""rgb(0,0,0)"" fill-opacity=""0"" stroke=""#ccc"" stroke-width=""0""></path>
+<path d=""M0 7L25 7"" transform=""translate(27.54 4.6)"" fill=""#000"" stroke=""#5470c6"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<path d=""M18.1 7A5.6 5.6 0 1 1 18.1 6.9994"" transform=""translate(27.54 4.6)"" fill=""#fff"" stroke=""#5470c6"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" x=""30"" y=""7"" transform=""translate(27.54 4.6)"" fill=""#333"">Email</text>
+<path d=""M0 7L25 7"" transform=""translate(98.5459 4.6)"" fill=""#000"" stroke=""#91cc75"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<path d=""M18.1 7A5.6 5.6 0 1 1 18.1 6.9994"" transform=""translate(98.5459 4.6)"" fill=""#fff"" stroke=""#91cc75"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" x=""30"" y=""7"" transform=""translate(98.5459 4.6)"" fill=""#333"">Union Ads</text>
+<path d=""M0 7L25 7"" transform=""translate(194.9111 4.6)"" fill=""#000"" stroke=""#fac858"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<path d=""M18.1 7A5.6 5.6 0 1 1 18.1 6.9994"" transform=""translate(194.9111 4.6)"" fill=""#fff"" stroke=""#fac858"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" x=""30"" y=""7"" transform=""translate(194.9111 4.6)"" fill=""#333"">Video Ads</text>
+<path d=""M0 7L25 7"" transform=""translate(290.4033 4.6)"" fill=""#000"" stroke=""#ee6666"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<path d=""M18.1 7A5.6 5.6 0 1 1 18.1 6.9994"" transform=""translate(290.4033 4.6)"" fill=""#fff"" stroke=""#ee6666"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" x=""30"" y=""7"" transform=""translate(290.4033 4.6)"" fill=""#333"">Direct</text>
+<path d=""M0 7L25 7"" transform=""translate(362.7393 4.6)"" fill=""#000"" stroke=""#73c0de"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<path d=""M18.1 7A5.6 5.6 0 1 1 18.1 6.9994"" transform=""translate(362.7393 4.6)"" fill=""#fff"" stroke=""#73c0de"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
+<text dominant-baseline=""central"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" xml:space=""preserve"" x=""30"" y=""7"" transform=""translate(362.7393 4.6)"" fill=""#333"">Search Engine</text> 
+<path d=""M-5 -5l10 0l0 10l-10 0Z"" transform=""translate(5 5)"" fill=""rgb(0,0,0)"" fill-opacity=""0"" stroke=""#ccc"" stroke-width=""0""></path>
+<defs >
+<clipPath id=""zr0-c0"">
+<path d=""M51 59l427 0l0 217.85l-427 0Z"" fill=""#000""></path>
+</clipPath>
+<clipPath id=""zr0-c1"">
+<path d=""M51 59l427 0l0 217.85l-427 0Z"" fill=""#000""></path>
+</clipPath>
+<clipPath id=""zr0-c2"">
+<path d=""M51 59l427 0l0 217.85l-427 0Z"" fill=""#000""></path>
+</clipPath>
+<clipPath id=""zr0-c3"">
+<path d=""M51 59l427 0l0 217.85l-427 0Z"" fill=""#000""></path>
+</clipPath>
+<clipPath id=""zr0-c4"">
+<path d=""M51 59l427 0l0 217.85l-427 0Z"" fill=""#000""></path>
+</clipPath>
+</defs>
+</svg>";
+
+
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+            Assert.IsNotNull(svg);
+            /*Assert.AreEqual(87, svg.Contents.Count);
+
+            var txt = svg.Contents[11] as SVGText;
+            Assert.IsNotNull(txt);
+
+            Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[12] as SVGText;
+            Assert.IsNotNull(txt);
+
+            Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[13] as SVGText;
+            Assert.IsNotNull(txt);
+
+            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[14] as SVGText;
+            Assert.IsNotNull(txt);
+
+            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[15] as SVGText;
+            Assert.IsNotNull(txt);
+
+            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+            */
+
+            svg.OverflowAction = OverflowAction.Clip;
+
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGLineChart.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+        }
+
     }
 
 }

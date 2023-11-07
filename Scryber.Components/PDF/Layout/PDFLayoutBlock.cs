@@ -1088,7 +1088,22 @@ namespace Scryber.PDF.Layout
                         var offsetX = 0;
                         var offsetY = this.TotalBounds.Height.PointsValue;
                         full = full.Clone();
-                        full.SetTranslation(offsetX, offsetY);
+
+                        float posOffsetX = 0.0F;
+                        float posOffsetY = 0.0F;
+
+                        //set any explicit position offsets
+
+                        //if (position.X.HasValue)
+                        //{
+                        //    posOffsetX = ((float)position.X.Value.PointsValue);
+                        //}
+                        //if (position.Y.HasValue)
+                        //{
+                        //   posOffsetY = ((float)position.Y.Value.PointsValue);
+                        //}
+
+                        full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
 
                         context.Graphics.SetTransformationMatrix(full, true, true);
                         this.Position.TransformMatrix = full;

@@ -58,7 +58,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        
+        private static readonly char[] _separators = { ',', ' ' };
 
 
         protected bool DoConvertTransform(StyleBase style, object value, out TransformOperation operation)
@@ -115,6 +115,13 @@ namespace Scryber.Styles.Parsing.Typed
                 negative2 = true;
                 valueCount = 2;
             }
+            else if (str.StartsWith("matrix("))
+            {
+                opLength = 7;
+                type = TransformType.Matrix;
+                useDegrees = false;
+                valueCount = 6;
+            }
             else
             {
                 throw new NotSupportedException("The transform operation " + str + " is not known or not currently supported");
@@ -132,7 +139,7 @@ namespace Scryber.Styles.Parsing.Typed
 
             if (valueCount == 2)
             {
-                var parts = values.Split(',');
+                var parts = values.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != 2)
                 {
                     operation = null;
@@ -153,6 +160,23 @@ namespace Scryber.Styles.Parsing.Typed
                 operation = new TransformOperation(type, value1, value2);
                 return true;
 
+            }
+            else if (valueCount == 6)
+            {
+                //A full matrix
+                var parts = values.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 6)
+                {
+                    operation = null;
+                    return false;
+
+                }
+                double[] all = new double[6];
+                for (var i = 0; i < all.Length; i++)
+                    all[i] = GetUnitValue(parts[i], false);
+
+                operation = new TransformMatrixOperation(all);
+                return true;
             }
             else
             {

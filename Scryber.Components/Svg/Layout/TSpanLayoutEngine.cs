@@ -15,13 +15,18 @@ namespace Scryber.Svg.Layout
         {
         }
 
+        protected override void DoLayoutComponent()
+        {
+            base.DoLayoutComponent();
+        }
 
         protected override void DoLayoutAChild(IComponent comp, Style full)
         {
             var textAnchor = full.GetValue(StyleKeys.TextAnchorKey, TextAnchor.Start);
             var domBase = full.GetValue(StyleKeys.DominantBaselineKey, DominantBaseline.Auto);
-            StyleValue<Unit> ypos;
-            full.TryGetValue(StyleKeys.PositionYKey, out ypos);
+
+            Unit yVal = full.GetValue(StyleKeys.PositionYKey, Unit.Zero);
+            Unit xVal = full.GetValue(StyleKeys.PositionXKey, Unit.Zero);
 
             base.DoLayoutAChild(comp, full);
             
@@ -122,6 +127,15 @@ namespace Scryber.Svg.Layout
                 block.Position.Y = (block.Position.Y ?? Unit.Zero) + offset;
                 var orig = block.TotalBounds;
                 var update = new Rect(orig.X, orig.Y + offset + defaultShift, orig.Width, orig.Height);
+
+                if (block.Position.TransformMatrix != null)
+                {
+                    if (yVal != Unit.Zero)
+                        update.Y += yVal;
+                    
+                    if (xVal != Unit.Zero)
+                        update.X += xVal;
+                }
                 block.TotalBounds = update;
                 
             }
@@ -166,7 +180,7 @@ namespace Scryber.Svg.Layout
 
         protected override PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
         {
-            this.AdjustContainerForTextBaseline(pos, comp, full);
+            //this.AdjustContainerForTextBaseline(pos, comp, full);
             return base.BeginNewRelativeRegionForChild(pos, comp, full);
         }
     }
