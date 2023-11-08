@@ -1082,9 +1082,10 @@ namespace Scryber.PDF.Layout
                     {
                         //Do Nothing
                     }
-                    else if (full.Transformations == MatrixTransformTypes.IsTranslation)
+                    else if (full.Transformations == MatrixTransformTypes.IsTranslation && this.Owner is Svg.Components.SVGText)
                     {
-                        //Just a translation so quicker to just offset the translation by the height of the block
+                        //TODO: Take this out and make the SVGText a Component run rather than a block.
+                        //Just a translation of some text so quicker to just offset the translation by the height of the block
                         var offsetX = 0;
                         var offsetY = this.TotalBounds.Height.PointsValue;
                         full = full.Clone();
