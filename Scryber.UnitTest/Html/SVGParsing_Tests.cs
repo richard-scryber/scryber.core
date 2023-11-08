@@ -721,8 +721,8 @@ namespace Scryber.Core.UnitTests.Html
         {
             var svgString = @"
             <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
-<g><text dominant-baseline=""central"" text-anchor=""middle"" style=""font-size:12px;font-family:sans-serif;"" x=""50"" y=""50"" transform=""translate(100 100)"" fill=""#6E7079"">At 50 + 100</text>
-</g></svg>";
+<text dominant-baseline=""auto"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" x=""50"" y=""50"" transform=""translate(100 100)"" fill=""#6E7079"">At 50 + 100</text>
+</svg>";
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
 
@@ -750,6 +750,75 @@ namespace Scryber.Core.UnitTests.Html
                 };
                 doc.SaveAsPDF(stream);
             }
+
+            Assert.IsNotNull(layout);
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var lpg = layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+            Assert.IsNotNull(lpg.ContentBlock);
+            var lblock = lpg.ContentBlock;
+            Assert.IsNotNull(lblock);
+            Assert.AreEqual(1, lblock.Columns.Length);
+            var lreg = lblock.Columns[0];
+            Assert.IsNotNull(lreg);
+            Assert.AreEqual(1, lreg.Contents.Count);
+
+            //Canvas inpage block
+            var litem = lreg.Contents[0];
+            Assert.IsNotNull(litem);
+            Assert.IsInstanceOfType(litem, typeof(PDFLayoutBlock));
+            var lcanv = litem as PDFLayoutBlock;
+            Assert.IsNotNull(lcanv);
+            Assert.AreSame(lcanv.Owner, svg);
+            Assert.AreEqual(2, lcanv.PositionedRegions.Count);
+
+            //Canvas positioned region
+            var lcanvReg = lcanv.PositionedRegions[0];
+            Assert.IsNotNull(lcanvReg);
+            Assert.AreEqual(498.0, lcanv.Size.Width.PointsValue);
+            Assert.AreEqual(305.0, lcanv.Size.Height.PointsValue);
+
+            //Positioned run on the first line in the canvas for the text
+            Assert.AreEqual(1, lcanvReg.Contents.Count);
+            var lline = lcanvReg.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(lline);
+            Assert.AreEqual(1, lline.Runs.Count);
+            var lposRun = lline.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(lposRun);
+
+            //Positioned region in the canvas for the text block
+            Assert.AreSame(lposRun.Region, lcanv.PositionedRegions[1]);
+            var ltxtPosReg = lcanv.PositionedRegions[1];
+
+            //Positioned region contains a block with 1 region with 1 line with 3 runs - text begin, chars and end
+            var ltxtBlock = ltxtPosReg.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(ltxtBlock);
+            var ltxtReg = ltxtBlock.Columns[0];
+            Assert.IsNotNull(ltxtReg);
+            Assert.AreEqual(1, ltxtReg.Contents.Count);
+            var ltxtLine = ltxtReg.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(ltxtLine);
+            Assert.AreEqual(3, ltxtLine.Runs.Count);
+            Assert.IsInstanceOfType(ltxtLine.Runs[0], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(ltxtLine.Runs[1], typeof(PDFTextRunCharacter));
+            Assert.IsInstanceOfType(ltxtLine.Runs[2], typeof(PDFTextRunEnd));
+
+            //Check transform of the layout text block
+            var lineH = 10.8; //baseline offset
+            var offsetX = 100.0; //translate x
+            var offsetY = -100.0 + lineH; //negative (translate y - the baseline offset)
+
+            Assert.AreEqual(offsetX, Math.Round(ltxtBlock.TransformedOffset.X.PointsValue, 1), "X offsets for the translate do not match");
+            Assert.AreEqual(offsetY, Math.Round(ltxtBlock.TransformedOffset.Y.PointsValue, 1), "Y offsets for the translate do not match");
+
+            //Check the position of the layout text block
+            var boundsX = 50.0; // explicit x
+            var boundsY = 52.1; // explicit y + descender 
+
+            Assert.AreEqual(boundsX, Math.Round(ltxtBlock.TotalBounds.X.PointsValue, 1));
+            Assert.AreEqual(boundsY, Math.Round(ltxtBlock.TotalBounds.Y.PointsValue, 1));
+
+
         }
 
         [TestMethod]
@@ -757,8 +826,8 @@ namespace Scryber.Core.UnitTests.Html
         {
             var svgString = @"
             <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
-<g><circle cx=""50"" cy=""50"" style=""font-size:12px;font-family:sans-serif;"" r=""10"" transform=""translate(100 100)"" fill=""#6E7079""></circle>
-</g></svg>";
+<circle cx=""50"" cy=""50"" style=""font-size:12px;font-family:sans-serif;"" r=""10"" transform=""translate(100 100)"" fill=""#6E7079""></circle>
+</svg>";
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
 
@@ -786,6 +855,77 @@ namespace Scryber.Core.UnitTests.Html
                 };
                 doc.SaveAsPDF(stream);
             }
+
+            Assert.IsNotNull(layout);
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var lpg = layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+            Assert.IsNotNull(lpg.ContentBlock);
+            var lblock = lpg.ContentBlock;
+            Assert.IsNotNull(lblock);
+            Assert.AreEqual(1, lblock.Columns.Length);
+            var lreg = lblock.Columns[0];
+            Assert.IsNotNull(lreg);
+            Assert.AreEqual(1, lreg.Contents.Count);
+
+            //Canvas inpage block
+            var litem = lreg.Contents[0];
+            Assert.IsNotNull(litem);
+            Assert.IsInstanceOfType(litem, typeof(PDFLayoutBlock));
+            var lcanv = litem as PDFLayoutBlock;
+            Assert.IsNotNull(lcanv);
+            Assert.AreSame(lcanv.Owner, svg);
+            Assert.AreEqual(2, lcanv.PositionedRegions.Count);
+
+            //Canvas positioned region
+            var lcanvReg = lcanv.PositionedRegions[0];
+            Assert.IsNotNull(lcanvReg);
+            Assert.AreEqual(498.0, lcanv.Size.Width.PointsValue);
+            Assert.AreEqual(305.0, lcanv.Size.Height.PointsValue);
+
+            //Positioned run on the first line in the canvas for the circle
+            Assert.AreEqual(1, lcanvReg.Contents.Count);
+            var lline = lcanvReg.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(lline);
+            Assert.AreEqual(1, lline.Runs.Count);
+            var lposRun = lline.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(lposRun);
+
+            //Positioned region in the canvas for the text block
+            Assert.AreSame(lposRun.Region, lcanv.PositionedRegions[1]);
+            var lcirclePosReg = lcanv.PositionedRegions[1];
+
+            Assert.IsNotNull(lcirclePosReg);
+            Assert.AreEqual(1, lcirclePosReg.Contents.Count);
+            var lcircleLine = lcirclePosReg.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(lcircleLine);
+
+            Assert.AreEqual(1, lcircleLine.Runs.Count);
+            var lcircleRun = lcircleLine.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(lcircleRun);
+
+            const double cWidth = 20.0; //bounds horizontal
+            const double cHeight = 20.0; // bounds vertical
+            const double cOffsetX = 50.0 - (cWidth / 2.0); // circle centre - half width
+            const double cOffsetY = 50.0 - (cHeight / 2.0); // circle centre - half height
+            const double ctranslateX = 100.0;
+            const double ctranslateY = 100.0;
+
+            //The offsets are on the positioned region bounds
+            Assert.AreEqual(cOffsetX, lcirclePosReg.TotalBounds.X);
+            Assert.AreEqual(cOffsetY, lcirclePosReg.TotalBounds.Y);
+
+            var circle = lcircleRun.Owner as SVGShape;
+
+            var path = (circle as IGraphicPathComponent).Path;
+            Assert.IsNotNull(path);
+            Assert.AreEqual(cWidth, path.Bounds.Width);
+            Assert.AreEqual(cHeight, path.Bounds.Height);
+
+            var transform = circle.TransformOperation;
+            var matrix = transform.GetMatrix(MatrixOrder.Append);
+            Assert.AreEqual(ctranslateX, matrix.Components[4]);
+            Assert.AreEqual(-ctranslateY, matrix.Components[5]);
         }
 
         [TestMethod]
@@ -843,41 +983,41 @@ namespace Scryber.Core.UnitTests.Html
 <path d=""M52.9693 158.5715L123.8211 145.6205L194.6729 153.8947L265.5247 147.0595L336.3764 113.9625L407.2282 92.3775L478.08 90.9385"" fill=""none"" stroke=""rgb(115,192,222)"" stroke-width=""2"" stroke-linejoin=""bevel""></path>
 </g> 
 <!-- Data circles -->
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 52.9693 267.216)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 123.8211 266.3526)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 194.6729 268.583)"" fill=""rgb(255,255,255)"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 265.5247,266.2087)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,269.3745)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,259.3015)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,260.7405)"" fill=""#fff"" stroke=""#5470c6""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,251.387)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,253.2577)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,254.8406)"" fill=""rgb(255,255,255)"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,249.3724)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,248.509)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,235.558)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,238.436)"" fill=""#fff"" stroke=""#91cc75""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,240.5945)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,236.5653)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,240.3786)"" fill=""rgb(255,255,255)"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,238.2921)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,234.8385)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,211.8145)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,208.9365)"" fill=""#fff"" stroke=""#fac858""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,217.5705)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,212.6779)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,218.7217)"" fill=""rgb(255,255,255)"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,214.2608)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,206.778)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,188.071)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,185.9125)"" fill=""#fff"" stroke=""#ee6666""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,158.5715)"" fill=""#fff"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,145.6205)"" fill=""#fff"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,153.8947)"" fill=""rgb(255,255,255)"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,147.0595)"" fill=""#fff"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,113.9625)"" fill=""#fff"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,92.3775)"" fill=""#fff"" stroke=""#73c0de""></path>
-<path d=""M1 0A1 1 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,90.9385)"" fill=""#fff"" stroke=""#73c0de""></path> 
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 52.9693 267.216)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 123.8211 266.3526)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 194.6729 268.583)"" fill=""rgb(255,255,255)"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1 0 0 1 265.5247,266.2087)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,269.3745)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,259.3015)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,260.7405)"" fill=""#fff"" stroke=""#5470c6""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,251.387)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,253.2577)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,254.8406)"" fill=""rgb(255,255,255)"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,249.3724)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,248.509)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,235.558)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,238.436)"" fill=""#fff"" stroke=""#91cc75""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,240.5945)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,236.5653)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,240.3786)"" fill=""rgb(255,255,255)"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,238.2921)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,234.8385)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,211.8145)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,208.9365)"" fill=""#fff"" stroke=""#fac858""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,217.5705)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,212.6779)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,218.7217)"" fill=""rgb(255,255,255)"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,214.2608)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,206.778)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,188.071)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,185.9125)"" fill=""#fff"" stroke=""#ee6666""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,52.9693,158.5715)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,123.8211,145.6205)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,194.6729,153.8947)"" fill=""rgb(255,255,255)"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,265.5247,147.0595)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,336.3764,113.9625)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,407.2282,92.3775)"" fill=""#fff"" stroke=""#73c0de""></path>
+<path d=""M1 0A2 2 0 1 1 1 -0.0001"" transform=""matrix(1,0,0,1,478.08,90.9385)"" fill=""#fff"" stroke=""#73c0de""></path> 
 <!-- Legend  -->
 <path d=""M-5 -5l454.9199 0l0 23.2l-454.9199 0Z"" transform=""translate(26.54 5)"" fill=""rgb(0,0,0)"" fill-opacity=""0"" stroke=""#ccc"" stroke-width=""0""></path>
 <path d=""M0 7L25 7"" transform=""translate(27.54 4.6)"" fill=""#000"" stroke=""#5470c6"" stroke-width=""2"" stroke-linecap=""butt"" stroke-miterlimit=""10""></path>
@@ -919,45 +1059,16 @@ namespace Scryber.Core.UnitTests.Html
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
-            /*Assert.AreEqual(87, svg.Contents.Count);
+            Assert.AreEqual(87, svg.Contents.Count);
 
-            var txt = svg.Contents[11] as SVGText;
-            Assert.IsNotNull(txt);
-
-            Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-
-            txt = svg.Contents[12] as SVGText;
-            Assert.IsNotNull(txt);
-
-            Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-
-            txt = svg.Contents[13] as SVGText;
-            Assert.IsNotNull(txt);
-
-            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-
-            txt = svg.Contents[14] as SVGText;
-            Assert.IsNotNull(txt);
-
-            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-
-            txt = svg.Contents[15] as SVGText;
-            Assert.IsNotNull(txt);
-
-            Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-            */
+            
 
             svg.OverflowAction = OverflowAction.Clip;
 
 
             using var doc = new Document();
             doc.AppendTraceLog = false;
-            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Messages);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
             var pg = new Page();
