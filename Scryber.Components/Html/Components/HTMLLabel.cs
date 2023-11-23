@@ -57,9 +57,12 @@ namespace Scryber.Html.Components
             set;
         }
 
-        public HTMLLabel()
+        public HTMLLabel() : this(HTMLObjectTypes.Label)
         {
         }
+
+        protected HTMLLabel(ObjectType type) : base(type)
+        { }
 
 
         protected override void OnPreLayout(LayoutContext context)

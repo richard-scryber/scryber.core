@@ -139,6 +139,7 @@ namespace Scryber
         Rotate,
         Scale,
         Skew,
+        Matrix
     }
 
     

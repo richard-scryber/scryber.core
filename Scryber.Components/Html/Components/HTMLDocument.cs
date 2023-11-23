@@ -90,9 +90,13 @@ namespace Scryber.Html.Components
         [PDFParserIgnore()]
         public override PageList Pages { get { return base.Pages; } }
 
-        public HTMLDocument() : base()
+        public HTMLDocument()
+            : this(HTMLObjectTypes.Document)
         {
         }
+
+        protected HTMLDocument(ObjectType type): base(type)
+        { }
 
         protected override Style GetBaseStyle()
         {

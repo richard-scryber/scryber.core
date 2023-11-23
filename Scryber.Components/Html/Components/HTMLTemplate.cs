@@ -92,9 +92,12 @@ namespace Scryber.Html.Components
 
         #endregion
 
-        public HTMLTemplate()
+        public HTMLTemplate() : this(HTMLObjectTypes.Template)
         {
         }
+
+        protected HTMLTemplate(ObjectType type): base(type)
+        { }
 
         protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {

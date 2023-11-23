@@ -46,8 +46,11 @@ namespace Scryber.Html.Components
         }
 
         public HTMLLegend()
-            : base()
+            : this(HTMLObjectTypes.Legend)
         {
         }
+
+        protected HTMLLegend(ObjectType type) : base(type)
+        { }
     }
 }

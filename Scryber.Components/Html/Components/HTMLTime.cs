@@ -54,9 +54,12 @@ namespace Scryber.Html.Components
 
         
 
-        public HTMLTime()
+        public HTMLTime() : this(HTMLObjectTypes.Time)
         {
         }
+
+        protected HTMLTime(ObjectType type): base(type)
+        { }
 
         protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {

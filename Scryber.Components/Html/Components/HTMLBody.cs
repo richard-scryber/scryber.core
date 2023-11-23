@@ -72,9 +72,14 @@ namespace Scryber.Html.Components
         }
 
         public HTMLBody()
-            : base()
+            : this(HTMLObjectTypes.Body)
         {
             
+        }
+
+        protected HTMLBody(ObjectType type): base(type)
+        {
+
         }
     }
 }

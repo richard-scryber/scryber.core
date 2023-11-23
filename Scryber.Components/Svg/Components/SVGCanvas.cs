@@ -180,6 +180,32 @@ namespace Scryber.Svg.Components
         [PDFAttribute("height")]
         public override Unit Height { get => base.Height; set => base.Height = value; }
 
+        //Style Collection
+
+        #region public StyleCollection Styles
+
+        private StyleCollection _innerStyles;
+
+        /// <summary>
+        /// Gets the inner set of styles defined within the SVGCanvas.
+        /// </summary>
+        /// <remarks>This collection is normally populated from the SVGStyleElement contents during processing</remarks>
+        public StyleCollection Styles
+        {
+            get
+            {
+                if (this._innerStyles == null)
+                    this._innerStyles = new StyleCollection(this);
+                return this._innerStyles;
+            }
+        }
+
+        public bool HasInnerStyles
+        {
+            get { return null != this._innerStyles && this._innerStyles.Count > 0; }
+        }
+
+        #endregion
 
         public SVGCanvas()
         {
@@ -219,6 +245,16 @@ namespace Scryber.Svg.Components
 
             found = null;
             return false;
+        }
+
+
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            if (this.HasInnerStyles)
+            {
+                this.Styles.MergeInto(baseStyle, forComponent);
+            }
+            return base.GetAppliedStyle(forComponent, baseStyle);
         }
     }
 }

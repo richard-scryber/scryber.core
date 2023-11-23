@@ -7,9 +7,12 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("code")]
     public class HTMLCodeSpan : HTMLSpan
     {
-        public HTMLCodeSpan()
+        public HTMLCodeSpan() : this(HTMLObjectTypes.Code)
         {
         }
+
+        protected HTMLCodeSpan(ObjectType type): base(type)
+        { }
 
         protected override Style GetBaseStyle()
         {

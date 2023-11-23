@@ -46,9 +46,12 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         public HTMLHead1()
-            : base()
+            : this(HTMLObjectTypes.Head1)
         {
         }
+
+        protected HTMLHead1(ObjectType type): base(type)
+        { }
     }
 
     [PDFParsableComponent("h2")]
@@ -90,10 +93,13 @@ namespace Scryber.Html.Components
         }
 
         public HTMLHead2()
-            : base()
+            : this(HTMLObjectTypes.Head2)
         {
         }
-    }
+
+    protected HTMLHead2(ObjectType type) : base(type)
+    { }
+}
 
 
     [PDFParsableComponent("h3")]
@@ -134,9 +140,12 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         public HTMLHead3()
-            : base()
+            : this(HTMLObjectTypes.Head3)
         {
         }
+
+        protected HTMLHead3(ObjectType type) : base(type)
+        { }
     }
 
     [PDFParsableComponent("h4")]
@@ -178,9 +187,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLHead4()
-            : base()
+            : this(HTMLObjectTypes.Head4)
         {
         }
+
+        protected HTMLHead4(ObjectType type) : base(type)
+        { }
     }
 
     [PDFParsableComponent("h5")]
@@ -222,9 +234,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLHead5()
-            : base()
+            : this(HTMLObjectTypes.Head5)
         {
         }
+
+        protected HTMLHead5(ObjectType type) : base(type)
+        { }
     }
 
     [PDFParsableComponent("h6")]
@@ -266,8 +281,11 @@ namespace Scryber.Html.Components
         }
 
         public HTMLHead6()
-            : base()
+            : this(HTMLObjectTypes.Head6)
         {
         }
+
+        protected HTMLHead6(ObjectType type) : base(type)
+        { }
     }
 }

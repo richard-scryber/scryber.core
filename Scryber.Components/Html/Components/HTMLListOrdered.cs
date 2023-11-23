@@ -73,9 +73,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLListOrdered()
-            : base()
+            : this(HTMLObjectTypes.ListOrdered)
         {
         }
+
+        protected HTMLListOrdered(ObjectType type) : base(type)
+        { }
 
     }
 

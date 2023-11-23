@@ -63,9 +63,32 @@ namespace Scryber.Html.Components
             get { return base.Contents; }
         }
 
-
-        public HTMLiFrame()
+        [PDFAttribute("data-passthrough")]
+        public bool Passthrough
         {
+            get;
+            set;
+        }
+
+        public HTMLiFrame() : this(HTMLObjectTypes.IFrame)
+        {
+        }
+
+        protected HTMLiFrame(ObjectType type): base(type)
+        {
+            this.Passthrough = true;
+        }
+
+
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            if (!Passthrough)
+            {
+                //TODO: Check the styles and contents of the remote parsed components
+                return new Style();
+            }
+            else
+                return base.GetAppliedStyle(forComponent, baseStyle);
         }
     }
 }

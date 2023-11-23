@@ -31,9 +31,9 @@ namespace Scryber.Expressive.Functions.Relational
 
 			value = each.Evaluate(variables);
 
-			IComparable max = null;
+			object max = null;
 
-			if(value is IEnumerable enumerate)
+			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{
@@ -41,13 +41,18 @@ namespace Scryber.Expressive.Functions.Relational
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
 
-					if(one is IComparable compare)
-					{
-						if (null == max)
-							max = compare;
-						else
-							max = (max.CompareTo(compare) < 0 ? compare : max);
-					}
+                    if (null == max)
+                        max = one;
+                    else
+                        max = Comparison.CompareUsingMostPreciseType(max, one, context) > 0 ? max : one;
+
+     //               if (one is IComparable compare)
+					//{
+					//	if (null == max)
+					//		max = compare;
+					//	else
+					//		max = (max.CompareTo(compare) < 0 ? compare : max);
+					//}
 					
 					
 				}

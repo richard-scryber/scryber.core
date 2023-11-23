@@ -1078,69 +1078,104 @@ namespace Scryber.PDF.Layout
 
                     //Start with the original transformation matrix
                     PDFTransformationMatrix full = this.Position.TransformMatrix.Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
-
-
-                    //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
-                    Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
-                    Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
-                    //offsetToOriginY -= context.PageSize.Height.PointsValue;
-                    if (position.X.HasValue)
-                        offsetToOriginX += 0.0; // position.X.Value;
-                    if (position.Y.HasValue)
-                        offsetToOriginY += 0.0;// position.Y.Value;
-
-                    //Defaulting to transforming around the centre of the shape.
-                    offsetToOriginX += this.TotalBounds.Width / 2;
-                    offsetToOriginY -= this.TotalBounds.Height / 2;
-
-                    float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
-                    float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
-
-                    
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
-
-                    
-                    
-                    float posOffsetX = 0.0F;
-                    float posOffsetY = 0.0F;
-
-                    //set any explicit position offsets
-
-                    if (position.X.HasValue)
+                    if (full.IsIdentity)
                     {
-                        posOffsetX = ((float)position.X.Value.PointsValue);
+                        //Do Nothing
                     }
-                    if (position.Y.HasValue)
+                    else if (full.Transformations == MatrixTransformTypes.IsTranslation && this.Owner is Svg.Components.SVGText)
                     {
-                        posOffsetY = ((float)position.Y.Value.PointsValue);
+                        //TODO: Take this out and make the SVGText a Component run rather than a block.
+                        //Just a translation of some text so quicker to just offset the translation by the height of the block
+                        var offsetX = 0;
+                        var offsetY = this.TotalBounds.Height.PointsValue;
+                        full = full.Clone();
+
+                        float posOffsetX = 0.0F;
+                        float posOffsetY = 0.0F;
+
+                        //set any explicit position offsets
+
+                        //if (position.X.HasValue)
+                        //{
+                        //    posOffsetX = ((float)position.X.Value.PointsValue);
+                        //}
+                        //if (position.Y.HasValue)
+                        //{
+                        //   posOffsetY = ((float)position.Y.Value.PointsValue);
+                        //}
+
+                        full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
+
+                        context.Graphics.SetTransformationMatrix(full, true, true);
+                        this.Position.TransformMatrix = full;
+                        this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
                     }
+                    else
+                    {
+                        
+                        //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
+                        Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
+                        Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
+                        //offsetToOriginY -= context.PageSize.Height.PointsValue;
+                        if (position.X.HasValue)
+                            offsetToOriginX += 0.0; // position.X.Value;
+                        if (position.Y.HasValue)
+                            offsetToOriginY += 0.0;// position.Y.Value;
 
-                    //Set the translation to the origin and the explicit position
-                    full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
+                        //Defaulting to transforming around the centre of the shape if we have a rotation
 
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
+                        offsetToOriginX += this.TotalBounds.Width / 2;
+                        offsetToOriginY -= this.TotalBounds.Height / 2;
+                        
 
-                    //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
-                    //within the centre of the container
-
-                    context.Graphics.SaveTranslationOffset(
-                        actualOffsetX,
-                        actualOffsetY);
-
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
-
-                    //apply the actual transformation
-                    context.Graphics.SetTransformationMatrix(full, true, true);
-                    //save state
-
-                    //Save the newly caclulated values back on the block.
-                    this.Position.TransformMatrix = full;
-                    this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+                        float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
+                        float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
 
 
+                        if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY, "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " + actualOffsetY + ")");
+
+
+
+                        float posOffsetX = 0.0F;
+                        float posOffsetY = 0.0F;
+
+                        //set any explicit position offsets
+
+                        if (position.X.HasValue)
+                        {
+                            posOffsetX = ((float)position.X.Value.PointsValue);
+                        }
+                        if (position.Y.HasValue)
+                        {
+                            posOffsetY = ((float)position.Y.Value.PointsValue);
+                        }
+
+                        //Set the translation to the origin and the explicit position
+                        full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
+
+                        if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Final transformation matrix to move to, transform, and move back from origin calculated to " + full);
+
+                        //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
+                        //within the centre of the container
+
+                        context.Graphics.SaveTranslationOffset(
+                            actualOffsetX,
+                            actualOffsetY);
+
+                        if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
+
+                        //apply the actual transformation
+                        context.Graphics.SetTransformationMatrix(full, true, true);
+                        //save state
+
+                        //Save the newly caclulated values back on the block.
+                        this.Position.TransformMatrix = full;
+                        this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+
+                    }
                 }
 
 

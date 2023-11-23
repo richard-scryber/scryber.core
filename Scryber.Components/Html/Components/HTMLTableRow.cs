@@ -63,9 +63,12 @@ namespace Scryber.Html.Components
         
 
         public HTMLTableRow()
-            : base()
+            : this(HTMLObjectTypes.TableRow)
         {
         }
+
+        protected HTMLTableRow(ObjectType type) : base(type)
+        { }
     }
 
 }

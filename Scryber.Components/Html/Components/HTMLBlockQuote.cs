@@ -55,8 +55,13 @@ namespace Scryber.Html.Components
         }
 
         public HTMLBlockQuote()
-            : base()
+            : this(HTMLObjectTypes.BlockQuote)
         {
+        }
+
+        protected HTMLBlockQuote(ObjectType type): base(type)
+        {
+
         }
 
         protected override Style GetBaseStyle()

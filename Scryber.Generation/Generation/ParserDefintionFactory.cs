@@ -673,6 +673,12 @@ namespace Scryber.Generation
                     CheckIsLoadedSource(ad, pi);
 
                     defn.Attributes.Add(ad);
+
+                    PDFCDataContentAttribute cdata = GetCustomAttribute<PDFCDataContentAttribute>(pi, true);
+                    if (null != cdata)
+                    {
+                        ad.AllowCData = cdata.AllowCData;
+                    }
                 }
 
                 PDFElementAttribute ele = GetCustomAttribute<PDFElementAttribute>(pi, true);
@@ -726,6 +732,12 @@ namespace Scryber.Generation
                     }
                     else
                         defn.Elements.Add(propele);
+
+                    PDFCDataContentAttribute cdata = GetCustomAttribute<PDFCDataContentAttribute>(pi, true);
+                    if(null != cdata)
+                    {
+                        propele.AllowCData = cdata.AllowCData;
+                    }
                 }
             }
         }

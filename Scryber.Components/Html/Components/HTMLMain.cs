@@ -13,7 +13,7 @@ namespace Scryber.Html.Components
     {
 
         public HTMLMain()
-            : this((ObjectType)"htMa")
+            : this(HTMLObjectTypes.Main)
         {
         }
         

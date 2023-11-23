@@ -134,7 +134,7 @@ namespace Scryber.Svg.Components
                 }
                 else
                 {
-                    this.TransformOperation = TransformOperation.Parse(value, ' ');
+                    this.TransformOperation = TransformOperation.Parse(value);
                 }
             }
         }

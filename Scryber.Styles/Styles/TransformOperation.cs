@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Scryber.Drawing;
 
 namespace Scryber.Styles
 {
@@ -86,7 +87,7 @@ namespace Scryber.Styles
             }
         }
 
-        public Scryber.Drawing.PDFTransformationMatrix GetMatrix(Scryber.Drawing.MatrixOrder order)
+        public virtual Scryber.Drawing.PDFTransformationMatrix GetMatrix(Scryber.Drawing.MatrixOrder order)
         {
             var matrix = new Drawing.PDFTransformationMatrix();
 
@@ -235,7 +236,7 @@ namespace Scryber.Styles
 
                     sb.Append(")");
                     break;
-
+                
                 default:
                     throw new PDFParserException("Could not understand the Transformation Type " + this.Type.ToString());
             }
@@ -247,8 +248,9 @@ namespace Scryber.Styles
 
         }
 
+        private static char[] _separators = { ',', ' ' };
 
-        public static TransformOperation Parse(string value, char separator = ',')
+        public static TransformOperation Parse(string value)
         {
             TransformType type;
             TransformOperation operation = null;
@@ -302,6 +304,13 @@ namespace Scryber.Styles
                 negative2 = true;
                 valueCount = 2;
             }
+            else if(str.StartsWith("matrix("))
+            {
+                opLength = 7;
+                type = TransformType.Matrix;
+                useDegrees = false;
+                valueCount = 6;
+            }
             else
             {
                 throw new NotSupportedException("The transform operation " + str + " is not known or not currently supported");
@@ -319,7 +328,7 @@ namespace Scryber.Styles
 
             if (valueCount == 2)
             {
-                var parts = values.Split(separator);
+                var parts = values.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != 2)
                 {
                     operation = null;
@@ -340,6 +349,23 @@ namespace Scryber.Styles
                 operation = new TransformOperation(type, value1, value2);
                 return operation;
 
+            }
+            else if(valueCount == 6)
+            {
+                //A full matrix
+                var parts = values.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                if(parts.Length != 6)
+                {
+                    operation = null;
+                    return operation;
+                    
+                }
+                double[] all = new double[6];
+                for (var i = 0; i < all.Length; i++)
+                    all[i] = GetUnitValue(parts[i], false);
+
+                operation = new TransformMatrixOperation(all);
+                return operation;
             }
             else
             {
@@ -411,6 +437,41 @@ namespace Scryber.Styles
         }
 
 
+    }
+
+
+    public class TransformMatrixOperation : TransformOperation
+    {
+        private double[] _values;
+
+        protected override void AppendTransformations(PDFTransformationMatrix matrix)
+        {
+            throw new NotSupportedException("A Matrix operation cannot append further transformations");
+        }
+
+        protected override void PrependTransformations(PDFTransformationMatrix matrix)
+        {
+            throw new NotSupportedException("A Matrix operation cannot prepend further transformations");
+        }
+
+        public TransformMatrixOperation(double[] values)
+            : base(TransformType.Matrix, 0, 0)
+        {
+
+            if (values == null)
+                throw new ArgumentNullException("values", "The values paramerter must be an array of 6 floating points");
+            if (values.Length != 6)
+                throw new ArgumentOutOfRangeException("values", "The values paramerter must be an array of 6 floating points");
+
+            _values = values;
+        }
+
+        public override PDFTransformationMatrix GetMatrix(MatrixOrder order)
+        {
+            Matrix2D d = new Matrix2D(_values[0], _values[1], _values[2], _values[3], _values[4], -(_values[5]));
+
+            return new PDFTransformationMatrix(d);
+        }
     }
 }
 

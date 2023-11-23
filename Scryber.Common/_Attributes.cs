@@ -366,9 +366,48 @@ namespace Scryber
 
     #endregion
 
-    
+    #region PDFCDataContent Attribute
+
+    /// <summary>
+    /// Identifies if the content of the property this attibute decorates can be contained in a &lt;![CDATA[....]]&gt; node.
+    /// </summary>
+    [Serializable()]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public class PDFCDataContentAttribute : Attribute
+    {
+        private bool _allowCData;
+
+        /// <summary>
+        /// True (default) if the content can be in a CDATA node, false if not
+        /// </summary>
+        public bool AllowCData
+        {
+            get { return _allowCData; }
+            set { _allowCData = value; }
+        }
+
+        /// <summary>
+        /// Creates a new CData content attribute, that sets the AllowCData flag to true.
+        /// </summary>
+        public PDFCDataContentAttribute()
+            : this(true)
+        { }
+
+        /// <summary>
+        /// Creates a new CData content attribute, that can either allow or reject CData nodes
+        /// </summary>
+        /// <param name="allowed"></param>
+        public PDFCDataContentAttribute(bool allowed)
+        {
+            this._allowCData = allowed;
+        }
+    }
+
+    #endregion
+
+
     #region PDFRequiredFramework Attribute
-    
+
     /// <summary>
     /// Defines the minimum (and optionally maximum) version of framework (Scryber.Common) this class can be used with.
     /// The XML Parser will check this when loading components to ensure they are valid.

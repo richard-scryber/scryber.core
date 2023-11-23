@@ -633,6 +633,10 @@ namespace Scryber.Drawing
             {
                 return true;
             }
+            else if (Html.CSSColors.Names2Colors.TryGetValue(value, out var found))
+            {
+                return TryParse(found, out color);
+            }
             else
                 return false;
         }

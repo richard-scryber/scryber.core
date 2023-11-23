@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Scryber.Expressive.Functions.Mathematical
+namespace Scryber.Expressive.Functions.Relational
 {
     public class CountFunction : FunctionBase
     {

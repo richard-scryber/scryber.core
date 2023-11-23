@@ -22,7 +22,10 @@ namespace Scryber.Svg.Components
         public override Unit X { get => base.X; set => base.X = value; }
 
         [PDFAttribute("y")]
-        public override Unit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y {
+            get => base.Y;
+            set => base.Y = value;
+        }
 
 
         [PDFAttribute("text-anchor")]
@@ -45,6 +48,32 @@ namespace Scryber.Svg.Components
         public void RemoveTextAnchor()
         {
             this.Style.RemoveValue(StyleKeys.TextAnchorKey);
+        }
+
+        [PDFAttribute("dominant-baseline")]
+        public DominantBaseline DominantBaseline
+        {
+            get
+            {
+                StyleValue<DominantBaseline> value;
+                if (this.Style.TryGetValue(StyleKeys.DominantBaselineKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return DominantBaseline.Auto;
+
+            }
+            set
+            {
+                if (value == DominantBaseline.Auto)
+                    this.RemoveDominantBaseline();
+                else
+                    this.Style.SetValue(StyleKeys.DominantBaselineKey, value);
+            }
+        }
+
+        public void RemoveDominantBaseline()
+        {
+            this.Style.RemoveValue(StyleKeys.DominantBaselineKey);
         }
 
         private TextLiteralList _inner;

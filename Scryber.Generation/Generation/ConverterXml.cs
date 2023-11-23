@@ -416,6 +416,9 @@ namespace Scryber.Generation
 
             if (value.IndexOf(' ') > -1)
                 value = value.Replace(' ', ',');
+            if (value.IndexOf('-') > -1)
+                value = value.Replace('-', '_');
+
             object result;
             if (EnumParser.TryParse(requiredType, value, true, out result))
                 return result;

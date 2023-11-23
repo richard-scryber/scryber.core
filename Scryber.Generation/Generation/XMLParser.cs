@@ -798,6 +798,33 @@ namespace Scryber.Generation
                     }
 
                 }
+                else if(reader.NodeType == XmlNodeType.CDATA)
+                {
+                    if(cdef.DefaultElement != null && string.IsNullOrEmpty(cdef.DefaultElement.Name) && cdef.DefaultElement.AllowCData)
+                    {
+                        LogAdd(reader, TraceLevel.Debug, "Parsing CDATA content for " + cdef.ClassType + " default element content");
+                        if(cdef.DefaultElement.ParseType == DeclaredParseType.SimpleElement)
+                        {
+                            ParserSimpleElementDefinition se = (ParserSimpleElementDefinition)cdef.DefaultElement;
+                            object value = se.GetValue(reader, this.Settings);
+                            this.SetValue(container, value, se);
+                            break;
+                        }
+                        else if (this.Mode == ParserConformanceMode.Strict)
+                            throw this.BuildParserXMLException(reader, Errors.ParserAttributeMustBeSimpleOrCustomParsableType, cdef.DefaultElement.PropertyInfo.Name, cdef.ClassType);
+                        else
+                            LogAdd(reader, TraceLevel.Message, "Skipping text content of property '" + cdef.DefaultElement.PropertyInfo.Name + "' on class '" + cdef.ClassType + ", because it is not a simple or parsable type");
+                    }
+                    else if (this.Mode == ParserConformanceMode.Strict)
+                    {
+                        throw this.BuildParserXMLException(reader, "The default element does not support CDATA content", cdef.ClassType, "element", reader.LocalName);
+                    }
+                    else
+                    {
+                        LogAdd(reader, TraceLevel.Message, "Skipping element '{0}' as the class default property does not support CDATA content", reader.Name);
+                        //reader.Skip();
+                    }
+                }
             }
         }
 

@@ -386,6 +386,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<TextAnchor> TextAnchorKey = StyleKey.InternalCreateStyleValueKey<TextAnchor>((ObjectType)"txta", TextItemKey);
 
+        public static readonly StyleKey<DominantBaseline> DominantBaselineKey = StyleKey.InternalCreateStyleValueKey<DominantBaseline>((ObjectType)"domb", TextItemKey);
+
         //List
 
         public static readonly StyleKey ListKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleList, NOT_INHERITED);

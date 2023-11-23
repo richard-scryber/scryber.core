@@ -6,9 +6,12 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("strike")]
     public class HTMLStrikeSpan : HTMLSpan
     {
-        public HTMLStrikeSpan()
+        public HTMLStrikeSpan() : this(HTMLObjectTypes.Strike)
         {
         }
+
+        protected HTMLStrikeSpan(ObjectType type) : base(type)
+        { }
 
         protected override Style GetBaseStyle()
         {
@@ -22,5 +25,12 @@ namespace Scryber.Html.Components
     public class HTMLDelSpan : HTMLStrikeSpan
     {
 
+        public HTMLDelSpan() : this(HTMLObjectTypes.Delete)
+        {
+
+        }
+
+        protected HTMLDelSpan(ObjectType type) : base(type)
+        { }
     }
 }

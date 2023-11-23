@@ -48,9 +48,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLTableGrid()
-            : base()
+            : this(HTMLObjectTypes.Table)
         {
         }
+
+        protected HTMLTableGrid(ObjectType type) : base(type)
+        { }
     }
 
 }

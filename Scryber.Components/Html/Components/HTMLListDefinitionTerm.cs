@@ -47,9 +47,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLListDefinitionTerm()
-            : base()
+            : this(HTMLObjectTypes.ListDefnTerm)
         {
         }
+
+        protected HTMLListDefinitionTerm(ObjectType type) : base(type)
+        { }
 
         protected override Style GetBaseStyle()
         {

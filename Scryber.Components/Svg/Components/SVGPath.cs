@@ -19,6 +19,8 @@ namespace Scryber.Svg.Components
             set { this.Path = value; }
         }
 
+        
+
         public SVGPath() : base(ObjectTypes.ShapePath)
         {
         }

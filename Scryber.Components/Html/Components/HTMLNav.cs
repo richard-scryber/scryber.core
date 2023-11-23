@@ -5,8 +5,11 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("nav")]
     public class HTMLNav : HTMLDiv
     {
-        public HTMLNav()
+        public HTMLNav() : this(HTMLObjectTypes.Nav)
         {
         }
+
+        protected HTMLNav(ObjectType type) : base(type)
+        { }
     }
 }

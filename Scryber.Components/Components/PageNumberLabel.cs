@@ -141,8 +141,15 @@ namespace Scryber.Components
 
 
         public PageNumberLabel()
-            : base(ObjectTypes.Text)
+            : this(ObjectTypes.Text)
         {
+
+        }
+
+        protected PageNumberLabel(ObjectType type)
+            : base(type)
+        {
+
         }
 
         /// <summary>

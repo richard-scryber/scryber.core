@@ -31,7 +31,11 @@ namespace Scryber.Expressive.Functions.String
            
             if (!string.IsNullOrEmpty(text))
             {
+#if NETSTANDARD2_0_OR_GREATER
                 var replaced = text.Replace(replace.ToString(), replacement.ToString());
+#else
+                var replaced = text.Replace(replace.ToString(), replacement.ToString(), context.EqualityStringComparison);
+#endif
                 return replaced;
             }
             else
@@ -42,6 +46,6 @@ namespace Scryber.Expressive.Functions.String
             
         }
 
-        #endregion
+#endregion
     }
 }

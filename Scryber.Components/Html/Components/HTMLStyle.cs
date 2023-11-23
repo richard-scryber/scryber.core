@@ -95,13 +95,16 @@ namespace Scryber.Html.Components
             }
         }
 
-        public HTMLStyle() : base((ObjectType)"htmS")
+        public HTMLStyle() : this(HTMLObjectTypes.StyleTag)
         {
-            
         }
+
+        protected HTMLStyle(ObjectType type) : base(type)
+        { }
 
         private void AssertInnerStyles(ContextBase context)
         {
+            //TODO: Check with the hidden attribute whether it should be included
             if(!string.IsNullOrEmpty(this.Contents))
             {
                 if (null == this._innerItems)
