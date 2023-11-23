@@ -2708,30 +2708,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.Inconclusive();
         }
 
-        private class ToUpperFunction : IFunction
-        {
-            public string Name { get { return "ToUpper"; } }
-
-            public object Evaluate(IExpression[] param, IDictionary<string, object> vars, Expressive.Context context)
-            {
-                if (null == param && param.Length < 1)
-                    throw new ExpressiveException("Invalid arguments for the ToUpper expression");
-
-                object one = param[0].Evaluate(vars);
-
-                if (null == one)
-                    return null;
-                else
-                    return one.ToString().ToUpper();
-
-            }
-        }
-
-        static HtmlParsing_Test()
-        {
-            //We do this early so we can make sure it is in the collection.
-            Scryber.Binding.BindingCalcExpressionFactory.RegisterFunction(new ToUpperFunction());
-        }
+        
 
 
         [TestMethod]
