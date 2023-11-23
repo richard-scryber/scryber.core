@@ -31,23 +31,27 @@ namespace Scryber.Expressive.Functions.Relational
 
 			value = each.Evaluate(variables);
 
-			IComparable min = null;
+			object min = null;
 
-			if(value is IEnumerable enumerate)
+			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{
-
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
 
-					if(one is IComparable compare)
-					{
-						if (null == min)
-							min = compare;
-						else
-							min = (min.CompareTo(compare) > 0 ? compare : min);
-					}
+					if (null == min)
+						min = one;
+					else
+						min = Comparison.CompareUsingMostPreciseType(min, one, context) > 0 ? one : min;
+
+					//if(one is IComparable compare)
+					//{
+					//	if (null == min)
+					//		min = compare;
+					//	else
+					//		min = (min.CompareTo(compare) > 0 ? compare : min);
+					//}
 					
 				}
 			}

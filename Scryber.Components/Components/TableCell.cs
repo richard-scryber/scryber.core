@@ -194,9 +194,12 @@ namespace Scryber.Components
     public class TableHeaderCell : TableCell
     {
         public TableHeaderCell()
-            : base(ObjectTypes.TableHeaderCell)
+            : this(ObjectTypes.TableHeaderCell)
         { }
 
+
+        protected TableHeaderCell(ObjectType type) : base(type)
+        { }
         
     }
 
@@ -204,9 +207,12 @@ namespace Scryber.Components
     public class TableFooterCell : TableCell
     {
         public TableFooterCell()
-            : base(ObjectTypes.TableFooterCell)
+            : this(ObjectTypes.TableFooterCell)
         { }
 
+        protected TableFooterCell(ObjectType type) : base(type)
+        {
+        }
 
     }
 
@@ -216,5 +222,6 @@ namespace Scryber.Components
             : base(inner)
         {
         }
+
     }
 }

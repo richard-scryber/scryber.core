@@ -46,8 +46,14 @@ namespace Scryber.Html.Components
         }
 
         public HTMLUnderlinedSpan()
-            : base()
+            : base(HTMLObjectTypes.Underline)
         {
+        }
+
+        protected HTMLUnderlinedSpan(ObjectType type)
+            : base(type)
+        {
+
         }
     }
 
@@ -55,5 +61,10 @@ namespace Scryber.Html.Components
     public class HTMLInsertSpan : HTMLUnderlinedSpan
     {
 
+        public HTMLInsertSpan(): this(HTMLObjectTypes.Insert)
+        { }
+
+        protected HTMLInsertSpan(ObjectType type) : base(type)
+        { }
     }
 }

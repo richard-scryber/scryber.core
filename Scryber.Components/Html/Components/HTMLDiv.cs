@@ -50,9 +50,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLDiv()
-            : base()
+            : this(HTMLObjectTypes.Div)
         {
         }
+
+        protected HTMLDiv(ObjectType type): base(type)
+        { }
 
 
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)

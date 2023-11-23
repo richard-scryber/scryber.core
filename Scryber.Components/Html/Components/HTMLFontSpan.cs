@@ -70,10 +70,15 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
+
+
         public HTMLFontSpan()
-            : base()
+            : this(HTMLObjectTypes.FontSpan)
         {
         }
+
+        protected HTMLFontSpan(ObjectType type): base(type)
+        { }
     }
 
 }

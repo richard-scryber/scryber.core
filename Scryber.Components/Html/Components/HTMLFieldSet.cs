@@ -46,8 +46,39 @@ namespace Scryber.Html.Components
         }
 
         public HTMLFieldSet()
-            : base()
+            : this(HTMLObjectTypes.FieldSet)
         {
+        }
+
+        protected HTMLFieldSet(ObjectType type) : base(type)
+        { }
+
+
+        protected override Style GetBaseStyle()
+        {
+            /* HTML Default
+              margin-left: 2px;
+              margin-right: 2px;
+              padding-top: 0.35em;
+              padding-bottom: 0.625em;
+              padding-left: 0.75em;
+              padding-right: 0.75em;
+              border: 2px groove */
+
+            var style= base.GetBaseStyle();
+
+            style.Margins.Left = 2;
+            style.Margins.Right = 2;
+
+            style.Padding.Top = new Drawing.Unit(0.35, Drawing.PageUnits.EMHeight);
+            style.Padding.Bottom = new Drawing.Unit(0.625, Drawing.PageUnits.EMHeight);
+            style.Padding.Left = new Drawing.Unit(0.75, Drawing.PageUnits.EMHeight);
+            style.Padding.Right = new Drawing.Unit(0.75, Drawing.PageUnits.EMHeight);
+
+            style.Border.Width = 2;
+            style.Border.LineStyle = Drawing.LineType.Solid;
+
+            return style;
         }
     }
 }

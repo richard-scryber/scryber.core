@@ -62,9 +62,12 @@ namespace Scryber.Html.Components
         }
 
 
-        public HTMLNumber()
+        public HTMLNumber() : this(HTMLObjectTypes.Number)
         {
         }
+
+        protected HTMLNumber(ObjectType type) : base(type)
+        { }
 
         protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {

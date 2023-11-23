@@ -240,9 +240,12 @@ namespace Scryber.Html.Components
         public bool IsContentBound { get; protected set; } = false;
 
         public HTMLLink()
-            : base((ObjectType)"htmL")
+            : this(HTMLObjectTypes.Link)
         {
-            
+        }
+
+        protected HTMLLink(ObjectType type) : base(type)
+        {
         }
 
         protected override void OnLoaded(LoadContext context)

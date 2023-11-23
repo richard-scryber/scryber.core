@@ -28,9 +28,12 @@ namespace Scryber.Components
     {
 
         public Line()
-            : base(ObjectTypes.ShapeLine)
+            : this(ObjectTypes.ShapeLine)
         {
         }
+
+        protected Line(ObjectType type) : base(type)
+        { }
 
 
         protected override Style GetBaseStyle()

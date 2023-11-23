@@ -57,12 +57,10 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        protected HTMLHeadFootContainer(): this((ObjectType)"htHF")
-        {}
+        
 
         protected HTMLHeadFootContainer(ObjectType type) : base(type)
         {
-            
         }
 
         protected override void OnInitialized(InitContext context)
@@ -172,8 +170,13 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        public HTMLComponentHeader() : base()
+        public HTMLComponentHeader() : this(HTMLObjectTypes.Header)
         { }
+
+        protected HTMLComponentHeader(ObjectType type) : base(type)
+        {
+
+        }
 
         protected override Style GetBaseStyle()
         {
@@ -236,8 +239,12 @@ namespace Scryber.Html.Components
         [PDFArray(typeof(Component))]
         public override ComponentList Contents => base.Contents;
 
-        public HTMLComponentFooter(): base()
+        public HTMLComponentFooter() : this(HTMLObjectTypes.Footer)
         { }
+
+        protected HTMLComponentFooter(ObjectType type) : base(type)
+        {
+        }
 
         protected override Style GetBaseStyle()
         {

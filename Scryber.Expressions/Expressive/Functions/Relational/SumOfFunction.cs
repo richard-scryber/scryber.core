@@ -6,17 +6,17 @@ using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Relational
 {
-	public class MaxOfFunction : FunctionBase
+	public class SumOfFunction : FunctionBase
 	{
         public override string Name
 		{
 			get
 			{
-				return "MaxOf";
+				return "SumOf";
 			}
 		}
 
-        public MaxOfFunction()
+        public SumOfFunction()
 		{
 		}
 
@@ -31,34 +31,19 @@ namespace Scryber.Expressive.Functions.Relational
 
 			value = each.Evaluate(variables);
 
-			object max = null;
+			object total = 0;
 
 			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{
-
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
-
-                    if (null == max)
-                        max = one;
-                    else
-                        max = Comparison.CompareUsingMostPreciseType(max, one, context) > 0 ? max : one;
-
-     //               if (one is IComparable compare)
-					//{
-					//	if (null == max)
-					//		max = compare;
-					//	else
-					//		max = (max.CompareTo(compare) < 0 ? compare : max);
-					//}
-					
-					
+					total = Numbers.Add(total ?? 0, one ?? 0);
 				}
 			}
 
-			return max;
+			return total;
         }
     }
 }

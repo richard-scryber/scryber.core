@@ -65,7 +65,6 @@ namespace Scryber.Binding
             _all.Add(new AtanFunction());
             _all.Add(new CeilingFunction());
             _all.Add(new CosFunction());
-            _all.Add(new CountFunction());
             _all.Add(new ExpFunction());
             _all.Add(new FloorFunction());
             _all.Add(new IEEERemainderFunction());
@@ -95,11 +94,14 @@ namespace Scryber.Binding
             _all.Add(new MinFunction());
             _all.Add(new MinOfFunction());
             _all.Add(new MaxOfFunction());
+            _all.Add(new CountFunction());
+            _all.Add(new CountOfFunction());
             //coalesce
             _all.Add(new EachFunction());
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());
             _all.Add(new SelectWhereFunction());
+            _all.Add(new FirstWhereFunction());
             //TODO: Add Merge, Splice
 
             // Statistical
@@ -122,7 +124,12 @@ namespace Scryber.Binding
             _all.Add(new JoinFunction());
             _all.Add(new SplitFunction());
             _all.Add(new ReplaceFunction());
-            //TODO: Add ToUpper, ToLower, Trim, TrimLeft and TrimRight functions
+            _all.Add(new ToUpperFunction());
+            _all.Add(new ToLowerFunction());
+            _all.Add(new TrimFunction());
+            _all.Add(new TrimLeftFunction());
+            _all.Add(new TrimRightFunction());
+
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());

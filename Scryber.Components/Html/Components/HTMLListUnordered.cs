@@ -76,11 +76,14 @@ namespace Scryber.Html.Components
         }
 
         public HTMLListUnordered()
-            : base()
+            : this(HTMLObjectTypes.ListUnOrdered)
         {
         }
 
-        
+        protected HTMLListUnordered(ObjectType type) : base(type)
+        { }
+
+
     }
 
 }

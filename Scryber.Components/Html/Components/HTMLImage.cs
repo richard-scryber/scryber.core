@@ -81,9 +81,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLImage()
-            : base()
+            : this(HTMLObjectTypes.Image)
         {
         }
+
+        protected HTMLImage(ObjectType type): base(type)
+        { }
 
 
         public override string MapPath(string path)

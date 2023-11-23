@@ -56,8 +56,11 @@ namespace Scryber.Html.Components
         }
 
         public HTMLParagraph()
-            : base()
+            : this(HTMLObjectTypes.Paragraph)
         {
         }
+
+        protected HTMLParagraph(ObjectType type) : base(type)
+        { }
     }
 }

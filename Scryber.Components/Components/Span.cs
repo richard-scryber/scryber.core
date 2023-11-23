@@ -63,9 +63,12 @@ namespace Scryber.Components
         }
 
         public Span()
-            : base()
+            : this(ObjectTypes.Span)
         {
         }
+
+        public Span(ObjectType type): base(type)
+        { }
 
 
         protected override Style GetBaseStyle()
@@ -90,8 +93,14 @@ namespace Scryber.Components
         }
 
         public BoldSpan()
-            : base()
+            : this(ObjectTypes.BoldSpan)
         {
+        }
+
+        protected BoldSpan(ObjectType type)
+            : base(type)
+        {
+
         }
 
 
@@ -119,8 +128,14 @@ namespace Scryber.Components
         }
 
         public ItalicSpan()
-            : base()
+            : this(ObjectTypes.ItalicSpan)
         {
+        }
+
+        protected ItalicSpan(ObjectType type)
+            : base(type)
+        {
+
         }
 
         protected override Style GetBaseStyle()
@@ -146,8 +161,13 @@ namespace Scryber.Components
         }
 
         public UnderlinedSpan()
-            : base()
+            : this(ObjectTypes.UnderlineSpan)
         {
+        }
+
+        protected UnderlinedSpan(ObjectType type) : base(type)
+        {
+
         }
 
         protected override Style GetBaseStyle()

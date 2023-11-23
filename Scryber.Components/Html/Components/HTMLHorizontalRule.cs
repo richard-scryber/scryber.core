@@ -46,8 +46,11 @@ namespace Scryber.Html.Components
         }
 
         public HTMLHorizontalRule()
-            : base()
+            : this(HTMLObjectTypes.HRule)
         {
         }
+
+        protected HTMLHorizontalRule(ObjectType type) : base(type)
+        { }
     }
 }

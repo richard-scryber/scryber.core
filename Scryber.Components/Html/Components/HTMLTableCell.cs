@@ -64,9 +64,12 @@ namespace Scryber.Html.Components
         #endregion
 
         public HTMLTableCell()
-            : base()
+            : this(HTMLObjectTypes.TableCell)
         {
         }
+
+        protected HTMLTableCell(ObjectType type) : base(type)
+        { }
     }
 
     [PDFParsableComponent("th")]
@@ -119,9 +122,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLTableHeaderCell()
-            : base()
+            : this(HTMLObjectTypes.TableHeaderCell)
         {
         }
+
+        protected HTMLTableHeaderCell(ObjectType type) : base(type)
+        { }
     }
 
 }

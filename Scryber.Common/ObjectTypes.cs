@@ -99,6 +99,9 @@ namespace Scryber
         public static readonly ObjectType Canvas = (ObjectType)"canv";
         public static readonly ObjectType Panel = (ObjectType)"panl";
         public static readonly ObjectType Span = (ObjectType)"span";
+        public static readonly ObjectType ItalicSpan = (ObjectType)"ital";
+        public static readonly ObjectType BoldSpan = (ObjectType)"bold";
+        public static readonly ObjectType UnderlineSpan = (ObjectType)"undl";
         public static readonly ObjectType Div = (ObjectType)"div_";
         public static readonly ObjectType BlockQuote = (ObjectType)"bkqu";
         public static readonly ObjectType Paragraph = (ObjectType)"para";

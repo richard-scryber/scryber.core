@@ -60,9 +60,12 @@ namespace Scryber.Html.Components
         }
 
         public HTMLPageNumber()
-            : base()
+            : this(HTMLObjectTypes.PageNumber)
         {
         }
+
+        protected HTMLPageNumber(ObjectType type) : base(type)
+        { }
 
         private const string TotalPageCountFormat = "{1}";
         private const string SectionPage = "{2}";

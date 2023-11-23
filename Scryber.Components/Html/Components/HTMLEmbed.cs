@@ -52,8 +52,11 @@ namespace Scryber.Html.Components
         }
 
 
-        public HTMLEmbed() : base((ObjectType)"htem")
+        public HTMLEmbed() : this(HTMLObjectTypes.Embed)
         {
         }
+
+        protected HTMLEmbed(ObjectType type): base(type)
+        { }
     }
 }

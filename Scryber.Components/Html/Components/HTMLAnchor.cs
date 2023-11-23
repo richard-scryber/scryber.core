@@ -62,9 +62,12 @@ namespace Scryber.Html.Components
 
 
         public HTMLAnchor()
-            : base()
+            : this(HTMLObjectTypes.Anchor)
         {
         }
+
+        protected HTMLAnchor(ObjectType type) : base(type)
+        { }
 
 
         public override string MapPath(string path)

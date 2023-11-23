@@ -107,7 +107,10 @@ namespace Scryber.Html.Components
         }
 
         public HTMLTableHead()
-            : base((ObjectType)"htTH")
+            : this(HTMLObjectTypes.TableHead)
+        { }
+
+        protected HTMLTableHead(ObjectType type) : base(type)
         { }
 
         protected override Style GetBaseStyle()
@@ -125,7 +128,10 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableBody()
-            : base((ObjectType)"htTB")
+            : this(HTMLObjectTypes.TableBody)
+        { }
+
+        protected HTMLTableBody(ObjectType type) : base(type)
         { }
 
 
@@ -136,7 +142,10 @@ namespace Scryber.Html.Components
     {
 
         public HTMLTableFooter()
-            : base((ObjectType)"htTF")
+            : this(HTMLObjectTypes.TableFoot)
+        { }
+
+        protected HTMLTableFooter(ObjectType type) : base(type)
         { }
 
 

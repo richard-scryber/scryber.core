@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 
-namespace Scryber.Expressive.Functions.Mathematical
+namespace Scryber.Expressive.Functions.Relational
 {
-	public class SumOfFunction : FunctionBase
+	public class CountOfFunction : FunctionBase
 	{
         public override string Name
 		{
 			get
 			{
-				return "SumOf";
+				return "CountOf";
 			}
 		}
 
-        public SumOfFunction()
+        public CountOfFunction()
 		{
 		}
 
@@ -31,19 +31,23 @@ namespace Scryber.Expressive.Functions.Mathematical
 
 			value = each.Evaluate(variables);
 
-			object total = 0;
+			int count = 0;
 
 			if(Helpers.Collections.TryIsCollection(value, out IEnumerable enumerate))
 			{
 				foreach (var item in enumerate)
 				{
+
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
-					total = Numbers.Add(total ?? 0, one ?? 0);
+					if (null != one)
+					{
+						count += 1;
+					}
 				}
 			}
 
-			return total;
+			return count;
         }
     }
 }
