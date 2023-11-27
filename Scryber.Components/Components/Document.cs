@@ -2138,6 +2138,17 @@ namespace Scryber.Components
             if (this.HasAdditions)
                 this.Additions.RegisterPreLayout(context);
 
+            if(null != this.Styles)
+            {
+                if (this.Styles.ShouldUseIndex())
+                    context.TraceLog.Add(TraceLevel.Message, "Document", "Document style collection is indexed as count is " + this.Styles.Count);
+                else
+                    context.TraceLog.Add(TraceLevel.Message, "Document", "Style collection does not need indexing as count is " + this.Styles.Count);
+
+                
+
+            }
+
             base.RegisterPreLayout(context);
         }
 

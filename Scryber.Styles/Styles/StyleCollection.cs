@@ -28,8 +28,14 @@ namespace Scryber.Styles
     /// </summary>
     public class StyleCollection : System.Collections.ObjectModel.Collection<StyleBase>
     {
+        /// <summary>
+        /// The number of items in the collection after which an index tree should be built and used, rather than just looping through the items.
+        /// </summary>
+        private const int StyleIndexLimit = 30;
+
         private IComponent _owner;
         private bool _hasowner;
+        private StyleRootIndexTree _index;
 
         /// <summary>
         /// Gets or sets the owner of this collection
@@ -61,22 +67,33 @@ namespace Scryber.Styles
         public StyleCollection(IComponent owner)
             : this(owner, true)
         {
-            
         }
 
         protected StyleCollection(IComponent owner, bool hasowner)
         {
             this.Owner = owner;
             this._hasowner = hasowner;
+            this._index = null;
         }
 
 
         public void MergeInto(Style style, IComponent forComponent)
         {
-            for (int i = 0; i < this.Count; i++)
+            if (this.ShouldUseIndex())
             {
-                StyleBase inner = this[i];
-                inner.MergeInto(style, forComponent);
+                var index = this.EnsureIndex();
+                foreach (var item in index.GetTopMatched(forComponent))
+                {
+                    item.MergeInto(style, forComponent);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    StyleBase inner = this[i];
+                    inner.MergeInto(style, forComponent);
+                }
             }
             
         }
@@ -94,6 +111,46 @@ namespace Scryber.Styles
                     naming.Owner = parent;
                 }
             }
+        }
+
+        //
+        // TreeIndex methods
+        //
+
+        public virtual bool ShouldUseIndex()
+        {
+            return this.Count > StyleIndexLimit;
+        }
+
+        
+
+        protected virtual StyleRootIndexTree EnsureIndex()
+        {
+            if(null == this._index)
+            {
+                this._index = new StyleRootIndexTree();
+                this.PopulateIndex(this._index, this);
+            }
+
+            return this._index;
+        }
+
+        private void PopulateIndex(StyleRootIndexTree index, StyleCollection withCollection)
+        {
+            foreach (var style in withCollection)
+            {
+                if (style is StyleDefn defn)
+                    index.AddDefinition(defn);
+                else if(style is StyleGroup grp)
+                {
+                    //throw new NotSupportedException("Cannot currently index groups");
+                }
+            }
+        }
+
+        protected virtual void ResetIndex()
+        {
+            this._index = null;
         }
 
         //
@@ -162,6 +219,7 @@ namespace Scryber.Styles
                         naming.Owner = this.Owner;
                 }
             }
+            this.ResetIndex();
         }
 
         protected override void InsertItem(int index, StyleBase item)
@@ -178,10 +236,13 @@ namespace Scryber.Styles
                         naming.Owner = this.Owner;
                 }
             }
+            this.ResetIndex();
         }
 
         protected override void ClearItems()
         {
+            this.ResetIndex();
+
             if (HasOwner)
             {
                 this.UpdateAllParents(null);
@@ -211,6 +272,8 @@ namespace Scryber.Styles
                 else if (removed is INamingContainer naming)
                     naming.Owner = null;
             }
+
+            this.ResetIndex();
         }
 
         

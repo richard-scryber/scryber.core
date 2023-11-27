@@ -105,6 +105,8 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else if (count == 3)
             {
+                result = true;
+
                 // top then left and right and finally bottom
                 if (!string.IsNullOrEmpty(exprs[0]))
                 {
@@ -140,6 +142,8 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else if (count == 4)
             {
+                result = true;
+
                 // all 4 individually top then right and then bottom and finally left
                 if (!string.IsNullOrEmpty(exprs[0]))
                 {

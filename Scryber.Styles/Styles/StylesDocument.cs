@@ -57,6 +57,14 @@ namespace Scryber.Styles
         {
             if (null != this.DataBound)
                 this.DataBound(this, args);
+
+            if(null != this.Styles)
+            {
+                if (this.Styles.ShouldUseIndex())
+                    args.Context.TraceLog.Add(TraceLevel.Message, "Styles Document", "Document style collection is indexed as count is " + this.Styles.Count);
+                else
+                    args.Context.TraceLog.Add(TraceLevel.Message, "Styles Document", "Document style collection does not need indexing as count is " + this.Styles.Count);
+            }
         }
 
         //
@@ -340,6 +348,8 @@ namespace Scryber.Styles
             if (includeChildren)
                 this.Styles.Load(context);
         }
+
+
 
         protected virtual void Dispose(bool disposing)
         {

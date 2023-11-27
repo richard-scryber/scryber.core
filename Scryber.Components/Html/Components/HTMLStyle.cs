@@ -27,7 +27,7 @@ namespace Scryber.Html.Components
             }
         }
 
-        #region protected PDFStyleCollection InnerItems
+        #region protected StyleCollection InnerItems
 
         private StyleCollection _innerItems;
 
@@ -45,7 +45,7 @@ namespace Scryber.Html.Components
 
         #endregion
 
-        #region public PDFStyleCollection Styles
+        #region public StyleCollection Styles
 
         /// <summary>
         /// Gets all the styles in this group

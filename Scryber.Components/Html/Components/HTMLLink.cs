@@ -138,6 +138,10 @@ namespace Scryber.Html.Components
                     }
 
                     doc.Styles.Add(_parsedGroup);
+
+                    if (_parsedGroup.Styles.ShouldUseIndex())
+                        context.TraceLog.Add(TraceLevel.Message, "Link Content", "Style collection will be indexed as count is " + _parsedGroup.Styles.Count);
+                    
                 }
             }
 

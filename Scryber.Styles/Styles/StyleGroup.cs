@@ -199,10 +199,7 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public override void MergeInto(Style style, IComponent Component)
         {
-            foreach (StyleBase def in this.InnerItems)
-            {
-                def.MergeInto(style, Component);
-            }
+            this.InnerItems.MergeInto(style, Component);
         }
 
         #endregion
@@ -233,11 +230,7 @@ namespace Scryber.Styles
             base.DoDataBind(context, includechildren);
             if (includechildren && this.InnerItems != null && this.InnerItems.Count > 0)
             {
-                foreach (StyleBase sb in this.InnerItems)
-                {
-                    if (sb is IBindableComponent)
-                        ((IBindableComponent)sb).DataBind(context);
-                }
+                this.InnerItems.DataBind(context);
             }
         }
 
