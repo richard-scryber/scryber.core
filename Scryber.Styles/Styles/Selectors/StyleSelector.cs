@@ -240,7 +240,10 @@ namespace Scryber.Styles.Selectors
 
             if (string.IsNullOrEmpty(this.AppliedElement) == false)
             {
-                if (string.IsNullOrEmpty(component.ElementName))
+                if (this.AppliedElement == "*" || this.AppliedElement == "*|*")
+                    ; //continue the flow as we are matching any element
+
+                else if (string.IsNullOrEmpty(component.ElementName))
                     return false;
                 else if (!this.AppliedElement.Equals(component.ElementName))
                     return false;

@@ -85,7 +85,8 @@ namespace Scryber.Styles.Selectors
             if (string.IsNullOrEmpty(selector))
                 return null;
 
-            if (string.Equals("*", selector))
+            if (string.Equals("*", selector) || string.Equals("*|*", selector))
+                //TODO: Support classes and other selectors after the *
                 return new StyleCatchAllMatcher();
 
             if(string.Equals(":root", selector))
@@ -158,6 +159,7 @@ namespace Scryber.Styles.Selectors
             StyleClassSelector appliedClass = null;
             string appliedId = null;
 
+            
             int stateIndex = -1;
             ParsingType statePreviousType = ParsingType.Type;
 
