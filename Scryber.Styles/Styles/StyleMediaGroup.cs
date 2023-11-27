@@ -8,6 +8,8 @@ namespace Scryber.Styles
     {
         public Selectors.MediaMatcher Media { get; set; }
 
+        
+
         public StyleMediaGroup() : base()
         {
 
@@ -20,6 +22,14 @@ namespace Scryber.Styles
 
         private OutputFormat _format = OutputFormat.PDF;
 
+        public virtual bool IsMediaMatched()
+        {
+            if (null == this.Media || this.Media.IsMatchedTo(this._format))
+                return true;
+            else
+                return false;
+        }
+       
         protected override void DoDataBind(DataContext context, bool includechildren)
         {
             this._format = context.Format;
@@ -29,7 +39,7 @@ namespace Scryber.Styles
 
         public override void MergeInto(Style style, IComponent Component)
         {
-            if (null == this.Media || this.Media.IsMatchedTo(this._format))
+            if (this.IsMediaMatched())
                 base.MergeInto(style, Component);
         }
     }

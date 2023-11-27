@@ -84,7 +84,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("." + cName);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label() { StyleClass = cName };
 
@@ -111,7 +111,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("#" + id);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ID = id;
@@ -141,7 +141,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ElementName = ele;
@@ -175,7 +175,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("#" + id);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -195,7 +195,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -215,7 +215,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("." + cls);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -241,7 +241,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele + "." + cls);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ElementName = ele;
@@ -285,7 +285,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele + "#" + id);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ID = id;
@@ -329,7 +329,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("#" + id + "." + cls);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ID = id;
@@ -378,7 +378,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele + "#" + id + "." + cls);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
             lbl.ID = id;
@@ -441,7 +441,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("." + cls + "." + cls2);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             
             var lbl = new Label();
@@ -495,7 +495,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(ele + "." + cls + "." + cls2);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
 
             var lbl = new Label();
@@ -563,7 +563,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn("#" + id + "." + cls + "." + cls2);
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
 
             var lbl = new Label();
@@ -646,7 +646,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             var tree = new StyleRootIndexTree();
 
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
 
             var lbl = new Label();
@@ -681,7 +681,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(root);
 
             var tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -702,7 +702,7 @@ namespace Scryber.Core.UnitTests.Styles
             //add another defn for a class
             var className = "clsName";
             var classDefn = new StyleDefn("." + className);
-            tree.AddDefinition(classDefn);
+            tree.AddStyle(classDefn);
 
             //apply the classes to the document and label
             lbl.StyleClass = className;
@@ -736,7 +736,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(catchAll);
 
             var tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -758,7 +758,7 @@ namespace Scryber.Core.UnitTests.Styles
             catchAll = "*|*";
             var nsdefn = new StyleDefn(catchAll);
 
-            tree.AddDefinition(nsdefn);
+            tree.AddStyle(nsdefn);
 
             found = tree.GetTopMatched(lbl).ToList();
 
@@ -789,7 +789,7 @@ namespace Scryber.Core.UnitTests.Styles
             var defn = new StyleDefn(innerCatchAll);
 
             var tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             var lbl = new Label();
 
@@ -826,7 +826,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn = new StyleDefn(innerCatchAll);
 
             tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             lbl = new Label();
 
@@ -862,7 +862,7 @@ namespace Scryber.Core.UnitTests.Styles
             defn = new StyleDefn(innerCatchAll);
 
             tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             lbl = new Label();
 
@@ -928,7 +928,7 @@ namespace Scryber.Core.UnitTests.Styles
             
 
             tree = new StyleRootIndexTree();
-            tree.AddDefinition(defn);
+            tree.AddStyle(defn);
 
             found = tree.GetTopMatched(lbl).ToList();
             Assert.IsNotNull(found);
@@ -1030,7 +1030,7 @@ namespace Scryber.Core.UnitTests.Styles
                 var defn = new StyleDefn("." + cName + i);
                 defn.Size.Width = i;
                 col.Add(defn);
-                tree.AddDefinition(defn);
+                tree.AddStyle(defn);
             }
             var rnd = new Random();
 

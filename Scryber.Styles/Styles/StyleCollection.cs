@@ -139,12 +139,7 @@ namespace Scryber.Styles
         {
             foreach (var style in withCollection)
             {
-                if (style is StyleDefn defn)
-                    index.AddDefinition(defn);
-                else if(style is StyleGroup grp)
-                {
-                    //throw new NotSupportedException("Cannot currently index groups");
-                }
+                index.AddStyle(style);
             }
         }
 
@@ -182,6 +177,10 @@ namespace Scryber.Styles
                 if (item is IBindableComponent)
                     (item as IBindableComponent).DataBind(context);
             }
+
+            //After databinding we make sure the index gets populated
+            this.ResetIndex();
+            
         }
 
         public void Dispose()

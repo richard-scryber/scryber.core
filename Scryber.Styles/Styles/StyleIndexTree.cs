@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Scryber.Styles;
 using Scryber.Styles.Selectors;
 
-namespace Scryber
+namespace Scryber.Styles
 {
 	/// <summary>
 	/// Base class to Index of a list of style definitions that can be enumerator over for matching
@@ -17,7 +16,7 @@ namespace Scryber
 		{
 		}
 
-        public virtual bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
+        protected internal virtual bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
         {
             if(null == _directs)
             {
@@ -36,7 +35,7 @@ namespace Scryber
         /// <param name="state"></param>
         /// <param name="component"></param>
         /// <returns></returns>
-		public virtual IEnumerable<StyleDefn> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
+		protected internal virtual IEnumerable<StyleBase> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
         {
             if (null != this._directs)
             {
@@ -59,7 +58,7 @@ namespace Scryber
         }
 
 
-        public override IEnumerable<StyleDefn> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
+        protected internal override IEnumerable<StyleBase> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
         {
             if (null != classes && classes.Length > 0)
             {
@@ -85,7 +84,7 @@ namespace Scryber
 
         }
 
-        public override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
+        protected internal override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
         {
             if (null != cls)
             {
@@ -120,7 +119,7 @@ namespace Scryber
             this.ElementName = name;
         }
 
-        public override IEnumerable<StyleDefn> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
+        protected internal override IEnumerable<StyleBase> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
         {
             if (null != classes && classes.Length > 0)
             {
@@ -145,7 +144,7 @@ namespace Scryber
             }
         }
 
-        public override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
+        protected internal override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
         {
             if (null != cls)
             {
@@ -182,7 +181,7 @@ namespace Scryber
             this.ID = id;
         }
 
-        public override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
+        protected internal override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
         {
             if (!string.IsNullOrEmpty(eleName))
             {
@@ -220,7 +219,7 @@ namespace Scryber
             }
         }
 
-        public override IEnumerable<StyleDefn> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
+        protected internal override IEnumerable<StyleBase> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
         {
             if (!string.IsNullOrEmpty(elementName))
             {
@@ -266,7 +265,8 @@ namespace Scryber
 		private Dictionary<string, StyleElementIndexTree> _byName;
 		private Dictionary<string, StyleClassIndexTree> _byClass;
         private List<StyleDefn> _roots;
-        private List<StyleDefn> _catchAlls;
+        private List<StyleBase> _catchAlls;
+        private List<StylePageGroup> _pages;
 
         /// <summary>
         /// Returns an enumerable set of style definitions that match the last (top) selector only of the definition against the component
@@ -274,7 +274,7 @@ namespace Scryber
         /// <param name="component"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public IEnumerable<StyleDefn> GetTopMatched(IComponent component)
+        public IEnumerable<StyleBase> GetTopMatched(IComponent component)
         {
             var id = component.ID;
             var ele = component.ElementName;
@@ -295,7 +295,62 @@ namespace Scryber
             return DoGetMatched(id, ele, allClasses, component);
         }
 
-        public bool AddDefinition(StyleDefn defn)
+        public bool AddStyle(StyleBase style)
+        {
+            if (style is StyleDefn defn)
+            {
+                return this.AddDefinition(defn);
+            }
+            else if (style is StylePageGroup pg)
+            {
+                return this.AddPageGroup(pg);
+            }
+            else if (style is StyleMediaGroup media)
+            {
+                return this.AddMediaGroup(media);
+            }
+            else if (style is StyleFontFace font)
+            {
+                return this.AddFontFace(font);
+            }
+            else
+            {
+                this._catchAlls.Add(style);
+                return false;
+            }
+        }
+
+        private bool AddPageGroup(StylePageGroup pg)
+        {
+            if (null == this._pages)
+                this._pages = new List<StylePageGroup>();
+            this._pages.Add(pg);
+            return true;
+        }
+
+        private bool AddMediaGroup(StyleMediaGroup media)
+        {
+            int count = 0;
+
+            if (media.IsMediaMatched())
+            {
+                foreach(var style in media.Styles)
+                {
+                    if (this.AddStyle(style))
+                        count++;
+                }
+            }
+
+            return count > 0;
+        }
+
+        private bool AddFontFace(StyleFontFace font)
+        {
+            //Do nothing as the font face is added directly to the resources
+            return false;
+        }
+
+        protected bool AddDefinition(StyleDefn defn)
         {
             var match = defn.Match;
             var sel = match.Selector;
@@ -310,7 +365,7 @@ namespace Scryber
             }
             else if(match is StyleCatchAllMatcher)
             {
-                if(null == _catchAlls) { _catchAlls = new List<StyleDefn>(); }
+                if(null == _catchAlls) { _catchAlls = new List<StyleBase>(); }
                 _catchAlls.Add(defn);
             }
             else
@@ -324,7 +379,7 @@ namespace Scryber
                     {
                         if (string.IsNullOrEmpty(id) && null == cls)
                         {
-                            if(null == _catchAlls) { _catchAlls = new List<StyleDefn>(); }
+                            if(null == _catchAlls) { _catchAlls = new List<StyleBase>(); }
                             _catchAlls.Add(defn);
                             count++;
                             sel = null;
@@ -360,7 +415,7 @@ namespace Scryber
             
         }
 
-        public override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
+        protected internal override bool DoAddDefinition(string id, string eleName, StyleClassSelector cls, StyleDefn defn)
         {
             if (!string.IsNullOrEmpty(id))
             {
@@ -407,7 +462,7 @@ namespace Scryber
             }
         }
 
-        public override IEnumerable<StyleDefn> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
+        protected internal override IEnumerable<StyleBase> DoGetMatched(string id, string elementName, string[] classes, IComponent component)
         {
             if(null != _catchAlls && _catchAlls.Count > 0)
             {
@@ -426,6 +481,14 @@ namespace Scryber
                     yield return root;
                 }
             }
+            else if(null != _pages && _pages.Count > 0 && component is IDocumentPage)
+            {
+                foreach(var pg in _pages)
+                {
+                    yield return pg;
+                }
+            }
+
             if(!string.IsNullOrEmpty(id))
             {
                 if(null != this._byID && this._byID.TryGetValue(id, out var tree))

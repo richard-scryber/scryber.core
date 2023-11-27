@@ -204,19 +204,7 @@ namespace Scryber.Styles
 
         #endregion
 
-        //#region public override PDFStyle MatchClass(string classname)
-
-        ///// <summary>
-        ///// Overrides the base implementation to call MatchClass on the inner items of this group
-        ///// </summary>
-        ///// <param name="classname"></param>
-        ///// <returns></returns>
-        //public override PDFStyle MatchClass(string classname)
-        //{
-        //    return this.InnerItems.MatchClass(classname);
-        //}
-
-        //#endregion
+        
 
         #region protected override void DoDataBind(PDFDataContext context, bool includechildren)
 

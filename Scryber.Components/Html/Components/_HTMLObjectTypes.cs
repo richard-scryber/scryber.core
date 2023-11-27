@@ -10,6 +10,10 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType BlockQuote = (ObjectType)"hBlQ";
 		public static readonly ObjectType Body = (ObjectType)"hBdy";
 		public static readonly ObjectType Bold = ObjectTypes.BoldSpan;
+		public static readonly ObjectType Big = (ObjectType)"hBig";
+		public static readonly ObjectType Small = (ObjectType)"hSml";
+		public static readonly ObjectType SuperScript = (ObjectType)"hSup";
+		public static readonly ObjectType SubScript = (ObjectType)"hSub";
 		public static readonly ObjectType Strong = (ObjectType)"hStg";
 		public static readonly ObjectType Cite = (ObjectType)"hCte";
 		public static readonly ObjectType Code = (ObjectType)"hCde";
@@ -48,6 +52,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType ListItem = ObjectTypes.ListItem;
 		public static readonly ObjectType ListOrdered = ObjectTypes.OrderedList;
 		public static readonly ObjectType ListUnOrdered = ObjectTypes.UnorderedList;
+		public static readonly ObjectType ListMenu = (ObjectType)"hMnu";
 		public static readonly ObjectType Main = (ObjectType)"hMan";
 		public static readonly ObjectType Meta = (ObjectType)"hMta";
 		public static readonly ObjectType Nav = (ObjectType)"hNav";
