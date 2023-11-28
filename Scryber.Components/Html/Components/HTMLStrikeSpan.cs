@@ -33,4 +33,16 @@ namespace Scryber.Html.Components
         protected HTMLDelSpan(ObjectType type) : base(type)
         { }
     }
+
+    /// <summary>
+    /// Same as &lt;strike&gt;&lt;/strike&gt;
+    /// </summary>
+    [PDFParsableComponent("s")]
+    public class HTMLSSpan : HTMLStrikeSpan
+    {
+
+        public HTMLSSpan(): base()
+        { }
+    }
+
 }

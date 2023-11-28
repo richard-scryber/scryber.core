@@ -17,7 +17,9 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Strong = (ObjectType)"hStg";
 		public static readonly ObjectType Cite = (ObjectType)"hCte";
 		public static readonly ObjectType Code = (ObjectType)"hCde";
-		public static readonly ObjectType Definition = (ObjectType)"hDef";
+		public static readonly ObjectType Sample = (ObjectType)"hSam";
+        public static readonly ObjectType Keyboard = (ObjectType)"hKbd";
+        public static readonly ObjectType Definition = (ObjectType)"hDef";
 		public static readonly ObjectType Div = ObjectTypes.Div;
 		public static readonly ObjectType Document = (ObjectType)"Html";
 		public static readonly ObjectType Embed = (ObjectType)"hEmd";
@@ -77,6 +79,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Time = ObjectTypes.DateComp;
 		public static readonly ObjectType Underline = ObjectTypes.UnderlineSpan;
 		public static readonly ObjectType Insert = (ObjectType)"hIns";
+		public static readonly ObjectType Progress = (ObjectType)"hPro";
 
     }
 }

@@ -2103,8 +2103,14 @@ body.grey div.reverse{
             .other{
                background-color: calc(concat('#', 'FF', '00', '00'));
                color: var(--text-color, #00FFFF);
-            }";
+            }
 
+            /*.calc{
+                width: calc(100% - 120px);
+            }*/
+";
+
+            //TODO: Sort the use of the calc expressions with units at binding time.
 
             using (var doc = BuildDocumentWithStyles(cssWithCalc))
             {

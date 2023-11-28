@@ -4,14 +4,14 @@ using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
-    [PDFParsableComponent("code")]
-    public class HTMLCodeSpan : HTMLSpan
-    {
-        public HTMLCodeSpan() : this(HTMLObjectTypes.Code)
-        {
-        }
 
-        protected HTMLCodeSpan(ObjectType type): base(type)
+    [PDFParsableComponent("kbd")]
+    public class HTMLKeyboardSpan : HTMLSpan
+    {
+        public HTMLKeyboardSpan() : this(HTMLObjectTypes.Keyboard)
+        { }
+
+        protected HTMLKeyboardSpan(ObjectType type) : base(type)
         { }
 
         protected override Style GetBaseStyle()
@@ -20,7 +20,6 @@ namespace Scryber.Html.Components
             style.Font.FontFamily = (FontSelector)"monospace";
             return style;
         }
-    }
 
-    
+    }
 }

@@ -57,7 +57,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Font.FontSize = new Drawing.Unit(70, Drawing.PageUnits.Percent);
+            style.Font.FontSize = new Drawing.Unit(75, Drawing.PageUnits.Percent);
             style.SetValue(StyleKeys.DominantBaselineKey, Drawing.DominantBaseline.Hanging);
             return style;
         }
