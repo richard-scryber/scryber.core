@@ -20,6 +20,16 @@ namespace Scryber.Html.Components
 		private ProgressBar _barComponent;
 		private ProgressValue _valComponent;
 
+        protected ProgressBar BarComponent
+        {
+            get { return _barComponent; }
+        }
+
+        protected ProgressValue ValueComponent
+        {
+            get { return _valComponent; }
+        }
+
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
@@ -81,15 +91,15 @@ namespace Scryber.Html.Components
 		public HTMLProgress(ObjectType type) : base(type)
 		{
 			this.Max = 1.0;
-			this.InitProgressContent();
+			this.InitProgressContent(ProgressBarClass, ProgressValueClass);
 		}
 
-		protected virtual void InitProgressContent()
+		protected virtual void InitProgressContent(string barClass, string valueClass)
 		{
-			this._barComponent = new ProgressBar(ProgressBarClass);
+			this._barComponent = new ProgressBar(barClass);
 			
 
-			this._valComponent = new ProgressValue(ProgressValueClass);
+			this._valComponent = new ProgressValue(valueClass);
 
 			this._barComponent.Contents.Add(this._valComponent);
 
@@ -118,7 +128,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
 			style.Position.PositionMode = PositionMode.InlineBlock;
-			style.Background.Color = StandardColors.Gray;
+			style.Background.Color = Color.Parse("#C0C0C0");
 			style.Size.Width = ProgressBarWidth;
 			style.Size.Height = ProgressBarHeight;
 			style.Overflow.Action = OverflowAction.Clip;
@@ -185,7 +195,7 @@ namespace Scryber.Html.Components
             }
         }
 
-		private class ProgressValue : Div
+		protected class ProgressValue : Div
 		{
             [PDFAttribute("class")]
             public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }

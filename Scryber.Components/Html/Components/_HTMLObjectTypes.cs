@@ -16,7 +16,10 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType SubScript = (ObjectType)"hSub";
 		public static readonly ObjectType Strong = (ObjectType)"hStg";
 		public static readonly ObjectType Cite = (ObjectType)"hCte";
-		public static readonly ObjectType Code = (ObjectType)"hCde";
+        public static readonly ObjectType Output = (ObjectType)"hOut";
+        public static readonly ObjectType Slot = (ObjectType)"hSlt";
+        public static readonly ObjectType Var = (ObjectType)"hVar";
+        public static readonly ObjectType Code = (ObjectType)"hCde";
 		public static readonly ObjectType Sample = (ObjectType)"hSam";
         public static readonly ObjectType Keyboard = (ObjectType)"hKbd";
         public static readonly ObjectType Definition = (ObjectType)"hDef";
@@ -80,6 +83,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Underline = ObjectTypes.UnderlineSpan;
 		public static readonly ObjectType Insert = (ObjectType)"hIns";
 		public static readonly ObjectType Progress = (ObjectType)"hPro";
+		public static readonly ObjectType Meter = (ObjectType)"hMtr";
 
     }
 }
