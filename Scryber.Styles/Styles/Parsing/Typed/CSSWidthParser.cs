@@ -25,11 +25,11 @@ namespace Scryber.Styles.Parsing.Typed
                     result = AttachExpressionBindingHandler(onStyle, StyleKeys.SizeWidthKey, value, DoConvertExplicitWidth);
                     result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
                 }
-                //else if (value == "100%")
-                //{
-                //    onStyle.SetValue(StyleKeys.SizeFullWidthKey, true);
-                //    result = true;
-                //}
+                else if (value == "100%")
+                {
+                    onStyle.SetValue(StyleKeys.SizeFullWidthKey, true);
+                    result = true;
+                }
                 else if (ParseCSSUnit(value, out parsed))
                 {
                     onStyle.SetValue(this.StyleAttribute, parsed);
