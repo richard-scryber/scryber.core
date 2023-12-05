@@ -800,6 +800,7 @@ namespace Scryber.Expressive.Tokenisation
         /// <param name="expression">The expression to check</param>
         /// <param name="index">The index at whick to start checking</param>
         /// <param name="length">The output length of the string that constitutes the number</param>
+        /// <param name="isUnit">Set to true if the token is a css unit (20pt, 100%, etc.) rather than a simple number</param>
         /// <returns>True if it is a number</returns>
         protected virtual bool IsNumber(string expression, int index, out int length, out bool isUnit)
         {
@@ -816,52 +817,82 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     if (index > start)
                         index++;
+                    else if (index == start && expression.Length > index + 1 && char.IsDigit(expression, index + 1))
+                        index++;
                     else
                         break;
                 }
-                else if(expression[index] == 'p') //1234.5pt
+                else if (index > start)
                 {
-                    if (index+1 < expression.Length && expression[index + 1] == 't')
+                    if(IsKnownUnitSuffix(expression, index, out int suffixLen))
                     {
-                        index+= 2;
+                        index += suffixLen;
+                        isUnit = true;
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    if (expression[index] == 'p') //1234.5pt, 1234.5px
+                    {
+                        if (index + 1 < expression.Length && expression[index + 1] == 't')
+                        {
+                            index += 2;
+                            isUnit = true;
+                            break;
+                        }
+                        else if(index + 1 < expression.Length && expression[index + 1] == 'x')
+                        {
+                            index += 2;
+                            isUnit = true;
+                            break;
+                        }
+                        else
+                            break;
+                    }
+                    else if (expression[index] == 'm') //1234.5mm
+                    {
+                        if (index + 1 < expression.Length && expression[index + 1] == 'm')
+                        {
+                            index += 2;
+                            isUnit = true;
+                            break;
+                        }
+                        else
+                            break;
+                    }
+                    else if (expression[index] == 'c') //1234.5cm
+                    {
+                        if (index + 1 < expression.Length && expression[index + 1] == 'm')
+                        {
+                            index += 2;
+                            isUnit = true;
+                            break;
+                        }
+                        else
+                            break;
+                    }
+                    else if (expression[index] == 'i') //1234.5in
+                    {
+                        if (index + 1 < expression.Length && expression[index + 1] == 'n')
+                        {
+                            index += 2;
+                            isUnit = true;
+                            break;
+                        }
+                        else
+                            break;
+                    }
+                    else if (expression[index] == '%')
+                    {
+                        index++;
                         isUnit = true;
                         break;
                     }
                     else
                         break;
-                }
-                else if(expression[index] == 'm') //1234.5mm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
-                    {
-                        index+= 2;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
-                }
-                else if (expression[index] == 'c') //1234.5cm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'm')
-                    {
-                        index+= 2;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
-                }
-                else if (expression[index] == 'i') //1234.5mm
-                {
-                    if (index + 1 < expression.Length && expression[index + 1] == 'n')
-                    {
-                        index+= 2;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
+
                 }
                 else
                     break;
@@ -870,6 +901,111 @@ namespace Scryber.Expressive.Tokenisation
             length = index - start;
             return length > 0;
 
+        }
+
+        private bool IsKnownUnitSuffix(string expression, int index, out int suffixLen)
+        {
+            suffixLen = 0;
+            if(expression.Length > index + 4) //vmin or vmax
+            {
+                if (expression[index] == 'v' && expression[index + 1] == 'm')
+                {
+                    if (expression[index +2] == 'i' && expression[index+3] == 'n' && IsUnitEndOrWhitespace(expression, index + 4)) //vmin
+                    {
+                        suffixLen = 4;
+                        return true;
+                    }
+                    else if (expression[index + 2] == 'a' && expression[index + 3] == 'x' && IsUnitEndOrWhitespace(expression, index + 4)) //vmax
+                    {
+                        suffixLen = 4;
+                        return true;
+                    }
+                }
+                    
+            }
+
+            if (expression.Length > index + 3) //rem
+            {
+                if (expression[index] == 'r' && expression[index + 1] == 'e' && expression[index + 2] == 'm' && IsUnitEndOrWhitespace(expression, index + 3))
+                {
+                    suffixLen = 3;
+                    return true;
+                }
+            }
+
+            if(expression.Length > index + 2) // em,ex,ch,vw,vh,mm,in,pt,px
+            {
+                switch (expression[index])
+                {
+                    case ('e'): //em,ex
+                        if ((expression[index + 1] == 'm' || expression[index+1] == 'x') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('c'): //ch
+                        if (expression[index + 1] == 'h' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('v'): //vw, vh
+                        if ((expression[index + 1] == 'w' || expression[index + 1] == 'h') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('m'): //mm
+                        if (expression[index + 1] == 'm' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('i'): //in
+                        if (expression[index + 1] == 'n' && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                    case ('p'): //pt,px
+                        if ((expression[index + 1] == 't' || expression[index + 1] == 'x') && IsUnitEndOrWhitespace(expression, index + 2))
+                        {
+                            suffixLen = 2;
+                            return true;
+                        }
+                        break;
+                }
+            }
+
+            if(expression.Length > index) // %
+            {
+                if (expression[index] == '%')
+                {
+                    suffixLen = 1;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static char[] _unitEnds = { ',', ';', ')', ']' };
+
+        private static bool IsUnitEndOrWhitespace(string expression, int index)
+        {
+            if (expression.Length <= index)
+                return true;
+            else if (char.IsWhiteSpace(expression, index))
+                return true;
+            else if (Array.IndexOf(_unitEnds, expression[index]) > -1)
+                return true;
+
+            return false;
         }
 
         /// <summary>

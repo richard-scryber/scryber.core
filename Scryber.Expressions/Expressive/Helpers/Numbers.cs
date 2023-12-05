@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Scryber.Drawing;
 
 namespace Scryber.Expressive.Helpers
@@ -6,10 +7,14 @@ namespace Scryber.Expressive.Helpers
     //  Shout out to https://ncalc.codeplex.com/ for the bulk of this implementation.
     internal static class Numbers
     {
-        private static object ConvertIfStringOrUnit(object s)
+        private static object ConvertIfStringOrUnit(object s, IDictionary<string, object> variables)
         {
             if(s is Unit unit)
             {
+                if (unit.IsRelative)
+                {
+                    unit = ConvertRelativeUnit(unit, variables);
+                }
                 return unit.PointsValue;
             }
             else if (s is String || s is char)
@@ -17,7 +22,13 @@ namespace Scryber.Expressive.Helpers
                 if (Decimal.TryParse(s.ToString(), out Decimal result))
                     return result;
                 else if (Unit.TryParse(s.ToString(), out unit))
+                {
+                    if (unit.IsRelative)
+                    {
+                        unit = ConvertRelativeUnit(unit, variables);
+                    }
                     return unit.PointsValue;
+                }
                 else
                     throw new InvalidCastException("Cannot convert " + s.ToString() + " to a decimal");
 
@@ -26,60 +37,116 @@ namespace Scryber.Expressive.Helpers
             return s;
         }
 
-        internal static object Add(object a, object b)
+        public static Unit ConvertRelativeUnit(Unit unit, IDictionary<string, object> variables)
+        {
+            Unit result, w, h;
+            bool useWidth;
+
+            if (!variables.TryGetValue(UnitRelativeVars.WidthIsPriority, out object widthPriority) || !(widthPriority is bool))
+                throw new InvalidOperationException("The relative conversion variables have not been set. Ensure the UnitRelativeVars.FillCssVars has populated the conversion variables for the expression.");
+            else
+                useWidth = (bool)widthPriority;
+
+            switch (unit.Units)
+            {
+                case (PageUnits.Percent):
+                    if (useWidth)
+                        result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.ContainerWidth]);
+                    else
+                        result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.ContainerHeight]);
+                    break;
+
+                case (PageUnits.EMHeight):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.FontUpperHeight]);
+                    break;
+
+                case (PageUnits.EXHeight):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.FontLowercaseHeight]);
+                    break;
+
+                case (PageUnits.ZeroWidth):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.FontStandardWidth]);
+                    break;
+
+                case (PageUnits.RootEMHeight):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.FontRootUpperHeight]);
+                    break;
+
+                case (PageUnits.ViewPortWidth):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.PageWidth]);
+                    break;
+
+                case (PageUnits.ViewPortHeight):
+                    result = unit.ToAbsolute((Unit)variables[UnitRelativeVars.PageHeight]);
+                    break;
+
+                case (PageUnits.ViewPortMin):
+                    w = (Unit)variables[UnitRelativeVars.PageWidth];
+                    h = (Unit)variables[UnitRelativeVars.PageHeight];
+
+                    if (w > h)
+                        result = unit.ToAbsolute(h);
+                    else
+                        result = unit.ToAbsolute(w);
+                    break;
+
+                case (PageUnits.ViewPortMax):
+                    w = (Unit)variables[UnitRelativeVars.PageWidth];
+                    h = (Unit)variables[UnitRelativeVars.PageHeight];
+
+                    if (w > h)
+                        result = unit.ToAbsolute(h);
+                    else
+                        result = unit.ToAbsolute(w);
+                    break;
+
+                default:
+                    result = unit;
+                    break;
+            }
+
+            return result;
+        }
+
+        private static object EnsureJsonExpanded(object value)
+        {
+            if (value is Newtonsoft.Json.Linq.JToken token)
+            {
+                if (token.Type == Newtonsoft.Json.Linq.JTokenType.Integer
+                    || token.Type == Newtonsoft.Json.Linq.JTokenType.Float
+                    || token.Type == Newtonsoft.Json.Linq.JTokenType.String)
+                {
+                    value = (token as Newtonsoft.Json.Linq.JValue).Value;
+                }
+            }
+#if NET6_0_OR_GREATER
+            else if (value is System.Text.Json.JsonElement element)
+            {
+                if (element.ValueKind == System.Text.Json.JsonValueKind.Number)
+                {
+                    value = element.GetDouble();
+                }
+                else if (element.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    value = element.GetString();
+                }
+            }
+#endif
+            return value;
+        }
+
+        internal static object Add(object a, object b, IDictionary<string, object> variables)
         {
             if (a is null || b is null)
             {
                 return null;
             }
 
-            if (a is Newtonsoft.Json.Linq.JToken token) {
-                if(token.Type == Newtonsoft.Json.Linq.JTokenType.Integer
-                    || token.Type == Newtonsoft.Json.Linq.JTokenType.Float
-                    || token.Type == Newtonsoft.Json.Linq.JTokenType.String)
-                {
-                    a = (token as Newtonsoft.Json.Linq.JValue).Value;
-                }
-            }
-#if NET6_0_OR_GREATER
-            else if(a is System.Text.Json.JsonElement element)
-            {
-                if(element.ValueKind == System.Text.Json.JsonValueKind.Number)
-                {
-                    a = element.GetDouble();
-                }
-                else if(element.ValueKind == System.Text.Json.JsonValueKind.String)
-                {
-                    a = element.GetString();
-                }
-            }
-#endif
-            if (b is Newtonsoft.Json.Linq.JToken btoken)
-            {
-                if (btoken.Type == Newtonsoft.Json.Linq.JTokenType.Integer
-                    || btoken.Type == Newtonsoft.Json.Linq.JTokenType.Float
-                    || btoken.Type == Newtonsoft.Json.Linq.JTokenType.String)
-                {
-                    b = (btoken as Newtonsoft.Json.Linq.JValue).Value;
-                }
-            }
-#if NET6_0_OR_GREATER
-            else if (b is System.Text.Json.JsonElement belement)
-            {
-                if (belement.ValueKind == System.Text.Json.JsonValueKind.Number)
-                {
-                    b = belement.GetDouble();
-                }
-                else if (belement.ValueKind == System.Text.Json.JsonValueKind.String)
-                {
-                    b = belement.GetString();
-                }
-            }
-#endif
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
 
-
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -313,15 +380,18 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Divide(object a, object b)
+        internal static object Divide(object a, object b, IDictionary<string, object> variables)
         {
             if (a is null || b is null)
             {
                 return null;
             }
 
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -527,15 +597,18 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Multiply(object a, object b)
+        internal static object Multiply(object a, object b, IDictionary<string, object> variables)
         {
             if (a is null || b is null)
             {
                 return null;
             }
 
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -741,15 +814,18 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Subtract(object a, object b)
+        internal static object Subtract(object a, object b, IDictionary<string, object> variables)
         {
             if (a is null || b is null)
             {
                 return null;
             }
 
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -972,15 +1048,18 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Modulus(object a, object b)
+        internal static object Modulus(object a, object b, IDictionary<string, object> variables)
         {
             if (a is null || b is null)
             {
                 return null;
             }
 
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is double && double.IsNaN((double)a))
             {
@@ -1186,10 +1265,14 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Max(object a, object b)
+        internal static object Max(object a, object b, IDictionary<string, object> variables)
         {
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is null || b is null)
             {
@@ -1227,10 +1310,14 @@ namespace Scryber.Expressive.Helpers
             return null;
         }
 
-        internal static object Min(object a, object b)
+        internal static object Min(object a, object b, IDictionary<string, object> variables)
         {
-            a = ConvertIfStringOrUnit(a);
-            b = ConvertIfStringOrUnit(b);
+
+            a = EnsureJsonExpanded(a);
+            b = EnsureJsonExpanded(b);
+
+            a = ConvertIfStringOrUnit(a, variables);
+            b = ConvertIfStringOrUnit(b, variables);
 
             if (a is null && b is null)
             {

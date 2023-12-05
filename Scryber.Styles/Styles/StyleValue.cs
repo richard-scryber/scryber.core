@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 
 namespace Scryber.Styles
 {
@@ -48,6 +49,12 @@ namespace Scryber.Styles
             return instance;
         }
 
+        public virtual void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont )
+        {
+            if (key.CanBeRelative)
+                key.FlattenValue(forStyle, page, container, font, rootFont);
+            //Base Implementation does nothing
+        }
     }
 
 

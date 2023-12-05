@@ -17,7 +17,7 @@ namespace Scryber.Expressive.Expressions.Binary.Bitwise
 
         /// <inheritdoc />
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) => Convert.ToUInt16(l) >> Convert.ToUInt16(r));
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) => Convert.ToUInt16(l) >> Convert.ToUInt16(r));
 
         #endregion
     }

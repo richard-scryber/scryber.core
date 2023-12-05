@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Scryber.Drawing;
 using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.CSS
@@ -17,6 +18,7 @@ namespace Scryber.Expressive.Functions.CSS
         {
             this.ValidateParameterCount(parameters, 1, 1);
             object value = parameters[0].Evaluate(variables);
+            
             return value;
         }
     }

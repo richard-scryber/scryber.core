@@ -88,10 +88,21 @@ namespace Scryber.Styles
 
         #endregion
 
-
+        /// <summary>
+        /// If this StyleKey supports the use of relative dimensions (e.g 5%, 0.8rem) in it's values.
+        /// </summary>
         public virtual bool CanBeRelative
         {
             get { return false; }
+        }
+
+        /// <summary>
+        /// Returns true if the relative dimensions of this style key should use widths as a measure e.g. 20% = 0.2 * container.Width, rather than 0.2 * container.height
+        /// </summary>
+        public bool UseRelativeWidthAsPriority
+        {
+            get;
+            protected set;
         }
 
         //
@@ -417,7 +428,7 @@ namespace Scryber.Styles
         /// <param name="foritem"></param>
         /// <returns></returns>
         /// <remarks>Used by the PDFStyleKeys style type constructor - as we are assured this is threadsafe</remarks>
-        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, FlattenUnits<T> flatten)
+        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, bool useWidth, FlattenUnits<T> flatten)
         {
             if (foritem.IsItemKey == false)
                 throw new InvalidOperationException("forItem is not an item");
@@ -425,7 +436,7 @@ namespace Scryber.Styles
             string full = GetStyleKeyAsString(foritem.StyleItemKey, name);
             int hash = InternalGetStyleHash(full);
 
-            return new RelativeStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, flatten);
+            return new RelativeStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, useWidth, flatten);
 
         }
 
@@ -459,12 +470,15 @@ namespace Scryber.Styles
     {
         public override bool CanBeRelative { get { return true; } }
 
+        
+
         public FlattenUnits<T> Flatten { get; protected set; }
 
-        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, FlattenUnits<T> flatten)
+        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, bool useWidth, FlattenUnits<T> flatten)
             : base(fullhash, item, value, inherited, false)
         {
             Flatten = flatten ?? throw new ArgumentNullException(nameof(flatten));
+            this.UseRelativeWidthAsPriority = useWidth;
         }
 
         public override void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)

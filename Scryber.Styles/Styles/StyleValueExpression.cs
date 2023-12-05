@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Scryber.Binding;
+using Scryber.Drawing;
 using Scryber.Expressive;
 using Scryber.Options;
 
@@ -154,13 +155,20 @@ namespace Scryber.Styles
             this._expression = CreateExpression();
             this._variableProvider = context.Items.ValueProvider(context.CurrentIndex,
                                             context.DataStack.HasData ? context.DataStack.Current : null);
-            
 
+            this._expression.BindExpression(this._variableProvider);
             //Execute once to make sure we are all set up - although css variables may not be there.
-            base.SetValue(this.EvaluateExpression(style));
+            //base.SetValue(this.EvaluateExpression(style));
         }
 
         #endregion
+
+        public override void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont)
+        {
+            if (this.EnsureExpression(forStyle))
+                this._variableProvider.AddRelativeDimensions(page, container, font, rootFont, key.UseRelativeWidthAsPriority);
+            base.FlattenValue(key, forStyle, page, container, font, rootFont);
+        }
 
         /// <summary>
         /// Creates an expression without the varabile provider

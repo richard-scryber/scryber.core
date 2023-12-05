@@ -39,7 +39,7 @@ namespace Scryber.Expressive.Functions.Relational
 				{
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
-					total = Numbers.Add(total ?? 0, one ?? 0);
+					total = Numbers.Add(total ?? 0, one ?? 0, variables);
 				}
 			}
 

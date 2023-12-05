@@ -33,14 +33,14 @@ namespace Scryber.Expressive.Functions.Statistical
                     foreach (var item in enumerable)
                     {
                         enumerableCount++;
-                        enumerableSum = Numbers.Add(enumerableSum, item);
+                        enumerableSum = Numbers.Add(enumerableSum, item, variables);
                     }
 
                     increment = enumerableCount;
                     evaluatedValue = enumerableSum;
                 }
 
-                result = Numbers.Add(result, evaluatedValue);
+                result = Numbers.Add(result, evaluatedValue, variables);
                 count += increment;
             }
 

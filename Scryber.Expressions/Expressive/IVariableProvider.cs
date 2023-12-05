@@ -1,4 +1,6 @@
-﻿namespace Scryber.Expressive
+﻿using Scryber.Drawing;
+
+namespace Scryber.Expressive
 {
     /// <summary>
     /// Interface definition for providing variable values.
@@ -12,5 +14,8 @@
         /// <param name="value">The value of the variable or <b>null</b> if it does not exist.</param>
         /// <returns>true if the variable exists, false otherwise.</returns>
         bool TryGetValue(string variableName, out object value);
+
+
+        void AddRelativeDimensions(Size page, Size container, Size font, Unit rootFont, bool useWidth);
     }
 }
