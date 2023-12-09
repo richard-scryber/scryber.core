@@ -25,7 +25,7 @@ namespace Scryber.Html.Components
             var style = base.GetBaseStyle();
 
             style.Background.Color = MarkColor;
-            style.Text.Decoration = Text.TextDecoration.Underline;
+            //style.Text.Decoration = Text.TextDecoration.Underline;
 
             return style;
         }
