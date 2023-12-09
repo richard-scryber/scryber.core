@@ -432,7 +432,70 @@ namespace Scryber.PDF.Layout
 
         public void RenderTextBackground(PDFRenderContext context, PDFWriter writer)
         {
+            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
+            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
+            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
 
+            if(lineh > top + bottom)
+            {
+                var dif = (lineh - (top + bottom)) / 2;
+                top += dif;
+                bottom += dif;
+            }
+
+            var drawing = false;
+            var finished = false;
+            
+            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
+            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
+            Unit recth = bottom + top;
+            Unit rectw = 0;
+
+            foreach(var line in this.Lines)
+            {
+                foreach(var run in line.Runs)
+                {
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        if (run == this)
+                        {
+                            drawing = true;
+                        }
+                    }
+                    else if (run is PDFTextRunEnd end)
+                    {
+                        if (end.Start == this)
+                        {
+                            drawing = false;
+                            finished = true;
+                            break;
+                        }
+                    }
+                    else if (drawing)
+                    {
+                        if (run is PDFTextRunCharacter chars)
+                        {
+                            rectw = chars.Width;
+                            Rect bounds = new Rect(rectx, recty, rectw, recth);
+                            var brush = this.TextRenderOptions.Background;
+                            context.Graphics.FillRectangle(brush, bounds);
+                        }
+                        else if (run is PDFTextRunNewLine nl)
+                        {
+                            recty += nl.NewLineOffset.Height;
+                            rectx -= nl.NewLineOffset.Width;
+                        }
+                        else if (run is PDFTextRunProxy proxy)
+                        {
+
+                        }
+                    }
+                    
+                }
+
+                if (finished) { break; } //the begin should have happend
+            }
+            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
         }
 
         public static double ThicknessFactor = 12.0;

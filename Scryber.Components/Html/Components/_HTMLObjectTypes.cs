@@ -44,6 +44,8 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType DataIf = ObjectTypes.NoOp;
 		public static readonly ObjectType IFrame = (ObjectType)"hIfr";
 		public static readonly ObjectType Image = ObjectTypes.Image;
+		public static readonly ObjectType Picture = (ObjectType)"hPic";
+		public static readonly ObjectType PictureSource = (ObjectType)"hPsc";
 		public static readonly ObjectType FormInput = (ObjectType)"hInp";
 		public static readonly ObjectType Italic = ObjectTypes.ItalicSpan;
 		public static readonly ObjectType Emphasis = (ObjectType)"hEmp";
@@ -69,6 +71,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Span = ObjectTypes.Span;
 		public static readonly ObjectType Strike = (ObjectType)"hSrk";
 		public static readonly ObjectType Delete = (ObjectType)"hDel";
+		public static readonly ObjectType Quoted = (ObjectType)"hQsp";
 		public static readonly ObjectType StyleTag = (ObjectType)"hSty";
 		public static readonly ObjectType TableCell = ObjectTypes.TableCell;
 		public static readonly ObjectType TableHeaderCell = ObjectTypes.TableHeaderCell;

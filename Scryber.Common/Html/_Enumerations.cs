@@ -374,6 +374,7 @@ namespace Scryber.Html
             _name2color.Add("LightYellow", "#FFFFE0");
             _name2color.Add("Ivory", "#FFFFF0");
             _name2color.Add("White", "#FFFFFF");
+            _name2color.Add("mark", "#FFFF00");
 
             //Convert to readonly
             _name2color = new ReadOnlyDictionary<string, string>(_name2color);

@@ -96,7 +96,9 @@ namespace Scryber.Html.Components
         }
 
         protected HTMLDocument(ObjectType type): base(type)
-        { }
+        {
+            this.AddRootStyles();
+        }
 
         protected override Style GetBaseStyle()
         {
@@ -110,6 +112,22 @@ namespace Scryber.Html.Components
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
             
             return applied;
+        }
+
+        protected virtual void AddRootStyles()
+        {
+            //Quote has before and after
+            var defn = new StyleDefn("q:before");
+            defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("open-quote", "“"));
+            this.Styles.Add(defn);
+
+            defn = new StyleDefn("q:after");
+            defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("close-quote", "”"));
+            this.Styles.Add(defn);
+
+
+
+
         }
     }
 }

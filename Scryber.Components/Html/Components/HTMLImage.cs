@@ -80,6 +80,12 @@ namespace Scryber.Html.Components
             set => base.Height = value;
         }
 
+        [PDFAttribute("alt")]
+        public string AlternateName
+        {
+            get;set;
+        }
+
         public HTMLImage()
             : this(HTMLObjectTypes.Image)
         {
