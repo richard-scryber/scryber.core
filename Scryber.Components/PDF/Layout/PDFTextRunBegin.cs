@@ -415,6 +415,11 @@ namespace Scryber.PDF.Layout
             return this.TextRenderOptions.Background != null;
         }
 
+        public bool ShouldRenderBorder(PDFRenderContext context)
+        {
+            return this.TextRenderOptions.Border != null;
+        }
+
         public bool ShouldRenderUnderline(PDFRenderContext context)
         {
             return (this.TextRenderOptions.TextDecoration & Text.TextDecoration.Underline) > 0;
@@ -450,6 +455,16 @@ namespace Scryber.PDF.Layout
             Unit recty = this.StartTextCursor.Height + context.Offset.Y;
             Unit recth = bottom + top;
             Unit rectw = 0;
+            Unit padw = 0;
+            Unit padh = 0;
+
+            if (this.TextRenderOptions.Padding.HasValue)
+            {
+                //TODO: Add the padding all around
+                var pad = this.TextRenderOptions.Padding.Value;
+                rectx -= pad.Left;
+                recty -= pad.Top;
+            }
 
             foreach(var line in this.Lines)
             {

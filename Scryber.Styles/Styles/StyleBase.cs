@@ -1221,6 +1221,9 @@ namespace Scryber.Styles
             options.FillBrush = this.DoCreateFillBrush();
             options.Background = this.DoCreateBackgroundBrush();
             options.Stroke = this.DoCreateStrokePen();
+            options.Border = this.DoCreateBorderPen();
+            options.Padding = this.DoCreatePaddingThickness();
+            options.InlineMargins = this.DoCreateInlineMarginSize();
 
             StyleValue<Unit> flindent;
             if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey,out flindent))
@@ -1993,6 +1996,24 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+        internal protected virtual Thickness DoCreateInlineMarginSize()
+        {
+            Unit start;
+            Unit end;
+
+            if (this.TryGetValue(StyleKeys.MarginsInlineStart, out StyleValue<Unit> sv))
+                start = sv.Value(this);
+            else
+                start = Unit.Zero;
+
+            if (this.TryGetValue(StyleKeys.MarginsInlineEnd, out StyleValue<Unit> ev))
+                end = ev.Value(this);
+            else
+                end = Unit.Zero;
+
+            return new Thickness(Unit.Zero, end, Unit.Zero, start);
+        }
 
         #region internal protected virtual PDFThickness DoCreateClippingThickness()
 

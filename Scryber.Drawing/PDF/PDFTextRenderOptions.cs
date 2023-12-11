@@ -94,6 +94,51 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public PDFPen Border {get;set;}
+
+        private PDFPen _border;
+
+        /// <summary>
+        /// Gets or sets the pen that should be used to draw a border around any text.
+        /// </summary>
+        public PDFPen Border
+        {
+            get { return _border; }
+            set { _border = value; }
+        }
+
+        #endregion
+
+        #region public Thickness Padding {get;set;}
+
+        private Thickness? _pad;
+
+        /// <summary>
+        /// Gets or sets any padding that should be set around the text
+        /// </summary>
+        public Thickness? Padding
+        {
+            get { return _pad; }
+            set
+            {
+                _pad = value;
+            }
+        }
+
+        #endregion;
+
+        #region public Thickness InlineMargins {get;set;}
+
+        private Thickness? _inlineMargins;
+
+        public Thickness? InlineMargins
+        {
+            get { return _inlineMargins; }
+            set { _inlineMargins = value; }
+        }
+
+        #endregion
+
         #region public WordWrap? WrapText {get;set;}
 
         public static readonly WordWrap DefaultWrapText = WordWrap.Auto;

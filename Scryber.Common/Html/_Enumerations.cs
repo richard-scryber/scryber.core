@@ -112,6 +112,9 @@ namespace Scryber.Html
         public const string MarginsRight = "margin-right";
         public const string MarginsTop = "margin-top";
         public const string MarginsBottom = "margin-bottom";
+        public const string MarginInlineStart = "margin-inline-start";
+        public const string MarginInlineEnd = "margin-inline-end";
+        public const string MarginInlineAll = "margin-inline";
 
         public const string Padding = "padding";
         public const string PaddingLeft = "padding-left";

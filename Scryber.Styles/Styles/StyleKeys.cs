@@ -186,6 +186,12 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> MarginsAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", MarginsItemKey
                                                                 , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenMarginAllThicknessPositionValue));
 
+        public static readonly StyleKey<Unit> MarginsInlineStart = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inSt", MarginsItemKey
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> MarginsInlineEnd = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inEd", MarginsItemKey
+                                                        , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
         // Clip
 
         public static readonly StyleKey ClipItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleClip, NOT_INHERITED);

@@ -110,6 +110,14 @@ namespace Scryber.Html.Components
             return base.MapPath(source, out isfile);
         }
 
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Position.PositionMode = PositionMode.Inline;
+            return style;
+        }
+
     }
 
 }
