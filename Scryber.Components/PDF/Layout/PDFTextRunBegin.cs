@@ -457,19 +457,17 @@ namespace Scryber.PDF.Layout
             Unit recty = this.StartTextCursor.Height + context.Offset.Y;
             Unit recth = bottom + top;
             Unit rectw = 0;
-            Unit padw = 0;
             Unit padl = 0;
-            Unit padr = 0;
 
             if (this.TextRenderOptions.Padding.HasValue)
             {
             //    //TODO: Add the padding all around
                 var pad = this.TextRenderOptions.Padding.Value;
                 padl = pad.Left;
-                padr = pad.Right;
 
                 rectx -= pad.Left;
                 recty -= pad.Top;
+                recth += pad.Top + pad.Bottom;
             }
 
             foreach(var line in this.Lines)
@@ -491,6 +489,7 @@ namespace Scryber.PDF.Layout
                         if (end.Start == this)
                         {
                             //render the background here.
+                            //As there is a spacer added for the right padding we have already calculated the right value.
                             Rect bounds = new Rect(rectx, recty, rectw, recth);
                             var brush = this.TextRenderOptions.Background;
                             context.Graphics.FillRectangle(brush, bounds);

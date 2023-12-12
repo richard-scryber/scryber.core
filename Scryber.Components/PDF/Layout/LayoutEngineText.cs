@@ -956,6 +956,14 @@ namespace Scryber.PDF.Layout
             {
                 this.AssertCurrentLine();
 
+                if (this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Right > Unit.Zero)
+                {
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent);
+                    this.CurrentLine.AddRun(spacer);
+                    //this.CurrentLineInset += spacer.Width;
+                    //this.BeginningRun.LineInset += spacer.Width;
+                }
+
                 PDFTextRunEnd end = new PDFTextRunEnd(this.BeginningRun, this.CurrentLine, this.TextComponent);
                 this.CurrentLine.AddRun(end);
             }

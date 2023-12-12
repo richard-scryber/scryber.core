@@ -125,10 +125,10 @@ namespace Scryber.Html.Components
         }
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
-            if (null == baseStyle)
-                baseStyle = new Style();
+            //if (null == baseStyle)
+            //    baseStyle = new Style();
 
-            this.RootStyles.MergeInto(baseStyle, forComponent);
+            //this.RootStyles.MergeInto(baseStyle, forComponent);
 
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
             
