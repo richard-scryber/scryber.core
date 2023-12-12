@@ -391,6 +391,14 @@ namespace Scryber.PDF.Layout
             else if (this.Context.ShouldLogVerbose)
                 this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Laid out text component " + this.TextComponent.ID);
 
+            //Check for inline padding on the left and if so add a spacer
+            if(this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Left > Unit.Zero)
+            {
+                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent);
+                this.CurrentLine.AddRun(spacer);
+                //this.CurrentLineInset += spacer.Width;
+                this.BeginningRun.LineInset += spacer.Width;
+            }
             return true;
         }
 
@@ -484,11 +492,8 @@ namespace Scryber.PDF.Layout
             Unit lineright = widthOfLastTextDraw;
             
             Unit back = line.Width - lineright;
-
-            //Previous - 27 Feb 2015
-            //br.Offset = new PDFSize(back, line.Height);
-
-            //Updated
+            
+           
             if (line.Height == Unit.Zero) //Empty line
                 line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
 

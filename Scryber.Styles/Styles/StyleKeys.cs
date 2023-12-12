@@ -190,7 +190,7 @@ namespace Scryber.Styles
                                                                 , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
 
         public static readonly StyleKey<Unit> MarginsInlineEnd = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inEd", MarginsItemKey
-                                                        , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
 
         // Clip
 

@@ -24,15 +24,24 @@ namespace Scryber.PDF.Layout
             get { return 0; }
         }
 
+        private Unit _width;
+
         public override Drawing.Unit Width
         {
-            get { return 0; }
+            get { return _width; }
         }
 
         public PDFLayoutInlineEnd(PDFLayoutLine line, PDFLayoutInlineBegin begin, IComponent owner, PDFPositionOptions pos)
             : base(line, owner)
         {
             this.BeginMarker = begin;
+
+            var style = begin.FullStyle;
+            //Set the margin inline end width
+            if (style.TryGetValue(StyleKeys.MarginsInlineEnd, out StyleValue<Unit> found))
+                this._width = found.Value(style);
+            else
+                this._width = Unit.Zero;
         }
 
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)

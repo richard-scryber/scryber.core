@@ -10,8 +10,11 @@
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
     <title>This is a body with decorations on the text</title>
     <style>
-        mark{
+        mark, u{
             border: solid 1px blue;
+            margin-inline-start: 0pt;
+            margin-inline-end: 0pt;
+            padding-left: 10pt;
         }
         body{
             padding: 8px;
@@ -22,7 +25,7 @@
     <p>The following paragraphs have text decorations applied in areas by specific components</p>
     <p>The underlines are performed by: <u>The u(nderline) element</u>, and also <ins>the ins(ert) element</ins></p>
     <p>The strike through is performed by: <s>The s(trike) element</s>, and also <del>the del(ete) element</del></p>
-    <p>The highlight is performed by: <mark>The mark(ing) element that can flow <img src="images/group.png" style="height:20px;" /> across multiple lines in the document.</mark> After the inline mark.</p>
+    <p>The highlight is performed by: <mark>The mark(ing) element that can flow <img src="images/group.png" style="height:20px;" /> across multiple lines in the document, and possibly even more lines within the page so that we can check this works.</mark> After the inline mark going onto further lines in the page.</p>
     <hr />
 </body>
 </html>

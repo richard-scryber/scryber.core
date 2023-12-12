@@ -107,8 +107,29 @@ namespace Scryber.Html.Components
             return style;
         }
 
+        private StyleCollection _roots;
+
+        /// <summary>
+        /// The root styles apply the User Agent style sheet styles to components. Inheritors can override the AddRootStyles to alter or extend any of these styles, and they will be applied to each component.
+        /// </summary>
+        protected StyleCollection RootStyles
+        {
+            get
+            {
+                if (null == _roots)
+                {
+                    _roots = new StyleCollection(this);
+                }
+                return _roots;
+            }
+        }
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
+            if (null == baseStyle)
+                baseStyle = new Style();
+
+            this.RootStyles.MergeInto(baseStyle, forComponent);
+
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
             
             return applied;
@@ -119,11 +140,11 @@ namespace Scryber.Html.Components
             //Quote has before and after
             var defn = new StyleDefn("q:before");
             defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("open-quote", "“"));
-            this.Styles.Add(defn);
+            this.RootStyles.Add(defn);
 
             defn = new StyleDefn("q:after");
             defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("close-quote", "”"));
-            this.Styles.Add(defn);
+            this.RootStyles.Add(defn);
 
 
 

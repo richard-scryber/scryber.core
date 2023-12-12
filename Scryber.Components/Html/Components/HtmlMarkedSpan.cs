@@ -10,7 +10,7 @@ namespace Scryber.Html.Components
 
         private static Color MarkColor = (Color)Html.CSSColors.Names2Colors["mark"];
 
-        public HTMLMarkedSpan() : this(HTMLObjectTypes.Quoted)
+        public HTMLMarkedSpan() : this(HTMLObjectTypes.Marked)
         {
         }
 
@@ -19,8 +19,7 @@ namespace Scryber.Html.Components
 
         protected override Style GetBaseStyle()
         {
-            if (string.IsNullOrEmpty(this.ElementName))
-                this.ElementName = "mark";
+            
 
             var style = base.GetBaseStyle();
 

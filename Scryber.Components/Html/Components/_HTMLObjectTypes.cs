@@ -61,6 +61,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType ListUnOrdered = ObjectTypes.UnorderedList;
 		public static readonly ObjectType ListMenu = (ObjectType)"hMnu";
 		public static readonly ObjectType Main = (ObjectType)"hMan";
+		public static readonly ObjectType Marked = (ObjectType)"hMrk";
 		public static readonly ObjectType Meta = (ObjectType)"hMta";
 		public static readonly ObjectType Nav = (ObjectType)"hNav";
 		public static readonly ObjectType Number = ObjectTypes.NumberComp;

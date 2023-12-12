@@ -93,12 +93,14 @@ namespace Scryber.PDF.Layout
 
         #region public override PDFUnit Width {get;}
 
+        private Unit _width;
+
         /// <summary>
-        /// Gets the height of this begin text run - PDFUnit.Zero
+        /// Gets the height of this begin text run - PDFUnit.Zero or Any left padding on the inline run style
         /// </summary>
         public override Unit Width
         {
-            get { return Unit.Zero; }
+            get { return _width; }
         }
 
         #endregion
@@ -456,12 +458,16 @@ namespace Scryber.PDF.Layout
             Unit recth = bottom + top;
             Unit rectw = 0;
             Unit padw = 0;
-            Unit padh = 0;
+            Unit padl = 0;
+            Unit padr = 0;
 
             if (this.TextRenderOptions.Padding.HasValue)
             {
-                //TODO: Add the padding all around
+            //    //TODO: Add the padding all around
                 var pad = this.TextRenderOptions.Padding.Value;
+                padl = pad.Left;
+                padr = pad.Right;
+
                 rectx -= pad.Left;
                 recty -= pad.Top;
             }
@@ -470,17 +476,24 @@ namespace Scryber.PDF.Layout
             {
                 foreach(var run in line.Runs)
                 {
+                    
+
                     if (run is PDFTextRunBegin begin)
                     {
                         if (run == this)
                         {
                             drawing = true;
+                            rectw = 0;
                         }
                     }
                     else if (run is PDFTextRunEnd end)
                     {
                         if (end.Start == this)
                         {
+                            //render the background here.
+                            Rect bounds = new Rect(rectx, recty, rectw, recth);
+                            var brush = this.TextRenderOptions.Background;
+                            context.Graphics.FillRectangle(brush, bounds);
                             drawing = false;
                             finished = true;
                             break;
@@ -488,22 +501,24 @@ namespace Scryber.PDF.Layout
                     }
                     else if (drawing)
                     {
-                        if (run is PDFTextRunCharacter chars)
+                        if (run is PDFTextRunNewLine nl)
                         {
-                            rectw = chars.Width;
+                            //Render the background here.
                             Rect bounds = new Rect(rectx, recty, rectw, recth);
                             var brush = this.TextRenderOptions.Background;
                             context.Graphics.FillRectangle(brush, bounds);
-                        }
-                        else if (run is PDFTextRunNewLine nl)
-                        {
-                            recty += nl.NewLineOffset.Height;
-                            rectx -= nl.NewLineOffset.Width;
-                        }
-                        else if (run is PDFTextRunProxy proxy)
-                        {
 
+                            //move down and back, then reset the width.
+                            recty += nl.NewLineOffset.Height;
+                            rectx -= (nl.NewLineOffset.Width - padl);
+                            rectw = 0;
+                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
                         }
+                        else
+                        {
+                            rectw += run.Width;
+                        }
+                        
                     }
                     
                 }

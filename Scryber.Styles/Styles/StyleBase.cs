@@ -1222,7 +1222,12 @@ namespace Scryber.Styles
             options.Background = this.DoCreateBackgroundBrush();
             options.Stroke = this.DoCreateStrokePen();
             options.Border = this.DoCreateBorderPen();
-            options.Padding = this.DoCreatePaddingThickness();
+            //If we are inline positioned - then add any padding
+            if (this.TryGetValue(StyleKeys.PositionModeKey, out StyleValue<PositionMode> mode) && mode.Value(this) == PositionMode.Inline)
+                options.Padding = this.DoCreatePaddingThickness();
+            else
+                options.Padding = null; //we are a block or other - so no padding on text options.
+
             options.InlineMargins = this.DoCreateInlineMarginSize();
 
             StyleValue<Unit> flindent;
