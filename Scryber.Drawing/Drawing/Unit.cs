@@ -1252,7 +1252,7 @@ namespace Scryber.Drawing
         //
 
         public const double DoublePrecision = 0.000000001;
-        public const int DoublePrecisionLength = 8;
+        public const int DoublePrecisionLength = 9;
 
         public const double PointsPerInch = 72;
         public const double PointsPerMM = PointsPerInch / 25.4;

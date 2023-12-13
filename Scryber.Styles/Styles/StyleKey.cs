@@ -466,6 +466,7 @@ namespace Scryber.Styles
 
     public delegate void FlattenUnits<T>(Style style, StyleKey<T> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize);
 
+
     public class RelativeStyleKey<T> : StyleKey<T>
     {
         public override bool CanBeRelative { get { return true; } }

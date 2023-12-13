@@ -2335,7 +2335,7 @@ body.grey div.reverse{
 
             .other div {
                 width: calc(10rem - 60pt);
-                /* height: calc(20pt);
+                height: calc(20pt);
                 margin-left: calc(10.1%);
                 margin-right: calc(4mm);
                 margin-top: calc(3em);
@@ -2344,7 +2344,7 @@ body.grey div.reverse{
                 padding-right: calc(2vh);
                 padding-top: calc(1.5vw);
                 padding-bottom: calc(2.1vmin);
-                min-width: calc(13vmax); */
+                min-width: calc(13vmax);
             }
 ";
 
@@ -2361,14 +2361,13 @@ body.grey div.reverse{
                 applied = div.GetAppliedStyle();
                 var pg = new Size(400, 600);
                 var contain = new Size(400, 300);
-                var fnt = new Size(14, 20);
+                var fnt = new Size(10, 16);
 
                 var flat = applied.Flatten(pg, contain, fnt, 20);
 
-                Assert.AreEqual(Unit.Pt(30), flat.Size.Width, "Width did not match");
-
-                //Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-                //Assert.AreEqual("rgb(0,255,255)", applied.Fill.Color.ToString(), "The fallback for the variable --text-color was not used");
+                Assert.AreEqual(Unit.Pt((20 * 10) - 60), flat.Size.Width, "Width did not match");
+                Assert.AreEqual(Unit.Pt(3 * 16), flat.Margins.Top, "Top margin did not match");
+                Assert.AreEqual(Unit.Mm(4), flat.Margins.Right, "Right margin did not match");
             }
         }
 
@@ -2378,10 +2377,10 @@ body.grey div.reverse{
         {
             var cssWithCalc = @"
 
-            /*.other{
+            .other{
                background-color: calc(concat('#', 'FF', '00', '00'));
                color: var(--text-color, #00FFFF);
-            }*/
+            }
 
             .inner{
                 width: calc(100% - 120px);

@@ -110,7 +110,9 @@ namespace Scryber.Html.Components
         private StyleCollection _roots;
 
         /// <summary>
-        /// The root styles apply the User Agent style sheet styles to components. Inheritors can override the AddRootStyles to alter or extend any of these styles, and they will be applied to each component.
+        /// The root styles apply the User Agent style sheet styles to components.
+        /// Inheritors can override the AddRootStyles to alter or extend any of these styles,
+        /// and they will be applied to each component.
         /// </summary>
         protected StyleCollection RootStyles
         {

@@ -25,6 +25,7 @@ namespace Scryber.Styles
         private Scryber.Expressive.Expression _expression;
         private Expressive.IVariableProvider _variableProvider;
         private StyleValueConvertor<T> _convertor;
+        private bool _flattened = false;
 
         //
         // properties
@@ -58,6 +59,15 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+        /// <summary>
+        /// If true then the expression has been evaluated and the result has been flattened (relative units converted to absolute).
+        /// </summary>
+        protected bool HasBeenFlattened
+        {
+            get { return _flattened; }
+            set { this._flattened = value; }
+        }
 
         //
         // .ctor
@@ -112,7 +122,11 @@ namespace Scryber.Styles
         /// <returns></returns>
         public override T Value(StyleBase forStyle)
         {
-            if (this.CanEvaluate == false)
+            if (this.Key.CanBeRelative && this.HasBeenFlattened)
+            {
+                return base.Value(forStyle);
+            }
+            else if (this.CanEvaluate == false)
             {
                 this.EnsureExpression(forStyle);
             }
@@ -165,9 +179,12 @@ namespace Scryber.Styles
 
         public override void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont)
         {
+
             if (this.EnsureExpression(forStyle))
                 this._variableProvider.AddRelativeDimensions(page, container, font, rootFont, key.UseRelativeWidthAsPriority);
+
             base.FlattenValue(key, forStyle, page, container, font, rootFont);
+            this.HasBeenFlattened = true;
         }
 
         /// <summary>
