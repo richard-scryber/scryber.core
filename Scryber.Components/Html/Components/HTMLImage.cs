@@ -80,6 +80,12 @@ namespace Scryber.Html.Components
             set => base.Height = value;
         }
 
+        [PDFAttribute("alt")]
+        public string AlternateName
+        {
+            get;set;
+        }
+
         public HTMLImage()
             : this(HTMLObjectTypes.Image)
         {
@@ -102,6 +108,14 @@ namespace Scryber.Html.Components
         public override string MapPath(string source, out bool isfile)
         {
             return base.MapPath(source, out isfile);
+        }
+
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Position.PositionMode = PositionMode.Inline;
+            return style;
         }
 
     }

@@ -47,7 +47,7 @@ namespace Scryber.Expressive.Expressions.Binary.Conditional
 
         /// <inheritdoc />
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) => l ?? r);
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) => l ?? r);
 
         #endregion
     }

@@ -1363,7 +1363,7 @@ namespace Scryber.Core.UnitTests.Drawing
             ConfirmString("1.5in", true, new Unit(1.5, PageUnits.Inches));
 
             //Three decimal places seems the most accurate.
-            ConfirmString("234567890123.12344mm", true, new Unit(234567890123.12344, PageUnits.Millimeters));
+            ConfirmString("234567890123.1234mm", true, new Unit(234567890123.1234, PageUnits.Millimeters));
         }
 
 

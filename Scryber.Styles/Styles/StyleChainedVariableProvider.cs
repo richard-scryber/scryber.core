@@ -1,4 +1,5 @@
 ﻿using System;
+using Scryber.Drawing;
 using Scryber.Expressive;
 
 
@@ -69,6 +70,12 @@ namespace Scryber.Styles
 
             return result;
             
+        }
+
+        public void AddRelativeDimensions(Size page, Size container, Size font, Unit rootFont, bool useWidth)
+        {
+            if (null != this.NextProvider)
+                this.NextProvider.AddRelativeDimensions(page, container, font, rootFont, useWidth);
         }
     }
 }

@@ -103,7 +103,7 @@ namespace Scryber.Expressive
         /// <exception cref="Exceptions.ExpressiveException">Thrown when there is a break in the evaluation process, check the InnerException for further information.</exception>
         /// <param name="variables">The variables to be used in the evaluation.</param>
         /// <returns>The result of the evaluation.</returns>
-        public object Evaluate(IDictionary<string, object> variables = null)
+        public object Evaluate(IDictionary<string, object> variables)
         {
             try
             {
@@ -268,6 +268,12 @@ namespace Scryber.Expressive
             this.compiledExpression = this.parser.CompileExpression(this.originalExpression, variables);
 
             this.referencedVariables = variables.ToArray();
+        }
+
+
+        public void BindExpression(IVariableProvider provider)
+        {
+
         }
 
 #region Private Methods

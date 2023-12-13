@@ -183,7 +183,9 @@ namespace Scryber.Core.UnitTests.Styles
             //set the specific values
 
             target = new Style();
-            
+
+            target.Position.PositionMode = PositionMode.Inline; //For background and border of text, we need to be inline
+
             target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
 
@@ -194,6 +196,10 @@ namespace Scryber.Core.UnitTests.Styles
             target.Stroke.Width = 2;
             target.Stroke.LineStyle = LineType.Solid;
 
+            target.Border.Color = StandardColors.Green;
+            target.Border.Width = 3;
+            target.Border.LineStyle = LineType.Dash;
+            target.Border.Dash = Dashes.LongDash;
 
             target.Font.FontSize = 36;
             target.Font.FontFamily = (FontSelector)"Bauhaus 92";
@@ -216,6 +222,10 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(StandardColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
             Assert.AreEqual((Unit)2, actual.Stroke.Width);
 
+            Assert.IsInstanceOfType(actual.Border, typeof(PDFDashPen));
+            Assert.AreEqual(StandardColors.Green, ((PDFDashPen)actual.Border).Color);
+            Assert.AreEqual(Dashes.LongDash.Phase, ((PDFDashPen)actual.Border).Dash.Phase);
+
             Assert.IsInstanceOfType(actual.Font, typeof(Font));
             Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.Selector);
             Assert.AreEqual((Unit)36, actual.Font.Size);
@@ -227,7 +237,43 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.IsTrue(actual.WrapText.HasValue);
             Assert.AreEqual(Text.WordWrap.NoWrap, actual.WrapText.Value);
 
+            //set the specific values
 
+            target = new Style();
+
+            target.Position.PositionMode = PositionMode.Block; //Background and border of text, should be ignored
+
+            target.Background.Color = StandardColors.Lime;
+            target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
+
+            target.Fill.Color = StandardColors.Navy;
+            target.Fill.Style = Scryber.Drawing.FillType.Solid;
+
+            
+            target.Border.Color = StandardColors.Green;
+            target.Border.Width = 3;
+            target.Border.LineStyle = LineType.Dash;
+            target.Border.Dash = Dashes.LongDash;
+
+            target.Font.FontSize = 36;
+            target.Font.FontFamily = (FontSelector)"Bauhaus 92";
+
+            //validate against settings
+            actual = target.CreateTextOptions();
+
+            //These should not be set if the position mode is block as they are used in the block not inline.
+            Assert.IsNull(actual.Background);
+
+            Assert.IsNull(actual.Border);
+
+            Assert.IsInstanceOfType(actual.FillBrush, typeof(PDFSolidBrush));
+            Assert.AreEqual(StandardColors.Navy, ((PDFSolidBrush)actual.FillBrush).Color);
+
+            
+            
+            Assert.IsInstanceOfType(actual.Font, typeof(Font));
+            Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.Selector);
+            Assert.AreEqual((Unit)36, actual.Font.Size);
         }
 
         

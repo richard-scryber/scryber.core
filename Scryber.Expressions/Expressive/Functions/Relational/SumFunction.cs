@@ -28,13 +28,13 @@ namespace Scryber.Expressive.Functions.Relational
                     foreach (var item in enumerable)
                     {
                         // When summing we don't want to bail out early with a null value.
-                        enumerableSum = Numbers.Add(enumerableSum ?? 0, item ?? 0);
+                        enumerableSum = Numbers.Add(enumerableSum ?? 0, item ?? 0, variables);
                     }
                     evaluatedValue = enumerableSum;
                 }
                 
                 // When summing we don't want to bail out early with a null value.
-                result = Numbers.Add(result ?? 0, evaluatedValue ?? 0);
+                result = Numbers.Add(result ?? 0, evaluatedValue ?? 0, variables);
             }
 
             return result;

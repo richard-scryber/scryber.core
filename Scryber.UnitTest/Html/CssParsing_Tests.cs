@@ -19,6 +19,7 @@ using Scryber.PDF.Resources;
 using System.Runtime.ExceptionServices;
 using System.IO;
 using System.Collections;
+using Scryber.Binding;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -2094,6 +2095,282 @@ body.grey div.reverse{
             Assert.AreEqual(StandardColors.Lime, third.FullStyle.Background.Color, "The calc colour did not match lime");
         }
 
+        [TestMethod]
+        public void ParseCalcAllUnits()
+        {
+            //Init the CSS variables for the relative dimensions
+            var vars = new Dictionary<string, object>();
+            Size pgSize = new Size(500, 800);
+            Size container = new Size(500, 300);
+            Unit fntMH = 14;
+            Unit fntxh = 8;
+            Unit fntow = 6;
+            Unit fntrem = 20;
+
+            bool widthPriority = true;
+
+            UnitRelativeVars.FillCSSVars(vars, pgSize, container, fntMH, fntxh, fntow, fntrem, widthPriority);
+
+            var funcs = new Expressive.Functions.FunctionSet();
+
+            var context = new Expressive.Context(new Expressive.ExpressiveOptions(), new Expressive.Functions.FunctionSet(), new Expressive.Operators.OperatorSet());
+
+            var tokeniser = new Scryber.Expressive.Tokenisation.Tokeniser(context);
+            //var parser = new Scryber.Expressive.ExpressionParser(context, tokeniser);
+
+            BindingCalcExpressionFactory factory = new BindingCalcExpressionFactory();
+
+            var calc = " calc(120pt)";
+
+            var expr = factory.CreateExpression(calc);
+
+            var result = expr.Evaluate(vars);
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            var unit = (Unit)result;
+
+            Assert.AreEqual(120.0, unit.Value);
+            Assert.AreEqual(PageUnits.Points, unit.Units);
+            Assert.AreEqual(120, unit.PointsValue);
+
+            calc = "calc(96px)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(96.0, unit.Value);
+            Assert.AreEqual(PageUnits.Pixel, unit.Units);
+            Assert.AreEqual(72, unit.PointsValue);
+
+
+            calc = "calc(254mm)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(254.0, unit.Value);
+            Assert.AreEqual(PageUnits.Millimeters, unit.Units);
+            Assert.AreEqual(720, unit.PointsValue);
+
+            calc = "calc(10in)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(10.0, unit.Value);
+            Assert.AreEqual(PageUnits.Inches, unit.Units);
+            Assert.AreEqual(720, unit.PointsValue);
+
+            //Relative units
+
+            calc = "calc(1em)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(1.0, unit.Value);
+            Assert.AreEqual(PageUnits.EMHeight, unit.Units);
+            unit = unit.ToAbsolute(14);
+            Assert.AreEqual(14.0, unit.PointsValue);
+
+            calc = "calc(0.5ex)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(0.5, unit.Value);
+            Assert.AreEqual(PageUnits.EXHeight, unit.Units);
+            unit = unit.ToAbsolute(14);
+            Assert.AreEqual(7.0, unit.PointsValue);
+
+            calc = "calc(5ch)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(5, unit.Value);
+            Assert.AreEqual(PageUnits.ZeroWidth, unit.Units);
+            unit = unit.ToAbsolute(14);
+            Assert.AreEqual(14 * 5.0, unit.PointsValue);
+
+            calc = "calc(0.2rem)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(0.2, unit.Value);
+            Assert.AreEqual(PageUnits.RootEMHeight, unit.Units);
+            unit = unit.ToAbsolute(10);
+            Assert.AreEqual(2, unit.PointsValue);
+
+            calc = "calc(90vw)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(90, unit.Value);
+            Assert.AreEqual(PageUnits.ViewPortWidth, unit.Units);
+            unit = unit.ToAbsolute(150);
+            Assert.AreEqual(150 * 0.9, unit.PointsValue);
+
+            calc = "calc(10vh)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(10, unit.Value);
+            Assert.AreEqual(PageUnits.ViewPortHeight, unit.Units);
+            unit = unit.ToAbsolute(150);
+            Assert.AreEqual(150 * 0.1, unit.PointsValue);
+
+            calc = "calc(20vmin)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(20, unit.Value);
+            Assert.AreEqual(PageUnits.ViewPortMin, unit.Units);
+            unit = unit.ToAbsolute(150);
+            Assert.AreEqual(150 * 0.2, unit.PointsValue);
+
+            calc = "calc(200vmax)";
+            result = factory.CreateExpression(calc).Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(Unit));
+            unit = (Unit)result;
+
+            Assert.AreEqual(200, unit.Value);
+            Assert.AreEqual(PageUnits.ViewPortMax, unit.Units);
+            unit = unit.ToAbsolute(150);
+            Assert.AreEqual(150 * 2, unit.PointsValue);
+
+        }
+
+        [TestMethod]
+        public void ParseCalcWithAbsoluteUnits()
+        {
+            var vars = new Dictionary<string, object>();
+            var factory = new BindingCalcExpressionFactory(); 
+            var calc = "calc(120px - 20pt)"; 
+            var expr = factory.CreateExpression(calc);
+            var result = expr.Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(double));
+            var actual = (double)result;
+            var expected = 70.0; // 90pt - 20pt = 70pt
+            Assert.AreEqual(expected, actual);
+
+            calc = "calc(100in - 96px)";
+            expr = factory.CreateExpression(calc);
+            result = expr.Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(double));
+            actual = (double)result;
+            expected = 7128.0; //7200pt - 72pt = 7128
+            Assert.AreEqual(expected, actual);
+
+            calc = "calc(100mm - 200mm)";
+            expr = factory.CreateExpression(calc);
+            result = expr.Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(double));
+            actual = (double)result;
+            expected = Math.Round(-100.0 * Unit.PointsPerMM, Unit.DoublePrecisionLength);
+            Assert.AreEqual(expected, actual);
+
+
+        }
+        [TestMethod]
+        public void ParseCalcWithRelativeUnits()
+        {
+            var vars = new Dictionary<string, object>();
+            Size pgSize = new Size(500, 800);
+            Size container = new Size(500, 300);
+            Unit fntMH = 14;
+            Unit fntxh = 8;
+            Unit fntow = 6;
+            Unit fntrem = 20;
+
+            bool widthPriority = true;
+
+            UnitRelativeVars.FillCSSVars(vars, pgSize , container , fntMH, fntxh, fntow, fntrem, widthPriority);
+
+            
+
+            var factory = new BindingCalcExpressionFactory();
+            var calc = "calc(80% - 20pt)";
+            var expr = factory.CreateExpression(calc);
+            var result = expr.Evaluate(vars);
+
+            Assert.IsInstanceOfType(result, typeof(double));
+            var actual = (double)result;
+            var expected = 380.0; // 80% of 500pt - 20pt = 380pt
+            Assert.AreEqual(expected, actual);
+
+            calc = "calc(100in - 10rem)";
+            expr = factory.CreateExpression(calc);
+            result = expr.Evaluate(vars);
+
+            //Assert.IsInstanceOfType(result, typeof(double));
+            //actual = (double)result;
+            //expected = 7128.0; //7200pt - 72pt = 7128
+            //Assert.AreEqual(expected, actual);
+
+
+        }
+
+        [TestMethod]
+        public void ParseCSSWithCalcAllUnits()
+        {
+            var cssWithCalc = @"
+
+            .other div {
+                width: calc(10rem - 60pt);
+                height: calc(20pt);
+                margin-left: calc(10.1%);
+                margin-right: calc(4mm);
+                margin-top: calc(3em);
+                margin-bottom: calc(12.1rem);
+                padding-left: calc(.5ch);
+                padding-right: calc(2vh);
+                padding-top: calc(1.5vw);
+                padding-bottom: calc(2.1vmin);
+                min-width: calc(13vmax);
+            }
+";
+
+            //TODO: Sort the use of the calc expressions with units at binding time.
+
+
+            using (var doc = BuildDocumentWithStyles(cssWithCalc))
+            {
+                doc.StyleClass = "other";
+                var applied = doc.GetAppliedStyle();
+
+                var div = (doc.Pages[0] as Page).Contents[0] as Div;
+
+                applied = div.GetAppliedStyle();
+                var pg = new Size(400, 600);
+                var contain = new Size(400, 300);
+                var fnt = new Size(10, 16);
+
+                var flat = applied.Flatten(pg, contain, fnt, 20);
+
+                Assert.AreEqual(Unit.Pt((20 * 10) - 60), flat.Size.Width, "Width did not match");
+                Assert.AreEqual(Unit.Pt(3 * 16), flat.Margins.Top, "Top margin did not match");
+                Assert.AreEqual(Unit.Mm(4), flat.Margins.Right, "Right margin did not match");
+            }
+        }
+
 
         [TestMethod]
         public void ParseCSSWithCalcExpression()
@@ -2105,9 +2382,9 @@ body.grey div.reverse{
                color: var(--text-color, #00FFFF);
             }
 
-            /*.calc{
+            .inner{
                 width: calc(100% - 120px);
-            }*/
+            }
 ";
 
             //TODO: Sort the use of the calc expressions with units at binding time.
@@ -2282,11 +2559,11 @@ body.grey div.reverse{
 
             Assert.AreEqual(PatternRepeat.RepeatX, applied.Background.PatternRepeat, "Pattern Repeat was not set");
 
-            Assert.AreEqual("7.5pt", applied.Background.PatternXPosition.ToString(), "Pattern X Position not set");
+            Assert.AreEqual("7.5pt", applied.Background.PatternXPosition.ToPoints().ToString(), "Pattern X Position not set");
             Assert.AreEqual("12pt", applied.Background.PatternYPosition.ToString(), "Pattern Y Position not set");
 
             Assert.AreEqual("12pt", applied.Background.PatternXSize.ToString(), "Pattern X Size not set");
-            Assert.AreEqual("7.5pt", applied.Background.PatternYSize.ToString(), "Pattern Y Size not set");
+            Assert.AreEqual("10px", applied.Background.PatternYSize.ToString(), "Pattern Y Size not set");
 
             Assert.AreEqual("rgb(255,0,255)", applied.Border.Color.ToString(), "Border color not set");
             Assert.AreEqual(LineType.Dash, applied.Border.LineStyle, "Border line style not set");
@@ -2596,6 +2873,13 @@ body.grey div.reverse{
         private Document BuildDocumentWithStyles(string css)
         {
             var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            div.ElementName = "div";
+            pg.Contents.Add(div);
+
             var context = new LoadContext(doc.Params, doc.TraceLog, doc.PerformanceMonitor, doc, OutputFormat.PDF);
             var cssparser = new CSSStyleParser(css, context);
 

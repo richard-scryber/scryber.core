@@ -93,12 +93,14 @@ namespace Scryber.PDF.Layout
 
         #region public override PDFUnit Width {get;}
 
+        private Unit _width;
+
         /// <summary>
-        /// Gets the height of this begin text run - PDFUnit.Zero
+        /// Gets the height of this begin text run - PDFUnit.Zero or Any left padding on the inline run style
         /// </summary>
         public override Unit Width
         {
-            get { return Unit.Zero; }
+            get { return _width; }
         }
 
         #endregion
@@ -404,15 +406,26 @@ namespace Scryber.PDF.Layout
             if (_hascustomspace && this.TextRenderOptions.CharacterSpacing.HasValue == false && this.TextRenderOptions.WordSpacing.HasValue == false)
                 context.Graphics.SetTextSpacing(this._wordspace, this._charspace, this.TextRenderOptions.Font.Size);
 
+            if (this.ShouldRenderBorder(context))
+                this.RenderTextBorder(context, writer);
+
             context.Graphics.MoveTextCursor(cursor, true);
             this.StartTextCursor = cursor;
+
+
             
+
             return null;
         }
 
         public bool ShouldRenderBackground(PDFRenderContext context)
         {
             return this.TextRenderOptions.Background != null;
+        }
+
+        public bool ShouldRenderBorder(PDFRenderContext context)
+        {
+            return this.TextRenderOptions.Border != null;
         }
 
         public bool ShouldRenderUnderline(PDFRenderContext context)
@@ -432,7 +445,191 @@ namespace Scryber.PDF.Layout
 
         public void RenderTextBackground(PDFRenderContext context, PDFWriter writer)
         {
+            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
+            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
+            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
 
+            if(lineh > top + bottom)
+            {
+                var dif = (lineh - (top + bottom)) / 2;
+                top += dif;
+                bottom += dif;
+            }
+
+            var drawing = false;
+            var finished = false;
+            
+            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
+            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
+            Unit recth = bottom + top;
+            Unit rectw = 0;
+            Unit padl = 0;
+
+            if (this.TextRenderOptions.Padding.HasValue)
+            {
+            //    //TODO: Add the padding all around
+                var pad = this.TextRenderOptions.Padding.Value;
+                padl = pad.Left;
+
+                rectx -= pad.Left;
+                recty -= pad.Top;
+                recth += pad.Top + pad.Bottom;
+            }
+
+            foreach(var line in this.Lines)
+            {
+                foreach(var run in line.Runs)
+                {
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        if (run == this)
+                        {
+                            drawing = true;
+                            rectw = 0;
+                        }
+                    }
+                    else if (run is PDFTextRunEnd end)
+                    {
+                        if (end.Start == this)
+                        {
+                            //render the background here.
+                            //As there is a spacer added for the right padding we have already calculated the right value.
+                            Rect bounds = new Rect(rectx, recty, rectw, recth);
+                            var brush = this.TextRenderOptions.Background;
+                            context.Graphics.FillRectangle(brush, bounds);
+                            drawing = false;
+                            finished = true;
+                            break;
+                        }
+                    }
+                    else if (drawing)
+                    {
+                        if (run is PDFTextRunNewLine nl)
+                        {
+                            //Render the background here.
+                            Rect bounds = new Rect(rectx, recty, rectw, recth);
+                            var brush = this.TextRenderOptions.Background;
+                            context.Graphics.FillRectangle(brush, bounds);
+
+                            //move down and back, then reset the width.
+                            recty += nl.NewLineOffset.Height;
+                            rectx -= (nl.NewLineOffset.Width - padl);
+                            rectw = 0;
+                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
+                        }
+                        else
+                        {
+                            rectw += run.Width;
+                        }
+                        
+                    }
+                    
+                }
+
+                if (finished) { break; } //the begin should have happend
+            }
+            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
+        }
+
+
+        private const Sides StartSides = Sides.Left | Sides.Top | Sides.Bottom;
+        private const Sides EndSides = Sides.Right | Sides.Top | Sides.Bottom;
+        private const Sides MidSides = Sides.Top | Sides.Bottom;
+        private const Sides AllSides = Sides.Left | Sides.Right | Sides.Top | Sides.Bottom;
+
+
+
+        public void RenderTextBorder(PDFRenderContext context, PDFWriter writer)
+        {
+            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
+            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
+            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
+
+            if (lineh > top + bottom)
+            {
+                var dif = (lineh - (top + bottom)) / 2;
+                top += dif;
+                bottom += dif;
+            }
+
+            var drawing = false;
+            var finished = false;
+            var pen = this.TextRenderOptions.Border;
+            var penOffset = pen.Width;
+            var halfPenOffset = penOffset / 2;
+
+            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
+            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
+            Unit recth = bottom + top;
+            Unit rectw = 0;
+            Unit padl = 0;
+            Sides sides = 0;
+
+            if (this.TextRenderOptions.Padding.HasValue)
+            {
+                var pad = this.TextRenderOptions.Padding.Value;
+                padl = pad.Left;
+
+                rectx -= pad.Left;
+                recty -= pad.Top;
+                recth += pad.Top + pad.Bottom;
+            }
+
+            foreach (var line in this.Lines)
+            {
+                foreach (var run in line.Runs)
+                {
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        if (run == this)
+                        {
+                            drawing = true;
+                            sides = StartSides;
+                            rectw = 0;
+                        }
+                    }
+                    else if (run is PDFTextRunEnd end)
+                    {
+                        if (end.Start == this)
+                        {
+                            //render the background here.
+                            //As there is a spacer added for the right padding we have already calculated the right value.
+                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
+                            sides = sides | Sides.Right;
+                            context.Graphics.DrawRectangle(pen, bounds, sides);
+                            drawing = false;
+                            finished = true;
+                            break;
+                        }
+                    }
+                    else if (drawing)
+                    {
+                        if (run is PDFTextRunNewLine nl)
+                        {
+                            //Render the background here.
+                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
+
+                            context.Graphics.DrawRectangle(pen, bounds, sides);
+                            sides = MidSides;
+
+                            //move down and back, then reset the width.
+                            recty += nl.NewLineOffset.Height;
+                            rectx -= (nl.NewLineOffset.Width - padl);
+                            rectw = 0;
+                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
+                        }
+                        else
+                        {
+                            rectw += run.Width;
+                        }
+
+                    }
+
+                }
+
+                if (finished) { break; } //the begin should have happend
+            }
+            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
         }
 
         public static double ThicknessFactor = 12.0;

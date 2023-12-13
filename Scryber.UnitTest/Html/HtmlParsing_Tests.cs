@@ -1202,6 +1202,32 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void TextDecoration()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/textdecoration.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Params["title"] = "Title in code";
+
+                using (var stream = DocStreams.GetOutputStream("textdecoration.pdf"))
+                {
+                    doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.SaveAsPDF(stream);
+
+                }
+
+                var pg = doc.Pages[0] as Section;
+                var body = _layoutcontext.DocumentLayout.AllPages[0];
+
+                //Assert.Inconclusive("There are no specific tests written for the text decoration");
+
+            }
+
+        }
+
+        [TestMethod()]
         public void BordersAndSides()
         {
             var path = System.Environment.CurrentDirectory;

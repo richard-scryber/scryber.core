@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Scryber.Drawing;
 using Scryber.Expressive;
 using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Functions.Relational;
@@ -80,18 +81,19 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static IVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata)
+        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata)
         {
-            return new PDFItemVariableProvider(items, index, currentdata);
+            return new ItemVariableProvider(items, index, currentdata);
         }
     }
 
-    public class PDFItemVariableProvider : IVariableProvider
+    public class ItemVariableProvider : IVariableProvider
     {
 
         private ItemCollection _items;
         private object _currentData;
         private int _currentIndex;
+        private RelativeDimensions _relatives;
 
 
         protected ItemCollection Items { get { return _items; } }
@@ -99,7 +101,9 @@ namespace Scryber.Binding
         protected object CurrentData { get { return _currentData; } }
         protected int CurrentIndex { get { return _currentIndex; } }
 
-        public PDFItemVariableProvider(ItemCollection items, int index, object currentData)
+        protected RelativeDimensions Relatives { get { return _relatives; } }
+
+        public ItemVariableProvider(ItemCollection items, int index, object currentData)
         {
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
@@ -108,6 +112,10 @@ namespace Scryber.Binding
             _currentData = currentData;
         }
 
+        public void AddRelativeDimensions(Size page, Size container, Size font, Unit rootFont, bool useWidth)
+        {
+            this._relatives = new RelativeDimensions(page, container, font, rootFont, useWidth);
+        }
 
         public bool TryGetValue(string variableName, out object value)
         {
@@ -122,8 +130,91 @@ namespace Scryber.Binding
 
                 return null != value;
             }
+            else if(null != this.Relatives && this.Relatives.TryGetValue(variableName, out value))
+            {
+                return null != value;
+            }
             else
                 return Items.TryGetValue(variableName, out value);
+        }
+
+        protected class RelativeDimensions
+        {
+            public Size PageSize { get; set; }
+
+            public Size ContainerSize { get; set; }
+
+            public Size FontSize { get; set; }
+
+            public Unit RootFontSize { get; set; }
+
+            public bool UseWidthAsPriority { get; set; }
+
+            public RelativeDimensions(Size page, Size container, Size font, Unit root, bool useWidth)
+            {
+                this.PageSize = page;
+                this.ContainerSize = container;
+                this.FontSize = font;
+                this.RootFontSize = root;
+                this.UseWidthAsPriority = useWidth;
+            }
+
+            public bool TryGetValue(string name, out object value)
+            {
+                if(string.IsNullOrEmpty(name) || !name.StartsWith(UnitRelativeVars.RelativeVarPrefix))
+                {
+                    value = null;
+                    return false;
+                }
+
+                bool result;
+                
+                switch (name)
+                {
+                    case UnitRelativeVars.PageWidth:
+                        value = PageSize.Width;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.PageHeight:
+                        value = PageSize.Height;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.ContainerWidth:
+                        value = ContainerSize.Height;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.ContainerHeight:
+                        value = ContainerSize.Height;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.FontUpperHeight:
+                        value = FontSize.Height;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.FontLowercaseHeight:
+                        value = FontSize.Width;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.FontStandardWidth:
+                        value = FontSize.Width;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.FontRootUpperHeight:
+                        value = RootFontSize;
+                        result = true;
+                        break;
+                    case UnitRelativeVars.WidthIsPriority:
+                        value = UseWidthAsPriority;
+                        result = true;
+                        break;
+                    default:
+                        value = null;
+                        result = false;
+                        break;
+                }
+
+                return result;
+            }
         }
     }
 }

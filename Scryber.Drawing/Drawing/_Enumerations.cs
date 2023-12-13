@@ -57,6 +57,7 @@ namespace Scryber.Drawing
         Millimeters = 1,
         Inches = 2,
         Pixel = 3,
+        //relative break point
         Percent = 4,
         EMHeight = 5,
         EXHeight = 6,

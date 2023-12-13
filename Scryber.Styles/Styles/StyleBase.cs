@@ -1219,8 +1219,24 @@ namespace Scryber.Styles
 
             options.Font = this.DoCreateFont(false);
             options.FillBrush = this.DoCreateFillBrush();
-            options.Background = this.DoCreateBackgroundBrush();
             options.Stroke = this.DoCreateStrokePen();
+            
+            //If we are inline positioned - then add any padding, background and border
+            if (this.TryGetValue(StyleKeys.PositionModeKey, out StyleValue<PositionMode> mode) && mode.Value(this) == PositionMode.Inline)
+            {
+                options.Padding = this.DoCreatePaddingThickness();
+                options.Background = this.DoCreateBackgroundBrush();
+                options.Border = this.DoCreateBorderPen();
+            }
+            else
+            {
+                //we are a block or other - so no padding, background and border on text options.
+                options.Padding = null;
+                options.Background = null;
+                options.Border = null;
+            }
+
+            options.InlineMargins = this.DoCreateInlineMarginSize();
 
             StyleValue<Unit> flindent;
             if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey,out flindent))
@@ -1993,6 +2009,24 @@ namespace Scryber.Styles
         }
 
         #endregion
+
+        internal protected virtual Thickness DoCreateInlineMarginSize()
+        {
+            Unit start;
+            Unit end;
+
+            if (this.TryGetValue(StyleKeys.MarginsInlineStart, out StyleValue<Unit> sv))
+                start = sv.Value(this);
+            else
+                start = Unit.Zero;
+
+            if (this.TryGetValue(StyleKeys.MarginsInlineEnd, out StyleValue<Unit> ev))
+                end = ev.Value(this);
+            else
+                end = Unit.Zero;
+
+            return new Thickness(Unit.Zero, end, Unit.Zero, start);
+        }
 
         #region internal protected virtual PDFThickness DoCreateClippingThickness()
 

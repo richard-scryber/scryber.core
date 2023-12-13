@@ -17,7 +17,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
         #region BinaryExpressionBase Members
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
-            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r) =>
+            EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) =>
                 Math.Pow(Convert.ToDouble(l), Convert.ToDouble(r)));
 
         #endregion

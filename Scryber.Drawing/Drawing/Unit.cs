@@ -236,6 +236,10 @@ namespace Scryber.Drawing
                     s = InchPostFix;
                     break;
 
+                case PageUnits.Pixel:
+                    s = ExplicitPixelPostFix;
+                    break;
+
                 case PageUnits.Percent:
                     s = RelativePercentPostfix;
                     break;
@@ -292,11 +296,14 @@ namespace Scryber.Drawing
                     return val;
                     
                 case PageUnits.Millimeters:
-                    return val * PointsPerMM;
+                    return Math.Round(val * PointsPerMM, DoublePrecisionLength);
                     
                 case PageUnits.Inches:
-                    return val * PointsPerInch;
-                    
+                    return Math.Round(val * PointsPerInch, DoublePrecisionLength);
+
+                case PageUnits.Pixel:
+                    return Math.Round(val * PointsPerPixel, DoublePrecisionLength);
+
                 default:
                     throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
             }
@@ -310,11 +317,14 @@ namespace Scryber.Drawing
                     return ptVal;
                     
                 case PageUnits.Millimeters:
-                    return ptVal * MMPerPoint;
+                    return Math.Round(ptVal * MMPerPoint, DoublePrecisionLength);
                     
                 case PageUnits.Inches:
-                    return ptVal * InchesPerPoint;
-                    
+                    return Math.Round(ptVal * InchesPerPoint, DoublePrecisionLength);
+
+                case PageUnits.Pixel:
+                    return Math.Round(ptVal * PixelsPerPoint, DoublePrecisionLength);
+
                 default:
                     throw new InvalidOperationException("The Unit must be absolute to be converted to another absolute dimension");
             }
@@ -344,7 +354,7 @@ namespace Scryber.Drawing
         }
 
 
-        private const double DoublePrecision = 0.000000001;
+        
 
         /// <summary>
         /// Compares 2 doubles for approximage equality.
@@ -428,7 +438,7 @@ namespace Scryber.Drawing
             if (left.IsRelative || right.IsRelative)
             {
                 if (left.Units != right.Units)
-                    throw new InvalidOperationException("Cannot calculate different relative units");
+                    throw new InvalidOperationException("Cannot calculate different relative units for " + left.ToString() + " + " + right.ToString());
             }
 
             var newUnit = new Unit(left._val + right._val);
@@ -450,7 +460,7 @@ namespace Scryber.Drawing
             if (left.IsRelative || right.IsRelative)
             {
                 if (left.Units != right.Units)
-                    throw new InvalidOperationException("Cannot calculate different relative units");
+                    throw new InvalidOperationException("Cannot calculate different relative units for " + left.ToString() + " - " + right.ToString());
             }
 
             var newUnit = new Unit(left._val - right._val);
@@ -760,7 +770,7 @@ namespace Scryber.Drawing
 
             val = GetNumber(ref offset, value);
             if (offset < value.Length)
-                unit = GetUnit(ref offset, value, ref val);
+                unit = GetUnit(ref offset, value, val);
             else
                 unit = PageUnits.Points;
 
@@ -821,7 +831,7 @@ namespace Scryber.Drawing
             return parsed;
         }
 
-        private static PageUnits GetUnit(ref int offset, string value, ref double number)
+        private static PageUnits GetUnit(ref int offset, string value, double number)
         {
             string end = value.Substring(offset).Trim().ToLower();
             switch (end)
@@ -836,8 +846,7 @@ namespace Scryber.Drawing
                     return PageUnits.Points;
 
                 case (ExplicitPixelPostFix):
-                    number = number * (72.0 / 96.0);
-                    return PageUnits.Points;
+                    return PageUnits.Pixel;
 
                 case (RelativePercentPostfix):
                     return PageUnits.Percent;
@@ -969,6 +978,10 @@ namespace Scryber.Drawing
 
         #endregion
 
+        public static Unit Px(double value)
+        {
+            return new Unit(value, PageUnits.Pixel);
+        }
 
         #region public static PDFUnit Inch(double value)
 
@@ -1238,10 +1251,15 @@ namespace Scryber.Drawing
         // conversion constants
         //
 
+        public const double DoublePrecision = 0.000000001;
+        public const int DoublePrecisionLength = 9;
+
         public const double PointsPerInch = 72;
         public const double PointsPerMM = PointsPerInch / 25.4;
         public const double InchesPerPoint = 1.0 / PointsPerInch;
         public const double MMPerPoint = 1.0 / PointsPerMM;
+        public const double PointsPerPixel = 72.0 / 96.0;
+        public const double PixelsPerPoint = 1.0 / PointsPerPixel;
 
         public const string MillimeterPostFix = "mm";
         public const string InchPostFix = "in";

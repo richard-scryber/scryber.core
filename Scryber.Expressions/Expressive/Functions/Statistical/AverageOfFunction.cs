@@ -41,12 +41,12 @@ namespace Scryber.Expressive.Functions.Statistical
                 {
                     CurrentDataExpression.SetCurrentData(item, variables);
                     var one = lookup.Evaluate(variables);
-                    total = Numbers.Add(total ?? 0, one ?? 0);
+                    total = Numbers.Add(total ?? 0, one ?? 0, variables);
                     count++;
                 }
             }
 
-            return Numbers.Divide(total, (double)count);
+            return Numbers.Divide(total, (double)count, variables);
         }
     }
 }

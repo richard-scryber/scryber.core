@@ -1023,10 +1023,123 @@ namespace Scryber.Core.UnitTests.Html
                 "Third datetime value was not correct");
             
         }
-        
+
 
         #endregion
-        
-        
+
+        #region picture source image
+
+        [TestMethod]
+        public void ComponentPicture_Test()
+        {
+
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<body style='padding:20pt;' >
+    <div id='wrapper' >
+        <span>Just an inner image</span>
+        <picture id='use-image'>
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>No Media queries - just pick the first appropriate one - 2x</span>
+        <picture id='no-media'>
+            <source srcset='../../../resources/group2x.png' />
+            <source srcset='../../../resources/group4x.png' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With media, so pick the printing one - 4x.</span>
+        <picture id='print-media'>
+            <source media='screen' srcset='../../../resources/group2x.png' />
+            <source media='print' srcset='../../../resources/group4x.png' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With resolutions, so pick the highest one - 4x.</span>
+        <picture id='highest-res'>
+            <source srcset='../../../resources/group2x.png 2x, ../../../resources/group4x.png 4x' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With widths, so pick the highest one - 1584w.</span>
+        <picture id='highest-width' >
+            <source srcset='../../../resources/group4x.png 1584w, ../../../resources/group2x.png 792w' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With non printing media, so default to img - 1x.</span>
+        <picture id='non-print'>
+            <source media='screen' srcset='../../../resources/group2x.png 2x' />
+            <source media='screen' srcset='../../../resources/group4x.png 4x' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With mime-types (not supported), so default to img - 1x.</span>
+        <picture id='non-types'>
+            <source type='unsupported/image' srcset='../../../resources/group2x.png 2x' />
+            <source type='unsupported/image' srcset='../../../resources/group4x.png 4x' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With mime-types (supported), so default to first - 2x.</span>
+        <picture id='valid-types'>
+            <source type='image/png' srcset='../../../resources/group2x.png 2x' />
+            <source type='image/png' srcset='../../../resources/group4x.png 4x' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+        <span>With mime-types (unsupported and supported) and media queries, so pick the best - 4x.</span>
+        <picture id='all-types'>
+            <source type='image/png' media='screen' srcset='../../../resources/group2x.png 2x' />
+            <source type='image/png' media='print' srcset='../../../resources/group4x.png 4x' />
+            <img style='width:100pt;' src='../../../resources/group.png' alt='Pick the best for print' />
+        </picture>
+    </div>
+</body>
+</html>";
+
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            using var stream = DocStreams.GetOutputStream("ComponentPicture.pdf");
+            doc.SaveAsPDF(stream);
+
+            var pg = doc.Pages[0] as Page;
+            var wrap = pg.Contents[0] as Div;
+
+            Assert.AreEqual("wrapper", wrap.ID);
+
+            var pic = wrap.Contents[1] as HTMLPicture;
+            Assert.AreEqual("use-image", pic.ID);
+            Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
+
+            pic = wrap.Contents[3] as HTMLPicture;
+            Assert.AreEqual("no-media", pic.ID);
+            Assert.AreEqual("../../../resources/group2x.png", pic.Image.Source);
+
+            pic = wrap.Contents[5] as HTMLPicture;
+            Assert.AreEqual("print-media", pic.ID);
+            Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
+
+            pic = wrap.Contents[7] as HTMLPicture;
+            Assert.AreEqual("highest-res", pic.ID);
+            Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
+
+            pic = wrap.Contents[9] as HTMLPicture;
+            Assert.AreEqual("highest-width", pic.ID);
+            Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
+
+            pic = wrap.Contents[11] as HTMLPicture;
+            Assert.AreEqual("non-print", pic.ID);
+            Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
+
+            pic = wrap.Contents[13] as HTMLPicture;
+            Assert.AreEqual("non-types", pic.ID);
+            Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
+
+            pic = wrap.Contents[15] as HTMLPicture;
+            Assert.AreEqual("valid-types", pic.ID);
+            Assert.AreEqual("../../../resources/group2x.png", pic.Image.Source);
+
+            pic = wrap.Contents[17] as HTMLPicture;
+            Assert.AreEqual("all-types", pic.ID);
+            Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
+        }
+
+
+        #endregion
     }
 }

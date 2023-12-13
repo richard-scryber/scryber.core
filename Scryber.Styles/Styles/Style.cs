@@ -1253,20 +1253,14 @@ namespace Scryber.Styles
             {
                 foreach (var key in this.InheritedValues.Keys)
                 {
-                    if (key.CanBeRelative)
-                    {
-                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
-                    }
+                    this.InheritedValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }
             }
             if (this.DirectValues.Count > 0)
             {
                 foreach (var key in this.DirectValues.Keys)
                 {
-                    if (key.CanBeRelative)
-                    {
-                        key.FlattenValue(this, pageSize, containerSize, fontSize, rootFontSize);
-                    }
+                    this.DirectValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }
             }
             return this;

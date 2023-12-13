@@ -27,7 +27,7 @@ namespace Scryber.PDF.Layout
             set;
         }
 
-
+        private Unit _width;
         
         public override Drawing.Unit Height
         {
@@ -36,7 +36,7 @@ namespace Scryber.PDF.Layout
 
         public override Drawing.Unit Width
         {
-            get { return 0; }
+            get { return _width; }
         }
 
         public PDFLayoutInlineBegin(PDFLayoutLine line, IComponent owner, PDFPositionOptions pos, Style fullStyle)
@@ -44,6 +44,13 @@ namespace Scryber.PDF.Layout
         {
             this.PositionOptions = pos;
             this.FullStyle = fullStyle;
+
+            //Set the margin inline start width
+            if (fullStyle.TryGetValue(StyleKeys.MarginsInlineStart, out StyleValue<Unit> found))
+                this._width = found.Value(fullStyle);
+            else
+                this._width = Unit.Zero;
+
         }
 
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)

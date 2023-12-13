@@ -73,15 +73,23 @@ namespace Scryber.Binding
             get { return DocumentGenerationStage.Bound; }
         }
 
-        public BindingCalcExpressionFactory()
-        {
 #if DEBUG
-            this._useCache = false;
+        const bool DefaultUseCache = false;
+        const ExpressiveOptions DefaultCaseOptions =  ExpressiveOptions.IgnoreCaseForParsing;
 #else
-            this._useCache = true;
+        const bool DefaultUseCache = true;
+        const ExpressiveOptions DefaultCaseOptions =  ExpressiveOptions.IgnoreCaseForParsing;
 #endif
 
-            this._options = Expressive.ExpressiveOptions.IgnoreCaseForParsing;
+        public BindingCalcExpressionFactory()
+            : this(DefaultUseCache, DefaultCaseOptions)
+        {
+        }
+
+        public BindingCalcExpressionFactory(bool useCache, ExpressiveOptions caseOptions)
+        {
+            this._useCache = useCache;
+            this._options = caseOptions;
             this.ResetBindingOptions();
         }
 
