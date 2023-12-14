@@ -451,7 +451,15 @@ namespace Scryber.Core.UnitTests.Html
             <legend id='legend' class='legendClass' style='padding:8pt' hidden='hidden' title='fieldset legend' >This is the legend</legend>
             This is the field set content.
         </fieldset>
-
+        <details id='det1' style='margin-top:10px; border-bottom: solid 1px gray' title='Details group' >
+            <p>This should actually appear at the bottom</p>
+            <summary style='padding-bottom: 3px; border-bottom: solid 1px #AAA;'>And this <b>SHOULD</b> be moved to the top</summary>
+        </details>
+        <details id='det2' open='closed' style='margin-top:10px; border-bottom: solid 1px gray' title='Details group' >
+            <p>This should be hidden</p>
+            <summary style='padding-bottom: 3px; border-bottom: solid 1px #AAA;'>And this <b>SHOULD</b> be the only content</summary>
+            <p>As should this</p>
+        </details>
     </div>
 </body>
 </html>";
@@ -470,7 +478,7 @@ namespace Scryber.Core.UnitTests.Html
             //div id='OuterDiv' class='divClass' style='padding:60pt' hidden='' title='Outer Div'
             var outer = ((Section)pg).Contents[0] as Panel;
             
-            var componentCount = 8;
+            var componentCount = 10;
             Assert.IsNotNull(outer, "outer was null");
             AssertBlock(outer, typeof(HTMLDiv), "OuterDiv", "divClass", 60.0, true, "Outer Div");
             Assert.AreEqual(componentCount, outer.Contents.Count);
@@ -553,6 +561,26 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(legend);
             AssertBlock(legend, typeof(HTMLLegend),"legend", "legendClass", 8.0, false, "fieldset legend");
             AssertLiteralContent(legend, 0, "This is the legend");
+
+            var det = outer.Contents[8] as HTMLDetails;
+            Assert.IsNotNull(det);
+            AssertBlock(det, typeof(HTMLDetails), "det1", null, null, true, "Details group");
+
+            var summary = det.Contents[0] as HTMLDetailsSummary; //summary should have been moved to the top.
+            Assert.IsNotNull(summary);
+
+            det = outer.Contents[9] as HTMLDetails;
+            Assert.IsNotNull(det);
+            AssertBlock(det, typeof(HTMLDetails), "det2", null, null, true, "Details group");
+
+            summary = det.Contents[0] as HTMLDetailsSummary; //summary should have been moved to the top.
+            Assert.IsNotNull(summary);
+
+            var content = det.Contents[1] as HTMLParagraph;
+            Assert.IsFalse(content.Visible); //any inner content should be hidden for the second details.
+
+            content = det.Contents[2] as HTMLParagraph;
+            Assert.IsFalse(content.Visible);
         }
 
         private void AssertLiteralContent(IContainerComponent comp, int index, string literalText)
