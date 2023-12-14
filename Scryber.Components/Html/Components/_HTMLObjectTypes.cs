@@ -89,6 +89,8 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Progress = (ObjectType)"hPro";
 		public static readonly ObjectType Meter = (ObjectType)"hMtr";
 
+		public static readonly ObjectType Details = (ObjectType)"hDet";
+		public static readonly ObjectType DetailsSummary = (ObjectType)"hDSm";
     }
 }
 
