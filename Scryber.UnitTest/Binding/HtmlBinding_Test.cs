@@ -417,5 +417,116 @@ namespace Scryber.Core.UnitTests.Binding
                 }
             }
         }
+
+        /// <summary>
+        /// The reverse of the above the content should be just treated as text.
+        /// </summary>
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindContent_IgnoreTags()
+        {
+            var literal = "Inner Content";
+            var id = "Appended";
+            var contentString = @"<div class='test' id='" + id + "' xmlns='http://www.w3.org/1999/xhtml' ><b>" + literal + "</b></div>";
+
+            var src = @"
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+    </head>
+    <body style='padding: 10pt' >
+        <div id='wrapper' style='border: solid 1px red; white-space:preserve'>
+            {{boundContent}}
+            <div>After Content</div>
+        </div>
+    </body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["boundContent"] = contentString;
+
+                using (var stream = DocStreams.GetOutputStream("HtmlBoundContent_IgnoreTags.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+                    Assert.AreEqual(1, pg.Contents.Count);
+
+                    var wrapper = pg.Contents[0] as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(2, wrapper.Contents.Count);
+
+                    var content = wrapper.Contents[0] as TextLiteral; //pre-pended
+                    Assert.IsNotNull(content);
+                    Assert.AreEqual(contentString, content.Text);
+                    
+
+                    var div = wrapper.Contents[1] as Div;
+                    Assert.IsNotNull(div);
+                    Assert.AreEqual(1, div.Contents.Count);
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// The reverse of the above the content should be just treated as text.
+        /// </summary>
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindContent_IgnoreWhitespaceTags()
+        {
+            var literal = "Inner Content";
+            var id = "Appended";
+            //The returns and tabs are not signficant. So the div should all be on one line.
+            var contentString = @"<div class='test' style='border: solid 1px red' id='" + id + @"' xmlns='http://www.w3.org/1999/xhtml' >Before
+                <b>" + literal + @"</b>
+                After</div>";
+
+            var src = @"
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+    </head>
+    <body style='padding: 10pt' >
+        <div id='wrapper' style='border: solid 1px red; white-space:preserve'>
+            <div data-content='{{boundContent}}' ></div>
+            <div>After Content</div>
+        </div>
+    </body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["boundContent"] = contentString;
+
+                using (var stream = DocStreams.GetOutputStream("HtmlBoundContent_IgnoreWhitespace.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+                    Assert.AreEqual(1, pg.Contents.Count);
+
+                    var wrapper = pg.Contents[0] as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(2, wrapper.Contents.Count);
+
+                    var content = wrapper.Contents[0] as TextLiteral; //pre-pended
+                    Assert.IsNotNull(content);
+                    Assert.AreEqual(contentString, content.Text);
+
+
+                    var div = wrapper.Contents[1] as Div;
+                    Assert.IsNotNull(div);
+                    Assert.AreEqual(1, div.Contents.Count);
+
+                }
+            }
+        }
     }
 }

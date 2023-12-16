@@ -142,5 +142,14 @@ namespace Scryber
         Matrix
     }
 
-    
+    public enum AttachmentDisplayIcon
+    {
+        Graph,
+        PushPin,
+        Paperclip,
+        Tag,
+        None
+    }
+
+
 }

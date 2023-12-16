@@ -7,8 +7,8 @@ using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
-    [PDFParsableComponent("output")]
-    public class HTMLOutput : Scryber.Components.Span
+    [PDFParsableComponent("object")]
+    public class HTMLObject : Scryber.Components.Span
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -51,15 +51,12 @@ namespace Scryber.Html.Components
         [PDFAttribute("form")]
         public string Form { get; set; }
 
-        [PDFAttribute("val")]
-        public string Value { get; set; }
-
-        public HTMLOutput()
-            : this(HTMLObjectTypes.Output)
+        public HTMLObject()
+            : this(HTMLObjectTypes.Object)
         {
         }
 
-        protected HTMLOutput(ObjectType type): base(type)
+        protected HTMLObject(ObjectType type): base(type)
         { }
 
 
