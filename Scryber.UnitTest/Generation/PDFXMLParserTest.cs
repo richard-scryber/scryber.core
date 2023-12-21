@@ -75,6 +75,7 @@ namespace Scryber.Core.UnitTests.Generation
         private ParserSettings GetSettings()
         {
             Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type whitespaceType = typeof(Scryber.Components.Whitespace);
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
@@ -82,7 +83,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor perfmon = new PerformanceMonitor(true);
-            ParserSettings settings = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
+            ParserSettings settings = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
 
             return settings;
         }

@@ -40,7 +40,7 @@ namespace Scryber.Core.UnitTests.Binding
     </head>
     <body style='padding: 10pt' >
 
-        <!-- <h2>1. Single Line,not formatted</h2>
+        <h2>1. Single Line,not formatted</h2>
         <div class='wrapper' >
             &lt;div data-content='\{{model.items[0].content}}\'&gt; &lt;/div&gt;
         </div>
@@ -83,21 +83,20 @@ namespace Scryber.Core.UnitTests.Binding
             &lt;div class='test' id='Appended' xmlns='' &gt;
                 &lt;b&gt;Inner &amp; Content&lt;/b&gt;
             &lt;/div&gt;
-        </div>-->
+        </div>
 
         <h2>8. Single Line with spans, pre-formatted</h2>
         <div class='wrapper preformatted' >
             <span>Before Content</span> &lt;div data-content='\{{model.items[0].content}}\'&gt;&lt;/div&gt; <span>After Content</span>
         </div>
-
-        <!--<h2>9. Multiple Line with spans, pre-formatted</h2>
+        <h2>9. Multiple Line with spans, pre-formatted</h2>
         <div class='wrapper preformatted' >
             <span>Before Content</span>
             &lt;div class='test' id='Appended' xmlns='' &gt;
                 &lt;b&gt;Inner &amp; Content&lt;/b&gt;
             &lt;/div&gt;
             <span>After Content</span>
-        </div>-->
+        </div>
 
     </body>
 </html>";

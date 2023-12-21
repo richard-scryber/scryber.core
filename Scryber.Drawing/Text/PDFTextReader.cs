@@ -89,8 +89,6 @@ namespace Scryber.Text
                     return new PDFPlainTextReader(text, preserveWhitespace);
 
                 case TextFormat.XML:
-                    throw new NotImplementedException("Working on the xhtml reader");
-                //return new PDFXMLFragmentReader(text, preserveWhitespace, log); //with xml we never preserve the white space
                 case TextFormat.XHTML:
                     return new PDFXHTMLTextReader(text, preserveWhitespace);
 
