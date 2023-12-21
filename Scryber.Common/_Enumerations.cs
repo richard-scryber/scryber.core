@@ -187,7 +187,8 @@ namespace Scryber
     public enum TextFormat
     {
         Plain,
-        XML
+        XML,
+        XHTML
     }
 
     /// <summary>

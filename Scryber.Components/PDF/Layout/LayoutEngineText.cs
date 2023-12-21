@@ -618,13 +618,15 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public static char[] WhiteSpaceChars = new char[] { ' ', '\r', '\n', '\t', '\x00a0', '\x0085' };
+
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
             if (this.CurrentLine != null &&
                 (this.CurrentLine.IsEmpty || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
             {
-                if (char.IsWhiteSpace(chars, 0))
-                    chars = chars.TrimStart(PDFXMLFragmentParser.WhiteSpace);
+                if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                    chars = chars.TrimStart(WhiteSpaceChars);
             }
             return chars;
         }

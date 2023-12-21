@@ -614,7 +614,14 @@ namespace Scryber.Generation
                         this.EnsureNamespaceRegistered(prefix, ns);
 
                     string value =reader.Value;
-                    if (ParserHelper.IsBindingExpression(ref value,out factory, this.Settings))
+                    if(ParserHelper.IsEscapedBindingExpression(ref value))
+                    {
+                        object actualValue = value;
+                        this.SetValue(container, value, attr);
+                        if (attr.IsParserSourceValue)
+                            this.LoadedSourcePath = actualValue.ToString();
+                    }
+                    else if (ParserHelper.IsBindingExpression(ref value,out factory, this.Settings))
                     {
                         GenerateBindingExpression(reader, container, cdef, attr, value, factory);
                     }
@@ -641,7 +648,13 @@ namespace Scryber.Generation
                 else if (cdef.Events.TryGetPropertyDefinition(name, out evt))
                 {
                     string expression = reader.Value;
-                    
+                    if(ParserHelper.IsEscapedBindingExpression(ref expression))
+                    {
+                        if (this.Mode == ParserConformanceMode.Strict)
+                            throw BuildParserXMLException(reader, Errors.CannotSpecifyBindingExpressionsOnEvents, expression, name);
+                        else
+                            LogAdd(reader, TraceLevel.Error, Errors.CannotSpecifyBindingExpressionsOnEvents, expression, name);
+                    }
                     if (ParserHelper.IsBindingExpression(ref expression, out factory, this.Settings))
                     {
                         if (this.Mode == ParserConformanceMode.Strict)
@@ -851,6 +864,12 @@ namespace Scryber.Generation
                 string value = reader.Value;
                 
                 IPDFBindingExpressionFactory factory;
+                if(ParserHelper.IsEscapedBindingExpression(ref value))
+                {
+                    object converted = prop.GetValue(reader, this.Settings);
+                    if (converted != DBNull.Value)
+                        this.SetValue(container, converted, prop);
+                }
                 if (ParserHelper.IsBindingExpression(ref value, out factory, this.Settings))
                     GenerateBindingExpression(reader, container, cdef, prop, value, factory);
                 else
@@ -1573,7 +1592,7 @@ namespace Scryber.Generation
         /// <param name="collection">The instance which has the property to add the text component to</param>
         private void AppendTextToCollection(StringBuilder textString, ParserArrayDefinition arraydefn, object collection)
         {
-            TextFormat format = TextFormat.XML;
+            TextFormat format = TextFormat.XHTML;
             
             //Add any bindings to the text
             string textSubString = textString.ToString();
@@ -1626,7 +1645,7 @@ namespace Scryber.Generation
 
         }
 
-        private Dictionary<string, char> HtmlEntities = XmlHtmlEntityReader.DefaultKnownHTMLEntities;
+        private IDictionary<string, char> HtmlEntities = Html.HtmlEntities.DefaultKnownHTMLEntities;
         private Regex bindingMatcher = new Regex("&(\\w{1,8});");
 
         private string ReplaceBindingEntitiesNotInQuotes(string bindindExpr)
