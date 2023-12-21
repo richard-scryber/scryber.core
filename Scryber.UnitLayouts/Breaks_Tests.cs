@@ -62,7 +62,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first page", chars.Characters);
+            Assert.AreEqual("Sits on the first page ", chars.Characters);
 
             content = layout.AllPages[1].ContentBlock;
 
@@ -72,7 +72,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second page", chars.Characters);
+            Assert.AreEqual("Sits on the second page ", chars.Characters);
 
 
 
@@ -125,7 +125,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(first);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first page", chars.Characters);
+            Assert.AreEqual("Sits on the first page ", chars.Characters);
 
             content = layout.AllPages[1].ContentBlock;
 
@@ -142,7 +142,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second page", chars.Characters);
+            Assert.AreEqual("Sits on the second page ", chars.Characters);
 
 
 
@@ -183,7 +183,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first column", chars.Characters);
+            Assert.AreEqual("Sits on the first column ", chars.Characters);
 
             content = layout.AllPages[0].ContentBlock;
 
@@ -193,7 +193,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second column", chars.Characters);
+            Assert.AreEqual("Sits on the second column ", chars.Characters);
 
 
 
@@ -248,7 +248,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(first);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the 1st column", chars.Characters);
+            Assert.AreEqual("Sits on the 1st column ", chars.Characters);
 
 
 
@@ -268,7 +268,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the 2nd column", chars.Characters);
+            Assert.AreEqual("Sits on the 2nd column ", chars.Characters);
 
 
 
@@ -326,7 +326,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(first);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the 1st column", chars.Characters);
+            Assert.AreEqual("Sits on the 1st column ", chars.Characters);
 
 
 
@@ -346,7 +346,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the 2nd column", chars.Characters);
+            Assert.AreEqual("Sits on the 2nd column ", chars.Characters);
 
             //Check the block after to make sure it has been pushed to a new 2 column page
 
@@ -369,7 +369,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(25, third.Height);
             Assert.AreEqual(3, third.Runs.Count);
             chars = third.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the 2nd page", chars.Characters);
+            Assert.AreEqual("Sits on the 2nd page ", chars.Characters);
 
         }
 
@@ -444,7 +444,7 @@ namespace Scryber.UnitLayouts
                         Assert.IsNotNull(first);
                         Assert.AreEqual(3, first.Runs.Count);
                         var chars = first.Runs[1] as PDFTextRunCharacter;
-                        var expected = pg + "." + col + "." + sub;
+                        var expected = pg + "." + col + "." + sub + " ";
                         Assert.AreEqual(expected, chars.Characters);
                     }
 
@@ -488,7 +488,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(24, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first line", chars.Characters);
+            Assert.AreEqual("Sits on the first line ", chars.Characters);
 
             //Check the block after to make sure it is ignoring the positioned region.
             var second = content.Columns[0].Contents[1] as PDFLayoutLine;
@@ -496,7 +496,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(24, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second line", chars.Characters);
+            Assert.AreEqual("Sits on the second line ", chars.Characters);
         }
 
         [TestCategory(TestCategoryName)]
@@ -533,7 +533,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(24, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first line", chars.Characters);
+            Assert.AreEqual("Sits on the first line ", chars.Characters);
 
             var space = content.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.AreEqual(1, space.Runs.Count);
@@ -546,7 +546,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(24, second.Height);
             Assert.AreEqual(3, second.Runs.Count);
             chars = second.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the second line", chars.Characters);
+            Assert.AreEqual("Sits on the second line ", chars.Characters);
         }
 
         [TestCategory(TestCategoryName)]
@@ -588,7 +588,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(30, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first line", chars.Characters);
+            Assert.AreEqual("Sits on the first line ", chars.Characters);
 
             for (int i = 1; i < BreakCount; i++)
             {
@@ -605,7 +605,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(30, last.Height);
             Assert.AreEqual(3, last.Runs.Count);
             chars = last.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line", chars.Characters);
+            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line ", chars.Characters);
         }
 
 
@@ -692,7 +692,7 @@ namespace Scryber.UnitLayouts
             var div2 = new Div() { BorderColor = Drawing.StandardColors.Blue, Margins = new Thickness(5) };
             div.Contents.Add(div2);
 
-            div2.Contents.Add(new TextLiteral("Sits on the first line"));
+            div2.Contents.Add(new TextLiteral("Sits on the first line "));
 
             for (var i = 0; i < BreakCount; i++)
             {
@@ -730,7 +730,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(30, first.Height);
             Assert.AreEqual(3, first.Runs.Count);
             var chars = first.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the first line", chars.Characters);
+            Assert.AreEqual("Sits on the first line ", chars.Characters);
 
             for (int i = 1; i < col1count; i++)
             {
@@ -766,7 +766,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(30, last.Height);
             Assert.AreEqual(3, last.Runs.Count);
             chars = last.Runs[1] as PDFTextRunCharacter;
-            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line", chars.Characters);
+            Assert.AreEqual("Sits on the " + (BreakCount + 1) + "th line ", chars.Characters);
         }
     }
 }
