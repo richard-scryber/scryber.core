@@ -256,7 +256,22 @@ namespace Scryber.PDF.Layout
             this._ctx = context;
             this._fullstyle = fullstyle;
 
-            
+            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+
+            if(null == this._reader)
+            {
+                if (context.ShouldLogDebug)
+                {
+                    if (this.TextComponent is Whitespace)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the whitespace " + this.TextComponent.ID + " as it's reader is null - not preformatted text");
+                    else
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it's reader is null");
+                }
+                //nothing to layout, so return 
+                return;
+            }
+
+
             this._posopts = fullstyle.CreatePostionOptions();
             this._textopts = fullstyle.CreateTextOptions();
 
@@ -271,13 +286,11 @@ namespace Scryber.PDF.Layout
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 
-            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+            
 
-            if (null != this._reader)
-            {
-                this.ContinueLayout = true;
-                this.DoLayoutText();
-            }
+            this.ContinueLayout = true;
+            this.DoLayoutText();
+            
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Layout);
 

@@ -967,7 +967,7 @@ namespace Scryber.Generation
                 else if (reader.NodeType == XmlNodeType.Text)
                 {
                     string val = reader.Value;
-                    val = System.Security.SecurityElement.Escape(val);
+                    //val = System.Security.SecurityElement.Escape(val);
 
                     textString.Append(val);
                     lastwastext = true;

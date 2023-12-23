@@ -963,10 +963,11 @@ namespace Scryber.Drawing
                 fref = _static[family, style, weight];
 
             if (null == fref)
+                fref = _generic[family, style, weight];
+
+            if (null == fref)
                 fref = _system[family, style, weight];
             
-            if (null == fref)
-                fref = _generic[family, style, weight];
 
             if (null == fref)
             {

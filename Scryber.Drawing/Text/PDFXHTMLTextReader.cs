@@ -107,10 +107,17 @@ namespace Scryber.Text
 		{
 
 			var txt = this.OriginalText;
+			if(string.IsNullOrEmpty(txt))
+			{
+				this.Lines = new string[] { };
+				return;
+			}
 
 			if (this.PreserveSpace == false) {
 
-				txt = txt.TrimStart();
+				if (char.IsWhiteSpace(txt, 0))
+					txt = " " + txt.TrimStart();
+
 				if (char.IsWhiteSpace(txt, txt.Length - 1))
 					txt = txt.TrimEnd() + " ";
 			}

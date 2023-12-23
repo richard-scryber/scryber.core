@@ -61,7 +61,9 @@ namespace Scryber.Core.UnitTests.Generation
 
             parsed.LayoutComplete += DefaultFont_LayoutComplete;
             using (var ms = DocStreams.GetOutputStream("DefaultFont.pdf"))
+            {
                 parsed.SaveAsPDF(ms);
+            }
 
         }
 
@@ -80,7 +82,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void StandardFonts_Test()
         {
             string documentxml = @"<?xml version='1.0' encoding='utf-8' ?>
-                                <?scryber parser-mode='Strict' parser-log='false' append-log='false' log-level='Warnings' ?>
+                                <?scryber parser-mode='Strict' parser-log='false' append-log='true' log-level='Messages' ?>
                                 <doc:Document xmlns:doc='Scryber.Components, Scryber.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               xmlns:styles='Scryber.Styles, Scryber.Styles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe'
                                               id='outerdoc' >
@@ -181,7 +183,7 @@ that will flow across multiple lines and show the expected default leading for t
             var sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Arial") as PDFFontResource;
             
             if (null == sans) //Arial might not be present and if not then should fall back to the sans-serif
-                sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "sans-serif") as PDFFontResource;
+                sans = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "Sans-Serif") as PDFFontResource;
 
             var serif = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, "serif") as PDFFontResource;
 
