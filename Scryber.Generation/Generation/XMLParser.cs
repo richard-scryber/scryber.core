@@ -1642,7 +1642,7 @@ namespace Scryber.Generation
                     }
                     else
                     {
-                        AddTextBindingExpression(content, arraydefn, collection, factory, format);
+                        AddTextBindingExpression(content, arraydefn, collection, factory, TextFormat.Plain);
                     }
                 }
             }

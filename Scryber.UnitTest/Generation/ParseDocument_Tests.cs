@@ -58,10 +58,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(7.5, div.Padding.Left);
@@ -72,18 +72,18 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(10.0, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
                 //However the lsquo and rsquo should be resolved as they are OK in html and invalid in XML.
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual("./Images/group.png", img.Source);
                 Assert.AreEqual(7.5, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
@@ -143,10 +143,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(7.5, div.Padding.Left);
@@ -157,18 +157,18 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(10.0, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
                 //However the lsquo and rsquo should be resolved as they are OK in html and invalid in XML.
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual("./Images/group.png", img.Source);
                 Assert.AreEqual(7.5, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
@@ -229,10 +229,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.FindAComponentById("div1") as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(7.5, div.Padding.Left);
@@ -243,16 +243,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.FindAComponentById("div2") as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(10.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
                     
                     
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.FindAComponentById("img1") as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(7.5, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -319,10 +319,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(7.5, div.Padding.Left);
@@ -333,16 +333,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(10.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(7.5, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -466,10 +466,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.FindAComponentById("div1") as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(7.5, div.Padding.Left);
@@ -480,16 +480,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.FindAComponentById("div2") as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(10.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.FindAComponentById("img1") as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(7.5, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -557,10 +557,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(7.5, div.Padding.Left);
@@ -571,16 +571,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(10.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(7.5, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -653,10 +653,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(7.5, div.Padding.Left);
@@ -667,16 +667,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(10.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(7.5, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -799,10 +799,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(20.0, div.Padding.Left);
@@ -813,18 +813,18 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(20.0, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
                 
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual(15, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
 
@@ -885,10 +885,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(7, pg.Contents.Count); //2 divs and an image
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(20.0, div.Padding.Left);
@@ -899,7 +899,7 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(20.0, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
@@ -910,7 +910,7 @@ namespace Scryber.Core.UnitTests.Generation
                 //However the lsquo and rsquo should be resolved as they are OK in html and invalid in XML.
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual("./Images/group.png", img.Source);
                 Assert.AreEqual(15, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
@@ -1535,10 +1535,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(9, pg.Contents.Count); //2 divs and an image + 2 lines of commments (ignored) and whitespace around each (x6)
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(3.75, div.Padding.Left);
@@ -1549,18 +1549,18 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(5, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
 
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual(5, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
 
@@ -1621,10 +1621,10 @@ namespace Scryber.Core.UnitTests.Generation
                 var pg = doc.Pages[0] as Page;
 
                 Assert.IsNotNull(pg);
-                Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                Assert.AreEqual(9, pg.Contents.Count); //2 divs and an image
 
                 //first div has a bound literal
-                var div = pg.Contents[0] as Div;
+                var div = pg.FindAComponentById("div1") as Div;
 
                 Assert.IsNotNull(div);
                 Assert.AreEqual(3.75, div.Padding.Left);
@@ -1635,18 +1635,18 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                div = pg.Contents[1] as Div;
+                div = pg.FindAComponentById("div2") as Div;
                 Assert.IsNotNull(div);
                 Assert.AreEqual(5.0, div.Padding.Left);
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
                 //However the lsquo and rsquo should be resolved as they are OK in html and invalid in XML.
 
 
-                var img = pg.Contents[2] as Image;
+                var img = pg.FindAComponentById("img1") as Image;
                 Assert.AreEqual("./Images/group.png", img.Source);
                 Assert.AreEqual(5, img.Padding.Left);
                 Assert.AreEqual(100.0, img.Width);
@@ -1707,10 +1707,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(9, pg.Contents.Count);
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.FindAComponentById("div1") as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(3.75, div.Padding.Left);
@@ -1721,16 +1721,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.FindAComponentById("div2") as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(5.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.FindAComponentById("img1") as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(5, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -1797,10 +1797,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(9, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(3.75, div.Padding.Left);
@@ -1811,16 +1811,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(5.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(5.0, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -1897,10 +1897,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(9, pg.Contents.Count);
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.FindAComponentById("div1") as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(3.75, div.Padding.Left);
@@ -1911,16 +1911,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.FindAComponentById("div2") as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(5.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.FindAComponentById("img1") as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(5.0, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -1988,10 +1988,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(9, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(3.75, div.Padding.Left);
@@ -2002,16 +2002,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(5.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(5, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -2084,10 +2084,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(9, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.FindAComponentById("div1") as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(3.75, div.Padding.Left);
@@ -2098,16 +2098,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.FindAComponentById("div2") as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(5.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.FindAComponentById("img1") as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(5.0, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);

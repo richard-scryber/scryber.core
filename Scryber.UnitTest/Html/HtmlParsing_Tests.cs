@@ -602,7 +602,7 @@ namespace Scryber.Core.UnitTests.Html
             var pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             var pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
 
-            Assert.AreEqual(pRun.Characters, model.headerText);
+            Assert.AreEqual(model.headerText, pRun.Characters);
 
             // Footer content check
 
@@ -613,7 +613,7 @@ namespace Scryber.Core.UnitTests.Html
             pLine = pBlock.Columns[0].Contents[0] as PDFLayoutLine;
             pRun = pLine.Runs[1] as PDFTextRunCharacter; // 0 is begin text
 
-            Assert.AreEqual(pRun.Characters, model.footerText);
+            Assert.AreEqual(model.footerText, pRun.Characters);
 
             //First page check
             pBlock = body.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;

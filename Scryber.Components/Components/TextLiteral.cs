@@ -66,7 +66,7 @@ namespace Scryber.Components
         }
 
         public TextLiteral(string text)
-            : this(text, ObjectTypes.Text)
+            : this(text, TextFormat.Plain)
         {
         }
 
