@@ -551,6 +551,41 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        public void PartialParagraphWithContent()
+        {
+
+            var str = @"<p xmlns='http://www.w3.org/1999/xhtml' class='{@:model.bodyClass}' style=""{@:model.bodyStyle}"">
+        This is the content on the next page with number <num value=""{@:model.number}"" data-format=""£#0.00"" /> and name <label data-content=""{@:model.items[1].Name}"">
+    {@:model.items[0].Name}
+</label>
+    </p>";
+
+            var frag = Document.Parse(new StringReader(str), ParseSourceType.DynamicContent) as Component;
+            var model = new
+            {
+                headerText = "Bound Header",
+                footerText = "Bound Footer",
+                content = "This is the bound content text",
+                bodyStyle = "background-color:red; color:#FFF; padding: 20pt",
+                bodyClass = "top",
+                number = (Decimal)10.1,
+                items = new[]
+                {
+                    new { Name = "First" },
+                    new { Name = "Second"},
+                    new { Name = "Third" }
+                }
+            };
+
+            Document doc = new Document();
+            Page pg = new Page();
+            pg.Contents.Add(frag);
+            doc.Params["model"] = model;
+
+
+        }
+
+        [TestMethod()]
         public void BodyWithBinding()
         {
             var path = System.Environment.CurrentDirectory;

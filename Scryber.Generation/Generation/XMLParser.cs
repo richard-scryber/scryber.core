@@ -934,6 +934,8 @@ namespace Scryber.Generation
         {
             LogAdd(reader, TraceLevel.Debug, "Parsing inner collection from element '{0}' for property '{2}' on class '{3}'", reader.Name, prop.Name, prop.PropertyInfo.Name, prop.PropertyInfo.DeclaringType);
             bool lastwastext = false;
+            bool lastWasEnd = false;
+
             StringBuilder textString = new StringBuilder();
 
             ParserArrayDefinition arraydefn = (ParserArrayDefinition)prop;
@@ -947,6 +949,7 @@ namespace Scryber.Generation
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
+                    var empty = reader.IsEmptyElement;
                     if (lastwastext)
                     {
                         AppendTextToCollection(textString, arraydefn, collection);
@@ -958,11 +961,14 @@ namespace Scryber.Generation
                     {
                         arraydefn.AddToCollection(collection, inner);
                     }
+                    if (empty)
+                        lastWasEnd = true;
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
                 {
+                    lastWasEnd = true;
                     if (reader.LocalName == endname && reader.NamespaceURI == endns)
-                        break;
+                        break;                       
                 }
                 else if (reader.NodeType == XmlNodeType.Text)
                 {

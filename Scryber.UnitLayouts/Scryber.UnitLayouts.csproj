@@ -27,9 +27,11 @@
   <ItemGroup>
     <None Remove="Content\" />
     <None Remove="Content\Images\" />
+    <None Remove="Content\WhiteSpaceLayouts\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Content\Images\" />
+    <Folder Include="Content\WhiteSpaceLayouts\" />
   </ItemGroup>
 </Project>

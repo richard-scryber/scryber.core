@@ -89,8 +89,13 @@ namespace Scryber.Text
                     return new PDFPlainTextReader(text, preserveWhitespace);
 
                 case TextFormat.XML:
-                case TextFormat.XHTML:
                     return new PDFXHTMLTextReader(text, preserveWhitespace);
+
+                case TextFormat.XHTML:
+                    if (preserveWhitespace)
+                        return new PDFXHTMLTextReaderPreserved(text);
+                    else
+                        return new PDFXHTMLTextReaderUnPreserved(text);
 
                 //case TextFormat.RTF:
                 //    throw new NotSupportedException("RTF is not currently supported");
