@@ -569,6 +569,10 @@ namespace Scryber.Generation
                 if (reader.HasAttributes && reader.AttributeCount > 1)
                     this.ParseAttributes(complex, true, reader, cdef);
 
+                //As the returned type may not be the same as the actual referenced type - make sure we have a matching definition.
+                if (complex.GetType() != cdef.ClassType)
+                    cdef = AssertGetClassDefinition(complex.GetType());
+
                 if (!empty)
                     this.ParseContents(complex, reader, element, ns, cdef);
             }

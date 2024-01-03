@@ -148,7 +148,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
                 var page = doc.Pages[0] as Page;
-                var div = page.Contents[0] as Div;
+                var div = page.Contents[1] as Div;
                 var h1 = div.Contents[1] as HTMLHead1;
                 Assert.IsNotNull(h1, "No heading found");
                 Assert.AreEqual(1, h1.Contents.Count);

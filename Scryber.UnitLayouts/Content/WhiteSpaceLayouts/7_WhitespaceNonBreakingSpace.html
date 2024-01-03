@@ -1,0 +1,48 @@
+﻿<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Whitespace Document</title>
+    <style>
+        h2 {
+            font-size: 16pt;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        #columns{
+            column-count: 2;
+            column-balanced: false;
+            border: solid 1px red;
+            margin: 10px;
+        }
+
+        .wrapped {
+            border: solid 1px red;
+            margin: 10px;
+            font-size: 12pt;
+        }
+
+        .preformatted {
+            white-space: pre;
+        }
+    </style>
+</head>
+<body style='padding: 10pt'>
+    <div id='wrapper_placebo' class="wrapped" >
+        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line of text.
+    </div>
+    <div id='wrapper' class="wrapped">
+        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line&nbsp;of text.
+    </div>
+    <div id="columns">
+        <div id='wrapper_column' class="wrapped">
+            This is a long line of text that should wrap&nbsp;on&nbsp;multiple lines for testing&nbsp;the&nbsp;non-breaking&nbsp;space&nbsp;within a&nbsp;line&nbsp;of&nbsp;text.
+        </div>
+        <div id='wrapper_span' class="wrapped">
+            <span>This is a long line of text that should wrap&nbsp;on&nbsp;multiple</span>
+            <b>lines for testing&nbsp;the&nbsp;non-breaking&nbsp;space&nbsp;within</b>
+            <span>a&nbsp;line&nbsp;of&nbsp;text.</span>
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -52,18 +52,19 @@ namespace Scryber.Core.UnitTests.Html
 
                     var section = doc.Pages[0] as Section;
                     Assert.IsNotNull(section);
-                    Assert.AreEqual(3, section.Contents.Count);
-                    Assert.IsInstanceOfType(section.Contents[0], typeof(HTMLParagraph));
-                    Assert.IsInstanceOfType(section.Contents[2], typeof(HTMLParagraph));
+                    Assert.AreEqual(7, section.Contents.Count);
+                    Assert.IsInstanceOfType(section.Contents[1], typeof(HTMLParagraph));
+                    Assert.IsInstanceOfType(section.Contents[3], typeof(Canvas));
+                    Assert.IsInstanceOfType(section.Contents[5], typeof(HTMLParagraph));
  
-                    var canvas = section.Contents[1] as Canvas;
+                    var canvas = section.Contents[3] as Canvas;
                     Assert.IsNotNull(canvas);
                     Assert.AreEqual(300, canvas.Style.Size.Width.PointsValue, "The width of the canvas was not set");
                     Assert.AreEqual(200, canvas.Style.Size.Height.PointsValue, "The height of the canvas was not set");
                     Assert.AreEqual("canvas", canvas.StyleClass, "The style class of the canvas was not set");
 
-                    Assert.AreEqual(1, canvas.Contents.Count);
-                    var rect = canvas.Contents[0] as Svg.Components.SVGRect;
+                    Assert.AreEqual(3, canvas.Contents.Count);
+                    var rect = canvas.Contents[1] as Svg.Components.SVGRect;
                     Assert.IsNotNull(rect, "The inner rectangle was not found");
                     Assert.AreEqual("box", rect.StyleClass, "The rect style class was not correct");
                     Assert.AreEqual(100, rect.Style.Position.X.PointsValue, "The X position of the rect was not correct");
@@ -96,15 +97,17 @@ namespace Scryber.Core.UnitTests.Html
                     
                     var section = doc.Pages[0] as Section;
                     Assert.IsNotNull(section);
-                    var clock = section.Contents[1] as Canvas;
+                    var clock = section.Contents[3] as Canvas;
                     
                     Assert.IsNotNull(clock);
                     Assert.AreEqual("ClockIcon", clock.ID);
-                    Assert.AreEqual(1, clock.Contents.Count);
+                    Assert.AreEqual(3, clock.Contents.Count);
                     Assert.AreEqual(20, clock.Width);
                     Assert.AreEqual(20, clock.Height);
 
-                    var clockPath = clock.Contents[0] as SVGPath;
+                    Assert.IsInstanceOfType(clock.Contents[0], typeof(Whitespace));
+                    var clockPath = clock.Contents[1] as SVGPath;
+                    Assert.IsInstanceOfType(clock.Contents[2], typeof(Whitespace));
                     Assert.IsNotNull(clockPath);
                     Assert.AreEqual(StandardColors.Blue, clockPath.FillColor);
                 }
@@ -254,10 +257,10 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.Fail("Svg image has not been parsed");
             }
 
-            var grp = svg.Contents[1] as SVGGroup;
+            var grp = svg.Contents[3] as SVGGroup;
             Assert.IsNotNull(grp);
 
-            var path = grp.Contents[0] as SVGPath;
+            var path = grp.Contents[1] as SVGPath;
             Assert.IsNotNull(path);
             Assert.IsNotNull(path.PathData);
             Assert.AreEqual(1, path.PathData.Paths.Count);
@@ -304,10 +307,10 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.Fail("Svg image has not been parsed");
             }
 
-            grp = svg.Contents[1] as SVGGroup;
+            grp = svg.Contents[3] as SVGGroup;
             Assert.IsNotNull(grp);
 
-            path = grp.Contents[0] as SVGPath;
+            path = grp.Contents[1] as SVGPath;
             Assert.IsNotNull(path);
             Assert.IsNotNull(path.PathData);
             Assert.AreEqual(1, path.PathData.Paths.Count);
@@ -392,7 +395,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     AppendTraceLog = false
                 };
-                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Diagnostic);
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
                 doc.RenderOptions.Compression = OutputCompressionType.None;
 
                 var pg = new Page();
@@ -400,10 +403,12 @@ namespace Scryber.Core.UnitTests.Html
                 pg.Contents.Add(svg);
                 svg.OverflowAction = OverflowAction.Clip;
 
-                foreach (VisualComponent item in svg.Contents)
+                foreach (Component item in svg.Contents)
                 {
-                    item.Style.Overflow.Action = OverflowAction.Clip;
+                    if (item is VisualComponent vis)
+                        vis.Style.Overflow.Action = OverflowAction.Clip;
                 }
+
                 var gStyle = new StyleDefn("g");
                 gStyle.Overflow.Action = OverflowAction.Clip;
                 
@@ -450,26 +455,26 @@ namespace Scryber.Core.UnitTests.Html
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
 
-            Assert.AreEqual(3, svg.Contents.Count);
-            var group = svg.Contents[2] as SVGGroup;
+            Assert.AreEqual(7, svg.Contents.Count);
+            var group = svg.Contents[5] as SVGGroup;
             Assert.IsNotNull(group);
 
-            Assert.AreEqual(4, group.Contents.Count);
+            Assert.AreEqual(4 * 2 + 1, group.Contents.Count);
 
-            var txt = group.Contents[0] as SVGText;
+            var txt = group.Contents[1] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
 
-            txt = group.Contents[1] as SVGText;
+            txt = group.Contents[3] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.Middle, txt.TextAnchor);
 
-            txt = group.Contents[2] as SVGText;
+            txt = group.Contents[5] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
 
             //Set via CSS
-            txt = group.Contents[3] as SVGText;
+            txt = group.Contents[7] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(TextAnchor.Middle, txt.TextAnchor);
 
@@ -562,45 +567,45 @@ namespace Scryber.Core.UnitTests.Html
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
-            Assert.AreEqual(22, svg.Contents.Count);
+            Assert.AreEqual(48, svg.Contents.Count);
 
-            var txt = svg.Contents[1] as SVGText;
+            var txt = svg.Contents[5] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
 
-            txt = svg.Contents[2] as SVGText;
+            txt = svg.Contents[7] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
 
-            txt = svg.Contents[3] as SVGText;
+            txt = svg.Contents[9] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
-            txt = svg.Contents[4] as SVGText;
+            txt = svg.Contents[11] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
 
-            txt = svg.Contents[5] as SVGText;
+            txt = svg.Contents[13] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
 
-            txt = svg.Contents[6] as SVGText;
+            txt = svg.Contents[15] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
 
-            txt = svg.Contents[7] as SVGText;
+            txt = svg.Contents[17] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
 
-            txt = svg.Contents[8] as SVGText;
+            txt = svg.Contents[19] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Alphabetic, txt.DominantBaseline);
 
-            txt = svg.Contents[9] as SVGText;
+            txt = svg.Contents[21] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
 
-            txt = svg.Contents[10] as SVGText;
+            txt = svg.Contents[23] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
 
@@ -659,33 +664,33 @@ namespace Scryber.Core.UnitTests.Html
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
-            Assert.AreEqual(16, svg.Contents.Count);
+            Assert.AreEqual((16 * 2) + 1, svg.Contents.Count); //whitespace is significant
 
-            var txt = svg.Contents[11] as SVGText;
+            var txt = svg.Contents[22 + 1] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
             Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
-            txt = svg.Contents[12] as SVGText;
+            txt = svg.Contents[22 + 3] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.Start, txt.TextAnchor);
             Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
-            txt = svg.Contents[13] as SVGText;
+            txt = svg.Contents[22 + 5] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
             Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
-            txt = svg.Contents[14] as SVGText;
+            txt = svg.Contents[22 + 7] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
             Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
-            txt = svg.Contents[15] as SVGText;
+            txt = svg.Contents[22 + 9] as SVGText;
             Assert.IsNotNull(txt);
 
             Assert.AreEqual(TextAnchor.End, txt.TextAnchor);
@@ -1059,7 +1064,7 @@ namespace Scryber.Core.UnitTests.Html
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
             Assert.IsNotNull(svg);
-            Assert.AreEqual(87, svg.Contents.Count);
+            Assert.AreEqual(181, svg.Contents.Count);
 
             
 

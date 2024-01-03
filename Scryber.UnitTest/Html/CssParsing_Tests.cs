@@ -1288,7 +1288,7 @@ body.grey div.reverse{
             Assert.AreEqual(3, line.Runs.Count);
             var text = line.Runs[1] as PDF.Layout.PDFTextRunCharacter;
             Assert.IsNotNull(text);
-            Assert.AreEqual("This will not be replaced by the css. ", text.Characters);
+            Assert.AreEqual("This will not be replaced by the css.", text.Characters);
             //Check the height was not ignored
             Assert.AreEqual(40, div.Position.Height.Value);
 
@@ -1382,7 +1382,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[7] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual("This will have text before, in the italic span. ", text.Characters);
+                Assert.AreEqual(" This will have text before, in the italic span. ", text.Characters);
 
 
                 // .empty::before { content: url('imgPath'); width: 20pt; padding-top: 5pt; }
@@ -1427,7 +1427,7 @@ body.grey div.reverse{
 
                 text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual("A quote will be in front in green. ", text.Characters);
+                Assert.AreEqual("A quote will be in front in green.", text.Characters);
 
 
                 //<div id='aquote' class='multiple' > An image ... image inlined.</div>
@@ -1460,7 +1460,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[10] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual("An image, a character, and a quote will be infront with the image inlined. ", text.Characters);
+                Assert.AreEqual(" An image, a character, and a quote will be infront with the image inlined.", text.Characters);
             }
         }
 
@@ -1545,7 +1545,7 @@ body.grey div.reverse{
             Assert.AreEqual(10, line.Runs.Count);
             var text = line.Runs[2] as PDF.Layout.PDFTextRunCharacter;
             Assert.IsNotNull(text);
-            Assert.AreEqual("This will be have content after. ", text.Characters);
+            Assert.AreEqual("This will be have content after.", text.Characters);
 
             text = line.Runs[6] as PDF.Layout.PDFTextRunCharacter;
             Assert.IsNotNull(text);

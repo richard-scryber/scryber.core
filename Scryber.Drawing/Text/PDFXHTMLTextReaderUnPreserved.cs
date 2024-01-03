@@ -104,6 +104,11 @@ namespace Scryber.Text
 		// Splitting implementation
 		//
 
+		/// <summary>
+		/// Although the Non-breaking space is considered as whitespace it is not to be split or contracted into a single space.
+		/// </summary>
+		private const char NBSPChar = (char)160;
+
 		protected virtual void SplitXHTML()
 		{
 
@@ -121,7 +126,7 @@ namespace Scryber.Text
 			while(index < txt.Length)
 			{
 				var c = txt[index];
-				if (char.IsWhiteSpace(c))
+				if (char.IsWhiteSpace(c) && !(c == NBSPChar))
 				{
 					if (!lastWasWhiteSpace)
 						buffer.Append(' ');

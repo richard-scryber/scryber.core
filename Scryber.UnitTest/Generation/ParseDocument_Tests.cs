@@ -905,7 +905,7 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.AreEqual(1, div.Contents.Count);
 
                 lit = div.Contents[0] as TextLiteral;
-                Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                Assert.AreEqual("<‘Inside’>", lit.Text);
                 //The < and > symbols are not resolved with the XML reader, they are resolved with the inner parser at layout time.
                 //However the lsquo and rsquo should be resolved as they are OK in html and invalid in XML.
 
@@ -971,10 +971,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.Contents[1] as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(20.0, div.Padding.Left);
@@ -985,16 +985,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.Contents[3] as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(20.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.Contents[5] as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(15, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -1061,10 +1061,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image wrapped in whitespace
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.Contents[1] as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20, div.Padding.Left);
@@ -1075,16 +1075,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.Contents[3] as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.Contents[5] as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(15, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -1155,10 +1155,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image wrapped in whitespace
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.Contents[1] as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20, div.Padding.Left);
@@ -1169,16 +1169,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.Contents[3] as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.Contents[5] as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(15, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -1249,10 +1249,10 @@ namespace Scryber.Core.UnitTests.Generation
                     var pg = doc.Pages[0] as Page;
 
                     Assert.IsNotNull(pg);
-                    Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                    Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image wrapped in whitespace
 
                     //first div has a bound literal
-                    var div = pg.Contents[0] as Div;
+                    var div = pg.Contents[1] as Div;
 
                     Assert.IsNotNull(div);
                     Assert.AreEqual(20, div.Padding.Left);
@@ -1263,16 +1263,16 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(lit);
                     Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                    div = pg.Contents[1] as Div;
+                    div = pg.Contents[3] as Div;
                     Assert.IsNotNull(div);
                     Assert.AreEqual(20.0, div.Padding.Left);
                     Assert.AreEqual(1, div.Contents.Count);
 
                     lit = div.Contents[0] as TextLiteral;
-                    Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                    Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                    var img = pg.Contents[2] as Image;
+                    var img = pg.Contents[5] as Image;
                     Assert.AreEqual("./Images/group.png", img.Source);
                     Assert.AreEqual(15, img.Padding.Left);
                     Assert.AreEqual(100.0, img.Width);
@@ -1344,10 +1344,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image wrapped in whitespace
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.Contents[1] as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20, div.Padding.Left);
@@ -1358,16 +1358,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.Contents[3] as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.Contents[5] as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(15, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);
@@ -1444,10 +1444,10 @@ namespace Scryber.Core.UnitTests.Generation
                         var pg = doc.Pages[0] as Page;
 
                         Assert.IsNotNull(pg);
-                        Assert.AreEqual(3, pg.Contents.Count); //2 divs and an image
+                        Assert.AreEqual(3 * 2 + 1, pg.Contents.Count); //2 divs and an image
 
                         //first div has a bound literal
-                        var div = pg.Contents[0] as Div;
+                        var div = pg.Contents[1] as Div;
 
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20, div.Padding.Left);
@@ -1458,16 +1458,16 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(lit);
                         Assert.AreEqual("Hello World & everyone in it.", lit.Text);
 
-                        div = pg.Contents[1] as Div;
+                        div = pg.Contents[3] as Div;
                         Assert.IsNotNull(div);
                         Assert.AreEqual(20.0, div.Padding.Left);
                         Assert.AreEqual(1, div.Contents.Count);
 
                         lit = div.Contents[0] as TextLiteral;
-                        Assert.AreEqual("&lt;‘Inside’&gt;", lit.Text);
+                        Assert.AreEqual("<‘Inside’>", lit.Text);
 
 
-                        var img = pg.Contents[2] as Image;
+                        var img = pg.Contents[5] as Image;
                         Assert.AreEqual("./Images/group.png", img.Source);
                         Assert.AreEqual(15, img.Padding.Left);
                         Assert.AreEqual(100.0, img.Width);

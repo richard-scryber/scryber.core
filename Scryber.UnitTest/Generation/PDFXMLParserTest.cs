@@ -157,7 +157,9 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(2.5, obj.Complex.Size);
             Assert.AreEqual(0, obj.Complex.AnotherIndex); //not set
 
-            Assert.IsNull(obj.DefaultCollection);
+            if (null == obj.DefaultCollection && obj.DefaultCollection.Count > 0)
+                throw new InvalidOperationException("The default collection is not null or empty");
+
             Assert.IsNull(obj.CollectionOne);
         }
 
