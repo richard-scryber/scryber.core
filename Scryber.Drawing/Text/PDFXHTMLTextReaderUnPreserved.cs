@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,12 +8,12 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Scryber.Text
 {
-	public class PDFXHTMLTextReader : PDFTextReader
+	public class PDFXHTMLTextReaderUnPreserved : PDFTextReader
 	{
 		/// <summary>
 		/// Gets the original text this reader was initialised with.
 		/// </summary>
-		public string OriginalText { get; private set; }
+		public string Text { get; private set; }
 
 		/// <summary>
 		/// Returns true if this XHTML reader should preserve the returns, tabs and spaces within the string.
@@ -73,11 +74,11 @@ namespace Scryber.Text
 
 
 
-		public PDFXHTMLTextReader(string text, bool preserveWhiteSpace)
+		public PDFXHTMLTextReaderUnPreserved(string text)
 			: base()
 		{
-			this.OriginalText = text;
-			this.PreserveSpace = preserveWhiteSpace;
+			this.Text = text;
+			this.PreserveSpace = false;
 
 			this.SplitXHTML();
 		}
@@ -103,17 +104,88 @@ namespace Scryber.Text
 		// Splitting implementation
 		//
 
+		/// <summary>
+		/// Although the Non-breaking space is considered as whitespace it is not to be split or contracted into a single space.
+		/// </summary>
+		private const char NBSPChar = (char)160;
+
 		protected virtual void SplitXHTML()
 		{
 
-			var txt = this.OriginalText;
+			var txt = this.Text;
 			if(string.IsNullOrEmpty(txt))
 			{
 				this.Lines = new string[] { };
 				return;
 			}
 
-			if (this.PreserveSpace == false) {
+			StringBuilder buffer = new StringBuilder(txt.Length);
+			bool lastWasWhiteSpace = false;
+			var index = 0;
+
+			while(index < txt.Length)
+			{
+				var c = txt[index];
+				if (char.IsWhiteSpace(c) && !(c == NBSPChar))
+				{
+					if (!lastWasWhiteSpace)
+						buffer.Append(' ');
+					lastWasWhiteSpace = true;
+				}
+				//else if (c == '&')
+				//{
+    //                int start = ++index;
+				//	int end = 0;
+				//	int max = Math.Max(start + 8, txt.Length);
+
+				//	while(index < max)
+				//	{
+				//		c = txt[index];
+				//		if(c == ';')
+				//		{
+				//			end = index;
+				//			break;
+				//		}
+				//		index++;
+				//	}
+				//	if(end > start)
+				//	{
+				//		var escape = txt.Substring(start, end - start);
+
+				//		if (escape[0] == '#' && int.TryParse(escape.Substring(1), out var result))
+    //                    {
+    //                        buffer.Append((char)result);
+				//		}
+				//		else if (HtmlEntities.TryGetValue(escape, out char toreplace))
+				//			buffer.Append(toreplace);
+				//		else
+				//			buffer.Append("&" + escape + ";");
+    //                }
+				//	else if(end == 0)
+				//	{
+				//		//Just add ampersand
+				//		buffer.Append('&');
+				//		index = start - 1;
+				//	}
+					
+				//	lastWasWhiteSpace = false;
+				//}
+				else
+				{
+					buffer.Append(txt[index]);
+					lastWasWhiteSpace = false;
+				}
+
+				index++;
+
+				
+			}
+
+            this.Lines = new string[] { buffer.ToString() };
+            this.Index = -1;
+            return;
+
+            if (this.PreserveSpace == false) {
 
 				if (char.IsWhiteSpace(txt, 0))
 					txt = " " + txt.TrimStart();
@@ -133,12 +205,12 @@ namespace Scryber.Text
 		}
 
 
-		private static IDictionary<string, char> HtmlEntities = Scryber.Html.HtmlEntities.DefaultKnownHTMLAndXMLEntities;
+		private static IDictionary<string, char> HtmlEntities = Scryber.Html.HtmlEntities.DefaultKnownHTMLEntities;
 		private static Regex matcher = new Regex("&(\\w{1,8});");
 
 		protected virtual string ReplaceXHTMLChars(string text)
 		{
-			if (string.IsNullOrEmpty(this.OriginalText)) {
+			if (string.IsNullOrEmpty(this.Text)) {
 				return string.Empty;
 			}
 

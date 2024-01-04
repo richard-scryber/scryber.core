@@ -28,7 +28,7 @@ namespace Scryber.Html
         public static Dictionary<string, char> InitKnownHTMLEntities()
         {
             Dictionary<string, char> known = new Dictionary<string, char>();
-            known.Add("nbsp", ' ');
+            known.Add("nbsp", (char)160);
             known.Add("apos", '\'');
             known.Add("quot", '"');
             known.Add("euro", '€');

@@ -9,9 +9,9 @@
 
         <doc:Page>
             <Content>
-                <doc:Div styles:padding='20pt'>{@:title}</doc:Div>
-                <doc:Div styles:padding="20pt" >&lt;‘Inside’&gt;</doc:Div>
-                <doc:Image src="./Images/group.png" styles:width="100pt" styles:padding="20px" />
+                <doc:Div id="div1" styles:padding='20pt'>{@:title}</doc:Div>
+                <doc:Div id="div2" styles:padding="20pt" >&lt;‘Inside’&gt;</doc:Div>
+                <doc:Image id="img1" src="./Images/group.png" styles:width="100pt" styles:padding="20px" />
             </Content>
         </doc:Page>
 

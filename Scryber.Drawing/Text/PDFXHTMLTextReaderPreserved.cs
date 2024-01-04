@@ -7,7 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Scryber.Text
 {
-	public class PDFXHTMLTextReader : PDFTextReader
+	public class PDFXHTMLTextReaderPreserved : PDFTextReader
 	{
 		/// <summary>
 		/// Gets the original text this reader was initialised with.
@@ -73,11 +73,11 @@ namespace Scryber.Text
 
 
 
-		public PDFXHTMLTextReader(string text, bool preserveWhiteSpace)
+		public PDFXHTMLTextReaderPreserved(string text)
 			: base()
 		{
 			this.OriginalText = text;
-			this.PreserveSpace = preserveWhiteSpace;
+			this.PreserveSpace = true;
 
 			this.SplitXHTML();
 		}

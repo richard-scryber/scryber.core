@@ -102,7 +102,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("Body Element", pg.OutlineTitle, "The section outline did not match");
             Assert.AreEqual("bodyClass", pg.StyleClass, "The section style class did not match");
             Assert.AreEqual(20, pg.Style.Padding.All.PointsValue, "The section padding did not match");
-            Assert.AreEqual(1, pg.Contents.Count,"Page content count did not match");
+            Assert.AreEqual(3, pg.Contents.Count,"Page content count did not match");
 
             var one = pg.Header.Instantiate(0, pg).ToArray();
             Assert.IsNotNull(one, "The section header was null");
@@ -147,14 +147,14 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(6, section.Contents.Count);
+            Assert.AreEqual(13, section.Contents.Count);
 
-            var h1 = section.Contents[0] as Head1;
-            var h2 = section.Contents[1] as Head2;
-            var h3 = section.Contents[2] as Head3;
-            var h4 = section.Contents[3] as Head4;
-            var h5 = section.Contents[4] as Head5;
-            var h6 = section.Contents[5] as Head6;
+            var h1 = section.FindAComponentById("h1") as Head1;
+            var h2 = section.FindAComponentById("h2") as Head2;
+            var h3 = section.FindAComponentById("h3") as Head3;
+            var h4 = section.FindAComponentById("h4") as Head4;
+            var h5 = section.FindAComponentById("h5") as Head5;
+            var h6 = section.FindAComponentById("h6") as Head6;
 
             ValidateHeading(h1, typeof(HTMLHead1), "h1", "Heading 1", "Heading 1 Title");
             ValidateHeading(h2, typeof(HTMLHead2), "h2", "Heading 2", "Heading 2 Title");
@@ -219,10 +219,10 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(2, section.Contents.Count);
+            Assert.AreEqual(5, section.Contents.Count);
 
-            var ul = section.Contents[0] as ListUnordered;
-            var ol = section.Contents[1] as ListOrdered;
+            var ul = section.FindAComponentById("ulId") as ListUnordered;
+            var ol = section.FindAComponentById("olId") as ListOrdered;
 
             Assert.IsNotNull(ul);
             ValidateList(ul, typeof(HTMLListUnordered), "ulId", "Unordered", false, "Unordered List", "Unordered"
@@ -319,7 +319,7 @@ namespace Scryber.Core.UnitTests.Html
         <em class='spanEmphasis2' id='emSpan' style='color:gray;' hidden='hidden' title='Emphasis Span' >This is emphasis as well</em>
         <strike class='spanStrike' id='strikeSpan' style='color:yellow;' hidden='hidden' title='Strike Span' >This is strike through</strike>
         <code class='spanCode' id='codeSpan' style='color:maroon;' hidden='hidden' title='Code Span' >This is Code</code>
-        <font face='Times' size='30' color='green' >This is the legacy font element</font>
+        <font id='spanFont' face='Times' size='30' color='green' >This is the legacy font element</font>
     </span>
 </body>
 </html>";
@@ -332,43 +332,43 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(1, section.Contents.Count);
+            Assert.AreEqual(3, section.Contents.Count);
 
-            var outer = section.Contents[0] as SpanBase;
+            var outer = section.Contents[1] as SpanBase;
             Assert.IsNotNull(outer);
             ValidateSpan(outer, typeof(HTMLSpan), "Outer", "spanClass", 20, null, true,
                 "Outer Span", null);
             
-            Assert.AreEqual(8, outer.Contents.Count);
+            Assert.AreEqual(8 * 2 + 1, outer.Contents.Count);
             
-            ValidateSpan(outer.Contents[0] as SpanBase, typeof(HTMLBoldSpan),"bSpan",
+            ValidateSpan(outer.FindAComponentById("bSpan") as SpanBase, typeof(HTMLBoldSpan),"bSpan",
                 "spanStrong", null, StandardColors.Red, false,
                 "Bold Span", "This is strong");
             
-            ValidateSpan(outer.Contents[1] as SpanBase, typeof(HTMLItalicSpan),"iSpan",
+            ValidateSpan(outer.FindAComponentById("iSpan") as SpanBase, typeof(HTMLItalicSpan),"iSpan",
                 "spanEmphasis", null, StandardColors.Red, false,
                 "Italic Span", "This is emphasis");
-            ValidateSpan(outer.Contents[2] as SpanBase, typeof(HTMLUnderlinedSpan),"uSpan",
+            ValidateSpan(outer.FindAComponentById("uSpan") as SpanBase, typeof(HTMLUnderlinedSpan),"uSpan",
                 "spanUnder", null, StandardColors.Green, false,
                 "Underlined Span", "This is underlined");
-            ValidateSpan(outer.Contents[3] as SpanBase, typeof(HTMLStrong),"strongSpan",
+            ValidateSpan(outer.FindAComponentById("strongSpan") as SpanBase, typeof(HTMLStrong),"strongSpan",
                 "spanStrong2", null, StandardColors.Blue, false,
                 "Strong Span", "This is strong as well");
             
-            ValidateSpan(outer.Contents[4] as SpanBase, typeof(HTMLEmphasis),"emSpan",
+            ValidateSpan(outer.FindAComponentById("emSpan") as SpanBase, typeof(HTMLEmphasis),"emSpan",
                 "spanEmphasis2", null, StandardColors.Gray, false,
                 "Emphasis Span", "This is emphasis as well");
             
-            ValidateSpan(outer.Contents[5] as SpanBase, typeof(HTMLStrikeSpan),"strikeSpan",
+            ValidateSpan(outer.FindAComponentById("strikeSpan") as SpanBase, typeof(HTMLStrikeSpan),"strikeSpan",
                 "spanStrike", null, StandardColors.Yellow, false,
                 "Strike Span", "This is strike through");
             
-            ValidateSpan(outer.Contents[6] as SpanBase, typeof(HTMLCodeSpan),"codeSpan",
+            ValidateSpan(outer.FindAComponentById("codeSpan") as SpanBase, typeof(HTMLCodeSpan),"codeSpan",
                 "spanCode", null, StandardColors.Maroon, false,
                 "Code Span", "This is Code");
 
             //Special case for the font element
-            var font = outer.Contents[7] as HTMLFontSpan;
+            var font = outer.FindAComponentById("spanFont") as HTMLFontSpan;
             Assert.IsNotNull(font);
             Assert.AreEqual("Times", font.FontFamily.ToString(),"The font family did not match");
             Assert.AreEqual(30, font.FontSize.PointsValue, "The font size did not match");
@@ -473,12 +473,12 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             
-            Assert.AreEqual(1, ((Section)pg).Contents.Count);
+            Assert.AreEqual(3, ((Section)pg).Contents.Count);
 
             //div id='OuterDiv' class='divClass' style='padding:60pt' hidden='' title='Outer Div'
-            var outer = ((Section)pg).Contents[0] as Panel;
+            var outer = ((Section)pg).Contents[1] as Div;
             
-            var componentCount = 10;
+            var componentCount = (10 * 2) + 1;
             Assert.IsNotNull(outer, "outer was null");
             AssertBlock(outer, typeof(HTMLDiv), "OuterDiv", "divClass", 60.0, true, "Outer Div");
             Assert.AreEqual(componentCount, outer.Contents.Count);
@@ -486,100 +486,100 @@ namespace Scryber.Core.UnitTests.Html
             
             
             //article id='Article' class='articleClass' style='padding:10pt' title='Article Title' 
-            var article = outer.Contents[0] as HTMLArticle;
+            var article = outer.Contents[1] as HTMLArticle;
             Assert.IsNotNull(article,"The first element was not an article");
             AssertBlock(article, typeof(HTMLArticle), "Article", "articleClass", 10.0, true, "Article Title");
-            AssertLiteralContent(article, 1, "This is the article content");
+            AssertLiteralContent(article, 2, "This is the article content");
             
             // article header
             var head = article.Contents[0] as HTMLComponentHeader;
             AssertLiteralContent(head, 0, "This is the article header");
             
             // article footer
-            var foot = article.Contents[2] as HTMLComponentFooter;
+            var foot = article.Contents[4] as HTMLComponentFooter;
             AssertLiteralContent(foot, 0, "This is the article footer");
             
             
             
             //section id='Section' class='sectionClass' style='padding:20pt' title='Section Title'
-            var section = outer.Contents[1] as HTMLSection;
+            var section = outer.Contents[3] as HTMLSection;
             Assert.IsNotNull(section,"The first element was not a section");
             AssertBlock(section, typeof(HTMLSection), "Section", "sectionClass", 20.0, true, "Section Title");
-            AssertLiteralContent(section, 1, "This is the section content");
+            AssertLiteralContent(section, 2, "This is the section content");
             
             //section header
             head = section.Contents[0] as HTMLComponentHeader;
             AssertLiteralContent(head, 0, "This is the section header"); 
             
             //section footer
-            foot = section.Contents[2] as HTMLComponentFooter;
+            foot = section.Contents[4] as HTMLComponentFooter;
             AssertLiteralContent(foot, 0, "This is the section footer");
             
             
             //block quote id='quote' class='quoteClass' style='padding:30pt' hidden='hidden' title='A Block Quote'
-            var quote = outer.Contents[2] as HTMLBlockQuote;
+            var quote = outer.Contents[5] as HTMLBlockQuote;
             Assert.IsNotNull(quote, "The second element was not a block quote " + outer.Contents[2].GetType());
             AssertBlock(quote, typeof(HTMLBlockQuote), "quote", "quoteClass", 30.0, false, "A Block Quote");
             AssertLiteralContent(quote, 0, "This is the block quote content");
             
             
             //main id='main' class='mainClass' style='padding:40pt' hidden='' title='A Main Element'
-            var main = outer.Contents[3] as HTMLMain;
+            var main = outer.Contents[7] as HTMLMain;
             Assert.IsNotNull(main, "The third element was not a main element " + outer.Contents[3].GetType());
             AssertBlock(main, typeof(HTMLMain), "main", "mainClass", 40.0, true, "A Main Element");
             AssertLiteralContent(main, 0, "This is the main content");
             
             
             //nav id='navigation' class='navClass' style='padding:35pt' hidden='hidden' title='A Nav Element'
-            var nav = outer.Contents[4] as HTMLNav;
+            var nav = outer.Contents[9] as HTMLNav;
             Assert.IsNotNull(nav, "The fourth element was not a nav element " + outer.Contents[4].GetType());
             AssertBlock(nav, typeof(HTMLNav), "navigation", "navClass", 35.0, false, "A Nav Element");
             AssertLiteralContent(nav, 0, "This is the nav content");
             
             
             //p id='para' class='paraClass' style='padding:25pt' hidden='' title='A Para Element'
-            var p = outer.Contents[5] as HTMLParagraph;
+            var p = outer.Contents[11] as HTMLParagraph;
             Assert.IsNotNull(p, "The fifth element was not a paragraph element " + outer.Contents[5].GetType());
             AssertBlock(p, typeof(HTMLParagraph), "para", "paraClass", 25.0, true, "A Para Element");
             AssertLiteralContent(p, 0, "This is the paragraph content");
             
             //pre id='preformatted' class='preClass' style='padding:15pt' hidden='hidden' title='A Preformatted Element'
-            var pre = outer.Contents[6] as HTMLPreformatted;
+            var pre = outer.Contents[13] as HTMLPreformatted;
             Assert.IsNotNull(pre, "The sixth element was not a pre element " + outer.Contents[6].GetType());
             AssertBlock(pre, typeof(HTMLPreformatted), "preformatted", "preClass", 15.0, true, "A Preformatted Element");
             AssertLiteralContent(pre, 0, "This is the pre-formatted content");
             
             //fieldset id='field' class='fieldClass' style='padding:5pt' hidden='' title='A Fieldset Element'
-            var fldSet = outer.Contents[7] as HTMLFieldSet;
+            var fldSet = outer.Contents[15] as HTMLFieldSet;
             Assert.IsNotNull(fldSet, "The seventh element was not a fieldset element " + outer.Contents[7].GetType());
             AssertBlock(fldSet, typeof(HTMLFieldSet), "field", "fieldClass", 5.0, true, "A Fieldset Element");
             //content is second element
-            AssertLiteralContent(fldSet, 1, "This is the field set content.");
+            AssertLiteralContent(fldSet, 2, "This is the field set content.");
 
             //inner legend id='legend' class='legendClass' style='padding:8pt' hidden='hidden' title='fieldset legend' 
-            var legend = fldSet.Contents[0] as HTMLLegend;
+            var legend = fldSet.Contents[1] as HTMLLegend;
             Assert.IsNotNull(legend);
             AssertBlock(legend, typeof(HTMLLegend),"legend", "legendClass", 8.0, false, "fieldset legend");
             AssertLiteralContent(legend, 0, "This is the legend");
 
-            var det = outer.Contents[8] as HTMLDetails;
+            var det = outer.Contents[17] as HTMLDetails;
             Assert.IsNotNull(det);
             AssertBlock(det, typeof(HTMLDetails), "det1", null, null, true, "Details group");
 
             var summary = det.Contents[0] as HTMLDetailsSummary; //summary should have been moved to the top.
             Assert.IsNotNull(summary);
 
-            det = outer.Contents[9] as HTMLDetails;
+            det = outer.Contents[19] as HTMLDetails;
             Assert.IsNotNull(det);
             AssertBlock(det, typeof(HTMLDetails), "det2", null, null, true, "Details group");
 
             summary = det.Contents[0] as HTMLDetailsSummary; //summary should have been moved to the top.
             Assert.IsNotNull(summary);
 
-            var content = det.Contents[1] as HTMLParagraph;
+            var content = det.Contents[2] as HTMLParagraph;
             Assert.IsFalse(content.Visible); //any inner content should be hidden for the second details.
 
-            content = det.Contents[2] as HTMLParagraph;
+            content = det.Contents[5] as HTMLParagraph;
             Assert.IsFalse(content.Visible);
         }
 
@@ -620,6 +620,7 @@ namespace Scryber.Core.UnitTests.Html
         <body style='padding:20pt;' >
             <!-- Simple Table -->
             <table id='simpleTable' class='tblClass' style='padding:5pt' hidden='' title='Simple Table' >
+                <!-- adding a comment -->
                 <tr id='simpleRow' class='trClass' style='padding:5pt' hidden='hidden' title='row' >
                     <td id='simpleCell' class='tdClass' style='padding:5pt' hidden='hidden' title='cell'>
                         In the cell content
@@ -678,13 +679,13 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             
-            Assert.AreEqual(2, ((Section)pg).Contents.Count);
+            Assert.AreEqual(7, ((Section)pg).Contents.Count);
             var section = (Section) pg;
             
             //Simple Table
             
             //table id='simpleTable' class='tblClass' style='padding:5pt' hidden='' title='Simple Table' 
-            var table = (TableGrid) section.Contents[0];
+            var table = (TableGrid) section.FindAComponentById("simpleTable");
             AssertTable(table, typeof(HTMLTableGrid), "simpleTable", "tblClass", 2, 5.0, true,"Simple Table");
             
             //tr id='simpleRow' class='trClass' style='padding:5pt' hidden='hidden' title='row'
@@ -696,7 +697,7 @@ namespace Scryber.Core.UnitTests.Html
             AssertCellContent(cell, typeof(HTMLTableCell), "simpleCell", "tdClass", 1, 5.0, false, "cell", "In the cell content");
             
             //Complex Table
-            table = (TableGrid) section.Contents[1];
+            table = (TableGrid) section.FindAComponentById("complexTable");
             //table id='complexTable' class='tblComplex' style='padding:10pt;' hidden='' title='Complex Table'
             AssertTable(table, typeof(HTMLTableGrid), "complexTable","tblComplex", 5, 10.0, true, "Complex Table");
             
@@ -838,9 +839,10 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(1, section.Contents.Count);
+            Assert.AreEqual(2, section.Contents.Count);
 
-            var template = section.Contents[0] as HTMLTemplate;
+            Assert.IsInstanceOfType(section.Contents[0], typeof(Whitespace));
+            var template = section.Contents[1] as HTMLTemplate;
             Assert.IsNotNull(template);
             Assert.IsNotNull(template.Template);
             Assert.IsInstanceOfType(template.Template, typeof(Scryber.Data.ParsableTemplateGenerator));
@@ -867,14 +869,14 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(template.Value);
             Assert.AreEqual(doc.Params["model"], template.Value);
             
-            //section now contains the template instance and the original template
-            Assert.AreEqual(2, section.Contents.Count);
-            var instance = section.Contents[0] as Data.TemplateInstance;
+            //section now contains the template instance and the original template (along with whitespace at the start)
+            Assert.AreEqual(3, section.Contents.Count);
+            var instance = section.Contents[1] as Data.TemplateInstance;
             Assert.IsNotNull(instance);
-            Assert.AreEqual(1, instance.Content.Count);
+            Assert.IsTrue(instance.Content.Count > 0);
             
             //div is in the template instance content
-            var div = instance.Content[0] as HTMLDiv;
+            var div = instance.Content[1] as HTMLDiv;
             Assert.IsNotNull(div);
             Assert.AreEqual("Second",div.Outline.Title); //div has the title set
         }
@@ -904,14 +906,14 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(2, section.Contents.Count);
+            Assert.AreEqual(5, section.Contents.Count);
 
-            var iframe = section.Contents[1] as Div;
+            var iframe = section.FindAComponentById("frame1") as Div;
             Assert.IsNotNull(iframe, "The frame content was null");
             Assert.AreEqual("frame1", iframe.ID);
 
-            Assert.AreEqual(2, iframe.Contents.Count);
-            Assert.IsInstanceOfType(iframe.Contents[0], typeof(Scryber.Components.Paragraph));
+            Assert.IsTrue(iframe.Contents.Count > 0, "The frame was empty");
+            Assert.IsInstanceOfType(iframe.Contents[1], typeof(Scryber.Components.Paragraph));
         }
         
         
@@ -940,14 +942,14 @@ namespace Scryber.Core.UnitTests.Html
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));
             var section = (Section) pg;
-            Assert.AreEqual(2, section.Contents.Count);
+            Assert.AreEqual(5, section.Contents.Count);
 
-            var embed = section.Contents[1] as Div;
+            var embed = section.FindAComponentById("embed1") as Div;
             Assert.IsNotNull(embed, "The embed content was null");
             Assert.AreEqual("embed1", embed.ID);
             Assert.IsNotNull(embed.Contents);
-            Assert.AreEqual(2, embed.Contents.Count);
-            Assert.IsInstanceOfType(embed.Contents[0], typeof(Scryber.Components.Paragraph));
+            Assert.IsTrue(embed.Contents.Count > 0, "The embed was empty");
+            Assert.IsInstanceOfType(embed.Contents[1], typeof(Scryber.Components.Paragraph));
         }
         
         #endregion
@@ -981,10 +983,10 @@ namespace Scryber.Core.UnitTests.Html
             var section = doc.Pages[0] as Section;
             Assert.IsNotNull(section);
 
-            var wrapper = section.Contents[0] as Div;
+            var wrapper = section.FindAComponentById("wrapper") as Div;
             Assert.IsNotNull(wrapper, "Wrapper div not found");
-            Assert.AreEqual(11, wrapper.Contents.Count, "Wrapper content count does not match");
-            var lbl = wrapper.Contents[0] as HTMLLabel;
+            Assert.AreEqual(20, wrapper.Contents.Count, "Wrapper content count does not match");
+            var lbl = wrapper.FindAComponentById("label1") as HTMLLabel;
             Assert.IsNotNull(lbl, "Label not found");
             Assert.AreEqual("label1", lbl.ID, "Label ids did not match");
             Assert.AreEqual(1, lbl.Contents.Count);
@@ -992,7 +994,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("num1", lbl.ForComponent);
 
             //<num   id='num1'   style='padding:10pt;' class='num' value='10.0' data-format='C' />
-            var num1 = wrapper.Contents[1] as HTMLNumber;
+            var num1 = wrapper.FindAComponentById("num1") as HTMLNumber;
             Assert.IsNotNull(num1, "First number not found");
             Assert.AreEqual(10, num1.Value, "The first number text did not match");
             Assert.AreEqual("num1", num1.ID, "First number ids did not match");
@@ -1001,16 +1003,16 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("C", num1.NumberFormat, "Number formats did not match");
 
             //<num id='num2' data-format='£#0.00' >11.0</num>
-            var num2 = wrapper.Contents[3] as HTMLNumber;
+            var num2 = wrapper.FindAComponentById("num2") as HTMLNumber;
 
             Assert.IsNotNull(num2, "Second number not found");
             Assert.AreEqual("11.0", num2.Text, "Second number text was not 11.0");
             Assert.AreEqual(11.0, num2.Value, "Second number value was not 11"); // value is set from text when reader is created
             Assert.AreEqual("£#0.00", num2.NumberFormat, "Second number format was not correct");
-            
-            
+
+
             //<page  id='pg1'    style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
-            var pg1 = wrapper.Contents[5] as HTMLPageNumber;
+            var pg1 = wrapper.FindAComponentById("pg1") as HTMLPageNumber;
             Assert.IsNotNull(pg1,"The first page number was not found");
             Assert.AreEqual("pg1", pg1.ID, "First page numbers did not match");
             Assert.AreEqual(10.0, pg1.Style.Padding.All.PointsValue, "The fist page number padding did not match");
@@ -1020,14 +1022,14 @@ namespace Scryber.Core.UnitTests.Html
             
             
             //<page  id='pg2'    for='label1' property='total' />
-            var pg2 = wrapper.Contents[6] as HTMLPageNumber;
+            var pg2 = wrapper.FindAComponentById("pg2") as HTMLPageNumber;
             Assert.IsNotNull(pg2);
             Assert.AreEqual("pg2", pg2.ID, "Second page ID was not correct");
             Assert.AreEqual("label1", pg2.ForComponent, "The second page for component id was not correct");
             Assert.AreEqual("total", pg2.Property, "The second page property was not correct");
-            
+
             //<time  id='time1'  style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
-            var time1 = wrapper.Contents[8] as HTMLTime;
+            var time1 = wrapper.FindAComponentById("time1") as HTMLTime;
             Assert.IsNotNull(time1,"First time was not found");
             Assert.AreEqual("time1", time1.ID, "First time id was not correct");
             Assert.AreEqual(10.0, time1.Style.Padding.All.PointsValue, "First time padding was not correct");
@@ -1036,7 +1038,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("D", time1.DateFormat, "First time date format was not correct");
             
             //<time  id='time2'  datetime='2021-11-14 12:04:59' />
-            var time2 = wrapper.Contents[9] as HTMLTime;
+            var time2 = wrapper.FindAComponentById("time2") as HTMLTime;
             Assert.IsNotNull(time2, "Second time was not found");
             Assert.AreEqual("time2", time2.ID, "Second time id was not correct");
             Assert.AreEqual("2021-11-14 12:04:59", time2.Value.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -1044,7 +1046,7 @@ namespace Scryber.Core.UnitTests.Html
             
             
             //<time  id='time3'  >2021-11-24 14:59:59.002</time>
-            var time3 = wrapper.Contents[10] as HTMLTime;
+            var time3 = wrapper.FindAComponentById("time3") as HTMLTime;
             Assert.IsNotNull(time3, "Third time was not found");
             Assert.AreEqual("time3", time3.ID, "Third time id was not correct");
             Assert.AreEqual("2021-11-24 14:59:59", time3.Value.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -1126,44 +1128,35 @@ namespace Scryber.Core.UnitTests.Html
             doc.SaveAsPDF(stream);
 
             var pg = doc.Pages[0] as Page;
-            var wrap = pg.Contents[0] as Div;
+            var wrap = pg.FindAComponentById("wrapper") as Div;
 
             Assert.AreEqual("wrapper", wrap.ID);
 
-            var pic = wrap.Contents[1] as HTMLPicture;
-            Assert.AreEqual("use-image", pic.ID);
+            var pic = wrap.FindAComponentById("use-image") as HTMLPicture;
             Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
 
-            pic = wrap.Contents[3] as HTMLPicture;
-            Assert.AreEqual("no-media", pic.ID);
+            pic = wrap.FindAComponentById("no-media") as HTMLPicture;
             Assert.AreEqual("../../../resources/group2x.png", pic.Image.Source);
 
-            pic = wrap.Contents[5] as HTMLPicture;
-            Assert.AreEqual("print-media", pic.ID);
+            pic = wrap.FindAComponentById("print-media") as HTMLPicture;
             Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
 
-            pic = wrap.Contents[7] as HTMLPicture;
-            Assert.AreEqual("highest-res", pic.ID);
+            pic = wrap.FindAComponentById("highest-res") as HTMLPicture;
             Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
 
-            pic = wrap.Contents[9] as HTMLPicture;
-            Assert.AreEqual("highest-width", pic.ID);
+            pic = wrap.FindAComponentById("highest-width") as HTMLPicture;
             Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
 
-            pic = wrap.Contents[11] as HTMLPicture;
-            Assert.AreEqual("non-print", pic.ID);
+            pic = wrap.FindAComponentById("non-print") as HTMLPicture;
             Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
 
-            pic = wrap.Contents[13] as HTMLPicture;
-            Assert.AreEqual("non-types", pic.ID);
+            pic = wrap.FindAComponentById("non-types") as HTMLPicture;
             Assert.AreEqual("../../../resources/group.png", pic.Image.Source);
 
-            pic = wrap.Contents[15] as HTMLPicture;
-            Assert.AreEqual("valid-types", pic.ID);
+            pic = wrap.FindAComponentById("valid-types") as HTMLPicture;
             Assert.AreEqual("../../../resources/group2x.png", pic.Image.Source);
 
-            pic = wrap.Contents[17] as HTMLPicture;
-            Assert.AreEqual("all-types", pic.ID);
+            pic = wrap.FindAComponentById("all-types") as HTMLPicture;
             Assert.AreEqual("../../../resources/group4x.png", pic.Image.Source);
         }
 

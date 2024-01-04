@@ -101,7 +101,8 @@ namespace Scryber
         private static IParserFactory[] _standards = new IParserFactory[] {
 
             new Scryber.Generation.PDFXMLReflectionParserFactory(),
-            new Scryber.Html.Parsing.HTMLParserFactory()
+            new Scryber.Html.Parsing.HTMLParserFactory(),
+            new Scryber.Generation.PlainTextParserFactory()
         };
 
 

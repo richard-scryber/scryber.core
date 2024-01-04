@@ -48,6 +48,7 @@ namespace Scryber.Generation
         private Type _templateinstanceType;
         private Type _tempateGenType;
         private Type _textLiteralType;
+        private Type _whitespaceType;
         private TraceLog _log;
         private bool _logParserOutput;
         private ParserConformanceMode _conformance;
@@ -84,6 +85,11 @@ namespace Scryber.Generation
         public Type TextLiteralType
         {
             get { return _textLiteralType; }
+        }
+
+        public Type WhitespaceType
+        {
+            get { return _whitespaceType; }
         }
 
         /// <summary>
@@ -190,11 +196,12 @@ namespace Scryber.Generation
             get { return _specificCulture != null; }
         }
 
-        public ParserSettings(Type literaltype, Type templategenerator, Type templateinstance, 
+        public ParserSettings(Type literaltype, Type whitespaceType, Type templategenerator, Type templateinstance, 
                                 PDFReferenceResolver resolver, ParserConformanceMode conformance, ParserLoadType loadtype,
                                 TraceLog log, PerformanceMonitor perfmon, object controllerInstance)
         {
             this._textLiteralType = literaltype;
+            this._whitespaceType = whitespaceType;
             this._tempateGenType = templategenerator;
             this._templateinstanceType = templateinstance;
             this._resolver = resolver;

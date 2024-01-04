@@ -75,6 +75,7 @@ namespace Scryber.Core.UnitTests.Generation
         private ParserSettings GetSettings()
         {
             Type literaltype = typeof(Scryber.Components.TextLiteral);
+            Type whitespaceType = typeof(Scryber.Components.Whitespace);
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
@@ -82,7 +83,7 @@ namespace Scryber.Core.UnitTests.Generation
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor perfmon = new PerformanceMonitor(true);
-            ParserSettings settings = new ParserSettings(literaltype, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
+            ParserSettings settings = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
 
             return settings;
         }
@@ -156,7 +157,9 @@ namespace Scryber.Core.UnitTests.Generation
             Assert.AreEqual(2.5, obj.Complex.Size);
             Assert.AreEqual(0, obj.Complex.AnotherIndex); //not set
 
-            Assert.IsNull(obj.DefaultCollection);
+            if (null == obj.DefaultCollection && obj.DefaultCollection.Count > 0)
+                throw new InvalidOperationException("The default collection is not null or empty");
+
             Assert.IsNull(obj.CollectionOne);
         }
 

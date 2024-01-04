@@ -569,8 +569,8 @@ namespace Scryber.PDF.Layout
         {
             if (context.ShouldLogVerbose)
                 context.TraceLog.Begin(TraceLevel.Verbose, "Layout Page", "Starting the render of Page: " + this.PageIndex);
-            else if(context.ShouldLogMessage)
-                context.TraceLog.Add(TraceLevel.Message, "Layout Page", "Rendering layout page " + this.PageIndex);
+            //else if(context.ShouldLogMessage)
+            //    context.TraceLog.Add(TraceLevel.Message, "Layout Page", "Rendering layout page " + this.PageIndex);
 
             //get the current style and aply it to the style stack
             Style style = this.FullStyle;

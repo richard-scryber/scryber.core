@@ -25,6 +25,7 @@ using System.Data.Common;
 
 using Scryber.Logging;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace Scryber.Generation
 {
@@ -568,6 +569,10 @@ namespace Scryber.Generation
                 if (reader.HasAttributes && reader.AttributeCount > 1)
                     this.ParseAttributes(complex, true, reader, cdef);
 
+                //As the returned type may not be the same as the actual referenced type - make sure we have a matching definition.
+                if (complex.GetType() != cdef.ClassType)
+                    cdef = AssertGetClassDefinition(complex.GetType());
+
                 if (!empty)
                     this.ParseContents(complex, reader, element, ns, cdef);
             }
@@ -692,7 +697,7 @@ namespace Scryber.Generation
         /// <param name="cdef">The class definition of the current component</param>
         private void ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
         {
-
+            
             LogAdd(reader, TraceLevel.Debug, "Parsing container contents");
             while (reader.Read())
             {
@@ -811,6 +816,18 @@ namespace Scryber.Generation
                     }
 
                 }
+                else if(reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    //TODO:Add whitespace content to a collection which can be used if the css white-space attribute is preserve (or the xml:space='preserve')
+                    if(cdef.DefaultElement != null && string.IsNullOrEmpty(cdef.DefaultElement.Name) && cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
+                    {
+                        AddWhitespaceString(reader.Value, cdef.DefaultElement, container, TextFormat.XML);
+                    }
+                    else
+                    {
+                        //Do nothing it's not an error, nor is it an issue - we can skip
+                    }
+                }
                 else if(reader.NodeType == XmlNodeType.CDATA)
                 {
                     if(cdef.DefaultElement != null && string.IsNullOrEmpty(cdef.DefaultElement.Name) && cdef.DefaultElement.AllowCData)
@@ -921,17 +938,22 @@ namespace Scryber.Generation
         {
             LogAdd(reader, TraceLevel.Debug, "Parsing inner collection from element '{0}' for property '{2}' on class '{3}'", reader.Name, prop.Name, prop.PropertyInfo.Name, prop.PropertyInfo.DeclaringType);
             bool lastwastext = false;
+            bool lastWasEnd = false;
+
             StringBuilder textString = new StringBuilder();
 
             ParserArrayDefinition arraydefn = (ParserArrayDefinition)prop;
 
 
             object collection = InitArrayCollection(container, arraydefn);
+            var icomplist = collection.GetType().GetInterface(nameof(IComponentList));
+            bool isComponentCollection = (null != icomplist);
 
             while (parsecurrentNode || reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
+                    var empty = reader.IsEmptyElement;
                     if (lastwastext)
                     {
                         AppendTextToCollection(textString, arraydefn, collection);
@@ -943,19 +965,37 @@ namespace Scryber.Generation
                     {
                         arraydefn.AddToCollection(collection, inner);
                     }
+                    if (empty)
+                        lastWasEnd = true;
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
                 {
+                    lastWasEnd = true;
                     if (reader.LocalName == endname && reader.NamespaceURI == endns)
-                        break;
+                        break;                       
                 }
                 else if (reader.NodeType == XmlNodeType.Text)
                 {
                     string val = reader.Value;
-                    val = System.Security.SecurityElement.Escape(val);
+                    //val = System.Security.SecurityElement.Escape(val);
 
                     textString.Append(val);
                     lastwastext = true;
+                }
+                else if (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    if (isComponentCollection)
+                    {
+                        if (lastwastext && textString.Length > 0)
+                        {
+                            AppendTextToCollection(textString, arraydefn, collection);
+                            textString.Length = 0;
+                            lastwastext = false;
+                        }
+
+                        string space = reader.Value;
+                        AddWhitespaceString(space, prop, container, TextFormat.XML);
+                    }
                 }
                 parsecurrentNode = false;
             }
@@ -1612,7 +1652,7 @@ namespace Scryber.Generation
                     }
                     else
                     {
-                        AddTextBindingExpression(content, arraydefn, collection, factory, format);
+                        AddTextBindingExpression(content, arraydefn, collection, factory, TextFormat.Plain);
                     }
                 }
             }
@@ -1683,6 +1723,26 @@ namespace Scryber.Generation
 
         #endregion
 
+        private void AddWhitespaceString(string spacer, ParserPropertyDefinition prop, object container, TextFormat format)
+        {
+            ParserArrayDefinition arraydefn = (ParserArrayDefinition)prop;
+
+
+            object collection = InitArrayCollection(container, arraydefn);
+            var icomplist = collection.GetType().GetInterface(nameof(IComponentList));
+            bool isComponentCollection = (null != icomplist);
+
+            if (isComponentCollection)
+            {
+                Type whitespaceType = this.Settings.WhitespaceType;
+                IPDFTextLiteral whitespace = (IPDFTextLiteral)CreateInstance(whitespaceType);
+                whitespace.Text = spacer;
+                whitespace.ReaderFormat = format;
+
+                arraydefn.AddToCollection(collection, whitespace);
+            }
+
+        }
 
         #region private object InitArrayCollection(object container, ParserArrayDefinition arraydefn)
 
