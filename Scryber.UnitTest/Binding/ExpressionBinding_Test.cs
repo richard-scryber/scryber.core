@@ -745,7 +745,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
             var withQuotes = @"<html>
   <body>
-    <table class='expressions relational'>
+    <table id='tbl1' class='expressions relational'>
       <tr>
         <td>if(model.number == 20.9 , ""Equal"", ""Not equal"")</td>
         <td class='result'>{{if(model.number == 20.9 , ""Equal"", ""Not equal"")}}</td>
@@ -784,7 +784,7 @@ namespace Scryber.Core.UnitTests.Binding
             var pg = doc.Pages[0] as Page;
             Assert.IsNotNull(pg);
 
-            var tbl = pg.Contents[0] as TableGrid;
+            var tbl = pg.FindAComponentById("tbl1") as TableGrid;
             Assert.IsNotNull(tbl) ;
 
             TableCell cell;
@@ -794,8 +794,8 @@ namespace Scryber.Core.UnitTests.Binding
 
             cell = tbl.Rows[0].Cells[0];
             lit = cell.Contents[0] as TextLiteral;
-            Assert.AreEqual("if(model.number == 20.9 , &quot;Equal&quot;, &quot;Not equal&quot;)", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual("if(model.number == 20.9 , \"Equal\", \"Not equal\")", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 0 cell 1
             cell = tbl.Rows[0].Cells[1];
@@ -803,15 +803,15 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsNotNull(lit);
 
             Assert.AreEqual("Equal", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(TextFormat.Plain, lit.ReaderFormat);
 
             //Row 1 cell 0
 
             cell = tbl.Rows[1].Cells[0] as TableCell;
             lit = cell.Contents[0] as TextLiteral;
 
-            Assert.AreEqual("Before &gt;(if(model.number == 20.9 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;)&lt; After", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual("Before >(if(model.number == 20.9 , \"'Equal'\", \"Not 'equal'\")< After", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 1 cell 1
 
@@ -821,26 +821,26 @@ namespace Scryber.Core.UnitTests.Binding
             lit = cell.Contents[0] as TextLiteral;
             Assert.AreEqual(3, cell.Contents.Count);
 
-            Assert.AreEqual(@"Before &gt;", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(@"Before >", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             lit = cell.Contents[1] as TextLiteral;
 
             Assert.AreEqual("'Equal'", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(TextFormat.Plain, lit.ReaderFormat);
 
             lit = cell.Contents[2] as TextLiteral;
 
-            Assert.AreEqual("&lt; After", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual("< After", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 2 cell 0
 
             cell = tbl.Rows[2].Cells[0] as TableCell;
             lit = cell.Contents[0] as TextLiteral;
 
-            Assert.AreEqual("Before &gt; (if(model.number == 20.0 , &quot;&apos;Equal&apos;&quot;, &quot;Not &apos;equal&apos;&quot;) &lt; After", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual("Before > (if(model.number == 20.0 , \"'Equal'\", \"Not 'equal'\") < After", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 2 cell 1
 
@@ -850,26 +850,26 @@ namespace Scryber.Core.UnitTests.Binding
             lit = cell.Contents[0] as TextLiteral;
             Assert.AreEqual(3, cell.Contents.Count);
 
-            Assert.AreEqual(@"Before &gt; ", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(@"Before > ", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             lit = cell.Contents[1] as TextLiteral;
 
             Assert.AreEqual("Not 'equal'", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(TextFormat.Plain, lit.ReaderFormat);
 
             lit = cell.Contents[2] as TextLiteral;
 
-            Assert.AreEqual(" &lt; After", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(" < After", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 3 cell 0
 
             cell = tbl.Rows[3].Cells[0] as TableCell;
             lit = cell.Contents[0] as TextLiteral;
 
-            Assert.AreEqual("20.9 &lt; 20.9", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual("20.9 < 20.9", lit.Text);
+            Assert.AreEqual(TextFormat.XHTML, lit.ReaderFormat);
 
             //Row 3 cell 1
 
@@ -877,7 +877,7 @@ namespace Scryber.Core.UnitTests.Binding
             lit = cell.Contents[0] as TextLiteral;
 
             Assert.AreEqual("False", lit.Text);
-            Assert.AreEqual(TextFormat.XML, lit.ReaderFormat);
+            Assert.AreEqual(TextFormat.Plain, lit.ReaderFormat);
 
         }
 

@@ -613,7 +613,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var literal = "Inner&ndash;Bound&nbsp;Content";
-            var unencoded = "Inner-Bound Content";
+            var unencoded = "Inner-Bound" + (char)160 + "Content";
             var id = "Appended";
             var contentString = @"<div id='" + id + "' style='border: solid 1px blue; margin: var(--marginsize) ' >" + literal + "</div>" +
                 "<div id='" + id + "2' style='border: solid 1px blue;  margin: calc(--marginsize + 5pt)' >" + literal + "2</div>";
