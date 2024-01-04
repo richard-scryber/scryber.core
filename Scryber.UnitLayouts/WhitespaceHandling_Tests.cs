@@ -539,69 +539,150 @@ namespace Scryber.UnitLayouts
                     Assert.IsNotNull(pg);
 
 
-                    var wrap = pg.FindAComponentById("wrapper_placebo") as Div;
+                    //var wrap = pg.FindAComponentById("wrapper_placebo") as Div;
+                    //Assert.IsNotNull(wrap);
+                    //Assert.AreEqual(1, wrap.Contents.Count);
+                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
+
+
+
+                    //var lit = wrap.Contents[0] as TextLiteral;
+                    //Assert.IsNotNull(lit);
+                    //Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line of text.\n    ", lit.Text);
+                    //var index = lit.Text.IndexOf('-');
+                    //Assert.IsTrue(index > 0);
+
+
+                    //wrap = pg.FindAComponentById("wrapper") as Div;
+                    //Assert.IsNotNull(wrap);
+                    //Assert.AreEqual(1, wrap.Contents.Count);
+                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
+
+                    //lit = wrap.Contents[0] as TextLiteral;
+                    //Assert.IsNotNull(lit);
+                    //Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line" + (char)160 + "of text.\n    ", lit.Text);
+
+
+                    //wrap = pg.FindAComponentById("wrapper_column") as Div;
+                    //Assert.IsNotNull(wrap);
+                    //Assert.AreEqual(1, wrap.Contents.Count);
+                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
+
+                    //lit = wrap.Contents[0] as TextLiteral;
+                    //Assert.IsNotNull(lit);
+                    //Assert.AreEqual("\n            This is a long line of text that should wrap" + (char)160 + "on" + (char)160 + "multiple lines for testing" + (char)160 + "the" + (char)160 + "non-breaking" + (char)160 + "space" + (char)160 + "within a" + (char)160 + "line" + (char)160 + "of" + (char)160 + "text.\n        ", lit.Text);
+
+
+                    var wrap = pg.FindAComponentById("wrapper_span") as Div;
                     Assert.IsNotNull(wrap);
-                    Assert.AreEqual(1, wrap.Contents.Count);
-                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
+                    Assert.AreEqual(3 * 2 + 1, wrap.Contents.Count);
+                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(Whitespace));
 
+                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(Whitespace));
 
-
-                    var lit = wrap.Contents[0] as TextLiteral;
-                    Assert.IsNotNull(lit);
-                    Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line of text.\n    ", lit.Text);
-                    var index = lit.Text.IndexOf('-');
-                    Assert.IsTrue(index > 0);
-
-
-                    wrap = pg.FindAComponentById("wrapper") as Div;
-                    Assert.IsNotNull(wrap);
-                    Assert.AreEqual(1, wrap.Contents.Count);
-                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-                    lit = wrap.Contents[0] as TextLiteral;
-                    Assert.IsNotNull(lit);
-                    Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line" + (char)160 + "of text.\n    ", lit.Text);
-
-
-                    wrap = pg.FindAComponentById("wrapper_column") as Div;
-                    Assert.IsNotNull(wrap);
-                    Assert.AreEqual(1, wrap.Contents.Count);
-                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-                    lit = wrap.Contents[0] as TextLiteral;
-                    Assert.IsNotNull(lit);
-                    Assert.AreEqual("\n            This is a long line of text that should wrap" + (char)160 + "on" + (char)160 + "multiple lines for testing" + (char)160 + "the" + (char)160 + "non-breaking" + (char)160 + "space" + (char)160 + "within a" + (char)160 + "line" + (char)160 + "of" + (char)160 + "text.\n        ", lit.Text);
-
-
-                    wrap = pg.FindAComponentById("wrapper_span") as Div;
-                    Assert.IsNotNull(wrap);
-                    Assert.AreEqual(1, wrap.Contents.Count);
-                    Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-                    Assert.Inconclusive();
-
-                    var span = wrap.Contents[2] as Span;
+                    var span = wrap.Contents[1] as Span;
                     Assert.IsNotNull(span);
-                    Assert.AreEqual(3, span.Contents.Count);
+                    Assert.AreEqual(1, span.Contents.Count);
 
-                    lit = span.Contents[0] as TextLiteral;
+                    var lit = span.Contents[0] as TextLiteral;
                     Assert.IsNotNull(lit);
-                    Assert.AreEqual("And this is after\n            ", lit.Text);
+                    Assert.AreEqual("This is a long line of text that should wrap" + (char)160 + "on" + (char)160 + "multiple", lit.Text);
 
-                    var b = span.Contents[1] as BoldSpan;
+                    Assert.IsInstanceOfType(wrap.Contents[2], typeof(Whitespace));
+
+                    var b = wrap.Contents[3] as BoldSpan;
                     Assert.IsNotNull(b);
                     Assert.AreEqual(1, b.Contents.Count);
                     lit = b.Contents[0] as TextLiteral;
                     Assert.IsNotNull(lit);
-                    Assert.AreEqual("WITHOUT", lit.Text);
+                    Assert.AreEqual("lines for testing" + (char)160 + "the" + (char)160 + "non-breaking" + (char)160 + "space" + (char)160 + "within", lit.Text);
 
-                    lit = span.Contents[2] as TextLiteral;
+                    Assert.IsInstanceOfType(wrap.Contents[4], typeof(Whitespace));
+
+                    span = wrap.Contents[5] as Span;
+                    Assert.IsNotNull(span);
+                    Assert.AreEqual(1, span.Contents.Count);
+
+                    lit = span.Contents[0] as TextLiteral;
                     Assert.IsNotNull(lit);
-                    Assert.AreEqual("\n        a white space!", lit.Text);
+                    Assert.AreEqual("a" + (char)160 + "line" + (char)160 + "of" + (char)160 + "text.", lit.Text);
 
                     //space at the end
-                    Assert.IsInstanceOfType(wrap.Contents[3], typeof(Whitespace));
+                    Assert.IsInstanceOfType(wrap.Contents[6], typeof(Whitespace));
 
+
+                    Assert.IsNotNull(this.layout);
+                    var lpg = this.layout.AllPages[0];
+
+                    var lcb = lpg.ContentBlock;
+                    var lcols = lcb.Columns[0].Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(lcols);
+                    Assert.AreEqual("columns", lcols.Owner.ID);
+                    Assert.AreEqual(2, lcols.Columns.Length);
+
+                    //Add other content after uncommenting
+
+                    var lcolReg1 = lcols.Columns[0];
+                    Assert.AreEqual(1, lcolReg1.Contents.Count);
+                    var lwrapspan = lcolReg1.Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(lwrapspan);
+
+                    Assert.AreEqual("wrapper_span", lwrapspan.Owner.ID);
+                    Assert.AreEqual(3, lwrapspan.Columns[0].Contents.Count);
+
+                    var lline = lwrapspan.Columns[0].Contents[0] as PDFLayoutLine;
+                    
+
+                    Assert.IsNotNull(lline);
+                    Assert.AreEqual(4, lline.Runs.Count);
+                    Assert.IsInstanceOfType(lline.Runs[0], typeof(PDFLayoutInlineBegin));
+                    Assert.IsInstanceOfType(lline.Runs[1], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(lline.Runs[2], typeof(PDFTextRunCharacter));
+                    Assert.IsInstanceOfType(lline.Runs[3], typeof(PDFTextRunNewLine));
+
+                    lline = lwrapspan.Columns[0].Contents[1] as PDFLayoutLine;
+                    Assert.IsNotNull(lline);
+
+                    Assert.AreEqual(11, lline.Runs.Count);
+                    Assert.IsInstanceOfType(lline.Runs[0], typeof(PDFTextRunSpacer));
+                    Assert.IsInstanceOfType(lline.Runs[1], typeof(PDFTextRunCharacter));
+                    Assert.IsInstanceOfType(lline.Runs[2], typeof(PDFTextRunEnd));
+                    Assert.IsInstanceOfType(lline.Runs[3], typeof(PDFLayoutInlineEnd));
+
+                    //Added whitespace between 2 inline runs
+                    Assert.IsInstanceOfType(lline.Runs[4], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(lline.Runs[5], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual(" ", (lline.Runs[5] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(lline.Runs[6], typeof(PDFTextRunEnd));
+
+                    Assert.IsInstanceOfType(lline.Runs[7], typeof(PDFLayoutInlineBegin));
+                    Assert.IsInstanceOfType(lline.Runs[8], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(lline.Runs[9], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("lines for testing" + (char)160 + "the" + (char)160 + "non-", (lline.Runs[9] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(lline.Runs[10], typeof(PDFTextRunNewLine));
+
+                    lline = lwrapspan.Columns[0].Contents[2] as PDFLayoutLine;
+                    Assert.IsNotNull(lline);
+                    Assert.AreEqual(12, lline.Runs.Count);
+
+                    Assert.IsInstanceOfType(lline.Runs[0], typeof(PDFTextRunSpacer));
+                    Assert.IsInstanceOfType(lline.Runs[1], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("breaking" + (char)160 + "space" + (char)160 + "within", (lline.Runs[1] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(lline.Runs[2], typeof(PDFTextRunEnd));
+                    Assert.IsInstanceOfType(lline.Runs[3], typeof(PDFLayoutInlineEnd));
+
+                    //Added whitespace between 2 inline runs
+                    Assert.IsInstanceOfType(lline.Runs[4], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(lline.Runs[5], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual(" ", (lline.Runs[5] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(lline.Runs[6], typeof(PDFTextRunEnd));
+
+                    Assert.IsInstanceOfType(lline.Runs[7], typeof(PDFLayoutInlineBegin));
+                    Assert.IsInstanceOfType(lline.Runs[8], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(lline.Runs[9], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("a" + (char)160 + "line" + (char)160 + "of" + (char)160 + "text.", (lline.Runs[9] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(lline.Runs[10], typeof(PDFTextRunEnd));
+                    Assert.IsInstanceOfType(lline.Runs[11], typeof(PDFLayoutInlineEnd));
                 }
             }
 

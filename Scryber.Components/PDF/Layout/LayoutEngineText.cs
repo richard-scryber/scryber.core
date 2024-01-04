@@ -837,7 +837,7 @@ namespace Scryber.PDF.Layout
         #region private bool IsBrokenInWord(string chars, int start, int count)
 
         /// <summary>
-        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary.
+        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary (or hyphen).
         /// </summary>
         /// <param name="chars"></param>
         /// <param name="start"></param>
@@ -848,6 +848,8 @@ namespace Scryber.PDF.Layout
             if (char.IsWhiteSpace(chars, start + count))
                 return false;
             else if (char.IsWhiteSpace(chars, start + count - 1))
+                return false;
+            else if (chars[start + count - 1] == '-') //broken just after a hyphen is allowed
                 return false;
             else if (this.CurrentLine.IsEmpty == false)
                 return true;
