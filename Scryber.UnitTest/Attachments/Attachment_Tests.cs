@@ -49,13 +49,30 @@ namespace Scryber.Core.UnitTests.Attachments
             doc.ConformanceMode = ParserConformanceMode.Strict;
 
             var attach = new IconAttachment();
-            attach.DisplayIcon = AttachmentDisplayIcon.Paperclip;
+            attach.DisplayIcon = AttachmentDisplayIcon.PushPin;
             attach.Source = "../../../Content/Markdown/Markdown.md";
             attach.Width = 20;
             attach.Height = 20;
+            attach.Padding = new Thickness(10);
+            attach.ID = "markdown";
+
             pg.Contents.Add("Before attachment");
             pg.Contents.Add(attach);
             pg.Contents.Add("After attachment");
+
+            pg.Contents.Add(new Div() {
+                ID = "wrapper",
+                Contents =
+                {
+                    new Link() { Destination = "#markdown", Action = LinkAction.Destination, Contents = {
+                            new TextLiteral("Link To Markdown")
+                        }
+                    }
+
+                }
+
+            });
+
             using (var sr = DocStreams.GetOutputStream("IconAttachment.pdf"))
             {
                 doc.SaveAsPDF(sr);
