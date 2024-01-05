@@ -151,7 +151,7 @@ namespace Scryber.UnitLayouts
 
                     lit = span.Contents[0] as TextLiteral;
                     Assert.IsNotNull(lit);
-                    Assert.AreEqual(" & this is after\n        with a \"white\" spáce prepended.", lit.Text);
+                    Assert.AreEqual("& this is after\n        with a \"white\" spáce prepended.", lit.Text);
 
                     //check the contents of the layout
 
@@ -170,19 +170,25 @@ namespace Scryber.UnitLayouts
                     var line = lwrap.Columns[0].Contents[0] as PDFLayoutLine;
                     Assert.IsNotNull(line);
 
-                    Assert.AreEqual(10, line.Runs.Count);
+                    Assert.AreEqual(13, line.Runs.Count);
                     Assert.IsInstanceOfType(line.Runs[0], typeof(PDFLayoutInlineBegin));
                     Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunBegin));
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunCharacter));
                     Assert.AreEqual("This is text.", (line.Runs[2] as PDFTextRunCharacter).Characters);
                     Assert.IsInstanceOfType(line.Runs[3], typeof(PDFTextRunEnd));
                     Assert.IsInstanceOfType(line.Runs[4], typeof(PDFLayoutInlineEnd));
-                    Assert.IsInstanceOfType(line.Runs[5], typeof(PDFLayoutInlineBegin));
-                    Assert.IsInstanceOfType(line.Runs[6], typeof(PDFTextRunBegin));
-                    Assert.IsInstanceOfType(line.Runs[7], typeof(PDFTextRunCharacter));
-                    Assert.AreEqual(" & this is after with a \"white\" spáce prepended.", (line.Runs[7] as PDFTextRunCharacter).Characters);
-                    Assert.IsInstanceOfType(line.Runs[8], typeof(PDFTextRunEnd));
-                    Assert.IsInstanceOfType(line.Runs[9], typeof(PDFLayoutInlineEnd));
+
+                    Assert.IsInstanceOfType(line.Runs[5], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(line.Runs[6], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual(" ", (line.Runs[6] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(line.Runs[7], typeof(PDFTextRunEnd));
+
+                    Assert.IsInstanceOfType(line.Runs[8], typeof(PDFLayoutInlineBegin));
+                    Assert.IsInstanceOfType(line.Runs[9], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(line.Runs[10], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("& this is after with a \"white\" spáce prepended.", (line.Runs[10] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(line.Runs[11], typeof(PDFTextRunEnd));
+                    Assert.IsInstanceOfType(line.Runs[12], typeof(PDFLayoutInlineEnd));
                 }
             }
         }
