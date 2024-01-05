@@ -1578,20 +1578,25 @@ namespace Scryber.UnitLayouts
 
             var data = GetData();
 
-            var tbl = GenerateTableGrid(data);
+            var tbl = GenerateTableGridWithAddRange(data);
         }
 
-        private TableGrid GenerateTableGrid(string[][] data)
+        private TableGrid GenerateTableGridWithAddRange(string[][] data)
         {
 
             var grid = new TableGrid() { FullWidth = true };
             grid.Rows.AddRange(data.Select(rowData => {
+
                     var row = new TableRow();
+
                     row.Cells.AddRange(rowData.Select(cellData => {
+
                         var cell = new TableCell();
                         cell.Contents.Add(cellData);
+
                         return cell;
                     }));
+
                     return row;
                 }));
             return grid;

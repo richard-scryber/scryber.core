@@ -3116,7 +3116,7 @@ namespace Scryber.Components
         protected static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
             ParserConformanceMode conformance, ParserLoadType loadtype, TraceLog log, PerformanceMonitor perfmon, object controller)
         {
-            ParserSettings settings = new ParserSettings(typeof(TextLiteral)
+            ParserSettings settings = new ParserSettings(typeof(TextLiteral), typeof(Whitespace)
                                                                     , typeof(ParsableTemplateGenerator)
                                                                     , typeof(TemplateInstance),
                                                                     resolver,

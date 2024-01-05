@@ -197,8 +197,8 @@ namespace Scryber.PDF.Resources
         // string measurement
         //
 
-        private static readonly TypeMeasureOptions WordBreaks = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = true };
-        private static readonly TypeMeasureOptions Default = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = false };
+        private static readonly TypeMeasureOptions WordBreaks = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = true, BreakOnHyphens = true };
+        private static readonly TypeMeasureOptions Default = new TypeMeasureOptions() { FontUnits = FontUnitType.UseHeadMetrics, BreakOnWordBoundaries = false, BreakOnHyphens = false };
         
         #region public override TypeMeasureOptions GetMeasurementOptions(..)
         
@@ -211,8 +211,8 @@ namespace Scryber.PDF.Resources
 
             if (wordSpace.HasValue || charSpace.HasValue)
                 return new TypeMeasureOptions()
-                    {WordSpacing = wordSpace, CharacterSpacing = charSpace, BreakOnWordBoundaries = wordBoundary};
-            
+                { WordSpacing = wordSpace, CharacterSpacing = charSpace, BreakOnWordBoundaries = wordBoundary, BreakOnHyphens = wordBoundary };
+
             else if (wordBoundary)
                 return WordBreaks;
             else

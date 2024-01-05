@@ -91,6 +91,8 @@ namespace Scryber.Html.Components
 
 		public static readonly ObjectType Details = (ObjectType)"hDet";
 		public static readonly ObjectType DetailsSummary = (ObjectType)"hDSm";
+
+		public static readonly ObjectType Object = (ObjectType)"hObj";
     }
 }
 

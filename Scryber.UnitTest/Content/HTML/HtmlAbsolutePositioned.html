@@ -5,6 +5,7 @@
     <style type="text/css">
         p {
             padding: 5pt;
+            border: solid 1px blue;
         }
 
         .pos {
@@ -21,7 +22,7 @@
     <p class="pos" >This is some absolutely positioned content relative to the page.</p>
     <div style="page-break-before:always; margin-top:100pt; border:solid 1pt #333;" >
         <p>This is more normal content</p>
-        <p style="position:relative; left:20pt; top:90pt; width:400pt; height:100pt; background-color:#EEE; "></p>
+        <p style="position:relative; left:20pt; top:90pt; width:400pt; height:100pt; background-color:#EEE; ">Inside the relative block</p>
         <p>After the relative block</p>
     </div>
     <p>This is after the div</p>

@@ -64,6 +64,7 @@ namespace Scryber
 
         public static readonly ObjectType Document = (ObjectType)"doc_";
         public static readonly ObjectType Text = (ObjectType)"text";
+        public static readonly ObjectType Whitespace = (ObjectType)"whsp";
         public static readonly ObjectType Label = (ObjectType)"labl";
         public static readonly ObjectType Field = (ObjectType)"fild";
         public static readonly ObjectType Page = (ObjectType)"page";

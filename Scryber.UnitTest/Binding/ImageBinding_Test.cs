@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsNotNull(found2.Data);
             Assert.AreEqual(data2, found2.Data);
             
-            Assert.AreEqual(2, doc.SharedResources.Count);
+            Assert.AreEqual(2, doc.SharedResources.Count, "Shared resource count was not 2, as expected");
             var rsrc1 = doc.SharedResources[0] as PDFImageXObject;
             var rsrc2 = doc.SharedResources[1] as PDFImageXObject;
 

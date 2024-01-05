@@ -50,7 +50,7 @@ namespace Scryber.Components
             }
         }
 
-        private TextFormat _reader = TextFormat.Plain;
+        private TextFormat _reader = TextFormat.XML;
 
         [PDFAttribute("format")]
         public TextFormat ReaderFormat
@@ -66,7 +66,7 @@ namespace Scryber.Components
         }
 
         public TextLiteral(string text)
-            : this(text, ObjectTypes.Text)
+            : this(text, TextFormat.Plain)
         {
         }
 

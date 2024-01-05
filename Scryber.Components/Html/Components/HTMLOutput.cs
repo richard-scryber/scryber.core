@@ -51,6 +51,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("form")]
         public string Form { get; set; }
 
+        [PDFAttribute("val")]
+        public string Value { get; set; }
+
         public HTMLOutput()
             : this(HTMLObjectTypes.Output)
         {
