@@ -31,12 +31,14 @@ namespace Scryber.PDF.Layout
             this.SubType = "Form";
             this.Matrix = PDFTransformationMatrix.Identity();
             this._position = position;
+            this.DrawingOrigin = DrawingOrigin.BottomLeft;
         }
 
         public PDFTransformationMatrix Matrix { get; set; }
 
         public Rect? ClipRect { get; set; }
 
+        public DrawingOrigin DrawingOrigin { get; set; }
 
         public string SubType { get; set; }
 
@@ -110,8 +112,8 @@ namespace Scryber.PDF.Layout
             
             if (null != this.OutPutName)
             {
-                context.Graphics.SaveGraphicsState();
 
+                context.Graphics.SaveGraphicsState();
 
                 var x = context.Offset.X.RealValue;
                 x = context.Graphics.GetXPosition(x);
@@ -119,25 +121,25 @@ namespace Scryber.PDF.Layout
                 var y = (context.Offset.Y + this.Height).RealValue;
                 y = context.Graphics.GetYPosition(y);
 
-                if(this.ClipRect.HasValue)
-                {
-                    //var rect = this.ClipRect.Value.Offset(context.Offset.X, context.Offset.Y);
-                    //context.Graphics.SetClipRect(rect);
-                }
-                var matrix = new PDFTransformationMatrix();
-                matrix.SetTranslation((float)x, (float)y);
-                //Set the transformation matrix for the current offset
-                context.Graphics.SetTransformationMatrix(matrix, true, true);
 
-                if(!this.Matrix.IsIdentity)
-                {
-                    context.Graphics.SetTransformationMatrix(this.Matrix, true, true);
-                }
+                
+
+                //var matrix = new PDFTransformationMatrix();
+                //matrix.SetTranslation((float)x, (float)y);
+
+                ////Set the transformation matrix for the current offset
+                //context.Graphics.SetTransformationMatrix(matrix, true, true);
+
+                //if(!this.Matrix.IsIdentity)
+                //{
+                //    context.Graphics.SetTransformationMatrix(this.Matrix, true, true);
+                //}
 
                 context.Graphics.PaintXObject(this.OutPutName);
 
                 context.Graphics.RestoreGraphicsState();
 
+                
                 return true;
             }
             else

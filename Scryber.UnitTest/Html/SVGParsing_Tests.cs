@@ -63,7 +63,7 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual("canvas", canvas.StyleClass, "The style class of the canvas was not set");
 
                     Assert.AreEqual(1, canvas.Contents.Count);
-                    var rect = canvas.Contents[0] as Svg.Components.SVGRect;
+                    var rect = canvas.Contents[0] as SVGRect;
                     Assert.IsNotNull(rect, "The inner rectangle was not found");
                     Assert.AreEqual("box", rect.StyleClass, "The rect style class was not correct");
                     Assert.AreEqual(100, rect.Style.Position.X.PointsValue, "The X position of the rect was not correct");
