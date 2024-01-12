@@ -684,6 +684,8 @@ namespace Scryber.PDF.Layout
             else
                 full = this.FullStyle;
 
+            CheckForPrecedingInlineWhitespace(comp, full);
+
             if (IsStyled(comp) && !IsText(comp))
             {
                 StyleValue<bool> br;
@@ -698,7 +700,6 @@ namespace Scryber.PDF.Layout
             }
 
             PDFArtefactRegistrationSet artefacts = comp.RegisterLayoutArtefacts(this.Context, full);
-
 
             //perform the actual layout of the component with the full style
             this.DoLayoutAChild(comp, full);
@@ -742,6 +743,70 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
+
+        private PositionMode _lastPositionMode = PositionMode.Block;
+        private Whitespace _lastWhitespace = null;
+
+        /// <summary>
+        /// If the current component is whitespace then it is remembers as the last whitespace.
+        /// Otherwise if this component and the previous component were inline or inline block, and there was a whitespace before this one,
+        /// Then we should add a space e.g. span whitespace span
+        /// </summary>
+        /// <param name="current">The current component that is being laidout</param>
+        /// <param name="currentFullStyle"></param>
+        protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
+        {
+            var currentIsText = IsText(current);
+            var nextPosMode = currentIsText ? PositionMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+            if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+            {
+                if (current is Whitespace ws)
+                {
+                    //We always remember the last whitespace
+                    _lastWhitespace = ws;
+                }
+                else
+                {
+                    if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+                    {
+                        //We are inline
+                        if (null != _lastWhitespace && _lastWhitespace.ReaderFormat != TextFormat.Plain)
+                        {
+                            //we have had a whitespace before
+                            if(currentIsText)
+                            {
+                                //Do Nothing as the text spacing should be handled by this component
+                            }
+                            else if (nextPosMode == PositionMode.Inline || nextPosMode == PositionMode.InlineBlock)
+                            {
+                                TextLiteral literal = new TextLiteral(" ", TextFormat.Plain);
+                                literal.Parent = this.Component;
+
+                                //TODO: Satisfy the edge case where the space overflows to the next line - it should be ignored, but a new line created.
+                                this.DoLayoutTextComponent(literal, currentFullStyle);
+                            }
+                        }
+                    }
+                    //The last one (i.e. current) was not whitespace
+                    _lastWhitespace = null;
+                }
+            }
+
+            //Save the last position mode (always)
+            _lastPositionMode = nextPosMode;
+
+        }
+
+        #endregion
+
+        #region protected virtual Style BuildFullStyle(Component forComponent)
+
+        /// <summary>
+        /// Builds a comple full style for the specified component. All relative units will be converted to absolute units based on the current full style.
+        /// </summary>
+        /// <param name="forComponent">The component to create the full style for.</param>
+        /// <returns>A full style</returns>
         protected virtual Style BuildFullStyle(Component forComponent)
         {
             var page = this.DocumentLayout.CurrentPage;
@@ -763,6 +828,8 @@ namespace Scryber.PDF.Layout
             return full;
         }
 
+        #endregion
+
 
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 
@@ -776,14 +843,6 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
-
-            //var pg = this.Context.DocumentLayout.GetLayoutPage();
-            //var block = null == pg ? null : pg.LastOpenBlock();
-            //var font = this.Context.Graphics.CurrentFont;
-
-            //var pageSize = null == pg ? Size.Empty : pg.Size;
-            //var blockSize = block == null ? pageSize : block.AvailableBounds.Size;
-            //var fontSize = null == font ? Font.DefaultFontSize : font.Size;
 
             //Here we can set up any required regions and then do the layout for the explicit types
             //If we have style then check if are actually relatively or absolutely positioned
@@ -881,8 +940,16 @@ namespace Scryber.PDF.Layout
 
         }
 
-        
+        #endregion
 
+        #region protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
+
+        /// <summary>
+        /// Checks to make sure the positioned region is on the correct page, given rollover to a new page and the original page of the positioned region.
+        /// </summary>
+        /// <param name="lastPositioned"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
         {
             var currPg = this.Context.DocumentLayout.CurrentPage;
@@ -907,6 +974,10 @@ namespace Scryber.PDF.Layout
                 return lastPositioned; //TODO:Resolve the rolling over of content onto a new page for the float left.
             }
         }
+
+        #endregion
+
+        #region protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
 
         protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
         {
@@ -988,6 +1059,8 @@ namespace Scryber.PDF.Layout
             
         }
 
+
+
         private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out Unit width, out bool isImage)
         {
             isImage = false;
@@ -1040,6 +1113,10 @@ namespace Scryber.PDF.Layout
                 }
             }
         }
+
+        #endregion
+
+        #region protected virtual void ApplyRelativeTransformations(PDFLayoutRegion positioned, PDFPositionOptions pos)
 
         /// <summary>
         /// Takes into account any transformations on a relatively positioned elements adjusting the size of the region 
@@ -1137,6 +1214,10 @@ namespace Scryber.PDF.Layout
             positioned.TotalBounds = new Rect(xpos, ypos, width, height);
 
         }
+
+        #endregion
+
+        #region BeginNewXXXRegionForChild(posOptions, component, style)
 
         protected virtual PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
         {
@@ -1370,8 +1451,6 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-
 
         #region protected virtual void DoLayoutInvisibleComponent(IPDFInvisibleContainer invisible, PDFStyle style)
 

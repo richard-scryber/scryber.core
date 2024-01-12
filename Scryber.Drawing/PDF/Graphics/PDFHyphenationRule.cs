@@ -443,9 +443,11 @@ namespace Scryber.PDF.Graphics
 
         }
 
+		private const char NBSP = (char)160;
+
 		private static bool IsWordBreakChar(char c)
 		{
-			return char.IsWhiteSpace(c);
+			return char.IsWhiteSpace(c) && !(c == NBSP);
 		}
     }
 }

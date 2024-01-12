@@ -47,7 +47,7 @@ namespace Scryber.Generation
         internal const int defaultErrorLevel = 4;
 
         internal static Type[] knownObjectTypes = new Type[] { typeof(Guid), typeof(DateTime), typeof(TimeSpan), typeof(Type), typeof(System.Uri), typeof(System.Version) };
-        
+
         //internal static Type textLiteralType = typeof(Scryber.Components.PDFTextLiteral);
 
         internal static char[] trimmingCharacters = new char[] { '\r', '\n', '\t', ' ' };
@@ -136,7 +136,7 @@ namespace Scryber.Generation
 
 
             var match = bindingMatcher.Match(value);
-            if(match == null || match.Success == false)
+            if (match == null || match.Success == false)
             {
                 parts = null;
                 factories = null;
@@ -149,12 +149,12 @@ namespace Scryber.Generation
             var pos = 0;
             bool found = false;
 
-            while(match != null && match.Success)
+            while (match != null && match.Success)
             {
                 string sub;
                 IPDFBindingExpressionFactory fact;
 
-                if(match.Index > pos)
+                if (match.Index > pos)
                 {
                     sub = value.Substring(pos, match.Index - pos);
                     partColl.Add(sub);
@@ -163,11 +163,10 @@ namespace Scryber.Generation
                 sub = match.Value;
                 if (IsEscapedBindingExpression(sub)) //We ignore escaped
                 {
-                    partColl.Add(sub.Substring(1, sub.Length-2));
+                    partColl.Add(sub.Substring(1, sub.Length - 2));
                     factColl.Add(null);
-                    found = true;
                 }
-                else if(TryGetBindingExpression(ref sub, out fact))
+                else if (TryGetBindingExpression(ref sub, out fact))
                 {
                     partColl.Add(sub);
                     factColl.Add(fact);
@@ -182,12 +181,25 @@ namespace Scryber.Generation
                 match = match.NextMatch();
             }
 
-            if(pos < value.Length)
+            if (pos < value.Length)
             {
                 partColl.Add(value.Substring(pos));
                 factColl.Add(null);
             }
 
+            if (!found && partColl.Count > 1)
+            {
+                //We did not find any factories but have split up the string,
+                //so bring it all back together as a single string with a null factory.
+                //(rather than returning false (as the content may have changed).
+
+                var concat = string.Concat(partColl);
+                partColl.Clear();
+                partColl.Add(concat);
+                factColl.Clear();
+                factColl.Add(null);
+                found = true;
+            }
             parts = partColl.ToArray();
             factories = factColl.ToArray();
 
@@ -205,6 +217,36 @@ namespace Scryber.Generation
             else {
                 return false;
             }
+        }
+
+
+        public static bool IsEscapedBindingExpression(ref string value)
+        {
+            if (!value.StartsWith("\\"))
+                return false;
+            else if (!value.EndsWith("\\"))
+            {
+                if (value.Length == 3 && value == "\\{{")
+                {
+                    value = "{{";
+                    return true;
+                }
+                else
+                    return false;
+            }
+
+            else if (value.StartsWith("\\{{") && value.EndsWith("}}\\"))
+            {
+                value = value.Substring(1, value.Length - 2);
+                return true;
+            }
+            else if(value.EndsWith("}}\\"))
+            {
+                value = "}}";
+                return true;
+            }
+            else
+                return false;
         }
 
 

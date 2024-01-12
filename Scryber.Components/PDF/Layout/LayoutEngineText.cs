@@ -256,7 +256,22 @@ namespace Scryber.PDF.Layout
             this._ctx = context;
             this._fullstyle = fullstyle;
 
-            
+            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+
+            if(null == this._reader)
+            {
+                if (context.ShouldLogDebug)
+                {
+                    if (this.TextComponent is Whitespace)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the whitespace " + this.TextComponent.ID + " as it's reader is null - not preformatted text");
+                    else
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it's reader is null");
+                }
+                //nothing to layout, so return 
+                return;
+            }
+
+
             this._posopts = fullstyle.CreatePostionOptions();
             this._textopts = fullstyle.CreateTextOptions();
 
@@ -271,13 +286,11 @@ namespace Scryber.PDF.Layout
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 
-            this._reader = this.TextComponent.CreateReader(context, fullstyle);
+            
 
-            if (null != this._reader)
-            {
-                this.ContinueLayout = true;
-                this.DoLayoutText();
-            }
+            this.ContinueLayout = true;
+            this.DoLayoutText();
+            
 
             this.Context.PerformanceMonitor.End(PerformanceMonitorType.Text_Layout);
 
@@ -618,13 +631,15 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public static char[] WhiteSpaceChars = new char[] { ' ', '\r', '\n', '\t', '\x00a0', '\x0085' };
+
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
             if (this.CurrentLine != null &&
                 (this.CurrentLine.IsEmpty || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
             {
-                if (char.IsWhiteSpace(chars, 0))
-                    chars = chars.TrimStart(PDFXMLFragmentParser.WhiteSpace);
+                if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                    chars = chars.TrimStart(WhiteSpaceChars);
             }
             return chars;
         }
@@ -822,7 +837,7 @@ namespace Scryber.PDF.Layout
         #region private bool IsBrokenInWord(string chars, int start, int count)
 
         /// <summary>
-        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary.
+        /// Checks to see if the fitted string is a split inside a word, rather than at a word boundary (or hyphen).
         /// </summary>
         /// <param name="chars"></param>
         /// <param name="start"></param>
@@ -833,6 +848,8 @@ namespace Scryber.PDF.Layout
             if (char.IsWhiteSpace(chars, start + count))
                 return false;
             else if (char.IsWhiteSpace(chars, start + count - 1))
+                return false;
+            else if (chars[start + count - 1] == '-') //broken just after a hyphen is allowed
                 return false;
             else if (this.CurrentLine.IsEmpty == false)
                 return true;

@@ -21,12 +21,52 @@ namespace Scryber.Expressive.Functions.Conversion
             // Safely check for a format parameter.
             if (parameters.Length > 1)
             {
-                var format = parameters[1].Evaluate(variables);
+                var first = parameters[1].Evaluate(variables);
 
-                if (format is string formatString)
+                string formatString;
+                System.Globalization.CultureInfo cultureInfo;
+
+                if (parameters.Length > 2)
                 {
-                    return string.Format(context.CurrentCulture, $"{{0:{formatString}}}", objectToConvert);
+                    var second = parameters[2].Evaluate(variables);
+
+                    if (second is System.Globalization.CultureInfo)
+                        cultureInfo = second as System.Globalization.CultureInfo;
+
+                    else if (second is string)
+                        cultureInfo = System.Globalization.CultureInfo.GetCultureInfo(second as string);
+
+                    else
+                        cultureInfo = null;
                 }
+                else
+                    cultureInfo = context.CurrentCulture;
+
+                if (first is string)
+                {
+                    formatString = first as string;
+                }
+                else
+                    formatString = "";
+
+
+                string converted;
+
+                if (objectToConvert is System.IFormattable conv)
+                    converted = conv.ToString(formatString, cultureInfo);
+                else
+                {
+                    if (!string.IsNullOrEmpty(formatString))
+                        formatString = $"{{0:{formatString}}}";
+                    else
+                        formatString = $"{{0}}";
+
+                    converted = string.Format(cultureInfo, formatString, objectToConvert);
+                }
+
+                //HACK:replace any narrow non-breaking space with a standard non-breaking space.
+                converted = converted.Replace((char)8239, (char)160); 
+                return converted;
             }
 
             return objectToConvert.ToString();

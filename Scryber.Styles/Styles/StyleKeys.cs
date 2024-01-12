@@ -571,5 +571,10 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<CounterStyleValue> CounterResetKey = StyleKey.InternalCreateStyleValueKey<CounterStyleValue>((ObjectType)"cnre", CounterItemKey);
 
+        //Attachments
+
+        public static readonly StyleKey AttachentItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"atch", INHERITED);
+
+        public static readonly StyleKey<AttachmentDisplayIcon> AttachmentDisplayIconKey = StyleKey.InternalCreateStyleValueKey<AttachmentDisplayIcon>((ObjectType)"atic", AttachentItemKey);
     }
 }

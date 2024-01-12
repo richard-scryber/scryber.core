@@ -75,7 +75,7 @@
     <None Remove="Newtonsoft.Json" />
     <None Remove="Common\" />
     <None Remove="Content\HTML\CribSheet\" />
-    <None Remove="SVG\" />
+    <None Remove="Attachments\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

@@ -194,4 +194,16 @@ namespace Scryber
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    public class PDFMissingAttachmentException : PDFException
+    {
+        public PDFMissingAttachmentException() { }
+        public PDFMissingAttachmentException(string message) : base(message) { }
+        public PDFMissingAttachmentException(string message, Exception inner) : base(message, inner) { }
+        protected PDFMissingAttachmentException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }

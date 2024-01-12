@@ -11,6 +11,7 @@ namespace Scryber.Core.UnitTests.Drawing
     /// Summary description for XMLFragmentReader_Test
     /// </summary>
     [TestClass]
+    [Obsolete("Need to switch to XHTMLFragmentReader", true)]
     public class PDFXMLFragmentReader_Test
     {
         public PDFXMLFragmentReader_Test()

@@ -5,7 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.1.0-beta</PackageVersion>
+    <PackageVersion>6.0.4.0-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2024</Copyright>
     <License>LICENSE.md</License>
@@ -13,19 +13,8 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-
-6.1.0.0-beta
-Added whitespace handling for inline, block, and pre-formatted content, reducing contiguous spaces to a single space in XHTML, along with honoring the &amp;nbsp; and - in text wrapping.
-Added support for the position and transformation attributes in SVG
-Added Style Indexing to signiciantly improve the performance of large CSS files.
-Added support for calc(..) on relative units within css - binding style values are now calculated completely at layout time, only parameters evaluated at bind time.
-Added padding and margin inline support along with borders and backgrounds.
-Added support for semantic tags - details, summary, kbd, samp, ins, aside, s, output, slot, var, big, small, sub, sub, menu and nav.
-
-
-NOTE:
-If you have existing code that relies on the index of content within a container, this may break as whitespace is now a significant component within a parsed document.
-Also whitepace between inline tags is honoured as a single space, but whitespace after the tag in a text run will also be honoured.
+6.0.4.0-beta
+Big updates to whitespace handling, support for &amp;nbsp; and hyphens in line breaks.
 
 6.0.3.2-beta
 Fix for prioritising parsing unit values in invariant culture on OS's set to non-invariant culture.

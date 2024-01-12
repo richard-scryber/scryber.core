@@ -34,7 +34,7 @@ namespace Scryber.PDF.Resources
     /// <remarks>
     /// Font Definitions are unique to a document and instances are not shared across multiple files
     /// </remarks>
-    [Obsolete("Use teh base FontDefinition or the PDFOpenTypeFontDefinition classes", true)]
+    [Obsolete("Use the base FontDefinition or the PDFOpenTypeFontDefinition classes", true)]
     public class PDFFontDefinition : FontDefinition
     {
 
@@ -258,7 +258,7 @@ namespace Scryber.PDF.Resources
             var size = this.TTFFile.MeasureString(encoding, chars, startOffset, fontSize, available, wordSpace, 
                 charSpace.HasValue ? charSpace.Value : 0.0, 
                 hScale.HasValue ? hScale.Value : 1.0, 
-                vertical, wordBoundary, out charsfitted);
+                vertical, wordBoundary, wordBoundary, out charsfitted);
             
             return new Size(size.RequiredWidth, size.RequiredHeight);
         }
