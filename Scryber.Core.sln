@@ -53,8 +53,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Imaging", "Scryber.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.UnitLayouts", "Scryber.UnitLayouts\Scryber.UnitLayouts.csproj", "{38F1C0BB-AB28-4125-8D25-18BFD9178598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scryber.Core.OpenType", "..\Scryber.Core.OpenType\Scryber.Core.OpenType\Scryber.Core.OpenType.csproj", "{7609C765-2FCB-4345-94E9-34974E807DA4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,12 +126,6 @@ Global
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38F1C0BB-AB28-4125-8D25-18BFD9178598}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7609C765-2FCB-4345-94E9-34974E807DA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
