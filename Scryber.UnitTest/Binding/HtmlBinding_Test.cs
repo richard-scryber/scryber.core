@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.WebSockets;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -807,6 +808,109 @@ namespace Scryber.Core.UnitTests.Binding
 
                 }
             }
+        }
+
+
+        [TestMethod()]
+        [TestCategory("Binding")]
+        public void BindXHtmlContent_CulturalValue()
+        {
+            
+            var src = @"
+<html lang='fr-FR' xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <title>Bound Document</title>
+    </head>
+    <body style='padding: 10pt' >
+        <div id='wrapper1' style='border: solid 1px red;' >
+            <span>This is in éuros</span>
+            <span>1&nbsp;234,60 €</span>
+        </div>
+        <div id='wrapper2' style='border: solid 1px red;' >
+            <span>This is bound content in {{model.currencyName}}</span>
+            <span>1&nbsp;234,60 {{model.currencyChar}}</span>
+        </div>
+        <div id='wrapper3' style='border: solid 1px red;' >
+            <span>This is calculated content in {{model.currencyName}}</span>
+            <span>{{string(model.currencyValue, 'C', 'fr-FR')}}</span>
+        </div>
+    </body>
+</html>";
+
+            var ending = "éuros";
+            var number = "1" + (char)160 + "234,60 €";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var model = new
+                {
+                    currencyName = "éuros",
+                    currencyChar = "€",
+                    currencyValue = 1234.60
+                };
+
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+                doc.Params["model"] = model;
+
+                using (var stream = DocStreams.GetOutputStream("HtmlBoundContent_Cultural.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                    var wrapper = pg.FindAComponentById("wrapper1") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    CheckSpanLiteralEnding(wrapper.Contents[1], ending);
+                    CheckSpanLiteralValue(wrapper.Contents[3], number);
+
+
+                    wrapper = pg.FindAComponentById("wrapper2") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    CheckSpanLiteralEnding(wrapper.Contents[1], ending);
+                    CheckSpanLiteralValue(wrapper.Contents[3], number);
+
+                    wrapper = pg.FindAComponentById("wrapper3") as Div;
+                    Assert.IsNotNull(wrapper);
+                    Assert.AreEqual(5, wrapper.Contents.Count);
+                    CheckSpanLiteralEnding(wrapper.Contents[1], ending);
+                    CheckSpanLiteralValue(wrapper.Contents[3], number);
+
+                }
+            }
+        }
+
+        private void CheckSpanLiteralValue(Component component, string number)
+        {
+            var span = component as Span;
+            Assert.IsNotNull(span);
+            StringBuilder sb = new StringBuilder();
+            for(var i = 0; i < span.Contents.Count; i++)
+            {
+                Assert.IsInstanceOfType(span.Contents[i], typeof(TextLiteral));
+                var lit = span.Contents[i] as TextLiteral;
+                sb.Append(lit.Text);
+            }
+            
+            Assert.AreEqual(number, sb.ToString());
+        }
+
+        private void CheckSpanLiteralEnding(Component component, string ending)
+        {
+            var span = component as Span;
+            Assert.IsNotNull(span);
+            string last = "";
+
+            for (var i = 0; i < span.Contents.Count; i++)
+            {
+                Assert.IsInstanceOfType(span.Contents[i], typeof(TextLiteral));
+                var lit = span.Contents[i] as TextLiteral;
+                last = lit.Text;
+            }
+
+            Assert.IsTrue(last.EndsWith(ending));
         }
     }
 }
