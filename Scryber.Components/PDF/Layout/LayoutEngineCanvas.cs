@@ -79,8 +79,9 @@ namespace Scryber.PDF.Layout
 
         private PDFTransformationMatrix CalculateMatrix(Size available, Rect view, SVGAspectRatio ratio)
         {
-
+            
             PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
+            
             if (ratio.Align == AspectRatioAlign.None)
             {
                 SVGAspectRatio.ApplyMaxNonUniformScaling(matrix, available, view);
@@ -133,6 +134,9 @@ namespace Scryber.PDF.Layout
             
 
             PDFLayoutXObject begin = this.Line.AddXObjectRun(this, this.Component, container, newpos, this.FullStyle);
+            //begin.Matrix = PDFTransformationMatrix.Identity();
+            //begin.Matrix.SetTranslation(50, 50);
+
             begin.SetOutputSize(oldpos.Width, oldpos.Height);
 
             

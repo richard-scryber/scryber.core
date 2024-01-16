@@ -570,6 +570,18 @@ namespace Scryber.PDF.Layout
                 if (null != childlast)
                     last = childlast;
             }
+
+            //Check the last positioned region.
+            if (this.HasPositionedRegions)
+            {
+                reg = this.PositionedRegions[this.PositionedRegions.Count - 1];
+                if(!reg.IsClosed)
+                {
+                    PDFLayoutBlock childlast = reg.LastOpenBlock();
+                    if (null != childlast)
+                        last = childlast;
+                }
+            }
             return last;
         }
 

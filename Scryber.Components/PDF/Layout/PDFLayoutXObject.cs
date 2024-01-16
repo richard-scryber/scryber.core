@@ -197,6 +197,18 @@ namespace Scryber.PDF.Layout
                 this._childContainer.OutputToPDF(context, writer);
 
             }
+
+            //Move the drawing origin to the bottom corner of the XObject viewbox
+            var origin = new Point(0, context.PageSize.Height);
+            origin.Y -= this.Height;
+            origin.Y -= this.Location.Y;
+
+            origin.X += this.Location.X;
+            if (null == this.Matrix)
+                this.Matrix = PDFTransformationMatrix.Identity();
+
+            this.Matrix.SetTranslation(origin.X, origin.Y);
+
             context.Offset = this.Location;
             context.Space = origSpace;
             context.Graphics = prevGraphics;
@@ -219,7 +231,7 @@ namespace Scryber.PDF.Layout
                 writer.WriteDictionaryNameEntry("Subtype", "Form");
 
             writer.BeginDictionaryEntry("Matrix");
-            writer.WriteArrayRealEntries(PDFTransformationMatrix.Identity().Components); // this.Matrix.Components);
+            writer.WriteArrayRealEntries( this.Matrix.Components);
             writer.EndDictionaryEntry();
 
             writer.BeginDictionaryEntry("BBox");

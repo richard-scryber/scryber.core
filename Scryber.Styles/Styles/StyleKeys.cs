@@ -298,7 +298,38 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
-        
+        //SVG - specific x, y, r, rx, ry, cx, cy.
+        // The width and height style keys are from standard as per spec - need to check with the drawing ops for this.
+
+        public static readonly StyleKey SVGGeometryKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSVGGeometry, NOT_INHERITED);
+
+        public static readonly StyleKey<Unit> SVGGeometryXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmxp", SVGGeometryKey
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmyp", SVGGeometryKey
+                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmra", SVGGeometryKey
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryRadiusXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmrx", SVGGeometryKey
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryRadiusYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmry", SVGGeometryKey
+                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryCentreXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmcx", SVGGeometryKey
+                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> SVGGeometryCentreYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmcy", SVGGeometryKey
+                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+
+        //public static readonly StyleKey<Unit> SVGGeometryWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmwd", SVGGeometryKey
+        //                                                        , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        //public static readonly StyleKey<Unit> SVGGeometryHeightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmht", SVGGeometryKey
+        //                                                        , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);

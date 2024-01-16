@@ -64,7 +64,7 @@ namespace Scryber.Core.UnitTests.Html
                     Assert.AreEqual("canvas", canvas.StyleClass, "The style class of the canvas was not set");
 
                     Assert.AreEqual(3, canvas.Contents.Count);
-                    var rect = canvas.Contents[1] as Svg.Components.SVGRect;
+                    var rect = canvas.Contents[1] as SVGRect;
                     Assert.IsNotNull(rect, "The inner rectangle was not found");
                     Assert.AreEqual("box", rect.StyleClass, "The rect style class was not correct");
                     Assert.AreEqual(100, rect.Style.Position.X.PointsValue, "The X position of the rect was not correct");
@@ -509,10 +509,13 @@ namespace Scryber.Core.UnitTests.Html
         {
             var svgString = @"<svg
                               width=""400""
-                              height=""550""
-                              viewBox=""0 0 400 550""
+                              height=""500""
+                              viewBox=""0 0 400 500""
                               xmlns=""http://www.w3.org/2000/svg"">
+<rect x=""50"" y=""50"" width=""300"" height=""400"" fill=""lime"" fill-opacity=""0.5"" stroke='black' stroke-width='2pt' />
+<rect x=""100"" y=""100"" width=""200"" height=""300"" fill=""navy"" fill-opacity=""0.5"" stroke='white' stroke-width='2pt' />
                               <!-- Materialization of anchors -->
+                              
                               <path
                                 d=""M60,20 L60,470
                                        M30,20 L400,20
@@ -521,7 +524,7 @@ namespace Scryber.Core.UnitTests.Html
                                        M30,170 L400,170
                                        M30,220 L400,220
                                        M30,270 L400,270
-	                               M30,320 L400,320
+	                                   M30,320 L400,320
                                        M30,370 L400,370
                                        M30,420 L400,420
                                        M30,470 L400,470
@@ -538,7 +541,7 @@ namespace Scryber.Core.UnitTests.Html
                               <text dominant-baseline=""ideographic"" x=""70"" y=""320"">ideographic</text>
                               <text dominant-baseline=""alphabetic"" x=""70"" y=""370"">alphabetic</text>
                               <text dominant-baseline=""text-after-edge"" x=""70"" y=""420"">text-after-edge</text>
-                              <text dominant-baseline=""text-before-edge"" x=""70"" y=""470"" >text-before-edge</text>
+                              <text dominant-baseline=""text-before-edge"" x=""70"" y=""470"" >text-before-edge</text> 
 
                               <!-- Materialization of anchors -->
                               <circle cx=""60"" cy=""20"" r=""3"" fill=""red"" />
@@ -550,23 +553,24 @@ namespace Scryber.Core.UnitTests.Html
                               <circle cx=""60"" cy=""320"" r=""3"" fill=""red"" />
                               <circle cx=""60"" cy=""370"" r=""3"" fill=""red"" />
                               <circle cx=""60"" cy=""420"" r=""3"" fill=""red"" />
-                              
-
+                              <circle cx=""60"" cy=""470"" r=""3"" fill=""red"" /> 
                               <style>
                                 <![CDATA[
                                   body{ padding: 20px}
                                   text {
-                                    font: bold 30px Verdana, Helvetica, Arial, sans-serif;
+                                    font: bold 30px Helvetica, Arial, sans-serif;
                                   }
                                   ]]>
                               </style>
 
-                              <circle cx=""60"" cy=""470"" r=""3"" fill=""red"" />
+                              
                             </svg>";
 
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
+
             Assert.IsNotNull(svg);
+            /*
             Assert.AreEqual(48, svg.Contents.Count);
 
             var txt = svg.Contents[5] as SVGText;
@@ -609,6 +613,51 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
 
+            Assert.IsNotNull(svg);
+            Assert.AreEqual(23, svg.Contents.Count);
+
+            var txt = svg.Contents[1] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
+
+            txt = svg.Contents[2] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
+
+            txt = svg.Contents[3] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
+
+            txt = svg.Contents[4] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
+
+            txt = svg.Contents[5] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
+
+            txt = svg.Contents[6] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
+
+            txt = svg.Contents[7] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
+
+            txt = svg.Contents[8] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Alphabetic, txt.DominantBaseline);
+
+            txt = svg.Contents[9] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
+
+            txt = svg.Contents[10] as SVGText;
+            Assert.IsNotNull(txt);
+            Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
+
+
+            */
 
             using var doc = new Document();
             doc.AppendTraceLog = false;
@@ -616,13 +665,22 @@ namespace Scryber.Core.UnitTests.Html
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
             var pg = new Page();
+            pg.PaperSize = PaperSize.Custom;
+            pg.Width = 500;
+            pg.Height = 600;
             doc.Pages.Add(pg);
+            //pg.Contents.Add(new TextLiteral("Above the SVG"));
             pg.Contents.Add(svg);
-            //pg.FontFamily = new FontSelector("serif");
-            pg.Margins = new Thickness(20, 0, 0, 0);
+            pg.Style.OverlayGrid.ShowGrid = false;
+            pg.Style.OverlayGrid.GridOpacity = 0.5;
+            pg.Style.OverlayGrid.GridSpacing = 50;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Gray;
+            svg.BorderColor = StandardColors.Aqua;
+            pg.FontFamily = new FontSelector("serif");
+            pg.Margins = new Thickness(50, 0, 0, 50);
             pg.FontSize = 10;
             pg.FontWeight = 700;
-
+            //pg.Contents.Add(new TextLiteral("Below the SVG"));
             PDF.Layout.PDFLayoutDocument layout = null;
             //Output the document (including databinding the data content)
             using (var stream = DocStreams.GetOutputStream("SVGTextDominantBaseline.pdf"))

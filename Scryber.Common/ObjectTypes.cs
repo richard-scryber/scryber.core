@@ -181,8 +181,8 @@ namespace Scryber
         public static readonly ObjectType StyleBarcode = (ObjectType)"sbar";
         public static readonly ObjectType StyleList = (ObjectType)"slst";
         public static readonly ObjectType StyleListItem = (ObjectType)"slli";
-        public static ObjectType StyleModify = (ObjectType)"smod";
-
+        public static readonly ObjectType StyleModify = (ObjectType)"smod";
+        public static readonly ObjectType StyleSVGGeometry = (ObjectType)"svgm";
 
         //Shapes
 

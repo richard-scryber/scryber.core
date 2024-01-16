@@ -245,5 +245,80 @@ namespace Scryber.Core.UnitTests.Binding
             
 
         }
+
+        [TestMethod]
+        public void LargeImageBoundWithFixedContainer()
+        {
+            var imgReader = Scryber.Imaging.ImageReader.Create();
+
+            var path = this.TestContext.TestRunDirectory;
+
+            path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images/LongRedBar.png"); ;
+
+            path = System.IO.Path.GetFullPath(path);
+
+            ImageData data;
+
+            using (var fs = new System.IO.FileStream(path, FileMode.Open))
+            {
+                data = imgReader.ReadStream(path, fs, false);
+            }
+
+            var model = new
+            {
+                ClientHasLogo = true,
+                ClientLogo = data
+            };
+
+            var content = @"<?xml version='1.0' encoding='utf-8' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <style>
+            .logo-container {
+               background: #dddddd;
+               width: 35mm;
+               height: 21mm;
+               vertical-align: middle;
+               text-align: center;
+               overflow: hidden;
+               padding:0px;
+            }
+
+        </style>
+    </head>
+    <body style='padding: 20pt'>
+        <table>
+           <tr>
+               <td class=""logo-container"">
+                   <if data-test=""{@:Model.ClientHasLogo}"">
+                       <img img-data=""{@:Model.ClientLogo}"" />
+                   </if>
+               </td>
+               <td></td>
+           </tr>
+        </table>
+    </body>
+</html>";
+
+            Document doc;
+
+            using (var reader = new System.IO.StringReader(content))
+            {
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+            }
+
+            doc.Params["Model"] = model;
+            
+
+            using (var stream = DocStreams.GetOutputStream("OverflowImageOutput.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+
+
+        }
+
+
     }
 }

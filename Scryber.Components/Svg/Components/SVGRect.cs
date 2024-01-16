@@ -46,16 +46,42 @@ namespace Scryber.Svg.Components
         // position
 
         [PDFAttribute("width")]
-        public override Unit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get { return base.Width; } set { base.Width = value; } }
 
         [PDFAttribute("height")]
-        public override Unit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get { return base.Height; } set { base.Height = value; } }
 
         [PDFAttribute("x")]
-        public override Unit X { get => base.X; set => base.X = value; }
+        public override Unit X {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
+            }
+        }
 
         [PDFAttribute("y")]
-        public override Unit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
+        }
 
         [PDFAttribute("rx")]
         public Unit CornerRadiusX
@@ -63,14 +89,14 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> value;
-                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out value))
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusXKey, out value))
                     return value.Value(this.Style);
                 else
                     return Unit.Zero;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ShapeCornerRadiusXKey, value);
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
             }
         }
 
@@ -79,12 +105,12 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out var value))
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusYKey, out var value))
                     return value.Value(this.Style);
                 else
                     return Unit.Zero;
             }
-            set => this.Style.SetValue(StyleKeys.ShapeCornerRadiusYKey, value);
+            set => this.Style.SetValue(StyleKeys.SVGGeometryRadiusYKey, value);
         }
 
         // stroke
@@ -124,6 +150,22 @@ namespace Scryber.Svg.Components
 
         public SVGRect()
         {
+        }
+
+
+        protected override Point[] GetPoints(Rect bounds, Style style)
+        {
+            var x = style.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
+            var y = style.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+            var w = style.GetValue(StyleKeys.SizeWidthKey, bounds.Width);
+            var h = style.GetValue(StyleKeys.SizeHeightKey, bounds.Height);
+
+            Point[] all = new Point[4];
+            all[0] = new Point(x, y);
+            all[1] = new Point(x + w, y);
+            all[2] = new Point(x + w, y + h);
+            all[3] = new Point(x, y + h);
+            return all;
         }
 
 
