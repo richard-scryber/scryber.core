@@ -67,8 +67,8 @@ namespace Scryber.Core.UnitTests.Html
                     var rect = canvas.Contents[1] as SVGRect;
                     Assert.IsNotNull(rect, "The inner rectangle was not found");
                     Assert.AreEqual("box", rect.StyleClass, "The rect style class was not correct");
-                    Assert.AreEqual(100, rect.Style.Position.X.PointsValue, "The X position of the rect was not correct");
-                    Assert.AreEqual(10, rect.Style.Position.Y.PointsValue, "The Y position of the rect was not correct");
+                    Assert.AreEqual(100, rect.Style.GetValue(StyleKeys.SVGGeometryXKey, 0), "The X position of the rect was not correct");
+                    Assert.AreEqual(10, rect.Style.GetValue(StyleKeys.SVGGeometryYKey, 0), "The Y position of the rect was not correct");
                     Assert.AreEqual(60, rect.Style.Size.Width.PointsValue, "The width of the rect was not correct");
                     Assert.AreEqual(70, rect.Style.Size.Height.PointsValue, "The height of the rect was not correct");
                     Assert.AreEqual(StandardColors.Green, rect.Style.Stroke.Color, "The stroke color of the rect was not set");
@@ -671,7 +671,7 @@ namespace Scryber.Core.UnitTests.Html
             doc.Pages.Add(pg);
             //pg.Contents.Add(new TextLiteral("Above the SVG"));
             pg.Contents.Add(svg);
-            pg.Style.OverlayGrid.ShowGrid = false;
+            pg.Style.OverlayGrid.ShowGrid = true;
             pg.Style.OverlayGrid.GridOpacity = 0.5;
             pg.Style.OverlayGrid.GridSpacing = 50;
             pg.Style.OverlayGrid.GridColor = StandardColors.Gray;
@@ -1127,7 +1127,7 @@ namespace Scryber.Core.UnitTests.Html
             
 
             svg.OverflowAction = OverflowAction.Clip;
-
+            svg.BorderWidth = 1;
 
             using var doc = new Document();
             doc.AppendTraceLog = false;
@@ -1137,7 +1137,9 @@ namespace Scryber.Core.UnitTests.Html
             var pg = new Page();
             doc.Pages.Add(pg);
             pg.Contents.Add(svg);
-
+            pg.Margins = new Thickness(25);
+            pg.BorderWidth = 1;
+            pg.Padding = new Thickness(25);
 
             PDF.Layout.PDFLayoutDocument layout = null;
             //Output the document (including databinding the data content)

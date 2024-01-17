@@ -187,7 +187,7 @@ namespace Scryber.Generation
                 factColl.Add(null);
             }
 
-            if (!found && partColl.Count > 1)
+            if (!found && partColl.Count > 0)
             {
                 //We did not find any factories but have split up the string,
                 //so bring it all back together as a single string with a null factory.

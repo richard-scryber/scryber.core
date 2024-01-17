@@ -122,18 +122,22 @@ namespace Scryber.PDF.Layout
                 y = context.Graphics.GetYPosition(y);
 
 
+
+
+                //Set the transformation matrix for the current offset independent of the matrix for the view-box
+
+                var origin = new Point(0, context.PageSize.Height);
+                origin.Y -= this.Height;
+                origin.Y -= this.Location.Y;
+
+                origin.X += this.Location.X;
                 
-
-                //var matrix = new PDFTransformationMatrix();
-                //matrix.SetTranslation((float)x, (float)y);
-
-                ////Set the transformation matrix for the current offset
-                //context.Graphics.SetTransformationMatrix(matrix, true, true);
-
-                //if(!this.Matrix.IsIdentity)
-                //{
-                //    context.Graphics.SetTransformationMatrix(this.Matrix, true, true);
-                //}
+                if(!origin.IsZero)
+                {
+                    var moveMatrix = new PDFTransformationMatrix();
+                    moveMatrix.SetTranslation(origin.X, origin.Y);
+                    context.Graphics.SetTransformationMatrix(moveMatrix, true, true);
+                }
 
                 context.Graphics.PaintXObject(this.OutPutName);
 
@@ -198,16 +202,16 @@ namespace Scryber.PDF.Layout
 
             }
 
-            //Move the drawing origin to the bottom corner of the XObject viewbox
-            var origin = new Point(0, context.PageSize.Height);
-            origin.Y -= this.Height;
-            origin.Y -= this.Location.Y;
+            ////Move the drawing origin to the bottom corner of the XObject viewbox
+            //var origin = new Point(0, context.PageSize.Height);
+            //origin.Y -= this.Height;
+            //origin.Y -= this.Location.Y;
 
-            origin.X += this.Location.X;
-            if (null == this.Matrix)
-                this.Matrix = PDFTransformationMatrix.Identity();
+            //origin.X += this.Location.X;
+            //if (null == this.Matrix)
+            //    this.Matrix = PDFTransformationMatrix.Identity();
 
-            this.Matrix.SetTranslation(origin.X, origin.Y);
+            //this.Matrix.SetTranslation(origin.X, origin.Y);
 
             context.Offset = this.Location;
             context.Space = origSpace;

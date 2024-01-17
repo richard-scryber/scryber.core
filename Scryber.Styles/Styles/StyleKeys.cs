@@ -324,6 +324,8 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> SVGGeometryCentreYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmcy", SVGGeometryKey
                                                                 , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
 
+        public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
+
         //public static readonly StyleKey<Unit> SVGGeometryWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmwd", SVGGeometryKey
         //                                                        , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
 

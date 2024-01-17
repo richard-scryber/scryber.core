@@ -7,6 +7,7 @@ namespace Scryber.Styles
     /// <summary>
     /// A linked list of transformation operations that can be used to build a transformation matrix
     /// </summary>
+    [PDFParsableValue()]
     public class TransformOperation
     {
         protected static readonly float _notSet = float.NaN;

@@ -143,7 +143,83 @@ namespace Scryber.Svg.Components
         [PDFAttribute("fill")]
         public override Color FillColor { get => base.FillColor; set => base.FillColor = value; }
 
+        [PDFAttribute("fill-opacity")]
+        public override double FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
 
+        [PDFAttribute("fill-rule")]
+        public string FillRule
+        {
+            get
+            {
+
+                if (this.Style.TryGetValue(StyleKeys.GraphicFillModeKey, out StyleValue<GraphicFillMode> mode))
+                {
+                    switch (mode.Value(this.Style))
+                    {
+                        case GraphicFillMode.EvenOdd: return "evenodd";
+                        default: return "nonzero";
+                    }
+                }
+                else
+                    return "nonzero";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    this.Style.RemoveValue(StyleKeys.GraphicFillModeKey);
+                else if(value == "evenodd")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.EvenOdd);
+                else if(value == "nonzero")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.Winding);
+
+            }
+        }
+
+        [PDFAttribute("transform")]
+        public TransformOperation TransformMatrix
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
+
+        [PDFAttribute("display")]
+        public string Display
+        {
+            get
+            {
+                if (this.Visible == false)
+                    return "none";
+                else if (this.Style.TryGetValue(StyleKeys.PositionModeKey, out StyleValue<PositionMode> posValue))
+                    return posValue.Value(this.Style).ToString().ToLower();
+                else
+                    return "inline";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value == "inherit")
+                    this.Style.RemoveValue(StyleKeys.PositionModeKey);
+                else if (value == "none")
+                    this.Visible = false;
+                else if (value == "initial")
+                    this.Style.SetValue(StyleKeys.PositionModeKey, PositionMode.Inline);
+
+                else if (PositionMode.TryParse(value, true, out PositionMode parsed))
+                    this.Style.SetValue(StyleKeys.PositionModeKey, parsed);
+                else
+                    throw new ArgumentOutOfRangeException("The value '" + value + "' is not supported for the display");
+
+            }
+
+        }
         //
         // .ctor
         //

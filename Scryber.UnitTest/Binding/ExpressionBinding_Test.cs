@@ -695,7 +695,11 @@ namespace Scryber.Core.UnitTests.Binding
         {
             var withEscapes = @"<html>
   <body>
-    <table class='expressions escaped'>
+    <table id='tbl' class='expressions escaped'>
+      <tr>
+        <td>{{model.number}}</td>
+        <td>\{{model.number}}\</td>
+      </tr>
       <tr>
         <td>A simple string (&amp;&amp;)</td>
         <td>A string with an inner {{model.number}} binding</td>
@@ -737,6 +741,72 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 doc.SaveAsPDF(stream);
             }
+            var listValues = new string[][]
+            {
+                new string[] { "20.9", "{{model.number}}" },
+                new string[] {"A simple string (&&)", "A string with an inner 20.9 binding" },
+                new string[] { "Wrapped in escapes {{ and after }} are ignored", "Wrapped in span {{ is ignored but not 20.9" },
+                new string[] { "{{model.number + 1}} ignored start", "\\21.9 binding start" },
+                new string[] { "Ignored end {{model.number + 1}}", "Bound end 21.9\\" },
+                new string[] { "Bound with space \\ 21.9 \\", "Bound with space  21.9 \\" },
+                new string[] { "Ignored middle {{concat('<', model.number + 1, '>')}} but not '21.9' after", "Bound middle 21.9 but ignored end {{model.number+2}}" }
+            };
+
+            var tbl = doc.FindAComponentById("tbl") as TableGrid;
+            Assert.IsNotNull(tbl);
+            Assert.AreEqual(listValues.Length, tbl.Rows.Count);
+
+            for(var r = 0; r < tbl.Rows.Count; r++)
+            {
+                var row = tbl.Rows[r];
+                var vals = listValues[r];
+
+                var cell1 = row.Cells[0];
+                var val1 = vals[0];
+
+                var output = "";
+
+                if (cell1.Contents.Count == 1)
+                {
+                    output = (cell1.Contents[0] as TextLiteral).Text;
+                }
+                else
+                {
+                    foreach (var comp in cell1.Contents)
+                    {
+                        if (comp is TextLiteral lit)
+                            output += lit.Text;
+                    }
+                }
+
+                Assert.AreEqual(val1, output);
+
+                var cell2 = row.Cells[1];
+                var val2 = vals[1];
+
+                output = "";
+
+                if (cell2.Contents.Count == 1)
+                {
+                    output = (cell2.Contents[0] as TextLiteral).Text;
+                }
+                else
+                {
+                    foreach (var comp in cell2.Contents)
+                    {
+                        if (comp is TextLiteral lit)
+                            output += lit.Text;
+                        else if(comp is Span span)
+                        {
+                            output += (span.Contents[0] as TextLiteral).Text;
+                        }
+                    }
+                }
+
+                Assert.AreEqual(val2, output);
+
+            }
+
         }
 
         [TestMethod]
