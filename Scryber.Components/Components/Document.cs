@@ -2564,6 +2564,7 @@ namespace Scryber.Components
                 src = RemoveReturns(src);
                 src = owner.MapPath(src);
 
+                
                 if (this.SharedResources.GetResource(PDFResource.XObjectResourceType, src) is PDFImageXObject exists)
                     return exists;
                 

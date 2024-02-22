@@ -534,5 +534,40 @@ namespace Scryber.Core.UnitTests.Imaging
 
         }
 
+        string urlWithParams = "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p01.png?t=" + Random.Shared.Next().ToString();
+
+        [TestMethod]
+        public void TestRemoteImageWithParams()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included even with a parameter for url " + urlWithParams);
+            pg.Contents.Add(p);
+            var img = new Image();
+            img.Source = urlWithParams;
+            pg.Contents.Add(img);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+
+            using(var stream = DocStreams.GetOutputStream("ImageTypesWithParameters.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach(var rsrc in doc.SharedResources)
+            {
+                if(rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
     }
 }
