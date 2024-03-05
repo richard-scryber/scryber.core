@@ -569,5 +569,327 @@ namespace Scryber.Core.UnitTests.Imaging
 
             Assert.IsTrue(found);
         }
+
+        [TestMethod]
+        public void TestJPEGHeader_Group()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 396;
+            var imgSizeY = 342;
+
+            var resolutionX = 144;
+            var resolutionY = 144;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = "../Content/HTML/Images/group.jpg";
+            path = System.IO.Path.Combine("../../", path);
+
+            path = io.Path.GetFullPath(path);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException("No File could be found at path " + path);
+            using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
+            {
+                byte[] marker = new byte[2];
+                stream.Read(marker);
+                Assert.AreEqual(0xFF, marker[0]);
+                Assert.AreEqual(0xD8, marker[1]);
+
+                long pos = 2;
+
+                byte[] appo = new byte[2];
+                stream.Read(appo);
+                Assert.AreEqual(0xFF, appo[0]);
+                Assert.AreEqual(0xE0, appo[1]);
+
+
+                byte[] len = new byte[2];
+                stream.Read(len);
+                ushort length = (ushort)((int)len[1] | (len[0] << 8));
+
+                Assert.AreEqual(16, length);
+
+                byte[] ident = new byte[5];
+                stream.Read(ident); //JFIF_
+                Assert.AreEqual(0x4A, ident[0]); //J
+                Assert.AreEqual(0x46, ident[1]); //F
+                Assert.AreEqual(0x49, ident[2]); //I
+                Assert.AreEqual(0x46, ident[3]); //F
+                Assert.AreEqual(0x00, ident[4]); //null
+
+                byte[] vers = new byte[2];
+                stream.Read(vers);
+
+                Assert.AreEqual(0x01, vers[0]);
+                Assert.AreEqual(0x01, vers[1]);
+
+                byte[] density = new byte[1];
+                stream.Read(density);
+                Assert.AreEqual(0, density[0]);
+
+                byte[] xdensities = new byte[2];
+                byte[] ydensities = new byte[2];
+
+                stream.Read(xdensities);
+                stream.Read(ydensities);
+
+                ushort xdensity = (ushort)(xdensities[0] << 8 | xdensities[1]);
+                ushort ydensity = (ushort)(ydensities[0] << 8 | ydensities[1]);
+
+
+                pos += 2 + length; // FF EO + len;
+
+                int w = 0;
+                int h = 0;
+                int bpp = 0;
+
+                while (pos < stream.Length)
+                {
+                    stream.Position = pos;
+                    stream.Read(marker); //looking for 0xFFC0 - start of frame;
+                    stream.Read(len);
+                    if (marker[0] != 0xFF)
+                        throw new Exception("did not hit the start of a JPEG file block");
+
+                    if (marker[1] == 0xC0) //start of frame marker
+                    {
+                        //byte - precision
+                        byte[] prec = new byte[1];
+                        stream.Read(prec);
+
+                        //ushort - no lines aka height
+                        var lines = new byte[2];
+                        stream.Read(lines);
+                        h = (ushort)((int)(lines[0] << 8) | lines[1]);
+
+                        //ushort - sample per line aka width
+                        var samples = new byte[2];
+                        stream.Read(samples);
+                        w = (ushort)((int)(samples[0] << 8) | samples[1]);
+
+                        byte[] components = new byte[1];
+                        stream.Read(components);
+
+                        bpp = prec[0] * (int)components[0];
+                        break;
+
+                    }
+                    else
+                    {
+                        length = (ushort)((int)len[1] | (len[0] << 8));
+                        pos += length + 2;
+                    }
+                }
+
+                Assert.AreEqual(imgSizeX, w);
+                Assert.AreEqual(imgSizeY, h);
+                Assert.AreEqual(bitsPerPixel, bpp);
+                Assert.AreEqual(resolutionX, xdensity);
+                Assert.AreEqual(resolutionY, ydensity);
+
+
+            }
+        }
+
+
+        [TestMethod]
+        public void TestJPEGHeader_Toroid()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 682;
+            var imgSizeY = 452;
+            var resolutionX = 72;
+            var resolutionY = 72;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = "../Content/HTML/Images/Toroid24.jpg";
+            path = System.IO.Path.Combine("../../", path);
+
+            path = io.Path.GetFullPath(path);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException("No File could be found at path " + path);
+            using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
+            {
+                byte[] marker = new byte[2];
+                stream.Read(marker);
+                Assert.AreEqual(0xFF, marker[0]);
+                Assert.AreEqual(0xD8, marker[1]);
+
+                long pos = 2;
+
+                byte[] appo = new byte[2];
+                stream.Read(appo);
+                Assert.AreEqual(0xFF, appo[0]);
+                Assert.AreEqual(0xE0, appo[1]);
+
+
+                byte[] len = new byte[2];
+                stream.Read(len);
+                ushort length = (ushort)((int)len[1] | (len[0] << 8));
+
+                Assert.AreEqual(16, length);
+
+                byte[] ident = new byte[5];
+                stream.Read(ident); //JFIF_
+                Assert.AreEqual(0x4A, ident[0]); //J
+                Assert.AreEqual(0x46, ident[1]); //F
+                Assert.AreEqual(0x49, ident[2]); //I
+                Assert.AreEqual(0x46, ident[3]); //F
+                Assert.AreEqual(0x00, ident[4]); //null
+
+                byte[] vers = new byte[2];
+                stream.Read(vers);
+
+                Assert.AreEqual(0x01, vers[0]);
+                Assert.AreEqual(0x01, vers[1]);
+
+                byte[] density = new byte[1];
+                stream.Read(density);
+                Assert.AreEqual(0, density[0]);
+
+                byte[] xdensities = new byte[2];
+                byte[] ydensities = new byte[2];
+
+                stream.Read(xdensities);
+                stream.Read(ydensities);
+
+                ushort xdensity = (ushort)(xdensities[0] << 8 | xdensities[1]);
+                ushort ydensity = (ushort)(ydensities[0] << 8 | ydensities[1]);
+                
+                
+                pos += 2 + length; // FF EO + len;
+
+                int w = 0;
+                int h = 0;
+                int bpp = 0;
+
+                while (pos < stream.Length)
+                {
+                    stream.Position = pos;
+                    stream.Read(marker); //looking for 0xFFC0 - start of frame;
+                    stream.Read(len);
+                    if (marker[0] != 0xFF)
+                        throw new Exception("did not hit the start of a JPEG file block");
+
+                    if (marker[1] == 0xC0) //start of frame marker
+                    {
+                        //byte - precision
+                        byte[] prec = new byte[1];
+                        stream.Read(prec);
+
+                        //ushort - no lines aka height
+                        var lines = new byte[2];
+                        stream.Read(lines);
+                        h = (ushort)((int)(lines[0] << 8) | lines[1]);
+
+                        //ushort - sample per line aka width
+                        var samples = new byte[2];
+                        stream.Read(samples);
+                        w = (ushort)((int)(samples[0] << 8) | samples[1]);
+
+                        byte[] components = new byte[1];
+                        stream.Read(components);
+
+                        bpp = prec[0] * (int)components[0];
+                        break;
+
+                    }
+                    else
+                    {
+                        length = (ushort)((int)len[1] | (len[0] << 8));
+                        pos += length + 2;
+                    }
+                }
+
+                Assert.AreEqual(imgSizeX, w);
+                Assert.AreEqual(imgSizeY, h);
+                Assert.AreEqual(bitsPerPixel, bpp);
+                Assert.AreEqual(resolutionX, xdensity);
+                Assert.AreEqual(resolutionY, ydensity);
+            }
+
+
+        }
+
+        [TestMethod]
+        public void TestJPEGHeaderImageReader()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 396;
+            var imgSizeY = 342;
+            var resolutionX = 144;
+            var resolutionY = 144;
+            var bitsPerPixel = 24; //8 x 3
+
+           
+            var path = "../Content/HTML/Images/group.jpg";
+            path = System.IO.Path.Combine("../../", path);
+
+            path = io.Path.GetFullPath(path);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException("No File could be found at path " + path);
+
+            Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            var image = factory.LoadImageData(null, null, path);
+
+            stopwatch.Stop();
+
+            //ImageReader reader = ImageReader.Create();
+            //var image = reader.ReadStream(path, stream, true);
+
+            Assert.IsNotNull(image);
+            Assert.AreEqual(imgSizeX, image.PixelWidth);
+            Assert.AreEqual(imgSizeY, image.PixelHeight);
+            Assert.AreEqual(bitsPerPixel, image.BitsPerColor * image.ColorsPerSample);
+            Assert.AreEqual(resolutionX, image.HorizontalResolution);
+            Assert.AreEqual(resolutionY, image.VerticalResolution);
+
+            
+        }
+
+        [TestMethod]
+        public void TestLargeJPEGHeaderImageReader()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 14220; // 682;
+            var imgSizeY = 3571; // 452;
+            var resolutionX = 72;
+            var resolutionY = 72;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = "../Content/HTML/Images/Superwide.jpeg";
+            //var path = "../Content/HTML/Images/group.jpg";
+            path = System.IO.Path.Combine("../../", path);
+
+            path = io.Path.GetFullPath(path);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException("No File could be found at path " + path);
+
+            Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            var image = factory.LoadImageData(null, null, path);
+
+            stopwatch.Stop();
+
+            //ImageReader reader = ImageReader.Create();
+            //var image = reader.ReadStream(path, stream, true);
+
+            Assert.IsNotNull(image);
+            Assert.AreEqual(imgSizeX, image.PixelWidth);
+            Assert.AreEqual(imgSizeY, image.PixelHeight);
+            Assert.AreEqual(bitsPerPixel, image.BitsPerColor * image.ColorsPerSample);
+            Assert.AreEqual(resolutionX, image.HorizontalResolution);
+            Assert.AreEqual(resolutionY, image.VerticalResolution);
+
+            
+        }
     }
 }

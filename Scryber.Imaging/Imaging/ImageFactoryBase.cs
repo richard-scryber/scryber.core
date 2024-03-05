@@ -35,7 +35,7 @@ namespace Scryber.Imaging
         
         public virtual ImageData LoadImageData(IDocument document, IComponent owner, string path)
         {
-            if (document is IResourceRequester resourceRequester)
+            if (null != document && document is IResourceRequester resourceRequester)
             {
                 return GetProxyImageData(document, resourceRequester, owner, path);
             }
@@ -48,7 +48,7 @@ namespace Scryber.Imaging
 
         public virtual async Task<ImageData> LoadImageDataAsync(IDocument document, IComponent owner, string path)
         {
-            if (document is IResourceRequester resourceRequester)
+            if (null != document && document is IResourceRequester resourceRequester)
             {
                 return GetProxyImageData(document, resourceRequester, owner, path);
             }
@@ -80,7 +80,7 @@ namespace Scryber.Imaging
             }
             catch (Exception ex)
             {
-                if (document.ConformanceMode == ParserConformanceMode.Strict)
+                if (null == document || document.ConformanceMode == ParserConformanceMode.Strict)
                     throw new System.IO.IOException("Could not load the image for component " + (owner == null ? "UNKNOWN" : owner.ID) + ". See the inner exception for more details", ex);
                 else
                     document.TraceLog.Add(TraceLevel.Error, "Imaging", " Could not load the image for component " + (owner == null ? "UNKNOWN" : owner.ID) + " from path: " + path, ex);

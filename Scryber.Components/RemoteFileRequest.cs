@@ -68,7 +68,7 @@ namespace Scryber
         {
             this.ResourceType = type ?? throw new ArgumentNullException(nameof(type));
             this.FilePath = path ?? throw new ArgumentNullException(nameof(path));
-            this.Callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            this.Callback = callback;
             this.Owner = owner;
             this.Arguments = args;
             this.IsCompleted = false;
