@@ -89,6 +89,8 @@ namespace Scryber.Binding
             _all.Add(new IfFunction());
             _all.Add(new InFunction());
             _all.Add(new IndexFunction());
+            _all.Add(new IfErrorFunction());
+
             // Relational
             _all.Add(new MaxFunction());
             _all.Add(new MinFunction());
