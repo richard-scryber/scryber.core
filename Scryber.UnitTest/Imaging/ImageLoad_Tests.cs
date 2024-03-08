@@ -8,6 +8,7 @@ using io = System.IO;
 using Scryber.Drawing;
 using Scryber.Imaging;
 using Scryber.PDF.Resources;
+using System.Threading.Tasks;
 
 namespace Scryber.Core.UnitTests.Imaging
 {
@@ -534,7 +535,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
         }
 
-        string urlWithParams = "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p01.png?t=" + Random.Shared.Next().ToString();
+        string urlWithParams = "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p01.png?t=" + Random.Shared.Next().ToString() + "&test=true";
 
         [TestMethod]
         public void TestRemoteImageWithParams()
@@ -569,6 +570,134 @@ namespace Scryber.Core.UnitTests.Imaging
 
             Assert.IsTrue(found);
         }
+
+        [TestMethod]
+        public void TestRemoteBackgroundImageWithParams()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.Style.Background.ImageSource = urlWithParams ;
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+
+            using (var stream = DocStreams.GetOutputStream("BackgroundImageWithParameters.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+
+        [TestMethod]
+        public async Task TestRemoteCSSBackgroundImageWithParams()
+        {
+            var doc = new Scryber.Html.Components.HTMLDocument();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            var style = ".bg-img{" +
+                "background-image: url('" + urlWithParams + "');" +
+                "}";
+            doc.Head = new Scryber.Html.Components.HTMLHead();
+            doc.Head.Contents.Add(new Scryber.Html.Components.HTMLStyle() { Contents = style });
+
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.StyleClass = "bg-img";
+
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+            
+            using (var stream = DocStreams.GetOutputStream("BackgroundCCSImageWithParameters.pdf"))
+            {
+                await doc.SaveAsPDFAsync(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+        [TestMethod]
+        public async Task TestRemoteCSSBackgroundImageWithEncodedParams()
+        {
+            var doc = new Scryber.Html.Components.HTMLDocument();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            var style = ".bg-img{" +
+                "background-image: url('" + urlWithParams.Replace("&", "&amp;") + "');" +
+                "}";
+            doc.Head = new Scryber.Html.Components.HTMLHead();
+            doc.Head.Contents.Add(new Scryber.Html.Components.HTMLStyle() { Contents = style });
+
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.StyleClass = "bg-img";
+
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+
+            using (var stream = DocStreams.GetOutputStream("BackgroundCCSImageWithEncodedParameters.pdf"))
+            {
+                await doc.SaveAsPDFAsync(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+
+
 
         [TestMethod]
         public void TestJPEGHeader_Group()
@@ -891,5 +1020,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             
         }
+
+        
     }
 }

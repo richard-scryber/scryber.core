@@ -413,19 +413,27 @@ namespace Scryber.Styles.Parsing
                                 buffer.Append(found);
                             }
                         }
-                        //else if (HTMLParserSettings.DefaultEscapedHTMLEntities.TryGetValue(entity, out found))
-                        //{
-                        //    buffer.Append(found);
-                        //    src.MoveNext();
-                        //}
+                        else if (HtmlEntities.DefaultKnownHTMLAndXMLEntities.TryGetValue(entity.Substring(1, entity.Length -2), out found))
+                        {
+                            buffer.Append(found);
+                            src.MoveNext();
+                        }
                     }
+                }
+                else
+                {
+
+                    var len = src.Offset - ampersandPos;
+                    buffer.Append(HTMLEntityStartMarker);
+                    src.Offset = ampersandPos + 1;
+
                 }
 
                 ampersandPos = value.IndexOf(HTMLEntityStartMarker, src.Offset);
             }
 
             if (src.Offset < src.Length)
-                buffer.Append(src.Substring(src.Length - src.Offset));
+                buffer.Append(src.Substring(src.Offset));
 
             return buffer.ToString();
         }
