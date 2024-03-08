@@ -20,16 +20,26 @@ namespace Scryber.Expressive.Functions.Relational
 
             foreach (var value in parameters)
             {
-                var increment = 1;
-                var evaluatedValue = value.Evaluate(variables);
-                IEnumerable ienum;
+                int increment;
 
-                if (Helpers.Collections.TryIsCollection(evaluatedValue, out ienum) && ienum is ICollection col)
+                if (null != value)
                 {
-                    increment = col.Count;
-                }
+                    var evaluatedValue = value.Evaluate(variables);
+                    if (null != evaluatedValue)
+                    {
+                        increment = 1;
 
-                count += increment;
+
+                        IEnumerable ienum;
+
+                        if (Helpers.Collections.TryIsCollection(evaluatedValue, out ienum) && ienum is ICollection col)
+                        {
+                            increment = col.Count;
+                        }
+
+                        count += increment;
+                    }
+                }
             }
 
             return count;

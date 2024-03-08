@@ -355,6 +355,15 @@ namespace Scryber.Styles
                 //return base.MapPath(path);
         }
 
+        protected override void DoDataBind(DataContext context, bool includechildren)
+        {
+            if (this.HasVariables)
+            {
+                this.Variables.DataBind(context, this);
+            }
+            base.DoDataBind(context, includechildren);
+        }
+
         //
         // object overrides
         //

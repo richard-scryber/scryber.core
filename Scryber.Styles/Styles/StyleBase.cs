@@ -347,12 +347,6 @@ namespace Scryber.Styles
 
         protected virtual void DoDataBind(DataContext context, bool includechildren)
         {
-            if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
-                this.EnsureCSSImage(context, StyleKeys.BgImgSrcKey, "background");
-            if (this.IsValueDefined(StyleKeys.FillImgSrcKey))
-                this.EnsureCSSImage(context, StyleKeys.FillImgSrcKey, "fill");
-            if (this.IsValueDefined(StyleKeys.ContentTextKey))
-                this.EnsureContentImage(context, this.GetValue(StyleKeys.ContentTextKey, null));
 
             if (includechildren && this.StyleItems.Count > 0)
             {
@@ -361,6 +355,13 @@ namespace Scryber.Styles
                     item.DataBind(context);
                 }
             }
+
+            if (this.IsValueDefined(StyleKeys.BgImgSrcKey))
+                this.EnsureCSSImage(context, StyleKeys.BgImgSrcKey, "background");
+            if (this.IsValueDefined(StyleKeys.FillImgSrcKey))
+                this.EnsureCSSImage(context, StyleKeys.FillImgSrcKey, "fill");
+            if (this.IsValueDefined(StyleKeys.ContentTextKey))
+                this.EnsureContentImage(context, this.GetValue(StyleKeys.ContentTextKey, null));
         }
 
         protected virtual void EnsureContentImage(DataContext context, ContentDescriptor descriptor)
@@ -419,7 +420,7 @@ namespace Scryber.Styles
             var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
 
             if (context.ShouldLogMessage)
-                context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested and " + (existing != null ? existing.ToString() : "nothing") + " returned");
+                context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested for path '" + mapped + "' and " + (existing != null ? existing.ToString() : "nothing") + " returned");
 
             return mapped;
         }
