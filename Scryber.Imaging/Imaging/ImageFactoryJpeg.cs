@@ -186,7 +186,7 @@ namespace Scryber.Imaging
                 return new Formatted.PDFImageJpegData.PDFImageJpegMetadata()
                 {
                     BitsPerColor = precision,
-                    ColorsPerSample = componentCount,
+                    ColorsPerSample = componentCount * precision,
                     HasAlpha = false,
                     ColorSpace = (componentCount == 1) ? ColorSpace.G : ColorSpace.RGB,
                     HorizontalResolution = densityX,

@@ -81,6 +81,8 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
+                    doc.AppendTraceLog = true;
+                    doc.TraceLog.SetRecordLevel(TraceRecordLevel.Messages);
                     using (var stream = DocStreams.GetOutputStream("DataImage.pdf"))
                     {
                         doc.SaveAsPDF(stream);

@@ -949,6 +949,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var imgSizeY = 342;
             var resolutionX = 144;
             var resolutionY = 144;
+            var bitsPerColor = 8;
             var bitsPerPixel = 24; //8 x 3
 
            
@@ -974,7 +975,8 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsNotNull(image);
             Assert.AreEqual(imgSizeX, image.PixelWidth);
             Assert.AreEqual(imgSizeY, image.PixelHeight);
-            Assert.AreEqual(bitsPerPixel, image.BitsPerColor * image.ColorsPerSample);
+            Assert.AreEqual(bitsPerColor, image.BitsPerColor);
+            Assert.AreEqual(bitsPerPixel, image.ColorsPerSample);
             Assert.AreEqual(resolutionX, image.HorizontalResolution);
             Assert.AreEqual(resolutionY, image.VerticalResolution);
 
