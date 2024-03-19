@@ -109,6 +109,17 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public Unit BorderRadius { get; set; }
+
+        /// <summary>
+        /// Gets or sets any border radius for the background and border
+        /// </summary>
+        public Unit BorderRadius { get; set; }
+
+        //TODO: Support multiple values
+
+        #endregion
+
         #region public Thickness Padding {get;set;}
 
         private Thickness? _pad;

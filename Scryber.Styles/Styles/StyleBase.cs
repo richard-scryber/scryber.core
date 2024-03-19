@@ -1228,6 +1228,12 @@ namespace Scryber.Styles
                 options.Padding = this.DoCreatePaddingThickness();
                 options.Background = this.DoCreateBackgroundBrush();
                 options.Border = this.DoCreateBorderPen();
+                options.BorderRadius = 0;
+
+                if(this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out StyleValue<Unit> rad))
+                {
+                    options.BorderRadius = rad.Value(this);
+                }
             }
             else
             {
