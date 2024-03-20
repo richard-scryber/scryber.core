@@ -1444,7 +1444,7 @@ namespace Scryber.PDF.Layout
 
 
                     PDFLayoutLine line = region.BeginNewLine();
-                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null));
+                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null, true));
                 }
                 region.CloseCurrentItem();
             }

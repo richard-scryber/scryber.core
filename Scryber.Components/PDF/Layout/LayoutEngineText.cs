@@ -384,7 +384,7 @@ namespace Scryber.PDF.Layout
 
                 if (inset > 0)
                 {
-                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null);
+                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null, false);
                     line.AddRun(spacer);
                 }
             }
@@ -407,7 +407,7 @@ namespace Scryber.PDF.Layout
             //Check for inline padding on the left and if so add a spacer
             if(this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Left > Unit.Zero)
             {
-                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent);
+                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent, false);
                 this.CurrentLine.AddRun(spacer);
                 //this.CurrentLineInset += spacer.Width;
                 this.BeginningRun.LineInset += spacer.Width;
@@ -466,9 +466,9 @@ namespace Scryber.PDF.Layout
         /// <param name="w"></param>
         /// <param name="h"></param>
         /// <param name="line"></param>
-        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line)
+        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line, bool isNewLine)
         {
-            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent);
+            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent, isNewLine);
             line.AddRun(spacer);
             return spacer;
         }
@@ -508,7 +508,7 @@ namespace Scryber.PDF.Layout
             
            
             if (line.Height == Unit.Zero) //Empty line
-                line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent));
+                line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent, true));
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
                 br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);
@@ -536,7 +536,7 @@ namespace Scryber.PDF.Layout
             else
                 inset = Unit.Zero;
 
-            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line);
+            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line, true);
             br.NextLineSpacer = spacer;
             this.CurrentLine = line;
             this.CurrentLineInset = inset;
@@ -975,7 +975,7 @@ namespace Scryber.PDF.Layout
 
                 if (this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Right > Unit.Zero)
                 {
-                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent);
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent, false);
                     this.CurrentLine.AddRun(spacer);
                     //this.CurrentLineInset += spacer.Width;
                     //this.BeginningRun.LineInset += spacer.Width;
