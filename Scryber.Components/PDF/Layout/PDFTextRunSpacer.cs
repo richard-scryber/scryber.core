@@ -110,6 +110,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             if (xoffset > 0 && this.IsNewLineSpacer)

@@ -601,95 +601,133 @@ namespace Scryber.PDF.Layout
 
         public void RenderTextBorder(PDFRenderContext context, PDFWriter writer)
         {
-            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
-            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
-            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
-
-            if (lineh > top + bottom)
+            if (null == this.CalculatedBounds || this.CalculatedBounds.Length == 0)
             {
-                var dif = (lineh - (top + bottom)) / 2;
-                top += dif;
-                bottom += dif;
-            }
-
-            var drawing = false;
-            var finished = false;
-            var pen = this.TextRenderOptions.Border;
-            var penOffset = pen.Width;
-            var halfPenOffset = penOffset / 2;
-
-            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
-            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
-            Unit recth = bottom + top;
-            Unit rectw = 0;
-            Unit padl = 0;
-            Sides sides = 0;
-
-            if (this.TextRenderOptions.Padding.HasValue)
-            {
-                var pad = this.TextRenderOptions.Padding.Value;
-                padl = pad.Left;
-
-                rectx -= pad.Left;
-                recty -= pad.Top;
-                recth += pad.Top + pad.Bottom;
-            }
-
-            foreach (var line in this.Lines)
-            {
-                foreach (var run in line.Runs)
+                if (context.ShouldLogVerbose)
                 {
-                    if (run is PDFTextRunBegin begin)
-                    {
-                        if (run == this)
-                        {
-                            drawing = true;
-                            sides = StartSides;
-                            rectw = 0;
-                        }
-                    }
-                    else if (run is PDFTextRunEnd end)
-                    {
-                        if (end.Start == this)
-                        {
-                            //render the background here.
-                            //As there is a spacer added for the right padding we have already calculated the right value.
-                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
-                            sides = sides | Sides.Right;
-                            context.Graphics.DrawRectangle(pen, bounds, sides);
-                            drawing = false;
-                            finished = true;
-                            break;
-                        }
-                    }
-                    else if (drawing)
-                    {
-                        if (run is PDFTextRunNewLine nl)
-                        {
-                            //Render the background here.
-                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
+                    context.TraceLog.Add(TraceLevel.Warning, "Text", "The calculated bounds for a text run begin was null or empty so cannot render background for component " + (this.Owner == null ? "unknown" : this.Owner.ID));
+                }
+                return;
+            }
+            var pen = this.TextRenderOptions.Border;
+            var pad = this.TextRenderOptions.Padding.HasValue ? this.TextRenderOptions.Padding.Value : Thickness.Empty();
+            var rad = this.TextRenderOptions.BorderRadius;
+            var metrics = this.TextRenderOptions.Font.FontMetrics;
 
-                            context.Graphics.DrawRectangle(pen, bounds, sides);
-                            sides = MidSides;
+            var rect = this.CalculatedBounds[0];
 
-                            //move down and back, then reset the width.
-                            recty += nl.NewLineOffset.Height;
-                            rectx -= (nl.NewLineOffset.Width - padl);
-                            rectw = 0;
-                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
+            Unit ascOffset = 0; //The ascender offset from the top of the line - usually zero unless we have leading.
+            Unit height = rect.Height; //The height of the line
+
+            if (this.TextRenderOptions.Leading.HasValue)
+            {
+                //We have spacing around the line (or negative spacing) but the background of inline
+                //is always dependant on the actual font heights + any padding.
+                ascOffset = (this.TextRenderOptions.GetBaselineOffset() - this.TextRenderOptions.GetAscent());
+                height = (this.TextRenderOptions.GetAscent() + this.TextRenderOptions.GetDescender());
+            }
+
+            if (!rect.IsEmpty && rect.Width > 0)
+            {
+                rect = rect.Offset(context.Offset);
+                rect.Y += ascOffset;
+                rect.Height = height;
+
+                //Left and right are part of the calculated bounds with the spacer.
+                //So just add the top and bottom
+                rect.Y -= pad.Top;
+                rect.Height += pad.Top + pad.Bottom;
+                if (rad > 0)
+                {
+                    if (this.CalculatedBounds.Length == 3 && (this.CalculatedBounds[1].IsEmpty == false || this.CalculatedBounds[2].IsEmpty == false))
+                    {
+                        //we have further lines so we only apply the corners to the top left and bottom right.
+                        context.Graphics.DrawRoundRectangle(pen, rect, Sides.Left | Sides.Top | Sides.Bottom, rad);
+                    }
+                    else
+                    {
+                        context.Graphics.DrawRoundRectangle(pen, rect, rad);
+                    }
+                }
+                else
+                    context.Graphics.DrawRectangle(pen, rect);
+            }
+
+            if (this.CalculatedBounds.Length > 1)
+            {
+                rect = this.CalculatedBounds[1];
+                if (!rect.IsEmpty)
+                {
+                    rect = rect.Offset(context.Offset);
+                    rect.Y += ascOffset;
+                    rect.Y -= pad.Top;
+
+                    rect.Height = height;
+                    rect.Height += pad.Top + pad.Bottom;
+
+                    //we render the background for the second to the pen-ultimate line
+                    for (var l = 1; l < this.Lines.Count - 1; l++)
+                    {
+                        var line = this.Lines[l];
+
+                        rect.Width = line.Width;
+
+                        if (line.Runs.Count > 0 && line.Runs[0] is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer)
+                        {
+                            rect.X = spacer.Width + context.Offset.X;
+                            rect.Width -= spacer.Width;
                         }
                         else
                         {
-                            rectw += run.Width;
+                            rect.X = context.Offset.X;
+                        }
+                        if (rect.Width > 0)
+                        {
+                            if (rad > 0 && this.CalculatedBounds.Length > 2 && this.CalculatedBounds[2].Width <= 0)
+                            {
+                                //edge case where we overflow, but there are no (significant) characters after. Show the radii
+                                context.Graphics.DrawRoundRectangle(pen, rect, Sides.Right | Sides.Top | Sides.Bottom, rad);
+                            }
+                            else
+                            {
+                                //otherwise no rounded corners on intermediate lines
+                                context.Graphics.DrawRectangle(pen, rect);
+                            }
+
+
                         }
 
+                        //move the rect down to the next line
+                        rect.Y += line.Height;
                     }
 
-                }
 
-                if (finished) { break; } //the begin should have happend
+                }
             }
-            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
+
+            if (this.CalculatedBounds.Length > 2)
+            {
+                rect = this.CalculatedBounds[2];
+                if (!rect.IsEmpty && rect.Width > 0)
+                {
+                    rect = rect.Offset(context.Offset);
+
+                    rect.Y += ascOffset;
+                    rect.Y -= pad.Top;
+
+                    rect.Height = height;
+                    rect.Height += pad.Top + pad.Bottom;
+                    if (rad > 0)
+                    {
+                        //We are the last line so only round the top right and bottom right corners.
+                        context.Graphics.DrawRoundRectangle(pen, rect, Sides.Right | Sides.Top | Sides.Bottom, rad);
+                    }
+                    else
+                    {
+                        context.Graphics.DrawRectangle(pen, rect);
+                    }
+                }
+            }
         }
 
         public static double ThicknessFactor = 12.0;

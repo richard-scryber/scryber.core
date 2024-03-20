@@ -453,6 +453,105 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
+        public void InlineBottomRightVeryLongTextWithReturnsBackgroundColor()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            pg.Margins = new Thickness(20);
+
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            div.ID = "WithContent";
+            div.BackgroundColor = StandardColors.Aqua;
+            div.Height = 300;
+            div.HorizontalAlignment = HorizontalAlignment.Right;
+            div.VerticalAlignment = VerticalAlignment.Bottom;
+            div.TextDecoration = Text.TextDecoration.Underline;
+            div.TextLeading = 40;
+            div.FontSize = 24;
+            pg.Contents.Add(div);
+
+            div.Contents.Add("This is before the span. ");
+
+            var span = new Span();
+            span.ID = "InnerContent";
+            span.Contents.Add("This is a very long string that will flow across more than two lines\r\n in the page,\r\n\r\nand will show the background across all the lines ending with the padding.");
+            span.BackgroundColor = StandardColors.Blue;
+            span.FillColor = StandardColors.White;
+            span.Padding = 4;
+            span.BorderCornerRadius = 4;
+            div.Contents.Add(span);
+
+            div.Contents.Add(" After the span");
+
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_InlineRightBottomVeryLongReturnsBGColor.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var lpg = layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+            var lblock = lpg.ContentBlock;
+            var lcontent = lblock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(lcontent);
+            Assert.AreEqual("WithContent", lcontent.Owner.ID);
+
+            var linner = lcontent.Columns[0].Contents[0] as PDFLayoutLine;
+            var lspanStart = linner.Runs[0] as PDFLayoutInlineBegin;
+            var ltextStart = linner.Runs[1] as PDFTextRunBegin;
+            var lchars = linner.Runs[2] as PDFTextRunCharacter;
+
+            Assert.IsNotNull(lspanStart);
+            Assert.IsNotNull(ltextStart);
+            Assert.IsNotNull(lchars);
+
+            Assert.AreEqual("InnerContent", lspanStart.Owner.ID);
+            Assert.AreEqual(0, lspanStart.OffsetX);
+
+            var w = lchars.Width;
+            var x = lcontent.Width - w; //as we are right aligned, then x is offset the with of the chars.
+            var h = linner.Height;
+            var y = lcontent.Height - (linner.Height * 2); //as we are bottom aligned, then the y offset is the height of the div - 2 x line height.
+
+            Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
+
+            //rect for the top line,
+            //empty rect for the middle content
+            //rect for the bottom line.
+
+            Assert.AreEqual(x, ltextStart.CalculatedBounds[0].X);
+            Assert.AreEqual(w, ltextStart.CalculatedBounds[0].Width);
+            Assert.AreEqual(y, ltextStart.CalculatedBounds[0].Y);
+            Assert.AreEqual(h, ltextStart.CalculatedBounds[0].Height);
+
+            Assert.IsNotNull(ltextStart.TextRenderOptions.Background);
+
+            //middle empty
+            Assert.IsTrue(ltextStart.CalculatedBounds[1].IsEmpty);
+
+            //last line.
+            linner = lcontent.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(linner);
+            lchars = linner.Runs[1] as PDFTextRunCharacter;
+
+            w = lchars.Width; //last line width
+            y += linner.Height; //add another line height
+            h = linner.Height; //the height
+            x = lcontent.Width - w; //right aligned still.
+
+            Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
+            Assert.AreEqual(w, ltextStart.CalculatedBounds[2].Width);
+            Assert.AreEqual(y, ltextStart.CalculatedBounds[2].Y);
+            Assert.AreEqual(h, ltextStart.CalculatedBounds[2].Height);
+
+
+
+        }
+
+        [TestMethod]
         public void InlineBottomRightVeryLongTextNestedSpanBackgroundColor()
         {
             var doc = new Document();
@@ -464,6 +563,7 @@ namespace Scryber.UnitLayouts
             var div = new Div();
             div.ID = "WithContent";
             div.BackgroundColor = StandardColors.Aqua;
+            
             div.Height = 300;
             div.HorizontalAlignment = HorizontalAlignment.Right;
             div.VerticalAlignment = VerticalAlignment.Bottom;
@@ -480,6 +580,7 @@ namespace Scryber.UnitLayouts
             span.FillColor = StandardColors.White;
             span.Padding = 4;
             span.BorderCornerRadius = 4;
+            span.BorderColor = StandardColors.White;
 
             var spanNest = new Span();
             spanNest.Contents.Add("and will show the background across all the");

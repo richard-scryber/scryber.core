@@ -508,7 +508,7 @@ namespace Scryber.PDF.Layout
             
            
             if (line.Height == Unit.Zero) //Empty line
-                line.Runs.Add(new PDFTextRunSpacer(1, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent, true));
+                line.Runs.Add(new PDFTextRunSpacer(0, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent, false));
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
                 br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);
