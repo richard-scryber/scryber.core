@@ -12,8 +12,9 @@ namespace Scryber.PDF.Layout
     public class PDFLayoutInlineBegin : PDFLayoutRun
     {
 
-        public PDFPositionOptions PositionOptions { get; set; }
+        public PDFPositionOptions PositionOptions { get; protected set; }
 
+        public PDFTextRenderOptions TextOptions { get; protected set; }
 
         public PDFLayoutInlineEnd EndMarker
         {
@@ -39,10 +40,12 @@ namespace Scryber.PDF.Layout
             get { return _width; }
         }
 
-        public PDFLayoutInlineBegin(PDFLayoutLine line, IComponent owner, PDFPositionOptions pos, Style fullStyle)
+        public PDFLayoutInlineBegin(PDFLayoutLine line, IComponent owner, PDFPositionOptions pos, PDFTextRenderOptions text, Style fullStyle)
             : base(line, owner)
         {
-            this.PositionOptions = pos;
+            
+            this.PositionOptions = pos ?? throw new ArgumentNullException(nameof(pos));
+            this.TextOptions = text ?? throw new ArgumentNullException(nameof(text));
             this.FullStyle = fullStyle;
 
             //Set the margin inline start width

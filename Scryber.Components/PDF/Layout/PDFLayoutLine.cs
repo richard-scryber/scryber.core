@@ -720,9 +720,9 @@ namespace Scryber.PDF.Layout
             return value;
         }
 
-        public PDFLayoutInlineBegin AddInlineRunStart(IPDFLayoutEngine engine, IComponent component, PDFPositionOptions options, Style full)
+        public PDFLayoutInlineBegin AddInlineRunStart(IPDFLayoutEngine engine, IComponent component, PDFPositionOptions posOptions, PDFTextRenderOptions textOptions, Style full)
         {
-            PDFLayoutInlineBegin begin = new PDFLayoutInlineBegin(this, component, options, full);
+            PDFLayoutInlineBegin begin = new PDFLayoutInlineBegin(this, component, posOptions, textOptions, full);
             this.Runs.Add(begin);
             return begin;
         }

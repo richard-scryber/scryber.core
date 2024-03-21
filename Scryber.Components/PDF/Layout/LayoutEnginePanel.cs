@@ -86,7 +86,8 @@ namespace Scryber.PDF.Layout
             if (containerRegion.HasOpenItem == false)
                 containerRegion.BeginNewLine();
             PDFLayoutLine currline = containerRegion.CurrentItem as PDFLayoutLine;
-            PDFLayoutInlineBegin begin = currline.AddInlineRunStart(this, this.Component, pos, this.FullStyle);
+            PDFTextRenderOptions text = this.FullStyle.CreateTextOptions();
+            PDFLayoutInlineBegin begin = currline.AddInlineRunStart(this, this.Component, pos, text, this.FullStyle);
             return begin;
         }
 
