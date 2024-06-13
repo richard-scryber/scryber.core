@@ -45,6 +45,20 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        private object _dataValue;
+
+        [PDFAttribute("data-value", BindingOnly = true)]
+        public object DataValue
+        {
+            get { return _dataValue; }
+            set { this._dataValue = value; this.HasDataValue = true; }
+        }
+
+        public bool HasDataValue
+        {
+            get;set;
+        }
+
         public HTMLVar()
             : this(HTMLObjectTypes.Slot)
         {
@@ -61,7 +75,19 @@ namespace Scryber.Html.Components
             style.Font.FontFaceStyle = Drawing.FontStyle.Italic;
             return style;
         }
+
+        protected override void OnDataBound(DataContext context)
+        {
+            if(this.DataValue != null && this.HasID)
+            {
+                this.Document.Params[this.ID] = this.DataValue;
+            }
+
+            base.OnDataBound(context);
+        }
     }
+
+
 
     
 }

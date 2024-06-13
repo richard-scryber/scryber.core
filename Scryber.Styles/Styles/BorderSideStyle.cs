@@ -195,7 +195,7 @@ namespace Scryber.Styles
         /// <returns></returns>
         public virtual PDFPen CreatePen()
         {
-            return this.AssertOwner().DoCreateBorderSidePen(this._side, _color, _width, _line, _dash);
+            return this.AssertOwner().DoCreateBorderSidePen(this._side, _color, _width, _line, _dash, null, null, null, null);
         }
 
         #endregion

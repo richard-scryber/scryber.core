@@ -75,60 +75,61 @@ namespace Scryber.PDF.Graphics
             Rect rect = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
-            pen.SetUpGraphics(this, rect);
-
-            //check to see if we are outputting all sides
-            if (sides == (Sides.Top | Sides.Right | Sides.Left | Sides.Bottom))
-                this.RenderRectangle(x, y, width, height);
-            else
+            if (pen.SetUpGraphics(this, rect))
             {
-                bool recalc = true; //flag to identifiy if the last op moved the cursor to the next correct position
-                
-                if ((sides & Sides.Top) > 0)
-                {
-                    this.RenderLine(x, y, x + width, y);
-                    recalc = false;
-                }
-                else
-                    recalc = true;
 
-                if ((sides & Sides.Right) > 0)
+                //check to see if we are outputting all sides
+                if (sides == (Sides.Top | Sides.Right | Sides.Left | Sides.Bottom))
+                    this.RenderRectangle(x, y, width, height);
+                else
                 {
-                    if (recalc == false)
+                    bool recalc = true; //flag to identifiy if the last op moved the cursor to the next correct position
+
+                    if ((sides & Sides.Top) > 0)
                     {
-                        this.RenderContinuationLine(x + width, y + height);
+                        this.RenderLine(x, y, x + width, y);
+                        recalc = false;
                     }
                     else
+                        recalc = true;
+
+                    if ((sides & Sides.Right) > 0)
                     {
-                        this.RenderLine(x + width, y, x + width, y + height);
+                        if (recalc == false)
+                        {
+                            this.RenderContinuationLine(x + width, y + height);
+                        }
+                        else
+                        {
+                            this.RenderLine(x + width, y, x + width, y + height);
+                        }
+                        recalc = false;
                     }
-                    recalc = false;
-                }
-                else
-                    recalc = true;
-
-                if ((sides & Sides.Bottom) > 0)
-                {
-                    if (recalc == false)
-                        this.RenderContinuationLine(x, y + height);
                     else
-                        this.RenderLine(x + width, y + height, x, y + height);
-                    recalc = false;
-                }
-                else
-                    recalc = true;
+                        recalc = true;
 
-                if ((sides & Sides.Left) > 0)
-                {
-                    if (recalc == false)
-                        this.RenderContinuationLine(x, y);
+                    if ((sides & Sides.Bottom) > 0)
+                    {
+                        if (recalc == false)
+                            this.RenderContinuationLine(x, y + height);
+                        else
+                            this.RenderLine(x + width, y + height, x, y + height);
+                        recalc = false;
+                    }
                     else
-                        this.RenderLine(x, y + height, x, y);
+                        recalc = true;
+
+                    if ((sides & Sides.Left) > 0)
+                    {
+                        if (recalc == false)
+                            this.RenderContinuationLine(x, y);
+                        else
+                            this.RenderLine(x, y + height, x, y);
+                    }
                 }
+                this.RenderStrokePathOp();
+                pen.ReleaseGraphics(this, rect);
             }
-            this.RenderStrokePathOp();
-            pen.ReleaseGraphics(this, rect);
-
             this.RestoreGraphicsState();
         }
 

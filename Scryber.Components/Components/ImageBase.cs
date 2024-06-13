@@ -160,20 +160,26 @@ namespace Scryber.Components
         /// <param name="fullstyle"></param>
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDF.PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            IResourceContainer resources = this.GetResourceContainer();
-            if (null == resources)
-                throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
-            PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
+            if (this.Visible && fullstyle.Position.PositionMode != PositionMode.Invisible)
+            {
+                IResourceContainer resources = this.GetResourceContainer();
+                if (null == resources)
+                    throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
+                PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
 
-            if (null != xobj)
-                resources.Register(xobj);
+                if (null != xobj)
+                    resources.Register(xobj);
 
-            base.DoRegisterArtefacts(context, set, fullstyle);
+                base.DoRegisterArtefacts(context, set, fullstyle);
+            }
         }
 
 
         public virtual PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            if (!this.Visible)
+                return null;
+
             PDFGraphics graphics = context.Graphics;
             Style full = null;
 
@@ -183,6 +189,9 @@ namespace Scryber.Components
 
             if (null == full)
                 full = context.FullStyle;
+
+            if (full.Position.PositionMode == PositionMode.Invisible)
+                return null;
 
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
