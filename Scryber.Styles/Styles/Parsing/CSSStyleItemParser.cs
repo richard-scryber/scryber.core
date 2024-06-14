@@ -188,6 +188,8 @@ namespace Scryber.Styles.Parsing
 
         #endregion
 
+        #region public static bool TryConvertToUnit(object value, out Unit converted)
+
         public static bool TryConvertToUnit(object value, out Unit converted)
         {
             if(value is Unit)
@@ -211,6 +213,8 @@ namespace Scryber.Styles.Parsing
                 return Unit.TryParse(str, out converted);
             }
         }
+
+        #endregion
 
         #region public static bool ParseCSSUnit(string part, out PDFUnit unit)
 
