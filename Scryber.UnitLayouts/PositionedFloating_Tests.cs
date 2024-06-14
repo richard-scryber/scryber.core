@@ -808,9 +808,56 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive();
 
-            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+
+            Unit pageW = 600;
+            Unit pageH = 800;
+
+            Assert.AreEqual(pageW, content.Width);
+            Assert.AreEqual(pageH, content.Height);
+
+            //Check the 10vw margins on the content block
+            Unit margin = 15;
+            Assert.AreEqual(margin, content.Position.Margins.Left);
+            Assert.AreEqual(margin, content.Position.Margins.Right);
+            Assert.AreEqual(margin, content.Position.Margins.Top);
+            Assert.AreEqual(margin, content.Position.Margins.Bottom);
+            Assert.AreEqual(600 - (margin * 2), content.AvailableBounds.Width);
+
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+
+            var wrapperBlock = content.Columns[0].Contents[0] as PDFLayoutBlock;
+            var wrapW = pageW - (margin * 2);
+
+
+            Assert.AreEqual(wrapW, wrapperBlock.Width); //wrapper is full width exluding margins
+
+            Assert.AreEqual(1, wrapperBlock.PositionedRegions.Count);
+            var pos = wrapperBlock.PositionedRegions[0];
+
+            var floatW = pos.Width;
+            var h = pos.Height;
+
+            Assert.AreEqual(15, h); //line height
+
+            var line = wrapperBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(4, line.Runs.Count);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFLayoutPositionedRegionRun));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunBegin));
+            Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunCharacter));
+            Assert.IsInstanceOfType(line.Runs[3], typeof(PDFTextRunEnd));
+
+            var begin = line.Runs[1] as PDFTextRunBegin;
+            var offset = floatW + margin + wrapper.Padding.Left;
+            Assert.AreEqual(offset, begin.StartTextCursor.Width);
+      
 
 
         }
@@ -835,6 +882,7 @@ namespace Scryber.UnitLayouts
                 FloatMode = FloatMode.Left
             };
 
+            
             floating.Contents.Add(new TextLiteral("50% width and height"));
             section.Contents.Add(floating);
 
@@ -929,7 +977,7 @@ namespace Scryber.UnitLayouts
             wrapper.Contents.Add(floating);
 
             wrapper.Contents.Add("After the float");
-            wrapper.Contents.Add(new Div() { Width = 60, Height = 100, BorderColor = StandardColors.Aqua });
+            wrapper.Contents.Add(new Div() { Width = 60, Height = 20, BorderColor = StandardColors.Aqua });
             section.Contents.Add("After the wrapper");
 
             using (var ms = DocStreams.GetOutputStream("Float_LeftRelativeSizeToContainer.pdf"))

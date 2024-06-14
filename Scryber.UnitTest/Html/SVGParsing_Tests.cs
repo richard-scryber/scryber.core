@@ -570,98 +570,53 @@ namespace Scryber.Core.UnitTests.Html
             var svg = component as SVGCanvas;
 
             Assert.IsNotNull(svg);
-            /*
-            Assert.AreEqual(48, svg.Contents.Count);
+            
+            Assert.AreEqual(52, svg.Contents.Count);
 
-            var txt = svg.Contents[5] as SVGText;
+            var txt = svg.Contents[9] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
-
-            txt = svg.Contents[7] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
-
-            txt = svg.Contents[9] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             txt = svg.Contents[11] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
 
             txt = svg.Contents[13] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
 
             txt = svg.Contents[15] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
 
             txt = svg.Contents[17] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
 
             txt = svg.Contents[19] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Alphabetic, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
 
             txt = svg.Contents[21] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
+            Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
 
             txt = svg.Contents[23] as SVGText;
             Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
-
-            Assert.IsNotNull(svg);
-            Assert.AreEqual(23, svg.Contents.Count);
-
-            var txt = svg.Contents[1] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Auto, txt.DominantBaseline);
-
-            txt = svg.Contents[2] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Middle, txt.DominantBaseline);
-
-            txt = svg.Contents[3] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Central, txt.DominantBaseline);
-
-            txt = svg.Contents[4] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Hanging, txt.DominantBaseline);
-
-            txt = svg.Contents[5] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Mathematical, txt.DominantBaseline);
-
-            txt = svg.Contents[6] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Text_Top, txt.DominantBaseline);
-
-            txt = svg.Contents[7] as SVGText;
-            Assert.IsNotNull(txt);
-            Assert.AreEqual(DominantBaseline.Ideographic, txt.DominantBaseline);
-
-            txt = svg.Contents[8] as SVGText;
-            Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Alphabetic, txt.DominantBaseline);
 
-            txt = svg.Contents[9] as SVGText;
+            txt = svg.Contents[25] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_After_Edge, txt.DominantBaseline);
 
-            txt = svg.Contents[10] as SVGText;
+            txt = svg.Contents[27] as SVGText;
             Assert.IsNotNull(txt);
             Assert.AreEqual(DominantBaseline.Text_Before_Edge, txt.DominantBaseline);
 
 
-            */
-
             using var doc = new Document();
             doc.AppendTraceLog = false;
-            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
             var pg = new Page();
