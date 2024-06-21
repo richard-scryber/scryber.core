@@ -257,13 +257,19 @@ namespace Scryber.Drawing
 
     public enum PositionMode
     {
+
         /// <summary>
         /// A postion that is set explicitly on the page, no matter where its parent is
+        /// </summary>
+        Fixed,
+
+        /// <summary>
+        /// A postion that is set relative to this Components (first positioned) parent position.
         /// </summary>
         Absolute,
 
         /// <summary>
-        /// A postion that is set relative to this Components parent position.
+        /// A block that still maintains the space used, but is shifted by the position
         /// </summary>
         Relative,
 

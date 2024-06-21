@@ -103,6 +103,8 @@ namespace Scryber.Core.UnitTests.Styles
             target.Position.VAlign = VerticalAlignment.Middle;
             target.Position.X = 20;
             target.Position.Y = 50;
+            target.Position.Bottom = 10;
+            target.Position.Right = 40;
             target.Size.Width = 100;
             //Don't define height
             target.Size.MaximumHeight = 90;
@@ -134,6 +136,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)50, actual.Y);
             Assert.AreEqual(null, actual.Height);
 
+            Assert.AreEqual(true, actual.Bottom.HasValue);
+            Assert.AreEqual(true, actual.Right.HasValue);
+            Assert.AreEqual((Unit)10, actual.Bottom);
+            Assert.AreEqual((Unit)40, actual.Right);
+
             Assert.AreEqual((Unit)200, actual.MaximumWidth);
             Assert.AreEqual((Unit)150, actual.MinimumWidth);
             Assert.AreEqual((Unit)90, actual.MaximumHeight);
@@ -148,7 +155,7 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)20, actual.Padding.Left);
             Assert.AreEqual((Unit)40, actual.Padding.Right);
 
-            Assert.AreEqual(PositionMode.Relative, actual.PositionMode); //mode is relative (because we have an xand a y)
+            Assert.AreEqual(PositionMode.Inline, actual.PositionMode);
             Assert.AreEqual(VerticalAlignment.Middle, actual.VAlign);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
 

@@ -298,6 +298,12 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
+        public static readonly StyleKey<Unit> PositionRightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"rpos", PositionItemKey
+                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+
+        public static readonly StyleKey<Unit> PositionBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bpos", PositionItemKey
+                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+
         //SVG - specific x, y, r, rx, ry, cx, cy.
         // The width and height style keys are from standard as per spec - need to check with the drawing ops for this.
 

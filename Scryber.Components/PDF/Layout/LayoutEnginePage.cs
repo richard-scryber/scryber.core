@@ -249,6 +249,7 @@ namespace Scryber.PDF.Layout
                 block = page.CurrentBlock;
                 region = block.CurrentRegion;
 
+                depth.Pop(); //As we build the PageBlock, and the inner ContentBlock we need to pop again.
                 if(this.Context.ShouldLogVerbose)
                     this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Built a new continuation page for " + this.Component + " and recreated the " + toclose.Count + " blocks and regions on the new page");
                 return true;

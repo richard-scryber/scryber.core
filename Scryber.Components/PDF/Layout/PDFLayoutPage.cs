@@ -63,6 +63,12 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public PDFLayoutBlock PageBlock
+        {
+            get;
+            private set;
+        }
+
         #region public PDFLayoutBlock ContentBlock { get; }
 
         /// <summary>
@@ -244,14 +250,34 @@ namespace Scryber.PDF.Layout
             this.PositionOptions = options;
 
             OverflowSplit split = options.OverflowSplit;
+            var pageBlock = new PDFLayoutBlock(this, this.Owner, this.Engine, this.FullStyle, split);
+            this.PageBlock = pageBlock;
 
+            Rect totalbounds = new Rect(Point.Empty, this.Size);
+            //Always 1 column on the page block
+            pageBlock.InitRegions(totalbounds, options, new PDFColumnOptions() { ColumnCount = 1 }, context);
 
-            PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, this.FullStyle, split);
-            Rect totalbounds = new Rect(Point.Empty,this.Size);
+            var blockStyle = new StyleFull();
+            var contentPosOptions = blockStyle.CreatePostionOptions();
 
-            
-            block.InitRegions(totalbounds, options, columns, context);
-            
+            PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, blockStyle, split); //this.FullStyle;
+
+            totalbounds = new Rect(Point.Empty, this.Size);
+
+            if (this.PositionOptions.Margins.IsEmpty == false)
+            {
+                totalbounds.Width -= this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+                totalbounds.Height -= this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+            }
+            if (this.PositionOptions.Padding.IsEmpty == false)
+            {
+                totalbounds.Width -= this.PositionOptions.Padding.Left + this.PositionOptions.Padding.Right;
+                totalbounds.Height -= this.PositionOptions.Padding.Top + this.PositionOptions.Padding.Bottom;
+            }
+
+            block.InitRegions(totalbounds, contentPosOptions, columns, context);
+            pageBlock.Columns[0].AddExistingItem(block);
+
             //We need to set the bounds of the page block to the total for a page 
             //(as margins are taken off from the size of the page
             // - this is different to a block where margins increase any explicit sizes).
@@ -324,21 +350,44 @@ namespace Scryber.PDF.Layout
             if (null != this.HeaderBlock)
                 throw RecordAndRaise.LayoutException(Errors.AlreadyAHeaderDefinedOnPage);
             
-            PDFLayoutBlock block = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
+            PDFLayoutBlock headblock = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
             
             //Take the magins away from the total bounds before initializing the regions
-            Rect content = this.ContentBlock.TotalBounds;
+            Rect content = this.PageBlock.TotalBounds;
 
             if (this.PositionOptions.Margins.IsEmpty == false)
             {
                 content.Width -= this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
                 content.Height -= this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
             }
+            if(this.PositionOptions.Padding.IsEmpty == false)
+            {
+                content.Width -= this.PositionOptions.Padding.Left + this.PositionOptions.Padding.Right;
+                content.Height -= this.PositionOptions.Padding.Top + this.PositionOptions.Padding.Bottom;
+            }
+            var headPos = full.CreatePostionOptions(); //this.ContentBlock.Position;
+            //var contentPos = this.ContentBlock.Position;
+            //if(contentPos.Margins.IsEmpty == false)
+            //{
+            //    var marg = headPos.Margins;
 
-            block.InitRegions(content, this.ContentBlock.Position, full.CreateColumnOptions(), context);
-            this._header = block;
+            //    marg.Left += contentPos.Margins.Left;
+            //    marg.Right += contentPos.Margins.Right;
+            //    marg.Top = Unit.Max(marg.Top, contentPos.Margins.Top);
+
+            //    headPos.Margins = marg;
+
+            //    marg = contentPos.Margins;
+            //    marg.Top = 0;
+            //    contentPos.Margins = marg;
+            //}
+            headblock.InitRegions(content, headPos, full.CreateColumnOptions(), context);
+
+            this._header = headblock;
+            this.PageBlock.Columns[0].AddExistingItem(this._header);
+
             //Make this block current
-            this.CurrentBlock = block;
+            this.CurrentBlock = headblock;
         }
 
         #endregion
@@ -386,15 +435,22 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = new PDFLayoutBlock(this, owner, this.Engine, full, OverflowSplit.Never);
 
             //Take the magins away from the total bounds before initializing the regions
-            Rect content = this.ContentBlock.TotalBounds;
+            Rect content = this.PageBlock.TotalBounds;
             if (this.PositionOptions.Margins.IsEmpty == false)
             {
                 content.Width -= this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
                 content.Height -= this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
             }
-            
-            block.InitRegions(content, this.ContentBlock.Position, full.CreateColumnOptions(), context);
+            if (this.PositionOptions.Padding.IsEmpty == false)
+            {
+                content.Width -= this.PositionOptions.Padding.Left + this.PositionOptions.Padding.Right;
+                content.Height -= this.PositionOptions.Padding.Top + this.PositionOptions.Padding.Bottom;
+            }
+            var footPos = full.CreatePostionOptions();//this.ContentBlock.Position
+
+            block.InitRegions(content, footPos, full.CreateColumnOptions(), context);
             this._footer = block;
+            this.PageBlock.Columns[0].AddExistingItem(this._footer);
             //Make this block current
             this.CurrentBlock = block;
         }
@@ -416,9 +472,9 @@ namespace Scryber.PDF.Layout
             //Need to move the footer to the bottom of the page
             Unit height = this.FooterBlock.TotalBounds.Height;
             Unit posY = this.FooterBlock.TotalBounds.Y;
-            Unit offset = this.Height - posY - height;
+            Unit offset = this.PageBlock.AvailableBounds.Height - posY - height;
 
-            this.FooterBlock.Offset(0, offset);
+            this.FooterBlock.Offset(0, offset); //content size of page block - height of footer.
             this.CurrentBlock = ContentBlock;
 
             if (null != this.ContentBlock)
@@ -472,13 +528,15 @@ namespace Scryber.PDF.Layout
             pageIndex = this.PageIndex;
 
             this.PageOwner.SetPageLayoutIndex(pageIndex);
-            if (null != this.HeaderBlock)
-                this.HeaderBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
+            this.PageBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
 
-            this.CurrentBlock.PushComponentLayout(context, pageIndex,  xoffset, yoffset);
+            //if (null != this.HeaderBlock)
+            //    this.HeaderBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
 
-            if (null != this.FooterBlock)
-                this.FooterBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
+            //this.CurrentBlock.PushComponentLayout(context, pageIndex,  xoffset, yoffset);
+
+            //if (null != this.FooterBlock)
+            //    this.FooterBlock.PushComponentLayout(context, pageIndex, xoffset, yoffset);
         }
 
         #endregion
@@ -506,6 +564,11 @@ namespace Scryber.PDF.Layout
 
             if(null != this.CurrentBlock && this.CurrentBlock.IsClosed == false)
                 this.CurrentBlock.Close();
+
+            if (this.PageBlock.IsClosed == false)
+            {
+                this.PageBlock.Close();
+            }
 
             return base.DoClose(ref msg);
         }
@@ -696,14 +759,15 @@ namespace Scryber.PDF.Layout
             using (PDFGraphics g = this.CreateGraphics(writer, context.StyleStack, context))
             {
                 context.Graphics = g;
+                this.PageBlock.OutputToPDF(context, writer);
 
-                if (null != this.HeaderBlock)
-                    this.HeaderBlock.OutputToPDF(context, writer);
+                //if (null != this.HeaderBlock)
+                //    this.HeaderBlock.OutputToPDF(context, writer);
 
-                this.ContentBlock.OutputToPDF(context, writer);
+                //this.ContentBlock.OutputToPDF(context, writer);
 
-                if (null != this.FooterBlock)
-                    this.FooterBlock.OutputToPDF(context, writer);
+                //if (null != this.FooterBlock)
+                //    this.FooterBlock.OutputToPDF(context, writer);
 
             }
             context.Offset = pt;

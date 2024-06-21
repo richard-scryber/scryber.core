@@ -349,5 +349,90 @@ namespace Scryber.Core.UnitTests.Styles
 
         #endregion
 
+
+        #region public void Position_XTest()
+
+        /// <summary>
+        ///A test for X
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_RightTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            // Default value
+
+            Unit expected = Unit.Empty;
+            Unit actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Set Value
+
+            expected = 20;
+            target.Right = expected;
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = new Unit(120, PageUnits.Millimeters);
+            target.Right = expected;
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Remove Value
+
+            expected = Unit.Empty;
+            target.RemoveRight();
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        #endregion
+
+        #region public void Position_YTest()
+
+        /// <summary>
+        ///A test for Y
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_BottomTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            // Default value
+
+            Unit expected = Unit.Empty;
+            Unit actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Set Value
+
+            expected = 20;
+            target.Bottom = expected;
+            actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = new Unit(120, PageUnits.Millimeters);
+            target.Bottom = expected;
+            actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Remove Value
+
+            expected = Unit.Empty;
+            target.RemoveBottom();
+            actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        #endregion
+
     }
 }

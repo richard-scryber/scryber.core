@@ -230,6 +230,61 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public PDFUnit Right {get;set;} + RemoveRight()
+
+        [PDFAttribute("right")]
+        [PDFDesignable("Right", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public Unit Right
+        {
+            get
+            {
+                Unit f;
+                if (this.TryGetValue(StyleKeys.PositionRightKey, out f))
+                    return f;
+                else
+                    return Unit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionRightKey, value);
+            }
+        }
+
+        public void RemoveRight()
+        {
+            this.RemoveValue(StyleKeys.PositionRightKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit Bottom {get;set;} + RemoveBottom()
+
+        [PDFAttribute("bottom")]
+        [PDFDesignable("Bottom", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public Unit Bottom
+        {
+            get
+            {
+                Unit f;
+                if (this.TryGetValue(StyleKeys.PositionBottomKey, out f))
+                    return f;
+                else
+                    return Unit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionBottomKey, value);
+            }
+        }
+
+        public void RemoveBottom()
+        {
+            this.RemoveValue(StyleKeys.PositionBottomKey);
+        }
+
+        #endregion
 
         // obselete legacy properties - moved to Size
 

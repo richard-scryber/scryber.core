@@ -941,7 +941,14 @@ namespace Scryber.PDF.Layout
             if (null == beforeline)
                 beforeline = before.BeginNewLine();
 
+            var addTo = this;
+
             Rect space;
+            if(pos.PositionMode == PositionMode.Fixed)
+            {
+                space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
+                //addTo = page.PageBlock; 
+            }
             if (pos.PositionMode == PositionMode.Absolute)
                 //Page sizing
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
@@ -986,7 +993,7 @@ namespace Scryber.PDF.Layout
             int index = -(this.PositionedRegions.Count + 1); //use a negative value for the positioned items
 
             PDFLayoutPositionedRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
-            this.PositionedRegions.Add(created);
+            addTo.PositionedRegions.Add(created);
 
             if (addAssociatedRun)
             {
@@ -1074,18 +1081,16 @@ namespace Scryber.PDF.Layout
             try
             {
                 context.FullStyle = fullstyle;
-                
-                
 
                 //If we have a transformation matrix applied.
-                if(position.HasTransformation)
+                if (position.HasTransformation)
                 {
                     if (context.ShouldLogDebug)
                         context.TraceLog.Begin(TraceLevel.Verbose, LOG_CATEGORY, "Setting the transformation matrix (including offsets) for " + this.Owner.ToString() + " and any ");
 
                     else if (context.ShouldLogVerbose)
                         context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Setting the Graphics state transformation matrix for " + this.Owner.ToString() + " and any children to " + this.Position.TransformMatrix);
-                    
+
                     context.Graphics.SaveGraphicsState();
 
                     //Start with the original transformation matrix
@@ -1124,7 +1129,7 @@ namespace Scryber.PDF.Layout
                     }
                     else
                     {
-                        
+
                         //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
                         Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
                         Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
@@ -1138,7 +1143,7 @@ namespace Scryber.PDF.Layout
 
                         offsetToOriginX += this.TotalBounds.Width / 2;
                         offsetToOriginY -= this.TotalBounds.Height / 2;
-                        
+
 
                         float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
                         float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
@@ -1190,6 +1195,21 @@ namespace Scryber.PDF.Layout
                     }
                 }
 
+
+                else if (position.PositionMode == PositionMode.Relative)
+                {
+                    var offset = context.Offset;
+                    if (position.X.HasValue)
+                    {
+                        offset.X += position.X.Value;
+                    }
+                    if (position.Y.HasValue)
+                    {
+                        offset.Y += position.Y.Value;
+                    }
+                    context.Offset = offset;
+
+                }
 
 
                 Rect total = this.TotalBounds;

@@ -77,6 +77,10 @@ namespace Scryber.Styles.Parsing.Typed
                     mode = PositionMode.InlineBlock;
                     return true;
 
+                case ("fixed"):
+                    mode = PositionMode.Fixed;
+                    return true;
+
                 default:
                     return false;
             }

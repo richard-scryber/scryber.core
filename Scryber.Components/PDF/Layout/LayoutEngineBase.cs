@@ -850,10 +850,10 @@ namespace Scryber.PDF.Layout
             {
                 options = full.CreatePostionOptions();
 
-                if (options.PositionMode == PositionMode.Absolute)
+                if (options.PositionMode == PositionMode.Fixed)
                     positioned = this.BeginNewAbsoluteRegionForChild(options, comp, full);
 
-                else if (options.PositionMode == PositionMode.Relative)
+                else if (options.PositionMode == PositionMode.Absolute)
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
 
                 else if (options.PositionMode == PositionMode.InlineBlock)
@@ -925,6 +925,11 @@ namespace Scryber.PDF.Layout
                     positioned.ExcludeFromOutput = true;
                     positioned.TotalBounds = Rect.Empty;
                 }
+                else if(positioned.PositionMode == PositionMode.Fixed)
+                {
+                    this.UpdateFixedRegionPosition(positioned, options);
+
+                }
                 //If we are relative and we some transformations to apply
                 if (options != null && options.HasTransformation)
                 {
@@ -941,6 +946,84 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
+        {
+            var pg = this.Context.DocumentLayout.CurrentPage;
+            var bounds = positioned.TotalBounds;
+
+            if (options.X.HasValue == false)
+            {
+                var w = pg.Width;
+
+                if (options.Right.HasValue)
+                {
+                    //Move to the right
+                    w -= (options.Right.Value + positioned.TotalBounds.Width);
+                    bounds.X = w;
+                }
+                else
+                {
+                    bounds.X = 0;
+                }
+            }
+            //else
+            //{
+            //    //Check the page padding, margins - Fixed is outside of these.
+
+            //    if (pg.PositionOptions.Margins.Left != 0)
+            //    {
+            //        bounds.X -= pg.PositionOptions.Margins.Left;
+            //    }
+            //    if (pg.PositionOptions.Padding.Left != 0)
+            //    {
+            //        bounds.X -= pg.PositionOptions.Padding.Left;
+            //    }
+            //}
+
+            if (options.Y.HasValue == false)
+            {
+                if (options.Bottom.HasValue)
+                {
+                    var h = pg.Height;
+                    h -= (options.Bottom.Value + positioned.TotalBounds.Height);
+
+                    bounds.Y = h;
+                }
+                else
+                {
+                    var y = pg.ContentBlock.Height;
+                    var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
+
+                    if (curr != null && curr is PDFLayoutLine line)
+                    {
+                        y += line.Height; //We add this to the y even through the line is not closed (as per html)
+                    }
+
+                    bounds.Y = y;
+                }
+            }
+            //else
+            //{
+            //    //Check the page padding, margins and Header - Fixed is outside of these.
+            //    if (pg.PositionOptions.Margins.Top != 0)
+            //    {
+            //        bounds.Y -= pg.PositionOptions.Margins.Top;
+            //    }
+            //    if (pg.PositionOptions.Padding.Top != 0)
+            //    {
+            //        bounds.Y -= pg.PositionOptions.Padding.Top;
+            //    }
+            //    if (pg.HeaderBlock != null)
+            //    {
+            //        bounds.Y -= pg.HeaderBlock.Height;
+            //    }
+
+            //}
+
+            //Put the bounds back on to the region.
+            positioned.TotalBounds = bounds;
+        }
 
         #region protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
 

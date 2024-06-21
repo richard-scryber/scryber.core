@@ -29,6 +29,250 @@ namespace Scryber.UnitLayouts
         }
 
 
+        protected string AssertGetContentFile(string name)
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/RelativePositioning/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
+
+            return path;
+        }
+
+
+        protected PDFLayoutPositionedRegion AssertGetFixedRegion(PDFLayoutDocument doc = null, int pgIndex = 0, int positionIndex = 0)
+        {
+            if(null == doc) { doc = layout; }
+            Assert.IsNotNull(doc, "No layout document");
+
+            Assert.IsTrue(doc.AllPages.Count > pgIndex, "There is no page " + pgIndex);
+            Assert.IsNotNull(doc.AllPages[pgIndex].PageBlock, "No page block at page " + pgIndex);
+            Assert.IsNotNull(doc.AllPages[pgIndex].PageBlock.PositionedRegions, "No Positioned regions");
+            Assert.IsTrue(doc.AllPages[pgIndex].PageBlock.PositionedRegions.Count > positionIndex, "No positioned region at index " + positionIndex);
+
+            var region = doc.AllPages[pgIndex].PageBlock.PositionedRegions[positionIndex];
+            Assert.IsInstanceOfType(region, typeof(PDFLayoutPositionedRegion));
+
+            return (PDFLayoutPositionedRegion)region;
+
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockTest()
+        {
+            var path = AssertGetContentFile("FixedBlock");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlock.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            Assert.IsNotNull(layout, "Layout not captured");
+            var fix = AssertGetFixedRegion();
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockMarginsTest()
+        {
+            var path = AssertGetContentFile("FixedBlockMargins");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockMargins.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockPositionWithMarginsTest()
+        {
+            var path = AssertGetContentFile("FixedBlockPositionWithMargins");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockPositionWithMargins.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockPositionWithHeaderTest()
+        {
+            var path = AssertGetContentFile("FixedBlockPositionWithHeader");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockPositionWithHeader.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockFullWidthTest()
+        {
+            var path = AssertGetContentFile("FixedBlockFullWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockFullWidth.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockPositionTest()
+        {
+            var path = AssertGetContentFile("FixedBlockPosition");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockPosition.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockPositionFullWidthTest()
+        {
+            var path = AssertGetContentFile("FixedBlockPositionFullWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockPositionFullWidth.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void FixedBlockBottomRightPositionTest()
+        {
+            var path = AssertGetContentFile("FixedBlockBottomRightPosition");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlockBottomRightPosition.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the fixed div");
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void RelativeBlockTest()
+        {
+            var path = AssertGetContentFile("BasicRelative");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_BlockRelative.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the relative div");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void RelativeBlockPositionTest()
+        {
+            var path = AssertGetContentFile("BasicRelativeWithPosition");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_BlockRelativeWithPosition.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 20;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Need to test the relative div");
+        }
+
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BlockRelativeToPage()

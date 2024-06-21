@@ -62,6 +62,16 @@ namespace Scryber.PDF
         public Unit? Y { get; set; }
 
         /// <summary>
+        /// Gets or sets the Right offset (an X value overrides any right value)
+        /// </summary>
+        public Unit? Right { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Bottom offset (a Y value overrides any bottom value)
+        /// </summary>
+        public Unit? Bottom { get; set; }
+
+        /// <summary>
         /// Gets or sets the Width
         /// </summary>
         public Unit? Width { get; set; }

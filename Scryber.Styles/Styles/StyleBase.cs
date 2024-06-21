@@ -894,8 +894,11 @@ namespace Scryber.Styles
                 options.PositionMode = PositionMode.Block;
 
             StyleValue<bool> b;
-            if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
+            if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+                options.FillWidth = false;
+            else if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value(this);
+            
 
             StyleValue<Unit> unit;
 
@@ -904,8 +907,8 @@ namespace Scryber.Styles
             {
                 options.X = unit.Value(this);
 
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
+                //if (options.PositionMode != PositionMode.Absolute)
+                //    options.PositionMode = PositionMode.Relative;
             }
             else
                 options.X = null;
@@ -915,11 +918,29 @@ namespace Scryber.Styles
             {
                 options.Y = unit.Value(this);
 
-                if (options.PositionMode != PositionMode.Absolute)
-                    options.PositionMode = PositionMode.Relative;
+                //if (options.PositionMode != PositionMode.Absolute)
+                //    options.PositionMode = PositionMode.Relative;
             }
             else
                 options.Y = null;
+
+            if(this.TryGetValue(StyleKeys.PositionRightKey, out unit))
+            {
+                options.Right = unit.Value(this);
+            }
+            else
+            {
+                options.Right = null;
+            }
+
+            if(this.TryGetValue(StyleKeys.PositionBottomKey, out unit))
+            {
+                options.Bottom = unit.Value(this);
+            }
+            else
+            {
+                options.Bottom = null;
+            }
 
             // Width
             if (this.TryGetValue(StyleKeys.SizeWidthKey, out unit))
@@ -1081,7 +1102,7 @@ namespace Scryber.Styles
                     transform = null; //identity will do nothing
 
                 //otherwise make sure we are positioned as absolute or relative.
-                else if (options.PositionMode != PositionMode.Absolute)
+                else if (options.PositionMode != PositionMode.Absolute || options.PositionMode != PositionMode.Fixed)
                     options.PositionMode = PositionMode.Relative;
             }
 

@@ -80,7 +80,7 @@ namespace Scryber.PDF.Layout
         {
             Scryber.Drawing.Point oldOffset = context.Offset;
 
-            if (this.Region.PositionMode == Drawing.PositionMode.Absolute)
+            if (this.Region.PositionMode == Drawing.PositionMode.Fixed)
             {
                 context.Offset = Scryber.Drawing.Point.Empty;
             }
