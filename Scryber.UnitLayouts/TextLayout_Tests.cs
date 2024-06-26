@@ -684,11 +684,10 @@ namespace Scryber.UnitLayouts
             pg.HorizontalAlignment = HorizontalAlignment.Center;
 
             doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
+            pg.Contents.Add(new TextLiteral("This is a centered text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
-            doc.AppendTraceLog = true;
+            //doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
             SaveAsPDF(doc, "Text_LiteralHAlignCenter");
 
@@ -1072,7 +1071,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1180,7 +1179,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             //First Page
@@ -1231,7 +1230,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
             region = content.Columns[0] as PDFLayoutRegion;
 
@@ -1295,7 +1294,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1378,7 +1377,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2
@@ -1446,7 +1445,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             var region = content.Columns[0];
@@ -1493,7 +1492,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1576,7 +1575,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2 - full

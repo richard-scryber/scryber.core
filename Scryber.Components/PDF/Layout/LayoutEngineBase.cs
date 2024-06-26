@@ -913,7 +913,9 @@ namespace Scryber.PDF.Layout
                 if (positioned.IsClosed) //we have overflowed and need to get the latest.
                     positioned = this.CurrentBlock.PositionedRegions.Last();
 
+
                 positioned.Close();
+                
 
                 if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
                     posReg.AssociatedRun.Close();
@@ -964,7 +966,15 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    bounds.X = 0;
+                    var x = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while (null != parent)// && parent != pg.PageBlock)
+                    {
+                        x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                    bounds.X = x;
                 }
             }
             //else
@@ -992,13 +1002,25 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    var y = pg.ContentBlock.Height;
-                    var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
+                    //var y = pg.ContentBlock.Height;
+                    //var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
 
-                    if (curr != null && curr is PDFLayoutLine line)
+                    var y = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while(null != parent)// && parent != pg.PageBlock)
                     {
-                        y += line.Height; //We add this to the y even through the line is not closed (as per html)
+                        y += parent.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
+
+                        if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                            y += line.Height;
+
+                        parent = parent.Parent as PDFLayoutBlock;
                     }
+                    //if (curr != null && curr is PDFLayoutLine line)
+                    //{
+                    //   y += line.Height; //We add this to the y even through the line is not closed (as per html)
+                    //}
 
                     bounds.Y = y;
                 }

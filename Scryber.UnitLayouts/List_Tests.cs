@@ -2787,6 +2787,7 @@ namespace Scryber.UnitLayouts
                 li.BorderColor = Drawing.StandardColors.Blue;
                 li.Padding = new Drawing.Thickness(2);
                 li.FullWidth = true;
+                li.Margins = Thickness.Empty();
                 ol.Items.Add(li);
 
                 if (Nests.Contains(i))

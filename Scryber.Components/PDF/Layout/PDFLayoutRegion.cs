@@ -798,8 +798,12 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private bool ShouldApplyAlignment()
         {
-            if (this.PositionMode == Drawing.PositionMode.Absolute || this.PositionMode == Drawing.PositionMode.Relative)
+            if (this.PositionMode == PositionMode.Fixed || this.PositionMode == Drawing.PositionMode.Absolute)
                 return false;
+            else if(this.PositionMode == PositionMode.Relative)
+            {
+                return false; //Check with relative unit tests.
+            }
             else
                 return true;
         }

@@ -947,9 +947,9 @@ namespace Scryber.PDF.Layout
             if(pos.PositionMode == PositionMode.Fixed)
             {
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
-                //addTo = page.PageBlock; 
+                
             }
-            if (pos.PositionMode == PositionMode.Absolute)
+            else if (pos.PositionMode == PositionMode.Absolute)
                 //Page sizing
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
             else
@@ -968,15 +968,35 @@ namespace Scryber.PDF.Layout
                     space.Width -= pos.X.Value;
                 }
             }
+            else if (pos.Right.HasValue)
+            {
+                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
+                    pos.X = null;
+                else
+                {
+                    //space.Y += pos.Y.Value; Needs sorting
+                    space.Width -= pos.Right.Value;
+                }
+            }
 
             if (pos.Y.HasValue)
             {
-                if (pos.PositionMode == PositionMode.InlineBlock)
+                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
                     pos.Y = null;
                 else
                 {
                     space.Y += pos.Y.Value;
                     space.Height -= pos.Y.Value;
+                }
+            }
+            else if (pos.Bottom.HasValue)
+            {
+                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
+                    pos.Y = null;
+                else
+                {
+                    //space.Y += pos.Y.Value; Needs Sorting
+                    space.Height -= pos.Bottom.Value;
                 }
             }
             

@@ -258,6 +258,8 @@ namespace Scryber.PDF.Layout
             pageBlock.InitRegions(totalbounds, options, new PDFColumnOptions() { ColumnCount = 1 }, context);
 
             var blockStyle = new StyleFull();
+            this.FullStyle.MergeInherited(blockStyle, true, Style.DirectStylePriority);
+
             var contentPosOptions = blockStyle.CreatePostionOptions();
 
             PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, blockStyle, split); //this.FullStyle;

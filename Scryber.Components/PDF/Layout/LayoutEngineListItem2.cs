@@ -173,7 +173,7 @@ namespace Scryber.PDF.Layout
             panel.OverflowAction = OverflowAction.Clip;
             panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
             panel.HorizontalAlignment = label.Alignment;
-            panel.PositionMode = PositionMode.Relative;
+            panel.PositionMode = PositionMode.Absolute;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
             //panel.Height = 20;

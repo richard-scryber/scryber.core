@@ -29,13 +29,13 @@
     <None Remove="Content\Images\" />
     <None Remove="Content\WhiteSpaceLayouts\" />
     <None Remove="Content\HTML\" />
-    <None Remove="Content\HTML\RelativePositioning\" />
+    <None Remove="Content\HTML\Positioning\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Content\Images\" />
     <Folder Include="Content\WhiteSpaceLayouts\" />
     <Folder Include="Content\HTML\" />
-    <Folder Include="Content\HTML\RelativePositioning\" />
+    <Folder Include="Content\HTML\Positioning\" />
   </ItemGroup>
 </Project>

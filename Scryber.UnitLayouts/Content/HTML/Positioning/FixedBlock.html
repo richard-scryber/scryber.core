@@ -5,27 +5,30 @@
 
     <style>
         h5{
-            margin-top: 1.67em;
-            margin-bottom: 1.67em;
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            line-height: 30pt;
+            border: solid 1px green;
+            padding: 0pt;
         }
 
         body{
-            margin: 30pt;
-            border: solid 1px red;
+            font-size: 12pt;
+            line-height: 15pt;
         }
 
-        .fixed {
+
+        #fixed {
             position: fixed;
             border: solid 1px blue;
         }
     </style>
 </head>
 <body>
-    <header>This is the header for the page</header>
     <h5>Block below is fixed positioned to the page, without a specific location</h5>
-    <span>Before the fixed.</span>
-    <div class="fixed">Fixed to the page</div>
-    <span> After the fixed block.</span>
+    <span id="before">Before the fixed.</span>
+    <div id="fixed">Fixed to the page</div>
+    <span id="after"> After the fixed block.</span>
 </body>
 </html>
 

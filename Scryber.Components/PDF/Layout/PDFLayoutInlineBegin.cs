@@ -69,6 +69,8 @@ namespace Scryber.PDF.Layout
             if (null != this.Owner && this.Owner is Component comp)
             {
                 var bounds = this.GetContainingBounds(context);
+                bounds.X += context.Offset.X;
+                bounds.Y += context.Offset.Y;
                 comp.SetArrangement(context, this.FullStyle, bounds);
             }
 

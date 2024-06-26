@@ -100,7 +100,12 @@ namespace Scryber.PDF.Layout
                 w = Unit.Max(w, item.Width);
             }
 
-            if (this.PositionMode != Drawing.PositionMode.Absolute && this.PositionMode != Drawing.PositionMode.Relative)
+            if (this.PositionMode == PositionMode.Fixed)
+            {
+                if (this.PositionOptions.Height.HasValue)
+                    h = this.PositionOptions.Height.Value;
+            }
+            else if (this.PositionMode != Drawing.PositionMode.Absolute)
             {
                 if (this.PositionOptions.Width.HasValue)
                     w = this.PositionOptions.Width.Value;
@@ -111,6 +116,7 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = new Rect(this.TotalBounds.Location, this.UsedSize);
 
             return base.DoClose(ref msg);
+
         }
 
         #endregion
