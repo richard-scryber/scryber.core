@@ -1017,6 +1017,11 @@ namespace Scryber.PDF.Layout
 
                         parent = parent.Parent as PDFLayoutBlock;
                     }
+                    if(pg.HeaderBlock != null)
+                    {
+                        y += pg.HeaderBlock.Height;
+                    }
+
                     //if (curr != null && curr is PDFLayoutLine line)
                     //{
                     //   y += line.Height; //We add this to the y even through the line is not closed (as per html)

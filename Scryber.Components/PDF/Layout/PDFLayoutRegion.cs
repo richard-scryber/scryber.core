@@ -523,7 +523,7 @@ namespace Scryber.PDF.Layout
         /// And increasing the size of this region if the block is closed.
         /// </summary>
         /// <param name="block"></param>
-        public virtual void AddExistingItem(PDFLayoutBlock block)
+        public virtual void AddExistingItem(PDFLayoutBlock block, int atIndex = -1)
         {
             if (null == block)
                 throw new ArgumentNullException("block");
@@ -531,7 +531,14 @@ namespace Scryber.PDF.Layout
             if (block.Parent != this.Parent) //make sure the parent blocks match
                 block.SetParent(this.Parent);
 
-            this.Contents.Add(block);
+            if (atIndex < 0 || atIndex >= this.Contents.Count)
+            {
+                this.Contents.Add(block);
+            }
+            else
+            {
+                this.Contents.Insert(atIndex, block);
+            }
 
             //Set the blocks new available bounds based on our size
             Rect newbounds = block.AvailableBounds;

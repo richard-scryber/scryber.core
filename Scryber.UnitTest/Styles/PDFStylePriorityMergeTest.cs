@@ -305,7 +305,7 @@ namespace Scryber.Core.UnitTests.Styles
                 using (var stream = DocStreams.GetOutputStream("StylePriorityNestedClasses.pdf"))
                     doc.SaveAsPDF(stream);
 
-                var pg = doc.FindAComponentById("pg");
+                var pg = doc.FindAComponentById("pg") as Page;
                 var first = doc.FindAComponentById("first");
                 var second = doc.FindAComponentById("second");
                 var third = doc.FindAComponentById("third");

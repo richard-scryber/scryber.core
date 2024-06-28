@@ -71,12 +71,20 @@ namespace Scryber.Styles.Parsing.Typed
             switch (value.ToLower())
             {
                 case ("auto"):
+                case ("scroll"):
+                    over = OverflowAction.NewPage;
+                    return true;
+
                 case ("visible"):
                     over = OverflowAction.None;
                     return true;
 
                 case ("hidden"):
                     over = OverflowAction.Truncate;
+                    return true;
+
+                case ("clip"):
+                    over = OverflowAction.Clip;
                     return true;
 
                 default:

@@ -386,7 +386,7 @@ namespace Scryber.PDF.Layout
             headblock.InitRegions(content, headPos, full.CreateColumnOptions(), context);
 
             this._header = headblock;
-            this.PageBlock.Columns[0].AddExistingItem(this._header);
+            this.PageBlock.Columns[0].AddExistingItem(this._header, 0);
 
             //Make this block current
             this.CurrentBlock = headblock;
