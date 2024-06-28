@@ -47,24 +47,24 @@ namespace Scryber.PDF.Layout
             this.Region = region;
         }
 
-        public override void SetOffsetY(Drawing.Unit y)
+        public override void SetOffsetY(Unit y)
         {
             //Do Nothing
         }
 
-        public override Drawing.Unit Height
+        public override Unit Height
         {
-            get { return Drawing.Unit.Zero; }
+            get { return Unit.Zero; }
         }
 
         private Unit _width = Unit.Zero;
 
-        public override Drawing.Unit Width
+        public override Unit Width
         {
             get { return _width; }
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             xoffset = 0;
             yoffset = 0;
@@ -80,10 +80,15 @@ namespace Scryber.PDF.Layout
         {
             Scryber.Drawing.Point oldOffset = context.Offset;
 
-            if (this.Region.PositionMode == Drawing.PositionMode.Fixed)
+            if (this.Region.PositionMode == PositionMode.Fixed)
             {
-                context.Offset = Scryber.Drawing.Point.Empty;
+                context.Offset = Point.Empty;
             }
+            else if(this.Region.PositionMode == PositionMode.Absolute)
+            {
+                context.Offset = Point.Empty;
+            }
+
             Native.PDFObjectRef oref = this.Region.OutputToPDF(context, writer);
 
             context.Offset = oldOffset;

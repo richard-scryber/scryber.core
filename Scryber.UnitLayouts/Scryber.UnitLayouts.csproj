@@ -30,6 +30,8 @@
     <None Remove="Content\WhiteSpaceLayouts\" />
     <None Remove="Content\HTML\" />
     <None Remove="Content\HTML\Positioning\" />
+    <None Remove="Content\HTML\Positioning\Fixed\" />
+    <None Remove="Content\HTML\Positioning\Absolute\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
@@ -37,5 +39,7 @@
     <Folder Include="Content\WhiteSpaceLayouts\" />
     <Folder Include="Content\HTML\" />
     <Folder Include="Content\HTML\Positioning\" />
+    <Folder Include="Content\HTML\Positioning\Fixed\" />
+    <Folder Include="Content\HTML\Positioning\Absolute\" />
   </ItemGroup>
 </Project>

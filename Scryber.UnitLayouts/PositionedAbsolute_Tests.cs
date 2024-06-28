@@ -12,9 +12,9 @@ using Scryber.Drawing;
 namespace Scryber.UnitLayouts
 {
     [TestClass()]
-    public class PositionedFixed_Tests
+    public class PositionedAbsolute_Tests
     {
-        const string TestCategoryName = "Layout Fixed";
+        const string TestCategoryName = "Layout Absolute";
 
         PDFLayoutDocument layout;
 
@@ -32,7 +32,7 @@ namespace Scryber.UnitLayouts
         protected string AssertGetContentFile(string name)
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Fixed/" + name + ".html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Absolute/" + name + ".html");
             path = System.IO.Path.GetFullPath(path);
 
             if (!System.IO.File.Exists(path))
@@ -44,13 +44,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_01_BlockTest()
+        public void Absolute_01_BlockTest()
         {
-            var path = AssertGetContentFile("FixedBlock");
+            var path = AssertGetContentFile("AbsoluteBlock");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_01_Block.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_01_Block.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -113,13 +113,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_02_BlockMarginsTest()
+        public void Absolute_02_BlockMarginsTest()
         {
-            var path = AssertGetContentFile("FixedBlockMargins");
+            var path = AssertGetContentFile("AbsoluteBlockMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_02_BlockMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_02_BlockMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -185,13 +185,13 @@ namespace Scryber.UnitLayouts
         
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_03_BlockFullWidthTest()
+        public void Absolute_03_BlockFullWidthTest()
         {
-            var path = AssertGetContentFile("FixedBlockFullWidth");
+            var path = AssertGetContentFile("AbsoluteBlockFullWidth");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_03_BlockFullWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_03_BlockFullWidth.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -259,13 +259,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_04_BlockNestedFullWidthTest()
+        public void Absolute_04_BlockNestedFullWidthTest()
         {
-            var path = AssertGetContentFile("FixedBlockNestedFullWidth");
+            var path = AssertGetContentFile("AbsoluteBlockNestedFullWidth");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlock_04_NestedFullWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteBlock_04_NestedFullWidth.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -336,13 +336,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_05_BlockNestedMarginsTest()
+        public void Absolute_05_BlockNestedMarginsTest()
         {
-            var path = AssertGetContentFile("FixedBlockNestedMargins");
+            var path = AssertGetContentFile("AbsoluteBlockNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlock_05_NestedMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteBlock_05_NestedMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -414,13 +414,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_06_BlockNestedFullWidthMarginsTest()
+        public void Absolute_06_BlockNestedFullWidthMarginsTest()
         {
-            var path = AssertGetContentFile("FixedBlockNestedFullWidthMargins");
+            var path = AssertGetContentFile("AbsoluteBlockNestedFullWidthMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_FixedBlock_06_NestedFullWidthMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteBlock_06_NestedFullWidthMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;

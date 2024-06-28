@@ -79,6 +79,7 @@ namespace Scryber.Styles
         public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Style style = BuildFullStyle(Component);
+            
             style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
             return style;
         }

@@ -930,7 +930,10 @@ namespace Scryber.PDF.Layout
                 else if(positioned.PositionMode == PositionMode.Fixed)
                 {
                     this.UpdateFixedRegionPosition(positioned, options);
-
+                }
+                else if(positioned.PositionMode == PositionMode.Absolute)
+                {
+                    this.UpdateAbsoluteRegionPosition(positioned, options);
                 }
                 //If we are relative and we some transformations to apply
                 if (options != null && options.HasTransformation)
@@ -1018,6 +1021,110 @@ namespace Scryber.PDF.Layout
                         parent = parent.Parent as PDFLayoutBlock;
                     }
                     if(pg.HeaderBlock != null)
+                    {
+                        y += pg.HeaderBlock.Height;
+                    }
+
+                    //if (curr != null && curr is PDFLayoutLine line)
+                    //{
+                    //   y += line.Height; //We add this to the y even through the line is not closed (as per html)
+                    //}
+
+                    bounds.Y = y;
+                }
+            }
+            //else
+            //{
+            //    //Check the page padding, margins and Header - Fixed is outside of these.
+            //    if (pg.PositionOptions.Margins.Top != 0)
+            //    {
+            //        bounds.Y -= pg.PositionOptions.Margins.Top;
+            //    }
+            //    if (pg.PositionOptions.Padding.Top != 0)
+            //    {
+            //        bounds.Y -= pg.PositionOptions.Padding.Top;
+            //    }
+            //    if (pg.HeaderBlock != null)
+            //    {
+            //        bounds.Y -= pg.HeaderBlock.Height;
+            //    }
+
+            //}
+
+            //Put the bounds back on to the region.
+            positioned.TotalBounds = bounds;
+        }
+
+
+        protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
+        {
+            var pg = this.Context.DocumentLayout.CurrentPage;
+            var bounds = positioned.TotalBounds;
+
+            if (options.X.HasValue == false)
+            {
+                var w = pg.Width;
+
+                if (options.Right.HasValue)
+                {
+                    //Move to the right
+                    w -= (options.Right.Value + positioned.TotalBounds.Width);
+                    bounds.X = w;
+                }
+                else
+                {
+                    var x = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while (null != parent)// && parent != pg.PageBlock)
+                    {
+                        x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                    bounds.X = x;
+                }
+            }
+            //else
+            //{
+            //    //Check the page padding, margins - Fixed is outside of these.
+
+            //    if (pg.PositionOptions.Margins.Left != 0)
+            //    {
+            //        bounds.X -= pg.PositionOptions.Margins.Left;
+            //    }
+            //    if (pg.PositionOptions.Padding.Left != 0)
+            //    {
+            //        bounds.X -= pg.PositionOptions.Padding.Left;
+            //    }
+            //}
+
+            if (options.Y.HasValue == false)
+            {
+                if (options.Bottom.HasValue)
+                {
+                    var h = pg.Height;
+                    h -= (options.Bottom.Value + positioned.TotalBounds.Height);
+
+                    bounds.Y = h;
+                }
+                else
+                {
+                    //var y = pg.ContentBlock.Height;
+                    //var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
+
+                    var y = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while (null != parent)// && parent != pg.PageBlock)
+                    {
+                        y += parent.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
+
+                        if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                            y += line.Height;
+
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                    if (pg.HeaderBlock != null)
                     {
                         y += pg.HeaderBlock.Height;
                     }
