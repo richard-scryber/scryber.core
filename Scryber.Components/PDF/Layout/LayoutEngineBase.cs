@@ -824,12 +824,59 @@ namespace Scryber.PDF.Layout
 
             var fontSize = new Size(font.GetZeroCharWidth(), font.GetSize());
 
-            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, new ParentComponentSizer(this.GetParentComponentSize), fontSize, Font.DefaultFontSize);
             return full;
         }
 
         #endregion
 
+
+        protected virtual Size GetParentComponentSize(IComponent component, Style style, PositionMode withMode)
+        {
+            Size sz = Size.Empty;
+            var pg = this.DocumentLayout.CurrentPage;
+
+            if (withMode == PositionMode.Relative)
+            {
+                var container = pg.LastOpenBlock();
+                bool foundRelative = false;
+
+                while(null != container)
+                {
+                    if(container.Position.PositionMode == PositionMode.Absolute
+                        || container.Position.PositionMode == PositionMode.Fixed
+                        || container.Position.PositionMode == PositionMode.Relative)
+                    {
+                        foundRelative = true;
+                        sz = container.CurrentRegion.TotalBounds.Size;
+                        break;
+                    }
+                    container = container.Parent as PDFLayoutBlock;
+                }
+
+                if (!foundRelative)
+                {
+                    sz = pg.Size;
+                }
+            }
+            else if(withMode ==  PositionMode.Fixed)
+            {
+                sz = pg.Size;
+            }
+            else
+            {
+                var container = pg.LastOpenBlock();
+
+                if (null != container)
+                    sz = container.CurrentRegion.TotalBounds.Size;
+                else if (null != pg.CurrentBlock)
+                    sz = pg.CurrentBlock.CurrentRegion.TotalBounds.Size;
+                else
+                    sz = pg.Size;
+
+            }
+            return sz;
+        }
 
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 

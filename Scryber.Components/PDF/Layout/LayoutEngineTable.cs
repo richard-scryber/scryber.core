@@ -704,35 +704,42 @@ namespace Scryber.PDF.Layout
         protected virtual Style BuildRowFullStyle(TableRow row, PDFPositionOptions tablePosition, PDFTextRenderOptions tablefont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
-
+            
             Size pageSize = page.Size;
-
-            Size tableSize = GetSize(tablePosition.Width, block.AvailableBounds.Width,
-                                     tablePosition.Height, block.AvailableBounds.Height);
 
             Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(row, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(row, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
         }
 
         protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle, PDFPositionOptions tablePosition, PDFPositionOptions rowPosition, PDFTextRenderOptions rowfont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
 
             Size pageSize = page.Size;
-
-            Size tableSize = GetSize(rowPosition.Width, tablePosition.Width.HasValue ? tablePosition.Width.Value : block.AvailableBounds.Width,
-                                     rowPosition.Height, tablePosition.Height.HasValue ? tablePosition.Height.Value : block.AvailableBounds.Height);
 
             Size fontSize = new Size(rowfont.GetZeroCharWidth(), rowfont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(cell, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(cell, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
+        }
+
+        protected virtual Size GetTableContainerSize(IComponent forComponent, Style withStyle, PositionMode inMode)
+        {
+            var block = this.CurrentBlock;
+            var tablePos = this.FullStyle.CreatePostionOptions();
+
+            var width = tablePos.Width;
+            var height = tablePos.Height;
+
+            
+            var w = width.HasValue ? width.Value : block.AvailableBounds.Width;
+            var h = height.HasValue ? height.Value : block.AvailableBounds.Height;
+
+            return new Size(w, h);
         }
 
         #region private void CalculateTableSpace()

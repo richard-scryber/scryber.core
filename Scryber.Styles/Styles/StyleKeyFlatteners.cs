@@ -44,8 +44,7 @@ namespace Scryber.Styles
                 Unit result;
                 if (dim.IsRelative)
                 {
-                    bool isFixed = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Inline) == PositionMode.Fixed;
-                    result = FlattenHorizontalUnit(dim, pageSize, containerSize, fontSize, rootFontSize, isFixed);
+                    result = FlattenHorizontalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
                     value.SetValue(result);
                 }
                 else
@@ -55,16 +54,13 @@ namespace Scryber.Styles
             }
         }
 
-        private static Unit FlattenHorizontalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize, bool isFixedPosition)
+        private static Unit FlattenHorizontalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Unit result;
             switch (dim.Units)
             {
                 case PageUnits.Percent:
-                    if (isFixedPosition)
-                        result = dim.ToAbsolute(pageSize.Width);
-                    else
-                        result = dim.ToAbsolute(containerSize.Width);
+                    result = dim.ToAbsolute(containerSize.Width);
                     break;
                 case PageUnits.EMHeight:
                     result = dim.ToAbsolute(fontSize.Height);
@@ -119,8 +115,7 @@ namespace Scryber.Styles
                 Unit result;
                 if (dim.IsRelative)
                 {
-                    bool isFixed = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Inline) == PositionMode.Fixed;
-                    result = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontSize, isFixed);
+                    result = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontSize);
                     value.SetValue(result);
                 }
                 else
@@ -130,16 +125,13 @@ namespace Scryber.Styles
             }
         }
 
-        private static Unit FlattenVerticalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize, bool isFixedPosition)
+        private static Unit FlattenVerticalUnit(Unit dim, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             Unit result;
             switch (dim.Units)
             {
                 case PageUnits.Percent:
-                    if (isFixedPosition)
-                        result = dim.ToAbsolute(pageSize.Height);
-                    else
-                        result = dim.ToAbsolute(containerSize.Height);
+                    result = dim.ToAbsolute(containerSize.Height);
                     break;
                 case PageUnits.EMHeight:
                     result = dim.ToAbsolute(fontSize.Height);
@@ -189,7 +181,7 @@ namespace Scryber.Styles
                 Unit dim = all.Value(style);
                 if (dim.IsRelative)
                 {
-                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight, false);
+                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
                     all.SetValue(vert);
                 }
                 else
@@ -211,7 +203,7 @@ namespace Scryber.Styles
                 Unit dim = all.Value(style);
                 if (dim.IsRelative)
                 {
-                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight, false);
+                    Unit vert = FlattenVerticalUnit(dim, pageSize, containerSize, fontSize, rootFontHeight);
                     all.SetValue(vert);
 
                 }
@@ -313,10 +305,10 @@ namespace Scryber.Styles
                 if (dim.IsRelative)
                 {
                     Rect flat = new Rect();
-                    flat.X = FlattenHorizontalUnit(dim.X, pageSize, containerSize, fontSize, rootFontSize, false);
-                    flat.Y = FlattenVerticalUnit(dim.Y, pageSize, containerSize, fontSize, rootFontSize, false);
-                    flat.Width = FlattenHorizontalUnit(dim.Width, pageSize, containerSize, fontSize, rootFontSize, false);
-                    flat.Height = FlattenVerticalUnit(dim.Height, pageSize, containerSize, fontSize, rootFontSize, false);
+                    flat.X = FlattenHorizontalUnit(dim.X, pageSize, containerSize, fontSize, rootFontSize);
+                    flat.Y = FlattenVerticalUnit(dim.Y, pageSize, containerSize, fontSize, rootFontSize);
+                    flat.Width = FlattenHorizontalUnit(dim.Width, pageSize, containerSize, fontSize, rootFontSize);
+                    flat.Height = FlattenVerticalUnit(dim.Height, pageSize, containerSize, fontSize, rootFontSize);
 
                     value.SetValue(flat);
                 }

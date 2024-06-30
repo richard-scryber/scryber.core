@@ -76,10 +76,24 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="Component"></param>
         /// <returns></returns>
-        public Style GetFullStyle(IComponent Component, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        public Style GetFullStyle(IComponent component, Size pageSize, ParentComponentSizer sizer, Size fontSize, Unit rootFontSize)
         {
-            Style style = BuildFullStyle(Component);
-            
+            Style style = BuildFullStyle(component);
+            PositionMode mode = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+            Size containerSize;
+            if(mode == PositionMode.Absolute)
+            {
+                containerSize = sizer(component, style, PositionMode.Relative);
+            }
+            else if(mode == PositionMode.Fixed)
+            {
+                containerSize = pageSize; // sizer(component, style, PositionMode.Fixed);
+            }
+            else
+            {
+                containerSize = sizer(component, style, PositionMode.Block);
+            }
+
             style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
             return style;
         }

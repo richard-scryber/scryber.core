@@ -141,7 +141,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(two);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, Size.Empty, Size.Empty, Size.Empty, Unit.Zero);
+            Style actual = target.GetFullStyle(lbl, Size.Empty, new ParentComponentSizer(this.RelativeViewEmptySizer), Size.Empty, Unit.Zero);
 
             Assert.AreEqual("Symbol", actual.Font.FontFamily.FamilyName); //inherited from root
             Assert.AreEqual((Unit)48, actual.Font.FontSize); //inherited from one
@@ -151,6 +151,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(Color.Transparent, actual.Background.Color); //not inherited from root
             Assert.AreEqual(FillType.None, actual.Background.FillStyle); //not inherited from one
             
+        }
+
+        private Size RelativeViewEmptySizer(IComponent component, Style style, PositionMode mode)
+        {
+            return Size.Empty;
         }
 
         /// <summary>
@@ -183,7 +188,7 @@ namespace Scryber.Core.UnitTests.Styles
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewPercentSizer), font, rem);
 
             
 
@@ -192,6 +197,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(400.0 * 0.05), actual.Padding.All); //5% of container height (default vertical)
             Assert.AreEqual((Unit)(400.0 * 0.1), actual.Margins.All); //10% of container height (default vertical)
             Assert.AreEqual((Unit)(300.0 * 0.15), actual.Margins.Left); //15% of container width
+        }
+
+        private Size RelativeViewPercentSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(300, 400);
         }
 
         /// <summary>
@@ -221,12 +231,11 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewWidthSizer), font, rem);
 
 
 
@@ -235,6 +244,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(600.0 * 0.15), actual.Padding.All); 
             Assert.AreEqual((Unit)(600.0 * 0.10), actual.Margins.All);
             Assert.AreEqual((Unit)(600.0 * 0.20), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewWidthSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
         /// <summary>
@@ -264,18 +278,23 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
+            
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewHeightSizer), font, rem);
 
             Assert.AreEqual((Unit)(800 * 0.06), actual.Font.FontSize); //50%
             Assert.AreEqual((Unit)2, actual.Border.Width); //absolute
             Assert.AreEqual((Unit)(800.0 * 0.16), actual.Padding.All); 
             Assert.AreEqual((Unit)(800.0 * 0.11), actual.Margins.All); 
             Assert.AreEqual((Unit)(800.0 * 0.21), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewHeightSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
         /// <summary>
@@ -305,12 +324,12 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
+            //Size container = new Size(400, 500);
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(RelativeViewMinSizer), font, rem);
 
             //vmin is 600
             Assert.AreEqual((Unit)(600 * 0.07), actual.Font.FontSize); 
@@ -318,6 +337,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(600.0 * 0.17), actual.Padding.All);
             Assert.AreEqual((Unit)(600.0 * 0.12), actual.Margins.All); 
             Assert.AreEqual((Unit)(600.0 * 0.22), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewMinSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
         /// <summary>
@@ -352,7 +376,7 @@ namespace Scryber.Core.UnitTests.Styles
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewMaxSizer), font, rem);
 
             //vmin is 600
             Assert.AreEqual((Unit)(800 * 0.08), actual.Font.FontSize); 
@@ -360,6 +384,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(800.0 * 0.18), actual.Padding.All); 
             Assert.AreEqual((Unit)(800.0 * 0.13), actual.Margins.All); 
             Assert.AreEqual((Unit)(800.0 * 0.23), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewMaxSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
 
@@ -395,7 +424,7 @@ namespace Scryber.Core.UnitTests.Styles
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewEmSizer), font, rem);
 
             //vmin is 600
             Assert.AreEqual((Unit)(20 * 4.0), actual.Font.FontSize); 
@@ -403,6 +432,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(20 * 5), actual.Padding.All);
             Assert.AreEqual((Unit)(20 * 3), actual.Margins.All); 
             Assert.AreEqual((Unit)(20 * 2), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewEmSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
 
@@ -433,12 +467,11 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewExHeightSizer), font, rem);
 
             //Ex is x char height, approx same as 0 width, so thats what we use.
             Assert.AreEqual((Unit)(10 * 8.0), actual.Font.FontSize);
@@ -446,6 +479,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(10 * 10), actual.Padding.All); 
             Assert.AreEqual((Unit)(10 * 6), actual.Margins.All); 
             Assert.AreEqual((Unit)(10 * 3), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewExHeightSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
         /// <summary>
@@ -475,12 +513,11 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewChWidthSizer), font, rem);
 
             //ch is zero width - font.Width
             Assert.AreEqual((Unit)(10 * 7.0), actual.Font.FontSize); 
@@ -488,6 +525,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(10 * 9), actual.Padding.All); 
             Assert.AreEqual((Unit)(10 * 8), actual.Margins.All); 
             Assert.AreEqual((Unit)(10 * 4), actual.Margins.Left); 
+        }
+
+        private Size RelativeViewChWidthSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
         /// <summary>
@@ -516,12 +558,11 @@ namespace Scryber.Core.UnitTests.Styles
             target.Push(one);
 
             Size page = new Size(600, 800);
-            Size container = new Size(400, 500);
             Size font = new Size(10, 20);
             Unit rem = new Unit(16);
 
             Label lbl = new Label();
-            Style actual = target.GetFullStyle(lbl, page, container, font, rem);
+            Style actual = target.GetFullStyle(lbl, page, new ParentComponentSizer(this.RelativeViewRemHeightSizer), font, rem);
 
             //ch is zero width - font.Width
             Assert.AreEqual((Unit)(16 * 2), actual.Font.FontSize); 
@@ -529,6 +570,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)(16 * 3), actual.Padding.All); 
             Assert.AreEqual((Unit)(16 * 4), actual.Margins.All); 
             Assert.AreEqual((Unit)(16 * 5), actual.Margins.Left);
+        }
+
+        private Size RelativeViewRemHeightSizer(IComponent component, Style style, PositionMode mode)
+        {
+            return new Size(400, 500);
         }
 
 

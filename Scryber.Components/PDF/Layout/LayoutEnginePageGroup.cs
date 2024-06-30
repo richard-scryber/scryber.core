@@ -175,8 +175,6 @@ namespace Scryber.PDF.Layout
             if (null == this._textOptions)
                 this._textOptions = this._full.CreateTextOptions();
 
-            var pos = this._full.CreatePostionOptions();
-
             var fontSize = new Size(this._textOptions.GetLineHeight(), this._textOptions.GetZeroCharWidth());
 
             if (forComponent is IDocumentPage docPg)
@@ -185,8 +183,18 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, pgSize.Subtract(pos.Margins), fontSize, Font.DefaultFontSize);
+                return this.Context.StyleStack.GetFullStyle(forComponent, pgSize, new ParentComponentSizer(this.GetPageSize), fontSize, Font.DefaultFontSize);
             }
+        }
+
+
+        private Size GetPageSize(IComponent forComponent, Style withStyle, PositionMode andMode)
+        {
+            var pg = this._full.CreatePageSize();
+            var pos = this._full.CreatePostionOptions();
+
+            return pg.Size.Subtract(pos.Margins);
+
         }
 
         protected virtual void PushGroupFooter(PageBase topage, bool first)
