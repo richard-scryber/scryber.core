@@ -836,7 +836,7 @@ namespace Scryber.PDF.Layout
             Size sz = Size.Empty;
             var pg = this.DocumentLayout.CurrentPage;
 
-            if (withMode == PositionMode.Relative)
+            if (withMode == PositionMode.Relative || withMode == PositionMode.Absolute)
             {
                 var container = pg.LastOpenBlock();
                 bool foundRelative = false;
@@ -849,6 +849,10 @@ namespace Scryber.PDF.Layout
                     {
                         foundRelative = true;
                         sz = container.CurrentRegion.TotalBounds.Size;
+                        if (container.Position.Padding.IsEmpty == false)
+                        {
+                            sz.Width += container.Position.Padding.Left + container.Position.Padding.Right;
+                        }
                         break;
                     }
                     container = container.Parent as PDFLayoutBlock;
@@ -1114,8 +1118,36 @@ namespace Scryber.PDF.Layout
 
                 if (options.Right.HasValue)
                 {
-                    //Move to the right
-                    w -= (options.Right.Value + positioned.TotalBounds.Width);
+                    var isadding = false;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    w -= (options.Right.Value + positioned.Width);
+
+                    while(null != parent)
+                    {
+                        var mode = parent.Position.PositionMode;
+
+                        if (!isadding)
+                        {
+                            if(mode == PositionMode.Relative)
+                            {
+                                isadding = true;
+                            }
+                            else if(mode == PositionMode.Fixed || mode == PositionMode.Absolute)
+                            {
+                                throw new NotSupportedException("This need to be tested");
+                            }
+
+                        }
+
+                        if (isadding)
+                        {
+                            w -= (parent.Position.Margins.Right + parent.Position.Padding.Right);
+                        }
+
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                                        
                     bounds.X = w;
                 }
                 else
@@ -1131,19 +1163,42 @@ namespace Scryber.PDF.Layout
                     bounds.X = x;
                 }
             }
-            //else
-            //{
-            //    //Check the page padding, margins - Fixed is outside of these.
+            else
+            {
 
-            //    if (pg.PositionOptions.Margins.Left != 0)
-            //    {
-            //        bounds.X -= pg.PositionOptions.Margins.Left;
-            //    }
-            //    if (pg.PositionOptions.Padding.Left != 0)
-            //    {
-            //        bounds.X -= pg.PositionOptions.Padding.Left;
-            //    }
-            //}
+                var x = options.X.Value;
+                var parent = positioned.Parent as PDFLayoutBlock;
+
+                //with absolute we find the closest positioned parent and add after that.
+
+                var isadding = false; 
+
+                while(null != parent)
+                {
+                    var mode = parent.Position.PositionMode;
+
+                    if (!isadding)
+                    {
+                        if (mode == PositionMode.Relative)
+                        {
+                            isadding = true;
+                        }
+                        else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
+                        {
+                            throw new NotSupportedException("This needs to be tested");
+                        }
+                    }
+
+                    if (isadding)
+                    {
+                        x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+                    }
+
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
+
+                bounds.X = x;
+            }
 
             if (options.Y.HasValue == false)
             {
@@ -1184,23 +1239,46 @@ namespace Scryber.PDF.Layout
                     bounds.Y = y;
                 }
             }
-            //else
-            //{
-            //    //Check the page padding, margins and Header - Fixed is outside of these.
-            //    if (pg.PositionOptions.Margins.Top != 0)
-            //    {
-            //        bounds.Y -= pg.PositionOptions.Margins.Top;
-            //    }
-            //    if (pg.PositionOptions.Padding.Top != 0)
-            //    {
-            //        bounds.Y -= pg.PositionOptions.Padding.Top;
-            //    }
-            //    if (pg.HeaderBlock != null)
-            //    {
-            //        bounds.Y -= pg.HeaderBlock.Height;
-            //    }
+            else
+            {
+                var y = options.Y.Value;
+                var parent = positioned.Parent as PDFLayoutBlock;
 
-            //}
+                //with absolute we find the closest positioned parent and add after that.
+
+                var isadding = false;
+
+                while (null != parent)
+                {
+                    var mode = parent.Position.PositionMode;
+
+                    if (!isadding)
+                    {
+                        if (mode == PositionMode.Relative)
+                        {
+                            isadding = true;
+                        }
+                        else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
+                        {
+                            throw new NotSupportedException("This needs to be tested");
+                        }
+                    }
+
+                    if (isadding)
+                    {
+                        y += parent.Position.Margins.Top + parent.Position.Padding.Top + parent.Height;
+                    }
+
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
+
+                if(isadding && pg.HeaderBlock != null)
+                {
+                    y += pg.HeaderBlock.Height;
+                }
+
+                bounds.Y = y;
+            }
 
             //Put the bounds back on to the region.
             positioned.TotalBounds = bounds;
