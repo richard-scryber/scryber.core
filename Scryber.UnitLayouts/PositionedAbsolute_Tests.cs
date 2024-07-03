@@ -2593,17 +2593,17 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(content);
 
 
-            Unit yOffset = layout.AllPages[0].Height - (100 + 15); //explicit value + line height from the bottom of the page
+            Unit yOffset = (30 + 50 + 20 + 15); //bottom of the nesting block
             Unit xOffset = 30 + 20; //body and nested margins
-            Unit height = 15;
+            Unit height = 15 * 2; // 2 lines of content
             Unit width = layout.AllPages[0].Width;
 
-
+            yOffset -= 20; //take off the explicit bottom value
 
             //explicit x should ignore the margins
 
 
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(yOffset, content.TotalBounds.Y + content.TotalBounds.Height);
             Assert.AreEqual(xOffset, content.TotalBounds.X);
             Assert.AreEqual(height, content.TotalBounds.Height);
             //Assert.AreEqual(width, content.TotalBounds.Width);
@@ -2624,7 +2624,7 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y + arrange.RenderBounds.Height);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             //Assert.AreEqual(width, arrange.RenderBounds.Width);
