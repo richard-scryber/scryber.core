@@ -37,6 +37,19 @@ namespace Scryber.PDF.Layout
         protected const int NULL_COLUMNINDEX = -1;
         protected const string LOG_CATEGORY = "PDFLayout";
 
+
+        //
+        // events
+        //
+
+        public event EventHandler LayoutBlockClosed;
+
+        protected virtual void OnLayoutItemClosed()
+        {
+            if (null != LayoutBlockClosed)
+                LayoutBlockClosed(this, EventArgs.Empty);
+        }
+
         //
         // properties
         //
@@ -185,6 +198,9 @@ namespace Scryber.PDF.Layout
                         msg = String.Empty;
                     throw new InvalidOperationException(Errors.LayoutItemCouldNotBeClosed + msg);
                 }
+
+                this.OnLayoutItemClosed();
+
                 return perform;
             }
             else

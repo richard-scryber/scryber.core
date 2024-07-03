@@ -1204,10 +1204,68 @@ namespace Scryber.PDF.Layout
             {
                 if (options.Bottom.HasValue)
                 {
-                    var h = pg.Height;
-                    h -= (options.Bottom.Value + positioned.TotalBounds.Height);
+                    var parent = positioned.Parent as PDFLayoutBlock;
+                    var attached = false;
 
-                    bounds.Y = h;
+                    while(null != parent)
+                    {
+                        var mode = parent.Position.PositionMode;
+                        switch (mode)
+                        {
+                            case (PositionMode.Absolute):
+                            case (PositionMode.Relative):
+                            case (PositionMode.Fixed):
+                                //TODO: capture the close event and update then.
+                                parent.LayoutBlockClosed += (sender, args) =>
+                                {
+                                    var block = sender as PDFLayoutBlock;
+
+                                    var bottomBaseline = block.Height - block.Position.Margins.Bottom; //baseline bottom of the container
+
+                                    var evt_parent = block.Parent as PDFLayoutBlock;
+
+                                    //add the offsets of the parents
+                                    while (null != evt_parent)
+                                    {
+                                        bottomBaseline += evt_parent.Height + evt_parent.Position.Margins.Top + evt_parent.Position.Padding.Top;
+
+                                        evt_parent = evt_parent.Parent as PDFLayoutBlock;
+                                    }
+
+                                    if (pg.HeaderBlock != null)
+                                    {
+                                        bottomBaseline += pg.HeaderBlock.Height;
+                                    }
+
+                                    //top of the positioned region is bottom baseline - the height of the region - the actual bottom value
+                                    var y = bottomBaseline - (options.Bottom.Value + positioned.Height);
+                                    var newBounds = positioned.TotalBounds;
+                                    //
+                                    newBounds.Y = y;
+
+                                    positioned.TotalBounds = newBounds;
+                                };
+                                attached = true;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (attached)
+                            parent = null;
+                        else
+                            parent = parent.Parent as PDFLayoutBlock;
+                    }
+
+
+                    if (!attached)
+                    {
+                        //No positioned parents so we simply work off the page.
+                        var h = pg.Height;
+                        h -= (options.Bottom.Value + positioned.TotalBounds.Height);
+
+                        bounds.Y = h;
+                    }
                 }
                 else
                 {

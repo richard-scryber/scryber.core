@@ -2408,13 +2408,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_30_BlockBottomPosition()
+        public void Absolute_30_BlockBottomPosition()
         {
-            var path = AssertGetContentFile("FixedBlockBottomPosition");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPosition");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_30_BlockBottomPosition.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absdolute_30_BlockBottomPosition.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2432,7 +2432,7 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(content);
 
-            Unit yOffset = layout.AllPages[0].Height - (100 + 15);//explicit bottom position and line height
+            Unit yOffset = layout.AllPages[0].Height - (100 + 15);//explicit bottom position and line height of absolute
             Unit xOffset = 0;
             Unit height = 15;
             Unit width = layout.AllPages[0].Width;
@@ -2489,13 +2489,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_31_BlockBottomPositionMargins()
+        public void Absolute_31_BlockBottomPositionMargins()
         {
-            var path = AssertGetContentFile("FixedBlockBottomPositionMargins");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_31_BlockBottomPositionMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_31_BlockBottomPositionMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2570,13 +2570,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_32_BlockBottomPositionNestedMargins()
+        public void Absolute_32_BlockBottomPositionNestedMargins()
         {
-            var path = AssertGetContentFile("FixedBlockBottomPositionNestedMargins");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_32_BlockBottomPositionNestedMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_32_BlockBottomPositionNestedMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
