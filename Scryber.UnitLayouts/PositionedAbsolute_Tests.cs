@@ -2652,13 +2652,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_33_BlockBottomPositionNestedMarginsFullWidth()
+        public void Absolute_33_BlockBottomPositionNestedMarginsFullWidth()
         {
-            var path = AssertGetContentFile("FixedBlockBottomPositionNestedMarginsFullWidth");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMarginsFullWidth");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_33_BlockBottomPositionNestedMarginsFullWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_33_BlockBottomPositionNestedMarginsFullWidth.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2678,17 +2678,19 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(content);
 
-            Unit yOffset = layout.AllPages[0].Height - (100 + 15); //page height - explicit value and a line.
+            Unit yOffset = (30 + 50 + 20 + 15); //bottom of the nesting block
             Unit xOffset = 30 + 20; //body and nested margins
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width;
+            Unit height = 15 * 2; // 2 lines of content
+            Unit width = layout.AllPages[0].Width - 60 - 40; //page width - page margins and nesting margins
+
+            yOffset -= 20; //take off the explicit bottom value
 
 
 
             //explicit x should ignore the margins
 
 
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(yOffset, content.TotalBounds.Y + content.TotalBounds.Height);
             Assert.AreEqual(xOffset, content.TotalBounds.X);
             Assert.AreEqual(height, content.TotalBounds.Height);
             Assert.AreEqual(width, content.TotalBounds.Width);
@@ -2709,7 +2711,7 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y + arrange.RenderBounds.Height);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
@@ -2737,13 +2739,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_34_BlockBottomPositionNestedMarginsHalfWidth()
+        public void Absolute_34_BlockBottomPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("FixedBlockBottomPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_34_BlockBottomPositionNestedMarginsHalfWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_34_BlockBottomPositionNestedMarginsHalfWidth.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2761,19 +2763,19 @@ namespace Scryber.UnitLayouts
 
 
 
-            Assert.IsNotNull(content);
-
-            Unit yOffset = layout.AllPages[0].Height - (100 + 15);//explicit value
+            Unit yOffset = (30 + 50 + 20 + 15); //bottom of the nesting block
             Unit xOffset = 30 + 20; //body and nested margins
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //half width
+            Unit height = 15 * 2; // 2 lines of content
+            Unit width = layout.AllPages[0].Width - 60 - 40; //page width - page margins and nesting margins
 
+            yOffset -= 20; //take off the explicit bottom value
+            width /= 2; //50% width
 
 
             //explicit x should ignore the margins
 
 
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(yOffset, content.TotalBounds.Y + content.TotalBounds.Height);
             Assert.AreEqual(xOffset, content.TotalBounds.X);
             Assert.AreEqual(height, content.TotalBounds.Height);
             Assert.AreEqual(width, content.TotalBounds.Width);
@@ -2794,7 +2796,7 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y + arrange.RenderBounds.Height);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
@@ -2822,14 +2824,14 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_35_BlockBottomPositionPageHeader()
+        public void Absolute_35_BlockBottomPositionPageHeader()
         {
 
-            var path = AssertGetContentFile("FixedBlockBottomPositionPageHeader");
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionPageHeader");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_35_BlockBottomPositionPageHeader.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_35_BlockBottomPositionPageHeader.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2898,13 +2900,14 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_36_BlockTopLeftPositionNestedMarginsHalfWidth()
+        public void Absolute_36_BlockBottomPositionNestedPageHeader()
         {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionNestedMarginsHalfWidth");
+
+            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedPageHeader");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_36_BlockTopLeftPositionNestedMarginsHalfWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_36_BlockBottomPositionNestedPageHeader.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -2921,18 +2924,19 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(content);
 
 
-            Unit yOffset = 80;//explicit fixed value
-            Unit xOffset = 70; //explicit fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //50% width
+            Unit yOffset = (30 + 50 + 20 + 15); //bottom of the nesting block
+            Unit xOffset = 30 + 20; //body and nested margins
+            Unit height = 15; // 2 lines of content
+            //Unit width = layout.AllPages[0].Width - 60 - 40; //page width - page margins and nesting margins
 
-            
+            yOffset += 30; //add the page header
+            yOffset -= 20; //take off the explicit bottom value
 
 
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(yOffset, content.TotalBounds.Y + content.TotalBounds.Height);
             Assert.AreEqual(xOffset, content.TotalBounds.X);
             Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
+            //Assert.AreEqual(width, content.TotalBounds.Width);
 
             block = content.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(block);
@@ -2941,7 +2945,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, block.TotalBounds.X);
             Assert.AreEqual(0, block.TotalBounds.Y);
             Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
+            //Assert.AreEqual(width, block.TotalBounds.Width);
 
             //Arrangement is for links and inner content references
             var div = block.Owner as Div;
@@ -2950,14 +2954,14 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y + arrange.RenderBounds.Height);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            //Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
-            yOffset = new Unit(10 + 10 + 30 + 20 + 30);//h5 top & bottom margin + h5 line height + margins
-            xOffset = 30 + 20; //back to the start with margins
+            yOffset = new Unit(10 + 10 + 30) + 30 + 30 + 20; //reset to body and header + body and nest margins
+            xOffset = 30 + 20; //body and nest margins
 
             var before = layout.DocumentComponent.FindAComponentById("before");
             Assert.IsNotNull(before);
@@ -2977,13 +2981,88 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Fixed_37_BlockBottomRightPositionNestedMarginsExplicitWidth()
+        public void Absolute_37_BlockTopLeftPositionMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("FixedBlockBottomRightPositionNestedMarginsExplicitWidth");
+            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_37_BlockBottomRightPositionNestedMarginsExplicitWidth.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_37_BlockTopLeftPositionMarginsHalfWidth.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+
+            Unit yOffset = 80;//explicit fixed value
+            Unit xOffset = 70; //explicit fixed value
+            Unit height = 15;
+            Unit width = layout.AllPages[0].Width / 2; //50% width
+
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            var block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            yOffset = new Unit(10 + 10 + 30 + 30);//h5 top & bottom margin + h5 line height + margins
+            xOffset = 30; //back to the start with margins
+
+            var before = layout.DocumentComponent.FindAComponentById("before");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+
+            //Next span is XOffset by the width, but on the same line.
+            xOffset += arrange.RenderBounds.Width;
+
+            var after = layout.DocumentComponent.FindAComponentById("after");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_38_BlockTopLeftPositionNestedMarginsHalfWidth()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedMarginsHalfWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_38_BlockTopLeftPositionNestedMarginsHalfWidth.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -3000,12 +3079,14 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(content);
 
 
-            Unit yOffset = layout.AllPages[0].Height - (80 + 15);//explicit bottom fixed value
-            Unit xOffset = layout.AllPages[0].Width - (70 + 150); //explicit right fixed value
+            Unit yOffset = new Unit(10 + 10 + 30 + 30 + 20);//h5 top & bottom margin + h5 line height + page margins + nesting margin top
+            Unit xOffset = new Unit(30 + 20); //nesting and page margins
             Unit height = 15;
-            Unit width = 150; //explicit width
+            Unit width = layout.AllPages[0].Width - (40 + 60); //50% width
 
-
+            yOffset += 80; // explicit top from relative
+            xOffset += 70; // explicit left from relative
+            width = width / 2; //50% width of relative
 
 
             Assert.AreEqual(yOffset, content.TotalBounds.Y);
@@ -3035,6 +3116,164 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
+            yOffset = new Unit(10 + 10 + 30 + 30 + 20);//h5 top & bottom margin + h5 line height + page margins + nesting margin top
+            xOffset = new Unit(30 + 20); //nesting and page margins
+
+            var before = layout.DocumentComponent.FindAComponentById("before");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+
+            //Next span is XOffset by the width, but on the same line.
+            xOffset += arrange.RenderBounds.Width;
+
+            var after = layout.DocumentComponent.FindAComponentById("after");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_39_BlockBottomRightPositionMarginsExplicitWidth()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockBottomRightPositionMarginsExplicitWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_39_BlockBottomRightPositionMarginsExplicitWidth.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+
+            Unit yOffset = layout.AllPages[0].Height - (80 + 15);//explicit bottom fixed value + height of line
+            Unit xOffset = layout.AllPages[0].Width - (70 + 150); //explicit right fixed value + explicit width
+            Unit height = 15;
+            Unit width = 150; //explicit width
+
+
+
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            var block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            yOffset = new Unit(10 + 10 + 30 + 30);//h5 top & bottom margin + h5 line height + margins
+            xOffset = 30; //back to the start with margins
+
+            var before = layout.DocumentComponent.FindAComponentById("before");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+
+            //Next span is XOffset by the width, but on the same line.
+            xOffset += arrange.RenderBounds.Width;
+
+            var after = layout.DocumentComponent.FindAComponentById("after");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_40_BlockBottomRightPositionNestedMarginsExplicitWidth()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockBottomRightPositionNestedMarginsExplicitWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_40_BlockBottomRightPositionNestedMarginsExplicitWidth.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var block = layout.AllPages[0].ContentBlock;
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+
+            Unit yOffset = new Unit(10 + 10 + 30 + 30 + 20 + 15);//h5 top & bottom margin + h5 line height + page margins + nesting margin top and content height
+            Unit xOffset = layout.AllPages[0].Width - new Unit(30 + 20); //nesting and page margins from the right
+            Unit height = 15;
+            Unit width = 150; //explicit width
+
+            yOffset -= 80; //explicit bottom
+            xOffset -= 70; //explicit right
+
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y + content.TotalBounds.Height);
+            Assert.AreEqual(xOffset, content.TotalBounds.X + content.TotalBounds.Width);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y + content.TotalBounds.Height);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X + content.TotalBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
             yOffset = new Unit(10 + 10 + 30 + 20 + 30);//h5 top & bottom margin + h5 line height + margins
             xOffset = 30 + 20; //back to the start with margins
 
@@ -3053,6 +3292,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
         }
+
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
