@@ -805,7 +805,7 @@ namespace Scryber.PDF.Layout
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
-                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative)
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed)
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
                     return true;
 
@@ -1072,7 +1072,7 @@ namespace Scryber.PDF.Layout
         {
             var currblock = this.Context.DocumentLayout.CurrentPage.CurrentBlock.LastOpenBlock();
 
-            if (currblock.Position.PositionMode == PositionMode.Relative)
+            if (currblock.Position.PositionMode == PositionMode.Absolute || currblock.Position.PositionMode == PositionMode.Fixed)
                 return false;
 
             if (null != currblock && null != currblock.CurrentRegion && region == currblock.CurrentRegion)

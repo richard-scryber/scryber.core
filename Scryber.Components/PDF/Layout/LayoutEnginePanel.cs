@@ -190,7 +190,7 @@ namespace Scryber.PDF.Layout
             }
 
 
-            if (newPageOrRegion && position.PositionMode == PositionMode.Relative)
+            if (newPageOrRegion && position.PositionMode == PositionMode.Absolute)
             {
 
                 CurrentBlock = containerBlock;

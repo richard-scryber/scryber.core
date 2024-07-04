@@ -1182,6 +1182,9 @@ namespace Scryber.PDF.Layout
                         if (mode == PositionMode.Relative)
                         {
                             isadding = true;
+
+                            if (parent.Position.X.HasValue)
+                                x += parent.Position.X.Value;
                         }
                         else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
                         {
@@ -1228,6 +1231,11 @@ namespace Scryber.PDF.Layout
                                     while (null != evt_parent)
                                     {
                                         bottomBaseline += evt_parent.Height + evt_parent.Position.Margins.Top + evt_parent.Position.Padding.Top;
+                                        if(evt_parent.Position.PositionMode == PositionMode.Relative)
+                                        {
+                                            if (evt_parent.Position.Y.HasValue)
+                                                bottomBaseline += evt_parent.Position.Y.Value;
+                                        }
 
                                         evt_parent = evt_parent.Parent as PDFLayoutBlock;
                                     }
@@ -1315,6 +1323,10 @@ namespace Scryber.PDF.Layout
                         if (mode == PositionMode.Relative)
                         {
                             isadding = true;
+
+                            if (parent.Position.Y.HasValue)
+                                y += parent.Position.Y.Value;
+
                         }
                         else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
                         {
@@ -1402,7 +1414,7 @@ namespace Scryber.PDF.Layout
             
             Unit floatInset = Unit.Zero;
             Unit height = positioned.Height;
-            Unit offset = pos.Y.Value;
+            Unit offset = pos.Y.HasValue ? pos.Y.Value : 0;
             var bounds = positioned.TotalBounds;
             var container = positioned.GetParentBlock();
             var pageOffset = container.GetPageYOffset();
@@ -2292,8 +2304,10 @@ namespace Scryber.PDF.Layout
         /// <remarks>The base method returns false if the region is set as absolute or relative</remarks>
         protected virtual bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
         {
-            if (region.PositionMode == PositionMode.Absolute) // || region.PositionMode == PositionMode.Relative)
+            if (region.PositionMode == PositionMode.Absolute || region.PositionMode == PositionMode.Fixed) // || region.PositionMode == PositionMode.Relative)
                 return false;
+            else if (region.PositionMode == PositionMode.Relative)
+                return true;
             else
                 return true;
         }
@@ -2336,7 +2350,7 @@ namespace Scryber.PDF.Layout
 
                 var mode = tomove.Position.PositionMode;
 
-                if(mode == PositionMode.Absolute || mode == PositionMode.Relative)
+                if(mode == PositionMode.Fixed || mode == PositionMode.Absolute)
                 {
                     posRegion = tomove.GetParentBlock().CurrentRegion as PDFLayoutPositionedRegion;
                     posIsOpen = !tomove.IsClosed;
