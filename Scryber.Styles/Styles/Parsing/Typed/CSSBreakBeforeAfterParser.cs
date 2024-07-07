@@ -79,6 +79,11 @@ namespace Scryber.Styles.Parsing.Typed
                     result = true;
                     break;
 
+                case ("column"):
+                    breakval = true;
+                    result = true;
+                    break;
+
                 default:
                     breakval = false;
                     result = false;

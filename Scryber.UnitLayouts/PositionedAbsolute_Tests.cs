@@ -3634,6 +3634,431 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
         }
 
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_45_BlockNestedPositionedMultiRelative()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedPositionedMultiRelative");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_45_BlockNestedPositionedMultiRelative.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+
+            //Should not overflow - so just one page
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Page 1 has the heading and the nested block
+
+            var block = layout.AllPages[0].ContentBlock;
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+
+
+            //first level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsFalse(block.HasPositionedRegions);
+
+            Assert.AreEqual(3, block.Columns[0].Contents.Count);
+
+            //second level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            Assert.IsNotNull(block);
+            Assert.IsTrue(block.HasPositionedRegions);
+
+            var content = block.PositionedRegions[0]  as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+            Unit yOffset = 30 + 10 + 60 + 10 + 20;//top margins, h5 (2 lines) and margins, and nesting margin
+            Unit xOffset = 30 + 20; //left margins, nesting left margin
+            Unit height = 15;
+            Unit width = layout.AllPages[0].Width - (60 + 40 + 20); //page width - margins of body, nesting
+
+
+            
+            yOffset += 60; //outer nesting top position
+            yOffset += 15; //outer nesting line
+            yOffset += 10; //inner nesting top margin
+            yOffset += 30; //inner nesting top position
+
+            xOffset += 40; //outer nesting left position
+            xOffset += 10; //inner nesting left margin
+            xOffset += 20; //inner nesting relative offset
+
+            yOffset += 30; //absolute offset
+            xOffset += 20; //absolute offset
+
+            width /= 2; //50% width
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            //Check that the before and after back in the relative position
+            yOffset -= 30;
+
+            var before = layout.DocumentComponent.FindAComponentById("before2");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+
+            var after = layout.DocumentComponent.FindAComponentById("after2");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_46_BlockNestedPositionedMultiRelativeRight()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedPositionedMultiRelativeRight");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_46_BlockNestedPositionedMultiRelativeRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+
+            //Should not overflow - so just one page
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Page 1 has the heading and the nested block
+
+            var block = layout.AllPages[0].ContentBlock;
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+
+
+            //first level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsFalse(block.HasPositionedRegions);
+
+            Assert.AreEqual(3, block.Columns[0].Contents.Count);
+
+            //second level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            Assert.IsNotNull(block);
+            Assert.IsTrue(block.HasPositionedRegions);
+
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+            Unit yOffset = 30 + 10 + 60 + 10 + 20;//top margins, h5 (2 lines) and margins, and nesting margin
+            Unit xOffset = 30 + 20; //left margins, nesting left margin
+            Unit height = 15;
+            Unit width = layout.AllPages[0].Width - (60 + 40 + 20); //page width - margins of body, nesting
+
+
+
+            yOffset += 60; //outer nesting top position
+            yOffset += 15; //outer nesting line
+            yOffset += 10; //inner nesting top margin
+            yOffset += 30; //inner nesting top position
+
+            xOffset += 40; //outer nesting left position
+            xOffset += 10; //inner nesting left margin
+            xOffset += 20; //inner nesting relative offset
+
+            yOffset += 30; //absolute offset
+            xOffset += 20; //absolute offset
+
+            width /= 2; //50% width
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            //Check that the before and after back in the relative position
+            yOffset -= 30;
+
+            var before = layout.DocumentComponent.FindAComponentById("before2");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+
+            var after = layout.DocumentComponent.FindAComponentById("after2");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_47_BlockPositionedMultiColumn()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockLeftPositionMultiColumn");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_47_AbsoluteBlockLeftPositionMultiColumn.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+
+            //Should not overflow - so just one page
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Page 1 has the heading and the nested block
+
+            var block = layout.AllPages[0].ContentBlock;
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+
+
+            //first level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsFalse(block.HasPositionedRegions);
+
+            Assert.AreEqual(3, block.Columns[0].Contents.Count);
+
+            //second level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            Assert.IsNotNull(block);
+            Assert.IsTrue(block.HasPositionedRegions);
+
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+            Unit yOffset = 30 + 10 + 60 + 10 + 20;//top margins, h5 (2 lines) and margins, and nesting margin
+            Unit xOffset = 30 + 20; //left margins, nesting left margin
+            Unit height = 15;
+            Unit width = layout.AllPages[0].Width - (60 + 40 + 20); //page width - margins of body, nesting
+
+
+
+            yOffset += 60; //outer nesting top position
+            yOffset += 15; //outer nesting line
+            yOffset += 10; //inner nesting top margin
+            yOffset += 30; //inner nesting top position
+
+            xOffset += 40; //outer nesting left position
+            xOffset += 10; //inner nesting left margin
+            xOffset += 20; //inner nesting relative offset
+
+            yOffset += 30; //absolute offset
+            xOffset += 20; //absolute offset
+
+            width /= 2; //50% width
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            //Check that the before and after back in the relative position
+            yOffset -= 30;
+
+            var before = layout.DocumentComponent.FindAComponentById("before2");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+
+            var after = layout.DocumentComponent.FindAComponentById("after2");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_48_BlockPositionedNestedMultiColumn()
+        {
+            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMultiColumn");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_48_BlockPositionedNestedMultiColumn.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+
+            //Should not overflow - so just one page
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            //Page 1 has the heading and the nested block
+
+            var block = layout.AllPages[0].ContentBlock;
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+
+
+            //first level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsFalse(block.HasPositionedRegions);
+
+            Assert.AreEqual(3, block.Columns[0].Contents.Count);
+
+            //second level nested block
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+
+            Assert.IsNotNull(block);
+            Assert.IsTrue(block.HasPositionedRegions);
+
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(content);
+
+            Unit yOffset = 30 + 10 + 60 + 10 + 20;//top margins, h5 (2 lines) and margins, and nesting margin
+            Unit xOffset = 30 + 20; //left margins, nesting left margin
+            Unit height = 15;
+            Unit width = layout.AllPages[0].Width - (60 + 40 + 20); //page width - margins of body, nesting
+
+
+
+            yOffset += 60; //outer nesting top position
+            yOffset += 15; //outer nesting line
+            yOffset += 10; //inner nesting top margin
+            yOffset += 30; //inner nesting top position
+
+            xOffset += 40; //outer nesting left position
+            xOffset += 10; //inner nesting left margin
+            xOffset += 20; //inner nesting relative offset
+
+            yOffset += 30; //absolute offset
+            xOffset += 20; //absolute offset
+
+            width /= 2; //50% width
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+
+            //Check that the before and after back in the relative position
+            yOffset -= 30;
+
+            var before = layout.DocumentComponent.FindAComponentById("before2");
+            Assert.IsNotNull(before);
+            arrange = before.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+
+            var after = layout.DocumentComponent.FindAComponentById("after2");
+            Assert.IsNotNull(after);
+            arrange = after.GetFirstArrangement();
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+        }
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void Fixed_42_BlockDeeplyNestedTopLeft()

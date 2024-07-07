@@ -1225,9 +1225,17 @@ namespace Scryber.PDF.Layout
                     {
                         offset.X += position.X.Value;
                     }
+                    else if (position.Right.HasValue)
+                    {
+                        offset.X -= position.Right.Value;
+                    }
                     if (position.Y.HasValue)
                     {
                         offset.Y += position.Y.Value;
+                    }
+                    else if(position.Bottom.HasValue)
+                    {
+                        offset.Y -= position.Bottom.Value;
                     }
                     context.Offset = offset;
 

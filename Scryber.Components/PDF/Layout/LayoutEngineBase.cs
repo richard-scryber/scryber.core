@@ -1133,16 +1133,26 @@ namespace Scryber.PDF.Layout
                             {
                                 isadding = true;
                             }
-                            else if(mode == PositionMode.Fixed || mode == PositionMode.Absolute)
-                            {
-                                throw new NotSupportedException("This need to be tested");
-                            }
+                            else if (parent.Position.PositionMode == PositionMode.Absolute)
+                                throw new NotImplementedException("This needs to be tested");
+                            else if (parent.Position.PositionMode == PositionMode.Fixed)
+                                throw new NotImplementedException("Need to test the fixed parent");
 
                         }
 
                         if (isadding)
                         {
                             w -= (parent.Position.Margins.Right + parent.Position.Padding.Right);
+
+                            if (parent.Position.PositionMode == PositionMode.Relative)
+                            {
+                                if (parent.Position.X.HasValue)
+                                    w += parent.Position.X.Value;
+                            }
+                            else if (parent.Position.PositionMode == PositionMode.Absolute)
+                                throw new NotImplementedException("This needs to be tested");
+                            else if (parent.Position.PositionMode == PositionMode.Fixed)
+                                throw new NotImplementedException("Need to test the fixed parent");
                         }
 
                         parent = parent.Parent as PDFLayoutBlock;
@@ -1158,6 +1168,17 @@ namespace Scryber.PDF.Layout
                     while (null != parent)// && parent != pg.PageBlock)
                     {
                         x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+
+                        if (parent.Position.PositionMode == PositionMode.Relative)
+                        {
+                            if (parent.Position.X.HasValue)
+                                x += parent.Position.X.Value;
+                        }
+                        else if (parent.Position.PositionMode == PositionMode.Absolute)
+                            throw new NotImplementedException("This needs to be tested");
+                        else if (parent.Position.PositionMode == PositionMode.Fixed)
+                            throw new NotImplementedException("Need to test the fixed parent");
+
                         parent = parent.Parent as PDFLayoutBlock;
                     }
                     bounds.X = x;
@@ -1182,19 +1203,22 @@ namespace Scryber.PDF.Layout
                         if (mode == PositionMode.Relative)
                         {
                             isadding = true;
-
-                            if (parent.Position.X.HasValue)
-                                x += parent.Position.X.Value;
                         }
-                        else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
-                        {
-                            throw new NotSupportedException("This needs to be tested");
-                        }
+                        else if (mode == PositionMode.Absolute)
+                            throw new NotImplementedException("This needs to be tested");
+                        else if (mode == PositionMode.Fixed)
+                            throw new NotImplementedException("Need to test the fixed parent");
                     }
 
                     if (isadding)
                     {
                         x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+
+                        if(mode == PositionMode.Relative)
+                        {
+                            if (parent.Position.X.HasValue)
+                                x += parent.Position.X.Value;
+                        }
                     }
 
                     parent = parent.Parent as PDFLayoutBlock;
@@ -1290,6 +1314,18 @@ namespace Scryber.PDF.Layout
                         if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
                             y += line.Height;
 
+                        if (parent.Position.PositionMode == PositionMode.Relative)
+                        {
+                            if (parent.Position.Y.HasValue)
+                                y += parent.Position.Y.Value;
+                            else if (parent.Position.Bottom.HasValue)
+                                throw new NotImplementedException("Need to test the bottom values");
+                        }
+                        else if (parent.Position.PositionMode == PositionMode.Absolute)
+                            throw new NotImplementedException("Need to test the absolutes");
+                        else if (parent.Position.PositionMode == PositionMode.Fixed)
+                            throw new NotImplementedException("Need to test the fixed parent");
+
                         parent = parent.Parent as PDFLayoutBlock;
                     }
                     if (pg.HeaderBlock != null)
@@ -1323,20 +1359,25 @@ namespace Scryber.PDF.Layout
                         if (mode == PositionMode.Relative)
                         {
                             isadding = true;
-
-                            if (parent.Position.Y.HasValue)
-                                y += parent.Position.Y.Value;
-
                         }
-                        else if (mode == PositionMode.Fixed || mode == PositionMode.Absolute)
-                        {
-                            throw new NotSupportedException("This needs to be tested");
-                        }
+                        else if (mode == PositionMode.Absolute)
+                            throw new NotImplementedException("This needs to be tested");
+                        else if (mode == PositionMode.Fixed)
+                            throw new NotImplementedException("Need to test the fixed parent");
+                        
                     }
 
                     if (isadding)
                     {
                         y += parent.Position.Margins.Top + parent.Position.Padding.Top + parent.Height;
+
+                        if (parent.Position.PositionMode == PositionMode.Relative)
+                        {
+                            if (parent.Position.Y.HasValue)
+                                y += parent.Position.Y.Value;
+                            else if (parent.Position.Bottom.HasValue)
+                                throw new NotImplementedException("Need to test the bottom values");
+                        }
                     }
 
                     parent = parent.Parent as PDFLayoutBlock;
