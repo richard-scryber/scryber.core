@@ -1148,6 +1148,8 @@ namespace Scryber.PDF.Layout
                             {
                                 if (parent.Position.X.HasValue)
                                     w += parent.Position.X.Value;
+                                else if (parent.Position.Right.HasValue)
+                                    w -= parent.Position.Right.Value;
                             }
                             else if (parent.Position.PositionMode == PositionMode.Absolute)
                                 throw new NotImplementedException("This needs to be tested");
@@ -1169,10 +1171,15 @@ namespace Scryber.PDF.Layout
                     {
                         x += parent.Position.Margins.Left + parent.Position.Padding.Left;
 
+                        if (parent.CurrentRegion.ColumnIndex > 0)
+                            x += parent.CurrentRegion.OffsetX;
+
                         if (parent.Position.PositionMode == PositionMode.Relative)
                         {
                             if (parent.Position.X.HasValue)
                                 x += parent.Position.X.Value;
+                            else if (parent.Position.Right.HasValue)
+                                x -= parent.Position.Right.Value;
                         }
                         else if (parent.Position.PositionMode == PositionMode.Absolute)
                             throw new NotImplementedException("This needs to be tested");
@@ -1212,12 +1219,18 @@ namespace Scryber.PDF.Layout
 
                     if (isadding)
                     {
+
                         x += parent.Position.Margins.Left + parent.Position.Padding.Left;
 
-                        if(mode == PositionMode.Relative)
+                        if (parent.CurrentRegion.ColumnIndex > 0)
+                            x += parent.CurrentRegion.OffsetX;
+
+                        if (mode == PositionMode.Relative)
                         {
                             if (parent.Position.X.HasValue)
                                 x += parent.Position.X.Value;
+                            else if (parent.Position.Right.HasValue)
+                                x -= parent.Position.Right.Value;
                         }
                     }
 
@@ -1309,7 +1322,7 @@ namespace Scryber.PDF.Layout
 
                     while (null != parent)// && parent != pg.PageBlock)
                     {
-                        y += parent.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
+                        y += parent.CurrentRegion.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
 
                         if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
                             y += line.Height;
