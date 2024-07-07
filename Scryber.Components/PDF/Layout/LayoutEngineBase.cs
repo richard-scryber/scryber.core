@@ -1382,7 +1382,7 @@ namespace Scryber.PDF.Layout
 
                     if (isadding)
                     {
-                        y += parent.Position.Margins.Top + parent.Position.Padding.Top + parent.Height;
+                        y += parent.Position.Margins.Top + parent.Position.Padding.Top + parent.CurrentRegion.Height;
 
                         if (parent.Position.PositionMode == PositionMode.Relative)
                         {
