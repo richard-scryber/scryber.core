@@ -145,7 +145,7 @@ namespace Scryber.Core.UnitTests.Styles
         {
             Scryber.Styles.FontStyle target = new Scryber.Styles.FontStyle();
             string expected = null;
-            Assert.AreEqual(expected, target.FontFamily);
+            Assert.AreEqual(expected, target.FontFamily.ToString());
 
             expected = "Arial MT";
             target.FontFamily = (FontSelector)expected;
@@ -158,7 +158,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             target.RemoveFontFamily();
             expected = null;
-            Assert.AreEqual(expected, target.FontFamily);
+            Assert.AreEqual(expected, target.FontFamily.ToString());
         }
 
         /// <summary>
