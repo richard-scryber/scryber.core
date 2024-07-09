@@ -80,7 +80,7 @@ namespace Scryber.Core.UnitTests.Generation
             
 
             //This has been loaded from the remote file
-            var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+            var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
             Assert.AreEqual((Color)"#808080", body.FullStyle.Background.Color, "Fill colors do not match");
 
 

@@ -194,7 +194,7 @@ namespace Scryber.Data
                     data = source.Select(this.SelectPath, context);
                     dataSource = source;
                 }
-#if NET6_0
+#if NET6_0_OR_GREATER
                 else if(data is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {
                     data = jele.EnumerateArray();

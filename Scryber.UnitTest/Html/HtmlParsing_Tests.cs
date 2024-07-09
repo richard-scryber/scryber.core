@@ -263,7 +263,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
                 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -307,7 +307,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -357,7 +357,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -450,7 +450,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -2837,7 +2837,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 error = true;
             }
@@ -2862,7 +2862,7 @@ namespace Scryber.Core.UnitTests.Html
                 error = false;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 error = true;
             }

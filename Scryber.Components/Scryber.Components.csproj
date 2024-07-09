@@ -134,7 +134,7 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
-    <AssemblyVersion>6.0.5.0</AssemblyVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>6.0.5.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>

@@ -1103,7 +1103,7 @@ namespace Scryber.Styles
 
                 //otherwise make sure we are positioned as absolute or relative.
                 else if (options.PositionMode != PositionMode.Absolute || options.PositionMode != PositionMode.Fixed)
-                    options.PositionMode = PositionMode.Relative;
+                    options.PositionMode = PositionMode.Absolute;
             }
 
             options.TransformMatrix = transform;

@@ -51,7 +51,7 @@ namespace Scryber.Expressive.Expressions
                 {
                     return DoGetDictionaryValue(dict, rhs.ToString());
                 }
-#if NET6_0
+#if NET6_0_OR_GREATER
 
                 else if (lhsResult is System.Text.Json.JsonElement jele &&
                     jele.ValueKind == System.Text.Json.JsonValueKind.Array)

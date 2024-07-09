@@ -73,7 +73,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 if (!System.IO.File.Exists(path))
                 {
-                    path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images/Toroid24.jpg");
+                    path = System.IO.Path.Combine(this.TestContext.TestRunDirectory, "../../Content/HTML/Images/Toroid24.jpg");
                     path = System.IO.Path.GetFullPath(path);
                     
                     if (!System.IO.File.Exists(path))
@@ -116,7 +116,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             if (!System.IO.Directory.Exists(path))
             {
-                path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images");
+                path = System.IO.Path.Combine(this.TestContext.TestRunDirectory, "../../Content/HTML/Images");
                 path = System.IO.Path.GetFullPath(path);
 
                 if (!System.IO.Directory.Exists(path))
@@ -256,6 +256,15 @@ namespace Scryber.Core.UnitTests.Binding
             path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images/LongRedBar.png"); ;
 
             path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.Directory.Exists(path))
+            {
+                path = System.IO.Path.Combine(this.TestContext.TestRunDirectory, "../../Content/HTML/Images/LongRedBar.png");
+                path = System.IO.Path.GetFullPath(path);
+
+                if (!System.IO.File.Exists(path))
+                    throw new System.IO.FileNotFoundException("Could not load the test image directory at path " + path);
+            }
 
             ImageData data;
 

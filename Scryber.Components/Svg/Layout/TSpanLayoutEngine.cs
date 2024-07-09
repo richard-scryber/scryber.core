@@ -178,11 +178,7 @@ namespace Scryber.Svg.Layout
             }
         }
 
-        protected override PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
-        {
-            //this.AdjustContainerForTextBaseline(pos, comp, full);
-            return base.BeginNewRelativeRegionForChild(pos, comp, full);
-        }
+        
     }
 
 }

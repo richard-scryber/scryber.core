@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
 using System.Text.Json;
 
@@ -93,7 +93,7 @@ namespace Scryber.Expressive.Expressions
                 return GetJTokenValue(result);
             }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
             //New to .net 6
             else if (parent is JsonElement jelement)
@@ -164,7 +164,7 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
 
         public static object GetJsonElementValue(JsonElement result)
         {

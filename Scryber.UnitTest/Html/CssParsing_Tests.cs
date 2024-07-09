@@ -553,7 +553,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -2695,7 +2695,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -2747,7 +2747,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 

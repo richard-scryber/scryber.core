@@ -1350,20 +1350,20 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
                 //new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
 
-                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01AM"},
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01 AM"},
                 new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00AM"},
-                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00PM"},
-                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02AM"},
-                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00AM"},
-                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00AM"},
-                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40AM"},
-                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00AM"},
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00 PM"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02 AM"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00 AM"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40 AM"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00 AM"},
 
                 new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
@@ -1532,8 +1532,10 @@ namespace Scryber.Core.UnitTests.Binding
                     var row = table.Rows[i + grpIndex];
                     var cell = row.Cells[2];
                     var content = cell.Contents[0] as TextLiteral;
+                    var expected = fn.result;
+                    var actual = content.Text.Replace((char)8239,' ');
 
-                    Assert.AreEqual(fn.result, content.Text, "Text Literal for " + fn.function + " does not match");
+                    Assert.AreEqual(expected, actual, "Text Literal for " + fn.function + " does not match");
                 }
             }
 
@@ -1625,7 +1627,7 @@ namespace Scryber.Core.UnitTests.Binding
             cultureNumber = "-3456.56";
             cultureCurrency = "-$3,456.56";
             cutlureDate = "Tuesday, December 13, 2022";
-            cutlureTime = "10:45:59PM";
+            cutlureTime = "10:45:59 PM";
 
             data = new
             {
@@ -1684,7 +1686,8 @@ namespace Scryber.Core.UnitTests.Binding
             var line = container.Columns[0].Contents[0] as PDFLayoutLine;
             var span = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(span);
-            Assert.AreEqual(text, span.Characters, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
+            var actual = span.Characters.Replace((char)8239,' ');
+            Assert.AreEqual(text, actual, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
         }
 
         private void CulturedDoc_LayoutComplete(object sender, LayoutEventArgs args)

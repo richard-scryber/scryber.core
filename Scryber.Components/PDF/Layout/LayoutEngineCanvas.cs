@@ -162,9 +162,9 @@ namespace Scryber.PDF.Layout
             Styles.PositionStyle pos = full.Position;
             PositionMode mode = pos.PositionMode;
             
-            if (mode != PositionMode.Absolute)
+            if (mode != PositionMode.Absolute || mode != PositionMode.Fixed)
             {
-                pos.PositionMode = PositionMode.Relative;
+                pos.PositionMode = PositionMode.Absolute;
             }
 
             base.DoLayoutAChild(comp, full);
@@ -203,10 +203,10 @@ namespace Scryber.PDF.Layout
             }
         }
 
-        protected override PDFLayoutRegion BeginNewRelativeRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
+        protected override PDFLayoutRegion BeginNewAbsoluteRegionForChild(PDFPositionOptions pos, IComponent comp, Style full)
         {
             this.AdjustContainerForTextBaseline(pos, comp, full);
-            return base.BeginNewRelativeRegionForChild(pos, comp, full);
+            return base.BeginNewAbsoluteRegionForChild(pos, comp, full);
         }
 
         private void CloseCurrentLine()

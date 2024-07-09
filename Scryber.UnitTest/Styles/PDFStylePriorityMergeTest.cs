@@ -241,7 +241,9 @@ namespace Scryber.Core.UnitTests.Styles
                 var first = doc.FindAComponentById("first");
                 var second = doc.FindAComponentById("second");
 
-                var style = pg.GetFirstArrangement().FullStyle;
+                var arrange = pg.GetFirstArrangement() as ComponentMultiArrangement;
+                arrange = arrange.NextArrangement; //we want the page arrangement not the content arrangement.
+                var style = arrange.FullStyle;
                 Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
                 Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 
@@ -310,7 +312,9 @@ namespace Scryber.Core.UnitTests.Styles
                 var second = doc.FindAComponentById("second");
                 var third = doc.FindAComponentById("third");
 
-                var style = pg.GetFirstArrangement().FullStyle;
+                var arrange = pg.GetFirstArrangement() as ComponentMultiArrangement;
+                arrange = arrange.NextArrangement; //we want the page arrangement not the content arrangement.
+                var style = arrange.FullStyle;
                 Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
                 Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 
