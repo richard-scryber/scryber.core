@@ -22,6 +22,11 @@
             margin: 10pt;
         }
 
+        #nest {
+            margin: 20pt;
+            border: solid 1px aqua;
+            position: relative;
+        }
 
         #abs {
             position: absolute;
@@ -33,9 +38,11 @@
 </head>
 <body>
     <h5>Block below is absolute positioned to the page, with a right location</h5>
-    <span id="before">Before the absolute.</span>
-    <div id="abs">Absolute to the page</div>
-    <span id="after"> After the absolute block.</span>
+    <div id="nest">
+        <span id="before">Before the absolute.</span>
+        <div id="abs">Absolute to the page</div>
+        <span id="after"> After the absolute block that flows onto a second line.</span>
+    </div>
 </body>
 </html>
 

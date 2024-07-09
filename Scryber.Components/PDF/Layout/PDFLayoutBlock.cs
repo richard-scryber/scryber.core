@@ -1250,7 +1250,8 @@ namespace Scryber.PDF.Layout
 
                 //Get the border to draw
                 PDFPenBorders border = this.FullStyle.CreateBorderPen();
-                
+
+                this.PagePosition = total.Location;
 
                 if (this.Position.OverflowAction == OverflowAction.Clip)
                 {

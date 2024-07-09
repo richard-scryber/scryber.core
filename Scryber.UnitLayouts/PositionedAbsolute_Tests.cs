@@ -2596,7 +2596,7 @@ namespace Scryber.UnitLayouts
             Unit yOffset = (30 + 50 + 20 + 15); //bottom of the nesting block
             Unit xOffset = 30 + 20; //body and nested margins
             Unit height = 15 * 2; // 2 lines of content
-            Unit width = layout.AllPages[0].Width;
+            //Unit width = layout.AllPages[0].Width;
 
             yOffset -= 20; //take off the explicit bottom value
 

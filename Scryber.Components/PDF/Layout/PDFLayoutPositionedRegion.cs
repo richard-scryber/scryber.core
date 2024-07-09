@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.PDF.Native;
 
 namespace Scryber.PDF.Layout
 {
@@ -50,6 +51,10 @@ namespace Scryber.PDF.Layout
         /// Gets or set the run associated with this positioned region
         /// </summary>
         public PDFLayoutPositionedRegionRun AssociatedRun { get; set; }
+
+        public PDFLayoutBlock RelativeTo { get; set; }
+
+        public Point RelativeOffset { get; set; }
 
         //
         // .ctor
@@ -120,6 +125,50 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        protected void UpdateTotalBoundsForRelativeParent(Point currentOffset)
+        {
+            var bounds = this.TotalBounds;
+
+            var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
+            var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
+            bounds.X +=  xoffset;
+            bounds.Y +=  yoffset;
+
+            if (this.PositionOptions.X.HasValue)
+                bounds.X += this.PositionOptions.X.Value;
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
+                farRight -= this.RelativeTo.Position.Margins.Right;
+                farRight -= this.PositionOptions.Right.Value;
+                bounds.X = farRight - this.Width;
+                
+            }
+
+            if (this.PositionOptions.Y.HasValue)
+                bounds.Y += this.PositionOptions.Y.Value;
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                
+                bounds.Y -= this.Height;
+                bounds.Y += this.RelativeTo.Height - (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
+                bounds.Y -= this.PositionOptions.Bottom.Value;
+                //bounds.Y -= this.PositionOptions.Bottom.Value;
+                
+            }
+
+            this.TotalBounds = bounds;
+        }
+
+        protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            if(this.RelativeTo != null)
+            {
+                this.UpdateTotalBoundsForRelativeParent(context.Offset);
+            }
+            return base.DoOutputToPDF(context, writer);
+        }
 
     }
 }
