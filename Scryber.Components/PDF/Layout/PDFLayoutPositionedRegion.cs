@@ -132,31 +132,81 @@ namespace Scryber.PDF.Layout
 
             var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
             var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
-            bounds.X +=  xoffset;
-            bounds.Y +=  yoffset;
+            bounds.X += xoffset;
+            bounds.Y += yoffset;
+
 
             if (this.PositionOptions.X.HasValue)
+            {
                 bounds.X += this.PositionOptions.X.Value;
+
+            }
             else if (this.PositionOptions.Right.HasValue)
             {
                 var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
                 farRight -= this.RelativeTo.Position.Margins.Right;
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
-                
             }
 
+
             if (this.PositionOptions.Y.HasValue)
+            {
                 bounds.Y += this.PositionOptions.Y.Value;
+
+            }
             else if (this.PositionOptions.Bottom.HasValue)
             {
-                
                 bounds.Y -= this.Height;
-                bounds.Y += this.RelativeTo.Height - (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
+                bounds.Y += this.RelativeTo.Height -
+                            (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
                 bounds.Y -= this.PositionOptions.Bottom.Value;
-                //bounds.Y -= this.PositionOptions.Bottom.Value;
-                
             }
+
+
+            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
+
+            this.TotalBounds = bounds;
+        }
+
+        protected void UpdateTotalBoundsForAbsoluteParent(Point contextOffset)
+        {
+            var bounds = this.TotalBounds;
+
+            var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
+            var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
+            bounds.X = xoffset;
+            bounds.Y = yoffset;
+
+
+            if (this.PositionOptions.X.HasValue)
+            {
+                bounds.X += this.PositionOptions.X.Value;
+            }
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
+                farRight -= this.RelativeTo.Position.Margins.Right;
+                farRight -= this.PositionOptions.Right.Value;
+                bounds.X = farRight - this.Width;
+            }
+
+
+            if (this.PositionOptions.Y.HasValue)
+            {
+                bounds.Y += this.PositionOptions.Y.Value;
+
+            }
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                bounds.Y -= this.Height;
+                bounds.Y += this.RelativeTo.Height -
+                            (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
+                bounds.Y -= this.PositionOptions.Bottom.Value;
+            }
+
+
+            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
 
             this.TotalBounds = bounds;
         }
@@ -165,7 +215,12 @@ namespace Scryber.PDF.Layout
         {
             if(this.RelativeTo != null)
             {
-                this.UpdateTotalBoundsForRelativeParent(context.Offset);
+                if (RelativeTo.Position.PositionMode == PositionMode.Relative)
+                    this.UpdateTotalBoundsForRelativeParent(context.Offset);
+                else if (this.RelativeTo.Position.PositionMode == PositionMode.Absolute)
+                {
+                    this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                }
             }
             return base.DoOutputToPDF(context, writer);
         }

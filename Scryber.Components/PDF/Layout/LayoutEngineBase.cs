@@ -1023,7 +1023,7 @@ namespace Scryber.PDF.Layout
                     var x = Unit.Zero;
                     var parent = positioned.Parent as PDFLayoutBlock;
 
-                    while (null != parent)// && parent != pg.PageBlock)
+                    while (null != parent)
                     {
                         x += parent.Position.Margins.Left + parent.Position.Padding.Left;
                         parent = parent.Parent as PDFLayoutBlock;
@@ -1031,19 +1031,7 @@ namespace Scryber.PDF.Layout
                     bounds.X = x;
                 }
             }
-            //else
-            //{
-            //    //Check the page padding, margins - Fixed is outside of these.
-
-            //    if (pg.PositionOptions.Margins.Left != 0)
-            //    {
-            //        bounds.X -= pg.PositionOptions.Margins.Left;
-            //    }
-            //    if (pg.PositionOptions.Padding.Left != 0)
-            //    {
-            //        bounds.X -= pg.PositionOptions.Padding.Left;
-            //    }
-            //}
+            
 
             if (options.Y.HasValue == false)
             {
@@ -1056,13 +1044,11 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    //var y = pg.ContentBlock.Height;
-                    //var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
 
                     var y = Unit.Zero;
                     var parent = positioned.Parent as PDFLayoutBlock;
 
-                    while(null != parent)// && parent != pg.PageBlock)
+                    while(null != parent)
                     {
                         y += parent.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
 
@@ -1075,32 +1061,10 @@ namespace Scryber.PDF.Layout
                     {
                         y += pg.HeaderBlock.Height;
                     }
-
-                    //if (curr != null && curr is PDFLayoutLine line)
-                    //{
-                    //   y += line.Height; //We add this to the y even through the line is not closed (as per html)
-                    //}
-
                     bounds.Y = y;
                 }
             }
-            //else
-            //{
-            //    //Check the page padding, margins and Header - Fixed is outside of these.
-            //    if (pg.PositionOptions.Margins.Top != 0)
-            //    {
-            //        bounds.Y -= pg.PositionOptions.Margins.Top;
-            //    }
-            //    if (pg.PositionOptions.Padding.Top != 0)
-            //    {
-            //        bounds.Y -= pg.PositionOptions.Padding.Top;
-            //    }
-            //    if (pg.HeaderBlock != null)
-            //    {
-            //        bounds.Y -= pg.HeaderBlock.Height;
-            //    }
-
-            //}
+            
 
             //Put the bounds back on to the region.
             positioned.TotalBounds = bounds;
@@ -1124,91 +1088,7 @@ namespace Scryber.PDF.Layout
 
             return null;
         }
-
-        protected virtual void UpdateAbsoluteRegionPositionAvoid(PDFLayoutRegion region, PDFPositionOptions options)
-        {
-            var positioned = (PDFLayoutPositionedRegion)region;
-
-            var pg = this.Context.DocumentLayout.CurrentPage;
-            var bounds = positioned.TotalBounds;
-
-            var relativeTo = this.GetClosestPositionedParent(region);
-
-            positioned.RelativeTo = relativeTo;
-
-            if (null == relativeTo)
-            {
-                this.UpdateFixedRegionPosition(region, options);
-                return;
-            }
-            else
-            {
-                Point offset = Point.Empty;
-
-                if (!options.X.HasValue && !options.Bottom.HasValue)
-                {
-                    //caclulate the current X offset relative to the parent positioned region and push back onto the position options.
-                    var x = Unit.Zero;
-                    var parent = positioned.Parent as PDFLayoutBlock;
-
-                    while (parent != null)// && parent != pg.PageBlock)
-                    {
-                        x += parent.Position.Margins.Left + parent.Position.Padding.Left;
-
-                        if (parent.CurrentRegion.ColumnIndex > 0)
-                            x += parent.CurrentRegion.OffsetX;
-
-                        if (parent == relativeTo)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            parent = parent.Parent as PDFLayoutBlock;
-                        }
-                    }
-
-                    offset.X = x;
-                }
-
-                if (!options.Y.HasValue && !options.Bottom.HasValue)
-                {
-                    //calculate the current Y offset relative to the parent positioned region
-                    //and push back onto the position options.
-
-                    var y = Unit.Zero;
-                    var parent = positioned.Parent as PDFLayoutBlock;
-
-                    while (null != parent)// && parent != pg.PageBlock)
-                    {
-                        y += parent.CurrentRegion.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
-
-                        if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
-                            y += line.Height;
-
-                        if (parent == relativeTo)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            parent = parent.Parent as PDFLayoutBlock;
-                        }
-                    }
-                    if (pg.HeaderBlock != null)
-                    {
-                        y += pg.HeaderBlock.Height;
-                    }
-
-                    offset.Y = y;
-                }
-
-                positioned.RelativeOffset = offset;
-
-                return;
-            }
-        }
-
+        
 
         protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
@@ -1268,6 +1148,9 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
+                    //We have no left or right values
+                    //so calculate up the tree.
+                    
                     var x = Unit.Zero;
                     var parent = positioned.Parent as PDFLayoutBlock;
 
@@ -1286,9 +1169,23 @@ namespace Scryber.PDF.Layout
                                 x -= parent.Position.Right.Value;
                         }
                         else if (parent.Position.PositionMode == PositionMode.Absolute)
-                            throw new NotImplementedException("This needs to be tested");
+                        {
+                            positioned.RelativeTo = parent;
+                            var offset = new Point(0, parent.Height);
+                            if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                                offset.Y += line.Height;
+                            positioned.RelativeOffset = offset;
+                            return;
+                        }
                         else if (parent.Position.PositionMode == PositionMode.Fixed)
-                            throw new NotImplementedException("Need to test the fixed parent");
+                        {
+                            positioned.RelativeTo = parent;
+                            var offset = new Point(0, parent.Height);
+                            if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                                offset.Y += line.Height;
+                            positioned.RelativeOffset = offset;
+                            return;
+                        }
 
                         parent = parent.Parent as PDFLayoutBlock;
                     }
@@ -1316,7 +1213,20 @@ namespace Scryber.PDF.Layout
                             isadding = true;
                         }
                         else if (mode == PositionMode.Absolute)
-                            throw new NotImplementedException("This needs to be tested");
+                        {
+                            positioned.RelativeTo = parent;
+                            var offset = new Point(0, 0);
+                            
+                            if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                            {
+                                offset.Y = parent.CurrentRegion.Height;
+                                if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                                    offset.Y += line.Height;
+                            }
+
+                            positioned.RelativeOffset = offset;
+                            return;
+                        }
                         else if (mode == PositionMode.Fixed)
                             throw new NotImplementedException("Need to test the fixed parent");
                     }
@@ -1378,8 +1288,7 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    //var y = pg.ContentBlock.Height;
-                    //var curr = pg.ContentBlock.CurrentRegion.CurrentItem;
+                    //no y or bottom value - so calculate
 
                     var y = Unit.Zero;
                     var parent = positioned.Parent as PDFLayoutBlock;
@@ -1404,11 +1313,18 @@ namespace Scryber.PDF.Layout
                         }
                         else if (parent.Position.PositionMode == PositionMode.Absolute)
                         {
-                            throw new NotImplementedException("Need to test the absolutes");
+                            positioned.RelativeTo = parent;
+                            var offset = new Point(0, 0);
+                            
+                            if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                                offset.Y += line2.Height;
+                            positioned.RelativeOffset = offset;
+                            return;
                         }
                         else if (parent.Position.PositionMode == PositionMode.Fixed)
                         {
-                            throw new NotImplementedException("Need to test the fixed parent");
+                            positioned.RelativeTo = parent;
+                            return;
                         }
                         parent = parent.Parent as PDFLayoutBlock;
                     }

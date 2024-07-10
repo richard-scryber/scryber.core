@@ -40,6 +40,5 @@
     <Folder Include="Content\HTML\" />
     <Folder Include="Content\HTML\Positioning\" />
     <Folder Include="Content\HTML\Positioning\Fixed\" />
-    <Folder Include="Content\HTML\Positioning\Absolute\" />
   </ItemGroup>
 </Project>

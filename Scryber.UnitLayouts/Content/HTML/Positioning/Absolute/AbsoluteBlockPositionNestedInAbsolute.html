@@ -4,12 +4,6 @@
 <head>
 
     <style>
-        body {
-            font-size: 12pt;
-            line-height: 15pt;
-            border: solid 1px red;
-            margin: 20pt
-        }
 
         h5{
             margin-top: 10pt;
@@ -17,30 +11,34 @@
             line-height: 30pt;
             font-size: 15pt;
             border: solid 1px green;
-            padding: 0px;
+            padding: 0;
         }
 
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+        }
+
+        #nest {
+            margin: 20pt;
+            border: solid 1px aqua;
+            position: absolute;
+        }
 
         #abs {
             position: absolute;
-            border: solid 2px blue;
-            width: 100%;
-        }
-
-        #nest{
-            margin: 10pt 20pt;
-            padding:0pt;
-            border: solid 1px aqua;
-            width: 100%;
+            border: solid 1px blue;
+            width: 50%;
         }
     </style>
 </head>
 <body>
-    <h5>Block below is nested, absolute positioned without a location.</h5>
+    <h5>Block below is absolute positioned to the page, with a right location</h5>
     <div id="nest">
         <span id="before">Before the absolute.</span>
         <div id="abs">Absolute to the page</div>
-        <span id="after"> After the absolute block</span>
+        <span id="after"> After the absolute block.</span>
     </div>
 </body>
 </html>
