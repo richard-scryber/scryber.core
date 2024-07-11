@@ -1090,6 +1090,7 @@ namespace Scryber.PDF.Layout
         }
         
 
+        
         protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
             var positioned = (PDFLayoutPositionedRegion)region;
@@ -1118,7 +1119,18 @@ namespace Scryber.PDF.Layout
                                 isadding = true;
                             }
                             else if (parent.Position.PositionMode == PositionMode.Absolute)
-                                throw new NotImplementedException("This needs to be tested");
+                            {
+                                positioned.RelativeTo = parent;
+                                var offset = new Point(0, 0);
+                                if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                                {
+                                    offset.Y = parent.CurrentRegion.Height;
+                                    if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                                        offset.Y += line.Height;
+                                }
+                                positioned.RelativeOffset = offset;
+                                return;
+                            }
                             else if (parent.Position.PositionMode == PositionMode.Fixed)
                                 throw new NotImplementedException("Need to test the fixed parent");
 
@@ -1131,14 +1143,41 @@ namespace Scryber.PDF.Layout
                             if (parent.Position.PositionMode == PositionMode.Relative)
                             {
                                 if (parent.Position.X.HasValue)
+                                {
                                     w += parent.Position.X.Value;
+                                }
                                 else if (parent.Position.Right.HasValue)
-                                    w -= parent.Position.Right.Value;
+                                {
+                                    if (parent.Position.Width.HasValue)
+                                    {
+                                        var space = parent.Position.Width.Value - positioned.Width;
+                                        var left = space + options.Right.Value;
+                                        w -= left;
+                                    }
+                                    else
+                                    {
+                                        w -= parent.Position.Right.Value;
+                                    }
+                                }
+                                else if (parent.Position.Width.HasValue)
+                                {
+                                    var space = parent.Position.Width.Value - positioned.Width;
+                                    var left = space + options.Right.Value;
+                                    w -= left;
+                                }
+
+                                
                             }
                             else if (parent.Position.PositionMode == PositionMode.Absolute)
+                            {
+                                //Inside a relative inside an absolute
                                 throw new NotImplementedException("This needs to be tested");
+                            }
                             else if (parent.Position.PositionMode == PositionMode.Fixed)
+                            {
+                                //Inside a relative inside a fixed
                                 throw new NotImplementedException("Need to test the fixed parent");
+                            }
                         }
 
                         parent = parent.Parent as PDFLayoutBlock;
@@ -1166,15 +1205,36 @@ namespace Scryber.PDF.Layout
                             if (parent.Position.X.HasValue)
                                 x += parent.Position.X.Value;
                             else if (parent.Position.Right.HasValue)
-                                x -= parent.Position.Right.Value;
+                            {
+                                if (parent.Position.Width.HasValue)
+                                {
+                                    var space = parent.Position.Width.Value - positioned.Width;
+                                    var left = space;
+                                    w -= left;
+                                    
+                                }
+                                else
+                                {
+                                    x -= parent.Position.Right.Value;
+                                }
+                            }
+                            else if (parent.Position.Width.HasValue)
+                            {
+                                
+                            }
                         }
                         else if (parent.Position.PositionMode == PositionMode.Absolute)
                         {
                             positioned.RelativeTo = parent;
-                            var offset = new Point(0, parent.Height);
-                            if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
-                                offset.Y += line.Height;
-                            positioned.RelativeOffset = offset;
+                            //If we don't have an explict Y or bottom value
+                            //then we need to save the current vertical offset relative to the parent.
+                            if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                            {
+                                var offset = new Point(0, parent.Height);
+                                if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                                    offset.Y += line.Height;
+                                positioned.RelativeOffset = offset;
+                            }
                             return;
                         }
                         else if (parent.Position.PositionMode == PositionMode.Fixed)
@@ -1245,6 +1305,16 @@ namespace Scryber.PDF.Layout
                                 x += parent.Position.X.Value;
                             else if (parent.Position.Right.HasValue)
                                 x -= parent.Position.Right.Value;
+                        }
+                        else if (parent.Position.PositionMode == PositionMode.Absolute)
+                        {
+                            //Inside a relative inside an absolute
+                            throw new NotImplementedException("This needs to be tested");
+                        }
+                        else if (parent.Position.PositionMode == PositionMode.Fixed)
+                        {
+                            //Inside a relative inside a fixed
+                            throw new NotImplementedException("Need to test the fixed parent");
                         }
                     }
 
