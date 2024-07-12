@@ -1096,7 +1096,69 @@ namespace Scryber.PDF.Layout
             var positioned = (PDFLayoutPositionedRegion)region;
             var pg = this.Context.DocumentLayout.CurrentPage;
             var bounds = positioned.TotalBounds;
+            PDFLayoutBlock relativeTo = null;
+            
+            var parent = positioned.GetParentBlock();
+            
+            while (parent != null)
+            {
+                var mode = parent.Position.PositionMode;
+                if (mode == PositionMode.Absolute ||
+                    mode == PositionMode.Fixed ||
+                    mode == PositionMode.Relative)
+                {
+                    relativeTo = parent;
+                    break;
+                }
+                else
+                {
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
 
+            }
+            
+            var offsetX = Unit.Zero;
+            var offsetY = Unit.Zero;
+            
+            if (null == relativeTo)
+            {
+                //no positioned parent so we are relative to the structural parent
+                //and it's current position - even if we have x and y values
+                relativeTo = positioned.GetParentBlock();
+                
+                offsetX = relativeTo.CurrentRegion.OffsetX;
+                offsetY = relativeTo.CurrentRegion.Height;
+
+                if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    offsetY += line.Height;
+            }
+            else
+            {
+                //We have a positioned parent
+                
+                if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                {
+                    //No vertical position - so relative to the positioned regions height
+                    //including any current open line.
+                    
+                    offsetY = relativeTo.CurrentRegion.Height;
+                    var open = relativeTo.CurrentRegion.LastOpenBlock();
+
+                    if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                        offsetY += line2.Height;
+                }
+
+                if (options.X.HasValue == false && options.Right.HasValue == false)
+                {
+                    //no horizontal position
+                    offsetX = relativeTo.CurrentRegion.OffsetX;
+                }
+            }
+
+            positioned.RelativeTo = relativeTo;
+            positioned.RelativeOffset = new Point(offsetX, offsetY);
+            return;
+            
             if (options.X.HasValue == false)
             {
                 var w = pg.Width;
@@ -1104,7 +1166,7 @@ namespace Scryber.PDF.Layout
                 if (options.Right.HasValue)
                 {
                     var isadding = false;
-                    var parent = positioned.Parent as PDFLayoutBlock;
+                    parent = positioned.Parent as PDFLayoutBlock;
 
                     w -= (options.Right.Value + positioned.Width);
 
@@ -1191,7 +1253,7 @@ namespace Scryber.PDF.Layout
                     //so calculate up the tree.
                     
                     var x = Unit.Zero;
-                    var parent = positioned.Parent as PDFLayoutBlock;
+                    parent = positioned.Parent as PDFLayoutBlock;
 
                     while (null != parent)// && parent != pg.PageBlock)
                     {
@@ -1256,7 +1318,7 @@ namespace Scryber.PDF.Layout
             {
 
                 var x = options.X.Value;
-                var parent = positioned.Parent as PDFLayoutBlock;
+                parent = positioned.Parent as PDFLayoutBlock;
 
                 //with absolute we find the closest positioned parent and add after that.
 
@@ -1328,7 +1390,7 @@ namespace Scryber.PDF.Layout
             {
                 if (options.Bottom.HasValue)
                 {
-                    var parent = positioned.Parent as PDFLayoutBlock;
+                    parent = positioned.Parent as PDFLayoutBlock;
                     
                     while(null != parent)
                     {
@@ -1361,7 +1423,7 @@ namespace Scryber.PDF.Layout
                     //no y or bottom value - so calculate
 
                     var y = Unit.Zero;
-                    var parent = positioned.Parent as PDFLayoutBlock;
+                    parent = positioned.Parent as PDFLayoutBlock;
 
                     while (null != parent)// && parent != pg.PageBlock)
                     {
@@ -1414,7 +1476,7 @@ namespace Scryber.PDF.Layout
             else
             {
                 var y = options.Y.Value;
-                var parent = positioned.Parent as PDFLayoutBlock;
+                parent = positioned.Parent as PDFLayoutBlock;
 
                 //with absolute we find the closest positioned parent and add after that.
 

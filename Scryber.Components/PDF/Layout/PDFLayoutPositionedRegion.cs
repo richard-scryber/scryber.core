@@ -126,50 +126,76 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        protected void UpdateTotalBoundsForRelativeParent(Point currentOffset)
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// not having a positioned parent.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForBlockParent(Point currentOffset)
         {
             var bounds = this.TotalBounds;
 
             var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
             var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
-            bounds.X += xoffset;
-            bounds.Y += yoffset;
+            bounds.X = xoffset;
+            bounds.Y = yoffset;
 
+            var relativeOffset = this.RelativeOffset;
 
             if (this.PositionOptions.X.HasValue)
             {
-                bounds.X += this.PositionOptions.X.Value;
-
+                //We have no positioned parent, so the x is taken from the page
+                bounds.X = this.PositionOptions.X.Value;
+                relativeOffset.X = 0;
             }
             else if (this.PositionOptions.Right.HasValue)
             {
-                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
-                farRight -= this.RelativeTo.Position.Margins.Right;
+                //we have no positioned parent so the x is taken from the width of
+                // the page - right and width of this region
+                
+                var farRight = this.RelativeTo.GetLayoutPage().Width;
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
+                relativeOffset.X = 0;
+            }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no horizontal offset so we include the padding
+                bounds.X += this.RelativeTo.Position.Padding.Left;
             }
 
 
             if (this.PositionOptions.Y.HasValue)
             {
-                bounds.Y += this.PositionOptions.Y.Value;
-
+                //we have no positioned parent so y is taken from the page
+                bounds.Y = this.PositionOptions.Y.Value;
+                relativeOffset.Y = 0;
             }
             else if (this.PositionOptions.Bottom.HasValue)
             {
-                bounds.Y -= this.Height;
-                bounds.Y += this.RelativeTo.Height -
-                            (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
-                bounds.Y -= this.PositionOptions.Bottom.Value;
+                var bottom = this.RelativeTo.GetLayoutPage().Height;
+                bottom -= this.PositionOptions.Bottom.Value;
+                bounds.Y = bottom - this.Height;
+                relativeOffset.Y = 0;
+            }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no vertical position so we include the padding in the offsets
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
             }
 
 
-            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
+            bounds.Location = bounds.Location.Offset(relativeOffset);
 
             this.TotalBounds = bounds;
         }
 
-        protected void UpdateTotalBoundsForAbsoluteParent(Point contextOffset)
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// having a relatively positioned parent.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForRelativeParent(Point currentOffset)
         {
             var bounds = this.TotalBounds;
 
@@ -190,12 +216,16 @@ namespace Scryber.PDF.Layout
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
             }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no horizontal offset so we include the padding
+                bounds.X += this.RelativeTo.Position.Padding.Left;
+            }
 
 
             if (this.PositionOptions.Y.HasValue)
             {
                 bounds.Y += this.PositionOptions.Y.Value;
-
             }
             else if (this.PositionOptions.Bottom.HasValue)
             {
@@ -204,8 +234,68 @@ namespace Scryber.PDF.Layout
                             (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
                 bounds.Y -= this.PositionOptions.Bottom.Value;
             }
+            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            {
+                //we have no vertical position so we include the padding in the offsets
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
+            }
 
 
+            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
+
+            this.TotalBounds = bounds;
+        }
+
+        /// <summary>
+        /// Calculates the new total bounds for the absolute positioned region based on
+        /// having an absolutely (or fixed) positioned parent, whose Total bounds will already have been calculated.
+        /// </summary>
+        /// <param name="currentOffset">The context offset for the rendering</param>
+        protected void UpdateTotalBoundsForAbsoluteParent(Point contextOffset)
+        {
+            var bounds = this.TotalBounds;
+
+            var xoffset = (this.RelativeTo.PagePosition.X);
+            var yoffset = (this.RelativeTo.PagePosition.Y);
+            bounds.X = xoffset;
+            bounds.Y = yoffset;
+
+
+            if (this.PositionOptions.X.HasValue)
+            {
+                bounds.X += this.PositionOptions.X.Value + this.RelativeTo.Position.Margins.Left;
+            }
+            else if (this.PositionOptions.Right.HasValue)
+            {
+                var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
+                farRight -= this.RelativeTo.Position.Margins.Right;
+                farRight -= this.PositionOptions.Right.Value;
+                bounds.X = farRight - this.Width;
+            }
+            else
+            {
+                bounds.X += this.RelativeTo.Position.Margins.Left;
+            }
+
+
+            if (this.PositionOptions.Y.HasValue)
+            {
+                bounds.Y += this.PositionOptions.Y.Value  + this.RelativeTo.Position.Margins.Top;
+            }
+            else if (this.PositionOptions.Bottom.HasValue)
+            {
+                var bottom = this.RelativeTo.PagePosition.Y + this.RelativeTo.Height;
+                bottom -= this.RelativeTo.Position.Margins.Bottom;
+                bottom -= this.PositionOptions.Bottom.Value;
+                
+                bounds.Y = bottom - this.Height;
+            }
+            else
+            {
+                bounds.Y += this.RelativeTo.Position.Margins.Top;
+            }
+            
+            
             bounds.Location = bounds.Location.Offset(this.RelativeOffset);
 
             this.TotalBounds = bounds;
@@ -215,11 +305,18 @@ namespace Scryber.PDF.Layout
         {
             if(this.RelativeTo != null)
             {
-                if (RelativeTo.Position.PositionMode == PositionMode.Relative)
-                    this.UpdateTotalBoundsForRelativeParent(context.Offset);
-                else if (this.RelativeTo.Position.PositionMode == PositionMode.Absolute)
+                var mode = this.RelativeTo.Position.PositionMode;
+                if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
                 {
                     this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                }
+                else if(mode == PositionMode.Relative)
+                {
+                    this.UpdateTotalBoundsForRelativeParent(context.Offset);
+                }
+                else
+                {
+                    this.UpdateTotalBoundsForBlockParent(context.Offset);
                 }
             }
             return base.DoOutputToPDF(context, writer);

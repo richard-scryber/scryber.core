@@ -37,6 +37,11 @@
             color: #CCC;
             padding: 5pt;
         }
+        
+        .fix{
+            position: fixed;
+            left: 100pt;
+        }
     </style>
 </head>
 <body>
@@ -47,13 +52,13 @@
         <div class="rel" style="" >
             <div class="padd">This is content within the block</div>
             <div class="rel" style="left: 20pt; top: 10pt; height: 100pt; width: 200pt;" >After another relative block
-                <div class="abs" style="right: 30pt;">Absolute</div>
+                <div id="deep1" class="abs" style="right: 30pt;">Absolute</div>
             </div>
         </div>
         <div class="fix" >
             <div class="padd" >
                 This is content within the block
-                <div class="abs">Absolute within the fixed</div>
+                <div id="deep2" class="abs">Absolute within the fixed</div>
             </div>
         </div>
     </div>

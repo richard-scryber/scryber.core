@@ -46,7 +46,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_01_BlockTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlock");
+            var path = AssertGetContentFile("Absolute_01_Block");
 
             var doc = Document.ParseDocument(path);
 
@@ -115,7 +115,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_02_BlockMarginsTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockMargins");
+            var path = AssertGetContentFile("Absolute_02_BlockMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -187,7 +187,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_03_BlockFullWidthTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockFullWidth");
+            var path = AssertGetContentFile("Absolute_03_BlockFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -261,7 +261,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_04_BlockNestedFullWidthTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockNestedFullWidth");
+            var path = AssertGetContentFile("Absolute_04_BlockNestedFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -338,7 +338,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_05_BlockNestedMarginsTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockNestedMargins");
+            var path = AssertGetContentFile("Absolute_05_BlockNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -416,7 +416,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_06_BlockNestedFullWidthMarginsTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockNestedFullWidthMargins");
+            var path = AssertGetContentFile("Absolute_06_BlockNestedFullWidthMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -496,7 +496,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_07_BlockMarginsPaddingTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockMarginsPadding");
+            var path = AssertGetContentFile("Absolute_07_BlockMarginsPadding");
 
             var doc = Document.ParseDocument(path);
 
@@ -572,7 +572,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_08_BlockNestedMarginsPaddingTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockNestedMarginsPadding");
+            var path = AssertGetContentFile("Absolute_08_BlockNestedMarginsPadding");
 
             var doc = Document.ParseDocument(path);
 
@@ -658,7 +658,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_09_BlockNestedMarginsPaddingFullWidthTest()
         {
-            var path = AssertGetContentFile("AbsoluteBlockNestedMarginsPaddingFullWidth");
+            var path = AssertGetContentFile("Absolute_09_BlockNestedMarginsPaddingFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -749,7 +749,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_10_BlockLeftPosition()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPosition");
+            var path = AssertGetContentFile("Absolute_10_BlockLeftPosition");
 
             var doc = Document.ParseDocument(path);
 
@@ -831,7 +831,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_11_BlockLeftPositionMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionMargins");
+            var path = AssertGetContentFile("Absolute_11_BlockLeftPositionMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -913,7 +913,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_12_BlockLeftPositionNestedMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMargins");
+            var path = AssertGetContentFile("Absolute_12_BlockLeftPositionNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -997,7 +997,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_13_BlockLeftPositionNestedMarginsFullWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMarginsFullWidth");
+            var path = AssertGetContentFile("Absolute_13_BlockLeftPositionNestedMarginsFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -1081,7 +1081,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_14_BlockLeftPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_14_BlockLeftPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -1162,7 +1162,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_15_BlockLeftPositionNestedMarginsHalfWidthTextRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMarginsHalfWidthTextRight");
+            var path = AssertGetContentFile("Absolute_15_BlockLeftPositionNestedMarginsHalfWidthTextRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -1253,7 +1253,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_16_BlockLeftPositionPageHeader()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionPageHeader");
+            var path = AssertGetContentFile("Absolute_16_BlockLeftPositionPageHeader");
 
             var doc = Document.ParseDocument(path);
 
@@ -1336,7 +1336,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_17_BlockRightPosition()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPosition");
+            var path = AssertGetContentFile("Absolute_17_BlockRightPosition");
 
             var doc = Document.ParseDocument(path);
 
@@ -1417,7 +1417,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_18_BlockRightPositionMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionMargins");
+            var path = AssertGetContentFile("Absolute_18_BlockRightPositionMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -1498,7 +1498,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_19_BlockRightPositionNestedMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionNestedMargins");
+            var path = AssertGetContentFile("Absolute_19_BlockRightPositionNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -1583,7 +1583,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_20_BlockRightPositionNestedMarginsFullWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionNestedMarginsFullWidth");
+            var path = AssertGetContentFile("Absolute_20_BlockRightPositionNestedMarginsFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -1668,7 +1668,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_21_BlockRightPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_21_BlockRightPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -1751,7 +1751,7 @@ namespace Scryber.UnitLayouts
         public void Absolute_22_BlockRightPositionNestedMarginsHalfWidthToPage()
         {
             //Although nested, the absolute div should be positioned to the page, as the nest div is not relatively positioned. 
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionNestedMarginsHalfWidthToPage");
+            var path = AssertGetContentFile("Absolute_22_BlockRightPositionNestedMarginsHalfWidthToPage");
 
             var doc = Document.ParseDocument(path);
 
@@ -1834,7 +1834,7 @@ namespace Scryber.UnitLayouts
         public void Absolute_23_BlockRightPositionPageHeader()
         {
             
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionPageHeader");
+            var path = AssertGetContentFile("Absolute_23_BlockRightPositionPageHeader");
 
             var doc = Document.ParseDocument(path);
 
@@ -1914,7 +1914,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_24_BlockTopPosition()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopPosition");
+            var path = AssertGetContentFile("Absolute_24_BlockTopPosition");
 
             var doc = Document.ParseDocument(path);
 
@@ -1995,7 +1995,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_25_BlockTopPositionMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopPositionMargins");
+            var path = AssertGetContentFile("Absolute_25_BlockTopPositionMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -2076,7 +2076,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_26_BlockTopPositionNestedMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopPositionNestedMargins");
+            var path = AssertGetContentFile("Absolute_26_BlockTopPositionNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -2159,7 +2159,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_27_BlockTopPositionNestedMarginsFullWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopPositionNestedMarginsFullWidth");
+            var path = AssertGetContentFile("Absolute_27_BlockTopPositionNestedMarginsFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -2246,7 +2246,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_28_BlockTopPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_28_BlockTopPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -2328,7 +2328,7 @@ namespace Scryber.UnitLayouts
         public void Absolute_29_BlockTopPositionPageHeader()
         {
 
-            var path = AssertGetContentFile("AbsoluteBlockTopPositionPageHeader");
+            var path = AssertGetContentFile("Absolute_29_BlockTopPositionPageHeader");
 
             var doc = Document.ParseDocument(path);
 
@@ -2403,14 +2403,12 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
         }
-
-
-
+        
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void Absolute_30_BlockBottomPosition()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomPosition");
+            var path = AssertGetContentFile("Absolute_30_BlockBottomPosition");
 
             var doc = Document.ParseDocument(path);
 
@@ -2491,7 +2489,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_31_BlockBottomPositionMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionMargins");
+            var path = AssertGetContentFile("Absolute_31_BlockBottomPositionMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -2572,7 +2570,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_32_BlockBottomPositionNestedMargins()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMargins");
+            var path = AssertGetContentFile("Absolute_32_BlockBottomPositionNestedMargins");
 
             var doc = Document.ParseDocument(path);
 
@@ -2654,7 +2652,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_33_BlockBottomPositionNestedMarginsFullWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMarginsFullWidth");
+            var path = AssertGetContentFile("Absolute_33_BlockBottomPositionNestedMarginsFullWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -2741,7 +2739,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_34_BlockBottomPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_34_BlockBottomPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -2827,7 +2825,7 @@ namespace Scryber.UnitLayouts
         public void Absolute_35_BlockBottomPositionPageHeader()
         {
 
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionPageHeader");
+            var path = AssertGetContentFile("Absolute_35_BlockBottomPositionPageHeader");
 
             var doc = Document.ParseDocument(path);
 
@@ -2903,7 +2901,7 @@ namespace Scryber.UnitLayouts
         public void Absolute_36_BlockBottomPositionNestedPageHeader()
         {
 
-            var path = AssertGetContentFile("AbsoluteBlockBottomPositionNestedPageHeader");
+            var path = AssertGetContentFile("Absolute_36_BlockBottomPositionNestedPageHeader");
 
             var doc = Document.ParseDocument(path);
 
@@ -2983,7 +2981,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_37_BlockTopLeftPositionMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_37_BlockTopLeftPositionMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -3058,7 +3056,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_38_BlockTopLeftPositionNestedMarginsHalfWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedMarginsHalfWidth");
+            var path = AssertGetContentFile("Absolute_38_BlockTopLeftPositionNestedMarginsHalfWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -3139,7 +3137,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_39_BlockBottomRightPositionMarginsExplicitWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomRightPositionMarginsExplicitWidth");
+            var path = AssertGetContentFile("Absolute_39_BlockBottomRightPositionMarginsExplicitWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -3217,7 +3215,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_40_BlockBottomRightPositionNestedMarginsExplicitWidth()
         {
-            var path = AssertGetContentFile("AbsoluteBlockBottomRightPositionNestedMarginsExplicitWidth");
+            var path = AssertGetContentFile("Absolute_40_BlockBottomRightPositionNestedMarginsExplicitWidth");
 
             var doc = Document.ParseDocument(path);
 
@@ -3298,7 +3296,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_41_BlockTopLeftSecondPage()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionSecondPage");
+            var path = AssertGetContentFile("Absolute_41_BlockTopLeftPositionSecondPage");
 
             var doc = Document.ParseDocument(path);
 
@@ -3389,7 +3387,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_42_BlockTopLeftOverflow()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionOverflow");
+            var path = AssertGetContentFile("Absolute_42_BlockTopLeftPositionOverflow");
 
             var doc = Document.ParseDocument(path);
 
@@ -3463,7 +3461,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_43_BlockTopLeftClipped()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionClipped");
+            var path = AssertGetContentFile("Absolute_43_BlockTopLeftPositionClipped");
 
             var doc = Document.ParseDocument(path);
 
@@ -3548,7 +3546,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_44_BlockNestedPositionedRelative()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedPositionedRelative");
+            var path = AssertGetContentFile("Absolute_44_BlockTopLeftPositionNestedPositionedRelative");
 
             var doc = Document.ParseDocument(path);
 
@@ -3638,7 +3636,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_45_BlockNestedPositionedMultiRelative()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedPositionedMultiRelative");
+            var path = AssertGetContentFile("Absolute_45_BlockTopLeftPositionNestedPositionedMultiRelative");
 
             var doc = Document.ParseDocument(path);
 
@@ -3744,7 +3742,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_46_BlockNestedPositionedMultiRelativeRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockTopLeftPositionNestedPositionedMultiRelativeRight");
+            var path = AssertGetContentFile("Absolute_46_BlockTopLeftPositionNestedPositionedMultiRelativeRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -3850,7 +3848,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_47_BlockPositionedMultiColumn()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionMultiColumn");
+            var path = AssertGetContentFile("Absolute_47_BlockLeftPositionMultiColumn");
 
             var doc = Document.ParseDocument(path);
 
@@ -3936,7 +3934,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_48_BlockPositionedNestedMultiColumn()
         {
-            var path = AssertGetContentFile("AbsoluteBlockLeftPositionNestedMultiColumn");
+            var path = AssertGetContentFile("Absolute_48_BlockLeftPositionNestedMultiColumn");
 
             var doc = Document.ParseDocument(path);
 
@@ -4026,7 +4024,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_49_BlockPositionedMultiColumnRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionMultiColumn");
+            var path = AssertGetContentFile("Absolute_49_BlockPositionMultiColumnRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -4112,7 +4110,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_50_BlockPositionedNestedMultiColumnRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockRightPositionNestedMultiColumn");
+            var path = AssertGetContentFile("Absolute_50_BlockRightPositionNestedMultiColumn");
 
             var doc = Document.ParseDocument(path);
 
@@ -4198,14 +4196,12 @@ namespace Scryber.UnitLayouts
             arrange = after.GetFirstArrangement();
             Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
         }
-
-
-
+        
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void Absolute_51_BlockNestedPositionedNestedAbsolute()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionNestedInAbsolute");
+            var path = AssertGetContentFile("Absolute_51_BlockPositionNestedInAbsolute");
 
             var doc = Document.ParseDocument(path);
 
@@ -4298,7 +4294,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_52_BlockNestedPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_52_BlockPositionNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4391,7 +4387,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_53_BlockNestedPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_53_BlockPositionNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -4484,7 +4480,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_54_BlockNestedTopLeftPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionTopLeftNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_54_BlockPositionTopLeftNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4581,7 +4577,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_55_BlockNestedBottomRightPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionBottomRightNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_55_BlockPositionBottomRightNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4680,7 +4676,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_56_BlockNestedBottomPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionBottomNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_56_BlockPositionBottomNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4775,7 +4771,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_57_BlockNestedTopPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionTopNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_57_BlockPositionTopNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4870,7 +4866,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_58_BlockNestedLeftPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionLeftNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_58_BlockPositionLeftNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
@@ -4963,11 +4959,11 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_59_BlockNestedRightPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionRightNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_59_BlockPositionRightNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_58_BlockNestedRightPositionedInAbsoluteTopLeft.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_59_BlockNestedRightPositionedInAbsoluteTopLeft.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -5057,7 +5053,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_60_BlockNestedTopLeftPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionTopLeftNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_60_BlockPositionTopLeftNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5150,7 +5146,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_61_BlockNestedBottomRightPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionBottomRightNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_61_BlockPositionBottomRightNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5243,7 +5239,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_62_BlockNestedBottomPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionBottomNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_62_BlockPositionBottomNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5336,7 +5332,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_63_BlockNestedTopPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionTopNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_63_BlockPositionTopNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5430,7 +5426,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_64_BlockNestedLeftPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionLeftNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_64_BlockPositionLeftNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5524,7 +5520,7 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void Absolute_65_BlockNestedRightPositionedNestedAbsoluteBottomRight()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionRightNestedInAbsoluteBottomRight");
+            var path = AssertGetContentFile("Absolute_65_BlockPositionRightNestedInAbsoluteBottomRight");
 
             var doc = Document.ParseDocument(path);
 
@@ -5615,13 +5611,13 @@ namespace Scryber.UnitLayouts
 
          [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void Absolute_66_BlockDeepNestedPositionedNestedAbsoluteTopLeft()
+        public void Absolute_99_BlockDeepNestedPositionedNestedAbsoluteTopLeft()
         {
-            var path = AssertGetContentFile("AbsoluteBlockPositionDeepNestedInAbsoluteTopLeft");
+            var path = AssertGetContentFile("Absolute_99_BlockPositionDeepNestedInAbsoluteTopLeft");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_66_BlockDeepNestedPositionedInAbsoluteTopLeft.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Absolute_99_BlockDeepNestedPositionedInAbsoluteTopLeft.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -5636,582 +5632,14 @@ namespace Scryber.UnitLayouts
             //Should not overflow - so just one page
             Assert.AreEqual(1, layout.AllPages.Count);
 
-            //Page 1 has the heading and the nested block
+            //just test the inner blocks compared to their RenderBounds
+            //tests above check their Total bounds and hierarchy.
 
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+            var comp = doc.FindAComponentById("deepnest1");
             
-            Assert.IsTrue(block.HasPositionedRegions);
-            var nest = block.PositionedRegions[0];
-            Assert.IsNotNull(nest);
-            
-            //A single line on the nested positioned region.
-            Assert.AreEqual(1, nest.Contents.Count);
-            
-            block = nest.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-            Assert.IsTrue(block.HasPositionedRegions);
-
-            var content = block.PositionedRegions[0];
-            
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 60 + 20 + 15;//top nesting explicit position and top margins + nest height = bottom baseline
-            Unit xOffset = 80 + 20; //left nesting explicit position and left margin
-            Unit height = 15;
-            Unit width = 300; //explicit nesting width
-
-            xOffset += width; //right baseline
-            yOffset -= (15 + 20); //explicit position - abs height
-            xOffset -= 30; //explicit position from right
-
-            width /= 2; //50% width
-
-            xOffset -= width; //left side
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are at the explicit position
-            yOffset = 80;
-            xOffset = 100;
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            xOffset += arrange.RenderBounds.Width;
-            
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.Inconclusive("Need to text the fixed positioning");
         }
         
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_42_BlockDeeplyNestedTopLeft()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_43_BlockDeeplyNestedBottomRight()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_43_BlockDeeplyNestedMultiColumn()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_44_BlockDeeplyNestedBottomRightWidthHeight()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_44_BlockInFixedNestedBottomRightWidthHeight()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void Fixed_44_BlockInAbsoluteNestedBottomRightWidthHeight()
-        {
-            var path = AssertGetContentFile("FixedBlockTopLeftPositionClipped");
-
-            var doc = Document.ParseDocument(path);
-
-            using (var ms = DocStreams.GetOutputStream("Positioned_Fixed_40_BlockTopLeftClipped.pdf"))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.Inconclusive();
-
-            Assert.IsNotNull(layout, "Layout not captured");
-
-            //Should not overflow - so just one page
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            //Page 1 has the heading and the nested block
-
-            var block = layout.AllPages[0].ContentBlock;
-            Assert.AreEqual(2, block.Columns[0].Contents.Count);
-
-
-
-            //nested block on second page
-            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsTrue(block.HasPositionedRegions);
-            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(content);
-
-            Unit yOffset = 80;//explicit top fixed value
-            Unit xOffset = 70; //explicit left fixed value
-            Unit height = 15;
-            Unit width = layout.AllPages[0].Width / 2; //explicit width
-
-
-            Assert.AreEqual(yOffset, content.TotalBounds.Y);
-            Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
-
-            block = content.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            //Block is at offset 0,0 relative to the positioned region
-            Assert.AreEqual(0, block.TotalBounds.X);
-            Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
-
-            //Arrangement is for links and inner content references
-            var div = block.Owner as Div;
-            var arrange = div.GetFirstArrangement();
-
-
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-
-
-            //Check that the before and after are on the same page
-
-            var before = layout.DocumentComponent.FindAComponentById("before");
-            Assert.IsNotNull(before);
-            arrange = before.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-
-            var after = layout.DocumentComponent.FindAComponentById("after");
-            Assert.IsNotNull(after);
-            arrange = after.GetFirstArrangement();
-            Assert.AreEqual(820, arrange.RenderBounds.Y);
-        }
     }
 
 
