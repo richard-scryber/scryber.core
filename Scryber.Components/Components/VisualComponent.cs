@@ -234,6 +234,80 @@ namespace Scryber.Components
 
         #endregion
 
+        
+        #region public PDFUnit Right {get;set;} + public bool HasRight {get;}
+
+        /// <summary>
+        /// Gets or Sets the Right (Horizontal) position of this page Component
+        /// </summary>
+        [PDFAttribute("right", Const.PDFStylesNamespace)]
+        [PDFDesignable("Right", Ignore = true, Category ="Position",Priority = 1,Type ="PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"left\"")]
+        public virtual Unit Right
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionRightKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionRightKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identify if the X position has been set for this Page Component
+        /// </summary>
+        public virtual bool HasRight
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionRightKey, out x);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit Bottom {get;set;} + public bool HasBottom {get;}
+
+        /// <summary>
+        /// Gets or sets the Y (vertical) position of the Page Component
+        /// </summary>
+        [PDFAttribute("bottom", Const.PDFStylesNamespace)]
+        [PDFDesignable("Bottom", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"top\"")]
+        public virtual Unit Bottom
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionBottomKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionBottomKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identifiy is the Y value has been set on this page Component
+        /// </summary>
+        public virtual bool HasBottom
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionBottomKey, out x);
+            }
+        }
+
+        #endregion
 
         #region public PDFUnit MinimumWidth {get;set;} + public bool HasMinimumWidth {get;}
 
