@@ -6,9 +6,16 @@ namespace Scryber
 {
     public abstract class LayoutContext : ContextStyleBase
     {
+        
+        /// <summary>
+        /// Gets or sets the current layout depth of positioned regions
+        /// </summary>
+        public int PositionDepth { get; set; }  
+        
         public LayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document, OutputFormat format)
             : base(new StyleStack(style), items, log, perfmon, document, format)
         {
+            this.PositionDepth = 0;
         }
 
         protected abstract IDocumentLayout DoGetLayout();

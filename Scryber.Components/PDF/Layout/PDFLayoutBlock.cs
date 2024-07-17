@@ -1307,12 +1307,14 @@ namespace Scryber.PDF.Layout
 
                     component.SetArrangement(context, fullstyle, contentRect);
                 }
-
+                
                 PDFPen grid = this.FullStyle.CreateOverlayGridPen();
+                
                 if (null != grid)
                 {
+                    PDFPen major = this.FullStyle.CreateOverlayGridPen(forMajor: true);
                     OverlayGridStyle over = this.FullStyle.OverlayGrid;
-                    this.OutputOverlayGrid(grid, over, context, total);
+                    this.OutputOverlayGrid(grid, major, over, context, total);
                     if (over.HighlightColumns)
                         this.OutputRegionOverlay(over, context, contentRect);
                 }
@@ -1451,17 +1453,17 @@ namespace Scryber.PDF.Layout
         /// <param name="grid">The grid to render</param>
         /// <param name="context"></param>
         /// <param name="rect">The rectangle to use to render the grid within</param>
-        private void OutputOverlayGrid(PDFPen pen, OverlayGridStyle grid, PDFRenderContext context, Rect rect)
+        private void OutputOverlayGrid(PDFPen minor, PDFPen major, OverlayGridStyle grid, PDFRenderContext context, Rect rect)
         {
-            if (null == pen)
+            if (null == minor)
                 return;
 
             if (null == grid)
                 throw new ArgumentNullException("grid");
 
             var graphics = context.Graphics;
-            
 
+            
             //Will paint a 50% opacity colour over the columns in a panel
             //so they can be identified
             graphics.SaveGraphicsState();
@@ -1469,10 +1471,12 @@ namespace Scryber.PDF.Layout
             
 
             Rect absolutebounds = rect;
-            pen.SetUpGraphics(graphics, absolutebounds);
+            minor.SetUpGraphics(graphics, absolutebounds);
+            var factor = grid.GridMajorCount > 0 ?  grid.GridMajorCount : int.MaxValue;
             
             //vertical lines first
             Unit space = grid.GridSpacing;
+            
             if (space <= 0)
                 throw new ArgumentOutOfRangeException("Cannot render a grid with zero or less spacing");
 
@@ -1481,23 +1485,77 @@ namespace Scryber.PDF.Layout
             Unit y2 = absolutebounds.Y + absolutebounds.Height;
             Unit x2 = x1 + absolutebounds.Width;
 
+            int index = 0;
             while (x1 < x2)
             {
-                graphics.DrawLine(x1, y1, x1, y2);
+                if (index % factor != 0)
+                {
+                    graphics.DrawLine(x1, y1, x1, y2);
+                }
                 x1 += space;
+                index++;
             }
 
             x1 = absolutebounds.X;
             y1 = absolutebounds.Y + grid.GridYOffset;
-
+            index = 0;
+            
             while (y1 < y2)
             {
-                graphics.DrawLine(x1, y1, x2, y1);
+                if (index % factor != 0)
+                {
+                    graphics.DrawLine(x1, y1, x2, y1);
+                }
+
                 y1 += space;
+                index++;
             }
 
-            pen.ReleaseGraphics(graphics, absolutebounds);
+            minor.ReleaseGraphics(graphics, absolutebounds);
             graphics.RestoreGraphicsState();
+
+            if (major != null && factor < int.MaxValue)
+            {
+                graphics.SaveGraphicsState();
+                major.SetUpGraphics(graphics, absolutebounds);
+                
+                x1 = absolutebounds.X + grid.GridXOffset;
+                y1 = absolutebounds.Y;
+                y2 = absolutebounds.Y + absolutebounds.Height;
+                x2 = x1 + absolutebounds.Width;
+
+                index = 0;
+                while (x1 < x2)
+                {
+                    if (index % factor == 0)
+                    {
+                        graphics.DrawLine(x1, y1, x1, y2);
+                    }
+
+                    x1 += space;
+                    index++;
+                }
+
+                x1 = absolutebounds.X;
+                y1 = absolutebounds.Y + grid.GridYOffset;
+                index = 0;
+
+                while (y1 < y2)
+                {
+                    if (index % factor == 0)
+                    {
+                        graphics.DrawLine(x1, y1, x2, y1);
+                    }
+
+                    y1 += space;
+                    index++;
+                }
+                
+                minor.ReleaseGraphics(graphics, absolutebounds);
+                graphics.RestoreGraphicsState();
+            }
+
+
         }
 
         #endregion

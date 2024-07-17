@@ -27,7 +27,7 @@ namespace Scryber.PDF.Layout
             
             if (this.Component.Page != null)
             {
-                PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+                PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
                 PDFTextRenderOptions opts = this.FullStyle.CreateTextOptions();
                 FontMetrics metrics = opts.Font.FontMetrics;
                 PDFLayoutRegion curReg = this.CurrentBlock.LastOpenBlock().CurrentRegion;

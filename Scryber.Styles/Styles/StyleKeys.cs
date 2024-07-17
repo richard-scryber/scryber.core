@@ -332,12 +332,7 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
 
-        //public static readonly StyleKey<Unit> SVGGeometryWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmwd", SVGGeometryKey
-        //                                                        , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
-
-        //public static readonly StyleKey<Unit> SVGGeometryHeightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmht", SVGGeometryKey
-        //                                                        , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
-
+        
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);
@@ -494,6 +489,7 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<bool> OverlayShowColumnsKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"colm", OverlayItemKey);
 
+        public static readonly StyleKey<int> OverlayMajorCount = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"majc", OutlineItemKey);
         //Page
         public static readonly StyleKey PageItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePage, NOT_INHERITED);
 

@@ -102,7 +102,7 @@ namespace Scryber.PDF.Layout
             PageSize pgsize = this.FullStyle.CreatePageSize();
             pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size);
 
-            PDFPositionOptions options = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions options = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
 
             

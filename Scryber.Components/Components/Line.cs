@@ -50,7 +50,7 @@ namespace Scryber.Components
 
         protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            var pos = fullstyle.CreatePostionOptions();
+            var pos = fullstyle.CreatePostionOptions(false);
 
             Point start = Point.Empty;
             Point end = new Point(available.Width, start.Y);

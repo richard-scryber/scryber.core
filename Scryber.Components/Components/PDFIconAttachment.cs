@@ -427,7 +427,7 @@ namespace Scryber.Components
         /// <returns>The required size of the component content (excluding any padding or margins)</returns>
         public Size GetRequiredSizeForLayout(Size available, PDFLayoutContext context, Style appliedstyle)
         {
-            PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
+            PDFPositionOptions pos = appliedstyle.CreatePostionOptions(context.PositionDepth > 0);
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
 
             Unit h;

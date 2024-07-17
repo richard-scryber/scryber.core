@@ -95,7 +95,7 @@ namespace Scryber.PDF.Layout
             if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                 this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             
             
             //Set up the outer container block that will hold the list and all it's items
@@ -364,7 +364,7 @@ namespace Scryber.PDF.Layout
 
             PDFArtefactRegistrationSet artefacts = entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
 
-            PDFPositionOptions itemopts = full.CreatePostionOptions();
+            PDFPositionOptions itemopts = full.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             Unit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
             Unit h = pageHeight;

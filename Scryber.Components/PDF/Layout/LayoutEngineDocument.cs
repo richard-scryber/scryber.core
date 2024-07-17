@@ -228,7 +228,7 @@ namespace Scryber.PDF.Layout
         private Size GetPageSize(IComponent forComponent, Style withStyle, PositionMode andMode)
         {
             var pg = this.FullStyle.CreatePageSize();
-            var pos = this.FullStyle.CreatePostionOptions();
+            var pos = this.FullStyle.CreatePostionOptions(false);
 
             return pg.Size.Subtract(pos.Margins);
 

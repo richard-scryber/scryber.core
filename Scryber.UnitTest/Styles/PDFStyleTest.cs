@@ -66,7 +66,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Default (empty) position options
-            PDFPositionOptions actual = target.CreatePostionOptions();
+            PDFPositionOptions actual = target.CreatePostionOptions(false);
 
             Assert.AreEqual(false, actual.FillWidth);
             Assert.AreEqual(HorizontalAlignment.Left, actual.HAlign);
@@ -121,7 +121,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Padding.All = 20;
             target.Padding.Right = 40;
 
-            actual = target.CreatePostionOptions();
+            actual = target.CreatePostionOptions(false);
 
             Assert.AreEqual(false, actual.FillWidth); //false because a width has been set
             Assert.AreEqual(HorizontalAlignment.Center, actual.HAlign);

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
@@ -71,7 +72,7 @@ namespace Scryber.PDF.Layout
                 if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                     this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions();
+                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
                 //fix for width - if we have an explicit width, then we should fill it.
                 if (tablepos.Width.HasValue)
@@ -217,7 +218,7 @@ namespace Scryber.PDF.Layout
 
             //create the row block and region and hold a reference in the ivar _rowblock
 
-            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions();
+            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.PositionMode);
 
@@ -537,7 +538,7 @@ namespace Scryber.PDF.Layout
             List<List<Style>> cellapplieds = new List<List<Style>>();
             int maxcolcount = 0;
 
-            var tablePos = this.FullStyle.CreatePostionOptions();
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             var tableFont = this.FullStyle.CreateTextOptions();
 
             foreach (TableRow row in this.Table.Rows)
@@ -582,7 +583,7 @@ namespace Scryber.PDF.Layout
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
 
-                var rowPos = rowfull.CreatePostionOptions();
+                var rowPos = rowfull.CreatePostionOptions(this.Context.PositionDepth > 0);
                 var rowFont = rowfull.CreateTextOptions();
 
                 //For each of the cells in the row
@@ -730,7 +731,7 @@ namespace Scryber.PDF.Layout
         protected virtual Size GetTableContainerSize(IComponent forComponent, Style withStyle, PositionMode inMode)
         {
             var block = this.CurrentBlock;
-            var tablePos = this.FullStyle.CreatePostionOptions();
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             var width = tablePos.Width;
             var height = tablePos.Height;
@@ -1758,7 +1759,7 @@ namespace Scryber.PDF.Layout
             /// <param name="fullstyle"></param>
             private void PopulateStyleValues(Style fullstyle)
             {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions(); //Full Styles cache this so should be quick anyway
+                PDFPositionOptions opts = fullstyle.CreatePostionOptions(false); //Full Styles cache this so should be quick anyway
                 _margins = opts.Margins;
                 if (opts.Width.HasValue)
                     _totalWidth = opts.Width.Value + _margins.Left + _margins.Right;
@@ -1968,7 +1969,7 @@ namespace Scryber.PDF.Layout
             /// <param name="fullstyle"></param>
             private void PopulateStyleValues(Style fullstyle)
             {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions();
+                PDFPositionOptions opts = fullstyle.CreatePostionOptions(false);
                 _margins = opts.Margins;
 
                 if (opts.Height.HasValue)

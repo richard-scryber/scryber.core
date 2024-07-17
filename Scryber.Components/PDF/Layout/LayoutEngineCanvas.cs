@@ -47,7 +47,7 @@ namespace Scryber.PDF.Layout
         
         protected override void DoLayoutChildren()
         {
-            PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions position = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFLayoutXObject canvas = null;
             if (position.ViewPort.HasValue)
             {

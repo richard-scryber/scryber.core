@@ -199,15 +199,16 @@ namespace Scryber.PDF.Layout
         {
             var bounds = this.TotalBounds;
 
-            var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
-            var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
+            var xoffset = (this.RelativeTo.PagePosition.X);
+            var yoffset = (this.RelativeTo.PagePosition.Y);
             bounds.X = xoffset;
             bounds.Y = yoffset;
 
+            var relativeOffset = this.RelativeOffset;
 
             if (this.PositionOptions.X.HasValue)
             {
-                bounds.X += this.PositionOptions.X.Value;
+                bounds.X += this.PositionOptions.X.Value + this.RelativeTo.Position.Margins.Left;
             }
             else if (this.PositionOptions.Right.HasValue)
             {
@@ -216,32 +217,32 @@ namespace Scryber.PDF.Layout
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
             }
-            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            else
             {
                 //we have no horizontal offset so we include the padding
-                bounds.X += this.RelativeTo.Position.Padding.Left;
+                bounds.X += this.RelativeTo.Position.Padding.Left + this.RelativeTo.Position.Margins.Left;
             }
 
 
             if (this.PositionOptions.Y.HasValue)
             {
-                bounds.Y += this.PositionOptions.Y.Value;
+                bounds.Y += this.PositionOptions.Y.Value + this.RelativeTo.Position.Margins.Top;
             }
             else if (this.PositionOptions.Bottom.HasValue)
             {
                 bounds.Y -= this.Height;
                 bounds.Y += this.RelativeTo.Height -
-                            (this.RelativeTo.Position.Margins.Top + this.RelativeTo.Position.Margins.Bottom);
+                            (this.RelativeTo.Position.Margins.Bottom);
                 bounds.Y -= this.PositionOptions.Bottom.Value;
             }
-            else if(!this.RelativeTo.Position.Padding.IsEmpty)
+            else
             {
                 //we have no vertical position so we include the padding in the offsets
                 bounds.Y += this.RelativeTo.Position.Padding.Top;
             }
 
 
-            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
+            bounds.Location = bounds.Location.Offset(relativeOffset);
 
             this.TotalBounds = bounds;
         }
@@ -259,11 +260,14 @@ namespace Scryber.PDF.Layout
             var yoffset = (this.RelativeTo.PagePosition.Y);
             bounds.X = xoffset;
             bounds.Y = yoffset;
+            var relativeOffset = this.RelativeOffset;
 
 
             if (this.PositionOptions.X.HasValue)
             {
                 bounds.X += this.PositionOptions.X.Value + this.RelativeTo.Position.Margins.Left;
+                relativeOffset.X = 0;
+
             }
             else if (this.PositionOptions.Right.HasValue)
             {
@@ -271,32 +275,38 @@ namespace Scryber.PDF.Layout
                 farRight -= this.RelativeTo.Position.Margins.Right;
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
+
+                relativeOffset.X = 0;
             }
             else
             {
-                bounds.X += this.RelativeTo.Position.Margins.Left;
+                bounds.X += this.RelativeTo.Position.Margins.Left + this.RelativeTo.Position.Padding.Left;
             }
 
 
             if (this.PositionOptions.Y.HasValue)
             {
                 bounds.Y += this.PositionOptions.Y.Value  + this.RelativeTo.Position.Margins.Top;
+                relativeOffset.Y = 0;
             }
             else if (this.PositionOptions.Bottom.HasValue)
             {
                 var bottom = this.RelativeTo.PagePosition.Y + this.RelativeTo.Height;
+                
                 bottom -= this.RelativeTo.Position.Margins.Bottom;
                 bottom -= this.PositionOptions.Bottom.Value;
                 
                 bounds.Y = bottom - this.Height;
+
+                relativeOffset.Y = 0;
             }
             else
             {
-                bounds.Y += this.RelativeTo.Position.Margins.Top;
+                //bounds.Y += this.RelativeTo.Position.Margins.Top;
             }
             
             
-            bounds.Location = bounds.Location.Offset(this.RelativeOffset);
+            bounds.Location = bounds.Location.Offset(relativeOffset);
 
             this.TotalBounds = bounds;
         }

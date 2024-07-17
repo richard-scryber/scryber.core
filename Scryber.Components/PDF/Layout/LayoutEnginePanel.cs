@@ -59,7 +59,7 @@ namespace Scryber.PDF.Layout
             if (this.Context.ShouldLogVerbose)
                 this.Context.TraceLog.Begin(TraceLevel.Verbose, "Panel Layout Engine", "Beginning layout of component '" + this.Component + "' as a viewport component");
 
-            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = this.FullStyle.CreateColumnOptions();
             if (pos.PositionMode != Drawing.PositionMode.Inline)
             {

@@ -877,13 +877,14 @@ namespace Scryber.Styles
 
         #endregion
 
-        #region internal protected virtual PDFPositionOptions DoCreatePositionOptions()
+        #region internal protected virtual PDFPositionOptions DoCreatePositionOptions(bool isInPositioned)
 
         /// <summary>
         /// Implementation of the PDFPositionOptions creation
         /// </summary>
+        /// <param name="isInPositioned">Specifies if the position options a being created for a component that is within a positioned region</param>
         /// <returns></returns>
-        internal protected virtual PDFPositionOptions DoCreatePositionOptions()
+        internal protected virtual PDFPositionOptions DoCreatePositionOptions(bool isInPositioned)
         {
             PDFPositionOptions options = new PDFPositionOptions();
             StyleValue<PositionMode> posmode;
@@ -894,7 +895,7 @@ namespace Scryber.Styles
                 options.PositionMode = PositionMode.Block;
 
             StyleValue<bool> b;
-            if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+            if (isInPositioned || options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
                 options.FillWidth = false;
             else if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value(this);
@@ -2162,7 +2163,7 @@ namespace Scryber.Styles
 
         #region internal protected virtual PDFPen DoCreateOverlayGridPen()
 
-        internal protected virtual PDFPen DoCreateOverlayGridPen()
+        internal protected virtual PDFPen DoCreateOverlayGridPen(bool forMajor)
         {
             StyleValue<bool> show;
             StyleValue<Color> color;
@@ -2173,8 +2174,16 @@ namespace Scryber.Styles
                     color = new StyleValue<Color>(StyleKeys.OverlayColorKey, OverlayGridStyle.DefaultGridColor);
                 if (this.TryGetValue(StyleKeys.OverlayOpacityKey, out opacity) == false)
                     opacity = new StyleValue<double>(StyleKeys.OverlayOpacityKey, OverlayGridStyle.DefaultGridOpacity);
-
-                PDFPen solid = new PDFSolidPen(color.Value(this), OverlayGridStyle.DefaultGridPenWidth) { Opacity = opacity.Value(this) };
+                PDFPen solid;
+                if (forMajor)
+                {
+                    solid = new PDFSolidPen(color.Value(this), OverlayGridStyle.DefaultGridPenMajorWidth)
+                        { Opacity = opacity.Value(this) };
+                }
+                else
+                    solid = new PDFSolidPen(color.Value(this), OverlayGridStyle.DefaultGridPenWidth)
+                        { Opacity = opacity.Value(this) };
+                
                 return solid;
             }
             return null;

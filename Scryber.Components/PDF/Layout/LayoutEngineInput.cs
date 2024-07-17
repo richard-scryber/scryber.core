@@ -29,7 +29,7 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutComponent()
         {
-            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutXObject xObject = this.CreateAndAddInput(pos);
             _addedProxyText = false;

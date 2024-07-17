@@ -894,24 +894,35 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
-
+            bool decrementDepthAfter = false;
+            
             //Here we can set up any required regions and then do the layout for the explicit types
             //If we have style then check if are actually relatively or absolutely positioned
             if (IsStyled(comp))
             {
-                options = full.CreatePostionOptions();
+                options = full.CreatePostionOptions(this.Context.PositionDepth > 0);
 
                 if (options.PositionMode == PositionMode.Fixed)
+                {
                     positioned = this.BeginNewAbsoluteRegionForChild(options, comp, full);
-
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
                 else if (options.PositionMode == PositionMode.Absolute)
+                {
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
-
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
                 else if (options.PositionMode == PositionMode.InlineBlock)
                     positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
 
                 else if (options.FloatMode != FloatMode.None)
+                {
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
             }
 
 
@@ -966,7 +977,9 @@ namespace Scryber.PDF.Layout
 
 
                 positioned.Close();
-                
+
+                if (decrementDepthAfter)
+                    this.Context.PositionDepth -= 1;
 
                 if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
                     posReg.AssociatedRun.Close();
@@ -1099,6 +1112,8 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock relativeTo = null;
             
             var parent = positioned.GetParentBlock();
+            var parentOffset = Point.Empty;
+            var firstParent = true;
             
             while (parent != null)
             {
@@ -1112,6 +1127,15 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
+                    parentOffset.Y += parent.CurrentRegion.Height;
+                    
+                    if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    {  parentOffset.Y += line.Height;}
+
+                    parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
+                    parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
+                    
+                    firstParent = false;
                     parent = parent.Parent as PDFLayoutBlock;
                 }
 
@@ -1131,6 +1155,8 @@ namespace Scryber.PDF.Layout
 
                 if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line)
                     offsetY += line.Height;
+                //reset the positioned offset;
+                parentOffset = Point.Empty;
             }
             else
             {
@@ -1140,8 +1166,8 @@ namespace Scryber.PDF.Layout
                 {
                     //No vertical position - so relative to the positioned regions height
                     //including any current open line.
-                    
-                    offsetY = relativeTo.CurrentRegion.Height;
+
+                    offsetY = relativeTo.CurrentRegion.Height + relativeTo.Position.Margins.Top;
                     var open = relativeTo.CurrentRegion.LastOpenBlock();
 
                     if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line2)
@@ -1156,7 +1182,7 @@ namespace Scryber.PDF.Layout
             }
 
             positioned.RelativeTo = relativeTo;
-            positioned.RelativeOffset = new Point(offsetX, offsetY);
+            positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
             
         }
 
@@ -1450,6 +1476,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            
             return abs;
         }
 
@@ -1747,7 +1774,7 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
@@ -1780,7 +1807,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutPathComponent(IGraphicPathComponent comp, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
@@ -1842,7 +1869,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style">The image style</param>
         protected virtual void DoLayoutVisualRenderComponent(ILayoutComponent comp, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
@@ -2264,7 +2291,7 @@ namespace Scryber.PDF.Layout
 
             int repeatindex = blockToClose.BlockRepeatIndex + 1;
 
-            PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions position = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions options = this.FullStyle.CreateColumnOptions();
 
             Rect total = new Rect(new Point(0, joinToRegion.Height), joinToRegion.UnusedBounds.Size);
@@ -2598,7 +2625,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected void InitBlock(PDFLayoutBlock block, Rect bounds, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = style.CreateColumnOptions();
             
             block.InitRegions(bounds, options, columns, this.Context);

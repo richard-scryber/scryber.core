@@ -272,7 +272,7 @@ namespace Scryber.PDF.Layout
             }
 
 
-            this._posopts = fullstyle.CreatePostionOptions();
+            this._posopts = fullstyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             this._textopts = fullstyle.CreateTextOptions();
 
             if (this._posopts.PositionMode == PositionMode.Invisible)

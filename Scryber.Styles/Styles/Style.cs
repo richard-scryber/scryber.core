@@ -1047,15 +1047,16 @@ namespace Scryber.Styles
         // createXXX methods
         //
 
-        #region public PDFPositionOptions CreatePostionOptions()
+        #region public PDFPositionOptions CreatePostionOptions(bool isInPositioned)
 
         /// <summary>
         /// Creates and returns the position options for this style.
         /// </summary>
+        /// <param name="isInPositioned">Specifies if these options are being created for a component that is within a positioned region</param>
         /// <returns></returns>
-        public PDFPositionOptions CreatePostionOptions()
+        public PDFPositionOptions CreatePostionOptions(bool isInPositioned)
         {
-           return this.DoCreatePositionOptions();
+           return this.DoCreatePositionOptions(isInPositioned);
         }
 
         #endregion
@@ -1233,9 +1234,9 @@ namespace Scryber.Styles
         /// for this style if it has any overlay grid attributes set, otherwise returns null
         /// </summary>
         /// <returns></returns>
-        public PDFPen CreateOverlayGridPen()
+        public PDFPen CreateOverlayGridPen(bool forMajor = false)
         {
-            return this.DoCreateOverlayGridPen();
+            return this.DoCreateOverlayGridPen(forMajor);
         }
 
         #endregion

@@ -227,7 +227,7 @@ namespace Scryber.Components
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
-            PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
+            PDFPositionOptions pos = appliedstyle.CreatePostionOptions(context.PositionDepth > 0);
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
             PDFImageXObject xobj = this.GetImageObject(context, appliedstyle);
             Size naturalSize = xobj.GetImageSize();

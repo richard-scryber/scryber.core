@@ -260,7 +260,7 @@ namespace Scryber.PDF.Layout
             var blockStyle = new StyleFull();
             this.FullStyle.MergeInherited(blockStyle, true, Style.DirectStylePriority);
 
-            var contentPosOptions = blockStyle.CreatePostionOptions();
+            var contentPosOptions = blockStyle.CreatePostionOptions(false);
 
             PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, blockStyle, split); //this.FullStyle;
 
@@ -367,7 +367,7 @@ namespace Scryber.PDF.Layout
                 content.Width -= this.PositionOptions.Padding.Left + this.PositionOptions.Padding.Right;
                 content.Height -= this.PositionOptions.Padding.Top + this.PositionOptions.Padding.Bottom;
             }
-            var headPos = full.CreatePostionOptions(); //this.ContentBlock.Position;
+            var headPos = full.CreatePostionOptions(false); //this.ContentBlock.Position;
             //var contentPos = this.ContentBlock.Position;
             //if(contentPos.Margins.IsEmpty == false)
             //{
@@ -448,7 +448,7 @@ namespace Scryber.PDF.Layout
                 content.Width -= this.PositionOptions.Padding.Left + this.PositionOptions.Padding.Right;
                 content.Height -= this.PositionOptions.Padding.Top + this.PositionOptions.Padding.Bottom;
             }
-            var footPos = full.CreatePostionOptions();//this.ContentBlock.Position
+            var footPos = full.CreatePostionOptions(false);//this.ContentBlock.Position
 
             block.InitRegions(content, footPos, full.CreateColumnOptions(), context);
             this._footer = block;
