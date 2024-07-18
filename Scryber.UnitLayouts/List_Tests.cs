@@ -1823,7 +1823,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + firstColumnItemCount + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default - based on the page
-                Assert.AreEqual(DefaultNumberWidth + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width + chars.Width + LabelPadding);
+                Assert.AreEqual(DefaultNumberWidth + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width + chars.Width + LabelPadding, "Text start for second column in index " + i + " failed");
             }
         }
 

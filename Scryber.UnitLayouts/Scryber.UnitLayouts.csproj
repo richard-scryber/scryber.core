@@ -38,7 +38,6 @@
     <Folder Include="Content\Images\" />
     <Folder Include="Content\WhiteSpaceLayouts\" />
     <Folder Include="Content\HTML\" />
-    <Folder Include="Content\HTML\Positioning\" />
     <Folder Include="Content\HTML\Positioning\Fixed\" />
   </ItemGroup>
 </Project>

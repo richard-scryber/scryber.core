@@ -178,12 +178,14 @@ namespace Scryber.UnitLayouts
                 Y = new Unit(40, PageUnits.ViewPortHeight),
                 MinimumWidth = new Unit(50, PageUnits.ViewPortWidth),
                 MinimumHeight = new Unit(20, PageUnits.ViewPortHeight),
+                PositionMode = PositionMode.Relative,
                 BorderWidth = 1,
-                BorderColor = Drawing.StandardColors.Red
+                BorderColor = Drawing.StandardColors.Red,
+                Contents = { new TextLiteral("min width and height") }
             };
 
 
-            relative.Contents.Add(new TextLiteral("min width and height"));
+            
             section.Contents.Add(relative);
 
             using (var ms = DocStreams.GetOutputStream("RelativeOffset_MinWidthAndHeightToPage.pdf"))
@@ -196,22 +198,14 @@ namespace Scryber.UnitLayouts
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.IsNotNull(line);
-            Assert.AreEqual(1, line.Runs.Count);
-            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
-
-            var posRegion = pg.ContentBlock.PositionedRegions[0] as PDFLayoutRegion;
-            Assert.AreEqual(posRun.Region, posRegion);
-
-            //Check the offsets for x and y match the viewport dimensions
-            Assert.AreEqual(600 * 0.25, posRegion.TotalBounds.X);
-            Assert.AreEqual(800 * 0.4, posRegion.TotalBounds.Y);
-
-            var block = posRegion.Contents[0] as PDFLayoutBlock;
+            
+            
+            var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-
+   
+            //Check the widths and heights
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
             Assert.AreEqual(600 * 0.5, block.Width);
             Assert.AreEqual(800 * 0.2, block.Height);
         }
@@ -827,15 +821,13 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(block);
 
             var pgContent = pg.Size;
-            
-
-
-            Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
-            Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
 
             pgContent.Width -= (pgContent.Width * 0.1) * 2; //2 page width margins
             pgContent.Height -= (pgContent.Height * 0.1) * 2; //2 page height margins
 
+            Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
+            Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
+            
             Unit expectedWidth = pgContent.Width;
             Unit expectedHeight = pgContent.Height / 2.0; //50% of (page height - 10% margins)
 

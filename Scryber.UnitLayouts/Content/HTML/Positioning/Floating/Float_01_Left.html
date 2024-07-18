@@ -1,0 +1,44 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body{
+            margin: 20pt;
+        }
+        h5{
+            margin-top: 1.67em;
+            margin-bottom: 1.67em;
+        }
+        .float{
+            float: left;
+            border: solid 1pt blue;
+        }
+        
+        .after{
+            border: solid 1pt red;
+        }
+
+        .nest{
+            border: solid 1pt green;
+            padding: 30pt;
+        }
+        
+    </style>
+</head>
+<body>
+    <h5>Block below is floating left positioned without any position values</h5>
+    <div class="nest" >
+        Before the floating block that should go over more than one line in the page.
+        <div class="float">
+            Inside the floating block.<br />
+            Made bigger
+        </div>
+        After the floating block.
+        <div class="after">On a following div in the page.</div>
+    </div>
+    
+</body>
+</html>
+

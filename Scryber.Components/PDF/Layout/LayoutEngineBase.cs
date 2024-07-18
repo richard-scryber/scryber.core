@@ -247,6 +247,136 @@ namespace Scryber.PDF.Layout
 #endregion
 
 
+        //
+        // abstract methods
+        //
+
+        /// <summary>
+        /// Abstract method that inheritors must implement in order to actually 
+        /// layout the component and any child components
+        /// </summary>
+        protected abstract void DoLayoutComponent();
+
+        //
+        // layout children methods
+        //
+
+        #region protected virtual void DoLayoutChildren()
+
+        /// <summary>
+        /// enumerates over any / each of the engines component children and performs the correct layout option for these.
+        /// The component this engine is laying out should implement the IPDFContainerComponent
+        /// </summary>
+        protected virtual void DoLayoutChildren()
+        {
+            //Set this at the top
+            this.ContinueLayout = true;
+            ComponentList children;
+            if (TryGetComponentChildren(this.Component, out children))
+            {
+                DoLayoutChildren(children);
+            }
+        }
+        
+        #endregion
+        
+        #region private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+
+        /// <summary>
+        /// Gets the list of child components and returns true if there are some
+        /// </summary>
+        /// <param name="parent">The parent component to get the children for.</param>
+        /// <param name="children"></param>
+        /// <returns></returns>
+        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+        {
+            children = GetComponentChildren(parent);
+
+#if COUNTERS_AND_PSEUDOCONTENT
+
+            //Apply the ::before and ::after states as children
+            if (this.FullStyle.HasStates)
+            {
+                Style state;
+                StyleValue<ContentDescriptor> content;
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddBeforeContent(parent, children, state, content.Value(state));
+                }
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddAfterContent(parent, children, state, content.Value(state));
+                }
+            }
+
+#endif
+            return null != children && children.Count > 0;
+
+        }
+        
+        #endregion
+
+        #region protected virtual ComponentList GetComponentChildren(IComponent parent)
+        /// <summary>
+        /// Returns the child components of the IPDFcomponent if any.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        protected virtual ComponentList GetComponentChildren(IComponent parent)
+        {
+            if (parent is IContainerComponent)
+            {
+                IContainerComponent contaner = parent as IContainerComponent;
+                if (contaner.HasContent)
+                    return contaner.Content;
+            }
+            return null;
+        }
+
+        #endregion
+        
+        #region protected virtual void DoLayoutChildren(PDFComponentList children)
+
+        /// <summary>
+        /// enumerates over each of the components in the specified list 
+        /// and performs the layout of each individually
+        /// </summary>
+        /// <param name="children"></param>
+        protected virtual void DoLayoutChildren(ComponentList children)
+        {
+            
+            foreach (Component comp in children)
+            {
+                if (comp.Visible)
+                    this.DoLayoutAChild(comp);
+
+                if (this.ContinueLayout == false 
+                    || this.DocumentLayout.CurrentPage.IsClosed 
+                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                    break;
+            }
+            
+        }
+
+        
+
+        #endregion
+        
+        //
+        // counters
+        //
+        
+        
+        #region protected virtual void EnsureCounterUpdatesForStyle(Style style)
+
         /// <summary>
         /// Updates any counters on the style - either reset or increment
         /// </summary>
@@ -277,6 +407,7 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        #endregion
 
         #region protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
 
@@ -358,78 +489,26 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-
-        //
-        // abstract methods
-        //
+        
+        #region protected void RemoveCountersFromStateStyle(Style style)
 
         /// <summary>
-        /// Abstract method that inheritors must implement in order to actually 
-        /// layout the component and any child components
+        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
+        /// then we do not want them to be executed again.
         /// </summary>
-        protected abstract void DoLayoutComponent();
-
-        //
-        // layout children methods
-        //
-
-        #region protected virtual void DoLayoutChildren()
-
-        /// <summary>
-        /// enumerates over any / each of the engines component children and performs the correct layout option for these.
-        /// The component this engine is laying out should implement the IPDFContainerComponent
-        /// </summary>
-        protected virtual void DoLayoutChildren()
+        /// <param name="style"></param>
+        protected void RemoveCountersFromStateStyle(Style style)
         {
-            //Set this at the top
-            this.ContinueLayout = true;
-            ComponentList children;
-            if (TryGetComponentChildren(this.Component, out children))
-            {
-                DoLayoutChildren(children);
-            }
+            style.RemoveValue(StyleKeys.CounterResetKey);
+            style.RemoveValue(StyleKeys.CounterIncrementKey);
         }
 
-        /// <summary>
-        /// Gets the list of child components and returns true if there are some
-        /// </summary>
-        /// <param name="children"></param>
-        /// <returns></returns>
-        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
-        {
-            children = GetComponentChildren(parent);
-
-#if COUNTERS_AND_PSEUDOCONTENT
-
-            //Apply the ::before and ::after states as children
-            if (this.FullStyle.HasStates)
-            {
-                Style state;
-                StyleValue<ContentDescriptor> content;
-
-                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
-                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
-                {
-                    if (null == children)
-                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
-                    AddBeforeContent(parent, children, state, content.Value(state));
-                }
-
-                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
-                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
-                {
-                    if (null == children)
-                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
-                    AddAfterContent(parent, children, state, content.Value(state));
-                }
-            }
-
-#endif
-            return null != children && children.Count > 0;
-
-        }
-
+        #endregion
+        
+        // ::before and ::after content
+        
+        #region private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
+        
         private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
         {
             Span span = new Span();
@@ -457,7 +536,11 @@ namespace Scryber.PDF.Layout
 
 
         }
+        
+        #endregion
 
+        #region private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
+        
         private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
         {
             Span span = new Span();
@@ -486,19 +569,11 @@ namespace Scryber.PDF.Layout
 
 
         }
+        
+        #endregion
 
-        /// <summary>
-        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
-        /// then we do not want them to be executed again.
-        /// </summary>
-        /// <param name="style"></param>
-        protected void RemoveCountersFromStateStyle(Style style)
-        {
-            style.RemoveValue(StyleKeys.CounterResetKey);
-            style.RemoveValue(StyleKeys.CounterIncrementKey);
-        }
-
-
+        #region private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
+        
         private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
         {
             bool added = false;
@@ -581,52 +656,13 @@ namespace Scryber.PDF.Layout
             }
             return added;
         }
-
-        /// <summary>
-        /// Returns the child components of the IPDFcomponent if any.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        private static ComponentList GetComponentChildren(IComponent parent)
-        {
-            if (parent is IContainerComponent)
-            {
-                IContainerComponent contaner = parent as IContainerComponent;
-                if (contaner.HasContent)
-                    return contaner.Content;
-            }
-            return null;
-        }
-
-        #endregion
-
-        #region protected virtual void DoLayoutChildren(PDFComponentList children)
-
-        /// <summary>
-        /// enumerates over each of the components in the specified list 
-        /// and performs the layout of each individually
-        /// </summary>
-        /// <param name="children"></param>
-        protected virtual void DoLayoutChildren(ComponentList children)
-        {
-            
-            foreach (Component comp in children)
-            {
-                if (comp.Visible)
-                    this.DoLayoutAChild(comp);
-
-                if (this.ContinueLayout == false 
-                    || this.DocumentLayout.CurrentPage.IsClosed 
-                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
-                    break;
-            }
-            
-        }
-
         
-
         #endregion
 
+        //
+        // Child layout
+        //
+        
         #region protected virtual void DoLayoutAChild(PDFComponent comp)
 
         /// <summary>
@@ -830,6 +866,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region protected virtual Size GetParentComponentSize(IComponent component, Style style, PositionMode withMode)
 
         protected virtual Size GetParentComponentSize(IComponent component, Style style, PositionMode withMode)
         {
@@ -881,6 +918,8 @@ namespace Scryber.PDF.Layout
             }
             return sz;
         }
+        
+        #endregion
 
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 
@@ -1016,6 +1055,8 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
+        
         protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
         {
             var pg = this.Context.DocumentLayout.CurrentPage;
@@ -1083,6 +1124,9 @@ namespace Scryber.PDF.Layout
             positioned.TotalBounds = bounds;
         }
 
+        #endregion
+        
+        #region protected PDFLayoutBlock GetClosestPositionedParent(PDFLayoutRegion region)
         protected PDFLayoutBlock GetClosestPositionedParent(PDFLayoutRegion region)
         {
             var block = region.GetParentBlock();
@@ -1102,6 +1146,9 @@ namespace Scryber.PDF.Layout
             return null;
         }
         
+        #endregion
+        
+        #region protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
 
         
         protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
@@ -1185,6 +1232,8 @@ namespace Scryber.PDF.Layout
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
             
         }
+        
+        #endregion
 
         #region protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
 
@@ -1922,6 +1971,8 @@ namespace Scryber.PDF.Layout
         //
         // overflow methods
         //
+        
+        #region protected bool IsLastInClippedBlock(PDFLayoutRegion container)
 
         protected bool IsLastInClippedBlock(PDFLayoutRegion container)
         {
@@ -1957,7 +2008,11 @@ namespace Scryber.PDF.Layout
             }
             return false;
         }
+        
+        #endregion
 
+        #region protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
+        
         protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
         {
             if (ablock.Owner == this.Component)
@@ -1972,6 +2027,8 @@ namespace Scryber.PDF.Layout
             else
                 return true;
         }
+        
+        #endregion
 
         #region internal protected virtual bool MoveToNextRegion(ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
 
@@ -2662,8 +2719,6 @@ namespace Scryber.PDF.Layout
         #endregion
 
         
-
-
         //
         // disposal
         //

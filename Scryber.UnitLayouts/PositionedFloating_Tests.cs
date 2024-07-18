@@ -36,6 +36,18 @@ namespace Scryber.UnitLayouts
         {
             layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
+        
+        protected string AssertGetContentFile(string name)
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Floating/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
+
+            return path;
+        }
 
         /// <summary>
         /// Checks a simple unsized float left div with text after.
@@ -45,28 +57,10 @@ namespace Scryber.UnitLayouts
         public void FloatLeftToPage()
         {
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 10;
-            section.TextLeading = 15;
-            section.Margins = 15;
-            section.Style.OverlayGrid.ShowGrid = true;
-            section.Style.OverlayGrid.GridSpacing = 15;
-            doc.Pages.Add(section);
+            var path = AssertGetContentFile("Float_01_Left");
 
+            var doc = Document.ParseDocument(path);
 
-            Div floating = new Div()
-            {
-                BackgroundColor = Drawing.StandardColors.Red,
-                FloatMode = FloatMode.Left
-            };
-
-            floating.Contents.Add(new TextLiteral("Floating Div"));
-            section.Contents.Add(floating);
-
-            section.Contents.Add("After the float");
 
 
             using (var ms = DocStreams.GetOutputStream("Float_LeftToPage.pdf"))
@@ -109,7 +103,7 @@ namespace Scryber.UnitLayouts
 
             //width and hight of the content and float should be chars width and line height
             Unit w = chars.Width;
-            Unit h = section.TextLeading;
+            Unit h = 15;
 
             Assert.AreEqual(w, innerLine.Width);
             Assert.AreEqual(h, innerLine.Height);
@@ -136,7 +130,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(h, pos.Height);
 
             //The start run should account for the float with the text cursors position (size)
-            Assert.AreEqual(w + section.Margins.Left, startRun.StartTextCursor.Width );
+            Assert.AreEqual(w, startRun.StartTextCursor.Width );
 
         }
 
