@@ -954,8 +954,9 @@ namespace Scryber.PDF.Layout
                     decrementDepthAfter = true;
                 }
                 else if (options.PositionMode == PositionMode.InlineBlock)
+                {
                     positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
-
+                }
                 else if (options.FloatMode != FloatMode.None)
                 {
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
@@ -1036,18 +1037,24 @@ namespace Scryber.PDF.Layout
                 }
                 else if(positioned.PositionMode == PositionMode.Absolute)
                 {
-                    this.UpdateAbsoluteRegionPosition(positioned, options);
+                    if (options.FloatMode != FloatMode.None)
+                    {
+                        positioned = EnsurePositionedOnPage(positioned, options);
+                        this.UpdateFloatingRegionPosition(positioned, options);
+                    }
+                    else
+                    {
+                        this.UpdateAbsoluteRegionPosition(positioned, options);
+                    }
+                    
                 }
+                
                 //If we are relative and we some transformations to apply
-                if (options != null && options.HasTransformation)
+                if (options.HasTransformation)
                 {
                     ApplyRelativeTransformations(positioned, options);
                 }
-                else if(options.FloatMode != FloatMode.None)
-                {
-                    positioned = EnsurePositionedOnPage(positioned, options);
-                    ApplyFloat(positioned, options);
-                }
+                
                 
             }
 
@@ -1270,86 +1277,96 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
+        #region protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions pos)
 
-        protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
+        protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
-            if (null == pos)
-                throw new ArgumentNullException("pos");
-
-            if (null == positioned)
-                throw new ArgumentNullException("positioned");
-
-            if (pos.FloatMode == FloatMode.None)
-                throw new ArgumentOutOfRangeException("pos.FloatMode", "Can not be None");
-
-            if(positioned.Contents.Count == 0)
-            {
-                this.Context.TraceLog.Add(TraceLevel.Warning, "Float Layout", "Block has moved to a new page and cannot find a parent that is valid. Float detail is lost");
-                return;
-            }
-            Unit floatWidth;
-            bool isImage;
-            if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out isImage))
-                return;
+            //Knock out any explicit position values and set it to absolute.
+            options.X = null;
+            options.Y = null;
+            options.Bottom = null;
+            options.Right = null;
+            options.PositionMode = PositionMode.Absolute;
             
-            Unit floatInset = Unit.Zero;
-            Unit height = positioned.Height;
-            Unit offset = pos.Y.HasValue ? pos.Y.Value : 0;
+            var positioned = (PDFLayoutPositionedRegion)region;
+            var pg = this.Context.DocumentLayout.CurrentPage;
             var bounds = positioned.TotalBounds;
-            var container = positioned.GetParentBlock();
-            var pageOffset = container.GetPageYOffset();
-            var rightAlign = container.Position.HAlign == HorizontalAlignment.Right;
-
-            if (pos.FloatMode == FloatMode.Left)
-            {
-                
-                floatInset = container.CurrentRegion.GetLeftInset(offset, height);
-
-                //if (floatLeft > 0)
-                //   bounds.X += floatLeft;
-                if(isImage)
-                {
-                    if (pos.Width.HasValue && rightAlign)
-                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
-                }
-                else if(pos.Margins.IsEmpty == false)
-                {
-                    height += pos.Margins.Top + pos.Margins.Bottom;
-                    //bounds.X += pos.Margins.Left;
-                    //bounds.Y += pos.Margins.Top;
-                    bounds.Height = height;
-                    positioned.TotalBounds = bounds;
-                }
-            }
-            else if(pos.FloatMode == FloatMode.Right)
-            {
-                floatInset = container.CurrentRegion.GetRightInset(offset, height);
-                
-                var avail = container.CurrentRegion.TotalBounds.Width;
-                var w = avail;
-                bounds.X = avail - (floatWidth + floatInset);
-                
-
-                if(isImage)
-                {
-                    //HACK: The width of the image is being used explicitly for in positioning, so need to
-                    //adjust back to the right size.
-                    //if (pos.Width.HasValue && rightAlign)
-                    //    bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
-                }
-                else if (pos.Margins.IsEmpty == false)
-                {
-                    height += pos.Margins.Top + pos.Margins.Bottom;
-                    //bounds.X += pos.Margins.Left;
-                    //bounds.Y += pos.Margins.Top;
-                    bounds.Height = height;
-                }
-            }
-            positioned.TotalBounds = bounds;
-            positioned.HAlignment = HorizontalAlignment.Left;
-            container.CurrentRegion.AddFloatingInset(pos.FloatMode, floatWidth, floatInset, offset, height);
+            PDFLayoutBlock relativeTo = null;
             
+            var parent = positioned.GetParentBlock();
+            var parentOffset = Point.Empty;
+            var firstParent = true;
+            
+            while (parent != null)
+            {
+                var mode = parent.Position.PositionMode;
+                if (mode == PositionMode.Absolute ||
+                    mode == PositionMode.Fixed ||
+                    mode == PositionMode.Relative)
+                {
+                    relativeTo = parent;
+                    break;
+                }
+                else
+                {
+                    parentOffset.Y += parent.CurrentRegion.Height;
+                    
+                    if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    {  parentOffset.Y += line.Height;}
+
+                    parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
+                    parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
+                    
+                    firstParent = false;
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
+
+            }
+            
+            var offsetX = Unit.Zero;
+            var offsetY = Unit.Zero;
+            
+            if (null == relativeTo)
+            {
+                //no positioned parent so we are relative to the structural parent
+                //and it's current position - even if we have x and y values
+                relativeTo = positioned.GetParentBlock();
+                
+                offsetX = relativeTo.CurrentRegion.OffsetX;
+                offsetY = relativeTo.CurrentRegion.Height;
+
+                if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    offsetY += line.Height;
+                
+                //reset the positioned offset;
+                parentOffset = Point.Empty;
+            }
+            else
+            {
+                //We have a positioned parent
+                
+                if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                {
+                    //No vertical position - so relative to the positioned regions height
+                    //including any current open line.
+
+                    offsetY = relativeTo.CurrentRegion.Height + relativeTo.Position.Margins.Top;
+                    var open = relativeTo.CurrentRegion.LastOpenBlock();
+
+                    if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                        offsetY += line2.Height;
+                }
+
+                if (options.X.HasValue == false && options.Right.HasValue == false)
+                {
+                    //no horizontal position
+                    offsetX = relativeTo.CurrentRegion.OffsetX;
+                }
+            }
+
+            positioned.RelativeTo = relativeTo;
+            positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
+            relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.Width, 0, offsetY, positioned.Height);
         }
 
 
@@ -1542,34 +1559,17 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            Unit offsetY = last.Height;
-            var region = last.CurrentRegion;
-            if (null != region)
-            {
-                //Check if we have an open line with existing content on it.
-                //If so, then we move down a line for the layout block.
-                //Otherwise just reduce the width of the current line by block width
-                if (region.CurrentItem != null && region.CurrentItem is PDFLayoutLine)
-                {
-                    var line = (region.CurrentItem as PDFLayoutLine);
-                    if (line.Runs.Count > 0)
-                        offsetY += region.CurrentItem.Height;
-                    else
-                        line.SetMaxWidth(line.AvailableWidth - pos.Width ?? Unit.Zero);
-
-                }
-                //there could be another float left, so make sure we inset to match this.
-                if (pos.FloatMode == FloatMode.Left)
-                {
-                    var x = region.GetLeftInset(offsetY, pos.Height ?? (Unit)1);
-                    if (x > 0)
-                        pos.X = x;
-                }
-            }
-            pos.Y = offsetY;
-            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
             
-            return floating;
+            //Knock out any positioning, and treat the block as absolute.
+            //We can then exclude this in the line widths for the parent it is relative to.
+            
+            pos.X = null;
+            pos.Y = null;
+            pos.Bottom = null;
+            pos.Right = null;
+            pos.PositionMode = PositionMode.Absolute;
+            PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
+            return ib;
         }
 
         #endregion

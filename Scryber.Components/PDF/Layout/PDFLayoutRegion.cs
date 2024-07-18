@@ -624,8 +624,13 @@ namespace Scryber.PDF.Layout
             Unit avail = this.UnusedBounds.Width;
 
             if (null != this.Floats)
-                avail = this.Floats.ApplyWidthInset(avail, yoffset, height);
-            return avail;
+                return this.Floats.ApplyWidthInset(avail, yoffset, height);
+            else if (this.PositionMode != PositionMode.Absolute)
+                return avail;
+            else
+                return this.GetParentBlock().GetParentBlock().CurrentRegion
+                    .GetAvailableWidth(yoffset + this.Height, height);
+            
         }
 
         #endregion

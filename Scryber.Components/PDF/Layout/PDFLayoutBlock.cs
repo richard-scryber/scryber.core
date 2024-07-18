@@ -944,64 +944,71 @@ namespace Scryber.PDF.Layout
                 beforeline = before.BeginNewLine();
 
             var addTo = this;
-
+            
             Rect space;
             if(pos.PositionMode == PositionMode.Fixed)
             {
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
-                
             }
             else if (pos.PositionMode == PositionMode.Absolute)
+            {
                 //Page sizing
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
+
+            }
             else
                 //Block sizing
                 space = new Rect(Point.Empty, this.AvailableBounds.Size);
 
-            //Calculate the available space
+            //Calculate the available space if we are not a flao
+            if (!isfloating)
+            {
+                if (pos.X.HasValue)
+                {
+                    if (pos.PositionMode == PositionMode.InlineBlock)
+                        pos.X = null;
+                    else
+                    {
+                        space.X += pos.X.Value;
+                        space.Width -= pos.X.Value;
+                    }
+                }
+                else if (pos.Right.HasValue)
+                {
+                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
+                        pos.PositionMode == PositionMode.Inline)
+                        pos.X = null;
+                    else
+                    {
+                        //space.Y += pos.Y.Value; Needs sorting
+                        space.Width -= pos.Right.Value;
+                    }
+                }
 
-            if (pos.X.HasValue)
-            {
-                if (pos.PositionMode == PositionMode.InlineBlock)
-                    pos.X = null;
-                else
+                if (pos.Y.HasValue)
                 {
-                    space.X += pos.X.Value;
-                    space.Width -= pos.X.Value;
+                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
+                        pos.PositionMode == PositionMode.Inline)
+                        pos.Y = null;
+                    else
+                    {
+                        space.Y += pos.Y.Value;
+                        space.Height -= pos.Y.Value;
+                    }
                 }
-            }
-            else if (pos.Right.HasValue)
-            {
-                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
-                    pos.X = null;
-                else
+                else if (pos.Bottom.HasValue)
                 {
-                    //space.Y += pos.Y.Value; Needs sorting
-                    space.Width -= pos.Right.Value;
+                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
+                        pos.PositionMode == PositionMode.Inline)
+                        pos.Y = null;
+                    else
+                    {
+                        //space.Y += pos.Y.Value; Needs Sorting
+                        space.Height -= pos.Bottom.Value;
+                    }
                 }
             }
 
-            if (pos.Y.HasValue)
-            {
-                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
-                    pos.Y = null;
-                else
-                {
-                    space.Y += pos.Y.Value;
-                    space.Height -= pos.Y.Value;
-                }
-            }
-            else if (pos.Bottom.HasValue)
-            {
-                if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block || pos.PositionMode == PositionMode.Inline)
-                    pos.Y = null;
-                else
-                {
-                    //space.Y += pos.Y.Value; Needs Sorting
-                    space.Height -= pos.Bottom.Value;
-                }
-            }
-            
             //if (pos.HasWidth)
             //{
             //    space.Width = pos.Width;

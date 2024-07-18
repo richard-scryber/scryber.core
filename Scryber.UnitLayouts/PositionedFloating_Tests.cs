@@ -65,6 +65,10 @@ namespace Scryber.UnitLayouts
 
             using (var ms = DocStreams.GetOutputStream("Float_LeftToPage.pdf"))
             {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
