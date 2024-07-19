@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
@@ -419,7 +420,7 @@ namespace Scryber.PDF.Layout
             this.AssertIsOpen();
             var last = this.AssertLastItemIsClosed() as PDFLayoutLine;
             
-            Unit width = this.GetAvailableWidth();
+            Unit width = this.GetAvailableLineWidth();
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, VerticalAlignment.Baseline, this.Contents.Count);
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
@@ -614,23 +615,40 @@ namespace Scryber.PDF.Layout
         /// Gets the current available width for a line
         /// </summary>
         /// <returns></returns>
-        protected Unit GetAvailableWidth()
+        protected Unit GetAvailableLineWidth()
         {
-            return GetAvailableWidth(this.UsedSize.Height, 1.0);
+            return GetAvailableLineWidth(this.UsedSize.Height, 1.0);
         }
 
-        public virtual Unit GetAvailableWidth(Unit yoffset, Unit height)
+        public virtual Unit GetAvailableLineWidth(Unit yoffset, Unit height)
         {
             Unit avail = this.UnusedBounds.Width;
-
+            
             if (null != this.Floats)
                 return this.Floats.ApplyWidthInset(avail, yoffset, height);
-            else if (this.PositionMode != PositionMode.Absolute)
-                return avail;
             else
-                return this.GetParentBlock().GetParentBlock().CurrentRegion
-                    .GetAvailableWidth(yoffset + this.Height, height);
+            {
+                var block = this.GetParentBlock();
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                    return avail;
+                else
+                {
+                    var parent = block.GetParentBlock();
+                    if (null != parent)
+                    {
+                        yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top + block.Position.Padding.Top;
+                        avail = parent.CurrentRegion.GetAvailableLineWidth(yoffset, height); 
+                        avail -= block.Position.Margins.Left + block.Position.Margins.Right;
+                        avail -= block.Position.Padding.Left + block.Position.Padding.Right;
+                        return avail;
+                    }
+                    else
+                    {
+                        return avail;
+                    }
+                }
             
+            }
         }
 
         #endregion
@@ -638,18 +656,65 @@ namespace Scryber.PDF.Layout
         public virtual Unit GetLeftInset(Unit yoffset, Unit height)
         {
             Unit x = Unit.Zero;
+            
             if (null != this.Floats)
-                x = this.Floats.GetLeftOffset(x, yoffset, height);
+                return this.Floats.GetLeftOffset(x, yoffset, height);
+            else
+            {
+                var block = this.GetParentBlock();
+                
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                    return x;
+                else
+                {
+                    var parent = block.GetParentBlock();
+                    
+                    if (null != parent)
+                    {
+                        yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
+                        x = parent.CurrentRegion.GetLeftInset(yoffset, height);
+                        //x -= block.Position.Margins.Left;
+                        //x -= block.Position.Padding.Left;
+                        return x;
+                    }
+                    else
+                        return x;
+                }
+            
+            }
 
-            return x;
         }
 
         public virtual Unit GetRightInset(Unit yoffset, Unit height)
         {
             Unit x = Unit.Zero;
-            if (null != this.Floats)
-                x = this.Floats.GetRightInset(x, yoffset, height);
+            //if (null != this.Floats)
+            //    x = this.Floats.GetRightInset(x, yoffset, height);
 
+            if (null != this.Floats)
+                return this.Floats.GetRightInset(x, yoffset, height);
+            else
+            {
+                var block = this.GetParentBlock();
+                
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                    return x;
+                else
+                {
+                    var parent = block.GetParentBlock();
+                    if (null != parent)
+                    {
+                        yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top + block.Position.Padding.Top;
+                        x = parent.CurrentRegion.GetRightInset(yoffset, height);
+                        //x -= block.Position.Margins.Left;
+                        //x -= block.Position.Padding.Left;
+                        return x;
+                    }
+                    else
+                        return x;
+                }
+            
+            }
             return x;
         }
 
@@ -751,8 +816,12 @@ namespace Scryber.PDF.Layout
             foreach (PDFLayoutItem item in this.Contents)
             {
                 Unit actYOffset = yoffset + item.OffsetY;
-             
-                Unit xInset = this.GetLeftInset(actYOffset, item.Height);
+
+                var line = item as PDFLayoutLine;
+                Unit xInset = Unit.Zero;
+                
+                if (null != line)
+                    xInset = this.GetLeftInset(actYOffset, item.Height);
                 Unit itemXOffset = origXoffset;
 
                 if (xInset != 0) //We have floating left item(s)
@@ -764,12 +833,16 @@ namespace Scryber.PDF.Layout
                 ///Individually calculate each lines horizontal offset
                 if (applyAlignments && h != HorizontalAlignment.Left)
                 {
-                    Unit width = this.GetAvailableWidth(actYOffset, item.Height);
+                    Unit width =  this.UnusedBounds.Width;
+                    
+                    if (null != line)
+                        width = this.GetAvailableLineWidth(actYOffset, item.Height);
+                    
                     Unit space = width - item.Width;
 
                     if(h == HorizontalAlignment.Justified)
                     {
-                        if (item is PDFLayoutLine line)
+                        if (null != line)
                         {
                             if (logdebug)
                                 context.TraceLog.Add(TraceLevel.Verbose, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);

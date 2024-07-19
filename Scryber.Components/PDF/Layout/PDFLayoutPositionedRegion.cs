@@ -316,9 +316,18 @@ namespace Scryber.PDF.Layout
             if(this.RelativeTo != null)
             {
                 var mode = this.RelativeTo.Position.PositionMode;
-                if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
+                if (mode == PositionMode.Fixed)
                 {
                     this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                }
+                if (mode == PositionMode.Absolute)
+                {
+                    if (this.PositionOptions.FloatMode == FloatMode.Right)
+                    {
+                        this.PositionOptions.Right = 0;
+                    }
+                    this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
+                    
                 }
                 else if(mode == PositionMode.Relative)
                 {

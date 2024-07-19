@@ -1568,6 +1568,12 @@ namespace Scryber.PDF.Layout
             pos.Bottom = null;
             pos.Right = null;
             pos.PositionMode = PositionMode.Absolute;
+            var region = this.CurrentBlock.CurrentRegion;
+            if (pos.FloatMode == FloatMode.Left)
+                pos.X = region.GetLeftInset(region.UsedSize.Height, 1.0);
+            else
+                pos.Right = region.GetRightInset(region.UsedSize.Height, 1.0);
+            
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
             return ib;
         }

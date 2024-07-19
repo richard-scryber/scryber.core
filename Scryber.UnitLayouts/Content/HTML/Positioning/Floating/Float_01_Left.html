@@ -8,7 +8,7 @@
             margin: 20pt;
             line-height: 15pt;
             font-size: 12pt;
-            text-align: center;
+            text-align: left;
         }
         h5{
             margin-top: 10pt;
@@ -19,8 +19,9 @@
         
         #float{
             float: left;
-            width: 100pt;
-            margin: 5pt 10pt;
+            width: 150pt;
+            margin: 0pt;
+            padding: 15pt;
             border: solid 1pt blue;
         }
         
@@ -30,22 +31,23 @@
 
         #nest{
             border: solid 1pt green;
-            padding: 30pt;
+            margin: 20pt;
+            /*padding: 15pt;*/
         }
         
     </style>
 </head>
 <body>
-    <h5>Block below is floating left positioned without any position values</h5>
+    <!--<h5>Block below is floating left positioned without any position values</h5>-->
     <div id="nest" >
         Before the floating block that should go over more than one line in the page.
         <div id="float">
-            Inside the floating block.<br />
-            Made bigger
+            Inside the floating block.
         </div>
-        After the floating block, that will continue along the page until it comes to a new line and then it will 
-        go onto a new line all  the time avoiding the region to the left.
-        <div id="after">On a following div in the page.</div>
+        After the float block, that will continue along the page until it comes to a new line and then it will 
+        go onto a new line all  the time avoiding the region to the left and still honour the margins 
+        
+        <div id="after">On a following div in the page that should continue on until it hits the floating block and goes onto a new line. </div>
     </div>
     
 </body>
