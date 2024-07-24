@@ -54,7 +54,7 @@ namespace Scryber.UnitLayouts
         /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void FloatLeftToPage()
+        public void Float_01_LeftToPage()
         {
 
             var path = AssertGetContentFile("Float_01_Left");
@@ -63,7 +63,7 @@ namespace Scryber.UnitLayouts
 
 
 
-            using (var ms = DocStreams.GetOutputStream("Float_LeftToPage.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Float_01_LeftToPage.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -79,17 +79,22 @@ namespace Scryber.UnitLayouts
             var content = pg.ContentBlock;
 
 
-            Assert.AreEqual(1, content.PositionedRegions.Count);
-            var pos = content.PositionedRegions[0];
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
 
-            Assert.AreEqual(1, content.Columns.Length);
-            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+            var pos = nest.PositionedRegions[0];
 
-            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+            
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            Assert.AreEqual(4, line.Runs.Count); //pos run, start, chars, end
+            Assert.AreEqual(7, line.Runs.Count); //start, chars, end, pos-run, start, chars, new-line
 
-            var floatAddition = content.Columns[0].Floats;
+            var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
             Assert.IsNull(floatAddition.Prev);
@@ -119,22 +124,58 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(h, floatAddition.FloatHeight);
             Assert.AreEqual(0, floatAddition.FloatInset);
 
-            //outer line content
-            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            var startRun = line.Runs[1] as PDFTextRunBegin;
-
+            //first line content
+            
+            var firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            var secondStartRun = line.Runs[4] as PDFTextRunBegin;
+            
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsNotNull(chars);
             Assert.IsNotNull(posRun);
-            Assert.IsNotNull(startRun);
+            Assert.IsNotNull(secondStartRun);
+            
             Assert.AreEqual(0, posRun.Width); //The positioned run width is zero, as it does not affect the line height etc.
             Assert.AreEqual(0, posRun.Height); //The positioned run height is zero, as it does not affect the line height etc.
 
             //And the positioned region should also have the relative size
             Assert.AreEqual(pos, posRun.Region);
+
+            Unit yOffset = 20 + 10 + 10 + 30; //page margins and heading.
+
+            yOffset += 15; //first line
+            
             Assert.AreEqual(w, pos.Width);
             Assert.AreEqual(h, pos.Height);
+            
+            Assert.AreEqual(yOffset, pos.TotalBounds.Y);
+            Assert.AreEqual(15, pos.TotalBounds.Height);
+            Assert.AreEqual(w, pos.TotalBounds.Width);
+            
+            //The first start run should just have the page margins.
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width);
+            //The second should ignore the float and continue on the first line straight after
+            Assert.AreEqual(20 + firstStartRun.Width + chars.Width, secondStartRun.StartTextCursor.Width);
 
-            //The start run should account for the float with the text cursors position (size)
-            Assert.AreEqual(w, startRun.StartTextCursor.Width );
+            //The new line should go back to less than the width of the line + the floating width.
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            Assert.IsTrue(newLine.NewLineOffset.Width < line.Width - pos.Width);
+            
+            //After block
+            var after = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(0, after.TotalBounds.X);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
+            
+            line = after.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(firstStartRun);
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width); //page margins
 
         }
 
@@ -143,58 +184,47 @@ namespace Scryber.UnitLayouts
         /// </summary>
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void FloatLeftSizedToPage()
+        public void Float_02_LeftSizedToPage()
         {
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 10;
-            section.TextLeading = 15;
-            section.Margins = 15;
-            section.Style.OverlayGrid.ShowGrid = true;
-            section.Style.OverlayGrid.GridSpacing = 15;
-            doc.Pages.Add(section);
+            var path = AssertGetContentFile("Float_02_LeftSized");
+
+            var doc = Document.ParseDocument(path);
 
 
-            Div floating = new Div()
+
+            using (var ms = DocStreams.GetOutputStream("Float_02_LeftSizedToPage.pdf"))
             {
-                BackgroundColor = Drawing.StandardColors.Red,
-                FloatMode = FloatMode.Left,
-                Width = 120,
-                Height = 150
-            };
-
-            floating.Contents.Add(new TextLiteral("Floating Div"));
-            section.Contents.Add(floating);
-
-            section.Contents.Add("After the float");
-
-
-            using (var ms = DocStreams.GetOutputStream("Float_LeftSizedToPage.pdf"))
-            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
 
-
+            
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             var content = pg.ContentBlock;
 
 
-            Assert.AreEqual(1, content.PositionedRegions.Count);
-            var pos = content.PositionedRegions[0];
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
 
-            Assert.AreEqual(1, content.Columns.Length);
-            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+            var pos = nest.PositionedRegions[0];
 
-            var line = content.Columns[0].Contents[0] as PDFLayoutLine;
+            
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            Assert.AreEqual(4, line.Runs.Count); //pos run, start, chars, end
+            Assert.AreEqual(7, line.Runs.Count); //start, chars, end, pos-run, start, chars, new-line
 
-            var floatAddition = content.Columns[0].Floats;
+            var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
             Assert.IsNull(floatAddition.Prev);
@@ -202,7 +232,7 @@ namespace Scryber.UnitLayouts
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
             Assert.AreEqual(1, innerBlock.Columns.Length);
-            Assert.AreEqual(1, innerBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(2, innerBlock.Columns[0].Contents.Count);
             var innerLine = innerBlock.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(innerLine);
 
@@ -210,39 +240,518 @@ namespace Scryber.UnitLayouts
             var chars = innerLine.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(chars);
 
-            //width and hight of the content and float are explicit
-            Unit w = 120;
-            Unit h = 150;
+            //width and hight of the content and float should be chars width and line height
+            Unit w = chars.Width; //first line chars width + padding
+            Unit h = 15; 
 
-            Assert.AreEqual(chars.Width, innerLine.Width);
-            Assert.AreEqual(section.TextLeading, innerLine.Height);
+            Assert.AreEqual(w, innerLine.Width);
+            Assert.AreEqual(h, innerLine.Height);
 
-            Assert.AreEqual(w, innerBlock.Width);
+            w = 120;
+            h = (15 * 2) + 10; //2 lines + 5pt padding
+            Assert.AreEqual(w, innerBlock.Width); //explict width
             Assert.AreEqual(h, innerBlock.Height);
 
-            Assert.AreEqual(w, floatAddition.FloatWidth);
+            Assert.AreEqual(w, floatAddition.FloatWidth); //explicit width
             Assert.AreEqual(h, floatAddition.FloatHeight);
             Assert.AreEqual(0, floatAddition.FloatInset);
 
-            //outer line content
-            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            var startRun = line.Runs[1] as PDFTextRunBegin;
-
+            //first line content
+            
+            var firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            var secondStartRun = line.Runs[4] as PDFTextRunBegin;
+            
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsNotNull(chars);
             Assert.IsNotNull(posRun);
-            Assert.IsNotNull(startRun);
+            Assert.IsNotNull(secondStartRun);
+            
             Assert.AreEqual(0, posRun.Width); //The positioned run width is zero, as it does not affect the line height etc.
             Assert.AreEqual(0, posRun.Height); //The positioned run height is zero, as it does not affect the line height etc.
 
             //And the positioned region should also have the relative size
             Assert.AreEqual(pos, posRun.Region);
+
+            Unit yOffset = 20 + 10 + 10 + 30; //page margins and heading.
+
+            yOffset += 15; //first line
+            
             Assert.AreEqual(w, pos.Width);
             Assert.AreEqual(h, pos.Height);
+            Assert.AreEqual(20, pos.TotalBounds.X);
+            Assert.AreEqual(yOffset, pos.TotalBounds.Y);
+            Assert.AreEqual(h, pos.TotalBounds.Height);
+            Assert.AreEqual(w, pos.TotalBounds.Width);
+            
+            //The first start run should just have the page margins.
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width);
+            //The second should ignore the float and continue on the first line straight after
+            Assert.AreEqual(20 + firstStartRun.Width + chars.Width, secondStartRun.StartTextCursor.Width);
 
-            //The start run should account for the float with the text cursors position (size)
-            Assert.AreEqual(w + section.Margins.Left, startRun.StartTextCursor.Width);
+            //The new line should go back to less than the width of the line + the floating width.
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            Assert.IsTrue(newLine.NewLineOffset.Width < line.Width - pos.Width);
 
+            //After block
+            var after = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            Assert.IsNotNull(after);
+            //even through the text is pushed left, the block should be from the left of the nesting block.
+            Assert.AreEqual(0, after.TotalBounds.X);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
+            
+            line = after.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(firstStartRun);
+            Assert.AreEqual(20 + w, firstStartRun.StartTextCursor.Width); //page margins + floating block inset.
+            //The text line content should be less than the outer width - the width of the float.
+            Assert.IsTrue(line.Width <= nest.Width - w);
+            
+            newLine = line.Runs[2] as PDFTextRunNewLine;
+            //last line should reset to 0 left position in the nesting and after block.
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(120, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
         }
 
+        /// <summary>
+        /// Checks a simple float left div with explicit size and text after.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Float_03_RightSizedToPage()
+        {
+
+            var path = AssertGetContentFile("Float_03_RightSized");
+
+            var doc = Document.ParseDocument(path);
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Float_03_RightSizedToPage.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+
+
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+            var pos = nest.PositionedRegions[0];
+
+            
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(7, line.Runs.Count); //start, chars, end, pos-run, start, chars, new-line
+
+            var floatAddition = nest.Columns[0].Floats;
+            Assert.IsNotNull(floatAddition);
+            Assert.AreEqual(1, floatAddition.Count);
+            Assert.IsNull(floatAddition.Prev);
+
+            var innerBlock = pos.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(innerBlock);
+            Assert.AreEqual(1, innerBlock.Columns.Length);
+            Assert.AreEqual(2, innerBlock.Columns[0].Contents.Count);
+            var innerLine = innerBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(innerLine);
+
+            Assert.AreEqual(3, innerLine.Runs.Count);
+            var chars = innerLine.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+
+            //width and hight of the content and float should be chars width and line height
+            Unit w = chars.Width; //first line chars width + padding
+            Unit h = 15; 
+
+            Assert.AreEqual(w, innerLine.Width);
+            Assert.AreEqual(h, innerLine.Height);
+
+            w = 120;
+            h = (15 * 2) + 10; //2 lines + 5pt padding
+            Assert.AreEqual(w, innerBlock.Width); //explict width
+            Assert.AreEqual(h, innerBlock.Height);
+
+            Assert.AreEqual(w, floatAddition.FloatWidth); //explicit width
+            Assert.AreEqual(h, floatAddition.FloatHeight);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(FloatMode.Right, floatAddition.Mode);
+            
+            //first line content
+            
+            var firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            var secondStartRun = line.Runs[4] as PDFTextRunBegin;
+            
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsNotNull(chars);
+            Assert.IsNotNull(posRun);
+            Assert.IsNotNull(secondStartRun);
+            
+            Assert.AreEqual(0, posRun.Width); //The positioned run width is zero, as it does not affect the line height etc.
+            Assert.AreEqual(0, posRun.Height); //The positioned run height is zero, as it does not affect the line height etc.
+
+            //And the positioned region should also have the relative size
+            Assert.AreEqual(pos, posRun.Region);
+
+            Unit yOffset = 20 + 10 + 10 + 30; //page margins and heading.
+
+            yOffset += 15; //first line
+            
+            Assert.AreEqual(w, pos.Width);
+            Assert.AreEqual(h, pos.Height);
+            Assert.AreEqual(pg.Width - (20 + w), pos.TotalBounds.X); //right side - margins and width of positioned block
+            Assert.AreEqual(yOffset, pos.TotalBounds.Y);
+            Assert.AreEqual(h, pos.TotalBounds.Height);
+            Assert.AreEqual(w, pos.TotalBounds.Width);
+            
+            //The first start run should just have the page margins.
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width);
+            //The second should ignore the float and continue on the first line straight after
+            Assert.AreEqual(20 + firstStartRun.Width + chars.Width, secondStartRun.StartTextCursor.Width);
+
+            //The new line should go back to less than the width of the line + the floating width.
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            Assert.IsTrue(newLine.NewLineOffset.Width < line.Width - pos.Width);
+
+            //After block
+            var after = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            Assert.IsNotNull(after);
+            //even through the text is pushed left, the block should be from the left of the nesting block.
+            Assert.AreEqual(0, after.TotalBounds.X);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
+            
+            line = after.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(firstStartRun);
+            Assert.AreEqual(20 , firstStartRun.StartTextCursor.Width); //page margins.
+            //The text line content should be less than the outer width - the width of the float.
+            Assert.IsTrue(line.Width <= nest.Width - w);
+            
+            newLine = line.Runs[2] as PDFTextRunNewLine;
+            //last line should also be 0 left position in the nesting and after block.
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+        }
+        
+        /// <summary>
+        /// Checks a simple float left div with explicit size and text after.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Float_04_RightSizedToPageTextRight()
+        {
+
+            var path = AssertGetContentFile("Float_04_RightSizedTextRight");
+
+            var doc = Document.ParseDocument(path);
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Float_04_RightSizedToPageTextRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+
+
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+            var pos = nest.PositionedRegions[0];
+
+            
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(7, line.Runs.Count); //start, chars, end, pos-run, start, chars, new-line
+
+            var floatAddition = nest.Columns[0].Floats;
+            Assert.IsNotNull(floatAddition);
+            Assert.AreEqual(1, floatAddition.Count);
+            Assert.IsNull(floatAddition.Prev);
+
+            var innerBlock = pos.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(innerBlock);
+            Assert.AreEqual(1, innerBlock.Columns.Length);
+            Assert.AreEqual(2, innerBlock.Columns[0].Contents.Count);
+            var innerLine = innerBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(innerLine);
+
+            Assert.AreEqual(3, innerLine.Runs.Count);
+            var chars = innerLine.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+
+            //width and hight of the content and float should be chars width and line height
+            Unit w = chars.Width; //first line chars width + padding
+            Unit h = 15; 
+
+            Assert.AreEqual(w, innerLine.Width);
+            Assert.AreEqual(h, innerLine.Height);
+
+            w = 120;
+            h = (15 * 2) + 10; //2 lines + 5pt padding
+            Assert.AreEqual(w, innerBlock.Width); //explict width
+            Assert.AreEqual(h, innerBlock.Height);
+
+            Assert.AreEqual(w, floatAddition.FloatWidth); //explicit width
+            Assert.AreEqual(h, floatAddition.FloatHeight);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(FloatMode.Right, floatAddition.Mode);
+            
+            //first line content
+            
+            var firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            var secondStartRun = line.Runs[4] as PDFTextRunBegin;
+            
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsNotNull(chars);
+            Assert.IsNotNull(posRun);
+            Assert.IsNotNull(secondStartRun);
+            
+            Assert.AreEqual(0, posRun.Width); //The positioned run width is zero, as it does not affect the line height etc.
+            Assert.AreEqual(0, posRun.Height); //The positioned run height is zero, as it does not affect the line height etc.
+
+            //And the positioned region should also have the relative size
+            Assert.AreEqual(pos, posRun.Region);
+
+            Unit yOffset = 20 + 10 + 10 + 30; //page margins and heading.
+
+            yOffset += 15; //first line
+            
+            Assert.AreEqual(w, pos.Width);
+            Assert.AreEqual(h, pos.Height);
+            Assert.AreEqual(pg.Width - (20 + w), pos.TotalBounds.X); //right side - margins and width of positioned block
+            Assert.AreEqual(yOffset, pos.TotalBounds.Y);
+            Assert.AreEqual(h, pos.TotalBounds.Height);
+            Assert.AreEqual(w, pos.TotalBounds.Width);
+            
+            //The first start run should just have the page margins.
+            Assert.AreEqual( pg.Width - 20, firstStartRun.StartTextCursor.Width + line.Width);
+            Assert.AreEqual(yOffset - 15, firstStartRun.StartTextCursor.Height - firstStartRun.TextRenderOptions.GetBaselineOffset());
+            //The second should ignore the float and continue on the first line straight after
+            Assert.AreEqual(yOffset - 15, secondStartRun.StartTextCursor.Height - secondStartRun.TextRenderOptions.GetBaselineOffset());
+
+
+            //The new line should go back to less than the width of the line + the floating width.
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            Assert.IsTrue(newLine.NextLineSpacer.Width > 0); //right align
+            Assert.AreEqual(nest.Width, newLine.NextLineSpacer.Line.Width + w); //line width + float width
+            
+            //After block
+            var after = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            Assert.IsNotNull(after);
+            //even through the text is pushed left, the block should be from the left of the nesting block.
+            Assert.AreEqual(0, after.TotalBounds.X);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
+            
+            line = after.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsTrue(firstStartRun.StartTextCursor.Width > 20); //line inset > page margins.
+            //The text line content should be less than the outer width - the width of the float.
+            Assert.IsTrue(line.Width <= nest.Width - w);
+            
+            newLine = line.Runs[2] as PDFTextRunNewLine;
+            //last line should also be 0 left position in the nesting and after block.
+            Assert.IsNotNull(newLine);
+            Assert.IsTrue(newLine.NewLineOffset.Width > 0); //right align again
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+        }
+        
+        
+        /// <summary>
+        /// Checks a simple float left div with explicit size and text after.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Float_05_RightSizedToPageTextJustify()
+        {
+
+            var path = AssertGetContentFile("Float_05_RightSizedTextJustify");
+
+            var doc = Document.ParseDocument(path);
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Float_05_RightSizedToPageTextJustify.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+
+
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+            var pos = nest.PositionedRegions[0];
+
+            
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(7, line.Runs.Count); //start, chars, end, pos-run, start, chars, new-line
+
+            var floatAddition = nest.Columns[0].Floats;
+            Assert.IsNotNull(floatAddition);
+            Assert.AreEqual(1, floatAddition.Count);
+            Assert.IsNull(floatAddition.Prev);
+
+            var innerBlock = pos.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(innerBlock);
+            Assert.AreEqual(1, innerBlock.Columns.Length);
+            Assert.AreEqual(2, innerBlock.Columns[0].Contents.Count);
+            var innerLine = innerBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(innerLine);
+
+            Assert.AreEqual(3, innerLine.Runs.Count);
+            var chars = innerLine.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+
+            //width and hight of the content and float should be chars width and line height
+            Unit w = chars.Width; //first line chars width + padding
+            Unit h = 15; 
+
+            Assert.AreEqual(w, innerLine.Width);
+            Assert.AreEqual(h, innerLine.Height);
+
+            w = 120;
+            h = (15 * 2) + 10; //2 lines + 5pt padding
+            Assert.AreEqual(w, innerBlock.Width); //explict width
+            Assert.AreEqual(h, innerBlock.Height);
+
+            Assert.AreEqual(w, floatAddition.FloatWidth); //explicit width
+            Assert.AreEqual(h, floatAddition.FloatHeight);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(FloatMode.Right, floatAddition.Mode);
+            
+            //first line content
+            
+            var firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
+            var secondStartRun = line.Runs[4] as PDFTextRunBegin;
+            
+            Assert.IsNotNull(firstStartRun);
+            Assert.IsNotNull(chars);
+            Assert.IsNotNull(posRun);
+            Assert.IsNotNull(secondStartRun);
+            
+            Assert.AreEqual(0, posRun.Width); //The positioned run width is zero, as it does not affect the line height etc.
+            Assert.AreEqual(0, posRun.Height); //The positioned run height is zero, as it does not affect the line height etc.
+
+            //And the positioned region should also have the relative size
+            Assert.AreEqual(pos, posRun.Region);
+
+            Unit yOffset = 20 + 10 + 10 + 30; //page margins and heading.
+
+            yOffset += 15; //first line
+            
+            Assert.AreEqual(w, pos.Width);
+            Assert.AreEqual(h, pos.Height);
+            Assert.AreEqual(pg.Width - (20 + w), pos.TotalBounds.X); //right side - margins and width of positioned block
+            Assert.AreEqual(yOffset, pos.TotalBounds.Y);
+            Assert.AreEqual(h, pos.TotalBounds.Height);
+            Assert.AreEqual(w, pos.TotalBounds.Width);
+            
+            //The first start run should just have the page margins.
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width);
+            Assert.AreEqual(yOffset - 15, firstStartRun.StartTextCursor.Height - firstStartRun.TextRenderOptions.GetBaselineOffset());
+            //The second should ignore the float and continue on the first line straight after
+            Assert.AreEqual(yOffset - 15, secondStartRun.StartTextCursor.Height - secondStartRun.TextRenderOptions.GetBaselineOffset());
+            Assert.IsTrue(firstStartRun.HasCustomSpace);
+            
+            //The new line should go back to less than the width of the line + the floating width.
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            Assert.AreEqual(0, newLine.NextLineSpacer.Width); //justified so should be 0
+            
+            
+            //After block
+            var after = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            Assert.IsNotNull(after);
+            //even through the text is pushed left, the block should be from the left of the nesting block.
+            Assert.AreEqual(0, after.TotalBounds.X);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
+            
+            line = after.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            firstStartRun = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(firstStartRun);
+            Assert.AreEqual(20, firstStartRun.StartTextCursor.Width); //line inset > page margins.
+            //The text line content should be less than the outer width - the width of the float.
+            Assert.IsTrue(firstStartRun.HasCustomSpace);
+            
+            newLine = line.Runs[2] as PDFTextRunNewLine;
+            //last line should also be 0 left position in the nesting and after block.
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width); //right align again
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+        }
+        
+        
         /// <summary>
         /// Checks a float left div with explicit size with text before and after reaching beyond the size of the div.
         /// </summary>

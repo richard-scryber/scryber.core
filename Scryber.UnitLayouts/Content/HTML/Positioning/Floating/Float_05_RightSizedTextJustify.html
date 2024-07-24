@@ -8,7 +8,8 @@
             margin: 20pt;
             line-height: 15pt;
             font-size: 12pt;
-            text-align: left;
+            text-align: justify;
+            font-family: serif;
         }
         h5{
             margin-top: 10pt;
@@ -22,14 +23,19 @@
         #float{
             float: left;
             border: solid 1pt blue;
+            padding: 5pt;
+            width: 120pt;
         }
         
         #after{
             border: solid 1pt red;
         }
+        
+
 
         #nest{
             border: solid 1pt green;
+            position: absolute;
         }
         
     </style>
@@ -42,7 +48,7 @@
             Inside the floating block.
         </div>
         After the float block, that will continue along the page until it comes to a new line and then it will 
-        go onto a new line all  the time avoiding the region to the left and still honour the margins 
+        go on new line all the time avoiding the region to the left and still honour the margins
         
         <div id="after">On a following div in the page that should continue on until it hits the floating block 
             and goes onto a new line that keeps flowing around the floating region. </div>

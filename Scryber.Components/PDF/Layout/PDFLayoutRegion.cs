@@ -816,15 +816,13 @@ namespace Scryber.PDF.Layout
             foreach (PDFLayoutItem item in this.Contents)
             {
                 Unit actYOffset = yoffset + item.OffsetY;
-                
-                
+
                 var line = item as PDFLayoutLine;
-                
+                Unit leftInset = Unit.Zero;
                 Unit rightInset = Unit.Zero;
-                Unit leftInset = this.GetLeftInset(actYOffset, item.Height);
                 
-                //if (null != line)
-                //   leftInset = this.GetLeftInset(actYOffset, item.Height);
+                if (null != line)
+                    leftInset = this.GetLeftInset(actYOffset, item.Height);
                 Unit itemXOffset = origXoffset;
 
                 if (leftInset != 0) //We have floating left item(s)

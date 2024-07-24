@@ -28,10 +28,10 @@
         }
 
         #nest{
-            margin: 10pt 20pt;
+            margin: 10pt 0pt;
             padding:0pt;
             border: solid 1px aqua;
-            position: relative;
+            position: absolute;
         }
     </style>
 </head>
@@ -39,7 +39,8 @@
     <h5>Block below is nested, absolute positioned without a location.</h5>
     <div id="nest">
         <span id="before">Before the absolute.</span>
-        <div id="abs">Absolute to the page</div>
+        <div id="abs">Absolute to the page, with really long text that should flow across the width of the page and then 
+        go onto a new line within the absolute block.</div>
         <span id="after"> After the absolute block</span>
     </div>
 </body>
