@@ -1,0 +1,57 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body{
+            margin: 20pt;
+            line-height: 15pt;
+            font-size: 12pt;
+            text-align: left;
+        }
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 12pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+
+        #float{
+            float: right;
+            margin: 10pt;
+            padding: 5pt;
+            border: solid 1pt blue;
+            width: 120pt;
+        }
+
+        #after{
+            border: solid 1pt red;
+        }
+
+        #nest{
+            border: solid 1pt green;
+            margin: 0pt;
+            text-align: right;
+            /*padding: 15pt;*/
+        }
+
+    </style>
+</head>
+<body>
+<h5>Block below is floating left positioned without any position values</h5>
+<div id="nest" >
+    
+    Before the floating block that should go over more than one line in the page.
+    <div id="float">
+        Inside the floating block.
+    </div>
+    After the float block, that will continue along the page until it comes to a new line and then it will
+    go onto a new line all  the time avoiding the region to the left and still honour the margins
+    <div id="after">On a following div in the page that should continue on until it hits the floating block and goes onto a new line. </div>
+</div>
+
+</body>
+</html>
+

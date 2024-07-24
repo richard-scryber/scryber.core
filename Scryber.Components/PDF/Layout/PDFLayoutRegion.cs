@@ -829,11 +829,16 @@ namespace Scryber.PDF.Layout
                 if (applyAlignments && h != HorizontalAlignment.Left)
                 {
                     Unit width = this.UnusedBounds.Width;
+                    Unit right = Unit.Zero;
 
                     if (null != line)
+                    {
                         width = this.GetAvailableLineWidth(actYOffset, item.Height);
-                    
+                        right = this.GetRightInset(actYOffset, item.Height);
+                    }
+
                     Unit space = width - item.Width;
+                    
 
                     if(h == HorizontalAlignment.Justified)
                     {
@@ -858,6 +863,17 @@ namespace Scryber.PDF.Layout
                     else if(h == HorizontalAlignment.Center)
                     {
                         space = space / 2;
+                    }
+                    else if (h == HorizontalAlignment.Right)
+                    {
+                        if (null != line)
+                        {
+                            
+                            if (right != Unit.Zero)
+                            {
+                                space -= right;
+                            }
+                        }
                     }
                     
                     itemXOffset = itemXOffset + space;

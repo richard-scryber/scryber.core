@@ -315,6 +315,17 @@ namespace Scryber.PDF.Layout
         {
             if(this.RelativeTo != null)
             {
+                if (this.PositionOptions.FloatMode == FloatMode.Right)
+                {
+                    //this.RelativeTo region float inset
+                    //needs to take account of the possible multiple insets.
+                    this.PositionOptions.X = this.RelativeTo.PagePosition.X + this.RelativeTo.Width - this.Width;
+                }
+                else if (this.PositionOptions.FloatMode == FloatMode.Left)
+                {
+                    //Todo - push the floating block to the right.
+                }
+                
                 var mode = this.RelativeTo.Position.PositionMode;
                 if (mode == PositionMode.Fixed)
                 {
@@ -322,10 +333,6 @@ namespace Scryber.PDF.Layout
                 }
                 else if (mode == PositionMode.Absolute)
                 {
-                    if (this.PositionOptions.FloatMode == FloatMode.Right)
-                    {
-                        this.PositionOptions.Right = 0;
-                    }
                     this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
                 }
                 else if(mode == PositionMode.Relative)
