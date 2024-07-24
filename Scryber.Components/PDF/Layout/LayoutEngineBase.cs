@@ -1559,7 +1559,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            
+            PDFLayoutRegion region = last.CurrentRegion;
             //Knock out any positioning, and treat the block as absolute.
             //We can then exclude this in the line widths for the parent it is relative to.
             
@@ -1568,6 +1568,12 @@ namespace Scryber.PDF.Layout
             pos.Bottom = null;
             pos.Right = null;
             pos.PositionMode = PositionMode.Absolute;
+            
+            if (pos.FloatMode == FloatMode.Left)
+                pos.X = region.GetLeftInset(region.UsedSize.Height, 1.0);
+            else if (pos.FloatMode == FloatMode.Right)
+                pos.Right = region.GetRightInset(region.UsedSize.Height, 1.0);
+            
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
             return ib;
         }
