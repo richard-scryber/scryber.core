@@ -19,9 +19,6 @@
         
         #float{
             float: left;
-            width: 150pt;
-            margin: 0pt;
-            padding: 15pt;
             border: solid 1pt blue;
         }
         
@@ -32,13 +29,13 @@
         #nest{
             border: solid 1pt green;
             margin: 20pt;
-            /*padding: 15pt;*/
+            padding: 15pt;
         }
         
     </style>
 </head>
 <body>
-    <!--<h5>Block below is floating left positioned without any position values</h5>-->
+    <h5>Block below is floating left positioned without any position values</h5>
     <div id="nest" >
         Before the floating block that should go over more than one line in the page.
         <div id="float">
@@ -47,7 +44,8 @@
         After the float block, that will continue along the page until it comes to a new line and then it will 
         go onto a new line all  the time avoiding the region to the left and still honour the margins 
         
-        <div id="after">On a following div in the page that should continue on until it hits the floating block and goes onto a new line. </div>
+        <div id="after">On a following div in the page that should continue on until it hits the floating block 
+            and goes onto a new line that keeps flowing around the floating region. </div>
     </div>
     
 </body>

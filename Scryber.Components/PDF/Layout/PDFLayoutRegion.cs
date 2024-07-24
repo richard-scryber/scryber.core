@@ -704,7 +704,7 @@ namespace Scryber.PDF.Layout
                     var parent = block.GetParentBlock();
                     if (null != parent)
                     {
-                        yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top + block.Position.Padding.Top;
+                        yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
                         x = parent.CurrentRegion.GetRightInset(yoffset, height);
                         //x -= block.Position.Margins.Left;
                         //x -= block.Position.Padding.Left;
@@ -816,17 +816,20 @@ namespace Scryber.PDF.Layout
             foreach (PDFLayoutItem item in this.Contents)
             {
                 Unit actYOffset = yoffset + item.OffsetY;
-
-                var line = item as PDFLayoutLine;
-                Unit xInset = Unit.Zero;
                 
-                if (null != line)
-                    xInset = this.GetLeftInset(actYOffset, item.Height);
+                
+                var line = item as PDFLayoutLine;
+                
+                Unit rightInset = Unit.Zero;
+                Unit leftInset = this.GetLeftInset(actYOffset, item.Height);
+                
+                //if (null != line)
+                //   leftInset = this.GetLeftInset(actYOffset, item.Height);
                 Unit itemXOffset = origXoffset;
 
-                if (xInset != 0) //We have floating left item(s)
+                if (leftInset != 0) //We have floating left item(s)
                 {
-                    itemXOffset += xInset;
+                    itemXOffset += leftInset;
                 }
                
 

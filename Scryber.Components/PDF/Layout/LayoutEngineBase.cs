@@ -1571,7 +1571,7 @@ namespace Scryber.PDF.Layout
             var region = this.CurrentBlock.CurrentRegion;
             if (pos.FloatMode == FloatMode.Left)
                 pos.X = region.GetLeftInset(region.UsedSize.Height, 1.0);
-            else
+            else if(pos.FloatMode == FloatMode.Right)
                 pos.Right = region.GetRightInset(region.UsedSize.Height, 1.0);
             
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
