@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
@@ -884,6 +882,83 @@ namespace Scryber.PDF.Layout
 
             if (context.ShouldLogDebug)
                 context.TraceLog.End(TraceLevel.Debug, "Layout Line", "Pushed all the component layouts onto the runs in the line " + this.ToString());
+        }
+
+        private PDFLayoutRun GetFirstSignificantLinetRun()
+        {
+            if (this.Runs.Count < 1)
+                return null;
+            for (var i = 0; i < this.Runs.Count; i++)
+            {
+                var run = this.Runs[i];
+                if (run is PDFTextRunBegin || run is PDFTextRunSpacer)
+                    return run;
+                
+            }
+
+            return null;
+        }
+        
+        internal bool RightAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit rightInset,
+            List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
+        {
+
+            Unit offset;
+            if (this.Runs.Count == 3)
+            {
+                //We are a simple line
+                PDFLayoutRun run = this.Runs[0];
+                if (run is PDFTextRunBegin begin)
+                {
+                    begin.LineInset += availableSpace;
+                }
+                else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
+                {
+                    var prev = (PDFLayoutLine)this.Region.Contents[this.LineIndex - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = totalWidth - prev.Width;
+                    var newWidth = totalWidth - currentWidth;
+                    offset = newWidth - prevWidth;
+                    var newoffset = last.NewLineOffset;
+                    newoffset.Width -= offset;
+                    last.NewLineOffset = newoffset;
+                }
+            }
+            else
+            {
+                
+                for (var i = 0; i < this.Runs.Count; i++)
+                {
+                    PDFLayoutRun run = this.Runs[i];
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        begin.LineInset += availableSpace;
+                    }
+                    else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
+                    {
+                        var prev = (PDFLayoutLine)this.Region.Contents[this.LineIndex - 1];
+                        var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                        var prevWidth = totalWidth - prev.Width;
+                        var newWidth = totalWidth - currentWidth;
+                        offset = newWidth - prevWidth;
+                        var newoffset = last.NewLineOffset;
+                        newoffset.Width -= offset;
+                        last.NewLineOffset = newoffset;
+                    }
+                }
+            }
+            
+            
+            return false;
+        }
+        
+        internal bool CenterAlignContent(Unit total, Unit current, Unit available, Unit rightInser,
+            List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
+        {
+            if (this.Runs.Count < 1)
+                return false;
+
+            return true;
         }
 
         internal bool JustifyContent(Unit total, Unit current, Unit available, bool all, List<PDFTextRunCharacter> runCache, PDFLayoutContext context, ref PDFTextRenderOptions currOptions)

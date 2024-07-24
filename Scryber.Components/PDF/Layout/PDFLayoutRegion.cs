@@ -857,22 +857,28 @@ namespace Scryber.PDF.Layout
                             }
 
                             lastwasapplied = didjustify;
+                            space = 0;
                         }
                         space = 0; // reset space to zero as already accounted for.
                     }
                     else if(h == HorizontalAlignment.Center)
                     {
-                        space = space / 2;
+                        if (null != line)
+                        {
+                            
+                            bool didcenter = line.CenterAlignContent(width, item.Width, space, right, cache, context);
+
+                            lastwasapplied = didcenter;
+                            space = 0;
+                        }
                     }
                     else if (h == HorizontalAlignment.Right)
                     {
                         if (null != line)
                         {
-                            
-                            if (right != Unit.Zero)
-                            {
-                                space -= right;
-                            }
+                            bool didright = line.RightAlignContent(width, item.Width, space, right, cache, context);
+                            lastwasapplied = didright;
+                            space = 0;
                         }
                     }
                     

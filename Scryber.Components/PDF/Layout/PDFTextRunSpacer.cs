@@ -95,14 +95,14 @@ namespace Scryber.PDF.Layout
         // methods
         //
 
-        #region protected virtual void SetSpacing(PDFUnit width, PDFUnit height)
+        #region public virtual void SetSpacing(PDFUnit width, PDFUnit height)
 
         /// <summary>
         /// Sets the Width and Height spacing values to the required size.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        protected virtual void SetSpacing(Unit width, Unit height)
+        public virtual void SetSpacing(Unit width, Unit height)
         {
             this._w = width;
             this._h = height;
