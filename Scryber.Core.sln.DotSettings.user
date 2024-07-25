@@ -5,5 +5,26 @@
   &lt;Or&gt;
     &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitLayouts" Presentation="&amp;lt;Scryber.UnitLayouts&amp;gt;" /&gt;
     &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitTest" Presentation="&amp;lt;Scryber.UnitTests&amp;gt;" /&gt;
+    &lt;And&gt;
+      &lt;TestAncestor&gt;
+        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples.TableBoundContent&lt;/TestId&gt;
+      &lt;/TestAncestor&gt;
+      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
+      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
+    &lt;/And&gt;
+    &lt;And&gt;
+      &lt;TestAncestor&gt;
+        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples.SimpleTable&lt;/TestId&gt;
+      &lt;/TestAncestor&gt;
+      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
+      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
+    &lt;/And&gt;
+    &lt;And&gt;
+      &lt;TestAncestor&gt;
+        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples&lt;/TestId&gt;
+      &lt;/TestAncestor&gt;
+      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
+      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
+    &lt;/And&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

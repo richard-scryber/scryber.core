@@ -234,7 +234,12 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-
+        /// <summary>
+        /// Gets or sets any right inset (from a float:right) that was applied to the newline offset.
+        /// </summary>
+        public Unit RightInset { get; set; }
+        
+        
         protected Unit? ExtraCharacterSpace { get; set; }
 
         protected Unit? ExtraWordSpace { get; set; }
@@ -910,7 +915,8 @@ namespace Scryber.PDF.Layout
                 PDFLayoutRun run = this.Runs[0];
                 if (run is PDFTextRunBegin begin)
                 {
-                    begin.LineInset += availableSpace;
+                    begin.LineInset += availableSpace - rightInset;
+                    this.RightInset = rightInset;
                 }
                 else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
                 {
@@ -920,7 +926,8 @@ namespace Scryber.PDF.Layout
                     var newWidth = totalWidth - currentWidth;
                     offset = newWidth - prevWidth;
                     var newoffset = last.NewLineOffset;
-                    newoffset.Width -= offset;
+                    newoffset.Width -= offset - (rightInset - prev.RightInset);
+                    this.RightInset = rightInset;
                     last.NewLineOffset = newoffset;
                 }
             }
@@ -932,7 +939,8 @@ namespace Scryber.PDF.Layout
                     PDFLayoutRun run = this.Runs[i];
                     if (run is PDFTextRunBegin begin)
                     {
-                        begin.LineInset += availableSpace;
+                        begin.LineInset += availableSpace - rightInset;
+                        this.RightInset = rightInset;
                     }
                     else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
                     {
@@ -942,8 +950,9 @@ namespace Scryber.PDF.Layout
                         var newWidth = totalWidth - currentWidth;
                         offset = newWidth - prevWidth;
                         var newoffset = last.NewLineOffset;
-                        newoffset.Width -= offset;
+                        newoffset.Width -= offset - (rightInset - prev.RightInset);
                         last.NewLineOffset = newoffset;
+                        this.RightInset = rightInset;
                     }
                 }
             }

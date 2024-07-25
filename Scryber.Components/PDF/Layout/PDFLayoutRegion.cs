@@ -694,6 +694,8 @@ namespace Scryber.PDF.Layout
 
                 if (block.Position.PositionMode == PositionMode.Absolute)
                     return x;
+                else if (block.Owner is TableCell)
+                    return x;
                 else
                 {
                     var parent = block.GetParentBlock();
