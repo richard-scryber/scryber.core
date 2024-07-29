@@ -40,9 +40,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void SVGSimple()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/SVG/SVGSimple.html");
 
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGSimple.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = DocStreams.GetOutputStream("SVGSimple.pdf"))
@@ -84,9 +84,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void SVGComponents()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/SVG/SVGComponents.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGComponents.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -117,9 +116,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void SVGTransform()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/SVG/SVGTransform.html");
 
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 Div div;
@@ -382,8 +381,9 @@ namespace Scryber.Core.UnitTests.Html
 
             try
             {
-                var path = System.Environment.CurrentDirectory;
-                path = System.IO.Path.Combine(path, "../../../Content/SVG/Chart.svg");
+
+                var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/Chart.svg",
+                    this.TestContext);
                 svgString = System.IO.File.ReadAllText(path);
 
                 var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);

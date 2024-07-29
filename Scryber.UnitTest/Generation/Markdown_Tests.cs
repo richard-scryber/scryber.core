@@ -51,9 +51,8 @@ namespace Scryber.Core.UnitTests.Generation
         [TestMethod]
         public void MarkdownToPDFTest()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/Markdown/Markdown.md");
-            path = System.IO.Path.GetFullPath(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/Markdown/Markdown.md", this.TestContext);
+
             var content = System.IO.File.ReadAllText(path);
 
             var doc = new Document();

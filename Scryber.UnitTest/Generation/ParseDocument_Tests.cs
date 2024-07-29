@@ -131,12 +131,18 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXHTMLRelativeFile()
         {
             //should be relative to the bin directory 
+ 
             var relative = "../../../Content/HTML/HelloWorld.xhtml";
 
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
-                this.TestContext);
+            var path = System.Environment.CurrentDirectory;
 
+            var fullpath = System.IO.Path.Combine(path, relative);
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
+
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
+
+            
             using (Document doc = Document.ParseDocument(relative))
             {
                 doc.Params["title"] = "Hello World & everyone in it.";
@@ -2138,12 +2144,5 @@ namespace Scryber.Core.UnitTests.Generation
         #endregion
 
 
-        #region public void ParseHtmlXmlReaderWithPath()
-
-        /// 
-        /// As the html is not valid xml there is no method and therefor no test for parsing an HTML document with an XML Reader
-        /// 
-
-        #endregion
     }
 }

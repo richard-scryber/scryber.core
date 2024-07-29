@@ -460,9 +460,9 @@ body.grey div.reverse{
         public void ParseMinifiedCssFile()
         {
             //This is a minimised version of the styles above
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/CSS/include.min.css");
-            path = System.IO.Path.GetFullPath(path);
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/CSS/include.min.css",
+                this.TestContext);
             var css = System.IO.File.ReadAllText(path);
 
             var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);

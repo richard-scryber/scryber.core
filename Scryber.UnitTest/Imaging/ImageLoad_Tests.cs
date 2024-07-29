@@ -17,6 +17,20 @@ namespace Scryber.Core.UnitTests.Imaging
     {
         public const string PathToImages = "../../../Content/HTML/Images/";
 
+        private TestContext testContextInstance;
+
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+        
         public ImageLoad_Tests()
         {
         }
@@ -38,8 +52,8 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "group.png");
-            path = io.Path.GetFullPath(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
 
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
@@ -71,11 +85,8 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryJpeg();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "Group.jpg");
-            path = io.Path.GetFullPath(path);
-            
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
+                this.TestContext);
 
             var data = factory.LoadImageData(doc, page, path);
             doc.RemoteRequests.EnsureRequestsFullfilled();
@@ -118,11 +129,8 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(factory);
 
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages, "group.png");
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
 
             Image img = new Image();
             img.Source = path;
@@ -173,9 +181,10 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryTiff();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "groupBasic.tiff");
-            path = io.Path.GetFullPath(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
+                this.TestContext);
             
+     
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
 
@@ -710,13 +719,10 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 144;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = "../Content/HTML/Images/group.jpg";
-            path = System.IO.Path.Combine("../../", path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
+                this.TestContext);
 
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException("No File could be found at path " + path);
+            
             using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
             {
                 byte[] marker = new byte[2];
@@ -831,13 +837,9 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 72;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = "../Content/HTML/Images/Toroid24.jpg";
-            path = System.IO.Path.Combine("../../", path);
-
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException("No File could be found at path " + path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg",
+                this.TestContext);
+            
             using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
             {
                 byte[] marker = new byte[2];
@@ -953,13 +955,8 @@ namespace Scryber.Core.UnitTests.Imaging
             var bitsPerPixel = 24; //8 x 3
 
            
-            var path = "../Content/HTML/Images/group.jpg";
-            path = System.IO.Path.Combine("../../", path);
-
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException("No File could be found at path " + path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
+                            this.TestContext);
 
             Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
 
@@ -993,14 +990,10 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 72;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = "../Content/HTML/Images/Superwide.jpeg";
-            //var path = "../Content/HTML/Images/group.jpg";
-            path = System.IO.Path.Combine("../../", path);
-
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException("No File could be found at path " + path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Superwide.jpeg",
+                this.TestContext);
+            
+            
 
             Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
 

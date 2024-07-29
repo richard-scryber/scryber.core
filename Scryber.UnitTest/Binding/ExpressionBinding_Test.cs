@@ -27,7 +27,7 @@ namespace Scryber.Core.UnitTests.Binding
     [TestClass()]
     public class ExpressionBinding_Test
     {
-        public TestContext TextContext
+        public TestContext TestContext
         {
             get;
             set;
@@ -955,8 +955,9 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindCribsheetExpressions_PerformanceTest()
         {
-            var path = "../../../Content/HTML/CribSheet/";
-
+            //var path = "../../../Content/HTML/CribSheet/";
+            var path = DocStreams.AssertGetDirectoryPath("../../Scryber.UnitTest/Content/HTML/CribSheet/",
+                this.TestContext);
             var content = File.ReadAllText(path + "CribSheet-Expressions.txt");
             Assert.IsNotNull(content);
 
