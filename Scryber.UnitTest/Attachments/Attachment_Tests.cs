@@ -43,6 +43,8 @@ namespace Scryber.Core.UnitTests.Attachments
         [TestMethod]
         public void TestIconAttachment()
         {
+            var path = "../../Scryber.UnitTest/Content/Markdown/Markdown.md";
+            path = DocStreams.AssertGetContentPath(path, TestContext);
             var doc = new Document();
             var pg = new Page();
             doc.Pages.Add(pg);
@@ -50,7 +52,7 @@ namespace Scryber.Core.UnitTests.Attachments
 
             var attach = new IconAttachment();
             attach.DisplayIcon = AttachmentDisplayIcon.PushPin;
-            attach.Source = "../../../Content/Markdown/Markdown.md";
+            attach.Source = path;
             attach.Width = 20;
             attach.Height = 20;
             attach.Padding = new Thickness(10);

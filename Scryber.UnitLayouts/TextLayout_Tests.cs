@@ -628,7 +628,13 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
@@ -647,8 +653,10 @@ namespace Scryber.UnitLayouts
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
                 var offset = pgContentWidth - twidth;
@@ -656,12 +664,19 @@ namespace Scryber.UnitLayouts
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 
@@ -684,8 +699,15 @@ namespace Scryber.UnitLayouts
             pg.HorizontalAlignment = HorizontalAlignment.Center;
 
             doc.Pages.Add(pg);
-            pg.Contents.Add(new TextLiteral("This is a centered text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            
             doc.RenderOptions.Compression = OutputCompressionType.None;
             //doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
@@ -703,21 +725,30 @@ namespace Scryber.UnitLayouts
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
-                var offset = (pgContentWidth - twidth) / 2.0;
+                var offset = pgContentWidth - twidth;
 
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue / 2, start.LineInset.PointsValue, "First line inset should be " + (offset / 2));
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, ((prevWidth - newWidth) / 2).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 

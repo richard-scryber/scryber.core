@@ -909,6 +909,7 @@ namespace Scryber.PDF.Layout
         {
 
             Unit offset;
+            var updated = false;
             if (this.Runs.Count == 3)
             {
                 //We are a simple line
@@ -929,9 +930,10 @@ namespace Scryber.PDF.Layout
                     newoffset.Width -= offset - (rightInset - prev.RightInset);
                     this.RightInset = rightInset;
                     last.NewLineOffset = newoffset;
+                    updated = true;
                 }
             }
-            else
+            else if(this.Runs.Count > 0)
             {
                 
                 for (var i = 0; i < this.Runs.Count; i++)
@@ -953,21 +955,72 @@ namespace Scryber.PDF.Layout
                         newoffset.Width -= offset - (rightInset - prev.RightInset);
                         last.NewLineOffset = newoffset;
                         this.RightInset = rightInset;
+                        updated = true;
                     }
                 }
             }
             
             
-            return false;
+            return updated;
         }
         
-        internal bool CenterAlignContent(Unit total, Unit current, Unit available, Unit rightInser,
+        internal bool CenterAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit rightInset,
             List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
         {
-            if (this.Runs.Count < 1)
-                return false;
-
-            return true;
+            Unit offset;
+            var updated = false;
+            if (this.Runs.Count == 3)
+            {
+                //We are a simple line
+                PDFLayoutRun run = this.Runs[0];
+                if (run is PDFTextRunBegin begin)
+                {
+                    begin.LineInset += (availableSpace - rightInset) / 2;
+                    this.RightInset = rightInset / 2;
+                }
+                else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
+                {
+                    var prev = (PDFLayoutLine)this.Region.Contents[this.LineIndex - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = totalWidth - prev.Width;
+                    var newWidth = totalWidth - currentWidth;
+                    offset = (newWidth - prevWidth) / 2;
+                    var newoffset = last.NewLineOffset;
+                    newoffset.Width -= offset - (rightInset - prev.RightInset);
+                    this.RightInset = rightInset / 2;
+                    last.NewLineOffset = newoffset;
+                    updated = true;
+                }
+            }
+            else if(this.Runs.Count > 0)
+            {
+                
+                for (var i = 0; i < this.Runs.Count; i++)
+                {
+                    PDFLayoutRun run = this.Runs[i];
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        begin.LineInset += (availableSpace - rightInset) / 2;
+                        this.RightInset = rightInset / 2;
+                    }
+                    else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer && this.LineIndex > 0)
+                    {
+                        var prev = (PDFLayoutLine)this.Region.Contents[this.LineIndex - 1];
+                        var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                        var prevWidth = totalWidth - prev.Width;
+                        var newWidth = totalWidth - currentWidth;
+                        offset = (newWidth - prevWidth) / 2;
+                        var newoffset = last.NewLineOffset;
+                        newoffset.Width -= offset - (rightInset - prev.RightInset);
+                        last.NewLineOffset = newoffset;
+                        this.RightInset = rightInset / 2;
+                        updated = true;
+                    }
+                }
+            }
+            
+            
+            return updated;
         }
 
         internal bool JustifyContent(Unit total, Unit current, Unit available, bool all, List<PDFTextRunCharacter> runCache, PDFLayoutContext context, ref PDFTextRenderOptions currOptions)
