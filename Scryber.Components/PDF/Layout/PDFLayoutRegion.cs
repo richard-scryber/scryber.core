@@ -752,14 +752,22 @@ namespace Scryber.PDF.Layout
             //If we have a current line and the float is on this line
             if (null != line && line.OffsetY >= offsetY)
                 line.SetMaxWidth(line.FullWidth - floatWidth);
-
+            
             if (mode == FloatMode.Left)
             {
-                this.Floats = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
+                var floating = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY);
+                if (null == this.Floats)
+                    this.Floats = floating;
+                else
+                    this.Floats.AppendFloat(floating);
             }
             else if(mode == FloatMode.Right)
             {
-                this.Floats = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
+                var floating = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY);
+                if (null == this.Floats)
+                    this.Floats = floating;
+                else
+                    this.Floats.AppendFloat(floating);
             }
         }
 

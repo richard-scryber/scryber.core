@@ -95,7 +95,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
@@ -221,7 +221,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
@@ -350,7 +350,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
@@ -481,7 +481,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
@@ -607,7 +607,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
@@ -738,7 +738,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(2, floatAddition.Count);
-            Assert.IsNotNull(floatAddition.Prev);
+            Assert.IsNotNull(floatAddition.Next);
             
             
             
@@ -768,7 +768,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(w , floatAddition.FloatWidth);
             Assert.AreEqual(h, floatAddition.FloatHeight);
-            Assert.AreEqual(floatAddition.Prev.FloatWidth, floatAddition.FloatInset);
+            Assert.AreEqual(0, floatAddition.FloatInset);
             
             //Check the second float in the addi
 
@@ -871,7 +871,7 @@ namespace Scryber.UnitLayouts
             var floatAddition = nest.Columns[0].Floats;
             Assert.IsNotNull(floatAddition);
             Assert.AreEqual(1, floatAddition.Count);
-            Assert.IsNull(floatAddition.Prev);
+            Assert.IsNull(floatAddition.Next);
 
             var innerBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(innerBlock);
