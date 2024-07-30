@@ -903,8 +903,53 @@ namespace Scryber.PDF.Layout
 
             return null;
         }
+
+        internal bool RightAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit leftInset, Unit rightInset, List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
+        {
+            var pushOffset = this.AvailableWidth;
+            var pushedRight = false;
+            if (this.LineIndex == 0)
+            {
+                for (var i = 0; i < this.Runs.Count; i++)
+                {
+                    PDFLayoutRun run = this.Runs[i];
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        begin.LineInset += pushOffset;
+                        this.RightInset = pushOffset;
+                        pushedRight = true;
+                    }
+                }
+            }
+            else
+            {
+                var index  = this.LineIndex;
+                var prev = this.Region.Contents[index -1 ] as PDFLayoutLine;
+                
+                if (null == prev || prev.LineIndex != index - 1)
+                {
+                    index = this.Region.Contents.IndexOf(this);
+                    prev = this.Region.Contents[index - 1] as PDFLayoutLine;
+                }
+
+                if (null != prev && prev.HAlignment == HorizontalAlignment.Right)
+                {
+                    var prevPushOffset = prev.RightInset;
+                    
+                    var last = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
+                    if (null != last)
+                    {
+                        var offset = last.NewLineOffset;
+                        offset.Width -= (pushOffset - prevPushOffset);
+                        this.RightInset = pushOffset;
+                        last.NewLineOffset = offset;
+                    }
+                }
+            }
+            return pushedRight;
+        }
         
-        internal bool RightAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit rightInset,
+        internal bool RightAlignContent_old(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit leftInset, Unit prevLeftInset, Unit rightInset,
             List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
         {
 
@@ -927,7 +972,7 @@ namespace Scryber.PDF.Layout
                     var newWidth = totalWidth - currentWidth;
                     offset = newWidth - prevWidth;
                     var newoffset = last.NewLineOffset;
-                    newoffset.Width -= offset - (rightInset - prev.RightInset);
+                    newoffset.Width -= offset - (rightInset - prev.RightInset) + (prevLeftInset - leftInset);
                     this.RightInset = rightInset;
                     last.NewLineOffset = newoffset;
                     updated = true;

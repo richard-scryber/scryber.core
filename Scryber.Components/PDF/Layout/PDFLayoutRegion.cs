@@ -646,7 +646,9 @@ namespace Scryber.PDF.Layout
                         
                         var left = parent.CurrentRegion.GetLeftInset(yoffset, height);
                         var right = parent.CurrentRegion.GetRightInset(yoffset, height);
-
+                        if (left > 0)
+                            ; //We could remove the left margin size from the line, as this is accounted for in the offset.
+                        
                         avail -= (left + right);
                         return avail;
                         
@@ -844,6 +846,7 @@ namespace Scryber.PDF.Layout
 
                 if (xInset != 0) //We have floating left item(s)
                 {
+                    
                     itemXOffset += xInset;
                 }
                
@@ -900,7 +903,7 @@ namespace Scryber.PDF.Layout
                     {
                         if (null != line)
                         {
-                            bool didright = line.RightAlignContent(width, item.Width, space, right, cache, context);
+                            bool didright = line.RightAlignContent(width, item.Width, space, xInset, right, cache, context);
                             lastwasapplied = didright;
                             space = 0;
                         }
@@ -908,7 +911,8 @@ namespace Scryber.PDF.Layout
                     
                     itemXOffset = itemXOffset + space;
                 }
-                
+
+                lastXInset = xInset;
                 item.PushComponentLayout(context, pageIndex, itemXOffset, yoffset);
             }
 

@@ -26,5 +26,6 @@
       &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
       &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
     &lt;/And&gt;
+    &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
