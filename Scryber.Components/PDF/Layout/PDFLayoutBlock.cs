@@ -589,20 +589,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        /*
-        public virtual void AddFloatingInset(FloatMode mode, PDFUnit inset, PDFUnit offsetY, PDFUnit height)
-        {
-            if (mode == FloatMode.Left)
-            {
-                this.Floats = new PDFFloatLeftAddition(inset, height, offsetY, this.Floats);
-            }
-            else if (mode == FloatMode.Right)
-            {
-                this.Floats = new PDFFloatRightAddition(inset, height, offsetY, this.Floats);
-            }
-        }
-
-        */
+        
 
         #region public override bool MoveToNextRegion(PDFUnit requiredHeight, PDFLayoutContext context)
 
@@ -1008,7 +995,18 @@ namespace Scryber.PDF.Layout
                     }
                 }
             }
-
+            else
+            {
+                if (pos.X.HasValue)
+                {
+                    space.X = pos.X.Value;
+                    space.Width -= pos.X.Value;
+                }
+                else if (pos.Right.HasValue)
+                {
+                    space.Width -= pos.Right.Value;
+                }
+            }
             //if (pos.HasWidth)
             //{
             //    space.Width = pos.Width;
@@ -1020,6 +1018,7 @@ namespace Scryber.PDF.Layout
             //}
 
             int index = -(this.PositionedRegions.Count + 1); //use a negative value for the positioned items
+
 
             PDFLayoutPositionedRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
             addTo.PositionedRegions.Add(created);

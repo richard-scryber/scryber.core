@@ -619,7 +619,7 @@ namespace Scryber.PDF.Layout
             return GetAvailableLineWidth(this.UsedSize.Height, 1.0, this.OffsetX);
         }
 
-        public virtual Unit GetAvailableLineWidth(Unit yoffset, Unit height, Unit regionInset)
+        public virtual Unit GetAvailableLineWidth(Unit yoffset, Unit height, Unit regionInset, bool postLayout = false)
         {
             Unit avail = this.UnusedBounds.Width;
 
@@ -638,7 +638,12 @@ namespace Scryber.PDF.Layout
                     var parent = block.GetParentBlock();
                     if (null != parent)
                     {
-                        yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top + block.Position.Padding.Top;
+                        if (postLayout)
+                            yoffset += block.TotalBounds.Y + block.Position.Margins.Top;
+                        else
+                            yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top +
+                                       block.Position.Padding.Top;
+                        
                         var left = parent.CurrentRegion.GetLeftInset(yoffset, height);
                         var right = parent.CurrentRegion.GetRightInset(yoffset, height);
 
@@ -843,7 +848,8 @@ namespace Scryber.PDF.Layout
 
                     if (null != line)
                     {
-                        width = this.GetAvailableLineWidth(actYOffset, item.Height, this.OffsetX);
+                        bool postLayout = true;
+                        width = this.GetAvailableLineWidth(actYOffset, item.Height, this.OffsetX, postLayout);
                         right = this.GetRightInset(actYOffset, item.Height);
                     }
 

@@ -1366,7 +1366,7 @@ namespace Scryber.PDF.Layout
 
             positioned.RelativeTo = relativeTo;
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
-            relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.Width, 0, offsetY, positioned.Height);
+            relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width, positioned.TotalBounds.X, offsetY, positioned.Height);
         }
 
 

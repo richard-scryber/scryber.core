@@ -137,9 +137,19 @@ namespace Scryber.PDF.Layout
 
             var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
             var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
-            bounds.X = xoffset;
-            bounds.Y = yoffset;
+            if (this.PositionOptions.FloatMode == FloatMode.None)
+            {
+                bounds.X = xoffset;
+                
+            }
+            else if (this.PositionOptions.FloatMode == FloatMode.Left)
+            {
+                //we can have a left inset on the float mode.
+                bounds.X += xoffset;
+            }
 
+            bounds.Y = yoffset;
+            
             var relativeOffset = this.RelativeOffset;
 
             if (this.PositionOptions.X.HasValue)
