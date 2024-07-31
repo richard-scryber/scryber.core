@@ -1281,6 +1281,8 @@ namespace Scryber.PDF.Layout
 
         protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
+            var rightOffset = options.Right ?? Unit.Zero;
+            
             //Knock out any explicit position values and set it to absolute.
             options.X = null;
             options.Y = null;
@@ -1366,7 +1368,16 @@ namespace Scryber.PDF.Layout
 
             positioned.RelativeTo = relativeTo;
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
-            relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width, positioned.TotalBounds.X, offsetY, positioned.Height);
+            if (options.FloatMode == FloatMode.Left)
+            {
+                relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
+                    positioned.TotalBounds.X, offsetY, positioned.Height);
+            }
+            else
+            {
+                positioned.PositionOptions.Right = rightOffset;
+                relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width, rightOffset, offsetY, positioned.Height);
+            }
         }
 
 
