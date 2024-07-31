@@ -893,7 +893,7 @@ namespace Scryber.PDF.Layout
                         if (null != line)
                         {
                             
-                            bool didcenter = line.CenterAlignContent(width, item.Width, space, right, cache, context);
+                            bool didcenter = line.CenterAlignContent(width, item.Width, space, xInset, right, cache, context);
 
                             lastwasapplied = didcenter;
                             space = 0;

@@ -908,7 +908,7 @@ namespace Scryber.PDF.Layout
         {
             var pushOffset = this.AvailableWidth;
             var pushedRight = false;
-            if (this.LineIndex == 0)
+            if (this.LineIndex == 0  || (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunBegin))
             {
                 for (var i = 0; i < this.Runs.Count; i++)
                 {
@@ -1023,7 +1023,65 @@ namespace Scryber.PDF.Layout
             return updated;
         }
         
-        internal bool CenterAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit rightInset,
+        internal bool CenterAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit leftInset, Unit rightInset, List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
+        {
+            var pushOffset = this.AvailableWidth / 2;
+            var pushedCenter = false;
+            if (this.LineIndex == 0 || (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunBegin))
+            {
+                for (var i = 0; i < this.Runs.Count; i++)
+                {
+                    PDFLayoutRun run = this.Runs[i];
+                    if (run is PDFTextRunBegin begin)
+                    {
+                        begin.LineInset += pushOffset;
+                        this.RightInset = pushOffset;
+                        pushedCenter = true;
+                    }
+                }
+            }
+            else
+            {
+                var index  = this.LineIndex;
+                var prev = this.Region.Contents[index -1 ] as PDFLayoutLine;
+                
+                if (null == prev || prev.LineIndex != index - 1)
+                {
+                    index = this.Region.Contents.IndexOf(this);
+                    prev = this.Region.Contents[index - 1] as PDFLayoutLine;
+                }
+
+                if (null != prev && prev.HAlignment == HorizontalAlignment.Center)
+                {
+                    var prevPushOffset = prev.RightInset;
+                    
+                    var last = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
+                    if (null != last)
+                    {
+                        var offset = last.NewLineOffset;
+                        offset.Width -= (pushOffset - prevPushOffset);
+                        this.RightInset = pushOffset;
+                        last.NewLineOffset = offset;
+                        pushedCenter = true;
+                    }
+                }
+
+                if (this.Runs.Count > 3)
+                {
+                    //complex line - shift any inner begin runs to the right as well
+                    foreach (var run in this.Runs)
+                    {
+                        if (run is PDFTextRunBegin begin)
+                        {
+                            begin.LineInset += pushOffset;
+                            pushedCenter = true;
+                        }
+                    }
+                }
+            }
+            return pushedCenter;
+        }
+        internal bool CenterAlignContent_old(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit rightInset,
             List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
         {
             Unit offset;
