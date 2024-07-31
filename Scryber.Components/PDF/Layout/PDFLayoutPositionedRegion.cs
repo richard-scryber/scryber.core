@@ -329,7 +329,7 @@ namespace Scryber.PDF.Layout
                 {
                     //this.RelativeTo region float inset
                     //needs to take account of the possible multiple insets.
-                    this.PositionOptions.X = this.RelativeTo.PagePosition.X + (this.RelativeTo.Width - this.Width) - this.PositionOptions.Right;
+                    this.PositionOptions.X = this.RelativeTo.PagePosition.X - this.RelativeTo.Position.Margins.Right + (this.RelativeTo.Width - this.Width) - this.PositionOptions.Right;
                 }
                 else if (this.PositionOptions.FloatMode == FloatMode.Left)
                 {

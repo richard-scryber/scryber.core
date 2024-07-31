@@ -1281,7 +1281,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
-            var rightOffset = options.Right ?? Unit.Zero;
+            var rightOffset = (options.Right ?? Unit.Zero);
             
             //Knock out any explicit position values and set it to absolute.
             options.X = null;
