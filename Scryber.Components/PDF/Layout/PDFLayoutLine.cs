@@ -943,6 +943,20 @@ namespace Scryber.PDF.Layout
                         offset.Width -= (pushOffset - prevPushOffset);
                         this.RightInset = pushOffset;
                         last.NewLineOffset = offset;
+                        pushedRight = true;
+                    }
+                }
+
+                if (this.Runs.Count > 3)
+                {
+                    //complex line - shift any inner begin runs to the right as well
+                    foreach (var run in this.Runs)
+                    {
+                        if (run is PDFTextRunBegin begin)
+                        {
+                            begin.LineInset += pushOffset;
+                            pushedRight = true;
+                        }
                     }
                 }
             }
