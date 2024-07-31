@@ -1246,13 +1246,13 @@ namespace Scryber.UnitLayouts
 
             //width and hight of the content and float should be chars width and line height
             Unit w = 120; //explicit
-            Unit h = 15; // 2 linew
+            Unit h = 15; // first line
 
             Assert.AreEqual(chars.Width, innerLine.Width);
             Assert.AreEqual(h, innerLine.Height);
 
-            w += 20; // add margins (not padding as explicit width)
-            h += 15 + 30; // add second line, padding and margins
+            w += 10; // add margins (not padding as explicit width)
+            h += 15 + 10; // add second line, padding and margins
             
             Assert.AreEqual(w, innerBlock.Width); 
             Assert.AreEqual(h, innerBlock.Height);
@@ -1287,14 +1287,14 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(chars.Width, innerLine.Width);
             Assert.AreEqual(h, innerLine.Height);
 
-            w += 20; //margins
-            h += 15 + 30;// second line and margins + padding
+            w += 10; // 5pt margins
+            h += 15 + 10;// second line and margins 
             Assert.AreEqual(w, innerBlock.Width);
             Assert.AreEqual(h, innerBlock.Height);
             
             Assert.AreEqual(w, floatAddition.FloatWidth);
             Assert.AreEqual(h, floatAddition.FloatHeight);
-            Assert.AreEqual(firstFloatWidth, floatAddition.FloatInset);
+            Assert.AreEqual(0, floatAddition.FloatInset);
 
             line = nest.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
@@ -1324,15 +1324,15 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(h, pos.Height);
 
             Assert.AreEqual(yOffset, pos.TotalBounds.Y);
-            Assert.AreEqual(30 + 30, pos.TotalBounds.Height);
+            Assert.AreEqual(30 + 10, pos.TotalBounds.Height);
             Assert.AreEqual(w, pos.TotalBounds.Width);
 
-            Assert.AreEqual(pg.Width - (10 + firstFloatWidth + 20 + pos.TotalBounds.Width) , pos.TotalBounds.X); //nest margins + offset to the right + the float margins
+            Assert.AreEqual(pg.Width - (10  + 20 + pos.TotalBounds.Width) , pos.TotalBounds.X); //nest margins + the float margins
 
             var after = nest.Columns[0].Contents[4] as PDFLayoutBlock;
             Assert.IsNotNull(after);
             Assert.AreEqual(1, after.Columns.Length);
-            Assert.AreEqual(3, after.Columns[0].Contents.Count);
+            Assert.AreEqual(2, after.Columns[0].Contents.Count);
             
             line = after.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
