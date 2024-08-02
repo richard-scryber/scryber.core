@@ -12,7 +12,7 @@ namespace Scryber.UnitLayouts
 	public class WhitespaceHandling_Tests
 	{
 
-        public const string WhitespaceSamplePath = "../../../Content/WhitespaceLayouts/";
+        public const string WhitespaceSamplePath = "../../../Content/Whitespace/";
 
         public static string LoadLayoutSample(string fileName)
         {
@@ -37,7 +37,54 @@ namespace Scryber.UnitLayouts
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
-        
+        private string WhitespaceSrc0 = "0_WhitespaceNoElements.html";
+
+        [TestMethod()]
+        public void Whitespace_0_NoElements()
+        {
+            var src = LoadLayoutSample(WhitespaceSrc0);
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Whitespace_0_NoElements.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                    
+
+                    var lit = pg.Contents[0] as TextLiteral;
+                    Assert.IsNotNull(lit);
+                    Assert.AreEqual("This is text. And this is after with a white space prepended.", lit.Text.Trim());
+
+                    
+                    //check the contents of the layout
+
+                    Assert.IsNotNull(this.layout);
+
+                    var lpg = this.layout.AllPages[0];
+                    var body = lpg.ContentBlock;
+                    Assert.AreEqual(1, body.Columns.Length);
+                    Assert.AreEqual(1, body.Columns[0].Contents.Count);
+
+                    
+                    var line = body.Columns[0].Contents[0] as PDFLayoutLine;
+                    Assert.IsNotNull(line);
+
+                    Assert.AreEqual(3, line.Runs.Count);
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("This is text. And this is after with a white space prepended.", (line.Runs[1] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                }
+            }
+        }
 
         private string WhitespaceSrc1 = "1_WhitespaceSimpleSpans.html";
 
@@ -101,7 +148,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[4], typeof(PDFLayoutInlineEnd));
                     Assert.IsInstanceOfType(line.Runs[5], typeof(PDFTextRunBegin));
                     Assert.IsInstanceOfType(line.Runs[6], typeof(PDFTextRunCharacter));
-                    Assert.AreEqual(" And this is after with a white space prepended. ", (line.Runs[6] as PDFTextRunCharacter).Characters);
+                    Assert.AreEqual(" And this is after with a white space prepended.", (line.Runs[6] as PDFTextRunCharacter).Characters);
                     Assert.IsInstanceOfType(line.Runs[7], typeof(PDFTextRunEnd));
 
                 }

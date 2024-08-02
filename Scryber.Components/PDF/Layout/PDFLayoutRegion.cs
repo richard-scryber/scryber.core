@@ -862,6 +862,9 @@ namespace Scryber.PDF.Layout
                         bool postLayout = true;
                         width = this.GetAvailableLineWidth(actYOffset, item.Height, this.OffsetX, postLayout);
                         right = this.GetRightInset(actYOffset, item.Height);
+
+                        if (width > line.FullWidth)
+                            width = line.FullWidth;
                     }
 
                     Unit space = width - item.Width;

@@ -354,7 +354,18 @@ namespace Scryber.PDF.Layout
                     this.UpdateTotalBoundsForBlockParent(context.Offset);
                 }
             }
-            return base.DoOutputToPDF(context, writer);
+            //HACK: Stops any spacing set on the line propogating to the positioned region
+            context.Graphics.SaveGraphicsState();
+            
+            if (null != context.Graphics.CurrentFont)
+                context.Graphics.SetTextSpacing(0, 0, context.Graphics.CurrentFont.Size);
+            
+            var result = base.DoOutputToPDF(context, writer);
+            
+            //Puts the line spacing back
+            context.Graphics.RestoreGraphicsState();
+
+            return result;
         }
 
     }

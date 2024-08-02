@@ -1,4 +1,5 @@
-﻿/*  Copyright 2012 PerceiveIT Limited
+﻿#define RemoveTrailingSpaces
+/*  Copyright 2012 PerceiveIT Limited
  *  This file is part of the Scryber library.
  *
  *  You can redistribute Scryber and/or modify 
@@ -297,8 +298,40 @@ namespace Scryber.PDF.Layout
         protected override bool DoClose(ref string msg)
         {
             PDFLayoutRun last = this.LastRun();
-            if (null != last && last.IsClosed == false)
-                last.Close();
+            if (null != last)
+            {
+                if (last.IsClosed == false)
+                    last.Close();
+#if RemoveTrailingSpaces
+                
+                var offset = 2;
+                if (last is PDFLayoutInlineEnd)
+                {
+                    last = this.Runs[this.Runs.Count - 2];
+                    offset++;
+                }
+                
+                if (last is PDFTextRunEnd end && this.Runs.Count > offset)
+                {
+                    var prev = this.Runs[this.Runs.Count - offset];
+                    //Remove a trailing whitespace from the character
+                    if (prev is PDFTextRunCharacter chars)
+                    {
+                        if (Char.IsWhiteSpace(chars.Characters, chars.Characters.Length - 1))
+                        {
+                            var origLen = chars.Characters.Length;
+                            chars.Characters = chars.Characters.TrimEnd();
+                            var newLen = chars.Characters.Length;
+                            var space = end.Start.CharSpace; 
+                            //TODO: Re-measure the width after the space removal Alter the width of the line by the size of a ' ';
+                            space *= (origLen - newLen);
+                            chars.SetMaxWidth(chars.Width - space);
+                        }
+                    }
+
+                }
+            }
+#endif
             EnsureAllRunsOnSameLevel();
             return base.DoClose(ref msg);
         }

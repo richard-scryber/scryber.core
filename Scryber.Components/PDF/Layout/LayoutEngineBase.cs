@@ -1579,12 +1579,22 @@ namespace Scryber.PDF.Layout
             pos.Bottom = null;
             pos.Right = null;
             pos.PositionMode = PositionMode.Absolute;
-            
+
             if (pos.FloatMode == FloatMode.Left)
-                pos.X = region.GetLeftInset(region.UsedSize.Height, 1.0);
+            {
+                var yoffset = region.UsedSize.Height;
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && !line.IsEmpty)
+                    yoffset += line.Height;
+                pos.X = region.GetLeftInset(yoffset, 1.0);
+            }
             else if (pos.FloatMode == FloatMode.Right)
-                pos.Right = region.GetRightInset(region.UsedSize.Height, 1.0);
-            
+            {
+                var yoffset = region.UsedSize.Height;
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && !line.IsEmpty)
+                    yoffset += line.Height;
+                pos.Right = region.GetRightInset(yoffset, 1.0);
+            }
+
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
             return ib;
         }
