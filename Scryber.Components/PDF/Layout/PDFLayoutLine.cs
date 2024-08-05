@@ -307,8 +307,13 @@ namespace Scryber.PDF.Layout
                 var offset = 2;
                 if (last is PDFLayoutInlineEnd)
                 {
-                    last = this.Runs[this.Runs.Count - 2];
-                    offset++;
+                    if (this.Runs.Count > 2)
+                    {
+                        last = this.Runs[this.Runs.Count - 2];
+                        offset++;
+                    }
+                    else
+                        last = null;
                 }
                 
                 if (last is PDFTextRunEnd end && this.Runs.Count > offset)

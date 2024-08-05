@@ -208,6 +208,12 @@ namespace Scryber.PDF.Layout
         protected void UpdateTotalBoundsForRelativeParent(Point currentOffset)
         {
             var bounds = this.TotalBounds;
+            var floatInset = Unit.Zero;
+
+            if (this.PositionOptions.FloatMode != FloatMode.None)
+            {
+                floatInset = bounds.X; //previously calculated inset
+            }
 
             var xoffset = (this.RelativeTo.PagePosition.X);
             var yoffset = (this.RelativeTo.PagePosition.Y);
@@ -226,6 +232,7 @@ namespace Scryber.PDF.Layout
                 farRight -= this.RelativeTo.Position.Margins.Right;
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
+                
             }
             else
             {
@@ -251,7 +258,8 @@ namespace Scryber.PDF.Layout
                 bounds.Y += this.RelativeTo.Position.Padding.Top;
             }
 
-
+            relativeOffset.X += floatInset;
+            
             bounds.Location = bounds.Location.Offset(relativeOffset);
 
             this.TotalBounds = bounds;
@@ -265,6 +273,15 @@ namespace Scryber.PDF.Layout
         protected void UpdateTotalBoundsForAbsoluteParent(Point contextOffset)
         {
             var bounds = this.TotalBounds;
+            
+            var floatOffset = Unit.Zero;
+            if (this.PositionOptions.FloatMode != FloatMode.None)
+            {
+                if (this.PositionOptions.FloatMode == FloatMode.Left)
+                    floatOffset = bounds.X;
+                else if (this.PositionOptions.FloatMode == FloatMode.Right)
+                    floatOffset = bounds.X;
+            }
 
             var xoffset = (this.RelativeTo.PagePosition.X);
             var yoffset = (this.RelativeTo.PagePosition.Y);
@@ -314,7 +331,8 @@ namespace Scryber.PDF.Layout
             {
                 //bounds.Y += this.RelativeTo.Position.Margins.Top;
             }
-            
+
+            relativeOffset.X += floatOffset;
             
             bounds.Location = bounds.Location.Offset(relativeOffset);
 

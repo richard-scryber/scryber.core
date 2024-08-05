@@ -1,0 +1,119 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body{
+            margin: 20pt;
+            line-height: 15pt;
+            font-size: 12pt;
+            text-align: left;
+        }
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 12pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+        
+        p {
+            margin-bottom: 10pt;
+            margin-top: 10pt;
+        }
+
+        .floating{
+            float: left;
+            top:100pt;
+            margin: 5pt;
+            border: solid 1pt blue;
+            font-size: 10pt;
+            width: 50pt;
+            text-align: left;
+        }
+        
+        .floating.right{
+            float: right;
+        }
+        
+        #after{
+            border: solid 1pt red;
+        }
+
+        #nest{
+            border: solid 1pt green;
+            margin: 10pt;
+            text-align: left;
+            padding: 0pt;
+        }
+        
+        #first{
+            position: relative;
+            top: 200pt;
+        }
+
+    </style>
+</head>
+<body>
+<h5>Block below is floating left positioned without any position values</h5>
+<div id="nest" >
+    <div id="first">
+        <div class="floating">
+            1. Inside the floating block.
+        </div>
+        <div class="floating">
+            2. Inside the floating block.
+        </div>
+        <div class="floating">
+            3. Inside the floating block.
+        </div>
+        <div class="floating">
+            4. Inside the floating block.
+        </div>
+        <div id="floatRelativeRight" class="floating right">
+            5. Inside the floating block.
+        </div>
+        <div class="floating">
+            6. Inside the floating block.
+        </div>
+        <div class="floating">
+            7. Inside the floating block.
+        </div>
+        <p>This is in the first column
+        <i>Before the floating block.
+        
+        After the float block, that will continue along the page until it comes to</i>
+        
+        a new line and then it will go onto a new line again.</p>
+        
+    </div>
+    After the floating blocks that should go over more than one line in the page.
+    <div class="floating right">
+        1. Inside the floating block.
+    </div>
+    <div class="floating right">
+        2. Inside the floating block.
+    </div>
+    <div class="floating right">
+        3. Inside the floating block.
+    </div>
+    <div class="floating right">
+        4. Inside the floating block.
+    </div>
+    <div class="floating right">
+        5. Inside the floating block.
+    </div>
+    <div class="floating right">
+        6. Inside the floating block.
+    </div>
+    <div class="floating">
+        7. Inside the floating block.
+    </div>
+    <b>After the float block, that will continue along the page between blocks.</b>
+    <div id="after">On a following div in the page that should continue on until it hits the floating block and goes onto a new line. </div>
+</div>
+
+</body>
+</html>
+

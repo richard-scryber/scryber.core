@@ -3113,7 +3113,52 @@ namespace Scryber.UnitLayouts
         }
 
 
-        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void DataBoundList()
+        {
+            var html = "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                       "<head>" +
+                       "    <title>Navigation Link Testing</title>" +
+                       "</head>" +
+                       "<body>" +
+                       "     <ol>" +
+                       "         <template data-bind='{{list.items}}' >" +
+                       "            <li><a href=\"{{concat('#',.id)}}\" >{{.title}}</a></li>" +
+                       "          </template>" +
+                       "        </ol>" +
+                       "</body>" +
+                       "</html>";
+            
+            var data = "{" +
+                       "    \"id\": \"list-data\"," +
+                       "    \"items\": [" +
+                       "     {" +
+                       "      \"id\": \"one\"," +
+                       "        \"title\": \"First Item\"," +
+                       "        \"desc\": \"First item description\"" +
+                       "      },{" +
+                       "        \"id\": \"two\"," +
+                       "       \"title\": \"Second Item\"," +
+                       "        \"desc\": \"First item description\"" +
+                       "      }" +
+                       "   ]" +
+                       "}";
+
+            object json = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
+            
+            using (var doc = Document.ParseDocument(new System.IO.StringReader(html)))
+            {
+                doc.Params.Add("list", json);
+                using (var sr = DocStreams.GetOutputStream("Lists_DataBound.pdf"))
+                {
+                    doc.SaveAsPDF(sr);
+                    
+                }
+                
+            }
+
+        }
 
         
 

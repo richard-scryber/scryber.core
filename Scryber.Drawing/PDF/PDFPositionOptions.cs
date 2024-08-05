@@ -54,7 +54,11 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the X (horizontal) offset
         /// </summary>
-        public Unit? X { get; set; }
+        public Unit? X 
+        { 
+            get; 
+            set; 
+        }
 
         /// <summary>
         /// Gets or sets the Y (vertical offset)
