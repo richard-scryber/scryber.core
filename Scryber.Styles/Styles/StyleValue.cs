@@ -33,6 +33,12 @@ namespace Scryber.Styles
         public StyleKey Key { get; set; }
 
         public int Priority { get; set; }
+        
+        //TODO: Implement the initial and inherit options.
+        
+        public bool IsInitial { get; set; }
+        
+        public bool IsInherit { get; set; }
 
         protected StyleValueBase(StyleKey key)
         {
@@ -86,7 +92,9 @@ namespace Scryber.Styles
 
         public override object GetValue(Style forStyle)
         {
-            return Value(forStyle);
+            object result = Value(forStyle);
+            
+            return result;
         }
     }
 

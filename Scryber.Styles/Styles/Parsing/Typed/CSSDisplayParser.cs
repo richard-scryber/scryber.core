@@ -68,7 +68,9 @@ namespace Scryber.Styles.Parsing.Typed
                 case ("inline"):
                     display = PositionMode.Inline;
                     return true;
-
+                case("inline-block"):
+                    display = PositionMode.InlineBlock;
+                    return true;
                 case ("block"):
                     display = PositionMode.Block;
                     return true;

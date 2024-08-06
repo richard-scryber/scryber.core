@@ -676,7 +676,7 @@ namespace Scryber.PDF.Layout
             {
                 var block = this.GetParentBlock();
 
-                if (block.Position.PositionMode == PositionMode.Absolute)
+                if (block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative || block.Position.PositionMode == PositionMode.Fixed)
                     return x;
                 else if (block.Owner is TableCell)
                     return x;
@@ -687,6 +687,7 @@ namespace Scryber.PDF.Layout
                     if (null != parent)
                     {
                         yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
+                        
                         x = parent.CurrentRegion.GetLeftInset(yoffset, height);
                     }
                     else
@@ -838,9 +839,9 @@ namespace Scryber.PDF.Layout
                 var line = item as PDFLayoutLine;
 
                 Unit xInset = 0;
-                
+
                 if (null != line)
-                    xInset = this.GetLeftInset(actYOffset, item.Height);
+                    xInset =  this.GetLeftInset(actYOffset, item.Height);
                 
                 Unit itemXOffset = origXoffset;
 

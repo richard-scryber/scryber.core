@@ -25,6 +25,7 @@
 
         .floating{
             float: left;
+            top:100pt;
             margin: 5pt;
             border: solid 1pt blue;
             font-size: 10pt;
@@ -36,23 +37,31 @@
             float: right;
         }
         
+        p{
+            border: solid 1pt lime;
+            margin: 0pt;
+            text-align: left;
+            width: 100%;
+        }
+        
         #after{
             border: solid 1pt red;
         }
 
         #nest{
-            position: relative;
             border: solid 1pt green;
-            margin: 10pt;
-            text-align: justify;
-            padding: 20pt;
+            margin: 0pt;
+            padding: 10pt;
+            position: relative;
         }
         
         #first{
-            position: relative;
-            border: solid 1px black;
-            top: 220pt;
-            left:20pt;
+            border: solid 1pt lime;
+            position: absolute;
+            left: 10pt;
+            top: 120pt;
+            width: calc(90% - 20pt);
+            text-align: justify;
         }
 
     </style>
@@ -70,22 +79,22 @@
         <div class="floating">
             3. Inside the floating block.
         </div>
-        <div class="floating">
+        <div class="floating right">
             4. Inside the floating block.
         </div>
-        <div class="floating">
+        <div id="floatRelativeRight" class="floating right">
             5. Inside the floating block.
         </div>
-        <div class="floating right">
+        <div class="floating">
             6. Inside the floating block.
         </div>
-        <div class="floating right">
+        <div class="floating">
             7. Inside the floating block.
         </div>
         <p>This is in the first column
-        <i>Before the floating block.
+        after the floating block.
         
-        After the float block, that will continue along the page until it comes to</i>
+        After the float block, that will continue along the page until it comes to
         
         a new line and then it will go onto a new line again.</p>
         
@@ -103,10 +112,10 @@
     <div class="floating right">
         4. Inside the floating block.
     </div>
-<!--    <div class="floating right">-->
-<!--        5. Inside the floating block.-->
-<!--    </div>-->
-    <div class="floating">
+    <div class="floating right">
+        5. Inside the floating block.
+    </div>
+    <div class="floating right">
         6. Inside the floating block.
     </div>
     <div class="floating">

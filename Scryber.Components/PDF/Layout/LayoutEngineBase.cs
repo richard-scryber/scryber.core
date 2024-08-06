@@ -1313,8 +1313,8 @@ namespace Scryber.PDF.Layout
                 {
                     parentOffset.Y += parent.CurrentRegion.Height;
                     
-                    if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
-                    {  parentOffset.Y += line.Height;}
+                    //if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    //{  parentOffset.Y += line.Height;}
 
                     parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
                     parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
@@ -1352,17 +1352,27 @@ namespace Scryber.PDF.Layout
                     //No vertical position - so relative to the positioned regions height
                     //including any current open line.
 
-                    offsetY = relativeTo.CurrentRegion.Height + relativeTo.Position.Margins.Top;
+                    offsetY = relativeTo.CurrentRegion.Height;// + relativeTo.Position.Margins.Top;
+                    parentOffset.Y += relativeTo.Position.Margins.Top;
+                    
                     var open = relativeTo.CurrentRegion.LastOpenBlock();
-
-                    if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line2)
-                        offsetY += line2.Height;
+//                    
+//TODO: check available space and if the current line can fit the floating region, move it to that line rather than shift down.
+//
+                    if (null != open)
+                    {
+                        if (open.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                            offsetY += line2.Height;
+                    }
+                    else if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line3)
+                        offsetY += line3.Height;
                 }
 
                 if (options.X.HasValue == false && options.Right.HasValue == false)
                 {
                     //no horizontal position
                     offsetX = relativeTo.CurrentRegion.OffsetX;
+                    //parentOffset.X += relativeTo.Position.Padding.Left;
                 }
             }
 

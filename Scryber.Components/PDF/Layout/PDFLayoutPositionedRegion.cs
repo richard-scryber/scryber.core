@@ -140,7 +140,6 @@ namespace Scryber.PDF.Layout
             if (this.PositionOptions.FloatMode == FloatMode.None)
             {
                 bounds.X = xoffset;
-                
             }
             else if (this.PositionOptions.FloatMode == FloatMode.Left)
             {
@@ -165,7 +164,9 @@ namespace Scryber.PDF.Layout
                 
                 var farRight = this.RelativeTo.GetLayoutPage().Width;
                 farRight -= this.PositionOptions.Right.Value;
+                farRight -= this.RelativeTo.Position.Padding.Right;
                 bounds.X = farRight - this.Width;
+                
                 relativeOffset.X = 0;
             }
             else if(!this.RelativeTo.Position.Padding.IsEmpty)
@@ -210,9 +211,13 @@ namespace Scryber.PDF.Layout
             var bounds = this.TotalBounds;
             var floatInset = Unit.Zero;
 
-            if (this.PositionOptions.FloatMode != FloatMode.None)
+            if (this.PositionOptions.FloatMode == FloatMode.Left)
             {
                 floatInset = bounds.X; //previously calculated inset
+            }
+            else if(this.PositionOptions.FloatMode == FloatMode.Right)
+            {
+                floatInset = 0 - (this.RelativeTo.Position.Padding.Right); //normally padding is not accounted for with relative parents, however floats should account for it.
             }
 
             var xoffset = (this.RelativeTo.PagePosition.X);
@@ -343,18 +348,25 @@ namespace Scryber.PDF.Layout
         {
             if(this.RelativeTo != null)
             {
+                var mode = this.RelativeTo.Position.PositionMode;
+                
                 if (this.PositionOptions.FloatMode == FloatMode.Right)
                 {
                     //this.RelativeTo region float inset
                     //needs to take account of the possible multiple insets.
-                    this.PositionOptions.X = this.RelativeTo.PagePosition.X - this.RelativeTo.Position.Margins.Right + (this.RelativeTo.Width - this.Width) - this.PositionOptions.Right;
+                    // if it's not positioned directly.
+                    if (mode != PositionMode.Absolute && mode != PositionMode.Fixed && mode != PositionMode.Relative)
+                        this.PositionOptions.X = this.RelativeTo.PagePosition.X -
+                                                 (this.RelativeTo.Position.Margins.Right + this.RelativeTo.Position.Padding.Right) +
+                                                 (this.RelativeTo.Width - this.Width) -
+                                                 this.PositionOptions.Right;
                 }
                 else if (this.PositionOptions.FloatMode == FloatMode.Left)
                 {
                     //Todo - push the floating block to the right.
                 }
                 
-                var mode = this.RelativeTo.Position.PositionMode;
+                
                 if (mode == PositionMode.Fixed)
                 {
                     this.UpdateTotalBoundsForAbsoluteParent(context.Offset);

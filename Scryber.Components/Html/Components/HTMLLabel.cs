@@ -45,7 +45,7 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("data-content")]
-        public string DataContent
+        public new string DataContent
         {
             get; set;
         }
