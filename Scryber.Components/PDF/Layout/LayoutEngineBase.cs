@@ -1378,16 +1378,18 @@ namespace Scryber.PDF.Layout
 
             positioned.RelativeTo = relativeTo;
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
+            
             if (options.FloatMode == FloatMode.Left)
             {
-                if (positioned.TotalBounds.X + positioned.TotalBounds.Width > relativeTo.CurrentRegion.TotalBounds.Width)
+                rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY, positioned.Height);
+                if (positioned.TotalBounds.X + positioned.TotalBounds.Width + rightOffset > relativeTo.CurrentRegion.TotalBounds.Width)
                 {
                     //move down as we cannot fit on the line.
                     var requiredSpace = positioned.TotalBounds.Width;
-                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width;
+                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - rightOffset;
                     var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth, requiredSpace);
                     offsetY = maxY;
-                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY + 1, positioned.Height);
+                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY , positioned.Height);
                     positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
                     bounds = positioned.TotalBounds;
                     bounds.X = offsetX;
@@ -1398,6 +1400,20 @@ namespace Scryber.PDF.Layout
             }
             else
             {
+                var leftOffset = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
+                if (rightOffset + positioned.TotalBounds.Width + leftOffset > relativeTo.CurrentRegion.TotalBounds.Width)
+                {
+                    //move down as we cannot fit on the line.
+                    var requiredSpace = positioned.TotalBounds.Width;
+                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - leftOffset;
+                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Right, availableWidth, requiredSpace);
+                    offsetY = maxY;
+                    rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY , positioned.Height);
+                    positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
+                    bounds = positioned.TotalBounds;
+                    bounds.X = offsetX;
+                    positioned.TotalBounds =  bounds;
+                }
                 positioned.PositionOptions.Right = rightOffset;
                 relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width, rightOffset, offsetY, positioned.Height);
             }
