@@ -1380,6 +1380,19 @@ namespace Scryber.PDF.Layout
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
             if (options.FloatMode == FloatMode.Left)
             {
+                if (positioned.TotalBounds.X + positioned.TotalBounds.Width > relativeTo.CurrentRegion.TotalBounds.Width)
+                {
+                    //move down as we cannot fit on the line.
+                    var requiredSpace = positioned.TotalBounds.Width;
+                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width;
+                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth, requiredSpace);
+                    offsetY = maxY;
+                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY + 1, positioned.Height);
+                    positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
+                    bounds = positioned.TotalBounds;
+                    bounds.X = offsetX;
+                    positioned.TotalBounds =  bounds;
+                }
                 relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
                     positioned.TotalBounds.X, offsetY, positioned.Height);
             }

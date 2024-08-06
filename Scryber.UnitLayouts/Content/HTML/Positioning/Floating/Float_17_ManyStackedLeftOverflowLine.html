@@ -9,6 +9,7 @@
             line-height: 15pt;
             font-size: 12pt;
             text-align: left;
+            font-family: sans-serif;
         }
         h5{
             margin-top: 10pt;
@@ -29,7 +30,7 @@
             margin: 5pt;
             border: solid 1pt blue;
             font-size: 10pt;
-            width: 50pt;
+            width: 80pt;
             text-align: left;
         }
         
@@ -48,27 +49,21 @@
             border: solid 1pt red;
         }
 
-        #nest{
+        .nest{
             border: solid 1pt green;
             margin: 0pt;
+            margin-bottom: 10pt;
             padding: 10pt;
             position: relative;
         }
         
-        #first{
-            border: solid 1pt lime;
-            position: absolute;
-            left: 10pt;
-            top: 120pt;
-            width: 90%;
-        }
+        
 
     </style>
 </head>
 <body>
 <h5>Block below is floating left positioned without any position values</h5>
-<div id="nest" >
-    <div id="first">
+<div class="nest" >
         <div class="floating">
             1. Inside the floating block.
         </div>
@@ -78,10 +73,10 @@
         <div class="floating">
             3. Inside the floating block.
         </div>
-        <div class="floating right">
+        <div class="floating">
             4. Inside the floating block.
         </div>
-        <div id="floatRelativeRight" class="floating right">
+        <div class="floating">
             5. Inside the floating block.
         </div>
         <div class="floating">
@@ -90,38 +85,64 @@
         <div class="floating">
             7. Inside the floating block.
         </div>
-        <p>This is in the first column
-        after the floating block.
+        This is after the floating block, that will continue along the page until it comes to
         
-        After the float block, that will continue along the page until it comes to
-        
-        a new line and then it will go onto a new line again.</p>
-        
-    </div>
-    After the floating blocks that should go over more than one line in the page.
-    <div class="floating right">
+        a new line and then it will go onto a new line again.
+</div>
+Second test
+<div class="nest" >
+    <div class="floating">
         1. Inside the floating block.
     </div>
-    <div class="floating right">
+    <div class="floating">
         2. Inside the floating block.
     </div>
-    <div class="floating right">
+    <div class="floating">
         3. Inside the floating block.
     </div>
-    <div class="floating right">
-        4. Inside the floating block.
+    <div class="floating">
+        4. Inside the floating block that is higher than the others.
     </div>
-    <div class="floating right">
+    <div class="floating">
         5. Inside the floating block.
     </div>
-    <div class="floating right">
+    <div class="floating">
         6. Inside the floating block.
     </div>
     <div class="floating">
         7. Inside the floating block.
     </div>
-    <b>After the float block, that will continue along the page between blocks.</b>
-    <div id="after">On a following div in the page that should continue on until it hits the floating block and goes onto a new line. </div>
+    This is after the floating block, that will continue along the page until it comes to
+
+    a new line and then it will go onto a new line again.
+</div>
+
+Third test
+<div class="nest" >
+    <div class="floating">
+        1. Inside the floating block.
+    </div>
+    <div class="floating">
+        2. Inside the floating block that is higher than the others.
+    </div>
+    <div class="floating">
+        3. Inside the floating block.
+    </div>
+    <div class="floating">
+        4. Inside the floating block.
+    </div>
+    <div class="floating">
+        5. Inside the floating block.
+    </div>
+    <div class="floating">
+        6. Inside the floating block.
+    </div>
+    <div class="floating">
+        7. Inside the floating block.
+    </div>
+    This is after the floating block, that will continue along the page until it comes to
+
+    a new line and then it will go onto a new line again.
 </div>
 
 </body>

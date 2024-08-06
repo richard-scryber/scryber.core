@@ -748,6 +748,27 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public virtual Unit GetFloatsMaxVOffset(FloatMode mode, Unit availableWidth, Unit reqiredSpace)
+        {
+            var maxY = Unit.Zero;
+            
+            var afloat = this.Floats;
+            
+            while (null != afloat)
+            {
+                if (afloat.Mode == mode)
+                {
+                    if (afloat.FloatInset + afloat.FloatWidth + reqiredSpace > availableWidth)
+                        maxY = Unit.Max(maxY, afloat.YOffset + afloat.FloatHeight);
+                }
+
+                afloat = afloat.Next;
+            }
+
+            return maxY;
+
+        }
+
         public virtual void AddFloatingInset(FloatMode mode, Unit floatWidth, Unit floatInset, Unit offsetY, Unit floatHeight)
         {
             var line = this.CurrentItem as PDFLayoutLine;

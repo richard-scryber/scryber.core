@@ -74,7 +74,7 @@ namespace Scryber.Styles
         /// <summary>
         /// Creates a new style, populates all based upon the current styles
         /// </summary>
-        /// <param name="Component"></param>
+        /// <param name="component"></param>
         /// <returns></returns>
         public Style GetFullStyle(IComponent component, Size pageSize, ParentComponentSizer sizer, Size fontSize, Unit rootFontSize)
         {
