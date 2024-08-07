@@ -1378,29 +1378,49 @@ namespace Scryber.PDF.Layout
 
             positioned.RelativeTo = relativeTo;
             positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
-            
+
             if (options.FloatMode == FloatMode.Left)
             {
                 rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY, positioned.Height);
-                if (positioned.TotalBounds.X + positioned.TotalBounds.Width + rightOffset > relativeTo.CurrentRegion.TotalBounds.Width)
+                if (positioned.TotalBounds.X + positioned.TotalBounds.Width + rightOffset >
+                    relativeTo.CurrentRegion.TotalBounds.Width)
                 {
                     //move down as we cannot fit on the line.
                     var requiredSpace = positioned.TotalBounds.Width;
                     var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - rightOffset;
-                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth, requiredSpace);
+                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth,
+                        requiredSpace);
                     offsetY = maxY;
-                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY , positioned.Height);
+                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
                     positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
                     bounds = positioned.TotalBounds;
                     bounds.X = offsetX;
-                    positioned.TotalBounds =  bounds;
+                    positioned.TotalBounds = bounds;
                 }
-                relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
-                    positioned.TotalBounds.X, offsetY, positioned.Height);
+
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                {
+                    PDFLayoutRegion newRegion = relativeTo.CurrentRegion;
+                    PDFLayoutBlock newBlock = relativeTo;
+                    bool newPage;
+                    if (!this.MoveFloatToNextRegion(FloatMode.Left, positioned.TotalBounds.X, positioned, relativeTo))
+                    {
+                        if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)
+                        {
+                            positioned.PositionOptions.Visibility = Visibility.Hidden;
+                        }
+                    }
+                }
+                else
+                {
+                    relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
+                        positioned.TotalBounds.X, offsetY, positioned.Height);
+                }
             }
             else
             {
                 var leftOffset = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
+                
                 if (rightOffset + positioned.TotalBounds.Width + leftOffset > relativeTo.CurrentRegion.TotalBounds.Width)
                 {
                     //move down as we cannot fit on the line.
@@ -1414,11 +1434,62 @@ namespace Scryber.PDF.Layout
                     bounds.X = offsetX;
                     positioned.TotalBounds =  bounds;
                 }
+                
                 positioned.PositionOptions.Right = rightOffset;
-                relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width, rightOffset, offsetY, positioned.Height);
+                
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                {
+                    PDFLayoutRegion newRegion = relativeTo.CurrentRegion;
+                    PDFLayoutBlock newBlock = relativeTo;
+                    bool newPage;
+                    if (!this.MoveFloatToNextRegion(FloatMode.Right, rightOffset, positioned, relativeTo))
+                    {
+                        if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)
+                        {
+                            positioned.PositionOptions.Visibility = Visibility.Hidden;
+                        }
+                    }
+                }
+                else
+                {
+                    relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
+                        rightOffset, offsetY, positioned.Height);
+                }
             }
         }
 
+        private bool MoveFloatToNextRegion(FloatMode floatMode, Unit floatInset, PDFLayoutPositionedRegion positioned, PDFLayoutBlock relativeTo)
+        {
+            var newRegion = relativeTo.CurrentRegion;
+            var newBlock = relativeTo;
+            bool newPage;
+            //POSTITIONED REGIONS IN THE HIERARCHY WILL NEVER FOARCE A NEW PAGE, OR COLUMN
+            if (this.MoveToNextRegion(positioned.Height, ref newRegion, ref newBlock, out newPage))
+            {
+                newRegion.AddFloatingInset(floatMode, positioned.TotalBounds.Width,
+                    floatInset, 0, positioned.Height);
+                
+                //swap the positioned region
+                
+                relativeTo.PositionedRegions.Remove(positioned);
+                newBlock.PositionedRegions.Add(positioned);
+                
+                var run = positioned.AssociatedRun;
+                run.Line.Runs.Remove(run);
+                var line = newRegion.StartOrReturnCurrentLine(PositionMode.Inline);
+                line.AddRun(run);
+                
+                //To do - update the current position.
+                positioned.RelativeTo = newBlock;
+                var offset = positioned.RelativeOffset;
+                offset.Y = newRegion.UsedSize.Height;
+                
+                positioned.RelativeOffset = offset;
+                return true;
+            }
+            else
+                return false;
+        }
 
 
         private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out Unit width, out bool isImage)

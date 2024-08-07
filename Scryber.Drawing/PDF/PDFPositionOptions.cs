@@ -207,6 +207,25 @@ namespace Scryber.PDF
         }
 
         /// <summary>
+        /// Returns true if these position options have an explicit position mode of Relative, Absolute or Fixed
+        /// </summary>
+        public bool HasExplicitPositionMode
+        {
+            get
+            {
+                if (this.PositionMode == PositionMode.Absolute || this.PositionMode == PositionMode.Fixed ||
+                    this.PositionMode == PositionMode.Relative)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates a new default position options
         /// </summary>
         public PDFPositionOptions()
