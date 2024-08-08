@@ -1087,6 +1087,10 @@ namespace Scryber.Styles
             {
                 options.FloatMode = floatm.Value(this);
                 options.FillWidth = false;
+                
+                //absolute and fixed knock out any float
+                if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+                    options.FloatMode = FloatMode.None;
             }
 
             // transformations

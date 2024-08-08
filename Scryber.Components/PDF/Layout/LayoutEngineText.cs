@@ -527,7 +527,7 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutRegion reg = line.Region;
             reg.CloseCurrentItem();
-            line = reg.BeginNewLine();
+            line = reg.BeginNewLine(this.TextRenderOptions.Leading.HasValue ? this.TextRenderOptions.Leading.Value.PointsValue : this.TextRenderOptions.Font.Size.PointsValue * 1.2);
             this.BeginningRun.Lines.Add(line);
 
             Unit inset;

@@ -1426,7 +1426,12 @@ namespace Scryber.PDF.Layout
                     //move down as we cannot fit on the line.
                     var requiredSpace = positioned.TotalBounds.Width;
                     var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - leftOffset;
-                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Right, availableWidth, requiredSpace);
+                    Unit maxY;
+                    if (availableWidth < requiredSpace) //We have left floats pushing us down.
+                        maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth,
+                            requiredSpace);
+                    else //we have right floats pushing us down
+                        maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Right, availableWidth, requiredSpace);
                     offsetY = maxY;
                     rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY , positioned.Height);
                     positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);

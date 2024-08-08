@@ -4250,6 +4250,218 @@ namespace Scryber.UnitLayouts
 
         }
         
+        
+        
+        /// <summary>
+        /// Known issues when parent is flating too
+        /// 1. The float left blocks are inset by the float padding amount. (.floating{ padding: 10pt})
+        /// 2. The text rendering of the content after the float blocks is at the samle baseline as the floating text.
+        /// Screenshot - 7th Aug 20:15
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Float_24_ManyInsideAnotherFloat()
+        {
+
+            var path = AssertGetContentFile("Float_24_ManyInsideAnotherFloat");
+
+            var doc = Document.ParseDocument(path);
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Float_24_ManyInsideAnotherFloat.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(ms);
+            }
+
+            // 2 pages
+
+            Assert.AreEqual(2, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            var content = pg.ContentBlock;
+
+
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+
+            // spacer on the first column
+            
+            var columns = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(columns);
+            Assert.AreEqual(2, columns.Columns.Length);
+            
+            //first column - spacer and nest part 1
+            Assert.AreEqual(1, columns.Columns[0].Contents.Count);
+            
+            // second column
+            
+            Assert.AreEqual(2, columns.Columns[1].Contents.Count);
+            
+            var nest = columns.Columns[1].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            
+            //2 floats on this first block
+            Assert.AreEqual(2, nest.PositionedRegions.Count);
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            Assert.AreEqual(5, line.Runs.Count); //begin, chars, end, float, float
+            Assert.IsNotNull(nest.Columns[0].Floats);
+            Assert.AreEqual(2, nest.Columns[0].Floats.Count);
+            
+            //first float
+            var floatAddition = nest.Columns[0].Floats;
+            
+            Assert.AreEqual(2, floatAddition.Count);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(15, floatAddition.YOffset); //line offset
+                
+            var pos = nest.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(pg.Width - 30 - 90, pos.TotalBounds.X); // right - margins and width
+            Assert.AreEqual(80 + 650 + 15, pos.TotalBounds.Y); //heading + spacer + line
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+            
+            //second float
+            floatAddition = floatAddition.Next;
+            Assert.IsNotNull(floatAddition);
+            
+            Assert.AreEqual(1, floatAddition.Count);
+            Assert.AreEqual(90, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(15, floatAddition.YOffset); // line offset
+                
+            pos = nest.PositionedRegions[1] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(pg.Width - 30 - 180, pos.TotalBounds.X); //right - margins, a float and width
+            Assert.AreEqual(80 + 650 + 15, pos.TotalBounds.Y); //heading + spacer + line
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+            
+            //
+            //First columns on the second page contains 4 floats and the text
+            //
+
+            pg = layout.AllPages[1];
+            Assert.IsNotNull(pg);
+            columns = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(columns);
+            Assert.AreEqual(2, columns.Columns.Length);
+            
+            //first column, now at the top
+            nest = columns.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            
+            //4 floats on this first block
+            //And 8 lines
+            Assert.AreEqual(4, nest.PositionedRegions.Count);
+            Assert.AreEqual(8, nest.Columns[0].Contents.Count);
+            Assert.IsNotNull(nest.Columns[0].Floats);
+            Assert.AreEqual(4, nest.Columns[0].Floats.Count);
+            
+            //first float
+            floatAddition = nest.Columns[0].Floats;
+            
+            Assert.AreEqual(4, floatAddition.Count);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(0, floatAddition.YOffset);
+
+            var absColumnRight = 20 + nest.Width;
+            pos = nest.PositionedRegions[0] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(absColumnRight - 10 - 90, pos.TotalBounds.X); //back at the right of nesting inc margins and width
+            Assert.AreEqual(30, pos.TotalBounds.Y); //page top inc margins
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+            
+            //second float
+            floatAddition = floatAddition.Next;
+            Assert.IsNotNull(floatAddition);
+            
+            Assert.AreEqual(3, floatAddition.Count);
+            Assert.AreEqual(90, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(0, floatAddition.YOffset);
+                
+            pos = nest.PositionedRegions[1] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(absColumnRight - 10 - 90 - 90, pos.TotalBounds.X);
+            Assert.AreEqual(30, pos.TotalBounds.Y); //heading only
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+            
+            //third float
+            floatAddition = floatAddition.Next;
+            Assert.IsNotNull(floatAddition);
+            
+            Assert.AreEqual(2, floatAddition.Count);
+            Assert.AreEqual(0, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(40, floatAddition.YOffset);
+                
+            pos = nest.PositionedRegions[2] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(absColumnRight - 10 - 90, pos.TotalBounds.X);
+            Assert.AreEqual(40 + 30, pos.TotalBounds.Y); //margins + a float
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+            
+            //fourth float
+            floatAddition = floatAddition.Next;
+            Assert.IsNotNull(floatAddition);
+            
+            Assert.AreEqual(1, floatAddition.Count);
+            Assert.AreEqual(90, floatAddition.FloatInset);
+            Assert.AreEqual(90, floatAddition.FloatWidth);
+            Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+            Assert.AreEqual(40, floatAddition.YOffset);
+                
+            pos = nest.PositionedRegions[3] as PDFLayoutPositionedRegion;
+            Assert.IsNotNull(pos);
+            Assert.AreEqual(absColumnRight - 10 - 90 - 90, pos.TotalBounds.X);
+            Assert.AreEqual(40 + 30, pos.TotalBounds.Y); //margins + a float
+            Assert.AreEqual(40, pos.Height);
+            Assert.AreEqual(90, pos.Width);
+
+            for (var i = 0; i < 6; i++)
+            {
+                line = nest.Columns[0].Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
+                if (i == 0)
+                {
+                    Assert.AreEqual(7, line.Runs.Count); //4 pos runs + start, chars, end
+                }
+                else
+                {
+                    Assert.AreEqual(3, line.Runs.Count);
+                }
+                Assert.AreEqual(nest.Width - 180 - 20, line.FullWidth); //outer - margins and 2 floats
+            }
+            
+            //back to full width
+            line = nest.Columns[0].Contents[6] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(nest.Width - 20, line.FullWidth);
+            
+
+        }
     }
     
     

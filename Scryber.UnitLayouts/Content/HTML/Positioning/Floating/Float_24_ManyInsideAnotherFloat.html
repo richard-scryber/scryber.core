@@ -1,0 +1,78 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body{
+            margin: 20pt;
+            line-height: 15pt;
+            font-size: 12pt;
+            text-align: left;
+            font-family: sans-serif;
+        }
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 12pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+
+
+        .floating{
+            position: absolute;
+            margin: 0pt;
+            border: solid 1pt blue;
+            font-size: 12pt;
+            text-align: left;
+            padding: 10pt;
+            padding-top: 10pt;
+        }
+
+        .right{
+            float: right;
+        }
+
+        .inner-float{
+            float: left;
+            font-size: 10pt;
+            border: solid 1pt green;
+            padding: 0pt;
+        }
+
+        .nest{
+            border: solid 1pt silver;
+        }
+
+
+        .columns{
+            column-count: 2;
+            border: red solid 1pt;
+            margin: 0pt
+        }
+
+    </style>
+</head>
+<body>
+<h5>Block below is floating left positioned without any position values</h5>
+
+<div class="nest" >
+    <div id="outerFloat" class="floating" style="width: 100%">
+        <div class="floating">
+            1. Inside the inner floating block.
+        </div>
+        <div class="floating">
+            2. Inside the inner floating block.
+        </div>
+        <div class="floating right">
+            3. Inside the inner floating block.
+        </div>
+        <div>This is after the inner floating block, that will continue along the page until it comes to
+        a new line and then it will go onto a new line again.</div>
+    </div>
+</div>
+<!-- TODO: test the reverse of this with 2 rights and then a left -->
+</body>
+</html>
+

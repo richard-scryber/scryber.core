@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
+using Scryber.Styles.Parsing.Typed;
 
 namespace Scryber.PDF.Layout
 {
@@ -412,14 +413,14 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Begins a new line on the current region and sets up it's width.
         /// </summary>
-        /// <param name="startparagraph">Set to true if this is the first line in a run or the first line in a new paragraph</param>
+        /// <param name="height">Set to true if this is the first line in a run or the first line in a new paragraph</param>
         /// <returns>The newly created and added line</returns>
-        public PDFLayoutLine BeginNewLine()
+        public PDFLayoutLine BeginNewLine(double heightPts = 1.0)
         {
             this.AssertIsOpen();
             var last = this.AssertLastItemIsClosed() as PDFLayoutLine;
             
-            Unit width = this.GetAvailableLineWidth();
+            Unit width = this.GetAvailableLineWidth(heightPts);
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, VerticalAlignment.Baseline, this.Contents.Count);
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
@@ -614,9 +615,9 @@ namespace Scryber.PDF.Layout
         /// Gets the current available width for a line
         /// </summary>
         /// <returns></returns>
-        protected Unit GetAvailableLineWidth()
+        protected Unit GetAvailableLineWidth(Unit height)
         {
-            return GetAvailableLineWidth(this.UsedSize.Height, 1.0, this.OffsetX);
+            return GetAvailableLineWidth(this.UsedSize.Height, height, this.OffsetX);
         }
 
         public virtual Unit GetAvailableLineWidth(Unit yoffset, Unit height, Unit regionInset, bool postLayout = false)

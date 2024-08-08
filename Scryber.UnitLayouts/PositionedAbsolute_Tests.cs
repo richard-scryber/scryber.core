@@ -4240,8 +4240,8 @@ namespace Scryber.UnitLayouts
             Unit height = 15;
             Unit width = layout.AllPages[0].Width - 40; //page width - page margins
 
-            yOffset += 15; //nesting line height
-            
+            yOffset += 10 + 15; //padding top and nesting line height
+            xOffset += 10; //padding left
 
             width /= 2; //50% width
 

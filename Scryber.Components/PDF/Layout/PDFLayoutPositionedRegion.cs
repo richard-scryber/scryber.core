@@ -334,7 +334,7 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                //bounds.Y += this.RelativeTo.Position.Margins.Top;
+                bounds.Y += this.RelativeTo.Position.Padding.Top;
             }
 
             relativeOffset.X += floatOffset;
