@@ -1245,7 +1245,7 @@ namespace Scryber.UnitLayouts
             const int PageHeight = 500;
             const int ItemCount = 5;
             string[] ItemValues = new[] { "1...a-", "1...b-", "1...c-", "1...d-", "1...e-" };
-            const double DefaultNumberWidth = 10.0;
+            const double DefaultNumberWidth = 25.0;
             const double DefaultGutterWidth = 10.0;
 
             Document doc = new Document();
@@ -1261,6 +1261,7 @@ namespace Scryber.UnitLayouts
             ol.NumberPrefix = "1...";
             ol.NumberAlignment = HorizontalAlignment.Right;
             ol.NumberInset = DefaultNumberWidth;
+            
             section.Contents.Add(ol);
 
 
@@ -1360,7 +1361,8 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(ItemValues[i], chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(0.0, start.StartTextCursor.Width);
+                var w = DefaultNumberWidth - chars.Width - numBlock.Position.Padding.Right;
+                Assert.AreEqual(w, start.StartTextCursor.Width);
             }
 
         }
@@ -1456,6 +1458,47 @@ namespace Scryber.UnitLayouts
 
             }
 
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void OverflowSingleListItem()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            const double DefaultNumberWidth = 30.0;
+            const double DefaultGutterWidth = 10.0;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.TextLeading = 18;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            var space = new Div();
+            space.BorderColor = StandardColors.Lime;
+            space.BorderWidth = 1;
+            space.Height = 490;
+            section.Contents.Add(space);
+            
+            var ol = new ListOrdered();
+            section.Contents.Add(ol);
+            
+            ol.Items.Add(new ListItem()
+            {
+                Contents = { new TextLiteral("Overflow Item") },
+                BorderColor = StandardColors.Fuchsia,
+                BorderWidth = 1
+                
+            });
+            
+            using (var ms = DocStreams.GetOutputStream("OrderedList_OverflowSingleItem.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
         }
 
         [TestCategory(TestCategoryName)]
@@ -1636,7 +1679,8 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual((i + firstPageItemCount + 1).ToString(), chars.Characters);
 
                 //Make sure we are right aligned by default
-                Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding); 
+                
+                Assert.AreEqual(30, start.StartTextCursor.Width + chars.Width + LabelPadding, "Failed at index " + i + " on the scond page"); 
             }
         }
 

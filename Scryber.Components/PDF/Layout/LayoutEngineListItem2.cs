@@ -132,7 +132,7 @@ namespace Scryber.PDF.Layout
 
                 //Add the extra space for the list item number
                 margins.Left += inset + alley;
-                style.Padding.Left = margins.Left;
+                style.Margins.Left = margins.Left;
                 position.Margins = margins;
                 
                 var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
