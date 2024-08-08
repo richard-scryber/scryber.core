@@ -21,13 +21,12 @@
 
 
         .floating{
-            position: absolute;
+            float: left;
             margin: 0pt;
             border: solid 1pt blue;
             font-size: 12pt;
             text-align: left;
             padding: 10pt;
-            padding-top: 10pt;
         }
 
         .right{
@@ -58,7 +57,7 @@
 <h5>Block below is floating left positioned without any position values</h5>
 
 <div class="nest" >
-    <div id="outerFloat" class="floating" style="width: 100%">
+    <div id="outerFloat" class="floating" style="width: 90%" >
         <div class="floating">
             1. Inside the inner floating block.
         </div>
@@ -68,10 +67,13 @@
         <div class="floating right">
             3. Inside the inner floating block.
         </div>
-        <div>This is after the inner floating block, that will continue along the page until it comes to
+        <div style="border: solid 1pt green"> This is after the inner floating block, that will continue along the page until it comes to
         a new line and then it will go onto a new line again.</div>
     </div>
+    <span>And this is after all the floating blocks.</span>
 </div>
+<div>And this is outside the nesting block.</div>
+
 <!-- TODO: test the reverse of this with 2 rights and then a left -->
 </body>
 </html>

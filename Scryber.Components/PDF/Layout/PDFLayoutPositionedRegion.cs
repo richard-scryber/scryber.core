@@ -304,7 +304,7 @@ namespace Scryber.PDF.Layout
             else if (this.PositionOptions.Right.HasValue)
             {
                 var farRight = this.RelativeTo.PagePosition.X + this.RelativeTo.Width;
-                farRight -= this.RelativeTo.Position.Margins.Right;
+                farRight -= this.RelativeTo.Position.Margins.Right + this.RelativeTo.Position.Padding.Right;
                 farRight -= this.PositionOptions.Right.Value;
                 bounds.X = farRight - this.Width;
 
