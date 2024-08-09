@@ -31,33 +31,35 @@ namespace Scryber.UnitLayouts
         {
             layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
+        
+        protected string AssertGetContentFile(string name)
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Relative/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
+
+            return path;
+        }
 
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void BlockPercentRelativeToPage()
+        public void Relative_01_BlockPercentToPage()
         {
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 20;
-            section.TextLeading = 25;
-            doc.Pages.Add(section);
+            var path = AssertGetContentFile("Relative_01_BlockPercentToPage");
 
-            Div relative = new Div() {
-                Height = new Unit(50, PageUnits.Percent),
-                Width = new Unit(50, PageUnits.Percent),
-                BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
-
-            relative.Contents.Add(new TextLiteral("50% width and height"));
-            section.Contents.Add(relative);
-
+            var doc = Document.ParseDocument(path);
             
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToPage.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Relative_01_BlockPercentToPage.pdf"))
             {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
@@ -65,14 +67,160 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-            var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading, span, relative, span
+            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
             Assert.IsNotNull(block);
 
-            Assert.AreEqual(600 / 2.0, block.Width);
-            Assert.AreEqual(800 / 2.0, block.Height);
+            
+            
+            //check the bounds.
+            Unit yOffset = 50 + 15;
+            Unit xOffset = 0;
+            Unit width = pg.Width / 2.0;
+            Unit height = pg.Height / 2.0;
+            
+            Assert.AreEqual(width, block.Width);
+            Assert.AreEqual(height, block.Height);
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            
+            //check before and after
+            var before = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = pg.ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height, after.OffsetY);
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_02_BlockPercentToPageMarginsPadding()
+        {
+
+            var path = AssertGetContentFile("Relative_02_BlockPercentToPageMarginsPadding");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_02_BlockPercentToPageMarginsPadding.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading, span, relative, span
+            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 50 + 15;
+            Unit xOffset = 0;
+            Unit width = (pg.Width - 40 ) / 2.0;
+            Unit height = (pg.Height - 40 ) / 2.0; 
+            
+            Assert.AreEqual(width + 40, block.Width);
+            Assert.AreEqual(height + 40, block.Height);
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width + 40, block.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 40, block.TotalBounds.Height);
+            
+            Assert.AreEqual(width - 20, block.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, block.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = pg.ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 40, after.OffsetY);
         }
 
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_03_BlockPercentToPageMarginsPaddingTopLeft()
+        {
+
+            var path = AssertGetContentFile("Relative_03_BlockPercentToPageMarginsPaddingTopLeft");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_03_BlockPercentToPageMarginsPaddingTopLeft.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading, span, relative, span
+            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 30 + 20 + 15; //heading, head margins, a line
+            Unit xOffset = 0;
+            Unit width = (pg.Width - 40) / 2.0;
+            Unit height = (pg.Height - 40) / 2.0; 
+            
+            Assert.AreEqual(width + 10, block.Width); //includes the margins
+            Assert.AreEqual(height + 10 , block.Height);
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width + 10 , block.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 10 , block.TotalBounds.Height);
+            
+            Assert.AreEqual(width - 20, block.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, block.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = pg.ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 10, after.OffsetY); //relative block margins
+
+            //relative position is applied to the render bounds AFTER layout.
+            //because it is just part of the layout as normal, then moved
+            
+            var arrange = ((Div)block.Owner).GetFirstArrangement();
+
+            yOffset = 20 + 30 + 15 + 20; //top margin, heading, line, explicit top value
+            xOffset = 20 + 10; //left page margin, explcit left value
+            //Assert.AreEqual(yOffset + 5, arrange.RenderBounds.Y); //position is applied to the render bounds for relative
+            Assert.AreEqual(xOffset + 5 , arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            
+            
+        }
+        
+        
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BlockPercentFullToPage()

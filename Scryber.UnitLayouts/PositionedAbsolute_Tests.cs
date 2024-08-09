@@ -5923,9 +5923,9 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset + 10, arrange.RenderBounds.Y); //Offset for padding
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X + 10 + arrange.RenderBounds.Width); //offset for the right with padding
-            Assert.AreEqual(height, arrange.RenderBounds.Height + 20); //renderpounds reduced for padding
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X  + arrange.RenderBounds.Width); //offset for the right with padding
+            Assert.AreEqual(height, arrange.RenderBounds.Height ); //renderpounds reduced for padding
             //Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
@@ -6047,9 +6047,9 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset + 10, arrange.RenderBounds.Y); //Offset for padding
-            Assert.AreEqual(xOffset + 10, arrange.RenderBounds.X); //offset with padding
-            Assert.AreEqual(height - 20, arrange.RenderBounds.Height); //renderpounds reduced for padding
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y); 
+            Assert.AreEqual(xOffset , arrange.RenderBounds.X);
+            Assert.AreEqual(height , arrange.RenderBounds.Height);
             //Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
@@ -6168,9 +6168,9 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset + 10, arrange.RenderBounds.Y); //Offset for padding
-            Assert.AreEqual(xOffset + 10, arrange.RenderBounds.X); //offset with padding
-            Assert.AreEqual(height - 20, arrange.RenderBounds.Height); //renderpounds reduced for padding
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset , arrange.RenderBounds.X);
+            Assert.AreEqual(height , arrange.RenderBounds.Height); 
             //Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
@@ -6289,9 +6289,9 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset , arrange.RenderBounds.Y + arrange.RenderBounds.Height + 10); //Offset for padding bottom for baseline
-            Assert.AreEqual(xOffset , arrange.RenderBounds.X + arrange.RenderBounds.Width + 10); //offset with padding right for right hand side
-            Assert.AreEqual(height - 20, arrange.RenderBounds.Height); //renderpounds reduced for padding
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y + arrange.RenderBounds.Height ); 
+            Assert.AreEqual(xOffset , arrange.RenderBounds.X + arrange.RenderBounds.Width ); 
+            Assert.AreEqual(height , arrange.RenderBounds.Height); 
             //Assert.AreEqual(width, arrange.RenderBounds.Width);
 
 
