@@ -2022,6 +2022,172 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        
+        private void CSSCalcDoc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _doc = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+        
+        [TestMethod]
+        public void ExpressionCSSCalc()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    #content{
+                                         border: solid 1px green;
+                                         width: calc(items.width - 10pt);
+                                    }
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='content' >Calculated width on the parargraph</p>
+                            </body>
+                        </html>";
+
+            
+            var json = @"{
+                'items': {
+                       'width':'100pt',
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_CSSWithCalc.pdf"))
+                {
+                    doc.LayoutComplete += CSSCalcDoc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("content") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+                Assert.AreEqual(1, p.Contents.Count);
+                
+
+                var layout = _doc;
+                Assert.IsNotNull(layout);
+                Assert.AreEqual(1, layout.AllPages.Count);
+                var content = layout.AllPages[0].ContentBlock;
+                var pblock = content.Columns[0].Contents[1] as PDFLayoutBlock;
+                Assert.IsNotNull(pblock);
+                
+                //make sure the width was applied to the position and the block
+                int pWidth = 100 - 10;
+                
+                Assert.AreEqual(pWidth, pblock.TotalBounds.Width);
+                Assert.AreEqual(pWidth, pblock.Position.Width);
+
+            }
+
+
+        }
+        
+        
+        [TestMethod]
+        public void ExpressionCSSRelativeCalc()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    #content{
+                                         border: solid 1px green;
+                                         width: calc(50% - items.width);
+                                    }
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='content' >Calculated width on the parargraph</p>
+                            </body>
+                        </html>";
+
+            
+            var json = @"{
+                'items': {
+                       'width':'100pt',
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_CSSWithCalc.pdf"))
+                {
+                    doc.LayoutComplete += CSSCalcDoc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("content") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+                Assert.AreEqual(1, p.Contents.Count);
+                
+
+                var layout = _doc;
+                Assert.IsNotNull(layout);
+                Assert.AreEqual(1, layout.AllPages.Count);
+                var content = layout.AllPages[0].ContentBlock;
+                var pblock = content.Columns[0].Contents[1] as PDFLayoutBlock;
+                Assert.IsNotNull(pblock);
+                
+                Assert.Inconclusive("Relative units and calculations currently fail. Need to switch to DataBind and then evaluate on flatten");
+                
+                //make sure the width was applied to the position and the block
+                double pWidth = (content.TotalBounds.Width.PointsValue / 2) - 100;
+                
+                Assert.AreEqual(pWidth, pblock.TotalBounds.Width);
+                Assert.AreEqual(pWidth, pblock.Position.Width);
+
+            }
+
+
+        }
     }
 
 

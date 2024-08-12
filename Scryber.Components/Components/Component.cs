@@ -1409,11 +1409,11 @@ namespace Scryber.Components
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()
 
 
-        public void SetArrangement(PDFRenderContext context, Style style, Rect contentBounds)
+        public void SetArrangement(PDFRenderContext context, Style style, Rect borderBounds)
         {
             ComponentMultiArrangement arrange = new ComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;
-            arrange.RenderBounds = contentBounds;
+            arrange.RenderBounds = borderBounds;
             arrange.FullStyle = style;
             this.SetArrangement(arrange);
         }

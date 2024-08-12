@@ -211,14 +211,482 @@ namespace Scryber.UnitLayouts
             
             var arrange = ((Div)block.Owner).GetFirstArrangement();
 
-            yOffset = 20 + 30 + 15 + 20; //top margin, heading, line, explicit top value
-            xOffset = 20 + 10; //left page margin, explcit left value
-            //Assert.AreEqual(yOffset + 5, arrange.RenderBounds.Y); //position is applied to the render bounds for relative
-            Assert.AreEqual(xOffset + 5 , arrange.RenderBounds.X);
+            yOffset = 20 + 50 + 15 + 5 + 20; //top margin, heading + margins, line, rel margin, explicit top value
+            xOffset = 20 + 5 + 10; //left page margin, rel margin, explcit left value
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset  , arrange.RenderBounds.X);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
             
+            //check that the text has moved with the block (inc padding)
+            Assert.AreEqual(1, block.Columns.Length);
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+            
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //start, chars, newline
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(xOffset + 10, begin.StartTextCursor.Width);
+            //vertical start text cursor should be offset down the padding + the baseline offset.
+            Assert.AreEqual(yOffset + 10, begin.StartTextCursor.Height - begin.TextRenderOptions.GetBaselineOffset());
+            
+            //next line should be level with the previous, down 15 pt for the leading
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
             
         }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_04_BlockPercentToPageMarginsPaddingBottomRight()
+        {
+
+            var path = AssertGetContentFile("Relative_04_BlockPercentToPageMarginsPaddingBottomRight");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_04_BlockPercentToPageMarginsPaddingBottomRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading, span, relative, span
+            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 30 + 20 + 15; //heading, head margins, a line
+            Unit xOffset = 0;
+            Unit width = (pg.Width - 40) / 2.0;
+            Unit height = (pg.Height - 40) / 2.0; 
+            
+            Assert.AreEqual(width + 10, block.Width); //includes the margins
+            Assert.AreEqual(height + 10 , block.Height);
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width + 10 , block.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 10 , block.TotalBounds.Height);
+            
+            Assert.AreEqual(width - 20, block.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, block.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = pg.ContentBlock.Columns[0].Contents[3] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 10, after.OffsetY); //relative block margins
+
+            //relative position is applied to the render bounds AFTER layout.
+            //because it is just part of the layout as normal, then moved
+            
+            var arrange = ((Div)block.Owner).GetFirstArrangement();
+
+            yOffset = 20 + 50 + 15 + 5 - 20; //top margin, heading + margin, line, rel margin, explicit bottom value
+            xOffset = 20 + 5 - 10; //left page margin, rel margin, explcit right value
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset  , arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+            //check that the text has moved with the block (inc padding)
+            Assert.AreEqual(1, block.Columns.Length);
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+            
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //start, chars, newline
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(xOffset + 10, begin.StartTextCursor.Width);
+            //vertical start text cursor should be offset down the padding + the baseline offset.
+            Assert.AreEqual(yOffset + 10, begin.StartTextCursor.Height - begin.TextRenderOptions.GetBaselineOffset());
+            
+            //next line should be level with the previous, down 15 pt for the leading
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+        }
+        
+        
+          [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_05_BlockPercentToNesting()
+        {
+
+            var path = AssertGetContentFile("Relative_05_BlockPercentToNesting");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_05_BlockPercentToNesting.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //heading, nest
+
+            var nest = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
+            var block = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 15; //50 + 15; now relative to the nesting block so just one line height
+            Unit xOffset = 0;
+            Unit width = pg.Width / 2.0;
+            Unit height = (pg.Height - 50) / 2.0; //50% relative to the nest availalbe height.
+            
+            Assert.AreEqual(width, block.Width);
+            Assert.AreEqual(height, block.Height);
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width, block.TotalBounds.Width);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+            
+            //check before and after
+            var before = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height, after.OffsetY);
+
+            var comp = block.Owner as Div;
+            Assert.IsNotNull(comp);
+            var arrange = comp.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            yOffset = 50 + 15; //top margin, heading + margins, line, rel margin, explicit top value
+            xOffset = 0; //left page margin, rel margin, explcit left value
+            Assert.AreEqual(yOffset , arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset  , arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_06_BlockPercentToNestingMarginsPadding()
+        {
+
+            var path = AssertGetContentFile("Relative_06_BlockPercentToNestingMarginsPadding");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_06_BlockPercentToNestingMarginsPadding.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //heading,nesting
+
+            var nest = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
+            var rel = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(rel);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 15; //body margin, h5 height and margins, nest v margin, line, rel margin 
+            Unit xOffset = 0;
+            
+            Unit width = (pg.Width - 40 - 40 - 30  ) / 2.0; //50% of content space = page width - body margins (2x20), nest margins (2x20), nest padding (2x15)
+            Unit height = (160 - 30 ) / 2.0; //50% of content space =  explicit height - nest padding (2x15)
+            
+            Assert.AreEqual(yOffset,  rel.TotalBounds.Y);
+            Assert.AreEqual(xOffset, rel.TotalBounds.X);
+            
+            Assert.AreEqual(width + 20 , rel.Width); //take account of the rel margins
+            Assert.AreEqual(height + 20, rel.Height);
+            
+            
+            Assert.AreEqual(width + 20, rel.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 20, rel.TotalBounds.Height); //The block total bounds includes the margins
+            
+            Assert.AreEqual(width - 20, rel.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, rel.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 20, after.OffsetY); //10pt margins again
+            
+            //relative position is applied to the render bounds AFTER layout.
+            //because it is just part of the layout as normal, then moved
+            
+            var arrange = ((Div)rel.Owner).GetFirstArrangement();
+
+            yOffset = 20 + 50 + (10 + 15) + 15 + 10; //top margin, heading + margins, nest margin and padding, line, rel margin
+            xOffset = 20 + 20 + 15 + 10; //left page margin, nest margin, nest padding, rel margin
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset , arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+            //check that the text has moved with the block (inc padding)
+            Assert.AreEqual(1, rel.Columns.Length);
+            Assert.AreEqual(2, rel.Columns[0].Contents.Count);
+            
+            var line = rel.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //start, chars, newline
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(xOffset + 10, begin.StartTextCursor.Width);
+            //vertical start text cursor should be offset down the padding + the baseline offset.
+            Assert.AreEqual(yOffset + 10, begin.StartTextCursor.Height - begin.TextRenderOptions.GetBaselineOffset());
+            
+            //next line should be level with the previous, down 15 pt for the leading
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_07_BlockPercentToNestingMarginsPaddingTopLeft()
+        {
+
+            var path = AssertGetContentFile("Relative_07_BlockPercentToNestingMarginsPaddingTopLeft");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_07_BlockPercentToNestingMarginsPaddingTopLeft.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //heading,nesting
+
+            var nest = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
+            var rel = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(rel);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 15; //body margin, h5 height and margins, nest v margin, line, rel margin 
+            Unit xOffset = 0;
+            
+            Unit width = (pg.Width - 40 - 40 - 30  ) / 2.0; //50% of content space = page width - body margins (2x20), nest margins (2x20), nest padding (2x15)
+            Unit height = (160 - 30 ) / 2.0; //50% of content space =  explicit height - nest padding (2x15)
+            
+            Assert.AreEqual(yOffset,  rel.TotalBounds.Y);
+            Assert.AreEqual(xOffset, rel.TotalBounds.X);
+            
+            Assert.AreEqual(width + 20 , rel.Width); //take account of the rel margins
+            Assert.AreEqual(height + 20, rel.Height);
+            
+            
+            Assert.AreEqual(width + 20, rel.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 20, rel.TotalBounds.Height); //The block total bounds includes the margins
+            
+            Assert.AreEqual(width - 20, rel.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, rel.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 20, after.OffsetY); //10pt margins again
+            
+            //relative position is applied to the render bounds AFTER layout.
+            //because it is just part of the layout as normal, then moved
+            
+            var arrange = ((Div)rel.Owner).GetFirstArrangement();
+
+            yOffset = 20 + 50 + (10 + 15) + 15 + 10; //top margin, heading + margins, nest margin and padding, line, rel margin
+            xOffset = 20 + 20 + 15 + 10; //left page margin, nest margin, nest padding, rel margin
+            Assert.AreEqual(yOffset + 60, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset + 30, arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+            //check that the text has moved with the block (inc padding)
+            Assert.AreEqual(1, rel.Columns.Length);
+            Assert.AreEqual(2, rel.Columns[0].Contents.Count);
+            
+            var line = rel.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //start, chars, newline
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(xOffset + 10 + 30, begin.StartTextCursor.Width);
+            //vertical start text cursor should be offset down the padding + the baseline offset.
+            Assert.AreEqual(yOffset + 10 + 60, begin.StartTextCursor.Height - begin.TextRenderOptions.GetBaselineOffset());
+            
+            //next line should be level with the previous, down 15 pt for the leading
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+            
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_08_BlockPercentToNestingMarginsPaddingBottomRight()
+        {
+
+            var path = AssertGetContentFile("Relative_08_BlockPercentToNestingMarginsPaddingBottomRight");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_08_BlockPercentToNestingMarginsPaddingBottomRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //heading,nesting
+
+            var nest = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.Columns.Length);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
+            var rel = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(rel);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 15; //body margin, h5 height and margins, nest v margin, line, rel margin 
+            Unit xOffset = 0;
+            
+            Unit width = (pg.Width - 40 - 40 - 30  ) / 2.0; //50% of content space = page width - body margins (2x20), nest margins (2x20), nest padding (2x15)
+            Unit height = (160 - 30 ) / 2.0; //50% of content space =  explicit height - nest padding (2x15)
+            
+            Assert.AreEqual(yOffset,  rel.TotalBounds.Y);
+            Assert.AreEqual(xOffset, rel.TotalBounds.X);
+            
+            Assert.AreEqual(width + 20 , rel.Width); //take account of the rel margins
+            Assert.AreEqual(height + 20, rel.Height);
+            
+            
+            Assert.AreEqual(width + 20, rel.TotalBounds.Width); //The block total bounds includes the margins
+            Assert.AreEqual(height + 20, rel.TotalBounds.Height); //The block total bounds includes the margins
+            
+            Assert.AreEqual(width - 20, rel.Columns[0].TotalBounds.Width); //The inner region total bounds includes the padding.
+            Assert.AreEqual(height - 20, rel.Columns[0].TotalBounds.Height);
+            
+            //check before and after
+            var before = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(before);
+            Assert.AreEqual(yOffset - 15, before.OffsetY);
+
+            var after = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 20, after.OffsetY); //10pt margins again
+            
+            //relative position is applied to the render bounds AFTER layout.
+            //because it is just part of the layout as normal, then moved
+            
+            var arrange = ((Div)rel.Owner).GetFirstArrangement();
+
+            yOffset = 20 + 50 + (10 + 15) + 15 + 10; //top margin, heading + margins, nest margin and padding, line, rel margin
+            xOffset = 20 + 20 + 15 + 10; //left page margin, nest margin, nest padding, rel margin
+            Assert.AreEqual(yOffset - 60, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset - 30, arrange.RenderBounds.X);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+            //check that the text has moved with the block (inc padding)
+            Assert.AreEqual(1, rel.Columns.Length);
+            Assert.AreEqual(2, rel.Columns[0].Contents.Count);
+            
+            var line = rel.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //start, chars, newline
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(xOffset + 10 - 30, begin.StartTextCursor.Width);
+            //vertical start text cursor should be offset down the padding + the baseline offset.
+            Assert.AreEqual(yOffset + 10 - 60, begin.StartTextCursor.Height - begin.TextRenderOptions.GetBaselineOffset());
+            
+            //next line should be level with the previous, down 15 pt for the leading
+            var newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(0, newLine.NewLineOffset.Width);
+            Assert.AreEqual(15, newLine.NewLineOffset.Height);
+        }
+        
         
         
         [TestCategory(TestCategoryName)]
@@ -1809,260 +2277,6 @@ namespace Scryber.UnitLayouts
         }
 
 
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void ListAlphaLowerRelativeInsetLeft()
-        {
-            const int PageWidth = 600;
-            const int PageHeight = 800;
-            const int ItemCount = 5;
-            string[] ItemValues = new[] { "1a-", "1b-", "1c-", "1d-", "1e-" };
-            const double DefaultNumberWidth = 600 * 0.1;
-            const double DefaultGutterWidth = 10.0;
-
-            Document doc = new Document();
-            Section section = new Section();
-            section.FontSize = 10;
-            section.Width = PageWidth;
-            section.Height = PageHeight;
-            section.Margins = 10;
-            section.BackgroundColor = StandardColors.Silver;
-            doc.Pages.Add(section);
-
-            var ol = new ListOrdered();
-            ol.NumberingStyle = ListNumberingGroupStyle.LowercaseLetters;
-            ol.NumberPostfix = "-";
-            ol.NumberPrefix = "1";
-            ol.NumberAlignment = HorizontalAlignment.Left;
-            ol.NumberInset = new Unit(10, PageUnits.ViewPortWidth);
-            ol.Width = new Unit(50, PageUnits.ViewPortWidth);
-            ol.BorderColor = StandardColors.Aqua;
-
-            section.Contents.Add(ol);
-
-
-
-            for (var i = 0; i < ItemCount; i++)
-            {
-                var li = new ListItem();
-                li.Contents.Add(new TextLiteral("Item " + i));
-                li.BorderColor = StandardColors.Green;
-                li.Width = new Unit(50, PageUnits.Percent);
-                ol.Items.Add(li);
-
-            }
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativeList_AlphaLowerRelativeInsetLeft.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            //Assert.Inconclusive();
-
-            Assert.AreEqual(1, layout.AllPages.Count);
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-
-            var olBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(olBlock);
-
-            Assert.AreEqual(1, olBlock.Columns.Length);
-            Assert.AreEqual(ItemCount, olBlock.Columns[0].Contents.Count);
-
-            
-
-            Assert.AreEqual(600 * 0.5, olBlock.Width);
-
-            for (var i = 0; i < ItemCount; i++)
-            {
-
-                var itemBlock = olBlock.Columns[0].Contents[i] as PDFLayoutBlock;
-                //var column = rowBlock.Columns[i];
-                Assert.IsNotNull(itemBlock);
-
-                Assert.AreEqual(1, itemBlock.Columns.Length);
-                Assert.AreEqual(1, itemBlock.PositionedRegions.Count);
-
-                Assert.AreEqual(1, itemBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(1, itemBlock.PositionedRegions[0].Contents.Count);
-
-                //the block has a width of the 50% of the ol + the margins for the label and gutter
-                //and the label is 10% of the page width
-                Assert.AreEqual((600 * 0.1) + 10, itemBlock.Position.Margins.Left);
-                Assert.AreEqual(olBlock.Width * 0.5 + itemBlock.Position.Margins.Left, itemBlock.Width);
-                
-
-                var numBlock = itemBlock.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
-                var itemLine = itemBlock.Columns[0].Contents[0] as PDFLayoutLine;
-
-                Assert.IsNotNull(numBlock);
-                Assert.IsNotNull(itemLine);
-
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
-                Assert.AreEqual(4, itemLine.Runs.Count);
-
-
-
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
-                Assert.IsNotNull(start);
-
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
-                Assert.IsNotNull(chars);
-
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
-                Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
-                Assert.AreEqual(DefaultNumberWidth, posRun.Region.Width);
-
-                //cursor starts at margins + number + gutter
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth + 10, start.StartTextCursor.Width);
-                Assert.AreEqual("Item " + i, chars.Characters);
-
-
-                Assert.AreEqual(1, numBlock.Columns.Length);
-                Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
-
-                var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
-                Assert.AreEqual(3, numLine.Runs.Count);
-
-                start = numLine.Runs[0] as PDFTextRunBegin;
-                Assert.IsNotNull(start);
-
-                chars = numLine.Runs[1] as PDFTextRunCharacter;
-                Assert.IsNotNull(chars);
-
-                end = numLine.Runs[2] as PDFTextRunEnd;
-                Assert.IsNotNull(end);
-
-                Assert.AreEqual(ItemValues[i], chars.Characters);
-
-                //Make sure we are left aligned from margins
-                Assert.AreEqual(10.0, start.StartTextCursor.Width);
-            }
-
-        }
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void HtmlParsingTest()
-        {
-
-            var src = @"<?scryber append-log='true' log-level='Verbose' parser-log='true' ?>
-<!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <meta charset='utf-8' />
-    <title>Relative Unit Test</title>
-
-    <style >
-        body {
-            background-color:#CCC;
-            padding:20pt;
-            font-size:1.2rem; /* 120 percent of the root size  */
-            margin:5vw; /* 5 percent of the view width */
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        h1{
-            font-size:2em;  /* double body size */
-            font-weight:normal;
-            height: 20vmax;  /* 20% of the max view dimension */
-            background-color: gray;
-        }
-
-    </style>
-</head>
-<body>
-    <div id='wrapper' style='height: 40vh; background-color: silver; padding: 1em;' >Above the heading
-        <h1 id='heading' >This is my first heading</h1>
-        <div id='inner' >And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
-    </div>
-</body>
-</html>";
-
-            using (var sr = new System.IO.StringReader(src))
-            {
-                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-                doc.RenderOptions.Compression = OutputCompressionType.None;
-
-                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
-
-                using (var stream = DocStreams.GetOutputStream("RelativeHTML_ParsingAndOutputTest.pdf"))
-                {
-                    doc.LayoutComplete += Doc_LayoutComplete;
-                    doc.SaveAsPDF(stream);
-                }
-
-                Assert.IsNotNull(this.layout);
-                Assert.AreEqual(1, this.layout.AllPages.Count);
-
-                var pg = this.layout.AllPages[0];
-                Assert.IsNotNull(pg);
-
-                var margin = pg.Size.Width * 0.05; // 5vw
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Left);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Top);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Bottom);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Right);
-
-
-                var rootEm = Font.DefaultFontSize; //16
-                Unit fbody = rootEm * 1.2; // 1.2em
-                var content = pg.ContentBlock;
-                Assert.AreEqual(fbody, content.FullStyle.Font.FontSize);
-
-                Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-                Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-                
-
-                var wrapper = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-
-                var h = pg.Size.Height * 0.4; //40vh
-                Assert.AreEqual(h, wrapper.Height);
-
-                var pad = fbody; //padding = 1em
-
-                Assert.AreEqual(pad, wrapper.Position.Padding.Left);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Top);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Bottom);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Right);
-
-                Assert.AreEqual(1, wrapper.Columns.Length);
-                Assert.AreEqual(3, wrapper.Columns[0].Contents.Count);
-
-                var literalLine = wrapper.Columns[0].Contents[0] as PDFLayoutLine;
-                var heading = wrapper.Columns[0].Contents[1] as PDFLayoutBlock; //After the text
-                var inner = wrapper.Columns[0].Contents[2] as PDFLayoutBlock;
-
-
-                var start = literalLine.Runs[0] as PDFTextRunBegin;
-                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
-
-                var fhead = fbody * 2; //2em of the 1.2em body size
-                var headHeight = pg.Size.Height * 0.2; //20vmax;
-
-                Assert.AreEqual(headHeight, heading.Height);
-                literalLine = heading.Columns[0].Contents[0] as PDFLayoutLine;
-                start = literalLine.Runs[0] as PDFTextRunBegin;
-
-                Assert.AreEqual(fhead, start.TextRenderOptions.GetSize());
-
-                //Should revert back to normal within the inner div.
-                literalLine = inner.Columns[0].Contents[0] as PDFLayoutLine;
-                start = literalLine.Runs[0] as PDFTextRunBegin;
-
-                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
-
-
-            }
-        }
-
-        
 
     }
 }
