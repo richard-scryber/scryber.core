@@ -71,13 +71,21 @@ namespace Scryber.Core.UnitTests.Generation
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(output);
             }
+
+            var layout = _doc;
+            Assert.IsNotNull(layout);
+            Assert.AreEqual(3, layout.AllPages.Count);
         }
+
+        private PDFLayoutDocument _doc;
+        
 
         private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
             var layout = args.Context.GetLayout<PDFLayoutDocument>();
             Assert.IsNotNull(layout);
-            Assert.AreEqual(2, layout.AllPages.Count);
+            _doc = layout;
+            
         }
     }
 }

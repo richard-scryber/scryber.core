@@ -32,7 +32,7 @@ namespace Scryber.UnitLayouts
         protected string AssertGetContentFile(string name)
         {
             var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/" + name + ".html");
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Inline/" + name + ".html");
             path = System.IO.Path.GetFullPath(path);
 
             if (!System.IO.File.Exists(path))
@@ -43,13 +43,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineTest()
+        public void Inline_01_ToPage()
         {
-            var path = AssertGetContentFile("Inline");
+            var path = AssertGetContentFile("Inline_01_ToPage");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_Inline.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_01_ToPage.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -92,13 +92,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineWithMarginsTest()
+        public void Inline_02_WithMarginsTest()
         {
-            var path = AssertGetContentFile("InlineWithMargins");
+            var path = AssertGetContentFile("Inline_02_WithMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineWithMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_02_WithMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -145,13 +145,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineNestedWithMarginsTest()
+        public void Inline_03_NestedWithMarginsTest()
         {
-            var path = AssertGetContentFile("InlineNestedWithMargins");
+            var path = AssertGetContentFile("Inline_03_NestedWithMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineNestedWithMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_03_NestedWithMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -203,13 +203,13 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineNestedSecondWithMarginsTest()
+        public void Inline_04_NestedSecondWithMarginsTest()
         {
-            var path = AssertGetContentFile("InlineNestedSecondWithMargins");
+            var path = AssertGetContentFile("Inline_04_NestedSecondWithMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineNestedSecondWithMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_04_NestedSecondWithMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -232,7 +232,8 @@ namespace Scryber.UnitLayouts
 
 
             var block = content.Contents[0] as PDFLayoutBlock;
-
+            Assert.IsNotNull(block);
+            
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
 
             Assert.IsNotNull(line);
@@ -251,24 +252,27 @@ namespace Scryber.UnitLayouts
 
             //render bounds take into account the margins on the page and the parent div
             yOffset += 30 + 50;
+            
+            //The x offset should be the width of the line - th content width
             xOffset += 30 + 20 + 10 + (line.Width - arrange.RenderBounds.Width);
 
             Assert.IsNotNull(arrange);
             Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.IsTrue(arrange.RenderBounds.Width > 0);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
 
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void InlineNestedSecondRightWithMarginsTest()
+        public void Inline_05_NestedSecondRightWithMarginsTest()
         {
-            var path = AssertGetContentFile("InlineNestedSecondRightWithMargins");
+            var path = AssertGetContentFile("Inline_05_NestedSecondRightWithMargins");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("Positioned_InlineNestedSecondRightWithMargins.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_05_NestedSecondRightWithMargins.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;

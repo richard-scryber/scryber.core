@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber;
+using Scryber.Drawing;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
@@ -1569,7 +1571,728 @@ namespace Scryber.UnitLayouts
 
         }
 
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentPercentToPage()
+        {
 
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+            Unit[] CellWidths = new Unit[] {
+                new Unit(20, PageUnits.Percent),
+                new Unit(30, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+            
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_TableToPage.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(580, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(580, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = 580 * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentFixedWidthToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            Unit tableWidth = 500;
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = tableWidth;
+            grid.FontSize = new Unit(70, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTable.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
+
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToPageCellHeight()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(60, PageUnits.Percent);
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            Unit tableWidth = (600 - 20) * 0.6;
+
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                
+
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableCellPercentHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //After the table should be on a new page
+            Assert.AreEqual(2, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //last line is zero height with the overflow
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var emptyBlock = pg.ContentBlock.Columns[0].Contents[1];
+            Assert.AreEqual(0, emptyBlock.Height);
+
+            pg = layout.AllPages[1];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+
+            //Quick check we have the literal on the new page.
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToColumnCellHeight()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 10;
+            section.BackgroundColor = StandardColors.Silver;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(40, PageUnits.ViewPortMin); //40% of page width without margins
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            Unit tableWidth = 600 * 0.4;
+
+            TableRow row  = new TableHeaderRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    //cell.Width = CellWidths[c]; - implied width from the header
+
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+            //Add a footer row to the table
+            row = new TableFooterRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableToColumnCellPercentHeight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //The table should force a new column
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count); //just the table
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(800 - 20, tableBlock.Height);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+
+            //Header Row
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, rowBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+            //Header cells
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                Assert.IsNotNull(rowColumn);
+                Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                Assert.AreEqual(cellW, rowColumn.Width);
+
+                var cellBlock = rowColumn.Contents[0];
+                Assert.AreEqual(cellW, cellBlock.Width);
+
+                Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+            }
+
+            for (var r = 1; r < tableBlock.Columns[0].Contents.Count; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var col1Total = tableBlock.Columns[0].Contents.Count;
+            var col2Total = RowCount + 2 + 1 - col1Total; //total rows + the 2 headers and a footer - the count on column1
+
+            //Quick check we have the rest of the table and literal on the new page.
+            Assert.AreEqual(2, pg.ContentBlock.Columns[1].Contents.Count);
+
+            tableBlock = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tableBlock);
+
+            Assert.AreEqual(col2Total, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < col2Total; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+
+            var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentCellRelativeWidthToColumnCellHeightRightAlign()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.ColumnCount = 2;
+            section.AlleyWidth = 10;
+            section.BackgroundColor = StandardColors.Silver;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Width = new Unit(40, PageUnits.ViewPortMin); //40% of page width without margins
+            grid.FontSize = new Unit(80, PageUnits.Percent);
+            section.Contents.Add(grid);
+            grid.Style.Position.HAlign = HorizontalAlignment.Right;
+
+            Unit tableWidth = 600 * 0.4;
+
+            TableRow row  = new TableHeaderRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    //cell.Width = CellWidths[c]; - implied width from the header
+
+                    //all cell heights should add up to the page content block height
+                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+            //Add a footer row to the table
+            row = new TableFooterRow();
+            grid.Rows.Add(row);
+
+            for (var c = 0; c < CellCount; c++)
+            {
+
+                TableCell cell = new TableCell();
+                cell.Width = CellWidths[c];
+
+                //all cell heights should add up to the page content block height
+                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
+
+                var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
+
+                cell.Contents.Add(content);
+                row.Cells.Add(cell);
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableToColumnCellPercentHeightRightAlign.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            //The table should force a new column
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count); //just the table
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(800 - 20, tableBlock.Height);
+
+            //Check the 80% font size on the full style
+            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
+
+
+            //Header Row
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, rowBlock.Width); //40vmin of page (inc. margins)
+
+            Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+            //Header cells
+
+            for (var c = 0; c < CellCount; c++)
+            {
+                var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                Assert.IsNotNull(rowColumn);
+                Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                Assert.AreEqual(cellW, rowColumn.Width);
+
+                var cellBlock = rowColumn.Contents[0];
+                Assert.AreEqual(cellW, cellBlock.Width);
+
+                Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+            }
+
+            for (var r = 1; r < tableBlock.Columns[0].Contents.Count; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+            var col1Total = tableBlock.Columns[0].Contents.Count;
+            var col2Total = RowCount + 2 + 1 - col1Total; //total rows + the 2 headers and a footer - the count on column1
+
+            //Quick check we have the rest of the table and literal on the new page.
+            Assert.AreEqual(2, pg.ContentBlock.Columns[1].Contents.Count);
+
+            tableBlock = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tableBlock);
+
+            Assert.AreEqual(col2Total, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < col2Total; r++)
+            {
+                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+
+                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
+                }
+
+            }
+
+
+            var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+            
+            Assert.Inconclusive("Need to test for the right alignment of text");
+        }
         public void TableFromCode()
         {
 

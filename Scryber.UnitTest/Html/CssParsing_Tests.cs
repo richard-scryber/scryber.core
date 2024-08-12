@@ -1382,7 +1382,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[7] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual(" This will have text before, in the italic span. ", text.Characters);
+                Assert.AreEqual(" This will have text before, in the italic span.", text.Characters);
 
 
                 // .empty::before { content: url('imgPath'); width: 20pt; padding-top: 5pt; }
