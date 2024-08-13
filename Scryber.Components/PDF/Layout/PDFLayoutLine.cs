@@ -244,6 +244,11 @@ namespace Scryber.PDF.Layout
         protected Unit? ExtraCharacterSpace { get; set; }
 
         protected Unit? ExtraWordSpace { get; set; }
+        
+        /// <summary>
+        /// Gets any extra space added to the line width (usually by justification of the content)
+        /// </summary>
+        public Unit? ExtraSpace { get; protected set; }
 
         //
         // ctor(s)
@@ -977,11 +982,21 @@ namespace Scryber.PDF.Layout
                     var last = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
                     if (null != last)
                     {
-                        var offset = last.NewLineOffset;
-                        offset.Width -= (pushOffset - prevPushOffset);
-                        this.RightInset = pushOffset;
-                        last.NewLineOffset = offset;
-                        pushedRight = true;
+                        Size offset;
+                        if (last.IsHardReturn)
+                        {
+                            offset = new Size(this.Width - prev.Width, prev.Height);
+                            this.RightInset = pushOffset; // offset.Width;
+                            last.NewLineOffset = offset;
+                        }
+                        else
+                        {
+                            offset = last.NewLineOffset;
+                            offset.Width -= (pushOffset - prevPushOffset);
+                            this.RightInset = pushOffset;
+                            last.NewLineOffset = offset;
+                            pushedRight = true;
+                        }
                     }
                 }
 
@@ -1197,6 +1212,7 @@ namespace Scryber.PDF.Layout
                 int charCount = 0;
                 int spaceCount = 0;
                 PDFTextRunCharacter lastchars = null;
+                Unit lineExtra = Unit.Zero;
 
                 for (int i = 0; i < this.Runs.Count; i++)
                 {
@@ -1273,6 +1289,7 @@ namespace Scryber.PDF.Layout
                                 charCount += runChars;
                                 spaceCount += runSpaces;
                                 chars.ExtraSpace = (_linespacingOptions.WordSpace * runSpaces) + (_linespacingOptions.CharSpace * runChars);
+                                lineExtra += chars.ExtraSpace;
                             }
                         }
                         else if (cur is PDFLayoutComponentRun comprun)
@@ -1303,10 +1320,12 @@ namespace Scryber.PDF.Layout
                         }
                     }
 
+                    
+                    
 
                 }
 
-                
+                this.ExtraSpace = lineExtra;
             }
 
             return shouldJustify;

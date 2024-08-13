@@ -494,7 +494,7 @@ namespace Scryber.PDF.Layout
             this.AssertCurrentLine();
             PDFLayoutLine line = this.CurrentLine;
             
-            PDFTextRunNewLine br = new PDFTextRunNewLine(false, line, this.TextRenderOptions, this.TextComponent);
+            PDFTextRunNewLine br = new PDFTextRunNewLine(hardReturn, line, this.TextRenderOptions, this.TextComponent);
 
 
             
@@ -505,10 +505,13 @@ namespace Scryber.PDF.Layout
             Unit lineright = widthOfLastTextDraw;
             
             Unit back = line.Width - lineright;
-            
-           
-            if (line.Height == Unit.Zero) //Empty line
-                line.Runs.Add(new PDFTextRunSpacer(0, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent, false));
+
+
+            if (line.Height == Unit.Zero && line.Runs.Count > 0) //Empty line
+            {
+                line.Runs.Insert(line.Runs.Count - 1, new PDFTextRunSpacer(0, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent,
+                    false));
+            }
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
                 br.NewLineOffset = new Size(back, this.TextRenderOptions.Leading.Value);

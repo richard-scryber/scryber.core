@@ -235,7 +235,7 @@ namespace Scryber.PDF.Layout
 
             bool counting = false;
             Unit linewidth = Unit.Zero;
-            Unit lineOffset = Unit.Zero;
+            Unit lineOffset = line.RightInset;
             bool first = true;
 
             foreach (PDFLayoutRun run in line.Runs)
@@ -245,10 +245,16 @@ namespace Scryber.PDF.Layout
                 else if (run == end)
                     break;
                 else if (counting)
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
                 else if(!first)
                 {
                     lineOffset += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
                 }
                 first = false;
             }
@@ -266,7 +272,7 @@ namespace Scryber.PDF.Layout
 
             bool counting = false;
             Unit linewidth = Unit.Zero;
-            Unit lineOffset = Unit.Zero;
+            Unit lineOffset = line.RightInset;
             bool first = true;
 
             foreach (PDFLayoutRun run in line.Runs)
@@ -274,10 +280,16 @@ namespace Scryber.PDF.Layout
                 if (run == this)
                     counting = true;
                 else if (counting)
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
                 else if(!first)
                 {
                     lineOffset += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
                 }
 
                 first = false;
@@ -293,6 +305,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutLine line = this._lines[this._lines.Count -1];
             Rect full = new Rect(this.TotalBounds.Location, Size.Empty);
+            full.X += line.RightInset;
             full.Y += voffset;
             Unit linewidth = Unit.Zero;
             full.Height = line.Height;
@@ -302,9 +315,15 @@ namespace Scryber.PDF.Layout
                 if (run == end)
                     break;
                 if (run is PDFTextRunSpacer && linewidth == 0) //spacer at the start of the line - so push right
-                    full.X = run.Width;
+                {
+                    full.X += run.Width;
+                }
                 else
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
             }
 
             full.Width = linewidth;
@@ -328,16 +347,21 @@ namespace Scryber.PDF.Layout
             for (int i = firstIndex; i <= lastIndex; i++)
             {
                 PDFLayoutLine line = this.Lines[i];
+                
 #if FULL_WIDTH
                 minleft = 0;
                 maxright = PDFUnit.Max(maxright, line.FullWidth);
 #else
 
-                Unit x = Unit.Zero;
-                Unit w = line.Width;
+                Unit x = Unit.Zero; // line.RightInset;
+                Unit w = line.Width + line.RightInset;
+                
+                if (line.ExtraSpace.HasValue)
+                    w += line.ExtraSpace.Value;
+                
                 if (line.Runs[0] is PDFTextRunSpacer)
                 {
-                    x = line.Runs[0].Width;
+                    x += line.Runs[0].Width;
                 }
                 maxright = Unit.Max(maxright, w);
                 minleft = Unit.Min(minleft, x);
@@ -387,8 +411,7 @@ namespace Scryber.PDF.Layout
                
             }
 
-            //TODO:Add any backgrounds and borders based on the 3 rects in the calculated bounds.
-            //FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
+            
 
             bounds.X += this.LineInset;
 
@@ -527,37 +550,41 @@ namespace Scryber.PDF.Layout
                     rect.Height += pad.Top + pad.Bottom;
 
                     //we render the background for the second to the pen-ultimate line
-                    for(var l = 1; l < this.Lines.Count -1; l++) {
+                    for(var l = 1; l < this.Lines.Count - 1; l++) {
                         var line = this.Lines[l];
-
-                        rect.Width = line.Width;
+                        var lineRect = rect.Clone();
+                        lineRect.X += line.RightInset;
+                        lineRect.Width = line.Width;
+                        
+                        if (line.ExtraSpace.HasValue)
+                            lineRect.Width += line.ExtraSpace.Value;
 
                         if(line.Runs.Count > 0 && line.Runs[0] is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer)
                         {
-                            rect.X = spacer.Width + context.Offset.X;
-                            rect.Width -= spacer.Width;
+                            var prev = this.Lines[l - 1];
+                            var newLine = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
+                            //if (null != newLine)
+                             //  lineRect.X -= newLine.NewLineOffset.Width;
+                            lineRect.Width -= spacer.Width;
                         }
-                        else
-                        {
-                            rect.X = context.Offset.X;
-                        }
-                        if (rect.Width > 0)
+                        
+                        if (lineRect.Width > 0)
                         {
                             if(rad > 0 && this.CalculatedBounds.Length > 2 && this.CalculatedBounds[2].Width <= 0)
                             {
                                 //edge case where we overflow, but there are no (significant) characters after. Show the radii
-                                context.Graphics.FillRoundRectangle(brush, rect, Sides.Right | Sides.Top | Sides.Bottom, rad);
+                                context.Graphics.FillRoundRectangle(brush, lineRect, Sides.Right | Sides.Top | Sides.Bottom, rad);
                             }
                             else
                             {
                                 //otherwise no rounded corners on intermediate lines
-                                context.Graphics.FillRectangle(brush, rect);
+                                context.Graphics.FillRectangle(brush, lineRect);
                             }
                             
                             
                         }
 
-                        //move the rect down to the next line
+                        //move the actual rect down to the next line
                         rect.Y += line.Height;
                     }
 

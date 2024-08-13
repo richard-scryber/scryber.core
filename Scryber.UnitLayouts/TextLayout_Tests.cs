@@ -683,6 +683,79 @@ namespace Scryber.UnitLayouts
             }
 
         }
+        
+        /// <summary>
+        /// Checks the font and line sizing along with offset Y for an explicit aligmnent in the middle
+        /// </summary>
+        [TestMethod()]
+        public void LiteralVeryLongWithHAlignRight()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Right;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page\r\n\r\nThis is on a new line on it's own"));
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            //doc.AppendTraceLog = true;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralHAlignRight");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+            var em = 24.0;  //Point size of font
+
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                var twidth = text.Width;
+
+                var offset = pgContentWidth - twidth;
+
+                if (i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
+                }
+                else
+                {
+                    //check the new line offset from the previous line to this line
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+
+
+            }
+
+        }
 
         /// <summary>
         /// Checks the font and line sizing along with offset Y for an explicit aligmnent in the middle
