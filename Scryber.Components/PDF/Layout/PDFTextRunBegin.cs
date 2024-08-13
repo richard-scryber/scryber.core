@@ -577,9 +577,11 @@ namespace Scryber.PDF.Layout
                         var lineRect = rect.Clone();
                         lineRect.X += line.RightInset;
                         lineRect.Width = line.Width + pad.Left + pad.Right;
-                        
+
                         if (line.ExtraSpace.HasValue)
+                        {
                             lineRect.Width += line.ExtraSpace.Value;
+                        }
 
                         if(line.Runs.Count > 0 && line.Runs[0] is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer)
                         {

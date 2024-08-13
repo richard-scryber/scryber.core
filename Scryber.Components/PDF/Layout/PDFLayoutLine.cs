@@ -1325,7 +1325,10 @@ namespace Scryber.PDF.Layout
 
                 }
 
-                this.ExtraSpace = lineExtra;
+                if (spaceCount > 0)
+                    this.ExtraSpace = lineExtra;
+                else if (this.LineSpacingOptions != null)
+                    this.ExtraSpace = this.LineSpacingOptions.WordSpace;
             }
 
             return shouldJustify;
@@ -1334,6 +1337,11 @@ namespace Scryber.PDF.Layout
         private ExtraSpacingOptions MeasureLineSpaces(PDFTextRenderOptions currOptions, int charCount, int spaceCount, Unit totalWidth, Unit currentWidth, Unit available, PDFLayoutContext context)
         {
             int fitted = 0;
+            if (spaceCount == 0)
+            {
+                return new ExtraSpacingOptions()
+                    { CharSpace = 0.0, WordSpace = totalWidth - currentWidth, Options = currOptions, SpaceWidth = totalWidth - currentWidth };
+            }
             Size spaceSize = currOptions.Font.Resource.Definition.MeasureStringWidth(" ", 0, currOptions.Font.Size.PointsValue, 2000.0, true, out fitted);
 
             Unit extraSpaceSpace = available.PointsValue / spaceCount;
