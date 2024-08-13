@@ -511,6 +511,12 @@ namespace Scryber.PDF.Layout
                 height = (this.TextRenderOptions.GetAscent() + this.TextRenderOptions.GetDescender());
             }
 
+            if (this.HasCustomSpace && this.LineInset > pad.Left)
+            {
+                //We are not the first run on the line, so we use the inset to know where we are.
+                rect.X = this.LineInset - pad.Left;
+            }
+
             if (!rect.IsEmpty && rect.Width > 0)
             {
                 rect = rect.Offset(context.Offset);
@@ -704,6 +710,12 @@ namespace Scryber.PDF.Layout
                 //is always dependant on the actual font heights + any padding.
                 ascOffset = (this.TextRenderOptions.GetBaselineOffset() - this.TextRenderOptions.GetAscent());
                 height = (this.TextRenderOptions.GetAscent() + this.TextRenderOptions.GetDescender());
+            }
+            
+            if (this.HasCustomSpace && this.LineInset > pad.Left)
+            {
+                //We are not the first run on the line, so we use the inset to know where we are.
+                rect.X = this.LineInset - pad.Left;
             }
 
             if (!rect.IsEmpty && rect.Width > 0)
