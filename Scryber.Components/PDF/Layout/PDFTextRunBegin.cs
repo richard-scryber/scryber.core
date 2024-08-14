@@ -393,23 +393,24 @@ namespace Scryber.PDF.Layout
 
             //Set the arrangement for this text run
             Component owner = this.Owner as Component;
-            if (owner != null && null != this._caclulatedBounds)
-            {
-                for (int i = 0; i < this._caclulatedBounds.Length; i++)
-                {
-                    Rect b = this._caclulatedBounds[i];
-                    if (b.IsEmpty == false)
-                    {
-                        if (i == 0)
-                            b.X += this.LineInset;
-
-                        b.X += context.Offset.X;
-                        b.Y += context.Offset.Y;
-                        owner.SetArrangement(context, context.FullStyle, b);
-                    }
-                }
-               
-            }
+            // THIS IS NOT DONE ON THER RENDER BACKGROUND SO THAT INDIVIDUAL LINES AND OFFSETS FROM FLOATS ARE CAPTURED
+            // if (owner != null && null != this._caclulatedBounds)
+            // {
+            //     for (int i = 0; i < this._caclulatedBounds.Length; i++)
+            //     {
+            //         Rect b = this._caclulatedBounds[i];
+            //         if (b.IsEmpty == false)
+            //         {
+            //             if (i == 0)
+            //                 b.X += this.LineInset;
+            //
+            //             b.X += context.Offset.X;
+            //             b.Y += context.Offset.Y;
+            //             owner.SetArrangement(context, context.FullStyle, b);
+            //         }
+            //     }
+            //    
+            // }
 
             
 

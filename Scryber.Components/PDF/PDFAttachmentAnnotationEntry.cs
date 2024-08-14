@@ -32,7 +32,7 @@ namespace Scryber.PDF
             this.AttachmentFileSpec = filespec;
         }
 
-        protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
+        protected override IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             int pgindex = context.PageIndex;
 
@@ -87,7 +87,7 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndObject();
 
-            return annotRef;
+            return new PDFObjectRef[] { annotRef };
 
         }
     }

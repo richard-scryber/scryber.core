@@ -90,9 +90,14 @@ namespace Scryber.PDF
 
             foreach (PDFAcrobatFormFieldWidget entry in this.Fields)
             {
-                PDFObjectRef oref = entry.OutputToPDF(context, writer);
-                if (null != oref)
-                    entries.Add(oref);
+                IEnumerable<PDFObjectRef> orefs = entry.OutputToPDF(context, writer);
+                if (null != orefs)
+                {
+                    foreach (var oref in orefs)
+                    {
+                        entries.Add(oref);
+                    }
+                }
             }
             writer.WriteArrayRefEntries(true, entries.ToArray());
             List<IPDFResource> rsrs = new List<IPDFResource>();

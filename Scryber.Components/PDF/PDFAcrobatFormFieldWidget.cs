@@ -54,7 +54,7 @@ namespace Scryber.PDF
 
         
 
-        protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
+        protected override IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             //Get the default font and size required for the DA (default Appearance value)
             var xObject = this._states[FormFieldAppearanceState.Normal];
@@ -151,7 +151,7 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndObject();
             //context.Offset = new PDFPoint(context.Offset.X, context.Offset.Y + _size.Height);
-            return root;
+            return new PDFObjectRef[] { root };
         }
 
         private void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, Color color)
