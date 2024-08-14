@@ -2230,7 +2230,7 @@ namespace Scryber.UnitLayouts
 
             var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(nest);
-            Assert.AreEqual(5, nest.Columns[0].Contents.Count); //4 lines + after block (first is absolute and outside of the flow)
+            Assert.AreEqual(6, nest.Columns[0].Contents.Count); //5 lines + after block (first is absolute and outside of the flow)
             
             Assert.AreEqual(8, nest.PositionedRegions.Count); //1 absolute and 7 floats
 
@@ -2264,7 +2264,7 @@ namespace Scryber.UnitLayouts
                 var pos = first.PositionedRegions[index] as PDFLayoutPositionedRegion;
                 Assert.IsNotNull(pos);
                 Assert.AreEqual(offsets[index], pos.TotalBounds.X); //left:-20
-                Assert.AreEqual(190, pos.TotalBounds.Y); //top: 70 to nest + 120 to first
+                Assert.AreEqual(70 + 180, pos.TotalBounds.Y); //top: 70 to nest + 180 to first
                 Assert.AreEqual(55, pos.Height);
                 Assert.AreEqual(60, pos.Width);
                 
@@ -2320,17 +2320,37 @@ namespace Scryber.UnitLayouts
                 if (index < 6)
                 {
                     Assert.AreEqual(0 + (60 * index), floatAddition.FloatInset);
-                    Assert.AreEqual(60, floatAddition.FloatWidth);
-                    Assert.AreEqual(45 + 10, floatAddition.FloatHeight);
+                    if (index == 5)
+                    {
+                        Assert.AreEqual(90 + 10, floatAddition.FloatWidth); //90pt wide and  therefor 2 lines high
+                        Assert.AreEqual(30 + 10, floatAddition.FloatHeight);
+                    }
+                    else
+                    {
+                        Assert.AreEqual(60, floatAddition.FloatWidth);
+                        Assert.AreEqual(45 + 10, floatAddition.FloatHeight);
+                    }
+                    
                     Assert.AreEqual(15, floatAddition.YOffset); //after first line
                     Assert.AreEqual(FloatMode.Right, floatAddition.Mode);
                     
                     Assert.IsNotNull(pos);
                     xInset = 60 * index;
-                    Assert.AreEqual(right - xInset - 60, pos.TotalBounds.X, "Float positioned region at index " + index + " failed"); //from the right including the width of this 
+                    if (index == 5)
+                    {
+                        Assert.AreEqual(right - xInset - 100, pos.TotalBounds.X, "Float positioned region at index " + index + " failed"); //from the right including the width of this 
+                        Assert.AreEqual(40, pos.Height);
+                        Assert.AreEqual(100, pos.Width);
+                    }
+                    else
+                    {
+                        Assert.AreEqual(right - xInset - 60, pos.TotalBounds.X, "Float positioned region at index " + index + " failed"); //from the right including the width of this 
+                        Assert.AreEqual(55, pos.Height);
+                        Assert.AreEqual(60, pos.Width);
+                    }
                     Assert.AreEqual(80 + 15 , pos.TotalBounds.Y);
-                    Assert.AreEqual(55, pos.Height);
-                    Assert.AreEqual(60, pos.Width);
+                    
+                    
                     
                 }
                 else
@@ -2355,7 +2375,7 @@ namespace Scryber.UnitLayouts
             }
             
             xInset = 60;
-            var rightInset = 6 * 60;
+            var rightInset = (5 * 60) + 100;
             
             //Top line above the floats.
             line = nest.Columns[0].Contents[0] as PDFLayoutLine;
@@ -2370,15 +2390,21 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(nest.TotalBounds.Width - (xInset + rightInset + 20), line.FullWidth);
             
+            //last line in the content should be wider by width - margin x 2
+            
+            line = nest.Columns[0].Contents[4] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(nest.TotalBounds.Width + 90 - 10 - xInset - rightInset, line.FullWidth);
+            
             //after block
-            var after = nest.Columns[0].Contents[4] as PDFLayoutBlock;
+            var after = nest.Columns[0].Contents[5] as PDFLayoutBlock;
             Assert.IsNotNull(after);
             Assert.AreEqual(2, after.Columns[0].Contents.Count);
             
-            //first line of after should be in the floats
+            //first line of after should full width
             line = after.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            Assert.AreEqual(after.Width - (xInset + rightInset), line.FullWidth);
+            Assert.AreEqual(after.Width, line.FullWidth);
             
             //seconds line of after should be back to full width
             line = after.Columns[0].Contents[1] as PDFLayoutLine;
