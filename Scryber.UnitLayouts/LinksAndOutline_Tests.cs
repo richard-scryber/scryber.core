@@ -297,8 +297,8 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(pg.PageIndex, arrange.PageIndex);
             Assert.AreEqual(0, arrange.RenderBounds.X);
-            Assert.AreEqual(0, arrange.RenderBounds.Y);
-            Assert.AreEqual(chars.Height, arrange.RenderBounds.Height); //line height
+            Assert.AreEqual(2.5, arrange.RenderBounds.Y);
+            Assert.AreEqual(20, arrange.RenderBounds.Height); //font height
             Assert.AreEqual(chars.Width, arrange.RenderBounds.Width);
 
             if (!string.IsNullOrEmpty(destination))
