@@ -28,4 +28,10 @@
     &lt;/And&gt;
     &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
   &lt;/Or&gt;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002ECommon_002FSystem_002ECommon_002EErrors/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EComponents_002FErrors/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EDrawing_002FErrors/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EGeneration_002FGeneration_002FErrors/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EStyles_002FErrors/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean></wpf:ResourceDictionary>

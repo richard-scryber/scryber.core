@@ -77,5 +77,11 @@ namespace Scryber.Styles
             if (null != this.NextProvider)
                 this.NextProvider.AddRelativeDimensions(page, container, font, rootFont, useWidth);
         }
+
+        public void AddRelativeCallback(RelativeToAbsoluteDimensionCallback callback)
+        {
+            if(null != this.NextProvider)
+                this.NextProvider.AddRelativeCallback(callback);
+        }
     }
 }

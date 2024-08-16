@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
-    <Folder Include="Content\HTML\Positioning\InlineBlock\" />
     <Folder Include="Content\Images\" />
     <Folder Include="Content\HTML\" />
     <Folder Include="Content\HTML\Positioning\Fixed\" />

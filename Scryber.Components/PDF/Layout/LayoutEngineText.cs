@@ -711,6 +711,9 @@ namespace Scryber.PDF.Layout
                             reg = line.Region;
                             availW = line.AvailableWidth;
                             availH = reg.AvailableHeight;
+
+                            if (availH < Unit.Zero)
+                                availH = lineheight;
                         }
                     }
                     else
@@ -787,17 +790,30 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool IsInClippedRegion()
         {
+            if (_cachedIsInClipped.HasValue)
+                return _cachedIsInClipped.Value;
+            
+            var isInClipped = false;
+            
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
                 if (block.Position.OverflowAction == OverflowAction.Clip
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
-                    return true;
+                {
+                    isInClipped = true;
+                    break;
+                }
 
                 block = block.GetParentBlock();
             }
-            return false;
+
+            _cachedIsInClipped = isInClipped;
+            return isInClipped;
         }
+
+        private bool? _cachedIsPositioned;
+        private bool? _cachedIsInClipped;
 
         /// <summary>
         /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
@@ -805,16 +821,32 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool IsInAbsoluteOrRelativeRegion()
         {
+            if (_cachedIsPositioned.HasValue)
+                return _cachedIsPositioned.Value;
+            
+            var ispositioned = false;
+            
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
                 if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed)
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
-                    return true;
+                {
+                    ispositioned = true;
+                    break;
+                }
+                else if (block.Position.PositionMode == PositionMode.InlineBlock &&
+                         block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
 
                 block = block.GetParentBlock();
             }
-            return false;
+
+            _cachedIsPositioned = ispositioned;
+            return ispositioned;
         }
 
         #region private bool CanSplitOnWordsOnly()
@@ -1017,7 +1049,7 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutLine lastline = this.CurrentLine;
 
-            this.EndText(); //Always end this block of text
+            
 
             bool newPage;
             PDFLayoutRegion origRegion = lastline.Region;
@@ -1030,13 +1062,19 @@ namespace Scryber.PDF.Layout
 
             else if (IsInAbsoluteOrRelativeRegion())
             {
-                if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
-                    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
+                //if (this.Context.TraceLog.ShouldLog(TraceLevel.Message))
+                //    this.Context.TraceLog.Add(TraceLevel.Message, LOG_CATEGORY, "Cannot layout any more text for component '" + this.TextComponent.ID + "'. Available space full inside a relative or absolute region - they do not overflow.");
 
-                this.ContinueLayout = false;
+                this.ContinueLayout = true;
+                return;
             }
-            else if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
+            
+            this.EndText(); //Always end this block of text
+            
+            if (engine.MoveToNextRegion(lineheight, ref region, ref block, out newPage))
             {
+                
+                
                 if (!this.StartText())
                     return;
             }

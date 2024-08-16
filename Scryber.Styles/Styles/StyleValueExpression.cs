@@ -177,12 +177,28 @@ namespace Scryber.Styles
 
         #endregion
 
+        
+        
         public override void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont)
         {
 
-            if (this.EnsureExpression(forStyle))
-                this._variableProvider.AddRelativeDimensions(page, container, font, rootFont, key.UseRelativeWidthAsPriority);
+            this.EnsureExpression(forStyle);
 
+            this._variableProvider.AddRelativeCallback((Unit relativeValue) =>
+            {
+                if (relativeValue.IsRelative)
+                {
+                    if (key.CanBeRelative && key is RelativeStyleKey<Unit> unitKey)
+                        return unitKey.Flatten.FlattenValue(relativeValue, page, container, font, rootFont);
+                }
+
+                return relativeValue;
+                
+            });
+            
+            this._variableProvider.AddRelativeDimensions(page, container, font, rootFont,
+                key.UseRelativeWidthAsPriority);
+            
             base.FlattenValue(key, forStyle, page, container, font, rootFont);
             this.HasBeenFlattened = true;
         }

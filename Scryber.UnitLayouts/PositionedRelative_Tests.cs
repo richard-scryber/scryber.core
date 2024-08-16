@@ -1224,5 +1224,120 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
         }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Relative_16_BlockCalcPercentToPageAndNest()
+        {
+
+            var path = AssertGetContentFile("Relative_16_BlockCalcPercentToPageAndNest");
+
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Relative_16_BlockCalcPercentToPageAndNest.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.1;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading spacer and half text
+            
+            
+            Assert.Inconclusive("Need to test this");
+            // first half
+            
+            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            
+            
+            //check the bounds.
+            Unit yOffset = 80 + 600; //heading + spacer height
+            Unit xOffset = 0;
+            Unit width = pg.ContentBlock.Columns[1].TotalBounds.Width / 2.0;
+            Unit height = (4 * 15) + 20; //4 lines of text + padding
+            
+            Assert.AreEqual(width + 40, block.Width); // inc margins
+            Assert.AreEqual(height + 40, block.Height); //inc margins
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width + 40, block.TotalBounds.Width);
+            Assert.AreEqual(height + 40, block.TotalBounds.Height);
+            
+            //check after
+            
+            
+            var comp = (block.Owner as Scryber.Components.Component);
+            Assert.IsNotNull(comp);
+            
+            var arrange = comp.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+
+            yOffset += 20 + 20; //body margins + rel margins
+            xOffset += 20 + 20; //body margins + rel margins
+
+            yOffset -= 30; //explicit
+            xOffset -= 10; //explicit
+            
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); 
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            
+            // second half
+            
+            block = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            
+            
+            //check the bounds.
+            yOffset = 0; //back to the top
+            xOffset = 0;
+            width = pg.ContentBlock.Columns[1].TotalBounds.Width / 2.0;
+            height = (8 * 15) + 20; //8 lines of text + padding
+            
+            Assert.AreEqual(width + 40, block.Width); // inc margins
+            Assert.AreEqual(height + 40, block.Height); //inc margins
+            
+            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
+            Assert.AreEqual(xOffset, block.TotalBounds.X);
+            Assert.AreEqual(width + 40, block.TotalBounds.Width);
+            Assert.AreEqual(height + 40, block.TotalBounds.Height);
+            
+            //check after
+            
+
+            var after = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(after);
+            Assert.AreEqual(yOffset + height + 40, after.OffsetY);
+            
+            comp = (block.Owner as Scryber.Components.Component);
+            Assert.IsNotNull(comp);
+            
+            //Move to the next block arrangement
+            arrange = arrange.NextArrangement;
+            Assert.IsNotNull(arrange);
+
+            yOffset += 20 + 20; //body margins + rel margins
+            xOffset = pg.ContentBlock.Columns[1].OffsetX + 20 + 20; //column xOffset + body margins + rel margins
+
+            yOffset -= 30; //explicit
+            xOffset -= 10; //explicit
+            
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); 
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+        }
     }
 }

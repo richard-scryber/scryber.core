@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Scryber.Drawing
 {
+	
+	public delegate Unit RelativeToAbsoluteDimensionCallback(Unit relative);
+	
 	public static class UnitRelativeVars
 	{
 		public const string RelativeVarPrefix = "__";
@@ -18,6 +21,18 @@ namespace Scryber.Drawing
 		public const string FontStandardWidth = RelativeVarPrefix + "FontWidth";
 		public const string WidthIsPriority = RelativeVarPrefix + "WidthPriority";
 
+		public const string RelativeCallbackVar = RelativeVarPrefix + "RelativeCallback";
+
+		public static bool FillCallbackVar(Dictionary<string, object> vars, RelativeToAbsoluteDimensionCallback callback)
+		{
+			vars[RelativeCallbackVar] = callback;
+			return true;
+		}
+
+		public static void ClearCallbackVar(Dictionary<string, object> vars)
+		{
+			vars.Remove(RelativeCallbackVar);
+		}
 
 		public static bool FillCSSVars(Dictionary<string, object> vars, Size page, Size container, Unit fontUpperHeight, Unit fontLowerHeight, Unit fontLowerWidth, Unit rootFontUpperHeight, bool isWidthPriority)
 		{

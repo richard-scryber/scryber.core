@@ -94,6 +94,7 @@ namespace Scryber.Binding
         private object _currentData;
         private int _currentIndex;
         private RelativeDimensions _relatives;
+        private RelativeToAbsoluteDimensionCallback _relativeCallback;
 
 
         protected ItemCollection Items { get { return _items; } }
@@ -102,6 +103,11 @@ namespace Scryber.Binding
         protected int CurrentIndex { get { return _currentIndex; } }
 
         protected RelativeDimensions Relatives { get { return _relatives; } }
+        
+        public RelativeToAbsoluteDimensionCallback RelativeCallback
+        {
+            get { return this._relativeCallback; }
+        }
 
         public ItemVariableProvider(ItemCollection items, int index, object currentData)
         {
@@ -117,6 +123,13 @@ namespace Scryber.Binding
             this._relatives = new RelativeDimensions(page, container, font, rootFont, useWidth);
         }
 
+        public void AddRelativeCallback(RelativeToAbsoluteDimensionCallback callback)
+        {
+            this._relativeCallback = callback;
+        }
+
+        
+
         public bool TryGetValue(string variableName, out object value)
         {
             if (variableName == IndexFunction.CurrentIndexVariableName)
@@ -128,6 +141,11 @@ namespace Scryber.Binding
             {
                 value = this.CurrentData;
 
+                return null != value;
+            }
+            else if (variableName == UnitRelativeVars.RelativeCallbackVar)
+            {
+                value = this._relativeCallback;
                 return null != value;
             }
             else if(null != this.Relatives && this.Relatives.TryGetValue(variableName, out value))

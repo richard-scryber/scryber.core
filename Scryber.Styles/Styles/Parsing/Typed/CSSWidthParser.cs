@@ -23,7 +23,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     //Attach to both the Width and the FullWidth flag
                     result = AttachExpressionBindingHandler(onStyle, StyleKeys.SizeWidthKey, value, DoConvertExplicitWidth);
-                    result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
+                    //result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
                 }
                 //else if (value == "100%")
                 //{

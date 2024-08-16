@@ -943,6 +943,10 @@ namespace Scryber.PDF.Layout
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
 
             }
+            // else if (pos.PositionMode == PositionMode.InlineBlock)
+            // {
+            //     space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
+            // }
             else
                 //Block sizing
                 space = new Rect(Point.Empty, this.AvailableBounds.Size);

@@ -142,6 +142,13 @@ namespace Scryber
         Matrix
     }
 
+    public enum PreferredFlattenDimension
+    {
+        Width,
+        Height,
+        Font
+    }
+
     public enum AttachmentDisplayIcon
     {
         Graph,

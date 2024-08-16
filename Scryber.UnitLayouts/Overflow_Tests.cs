@@ -2751,5 +2751,9 @@ namespace Scryber.UnitLayouts
             //Check that we have shrunk the block to the correct height
         }
 
+        public void ContentBlockOverflow()
+        {
+            //When the overflow action is none, then the content should continue to be shown.
+        }
     }
 }
