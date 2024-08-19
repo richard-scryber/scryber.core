@@ -1250,94 +1250,98 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(4, pg.ContentBlock.Columns[0].Contents.Count); //heading spacer and half text
             
             
-            Assert.Inconclusive("Need to test this");
+            
             // first half
             
-            var block = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
 
             
             
-            //check the bounds.
-            Unit yOffset = 80 + 600; //heading + spacer height
+            //check the bounds of outerrelative.
+            Unit yOffset = 50; //heading height
             Unit xOffset = 0;
-            Unit width = pg.ContentBlock.Columns[1].TotalBounds.Width / 2.0;
-            Unit height = (4 * 15) + 20; //4 lines of text + padding
+            Unit width = (pg.ContentBlock.Columns[0].TotalBounds.Width / 2.0) - 20; // calc(50% - 20pt)
+            Unit height = 15 + 20; //1 lines of text + padding
             
-            Assert.AreEqual(width + 40, block.Width); // inc margins
-            Assert.AreEqual(height + 40, block.Height); //inc margins
-            
-            Assert.AreEqual(yOffset,  block.TotalBounds.Y);
-            Assert.AreEqual(xOffset, block.TotalBounds.X);
-            Assert.AreEqual(width + 40, block.TotalBounds.Width);
-            Assert.AreEqual(height + 40, block.TotalBounds.Height);
-            
-            //check after
-            
-            
-            var comp = (block.Owner as Scryber.Components.Component);
-            Assert.IsNotNull(comp);
-            
-            var arrange = comp.GetFirstArrangement() as ComponentMultiArrangement;
-            Assert.IsNotNull(arrange);
-
-            yOffset += 20 + 20; //body margins + rel margins
-            xOffset += 20 + 20; //body margins + rel margins
-
-            yOffset -= 30; //explicit
-            xOffset -= 10; //explicit
-            
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); 
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-            
-            // second half
-            
-            block = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-            
-            
-            //check the bounds.
-            yOffset = 0; //back to the top
-            xOffset = 0;
-            width = pg.ContentBlock.Columns[1].TotalBounds.Width / 2.0;
-            height = (8 * 15) + 20; //8 lines of text + padding
-            
-            Assert.AreEqual(width + 40, block.Width); // inc margins
-            Assert.AreEqual(height + 40, block.Height); //inc margins
+            Assert.AreEqual(width , block.Width); // inc margins
+            Assert.AreEqual(height , block.Height); //inc margins
             
             Assert.AreEqual(yOffset,  block.TotalBounds.Y);
             Assert.AreEqual(xOffset, block.TotalBounds.X);
-            Assert.AreEqual(width + 40, block.TotalBounds.Width);
-            Assert.AreEqual(height + 40, block.TotalBounds.Height);
-            
-            //check after
-            
+            Assert.AreEqual(width , block.TotalBounds.Width);
+            Assert.AreEqual(height , block.TotalBounds.Height);
 
-            var after = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
-            Assert.IsNotNull(after);
-            Assert.AreEqual(yOffset + height + 40, after.OffsetY);
-            
-            comp = (block.Owner as Scryber.Components.Component);
-            Assert.IsNotNull(comp);
-            
-            //Move to the next block arrangement
-            arrange = arrange.NextArrangement;
+            var outer = block.Owner as Scryber.Components.Component;
+            Assert.IsNotNull(outer);
+            var arrange = outer.GetFirstArrangement() as ComponentMultiArrangement;
             Assert.IsNotNull(arrange);
 
-            yOffset += 20 + 20; //body margins + rel margins
-            xOffset = pg.ContentBlock.Columns[1].OffsetX + 20 + 20; //column xOffset + body margins + rel margins
-
-            yOffset -= 30; //explicit
-            xOffset -= 10; //explicit
             
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); 
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            
+            
+            Assert.AreEqual(yOffset + 20, arrange.RenderBounds.Y); // + body margins
+            Assert.AreEqual(xOffset + 20, arrange.RenderBounds.X); // + body margins
+            
+            //check nest - sizing to content block
+            //margin top : calc(10% + 10pt)
+            
 
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            var nest = pg.ContentBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+
+            //margins calc(10% - 5pt) should be calculated independently
+            var marginX = (pg.ContentBlock.Columns[0].TotalBounds.Width * 0.1) - 5;
+            var marginY = (pg.ContentBlock.Columns[0].TotalBounds.Height * 0.1) - 5;
+            
+            
+            width = 300; //explicit width
+            height = 35; //10pt padding + 1 line.
+            yOffset += height; //nest is straight after the outer relative
+            
+            Assert.AreEqual(yOffset, nest.TotalBounds.Y);
+            Assert.AreEqual(xOffset, nest.TotalBounds.X);
+            
+            Assert.AreEqual(height + (marginY * 2), nest.TotalBounds.Height);
+            Assert.AreEqual(width + (marginX * 2), nest.TotalBounds.Width);
+
+            var nestComp = (nest.Owner as Scryber.Components.Component);
+            Assert.IsNotNull(nestComp);
+            arrange = nestComp.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            
+            Assert.AreEqual(yOffset + 20 + marginY, arrange.RenderBounds.Y); //border absolute add body margins and nest margins vertical.
+            Assert.AreEqual(xOffset + 20 + marginX, arrange.RenderBounds.X); //border absolute add body margins and nest margins horizontal.
+            
             Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            
+            
+            //inner relative
+            
+            Assert.AreEqual(1, nest.Columns.Length);
+            Assert.AreEqual(1, nest.Columns[0].Contents.Count);
+
+            var inner = nest.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(inner);
+            
+            //calc-rel width = 50% - 20pt;
+            var innerWidth = (width / 2) - 20;
+            Assert.AreEqual(innerWidth, inner.TotalBounds.Width);
+            Assert.AreEqual(height, inner.TotalBounds.Height);
+            Assert.AreEqual(0, inner.TotalBounds.Y);
+            Assert.AreEqual(0, inner.TotalBounds.X);
+
+            var innerComp = (inner.Owner as Scryber.Components.Component);
+            Assert.IsNotNull(innerComp);
+            arrange = innerComp.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            
+            //check the renderbounds x and width match
+            Assert.AreEqual(xOffset + 20 + marginX, arrange.RenderBounds.X);
+            Assert.AreEqual(innerWidth, arrange.RenderBounds.Width);
+            
+            
         }
     }
 }
