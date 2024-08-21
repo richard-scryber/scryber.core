@@ -706,6 +706,8 @@ namespace Scryber.PDF.Layout
 
         public void RenderTextBorder(PDFRenderContext context, PDFWriter writer)
         {
+            throw new NotImplementedException("Need to sort the borders out as per backgrounds");
+            
             if (null == this.CalculatedBounds || this.CalculatedBounds.Length == 0)
             {
                 if (context.ShouldLogVerbose)

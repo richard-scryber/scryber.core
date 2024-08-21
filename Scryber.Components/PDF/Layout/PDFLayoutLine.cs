@@ -373,6 +373,7 @@ namespace Scryber.PDF.Layout
             Unit lastlineheight = Unit.Zero;
             Unit maxFontSize = Unit.Zero;
             Unit maxBaselineComponent = Unit.Zero;
+            Unit maxLeading = Unit.Zero;
             bool isComplex = false;
 
 
@@ -391,6 +392,7 @@ namespace Scryber.PDF.Layout
                 {
                     maxDescender = Unit.Max(maxDescender, begin.TextRenderOptions.GetDescender());
                     maxFontSize = Unit.Max(maxFontSize, begin.TextRenderOptions.GetSize());
+                    maxLeading = Unit.Max(maxLeading, begin.TextRenderOptions.GetLineHeight());
                 }
                 else if (run is PDFLayoutInlineBlockRun blockRun)
                 {
@@ -460,21 +462,20 @@ namespace Scryber.PDF.Layout
 
                 switch (valign.Value)
                 {
-                    case VerticalAlignment.Top:
-                        AlignBlocksFromTop(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
-                        break;
                     case VerticalAlignment.Middle:
                         AlignBlocksFromMiddle(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
                         break;
-                    case VerticalAlignment.Bottom:
-                        AlignBlocksFromBottom(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                    case VerticalAlignment.Top:
+                        baselineOffset = ((maxLeading - maxFontSize) / 2) + maxFontSize - maxDescender;
                         break;
+                    case VerticalAlignment.Bottom:
                     case VerticalAlignment.Baseline:
                     default:
-                        AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender,
-                            maxFontSize);
                         break;
                 }
+                
+                AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender,
+                    maxFontSize);
 
 
                 //this.BaseLineOffset = baselineOffset;
@@ -681,6 +682,7 @@ namespace Scryber.PDF.Layout
             Unit lastLineHeight, Unit maxdescender, Unit maxfont)
         {
             this.BaseLineOffset = baselineOffset;
+            this.BaseLineToBottom = totalHeight - baselineOffset;
             
             foreach (var run in this.Runs)
             {
@@ -697,17 +699,26 @@ namespace Scryber.PDF.Layout
                 else if (run is PDFLayoutComponentRun componentRun)
                 {
                     var valign = componentRun.PositionOptions.VAlign ?? VerticalAlignment.Baseline;
+                    Unit top;
                     switch (valign)
                     {
+                        case VerticalAlignment.Top:
+                            top = 0;
+                            componentRun.SetOffsetY(top);
+                            break;
                         case VerticalAlignment.Middle:
-                            var space = (totalHeight - componentRun.Height) / 2;
-                            componentRun.SetOffsetY(space);
+                            top = (totalHeight - componentRun.Height) / 2;
+                            componentRun.SetOffsetY(top);
+                            break;
+                        case VerticalAlignment.Bottom:
+                            top = totalHeight - componentRun.Height;
+                            componentRun.SetOffsetY(top);
                             break;
                         case (VerticalAlignment.Baseline):
                         default:
-                            var offset = baselineOffset;
-                            offset -= componentRun.Height;
-                            componentRun.SetOffsetY(offset);
+                            top = baselineOffset;
+                            top -= componentRun.Height;
+                            componentRun.SetOffsetY(top);
                             break;
                     }
                 }
@@ -724,6 +735,7 @@ namespace Scryber.PDF.Layout
                             break;
                     }
                 }
+                
             }
         }
 
