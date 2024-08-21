@@ -463,7 +463,13 @@ namespace Scryber.PDF.Layout
                 switch (valign.Value)
                 {
                     case VerticalAlignment.Middle:
-                        AlignBlocksFromMiddle(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender);
+                        if (totalHeight > maxLeading)
+                        {
+                            baselineOffset = totalHeight / 2;
+                        }
+
+                        //if (mid < baselineOffset) //we have available space to lift the base line up 
+                        //    baselineOffset = mid;
                         break;
                     case VerticalAlignment.Top:
                         baselineOffset = ((maxLeading - maxFontSize) / 2) + maxFontSize - maxDescender;
