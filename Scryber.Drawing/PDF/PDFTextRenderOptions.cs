@@ -197,7 +197,14 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public VerticalAlignment? VerticalAlignment { get; set; }
+        
+        /// <summary>
+        /// Gets or sets any vertical alignment on the text
+        /// </summary>
+        public VerticalAlignment? VerticalAlignment { get; set; }
 
+        #endregion
 
         #region public double? WordSpacing {get;set;}
 

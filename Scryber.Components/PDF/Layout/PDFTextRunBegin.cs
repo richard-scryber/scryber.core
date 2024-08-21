@@ -132,6 +132,16 @@ namespace Scryber.PDF.Layout
             get;
             private set;
         }
+        
+        private Unit _offsetY;
+
+        /// <summary>
+        /// Gets the Y offset for this text run.
+        /// </summary>
+        public override Unit OffsetY
+        {
+            get { return _offsetY; }
+        }
 
         private Unit _charspace, _wordspace;
         private bool _hascustomspace;
@@ -167,12 +177,20 @@ namespace Scryber.PDF.Layout
         // implementation
         //
 
+        
+        
         public override void SetOffsetY(Unit y)
         {
-            base.SetOffsetY(y);
             Rect bounds = this.TotalBounds;
-            bounds.Y += y;
+            bounds.Y -= this._offsetY;
+            this._offsetY = y;
+            bounds.Y += this._offsetY;
             this.TotalBounds = bounds;
+            
+            base.SetOffsetY(y);
+            //Rect bounds = this.TotalBounds;
+            //bounds.Y += y;
+            //this.TotalBounds = bounds;
         }
 
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
@@ -415,7 +433,7 @@ namespace Scryber.PDF.Layout
             
 
             bounds.X += this.LineInset;
-
+            //bounds.Y += this.OffsetY;
             Size cursor = new Size(bounds.X,bounds.Y);
 
 
@@ -492,6 +510,7 @@ namespace Scryber.PDF.Layout
                 return;
             }
             
+            
             Component toArrange = this.Owner as Component;
             
             var brush = this.TextRenderOptions.Background;
@@ -500,9 +519,10 @@ namespace Scryber.PDF.Layout
             var metrics = this.TextRenderOptions.Font.FontMetrics;
             var textLeft = Unit.Zero;
             var rect = this.CalculatedBounds[0];
-
-            Unit ascOffset = 0; //The ascender offset from the top of the line - usually zero unless we have leading.
-            Unit height = rect.Height; //The height of the line
+            
+            
+            Unit ascOffset;
+            Unit height = this.TextRenderOptions.GetLineHeight(); //The height of the line
 
             if (this.TextRenderOptions.Leading.HasValue)
             {
@@ -510,6 +530,12 @@ namespace Scryber.PDF.Layout
                 //is always dependant on the actual font heights + any padding.
                 ascOffset = (this.TextRenderOptions.GetBaselineOffset() - this.TextRenderOptions.GetAscent());
                 height = (this.TextRenderOptions.GetAscent() + this.TextRenderOptions.GetDescender());
+            }
+            else
+            {
+                var halfH = (this.TextRenderOptions.GetLineHeight() - this.TextRenderOptions.GetSize()) / 2;
+                ascOffset = this.Line.BaseLineOffset - (this.TextRenderOptions.GetAscent() + halfH); //The ascender offset from the top of the line - usually zero unless we have leading.
+                
             }
 
             if (this.HasCustomSpace && this.LineInset > pad.Left)
@@ -565,7 +591,6 @@ namespace Scryber.PDF.Layout
                 if (!rect.IsEmpty)
                 {
                     rect = rect.Offset(context.Offset);
-                    rect.Y += ascOffset;
                     rect.Y -= pad.Top;
 
                     rect.Height = height;
@@ -618,7 +643,7 @@ namespace Scryber.PDF.Layout
                         }
 
                         //move the actual rect down to the next line
-                        rect.Y += line.Height;
+                        rect.Y += this.TextRenderOptions.GetLineHeight();
                         textLeft = lineRect.X;
                     }
 
@@ -632,8 +657,7 @@ namespace Scryber.PDF.Layout
                 if (!rect.IsEmpty && rect.Width > 0)
                 {
                     rect = rect.Offset(context.Offset);
-
-                    rect.Y += ascOffset;
+                    
                     rect.Y -= pad.Top;
                     rect.X = textLeft;
                     rect.Width += pad.Left + pad.Right;
@@ -767,7 +791,6 @@ namespace Scryber.PDF.Layout
                 if (!rect.IsEmpty)
                 {
                     rect = rect.Offset(context.Offset);
-                    rect.Y += ascOffset;
                     rect.Y -= pad.Top;
 
                     rect.Height = height;
@@ -828,7 +851,6 @@ namespace Scryber.PDF.Layout
                 {
                     rect = rect.Offset(context.Offset);
 
-                    rect.Y += ascOffset;
                     rect.Y -= pad.Top;
                     rect.X = textLeft;
                     rect.Width += pad.Left + pad.Right;

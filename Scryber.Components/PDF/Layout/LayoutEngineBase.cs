@@ -817,10 +817,22 @@ namespace Scryber.PDF.Layout
                             else if (nextPosMode == PositionMode.Inline || nextPosMode == PositionMode.InlineBlock)
                             {
                                 TextLiteral literal = new TextLiteral(" ", TextFormat.Plain);
-                                literal.Parent = this.Component;
+                                literal.Parent = current.Parent;
 
                                 //TODO: Satisfy the edge case where the space overflows to the next line - it should be ignored, but a new line created.
-                                this.DoLayoutTextComponent(literal, currentFullStyle);
+                                
+                                //Take off any explicit style for this current component
+                                var prev = this.Context.StyleStack.Pop();
+                                
+                                //build the full style and layout the whitespace
+                                var literalFullStyle = this.BuildFullStyle(literal);
+                                var text = literalFullStyle.CreateTextOptions();
+                                var w = text.GetZeroCharWidth();
+                                
+                                this.DoLayoutTextComponent(literal, literalFullStyle);
+                                
+                                //now replace the previous style.
+                                this.Context.StyleStack.Push(prev);
                             }
                         }
                     }
