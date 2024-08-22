@@ -412,7 +412,7 @@ namespace Scryber.PDF.Layout
                     isComplex = true;
 
                     //any component valign is for the component, not the outer line.
-                    if (compRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                    if (compRun.PositionOptions.VAlign.HasValue) // && !valign.HasValue)
                         valign = compRun.PositionOptions.VAlign.Value;
 
                     if (!compRun.PositionOptions.VAlign.HasValue ||
@@ -430,7 +430,7 @@ namespace Scryber.PDF.Layout
                 {
                     isComplex = true;
 
-                    if (xobjRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                    if (xobjRun.PositionOptions.VAlign.HasValue) // && !valign.HasValue)
                         valign = xobjRun.PositionOptions.VAlign.Value;
                 }
                 else if (run is PDFTextRunNewLine nl)
@@ -456,7 +456,7 @@ namespace Scryber.PDF.Layout
                 totalHeight = maxHeight;
 
                 var addLead = false;
-                if (valign == VerticalAlignment.Baseline && maxBaselineComponent + maxDescender > totalHeight)
+                if (maxBaselineComponent + maxDescender > totalHeight)
                 {
                     totalHeight = maxBaselineComponent + maxDescender;
                 }
@@ -486,8 +486,15 @@ namespace Scryber.PDF.Layout
                     default:
                         break;
                 }
-                
-                AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender,
+
+                if (baselineOffset < maxBaselineComponent)
+                {
+                    baselineOffset = maxBaselineComponent;
+                    totalHeight = Unit.Max(totalHeight,
+                        baselineOffset + maxDescender); // + ((maxLeading - maxFontSize) / 2));
+                }
+
+                AlignBlocksFromBaseline(totalHeight, maxBaselineComponent, baselineOffset, lastlineheight, maxDescender,
                     maxFontSize, out addLead);
 
                 //baseline aligned, so add the half leading to the bottom
@@ -577,16 +584,24 @@ namespace Scryber.PDF.Layout
                         {
                             case(VerticalAlignment.Top):
                                 var lh = begin.TextRenderOptions.GetLineHeight();
+                                var lead = lh - begin.TextRenderOptions.GetSize();
                                 var baseline = begin.TextRenderOptions.GetBaselineOffset();
                                 begin.SetOffsetY(baseline - baselineOffset);
-                                this.BaseLineToBottom = baselineOffset - baseline;
+                                this.BaseLineToBottom = lead + baselineOffset - baseline;
+                                addLead = false;
                                 break;
                             case(VerticalAlignment.Middle):
                                 var halfh = ((totalHeight - begin.TextRenderOptions.GetLineHeight()) / 2) ;
                                 begin.SetOffsetY(begin.TextRenderOptions.GetDescender() - halfh);
                                 
                                 this.BaseLineToBottom = halfh;
-                                
+                                addLead = false;
+                                break;
+                            case(VerticalAlignment.Bottom) :
+                                this.BaseLineToBottom =
+                                    (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 +
+                                    begin.TextRenderOptions.GetDescender();
+                                addLead = addLead || hasBaseLineComponents;
                                 break;
                             case VerticalAlignment.Baseline:
                                 if (begin.TextRenderOptions.GetSize() == maxfont && hasBaseLineComponents)
