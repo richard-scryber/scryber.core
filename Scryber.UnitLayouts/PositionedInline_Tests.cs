@@ -1385,5 +1385,214 @@ namespace Scryber.UnitLayouts
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             
         }
+        
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Inline_11_NestedImagesWithExplicitHeightsPreTopMixedLeading()
+        {
+            var path = AssertGetContentFile("Inline_11_NestedImagesWithExplicitHeightsPreTopMixedLeading");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_11_NestedImagesWithExplicitHeightsPreTopMixedLeading.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            
+            
+
+            //Both images of different (scaled) heights should be on the baseline.
+            
+            
+            var nest = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+
+            var imgDim = new Size(682, 452);
+
+            var baseline = Unit.Pt(100);
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+            
+            
+
+            var runningWidth = Unit.Zero;
+            
+
+            Assert.AreEqual(20, line.Runs.Count);
+            
+            
+            //baseline is half the total height
+            
+            
+            
+            //0 = start span
+            //1 = text begin
+            var begin = line.Runs[1] as PDFTextRunBegin;
+            //top position
+            Assert.IsNotNull(begin);
+            baseline = begin.TextRenderOptions.GetBaselineOffset();
+            Assert.IsTrue(baseline < 12);//just a manual check that we are less than the font size
+            Assert.AreEqual(baseline + 30, begin.StartTextCursor.Height); // + body margin
+            Assert.AreEqual(30, begin.StartTextCursor.Width); // + body margin
+            
+            //2 = text chars
+            var chars = line.Runs[2] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            //3 = end text
+            //4 = end span
+            
+            //confirm the render bounds rect for the first span - body margins and on the full baseline.
+            var left = Unit.Pt(30); //body margins
+            var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
+            var width = chars.Width  + begin.TextRenderOptions.GetLeftSideBearing();
+            var height = begin.TextRenderOptions.GetLineHeight();
+            CheckRenderBounds(begin.Owner, 0, left, top, width, height);
+            
+            runningWidth += chars.Width;
+            
+            //5 = begin whitespace
+            //6 = text whitespace
+            var whiteSpace = line.Runs[6] as PDFTextRunCharacter;
+            Assert.IsNotNull(whiteSpace);
+            runningWidth += whiteSpace.Width;
+            
+            //7 = end whitespace
+            
+            //8 = small image baseline
+            var imgRun = line.Runs[8] as PDFLayoutComponentRun;
+            Assert.IsNotNull(imgRun);
+            Assert.AreEqual(runningWidth, imgRun.TotalBounds.X);
+            Assert.AreEqual((100 - 30), imgRun.TotalBounds.Y);
+            Assert.AreEqual(30, imgRun.TotalBounds.Height);
+            var imgW = (30 / imgDim.Height.PointsValue) * imgDim.Width.PointsValue;
+            Assert.AreEqual(Math.Round(imgW, 5), Math.Round(imgRun.TotalBounds.Width.PointsValue, 5)); //approx equal to 5 decimal places
+            
+            
+            //confirm the render bounds rect for the first image -
+            left = 30 + runningWidth ; //body margins
+            top = 30 + (100-30); //body margins + total line height - img height
+            width = imgRun.TotalBounds.Width;
+            height = 30;
+            CheckRenderBounds(imgRun.Owner, 0, left, top, width, height);
+
+            runningWidth += imgRun.TotalBounds.Width;
+            
+            //9 begin whitespace
+            //10 text whitespace
+            whiteSpace = line.Runs[10] as PDFTextRunCharacter;
+            Assert.IsNotNull(whiteSpace);
+            runningWidth += whiteSpace.Width;
+            
+            //11 = end whitespace
+            
+            //12 = large image
+            imgRun = line.Runs[12] as PDFLayoutComponentRun;
+            Assert.IsNotNull(imgRun);
+            Assert.AreEqual(runningWidth, imgRun.TotalBounds.X);
+            Assert.AreEqual(100, imgRun.TotalBounds.Height);
+            Assert.AreEqual(0, imgRun.TotalBounds.Y);
+            imgW = (100 / imgDim.Height.PointsValue) * imgDim.Width.PointsValue;
+            Assert.AreEqual(Math.Round(imgW, 5), Math.Round(imgRun.TotalBounds.Width.PointsValue, 5)); //approx equal to 5 decimal places
+            
+            
+            //confirm the render bounds rect for the second image 
+            left = 30 + runningWidth ; //body margins
+            top = 30 ; //body margins
+            width = imgRun.TotalBounds.Width;
+            height = 100;
+            CheckRenderBounds(imgRun.Owner, 0, left, top, width, height);
+            
+            runningWidth += imgRun.TotalBounds.Width;
+
+            
+            
+            //13 begin whitespace
+            //14 text whitespace
+            whiteSpace = line.Runs[14] as PDFTextRunCharacter;
+            Assert.IsNotNull(whiteSpace);
+            runningWidth += whiteSpace.Width;
+            //15 = end whitespace
+            
+            //16 span begin
+            //17 text begin
+            begin = line.Runs[17] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            Assert.AreEqual(101.44970703125, begin.StartTextCursor.Height);
+            Assert.AreEqual(runningWidth + 30, begin.StartTextCursor.Width);
+            
+            //18 text chars
+            chars = line.Runs[18] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            
+            //19 = newLine
+            var newLine = line.Runs[19] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            var offset = newLine.NewLineOffset;
+            Assert.AreEqual(runningWidth, offset.Width); //offset from the start of the start chars to the start of the next line
+            Assert.AreEqual(30 * 1.2, begin.TextRenderOptions.GetLineHeight()); //default leading 1.2 font size
+            Assert.AreEqual(61.55029296875, offset.Height); //from the middle to the baseline of the next line
+            
+            //confirm the render bounds rect for the second text run 
+            left = 30 + runningWidth ; //body margins
+            top = 75.34912109375; // 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            height = begin.TextRenderOptions.GetLineHeight();
+            CheckRenderBounds(begin.Owner, 0, left, top, width, height);
+            
+            runningWidth += chars.Width;
+            
+            //
+            // second line
+            //
+
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            Assert.AreEqual(line.Height, begin.TextRenderOptions.GetLineHeight()); //back to normal height
+
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            //confirm the render bounds rect for the second line of the second span run 
+            top = 136.8994140625; //30 + 100; //reset  to last line height + margins
+            left = 30; //margins
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            height = line.Height;
+            CheckRenderBounds(begin.Owner, 1, left, top, width, height);
+            
+            //
+            // third line
+            //
+            
+            line = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count); //begin, chars, end, inline end
+            Assert.AreEqual(line.Height, begin.TextRenderOptions.GetLineHeight()); //back to normal height
+
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            //confirm the render bounds rect for the second line of the second span run 
+            top += 36; //font size x 1.2 - currently 1.1
+            left = 30; //margins
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            height = line.Height;
+            CheckRenderBounds(begin.Owner, 2, left, top, width, height);
+            
+        }
     }
 }
