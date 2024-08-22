@@ -439,8 +439,8 @@ namespace Scryber.PDF.Layout
                 }
                 else if (run is PDFLayoutInlineBegin inlineBegin)
                 {
-                    if (inlineBegin.PositionOptions.VAlign.HasValue)
-                        valign = inlineBegin.PositionOptions.VAlign.Value;
+                    //if (inlineBegin.PositionOptions.VAlign.HasValue)
+                    //    valign = inlineBegin.PositionOptions.VAlign.Value;
                 }
 
                 currWidth += run.Width;
@@ -454,10 +454,15 @@ namespace Scryber.PDF.Layout
                     valign = VerticalAlignment.Baseline;
 
                 totalHeight = maxHeight;
-                if (maxBaselineComponent + maxDescender > totalHeight)
-                   totalHeight = maxBaselineComponent + maxDescender;
+
+                var addLead = false;
+                if (valign == VerticalAlignment.Baseline && maxBaselineComponent + maxDescender > totalHeight)
+                {
+                    totalHeight = maxBaselineComponent + maxDescender;
+                }
 
                 var baselineOffset = totalHeight - maxDescender;
+                
 
 
                 switch (valign.Value)
@@ -475,15 +480,23 @@ namespace Scryber.PDF.Layout
                         baselineOffset = ((maxLeading - maxFontSize) / 2) + maxFontSize - maxDescender;
                         break;
                     case VerticalAlignment.Bottom:
+                        baselineOffset -= (maxLeading - maxFontSize) / 2;
+                        break;
                     case VerticalAlignment.Baseline:
                     default:
                         break;
                 }
                 
                 AlignBlocksFromBaseline(totalHeight, maxHeight, baselineOffset, lastlineheight, maxDescender,
-                    maxFontSize);
+                    maxFontSize, out addLead);
 
-
+                //baseline aligned, so add the half leading to the bottom
+                if (addLead)
+                {
+                    var leadSpace = (maxLeading - maxFontSize) / 2;
+                    totalHeight += leadSpace;
+                }
+                
                 //this.BaseLineOffset = baselineOffset;
                 this._totalHeight = totalHeight;
                 this.VAlignment = valign.Value;
@@ -684,27 +697,62 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        /// <summary>
+        /// Alignes all the individual runs on a line to their requested vertical position.
+        /// </summary>
+        /// <param name="totalHeight"></param>
+        /// <param name="maxHeight"></param>
+        /// <param name="baselineOffset"></param>
+        /// <param name="lastLineHeight"></param>
+        /// <param name="maxdescender"></param>
+        /// <param name="maxfont"></param>
+        /// <param name="addLead">Set to true if the maxfont is a baseline aligned text run so we have ultimately a total height increased by half the leading, should be applied by the caller</param>
         private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset,
-            Unit lastLineHeight, Unit maxdescender, Unit maxfont)
+            Unit lastLineHeight, Unit maxdescender, Unit maxfont, out bool addLead)
         {
+            addLead = false;
+            bool hasBaseLineComponents = false;
             this.BaseLineOffset = baselineOffset;
             this.BaseLineToBottom = totalHeight - baselineOffset;
+            //Support a single alignments rather than doing stacks for each line.
+            VerticalAlignment? explicitAlign = null;
             
             foreach (var run in this.Runs)
             {
 
                 if (run is PDFTextRunBegin begin)
                 {
-                    
-                    if (begin.TextRenderOptions.VerticalAlignment.HasValue && begin.TextRenderOptions.VerticalAlignment.Value != VerticalAlignment.Baseline)
+                    if (explicitAlign.HasValue)
                     {
-                            //TODO: Inline text runs with non-baseline alignment
+                        switch (explicitAlign.Value)
+                        {
+                            case(VerticalAlignment.Top):
+                                var lh = begin.TextRenderOptions.GetLineHeight();
+                                var baseline = begin.TextRenderOptions.GetBaselineOffset();
+                                begin.SetOffsetY(baseline - baselineOffset);
+                                this.BaseLineToBottom = baselineOffset - baseline;
+                                break;
+                            case(VerticalAlignment.Middle):
+                                var halfh = ((totalHeight - begin.TextRenderOptions.GetLineHeight()) / 2) ;
+                                begin.SetOffsetY(begin.TextRenderOptions.GetDescender() - halfh);
+                                
+                                this.BaseLineToBottom = halfh;
+                                
+                                break;
+                            case VerticalAlignment.Baseline:
+                                if (begin.TextRenderOptions.GetSize() == maxfont && hasBaseLineComponents)
+                                    addLead = true;
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                   
+                    else if (begin.TextRenderOptions.GetSize() == maxfont && hasBaseLineComponents)
+                        addLead = true; //we are baselined
                 }
                 else if (run is PDFLayoutComponentRun componentRun)
                 {
-                    var valign = componentRun.PositionOptions.VAlign ?? VerticalAlignment.Baseline;
+                    var valign = componentRun.PositionOptions.VAlign ?? (explicitAlign ?? VerticalAlignment.Baseline);
                     Unit top;
                     switch (valign)
                     {
@@ -725,12 +773,14 @@ namespace Scryber.PDF.Layout
                             top = baselineOffset;
                             top -= componentRun.Height;
                             componentRun.SetOffsetY(top);
+                            if (componentRun.Height > maxfont)
+                                hasBaseLineComponents = true;
                             break;
                     }
                 }
                 else if (run is PDFLayoutInlineBlockRun ibRun)
                 {
-                    var valign = ibRun.PositionOptions.VAlign ?? VerticalAlignment.Baseline;
+                    var valign = ibRun.PositionOptions.VAlign ?? (explicitAlign ?? VerticalAlignment.Baseline);
                     switch (valign)
                     {
                         case (VerticalAlignment.Baseline):
@@ -740,6 +790,17 @@ namespace Scryber.PDF.Layout
                             ibRun.SetOffsetY(offset);
                             break;
                     }
+                }
+                else if (run is PDFLayoutInlineBegin inlineBegin)
+                {
+                    if (inlineBegin.PositionOptions.VAlign.HasValue)
+                    {
+                        explicitAlign = inlineBegin.PositionOptions.VAlign.Value;
+                    }
+                }
+                else if (run is PDFLayoutInlineEnd)
+                {
+                    explicitAlign = null;
                 }
                 
             }

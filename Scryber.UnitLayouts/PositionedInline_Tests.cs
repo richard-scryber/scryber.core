@@ -415,7 +415,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = Unit.Pt(30); //body margins
             var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            var width = chars.Width;
+            var width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             var height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -507,7 +507,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset(); //body margins + baseline offsets - text baseline offset
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -526,9 +526,9 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             
             //confirm the render bounds rect for the second line of the second span run 
-            top += 33; //font size x 1.2 - currently 1.1, looks the same as chrome.
+            top += 36; //font size x 1.2
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 1, left, top, width, height);
             
@@ -547,7 +547,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 36; //font size x 1.2 - currently 1.1
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             
@@ -601,7 +601,8 @@ namespace Scryber.UnitLayouts
             var beginSecond = line.Runs[17] as PDFTextRunBegin;
             Assert.IsNotNull(beginSecond, "The second text start run could not be located so cannot calculate the baseline offset");
 
-            var belowBaseline = beginSecond.TextRenderOptions.GetDescender();
+            //below baseline is the descender and half the leading
+            var belowBaseline = beginSecond.TextRenderOptions.GetDescender() + (beginSecond.TextRenderOptions.GetLineHeight() - beginSecond.TextRenderOptions.GetSize())/2 ; 
             
             
             var baseline = lineHeight - belowBaseline;
@@ -623,7 +624,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = Unit.Pt(30); //body margins
             var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            var width = chars.Width;
+            var width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             var height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -715,7 +716,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset(); //body margins + baseline offsets - text baseline offset
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -734,9 +735,9 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             
             //confirm the render bounds rect for the second line of the second span run 
-            top += 33; //font size x 1.2 - currently 1.1, looks the same as chrome.
+            top += 36; //font size x 1.2
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 1, left, top, width, height);
             
@@ -755,7 +756,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 36; //font size x 1.2 - currently 1.1
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             
@@ -832,7 +833,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = Unit.Pt(30); //body margins
             var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            var width = chars.Width;
+            var width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             var height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -925,7 +926,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30; //body margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -946,7 +947,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 100; //add the height of the first line
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 1, left, top, width, height);
             
@@ -965,7 +966,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 36; //font size x 1.2 - currently 1.1
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             
@@ -1039,7 +1040,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = Unit.Pt(30); //body margins
             var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            var width = chars.Width;
+            var width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             var height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1131,7 +1132,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1152,7 +1153,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top = 30 + 100; //reset  to last line height + margins
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 1, left, top, width, height);
             
@@ -1171,7 +1172,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 36; //font size x 1.2 - currently 1.1
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             
@@ -1212,8 +1213,8 @@ namespace Scryber.UnitLayouts
 
             var imgDim = new Size(682, 452);
 
-            var lineHeight = Unit.Pt(100);
-            Assert.AreEqual(lineHeight, line.Height);
+            var baseline = Unit.Pt(100);
+            Assert.AreEqual(baseline, line.BaseLineOffset);
             
             
 
@@ -1224,13 +1225,16 @@ namespace Scryber.UnitLayouts
             
             
             //baseline is half the total height
-            Unit baseline = 100 / 2;
+            
             
             
             //0 = start span
             //1 = text begin
             var begin = line.Runs[1] as PDFTextRunBegin;
+            //top position
             Assert.IsNotNull(begin);
+            baseline = begin.TextRenderOptions.GetBaselineOffset();
+            Assert.IsTrue(baseline < 12);//just a manual check that we are less than the font size
             Assert.AreEqual(baseline + 30, begin.StartTextCursor.Height); // + body margin
             Assert.AreEqual(30, begin.StartTextCursor.Width); // + body margin
             
@@ -1244,7 +1248,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = Unit.Pt(30); //body margins
             var top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            var width = chars.Width;
+            var width = chars.Width  + begin.TextRenderOptions.GetLeftSideBearing();
             var height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1258,11 +1262,11 @@ namespace Scryber.UnitLayouts
             
             //7 = end whitespace
             
-            //8 = small image
+            //8 = small image baseline
             var imgRun = line.Runs[8] as PDFLayoutComponentRun;
             Assert.IsNotNull(imgRun);
             Assert.AreEqual(runningWidth, imgRun.TotalBounds.X);
-            Assert.AreEqual((100 - 30) / 2, imgRun.TotalBounds.Y);
+            Assert.AreEqual((100 - 30), imgRun.TotalBounds.Y);
             Assert.AreEqual(30, imgRun.TotalBounds.Height);
             var imgW = (30 / imgDim.Height.PointsValue) * imgDim.Width.PointsValue;
             Assert.AreEqual(Math.Round(imgW, 5), Math.Round(imgRun.TotalBounds.Width.PointsValue, 5)); //approx equal to 5 decimal places
@@ -1270,7 +1274,7 @@ namespace Scryber.UnitLayouts
             
             //confirm the render bounds rect for the first image -
             left = 30 + runningWidth ; //body margins
-            top = 30 + (100-30)/2; //body margins + total line height - img height
+            top = 30 + (100-30); //body margins + total line height - img height
             width = imgRun.TotalBounds.Width;
             height = 30;
             CheckRenderBounds(imgRun.Owner, 0, left, top, width, height);
@@ -1317,7 +1321,7 @@ namespace Scryber.UnitLayouts
             //17 text begin
             begin = line.Runs[17] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
-            Assert.AreEqual(baseline + 30, begin.StartTextCursor.Height);
+            Assert.AreEqual(101.44970703125, begin.StartTextCursor.Height);
             Assert.AreEqual(runningWidth + 30, begin.StartTextCursor.Width);
             
             //18 text chars
@@ -1331,12 +1335,12 @@ namespace Scryber.UnitLayouts
             var offset = newLine.NewLineOffset;
             Assert.AreEqual(runningWidth, offset.Width); //offset from the start of the start chars to the start of the next line
             Assert.AreEqual(30 * 1.2, begin.TextRenderOptions.GetLineHeight()); //default leading 1.2 font size
-            Assert.AreEqual(line.Height / 2 + begin.TextRenderOptions.GetBaselineOffset(), offset.Height); //from the middle to the baseline of the next line
+            Assert.AreEqual(61.55029296875, offset.Height); //from the middle to the baseline of the next line
             
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
-            top = 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width;
+            top = 75.34912109375; // 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1355,9 +1359,9 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             
             //confirm the render bounds rect for the second line of the second span run 
-            top = 30 + 100; //reset  to last line height + margins
+            top = 136.8994140625; //30 + 100; //reset  to last line height + margins
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 1, left, top, width, height);
             
@@ -1367,7 +1371,7 @@ namespace Scryber.UnitLayouts
             
             line = nest.Columns[0].Contents[2] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            Assert.AreEqual(4, line.Runs.Count); //begin, chars, end, inline end
+            Assert.AreEqual(3, line.Runs.Count); //begin, chars, end, inline end
             Assert.AreEqual(line.Height, begin.TextRenderOptions.GetLineHeight()); //back to normal height
 
             chars = line.Runs[1] as PDFTextRunCharacter;
@@ -1376,7 +1380,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second line of the second span run 
             top += 36; //font size x 1.2 - currently 1.1
             left = 30; //margins
-            width = chars.Width;
+            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
             height = line.Height;
             CheckRenderBounds(begin.Owner, 2, left, top, width, height);
             

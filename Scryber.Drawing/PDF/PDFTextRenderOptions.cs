@@ -449,5 +449,13 @@ namespace Scryber.PDF
 
         #endregion
 
+        public Unit GetLeftSideBearing()
+        {
+            //HACK: Should come from the font as default LSB.
+            var size = this.GetSize();
+            size = size * 0.1;
+            return size;
+            
+        }
     }
 }

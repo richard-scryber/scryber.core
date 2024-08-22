@@ -20,16 +20,18 @@
 
         #inline{
             font-size: 30pt;
-            vertical-align: bottom;
+            vertical-align: middle;
         }
         
         img{
             border: solid 1pt blue;
-            vertical-align: middle;
+            vertical-align: baseline;
         }
         
         span{
-            background-color: silver;
+            background-color: rgba(192,192,192,0.5);
+            border: solid 1pt green;
+            padding: 0pt;
         }
         
         .top{
@@ -43,7 +45,7 @@
         <span class="top" style="background-color: silver">Before the inlining images</span>
         <img src="../../../images/toroid32.png" style="height: 30pt;" />
         <img src="../../../images/toroid32.png" style="height: 100pt;" />
-        <span id="inline">Inlining with the nest that will overflow onto moreishy than two lines in the contenty.</span>
+        <span id="inline">Inlining with the nest that will overflow onto moreishy than two lines in the content to make sure all flow down well.</span>
     </div>
 </body>
 </html>

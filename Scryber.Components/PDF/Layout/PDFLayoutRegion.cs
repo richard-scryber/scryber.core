@@ -272,7 +272,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public override Unit Height
         {
-            get { return this.UsedSize.Height; }
+            get
+            {
+                return this.UsedSize.Height;
+            }
         }
 
         #endregion
