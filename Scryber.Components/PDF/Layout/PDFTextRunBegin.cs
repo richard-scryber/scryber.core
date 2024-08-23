@@ -558,7 +558,9 @@ namespace Scryber.PDF.Layout
                 }
                 if (null != brush)
                 {
-                    padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
+                    if (this.Lines.Count > 1)
+                        padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
+                    
                     if (rad > 0)
                     {
                         if (this.CalculatedBounds.Length == 3 && (this.CalculatedBounds[1].IsEmpty == false ||
@@ -604,11 +606,38 @@ namespace Scryber.PDF.Layout
 
                 for (var l = 1; l < this.Lines.Count; l++)
                 {
+                    var isLastRunOnLine = false;
                     var line = this.Lines[l];
                     var lineRect = rect.Clone();
 
                     lineRect.X += line.RightInset;
-                    lineRect.Width = line.Width;
+
+                    if (l == this.Lines.Count - 1) // we are the last line in this inline block so calculate the width
+                    {
+                        lineRect.Width = 0;
+                        for (var r = 0; r < line.Runs.Count; r++)
+                        {
+                            var run = line.Runs[r];
+                            if (run is PDFTextRunEnd)
+                            {
+                                if (r == line.Runs.Count - 1)
+                                    isLastRunOnLine = true;
+                                else if (r == line.Runs.Count - 2 && line.Runs[r + 1] is PDFLayoutInlineEnd)
+                                    isLastRunOnLine = true;
+                                break;
+                            }
+                            else
+                            {
+                                lineRect.Width += run.Width;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        lineRect.Width = line.Width;
+                        isLastRunOnLine = true;
+                    }
 
                     if (line.ExtraSpace.HasValue)
                     {
@@ -630,8 +659,16 @@ namespace Scryber.PDF.Layout
                     if (lineRect.Width > Unit.Zero)
                     {
                         var padRect = lineRect.Clone();
-                        
-                        padRect.Width += this.TextRenderOptions.GetLeftSideBearing(); //add extra space for the left side bearing of the first character.
+
+                        if (isLastRunOnLine)
+                        {
+                            //add extra space for the left side bearing of the first character so the last of the line ends correctly
+                            padRect.Width +=
+                                this.TextRenderOptions
+                                    .GetLeftSideBearing(); 
+
+                        }
+
                         padRect.Y -= pad.Top;
                         padRect.X += pad.Left;
                         padRect.Height += pad.Top + pad.Bottom;

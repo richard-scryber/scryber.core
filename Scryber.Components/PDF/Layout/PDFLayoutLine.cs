@@ -454,14 +454,15 @@ namespace Scryber.PDF.Layout
                     valign = VerticalAlignment.Baseline;
 
                 totalHeight = maxHeight;
-
+                var leadSpace = (maxLeading - maxFontSize) / 2;
+                
                 var addLead = false;
                 if (maxBaselineComponent + maxDescender > totalHeight)
                 {
                     totalHeight = maxBaselineComponent + maxDescender;
                 }
 
-                var baselineOffset = totalHeight - maxDescender;
+                var baselineOffset = totalHeight - (maxDescender + leadSpace);
                 
 
 
@@ -480,9 +481,10 @@ namespace Scryber.PDF.Layout
                         baselineOffset = ((maxLeading - maxFontSize) / 2) + maxFontSize - maxDescender;
                         break;
                     case VerticalAlignment.Bottom:
-                        baselineOffset -= (maxLeading - maxFontSize) / 2;
+                        //baselineOffset -= (maxLeading - maxFontSize) / 2;
                         break;
                     case VerticalAlignment.Baseline:
+                        
                     default:
                         break;
                 }
@@ -500,7 +502,6 @@ namespace Scryber.PDF.Layout
                 //baseline aligned, so add the half leading to the bottom
                 if (addLead)
                 {
-                    var leadSpace = (maxLeading - maxFontSize) / 2;
                     totalHeight += leadSpace;
                 }
                 
