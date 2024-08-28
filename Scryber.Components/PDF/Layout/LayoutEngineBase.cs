@@ -1889,10 +1889,11 @@ namespace Scryber.PDF.Layout
                             return;
                         }
                     }
-
-
+                    
+                    PDFLayoutLine prev = region.CurrentItem as PDFLayoutLine;
+                    PDFTextRunNewLine prevNewLine = ((null != prev && prev.Runs.Count > 1) ? prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine : null);
                     PDFLayoutLine line = region.BeginNewLine();
-                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null, true));
+                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null, prevNewLine));
                 }
                 region.CloseCurrentItem();
             }

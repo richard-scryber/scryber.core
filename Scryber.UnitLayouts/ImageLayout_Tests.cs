@@ -1233,6 +1233,12 @@ namespace Scryber.UnitLayouts
             pg.FontSize = 20;
             doc.Pages.Add(pg);
 
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 20;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            pg.Style.OverlayGrid.GridXOffset = 10;
+            pg.Style.OverlayGrid.GridYOffset = 10;
+
             Image img;
 
             img = new Image();
@@ -1261,8 +1267,9 @@ namespace Scryber.UnitLayouts
             var reg = lpg.ContentBlock.Columns[0];
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(ImageNaturalHeight, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, ImageNaturalHeight.PointsValue);
 
             Assert.AreEqual(4, line.Runs.Count);
 
@@ -1274,7 +1281,9 @@ namespace Scryber.UnitLayouts
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
-
+            Assert.AreEqual(txtBegin.StartTextCursor.Width, ImageNaturalWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, ImageNaturalHeight + 10); //text is baseline with the image height
+            
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
             //Important to keep the space 
@@ -1359,8 +1368,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
 
             //first layout line
+            var halflead = (60 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(ImageNaturalHeight, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, ImageNaturalHeight.PointsValue);
 
             Assert.AreEqual(4, line.Runs.Count);
 
@@ -1372,7 +1382,9 @@ namespace Scryber.UnitLayouts
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
-
+            Assert.AreEqual(txtBegin.StartTextCursor.Width, ImageNaturalWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, ImageNaturalHeight + 10); //text is baseline with the image height
+            
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
 
@@ -1444,6 +1456,7 @@ namespace Scryber.UnitLayouts
             pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 20;
             doc.Pages.Add(pg);
 
             var img = new Image();
@@ -1474,21 +1487,25 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, reg.Contents.Count);
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(60.0, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(4, line.Runs.Count);
 
             var imgRun = line.Runs[0] as PDFLayoutComponentRun;
+            var calcImgWidth = (60.0 / ImageNaturalHeight.PointsValue) * ImageNaturalWidth.PointsValue;
             Assert.IsNotNull(imgRun);
             Assert.AreEqual(60.0, imgRun.Height.PointsValue);
-            AssertAreApproxEqual((60.0 / ImageNaturalHeight.PointsValue) * ImageNaturalWidth.PointsValue, imgRun.Width.PointsValue, "Image not scales proportionately");
+            AssertAreApproxEqual(calcImgWidth, imgRun.Width.PointsValue, "Image not scales proportionately");
 
             Assert.AreEqual(0, imgRun.OffsetX);
             Assert.AreEqual(0, imgRun.OffsetY);
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
+            AssertAreApproxEqual(txtBegin.StartTextCursor.Width.PointsValue, calcImgWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, 60 + 10); //text is baseline with the image height
 
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
@@ -1550,8 +1567,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
 
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            AssertAreApproxEqual(expectedImgHeight, line.Height.PointsValue);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, expectedImgHeight);
             
 
             Assert.AreEqual(4, line.Runs.Count);
@@ -1644,8 +1662,9 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(2, reg.Contents.Count);
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(60.0, line.Height.PointsValue);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(7, line.Runs.Count);
 
@@ -1768,7 +1787,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            Assert.AreEqual(60, line.Height.PointsValue);
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
+            Assert.IsNotNull(line);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(7, line.Runs.Count);
 
@@ -1804,13 +1825,17 @@ namespace Scryber.UnitLayouts
 
             var txtBr = line.Runs[6] as PDFTextRunNewLine;
             //Should the max height of the line - which is the 80 point second image
-            Assert.AreEqual(80, txtBr.NewLineOffset.Height.PointsValue);
+            Assert.AreEqual(80 + txtBegin.TextRenderOptions.GetDescender(), txtBr.NewLineOffset.Height.PointsValue);
 
 
             //Second line 
             line = reg.Contents[1] as PDFLayoutLine;
             Assert.AreEqual(7, line.Runs.Count);
-            Assert.AreEqual(80, line.Height);
+            
+            var h = txtBegin.TextRenderOptions.GetDescender(); //descender + half the leading (1.2 line height) below the baseline
+            h += (txtBegin.TextRenderOptions.GetLineHeight() - txtBegin.TextRenderOptions.GetSize()) / 2;
+            h += 80; //+ image height aligned to the baseline
+            Assert.AreEqual(h, line.Height);
 
             var txtSpace = line.Runs[0] as PDFTextRunSpacer;
             Assert.AreEqual(0, txtSpace.Width);
@@ -1929,7 +1954,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            Assert.AreEqual(60, line.Height.PointsValue);
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
+            Assert.IsNotNull(line);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(11, line.Runs.Count);
 

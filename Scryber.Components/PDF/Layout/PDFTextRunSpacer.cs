@@ -75,6 +75,12 @@ namespace Scryber.PDF.Layout
             protected set;
         }
 
+        public PDFTextRunNewLine PreviousNewLine
+        {
+            get;
+            protected set;
+        }
+
         //
         // ctor
         //
@@ -82,10 +88,11 @@ namespace Scryber.PDF.Layout
         #region public PDFTextRunSpacer(PDFUnit width, PDFUnit height, PDFLayoutLine line, IPDFComponent owner)
 
 
-        public PDFTextRunSpacer(Unit width, Unit height, PDFLayoutLine line, IComponent owner, bool isNewLineSpacer)
+        public PDFTextRunSpacer(Unit width, Unit height, PDFLayoutLine line, IComponent owner, PDFTextRunNewLine newLineSpacer)
             : base(line, owner)
         {
-            this.IsNewLineSpacer = isNewLineSpacer;
+            this.IsNewLineSpacer = null != newLineSpacer;
+            this.PreviousNewLine = newLineSpacer;
             this.SetSpacing(width, height);
         }
 

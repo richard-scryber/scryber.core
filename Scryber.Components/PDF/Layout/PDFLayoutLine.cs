@@ -373,6 +373,7 @@ namespace Scryber.PDF.Layout
             Unit lastlineheight = Unit.Zero;
             Unit maxFontSize = Unit.Zero;
             Unit maxBaselineComponent = Unit.Zero;
+            bool hasBaseLineComponents = false;
             Unit maxLeading = Unit.Zero;
             bool isComplex = false;
 
@@ -421,8 +422,10 @@ namespace Scryber.PDF.Layout
                         itemH = compRun.Height + maxDescender;
 
                         if (itemH > maxHeight)
+                        {
                             maxHeight = itemH;
-                        
+                        }
+
                         maxBaselineComponent = Unit.Max(maxBaselineComponent, compRun.Height);
                     }
                 }
@@ -462,6 +465,12 @@ namespace Scryber.PDF.Layout
                     totalHeight = maxBaselineComponent + maxDescender;
                 }
 
+                if (maxBaselineComponent > maxLeading)
+                {
+                    //we have components that push the baseline downn
+                    hasBaseLineComponents = true;
+                }
+
                 var baselineOffset = totalHeight - (maxDescender + leadSpace);
                 
 
@@ -497,7 +506,7 @@ namespace Scryber.PDF.Layout
                 }
 
                 AlignBlocksFromBaseline(totalHeight, maxBaselineComponent, baselineOffset, lastlineheight, maxDescender,
-                    maxFontSize, out addLead);
+                    maxFontSize, hasBaseLineComponents, out addLead);
 
                 //baseline aligned, so add the half leading to the bottom
                 if (addLead)
@@ -538,19 +547,7 @@ namespace Scryber.PDF.Layout
                     }
                 }
             }
-
-
-
-            //Check the line height of the previous line and move down if needed
-            //PDFTextRunNewLine prev;
-            //if (PrevLineIsTextReturn(out prev))
-            //{
-            //    if (prev.NewLineOffset.Height < this.Height)
-            //        prev.NewLineOffset = new Size(prev.NewLineOffset.Width, this.Height);
-            //
-            //}
-
-
+            
         }
 
 
@@ -565,10 +562,9 @@ namespace Scryber.PDF.Layout
         /// <param name="maxfont"></param>
         /// <param name="addLead">Set to true if the maxfont is a baseline aligned text run so we have ultimately a total height increased by half the leading, should be applied by the caller</param>
         private void AlignBlocksFromBaseline(Unit totalHeight, Unit maxHeight, Unit baselineOffset,
-            Unit lastLineHeight, Unit maxdescender, Unit maxfont, out bool addLead)
+            Unit lastLineHeight, Unit maxdescender, Unit maxfont, bool hasBaseLineComponents, out bool addLead)
         {
             addLead = false;
-            bool hasBaseLineComponents = false;
             this.BaseLineOffset = baselineOffset;
             this.BaseLineToBottom = totalHeight - baselineOffset;
             //Support a single alignments rather than doing stacks for each line.
@@ -614,6 +610,29 @@ namespace Scryber.PDF.Layout
                     }
                     else if (begin.TextRenderOptions.GetSize() == maxfont && hasBaseLineComponents)
                         addLead = true; //we are baselined
+                }
+                else if (run is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer == true)
+                {
+                    if (explicitAlign.HasValue)
+                    {
+                        ;
+                    }
+                    else if(this.LineIndex > 0)
+                    {
+                        var prev = spacer.PreviousNewLine;
+                        var offset = prev.NewLineOffset;
+                        var btob = prev.Line.BaseLineToBottom;
+
+                        // if (hasBaseLineComponents)
+                        //     btob += ((prev.TextOptions.GetLineHeight() - prev.TextOptions.GetSize()) / 2) +
+                        //             prev.TextOptions.GetDescender();
+                        //
+                        if (offset.Height < btob + baselineOffset)
+                        {
+                            offset.Height = btob + baselineOffset ;
+                            prev.NewLineOffset = offset;
+                        }
+                    }
                 }
                 else if (run is PDFLayoutComponentRun componentRun)
                 {

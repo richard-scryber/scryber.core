@@ -115,7 +115,7 @@ namespace Scryber.PDF.Layout
                                     maxed = OutsetRectToInclude(maxed, arrange.RenderBounds);
                             }
                         }
-                        else if (run is PDFLayoutInlineEnd)
+                        else if (run is PDFLayoutInlineEnd end && end.Owner == this.Owner)
                             break;
 
                         index++;

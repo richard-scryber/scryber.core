@@ -1199,13 +1199,13 @@ namespace Scryber.UnitLayouts
             span.Contents.Add("This is a very long string that will flow across a lot more than two lines in the page,\r\n\r\nand will show the background across all the lines ending with the padding.");
             span.BackgroundColor = StandardColors.Blue;
             span.FillColor = StandardColors.White;
+            span.BorderColor = StandardColors.Red;
             span.Padding = 4;
             span.BorderCornerRadius = 4;
             div.Contents.Add(span);
             span = new Span();
             span.Contents.Add(" After the span");
             div.Contents.Add(span);
-            //div.Contents.Add("After");
 
             using (var ms = DocStreams.GetOutputStream("Backgrounds_InlineJustifiedCentreVeryLongReturnsBGColor.pdf"))
             {
@@ -1253,9 +1253,9 @@ namespace Scryber.UnitLayouts
             
 
 
-            var w = lchars.Width + linner.ExtraSpace; //Extra space is for the word spacing added by justification
+            var w = lchars.Width + lchars.ExtraSpace; //Extra space is for the word spacing added by justification
             Unit padd = 4;
-            var x = lcontent.Width - (w + padd); //as we are right aligned, then x is offset the width of the chars.
+            var x = llitChars.Width + llitChars.ExtraSpace; // as we are justified, then x is offset the width of the chars and their extra space.
             var h = linner.Height;
             var y = (lcontent.Height - (linner.Height * 6)) / 2; //as we are centre aligned, then the y offset is the height of the div - 6 x line height, then halved for the centre.
 
@@ -1287,12 +1287,12 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(linner);
             lchars = linner.Runs[1] as PDFTextRunCharacter;
 
-            w = lchars.Width; //last line width
+            w = lchars.Width; //last line width - no extra spacing on last line
             y += linner.Height; //add another line height
             h = linner.Height; //the height
-            //x = lcontent.Width - w; //check x after the span
+            x = 0; //check x after the span
 
-            //Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
+            Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
             Assert.AreEqual(w + padd, ltextStart.CalculatedBounds[2].Width);
             Assert.AreEqual(y, ltextStart.CalculatedBounds[2].Y);
             Assert.AreEqual(h, ltextStart.CalculatedBounds[2].Height);

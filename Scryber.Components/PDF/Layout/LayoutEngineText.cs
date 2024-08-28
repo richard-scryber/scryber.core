@@ -384,7 +384,7 @@ namespace Scryber.PDF.Layout
 
                 if (inset > 0)
                 {
-                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null, false);
+                    PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null, null);
                     line.AddRun(spacer);
                 }
             }
@@ -407,7 +407,7 @@ namespace Scryber.PDF.Layout
             //Check for inline padding on the left and if so add a spacer
             if(this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Left > Unit.Zero)
             {
-                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent, false);
+                var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Left, 0, this.CurrentLine, this.TextComponent, null);
                 this.CurrentLine.AddRun(spacer);
                 //this.CurrentLineInset += spacer.Width;
                 this.BeginningRun.LineInset += spacer.Width;
@@ -466,9 +466,9 @@ namespace Scryber.PDF.Layout
         /// <param name="w"></param>
         /// <param name="h"></param>
         /// <param name="line"></param>
-        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line, bool isNewLine)
+        protected virtual PDFTextRunSpacer AddLineInsetRun(Unit w, Unit h, PDFLayoutLine line, PDFTextRunNewLine newLine)
         {
-            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent, isNewLine);
+            PDFTextRunSpacer spacer = new PDFTextRunSpacer(w, h, line, this.TextComponent, newLine);
             line.AddRun(spacer);
             return spacer;
         }
@@ -510,7 +510,7 @@ namespace Scryber.PDF.Layout
             if (line.Height == Unit.Zero && line.Runs.Count > 0) //Empty line
             {
                 line.Runs.Insert(line.Runs.Count - 1, new PDFTextRunSpacer(0, this.TextRenderOptions.GetLineHeight(), line, this.TextComponent,
-                    false));
+                    null));
             }
 
             if (this.TextRenderOptions.Leading.HasValue) //an explicit leading - always use.
@@ -539,7 +539,7 @@ namespace Scryber.PDF.Layout
             else
                 inset = Unit.Zero;
 
-            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line, true);
+            PDFTextRunSpacer spacer = this.AddLineInsetRun(inset, 0, line, br);
             br.NextLineSpacer = spacer;
             this.CurrentLine = line;
             this.CurrentLineInset = inset;
@@ -1010,7 +1010,7 @@ namespace Scryber.PDF.Layout
 
                 if (this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.Right > Unit.Zero)
                 {
-                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent, false);
+                    var spacer = new PDFTextRunSpacer(this.TextRenderOptions.Padding.Value.Right, 0, this.CurrentLine, this.TextComponent, null);
                     this.CurrentLine.AddRun(spacer);
                     //this.CurrentLineInset += spacer.Width;
                     //this.BeginningRun.LineInset += spacer.Width;
