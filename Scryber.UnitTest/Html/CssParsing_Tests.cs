@@ -2362,8 +2362,9 @@ body.grey div.reverse{
                 var pg = new Size(400, 600);
                 var contain = new Size(400, 300);
                 var fnt = new Size(10, 16);
-
-                var flat = applied.Flatten(pg, contain, fnt, 20);
+                
+                List<StyleKey> keyHolder = new List<StyleKey>();
+                var flat = applied.Flatten(pg, contain, fnt, 20, keyHolder);
 
                 Assert.AreEqual(Unit.Pt((20 * 10) - 60), flat.Size.Width, "Width did not match");
                 Assert.AreEqual(Unit.Pt(3 * 16), flat.Margins.Top, "Top margin did not match");

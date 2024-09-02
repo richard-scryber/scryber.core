@@ -1247,19 +1247,24 @@ namespace Scryber.Styles
         /// <summary>
         /// Returns a flat version of the PDFStyle, calculating any relative sizes to absolute.
         /// </summary>
+        /// <param name="keyHolder">A collection to cache keys into and enumerate over without worrying oub modifying the actual collection. Imporoves memory usage and performance by only allocating once and dyamically growing as needed.</param>
         /// <returns></returns>
-        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize, List<StyleKey> keyHolder)
         {
             if (this.InheritedValues.Count > 0)
             {
-                foreach (var key in this.InheritedValues.Keys)
+                keyHolder.Clear();
+                keyHolder.AddRange(this.InheritedValues.Keys);
+                foreach (var key in keyHolder)
                 {
                     this.InheritedValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }
             }
             if (this.DirectValues.Count > 0)
             {
-                foreach (var key in this.DirectValues.Keys)
+                keyHolder.Clear();
+                keyHolder.AddRange(this.DirectValues.Keys);
+                foreach (var key in keyHolder)
                 {
                     this.DirectValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }

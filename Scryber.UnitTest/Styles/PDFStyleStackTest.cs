@@ -194,7 +194,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             Assert.AreEqual((Unit)10, actual.Font.FontSize); //50%
             Assert.AreEqual((Unit)2, actual.Border.Width); //absolute
-            Assert.AreEqual((Unit)(400.0 * 0.05), actual.Padding.All); //5% of container height (default vertical)
+            Assert.AreEqual((Unit)(400.0 * 0.05), actual.Padding.All); //5% of container width (default vertical)
             Assert.AreEqual((Unit)(400.0 * 0.1), actual.Margins.All); //10% of container height (default vertical)
             Assert.AreEqual((Unit)(300.0 * 0.15), actual.Margins.Left); //15% of container width
         }

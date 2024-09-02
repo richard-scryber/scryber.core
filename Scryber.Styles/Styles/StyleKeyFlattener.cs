@@ -247,11 +247,19 @@ namespace Scryber.Styles
                 {
                     Unit vert = StyleKeyFlattenUnitValue.FlattenVerticalValue(dim, page, container, font, rootFont);
                     Unit horiz = StyleKeyFlattenUnitValue.FlattenHorizontalValue(dim, page, container, font, rootFont);
-                    all.SetValue(horiz);
-                    onStyle.SetValue(this.Left, horiz);
-                    onStyle.SetValue(this.Top, vert);
-                    onStyle.SetValue(this.Right, horiz);
-                    onStyle.SetValue(this.Bottom, vert);
+                    all.SetValue(vert);
+                    
+                    if (onStyle.TryGetValue(this.Left, out all) == false)
+                        onStyle.SetValue(this.Left, horiz);
+                    
+                    if (onStyle.TryGetValue(this.Top, out all) == false)
+                        onStyle.SetValue(this.Top, vert);
+                    
+                    if (onStyle.TryGetValue(this.Right, out all) == false)
+                        onStyle.SetValue(this.Right, horiz);
+                    
+                    if (onStyle.TryGetValue(this.Bottom, out all) == false)
+                        onStyle.SetValue(this.Bottom, vert);
                 }
                 else
                 {

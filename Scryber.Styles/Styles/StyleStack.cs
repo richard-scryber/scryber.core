@@ -32,6 +32,7 @@ namespace Scryber.Styles
         
 
         private List<Style> _styles;
+        private List<StyleKey> _keyHolder;
 
         public int Count
         {
@@ -53,6 +54,7 @@ namespace Scryber.Styles
         {
             this._styles = new List<Style>();
             this._styles.Add(root);
+            this._keyHolder = new List<StyleKey>();
         }
 
         public void Push(Style style)
@@ -94,7 +96,8 @@ namespace Scryber.Styles
                 containerSize = sizer(component, style, PositionMode.Block);
             }
 
-            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize);
+            this._keyHolder.Clear();
+            style = style.Flatten(pageSize, containerSize, fontSize, rootFontSize, this._keyHolder);
             return style;
         }
 
@@ -107,7 +110,7 @@ namespace Scryber.Styles
             newPageSize.Width = style.GetValue(StyleKeys.PageWidthKey, defaultPageSize.Width);
             newPageSize.Height = style.GetValue(StyleKeys.PageHeightKey, defaultPageSize.Height);
 
-            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont);
+            style = style.Flatten(newPageSize, newPageSize, fontSize, rootFont, _keyHolder);
 
             return style;
         }
