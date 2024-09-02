@@ -342,7 +342,10 @@ namespace Scryber.PDF.Layout
                 }
             }
 #endif
-            EnsureAllRunsOnSameLevel();
+            
+            if (!this.Parent.IsExplicitLayout)
+                EnsureAllRunsOnSameLevel();
+            
             return base.DoClose(ref msg);
         }
 
@@ -366,7 +369,6 @@ namespace Scryber.PDF.Layout
 
         private void EnsureAllRunsOnSameLevel()
         {
-
             Unit totalHeight = Unit.Zero;
             Unit maxHeight = Unit.Zero;
             Unit maxDescender = Unit.Zero;
@@ -794,7 +796,7 @@ namespace Scryber.PDF.Layout
 
         public virtual PDFLayoutPositionedRegionRun AddPositionedRun(PDFLayoutPositionedRegion postioned, IComponent component)
         {
-            PDFLayoutPositionedRegionRun run = new PDFLayoutPositionedRegionRun(postioned, this, component);
+            PDFLayoutPositionedRegionRun run = new PDFLayoutPositionedRegionRun(postioned, this, component, postioned.PositionOptions);
             postioned.AssociatedRun = run;
 
             this.Runs.Add(run);

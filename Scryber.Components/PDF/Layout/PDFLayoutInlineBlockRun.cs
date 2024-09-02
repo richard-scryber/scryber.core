@@ -42,7 +42,7 @@ namespace Scryber.PDF.Layout
         }
 
         public PDFLayoutInlineBlockRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner, PDFPositionOptions position)
-            : base(region, line, owner)
+            : base(region, line, owner, position)
         {
             _position = position;
         }
@@ -95,7 +95,7 @@ namespace Scryber.PDF.Layout
             else
                 yoffset = this.Line.OffsetY;
 
-            this.Region.PushComponentLayout(context, pageIndex, xoffset, yoffset);
+            base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
         }
 
         protected override bool DoClose(ref string msg)
@@ -104,10 +104,6 @@ namespace Scryber.PDF.Layout
             return closed;
         }
 
-        protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
-        {
-            Native.PDFObjectRef oref = this.Region.OutputToPDF(context, writer);
-            return oref;
-        }
+        
     }
 }

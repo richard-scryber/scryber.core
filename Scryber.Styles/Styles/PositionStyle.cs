@@ -286,6 +286,27 @@ namespace Scryber.Styles
 
         #endregion
 
+        public bool XObject
+        {
+            get
+            {
+                bool xobj;
+                if (this.TryGetValue(StyleKeys.PositionXObjectKey, out xobj))
+                    return xobj;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionXObjectKey, value);
+            }
+        }
+
+        public void RemoveXObject()
+        {
+            this.RemoveValue(StyleKeys.PositionXObjectKey);
+        }
+        
         // obselete legacy properties - moved to Size
 
 

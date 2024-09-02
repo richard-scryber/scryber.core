@@ -9,19 +9,19 @@ namespace Scryber.PDF.Resources
 
         private string _type;
         private string _key;
-        private PDFLayoutXObject _layout;
+        private PDFLayoutPositionedRegionRun _layout;
         
         public override string ResourceType => _type;
         public override string ResourceKey => _key;
 
-        public PDFLayoutXObject Layout => _layout;
+        public PDFLayoutPositionedRegionRun Layout => _layout;
         
-        public PDFLayoutXObjectResource(string type, string key, PDFLayoutXObject layout) : base(ObjectTypes.CanvasXObject)
+        public PDFLayoutXObjectResource(string type, string key, PDFLayoutPositionedRegionRun layout) : base(ObjectTypes.CanvasXObject)
         {
             this._type = type;
             this._key = key;
             this._layout = layout ?? throw new ArgumentNullException(nameof(layout));
-            this.Name = this._layout.OutPutName;
+            this.Name = this._layout.OutputName;
         }
 
         

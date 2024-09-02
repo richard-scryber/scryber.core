@@ -120,6 +120,11 @@ namespace Scryber.PDF.Layout
         //
         // ctor(s)
         //
+        
+        /// <summary>
+        /// Gets or set the flag for the items' layout - Explicit means no adjustment for the flow should be made.
+        /// </summary>
+        public bool IsExplicitLayout { get; set; }
 
         #region protected PDFLayoutItem(PDFLayoutItem parent)
 

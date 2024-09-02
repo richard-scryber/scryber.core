@@ -124,14 +124,14 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region public bool IsFormXObject { get; set; }
-
-        /// <summary>
-        /// Returns true if this block should be rendered as an xObject (independent of the main content stream (or out xObject)
-        /// </summary>
-        public bool IsFormXObject { get; set; }
-
-        #endregion
+        // #region public bool IsFormXObject { get; set; }
+        //
+        // /// <summary>
+        // /// Returns true if this block should be rendered as an xObject (independent of the main content stream (or out xObject)
+        // /// </summary>
+        // public bool IsFormXObject { get; set; }
+        //
+        // #endregion
 
         #region public PDFRect XObjectViewPort {get;set;}
 
@@ -1025,6 +1025,7 @@ namespace Scryber.PDF.Layout
 
 
             PDFLayoutPositionedRegion created = new PDFLayoutPositionedRegion(this, comp, space, index, pos);
+            
             addTo.PositionedRegions.Add(created);
 
             if (addAssociatedRun)
@@ -1036,6 +1037,15 @@ namespace Scryber.PDF.Layout
                 {
                     run = beforeline.AddPositionedRun(created, comp);
                     run.IsFloating = isfloating;
+                }
+               
+                if (pos.XObjectRender)
+                {
+                    run.RenderAsXObject = true;
+                    run.OutputName = (PDFName)this.Owner.Document.GetIncrementID(ObjectTypes.CanvasXObject);
+                    var rsrc = new Resources.PDFLayoutXObjectResource(Resources.PDFResource.XObjectResourceType, this.ToString(), run);;
+                    addTo.GetLayoutPage().PageOwner.Register(rsrc);
+                    this.Owner.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
                 }
             }
             return created;

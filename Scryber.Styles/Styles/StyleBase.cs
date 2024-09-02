@@ -888,6 +888,7 @@ namespace Scryber.Styles
         {
             PDFPositionOptions options = new PDFPositionOptions();
             StyleValue<PositionMode> posmode;
+            StyleValue<bool> xobj;
 
             if (this.TryGetValue(StyleKeys.PositionModeKey, out posmode))
                 options.PositionMode = posmode.Value(this);
@@ -899,7 +900,13 @@ namespace Scryber.Styles
                 options.FillWidth = false;
             else if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value(this);
-            
+
+            if (this.TryGetValue(StyleKeys.PositionXObjectKey, out xobj))
+                options.XObjectRender = xobj.Value(this);
+            else
+            {
+                options.XObjectRender = false;
+            }
 
             StyleValue<Unit> unit;
 

@@ -40,6 +40,10 @@ namespace Scryber.PDF
         /// </summary>
         public FloatMode FloatMode { get; set; }
 
+        /// <summary>
+        /// Gets or sets the rendering mode for this component - in stream or as an xobject.
+        /// </summary>
+        public bool XObjectRender { get; set; }
 
         private Visibility _vis;
         /// <summary>

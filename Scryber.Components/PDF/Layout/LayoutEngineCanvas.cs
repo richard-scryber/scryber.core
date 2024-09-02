@@ -63,7 +63,7 @@ namespace Scryber.PDF.Layout
                 this.CloseCurrentLine();
 
                 canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
-                var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
+                //var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
                 var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
 
                 var size = new Size(canvas.Width, canvas.Height);
@@ -71,8 +71,8 @@ namespace Scryber.PDF.Layout
                 canvas.ClipRect = new Rect(position.X ?? Unit.Zero,
                                               position.Y ?? Unit.Zero,
                                               canvas.Width, canvas.Height);
-                this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
-                this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
+                //this.Context.DocumentLayout.CurrentPage.PageOwner.Register(rsrc);
+                //this.Context.Document.EnsureResource(rsrc.ResourceType, rsrc.ResourceKey, rsrc);
             }
         }
 
@@ -133,17 +133,17 @@ namespace Scryber.PDF.Layout
 
             
 
-            PDFLayoutXObject begin = this.Line.AddXObjectRun(this, this.Component, container, newpos, this.FullStyle);
+            PDFLayoutXObject xObj = this.Line.AddXObjectRun(this, this.Component, container, newpos, this.FullStyle);
             //begin.Matrix = PDFTransformationMatrix.Identity();
             //begin.Matrix.SetTranslation(50, 50);
 
-            begin.SetOutputSize(oldpos.Width, oldpos.Height);
+            xObj.SetOutputSize(oldpos.Width, oldpos.Height);
 
             
             //this.CurrentBlock.IsFormXObject = true;
             //this.CurrentBlock.XObjectViewPort = pos.ViewPort.Value;
 
-            return begin;
+            return xObj;
         }
 
         #region protected override void DoLayoutAChild(IPDFComponent comp, Styles.PDFStyle full)
@@ -159,13 +159,13 @@ namespace Scryber.PDF.Layout
 
             //For each child if there is not an explict Absolute setting then
             //we should treat them as relative
-            Styles.PositionStyle pos = full.Position;
-            PositionMode mode = pos.PositionMode;
-            
-            if (mode != PositionMode.Absolute || mode != PositionMode.Fixed)
-            {
-                pos.PositionMode = PositionMode.Absolute;
-            }
+            // Styles.PositionStyle pos = full.Position;
+            // PositionMode mode = pos.PositionMode;
+            //
+            // if (mode != PositionMode.Absolute || mode != PositionMode.Fixed)
+            // {
+            //     pos.PositionMode = PositionMode.Absolute;
+            // }
 
             base.DoLayoutAChild(comp, full);
 

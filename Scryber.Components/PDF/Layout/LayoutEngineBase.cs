@@ -288,7 +288,7 @@ namespace Scryber.PDF.Layout
         /// <param name="parent">The parent component to get the children for.</param>
         /// <param name="children"></param>
         /// <returns></returns>
-        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+        protected bool TryGetComponentChildren(IComponent parent, out ComponentList children)
         {
             children = GetComponentChildren(parent);
 
@@ -974,6 +974,10 @@ namespace Scryber.PDF.Layout
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
                     this.Context.PositionDepth += 1;
                     decrementDepthAfter = true;
+                }
+                else if (options.XObjectRender)
+                {
+                    positioned = this.BeginNewXObjectRegionForChild(options, comp, full);
                 }
             }
 
@@ -1724,6 +1728,15 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
             return ib;
+        }
+
+        protected virtual PDFLayoutRegion BeginNewXObjectRegionForChild(PDFPositionOptions pos, IComponent comp,
+            Style full)
+        {
+            PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
+            PDFLayoutBlock last = page.LastOpenBlock();
+            PDFLayoutRegion xObj = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            return xObj;
         }
 
         #endregion
@@ -2591,7 +2604,7 @@ namespace Scryber.PDF.Layout
         /// <param name="linetoAddTo">The current line in the layout.</param>
         /// <param name="options">The position options</param>
         /// <returns>True if the component could be added (i.e. there was enough space) or false.</returns>
-        protected bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
+        protected virtual bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
         {
             Rect content = new Rect(
                 options.Padding.Top + options.Margins.Top,
@@ -2658,9 +2671,10 @@ namespace Scryber.PDF.Layout
                 }
 
                 linetoAddTo.AddComponentRun(component, total, border, content, total.Height, options, style);
-                //Close the current line because we are not inline
-
-                linetoAddTo.Region.CloseCurrentItem();
+                
+                //Close the current line if we are a block.
+                if (options.PositionMode == PositionMode.Block)
+                    linetoAddTo.Region.CloseCurrentItem();
             }
             else
             {

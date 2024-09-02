@@ -270,6 +270,18 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = bounds;
         }
 
+        protected void UpdateTotalBoundsForExplicitParent(Point contextOffset)
+        {
+            var bounds = this.TotalBounds;
+
+            var xOffset = this.RelativeTo.PagePosition.X;
+            var yOffset = this.RelativeTo.PagePosition.Y;
+            bounds.X += this.RelativeOffset.X + contextOffset.X;
+            bounds.Y += this.RelativeOffset.Y + contextOffset.Y;
+
+            this.TotalBounds = bounds;
+        }
+
         /// <summary>
         /// Calculates the new total bounds for the absolute positioned region based on
         /// having an absolutely (or fixed) positioned parent, whose Total bounds will already have been calculated.
@@ -365,9 +377,12 @@ namespace Scryber.PDF.Layout
                 {
                     //Todo - push the floating block to the right.
                 }
-                
-                
-                if (mode == PositionMode.Fixed)
+
+                if (this.IsExplicitLayout)
+                {
+                    this.UpdateTotalBoundsForExplicitParent(context.Offset);
+                }
+                else if (mode == PositionMode.Fixed)
                 {
                     this.UpdateTotalBoundsForAbsoluteParent(context.Offset);
                 }

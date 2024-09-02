@@ -2,6 +2,8 @@
 using Scryber.Styles;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.PDF;
+using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components
 {
@@ -213,7 +215,15 @@ namespace Scryber.Svg.Components
 
         protected override Style GetBaseStyle()
         {
-            return base.GetBaseStyle();
+            var style = base.GetBaseStyle();
+            style.Position.PositionMode = PositionMode.Relative;
+            style.Overflow.Action = OverflowAction.Clip;
+            style.Overflow.Split = OverflowSplit.Never;
+            style.Size.Width = 300;
+            style.Size.Height = 150;
+            style.Position.XObject= true;
+            
+            return style;
         }
 
         public bool TryFindComponentByID(string id, out IComponent found)
@@ -247,6 +257,11 @@ namespace Scryber.Svg.Components
             return false;
         }
 
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
+        {
+            return new LayoutEngineSVG(this, parent);
+            //return base.CreateLayoutEngine(parent, context, style);
+        }
 
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {

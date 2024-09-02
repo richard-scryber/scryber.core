@@ -19,13 +19,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+using Scryber.PDF.Resources;
+using Scryber.PDF.Native;
 
 namespace Scryber.PDF.Layout
 {
-    public class PDFLayoutPositionedRegionRun : PDFLayoutRun
+    public class PDFLayoutPositionedRegionRun : PDFLayoutRun, IResourceContainer
     {
         /// <summary>
         /// Gets the RelativeRegion associated with this
@@ -41,17 +45,24 @@ namespace Scryber.PDF.Layout
             get; set;
         }
 
-        public PDFLayoutPositionedRegionRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner)
-            : base(line, owner)
+        public bool RenderAsXObject
         {
-            this.Region = region;
+            get;
+            set;
         }
 
-        public override void SetOffsetY(Unit y)
+        protected PDFPositionOptions PositionOptions
         {
-            //Do Nothing
+            get; 
+            set;
         }
 
+        protected Point Location
+        {
+            get;
+            set;
+        }
+        
         public override Unit Height
         {
             get { return Unit.Zero; }
@@ -64,11 +75,68 @@ namespace Scryber.PDF.Layout
             get { return _width; }
         }
 
+        protected PDFLayoutPage Page
+        {
+            get;
+            set;
+        }
+
+        public PDFTransformationMatrix Matrix
+        {
+            get; 
+            set;
+        }
+
+        public PDFResourceList Resources
+        {
+            get;
+            protected set;
+        }
+
+        public Rect? ClipRect
+        {
+            get;
+            set;
+        }
+
+        public PDFName OutputName
+        {
+            get;
+            set;
+        }
+        
+        public PDFObjectRef RenderReference { get; set; }
+
+        public IDocument Document
+        {
+            get { return this.Owner.Document; }
+        }
+
+        public PDFLayoutPositionedRegionRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner, PDFPositionOptions pos)
+            : base(line, owner)
+        {
+            this.Region = region;
+            this.PositionOptions = pos;
+        }
+
+        public override void SetOffsetY(Unit y)
+        {
+            //Do Nothing
+        }
+
+        
+
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
-            xoffset = 0;
-            yoffset = 0;
+            if (this.RenderAsXObject)
+            {
+                xoffset = 0;
+                yoffset = 0;
+                
+            }
+
             this.Region.PushComponentLayout(context, pageIndex, xoffset, yoffset);
+            this.Page = context.DocumentLayout.CurrentPage;
         }
 
         protected override bool DoClose(ref string msg)
@@ -89,10 +157,238 @@ namespace Scryber.PDF.Layout
                 context.Offset = Point.Empty;
             }
 
-            Native.PDFObjectRef oref = this.Region.OutputToPDF(context, writer);
+            Native.PDFObjectRef oref;
+            if (this.RenderAsXObject)
+            {
+                oref = this.OutputAsXObject(context, writer);
+                this.RenderReference = oref;
+            }
+            else
+            {
+                oref = this.Region.OutputToPDF(context, writer);
+            }
 
             context.Offset = oldOffset;
             return oref;
+        }
+
+        protected virtual Native.PDFObjectRef OutputAsXObject(PDFRenderContext context, PDFWriter writer)
+        {
+            // set up the new xObject
+            
+            var xObj = writer.BeginObject();
+            IStreamFilter[] filters = (context.Compression == OutputCompressionType.FlateDecode)
+                ? this.Page.PageCompressionFilters
+                : null;
+            writer.BeginStream(xObj, filters);
+
+            this.Location = context.Offset.Offset(0, this.Line.OffsetY);
+            var prevSpace = context.Space;
+            var prevGraphics = context.Graphics;
+
+            using (var g = this.CreateXObjectGraphics(writer, context.StyleStack, context))
+            {
+                context.Graphics = g;
+                context.Offset = Point.Empty;
+
+                this.Region.OutputToPDF(context, writer);
+            }
+
+            //write the xObjectContent
+            var len = writer.EndStream();
+            writer.BeginDictionary();
+            this.WriteXObjectDictionaryContent(context, writer, len, filters);
+            writer.EndDictionary();
+            writer.EndObject();
+            
+
+            
+
+            //restore graphics
+            context.Offset = this.Location;
+            context.Graphics = prevGraphics;
+            context.Space = prevSpace;
+            
+            this.WriteXObjectDo(context, writer);
+            
+            return xObj;
+
+            
+        }
+        
+        protected virtual bool WriteXObjectDo(PDFRenderContext context, PDFWriter writer)
+        {
+            
+            if (null != this.OutputName)
+            {
+
+                
+                context.Graphics.SaveGraphicsState();
+
+                var x = context.Offset.X.RealValue;
+                x = context.Graphics.GetXPosition(x);
+
+                var y = (context.Offset.Y + this.Height).RealValue;
+                y = context.Graphics.GetYPosition(y);
+
+
+
+
+                //Set the transformation matrix for the current offset independent of the matrix for the view-box
+
+                var origin = new Point(0, context.PageSize.Height);
+                origin.Y -= this.Height;
+                origin.Y -= this.Location.Y;
+
+                origin.X += this.Location.X;
+                
+                if(!origin.IsZero)
+                {
+                    var moveMatrix = new PDFTransformationMatrix();
+                    moveMatrix.SetTranslation(origin.X, origin.Y);
+                    context.Graphics.SetTransformationMatrix(moveMatrix, true, true);
+                }
+
+                context.Graphics.PaintXObject(this.OutputName);
+
+                context.Graphics.RestoreGraphicsState();
+
+                
+                return true;
+            }
+            else
+                return false;
+        }
+        
+        
+        private void WriteXObjectDictionaryContent(PDFRenderContext context, PDFWriter writer, long len, IStreamFilter[] filters)
+        {
+            writer.WriteDictionaryNameEntry("Type", "XObject");
+            writer.WriteDictionaryNameEntry("Subtype", "Form");
+
+            if (null != this.Matrix)
+            {
+                writer.BeginDictionaryEntry("Matrix");
+                writer.WriteArrayRealEntries(this.Matrix.Components);
+                writer.EndDictionaryEntry();
+            }
+
+            writer.BeginDictionaryEntry("BBox");
+            writer.BeginArrayS();
+
+            if (this.PositionOptions.ViewPort.HasValue)
+            {
+                Rect vp = this.PositionOptions.ViewPort.Value;
+                writer.WriteReal(vp.X.PointsValue);
+                writer.WriteRealS(vp.Y.PointsValue);
+                writer.WriteRealS(vp.Width.PointsValue);
+                writer.WriteRealS(vp.Height.PointsValue);
+            }
+            else
+            {
+                writer.WriteReal(0.0F);
+                writer.WriteRealS(0.0F);
+                writer.WriteRealS(this.Region.Width.PointsValue);
+                writer.WriteRealS(this.Region.Height.PointsValue);
+            }
+            writer.EndArray();
+            writer.EndDictionaryEntry();
+
+            
+            if (null != this.Resources)
+            {
+                var res = this.Resources.WriteResourceList(context, writer);
+                writer.WriteDictionaryObjectRefEntry("Resources", res);
+            }
+
+            if (null != filters && filters.Length > 0)
+            {
+                writer.BeginDictionaryEntry("Length");
+                writer.WriteNumberS(len);
+                writer.EndDictionaryEntry();
+                writer.BeginDictionaryEntry("Filter");
+                writer.BeginArray();
+
+                foreach (IStreamFilter filter in filters)
+                {
+                    writer.BeginArrayEntry();
+                    writer.WriteName(filter.FilterName);
+                    writer.EndArrayEntry();
+                }
+                writer.EndArray();
+                writer.EndDictionaryEntry();
+            }
+            else
+            {
+                writer.BeginDictionaryEntry("Length");
+                writer.WriteNumberS(len);
+                writer.EndDictionaryEntry();
+            }
+        }
+
+        protected virtual PDFGraphics CreateXObjectGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
+        {
+            var sz = new Size(this.Region.Width, this.Region.Height);
+            if(this.PositionOptions.ViewPort.HasValue)
+            {
+                sz = this.PositionOptions.ViewPort.Value.Size;
+            }
+            return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
+        }
+        
+        //
+        // IResourceContainer
+        //
+        
+        string IResourceContainer.Register(ISharedResource rsrc)
+        {
+            return this.Register((PDFResource)rsrc).Value;
+        }
+
+        public PDFName Register(PDFResource rsrc)
+        {
+            if (this.RenderAsXObject)
+            {
+                if (null == rsrc.Name || string.IsNullOrEmpty(rsrc.Name.Value))
+                {
+                    string name = this.Page.Document.DocumentComponent.GetIncrementID(rsrc.Type);
+                    rsrc.Name = (PDFName)name;
+                }
+
+                if (null == this.Resources)
+                    this.Resources = new PDFResourceList(this, false);
+
+                rsrc.RegisterUse(this.Resources, this.Owner);
+                return rsrc.Name;
+            }
+            else
+            {
+                var parent = this.GetParentResourceRegister();
+                if (null == parent)
+                    throw new InvalidOperationException(
+                        "This positioned run is not an xObject, but does not have a parent resource container to register resources with");
+                return (PDFName)parent.Register(rsrc);
+            }
+        }
+
+        public string MapPath(string source)
+        {
+            IResourceContainer parentRegister = this.GetParentResourceRegister();
+            if (null == parentRegister)
+                return source;
+            else
+                return parentRegister.MapPath(source);
+            
+        }
+
+        protected virtual IResourceContainer GetParentResourceRegister()
+        {
+            PDFLayoutItem parent = this.Parent;
+            while (null != parent && !(parent is IResourceContainer))
+            {
+                parent = parent.Parent;
+            }
+            return parent as IResourceContainer;
         }
     }
 }

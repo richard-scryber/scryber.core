@@ -304,6 +304,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public bool ExcludeFromOutput { get; set; }
 
+        
         //
         // ctor(s)
         //
@@ -962,6 +963,10 @@ namespace Scryber.PDF.Layout
             else if(this.PositionMode == PositionMode.Relative)
             {
                 return false; //Check with relative unit tests.
+            }
+            else if (this.IsExplicitLayout)
+            {
+                return false; //canvas should not be aligned.
             }
             else
                 return true;

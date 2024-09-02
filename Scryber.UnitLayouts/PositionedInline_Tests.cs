@@ -3188,5 +3188,57 @@ namespace Scryber.UnitLayouts
             
             
         }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Inline_21_NestedSVGLastLargeSmallMixed()
+        {
+            var path = AssertGetContentFile("Inline_21_NestedSVGLastLargeSmallMixed");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_21_NestedSVGLastLargeSmallMixed.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            
+            
+
+
+            //Both images of different (scaled) heights should be on the baseline.
+
+            var topLine = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(topLine);
+            Assert.AreEqual(Unit.Pt(300), topLine.Width);
+            var svgRun = topLine.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(svgRun);
+            
+            var svg = svgRun.Region.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(svg);
+            var line = svg.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            //Assert.AreEqual(8, line.Runs.Count);
+            
+            var imgDim = new Size(682, 452);
+
+            var spanBegin = line.Runs[0] as PDFLayoutInlineBegin;
+            Assert.IsNotNull(spanBegin);
+
+            Assert.Inconclusive("Needs tests applied");
+            
+            
+            
+        }
     }
 }

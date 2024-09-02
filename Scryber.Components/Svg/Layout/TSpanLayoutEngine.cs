@@ -25,8 +25,8 @@ namespace Scryber.Svg.Layout
             var textAnchor = full.GetValue(StyleKeys.TextAnchorKey, TextAnchor.Start);
             var domBase = full.GetValue(StyleKeys.DominantBaselineKey, DominantBaseline.Auto);
 
-            Unit yVal = full.GetValue(StyleKeys.PositionYKey, Unit.Zero);
-            Unit xVal = full.GetValue(StyleKeys.PositionXKey, Unit.Zero);
+            Unit yVal = full.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+            Unit xVal = full.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
 
             base.DoLayoutAChild(comp, full);
             

@@ -19,12 +19,35 @@ namespace Scryber.Svg.Components
         public override Unit Height { get => base.Height; set => base.Height = value; }
 
         [PDFAttribute("x")]
-        public override Unit X { get => base.X; set => base.X = value; }
+        public override Unit X {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
+            }
+        }
 
         [PDFAttribute("y")]
         public override Unit Y {
-            get => base.Y;
-            set => base.Y = value;
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
         }
 
 

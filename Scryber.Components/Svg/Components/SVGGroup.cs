@@ -3,6 +3,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components
 {
@@ -46,7 +47,7 @@ namespace Scryber.Svg.Components
             fullstyle.Overflow.Split = Drawing.OverflowSplit.Never;
             fullstyle.Overflow.Action = Drawing.OverflowAction.None; 
             //return new LayoutEnginePanel(this, parent);
-            return new LayoutEngineCanvas(this, parent);
+            return new LayoutEngineSVG(this, parent);
         }
     }
 }
