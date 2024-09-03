@@ -50,6 +50,8 @@ namespace Scryber.PDF.Layout
             get;
             set;
         }
+        
+        
 
         protected PDFPositionOptions PositionOptions
         {
@@ -105,7 +107,15 @@ namespace Scryber.PDF.Layout
             set;
         }
         
-        public PDFObjectRef RenderReference { get; set; }
+        /// <summary>
+        /// Gets the Object Reference for this run if rendered as an xobject
+        /// </summary>
+        public PDFObjectRef RenderReference { get; protected set; }
+        
+        /// <summary>
+        /// Gets the Bounding Box (BBox) for this run if rendered as an XObject
+        /// </summary>
+        public Rect RenderBoundingBox { get; protected set; }
 
         public IDocument Document
         {
@@ -190,8 +200,20 @@ namespace Scryber.PDF.Layout
             {
                 context.Graphics = g;
                 context.Offset = Point.Empty;
-
+                var prev = context.RenderMatrix;
+                
+                //store the offsets so that they can be used when calculating the render bounds.
+                if(null == context.RenderMatrix)
+                    context.RenderMatrix = PDFTransformationMatrix.Identity();
+                else
+                {
+                    context.RenderMatrix = context.RenderMatrix.Clone();
+                }
+                context.RenderMatrix.SetTranslation(this.Location.X, this.Location.Y);
+                
                 this.Region.OutputToPDF(context, writer);
+
+                context.RenderMatrix = prev;
             }
 
             //write the xObjectContent
@@ -237,9 +259,10 @@ namespace Scryber.PDF.Layout
                 //Set the transformation matrix for the current offset independent of the matrix for the view-box
 
                 var origin = new Point(0, context.PageSize.Height);
-                origin.Y -= this.Height;
-                origin.Y -= this.Location.Y;
-
+                origin.Y -= this.Region.Height;
+                //Y origin takes account of the margins as from the bottom up (so need to be included)
+                origin.Y -= this.Location.Y + (this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
+                //X origin does not need margins as from the left.
                 origin.X += this.Location.X;
                 
                 if(!origin.IsZero)
@@ -247,6 +270,7 @@ namespace Scryber.PDF.Layout
                     var moveMatrix = new PDFTransformationMatrix();
                     moveMatrix.SetTranslation(origin.X, origin.Y);
                     context.Graphics.SetTransformationMatrix(moveMatrix, true, true);
+                    
                 }
 
                 context.Graphics.PaintXObject(this.OutputName);
@@ -258,6 +282,25 @@ namespace Scryber.PDF.Layout
             }
             else
                 return false;
+        }
+
+        protected virtual Rect GetBoundingBox(PDFRenderContext context)
+        {
+            Rect vp = Rect.Empty;
+            if (this.PositionOptions.ViewPort.HasValue)
+            {
+                vp = this.PositionOptions.ViewPort.Value;
+            }
+            else
+            {
+                //Bounding box includes any margins.
+                vp = new Rect(
+                    Unit.Empty, Unit.Empty, 
+                    this.Region.Width + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
+                    this.Region.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
+            }
+            
+            return vp;
         }
         
         
@@ -273,27 +316,19 @@ namespace Scryber.PDF.Layout
                 writer.EndDictionaryEntry();
             }
 
+            var bbox = this.GetBoundingBox(context);
+            
             writer.BeginDictionaryEntry("BBox");
             writer.BeginArrayS();
+            writer.WriteReal(bbox.X.PointsValue);
+            writer.WriteRealS(bbox.Y.PointsValue);
+            writer.WriteRealS(bbox.Width.PointsValue);
+            writer.WriteRealS(bbox.Height.PointsValue);
 
-            if (this.PositionOptions.ViewPort.HasValue)
-            {
-                Rect vp = this.PositionOptions.ViewPort.Value;
-                writer.WriteReal(vp.X.PointsValue);
-                writer.WriteRealS(vp.Y.PointsValue);
-                writer.WriteRealS(vp.Width.PointsValue);
-                writer.WriteRealS(vp.Height.PointsValue);
-            }
-            else
-            {
-                writer.WriteReal(0.0F);
-                writer.WriteRealS(0.0F);
-                writer.WriteRealS(this.Region.Width.PointsValue);
-                writer.WriteRealS(this.Region.Height.PointsValue);
-            }
             writer.EndArray();
             writer.EndDictionaryEntry();
 
+            this.RenderBoundingBox = bbox;
             
             if (null != this.Resources)
             {
@@ -328,10 +363,16 @@ namespace Scryber.PDF.Layout
 
         protected virtual PDFGraphics CreateXObjectGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
-            var sz = new Size(this.Region.Width, this.Region.Height);
+            Size sz;
+            
             if(this.PositionOptions.ViewPort.HasValue)
             {
                 sz = this.PositionOptions.ViewPort.Value.Size;
+            }
+            else
+            {
+                sz = new Size(this.Region.Width + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
+                    this.Region.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
             }
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
         }

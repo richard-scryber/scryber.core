@@ -150,7 +150,7 @@ namespace Scryber.Drawing
 
             
 
-            this._matrix.TransformPoints(all);
+            all = this._matrix.TransformPoints(all);
 
             double maxX = all[0].X.PointsValue;
             double minX = all[0].X.PointsValue;

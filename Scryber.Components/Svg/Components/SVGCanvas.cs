@@ -216,7 +216,7 @@ namespace Scryber.Svg.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Position.PositionMode = PositionMode.Relative;
+            style.Position.PositionMode = PositionMode.InlineBlock;
             style.Overflow.Action = OverflowAction.Clip;
             style.Overflow.Split = OverflowSplit.Never;
             style.Size.Width = 300;

@@ -63,7 +63,7 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
 
-            
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
 
         }
 

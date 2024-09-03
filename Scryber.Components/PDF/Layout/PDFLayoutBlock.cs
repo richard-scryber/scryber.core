@@ -1325,6 +1325,8 @@ namespace Scryber.PDF.Layout
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the arrangement of block " + this.ToString() + " back with component " + component.UniqueID + " for content rectangle " + contentRect.ToString());
 
+                    if (null != context.RenderMatrix)
+                        borderRect = context.RenderMatrix.TransformBounds(borderRect);
                     component.SetArrangement(context, fullstyle, borderRect);
                 }
                 
