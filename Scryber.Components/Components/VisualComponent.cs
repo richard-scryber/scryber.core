@@ -1219,13 +1219,38 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
                 else
-                    return PositionMode.Block;
+                    return PositionMode.Static;
             }
             set
             {
                 this.Style.SetValue(StyleKeys.PositionModeKey, value);
+            }
+        }
+
+        #endregion
+        
+        #region public DisplayMode DisplayMode
+
+        /// <summary>
+        /// Gets or sets the position mode of this component (flow, relative, absolute)
+        /// </summary>
+        [PDFAttribute("display-mode", Const.PDFStylesNamespace)]
+        [PDFDesignable("Display", Category = "Layout", Priority = 1, Type = "DisplayMode")]
+        [PDFJSConvertor("scryber.studio.design.convertors.displayMode_css")]
+        public DisplayMode DisplayMode
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                else
+                    return DisplayMode.Block;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionDisplayKey, value);
             }
         }
 

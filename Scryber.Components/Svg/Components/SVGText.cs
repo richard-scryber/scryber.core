@@ -122,7 +122,7 @@ namespace Scryber.Svg.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Position.PositionMode = PositionMode.Block;
+            style.Position.DisplayMode = DisplayMode.Block;
             style.Padding.Right = 4;
             style.Text.WrapText = Text.WordWrap.NoWrap;
             style.Text.PositionFromBaseline = true;

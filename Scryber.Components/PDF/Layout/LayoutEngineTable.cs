@@ -86,7 +86,7 @@ namespace Scryber.PDF.Layout
 
                 this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Table_Build_Process);
 
-                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.PositionMode);
+                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.DisplayMode);
 
                 Rect available = this.CalculateTableSpace(tableBlock, tablepos);
 
@@ -198,7 +198,7 @@ namespace Scryber.PDF.Layout
             this.Context.StyleStack.Push(rowRef.AppliedStyle);
 
 
-            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
                 return Unit.Zero;
 
             if (repeating) //for repeating rows we hold it in the grid
@@ -220,7 +220,7 @@ namespace Scryber.PDF.Layout
 
             PDFPositionOptions rowpos = rowStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
-            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.PositionMode);
+            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.DisplayMode);
 
             rowRef.Block = this._rowblock;
 
@@ -380,7 +380,7 @@ namespace Scryber.PDF.Layout
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
-                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) != PositionMode.Invisible)
+                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) != DisplayMode.Invisible)
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
@@ -572,8 +572,8 @@ namespace Scryber.PDF.Layout
 
                 //If we are set to invisible then ingnore eveything
 
-                StyleValue<PositionMode> found;
-                if(rowfull.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+                StyleValue<DisplayMode> found;
+                if(rowfull.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
                 {
                     this.StyleStack.Pop();
                     row.Visible = false;
@@ -622,8 +622,8 @@ namespace Scryber.PDF.Layout
 
                     //If we are set to invisible then ingnore eveything
 
-                    if (cellfull.TryGetValue(StyleKeys.PositionModeKey, out found)
-                        && found.Value(cellfull) == PositionMode.Invisible)
+                    if (cellfull.TryGetValue(StyleKeys.PositionDisplayKey, out found)
+                        && found.Value(cellfull) == DisplayMode.Invisible)
                     {
                         this.StyleStack.Pop();
                         cell.Visible = false;

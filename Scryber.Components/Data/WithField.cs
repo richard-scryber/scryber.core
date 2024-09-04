@@ -52,7 +52,7 @@ namespace Scryber.Data
         {
             Style style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }
@@ -161,18 +161,18 @@ namespace Scryber.Data
 
                 if (this.LayoutType == FieldLayoutType.Above)
                 {
-                    label.PositionMode = Drawing.PositionMode.Block;
+                    label.DisplayMode = Drawing.DisplayMode.Block;
 
                 }
                 else if (this.LayoutType == FieldLayoutType.NextTo)
                 {
-                    this.PositionMode = Drawing.PositionMode.Block;
-                    label.PositionMode = Drawing.PositionMode.Block;
+                    this.DisplayMode = Drawing.DisplayMode.Block;
+                    label.DisplayMode = Drawing.DisplayMode.Block;
                     this.ColumnCount = 2;
                     this.Contents.Add(new ColumnBreak());
                 }
                 else
-                    label.PositionMode = Drawing.PositionMode.Inline;
+                    label.DisplayMode = Drawing.DisplayMode.Inline;
             }
 
             VisualComponent field = this.DoBuildItemField(context);
@@ -180,9 +180,9 @@ namespace Scryber.Data
             field.StyleClass = this.ValueClass;
             this.Contents.Add(field);
             if (this.LayoutType == FieldLayoutType.Inline)
-                field.PositionMode = Drawing.PositionMode.Inline;
+                field.DisplayMode = Drawing.DisplayMode.Inline;
             else
-                field.PositionMode = Drawing.PositionMode.Block;
+                field.DisplayMode = Drawing.DisplayMode.Block;
 
         }
 

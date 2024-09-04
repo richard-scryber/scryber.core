@@ -299,7 +299,7 @@ namespace Scryber.PDF.Layout
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, DisplayMode mode)
         {
             if (this.IsClosed)
                 throw new InvalidOperationException(Errors.CannotLayoutAPageThatHasBeenClosed);

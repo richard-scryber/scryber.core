@@ -26,7 +26,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Position.PositionMode = Drawing.PositionMode.InlineBlock;
+            style.Position.DisplayMode = Drawing.DisplayMode.InlineBlock;
 
             return style;
         }

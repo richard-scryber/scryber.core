@@ -50,7 +50,7 @@ namespace Scryber.Styles
                 else if (this.IsDefined(StyleKeys.PositionXKey) || this.IsDefined(StyleKeys.PositionYKey))
                     return PositionMode.Relative;
                 else
-                    return PositionMode.Block;
+                    return PositionMode.Static;
             }
             set
             {
@@ -58,9 +58,32 @@ namespace Scryber.Styles
             }
         }
 
+        public DisplayMode DisplayMode
+        {
+            get
+            {
+                DisplayMode val;
+                if (this.TryGetValue(StyleKeys.PositionDisplayKey, out val))
+                    return val;
+                else
+                {
+                    return DisplayMode.Block;
+                }
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionDisplayKey, value);
+            }
+        }
+
         public void RemovePositionMode()
         {
             this.RemoveValue(StyleKeys.PositionModeKey);
+        }
+
+        public void RemoveDisplayMode()
+        {
+            this.RemoveValue(StyleKeys.PositionDisplayKey);
         }
 
         #endregion

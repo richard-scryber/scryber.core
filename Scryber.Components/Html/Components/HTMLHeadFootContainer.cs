@@ -182,7 +182,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }
@@ -250,7 +250,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.Size.FullWidth = true;
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
             return style;
         }
     }

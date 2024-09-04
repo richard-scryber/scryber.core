@@ -293,6 +293,12 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public DisplayMode DisplayMode
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets or sets the floating blocks in this region.
         /// </summary>
@@ -312,7 +318,7 @@ namespace Scryber.PDF.Layout
         #region public PDFLayoutRegion(PDFLayoutBlock block, IPDFComponent owner, PDFRect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign)
 
         public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign)
-            : this(block,owner,contentbounds,columnindex,halign,valign, PositionMode.Block)
+            : this(block,owner,contentbounds,columnindex,halign,valign, DisplayMode.Block, PositionMode.Static)
         {
         }
 
@@ -326,7 +332,7 @@ namespace Scryber.PDF.Layout
         /// <param name="block"></param>
         /// <param name="columnindex"></param>
         /// <param name="contentbounds"></param>
-        public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign, PositionMode mode)
+        public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign, DisplayMode display, PositionMode position)
             : base(block, owner)
         {
             this.UsedSize = Size.Empty;
@@ -334,7 +340,8 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = contentbounds;
             this.HAlignment = halign;
             this.VAlignment = valign;
-            this.PositionMode = mode;
+            this.PositionMode = position;
+            this.DisplayMode = display;
         }
 
         #endregion
@@ -1103,10 +1110,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="positionMode"></param>
         /// <returns></returns>
-        public PDFLayoutLine StartOrReturnCurrentLine(PositionMode mode)
+        public PDFLayoutLine StartOrReturnCurrentLine(DisplayMode mode)
         {
             PDFLayoutLine line;
-            if (mode == PositionMode.Inline)
+            if (mode == DisplayMode.Inline)
             {
                 //Just make sure we have an open and current line.
                 if (this.CurrentItem is PDFLayoutLine)
@@ -1118,7 +1125,7 @@ namespace Scryber.PDF.Layout
                     line = this.BeginNewLine();
                 }
             }
-            else if (mode == PositionMode.Block)
+            else if (mode == DisplayMode.Block)
             {
                 if (this.HasOpenItem)
                     this.CloseCurrentItem();

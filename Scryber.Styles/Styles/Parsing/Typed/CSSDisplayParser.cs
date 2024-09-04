@@ -7,17 +7,17 @@ namespace Scryber.Styles.Parsing.Typed
     /// <summary>
     /// Parses and sets the components text decoration option based on the CSS names
     /// </summary>
-    public class CSSDisplayParser : CSSEnumStyleParser<PositionMode>
+    public class CSSDisplayParser : CSSEnumStyleParser<DisplayMode>
     {
         public CSSDisplayParser()
-            : base(CSSStyleItems.Display, StyleKeys.PositionModeKey)
+            : base(CSSStyleItems.Display, StyleKeys.PositionDisplayKey)
         {
         }
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
-            PositionMode display;
+            DisplayMode display;
             if (reader.ReadNextValue())
             {
                 string value = reader.CurrentTextValue;
@@ -26,7 +26,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, DoConvertPosition);
                 }
-                if (TryGetPositionEnum(value, out display))
+                if (TryGetDisplayEnum(value, out display))
                 {
                     this.SetValue(onStyle, display);
                     result = true;
@@ -39,19 +39,19 @@ namespace Scryber.Styles.Parsing.Typed
         }
 
 
-        protected bool DoConvertPosition(StyleBase style, object value, out PositionMode position)
+        protected bool DoConvertPosition(StyleBase style, object value, out DisplayMode display)
         {
             if(null == value)
             {
-                position = PositionMode.Block;
+                display = DisplayMode.Block;
                 return false;
             }
-            else if(value is PositionMode p)
+            else if(value is DisplayMode p)
             {
-                position = p;
+                display = p;
                 return true;
             }
-            else if(TryGetPositionEnum(value.ToString(), out position))
+            else if(TryGetDisplayEnum(value.ToString(), out display))
             {
                 return true;
             }
@@ -61,24 +61,24 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        public static bool TryGetPositionEnum(string value, out PositionMode display)
+        public static bool TryGetDisplayEnum(string value, out DisplayMode display)
         {
             switch (value.ToLower())
             {
                 case ("inline"):
-                    display = PositionMode.Inline;
+                    display = DisplayMode.Inline;
                     return true;
                 case("inline-block"):
-                    display = PositionMode.InlineBlock;
+                    display = DisplayMode.InlineBlock;
                     return true;
                 case ("block"):
-                    display = PositionMode.Block;
+                    display = DisplayMode.Block;
                     return true;
                 case ("none"):
-                    display = PositionMode.Invisible;
+                    display = DisplayMode.Invisible;
                     return true;
                 default:
-                    display = PositionMode.Block;
+                    display = DisplayMode.Block;
                     return false;
 
             }

@@ -327,7 +327,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(img.ID));
                 label.Margins = new Thickness(0, 0, 10, 0);
-                label.PositionMode = PositionMode.Block;
+                label.DisplayMode = DisplayMode.Block;
                 page.Contents.Add(label);
 
                 ids.Add(System.IO.Path.GetFileName(src));

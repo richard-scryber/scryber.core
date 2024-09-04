@@ -81,7 +81,7 @@ namespace Scryber.Styles
         public Style GetFullStyle(IComponent component, Size pageSize, ParentComponentSizer sizer, Size fontSize, Unit rootFontSize)
         {
             Style style = BuildFullStyle(component);
-            PositionMode mode = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+            PositionMode mode = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
             Size containerSize;
             if(mode == PositionMode.Absolute)
             {
@@ -93,7 +93,7 @@ namespace Scryber.Styles
             }
             else
             {
-                containerSize = sizer(component, style, PositionMode.Block);
+                containerSize = sizer(component, style, PositionMode.Static);
             }
 
             this._keyHolder.Clear();

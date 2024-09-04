@@ -1245,7 +1245,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image1";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 1. An inline image at natural size, new line at text size that will flow onto multiple lines afterwards"));
 
@@ -1346,7 +1346,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image2";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("2. Inline and text size of 60pt with overflowing content"));
 
@@ -1463,7 +1463,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image3";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 3. Inline at explicit 60pt height"));
@@ -1541,7 +1541,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image4";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Width = 100;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width with content overflowing onto multiple lines"));
@@ -1636,7 +1636,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image5";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 
@@ -1748,7 +1748,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image6";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 
@@ -1758,7 +1758,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image6";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 80;
             pg.Contents.Add(img);
 
@@ -1918,7 +1918,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image1";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 40;
             
             pg.Contents.Add(img);
@@ -1929,7 +1929,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image2";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 

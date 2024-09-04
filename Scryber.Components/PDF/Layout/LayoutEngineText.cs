@@ -275,7 +275,7 @@ namespace Scryber.PDF.Layout
             this._posopts = fullstyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             this._textopts = fullstyle.CreateTextOptions();
 
-            if (this._posopts.PositionMode == PositionMode.Invisible)
+            if (this._posopts.DisplayMode == DisplayMode.Invisible)
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping the layout of the text component " + this.TextComponent.ID + " as it is invisible");
@@ -378,7 +378,7 @@ namespace Scryber.PDF.Layout
             Unit inset = Unit.Zero;
             if (line.IsEmpty == false)
                 inset = line.Width;
-            else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.PositionMode != PositionMode.Inline || started))
+            else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.DisplayMode != DisplayMode.Inline || started))
             {
                 inset += this.TextRenderOptions.FirstLineInset.Value;
 
@@ -835,7 +835,7 @@ namespace Scryber.PDF.Layout
                     ispositioned = true;
                     break;
                 }
-                else if (block.Position.PositionMode == PositionMode.InlineBlock &&
+                else if (block.Position.DisplayMode == DisplayMode.InlineBlock &&
                          block.CurrentRegion == block.Columns[block.Columns.Length - 1])
                 {
                     ispositioned = true;

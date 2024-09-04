@@ -147,8 +147,8 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style s = base.GetBaseStyle();
-            s.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
-            
+            s.Position.DisplayMode = Scryber.Drawing.DisplayMode.Block;
+            s.Position.PositionMode = PositionMode.Static;
             return s;
         }
 
@@ -160,7 +160,7 @@ namespace Scryber.Components
         /// <param name="fullstyle"></param>
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDF.PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            if (this.Visible && fullstyle.Position.PositionMode != PositionMode.Invisible)
+            if (this.Visible && fullstyle.Position.DisplayMode != DisplayMode.Invisible)
             {
                 IResourceContainer resources = this.GetResourceContainer();
                 if (null == resources)
@@ -190,7 +190,7 @@ namespace Scryber.Components
             if (null == full)
                 full = context.FullStyle;
 
-            if (full.Position.PositionMode == PositionMode.Invisible)
+            if (full.Position.DisplayMode == DisplayMode.Invisible)
                 return null;
 
             PDFImageXObject img = this.GetImageObject(context, full);

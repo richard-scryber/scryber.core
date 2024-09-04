@@ -209,8 +209,8 @@ namespace Scryber.PDF.Layout
 
 
 
-            StyleValue<PositionMode> found;
-            if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value(this._style) == PositionMode.Invisible)
+            StyleValue<DisplayMode> found;
+            if (this._style.TryGetValue(StyleKeys.PositionDisplayKey, out found) && found.Value(this._style) == DisplayMode.Invisible)
             {
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
@@ -604,7 +604,7 @@ namespace Scryber.PDF.Layout
                         var img = new Image();
                         img.Source = (content as ContentImageDescriptor).Source;
                         img.ElementName = "img";
-                        img.PositionMode = PositionMode.Inline;
+                        img.DisplayMode = DisplayMode.Inline;
                         children.Add(img);
                         added = !string.IsNullOrEmpty(img.Source);
                     }
@@ -781,7 +781,7 @@ namespace Scryber.PDF.Layout
 
         #region protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
 
-        private PositionMode _lastPositionMode = PositionMode.Block;
+        private DisplayMode _lastPositionMode = DisplayMode.Block;
         private Whitespace _lastWhitespace = null;
 
         /// <summary>
@@ -794,8 +794,8 @@ namespace Scryber.PDF.Layout
         protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
         {
             var currentIsText = IsText(current);
-            var nextPosMode = currentIsText ? PositionMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
-            if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+            var nextPosMode = currentIsText ? DisplayMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+            if (_lastPositionMode == DisplayMode.Inline || _lastPositionMode == DisplayMode.InlineBlock)
             {
                 if (current is Whitespace ws)
                 {
@@ -804,7 +804,7 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+                    if (_lastPositionMode == DisplayMode.Inline || _lastPositionMode == DisplayMode.InlineBlock)
                     {
                         //We are inline
                         if (null != _lastWhitespace && _lastWhitespace.ReaderFormat != TextFormat.Plain)
@@ -814,7 +814,7 @@ namespace Scryber.PDF.Layout
                             {
                                 //Do Nothing as the text spacing should be handled by this component
                             }
-                            else if (nextPosMode == PositionMode.Inline || nextPosMode == PositionMode.InlineBlock)
+                            else if (nextPosMode == DisplayMode.Inline || nextPosMode == DisplayMode.InlineBlock)
                             {
                                 TextLiteral literal = new TextLiteral(" ", TextFormat.Plain);
                                 literal.Parent = current.Parent;
@@ -952,7 +952,7 @@ namespace Scryber.PDF.Layout
             if (IsStyled(comp))
             {
                 options = full.CreatePostionOptions(this.Context.PositionDepth > 0);
-
+                
                 if (options.PositionMode == PositionMode.Fixed)
                 {
                     positioned = this.BeginNewAbsoluteRegionForChild(options, comp, full);
@@ -965,7 +965,7 @@ namespace Scryber.PDF.Layout
                     this.Context.PositionDepth += 1;
                     decrementDepthAfter = true;
                 }
-                else if (options.PositionMode == PositionMode.InlineBlock)
+                else if (options.DisplayMode == DisplayMode.InlineBlock)
                 {
                     positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
                 }
@@ -1497,7 +1497,7 @@ namespace Scryber.PDF.Layout
                 
                 var run = positioned.AssociatedRun;
                 run.Line.Runs.Remove(run);
-                var line = newRegion.StartOrReturnCurrentLine(PositionMode.Inline);
+                var line = newRegion.StartOrReturnCurrentLine(DisplayMode.Inline);
                 line.AddRun(run);
                 
                 //To do - update the current position.
@@ -1584,7 +1584,7 @@ namespace Scryber.PDF.Layout
             if (null == positioned)
                 throw new ArgumentNullException("positioned");
 
-            if (pos.PositionMode == PositionMode.Inline)
+            if (pos.PositionMode == PositionMode.Static)
                 throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absolute");
 
             //Get the block that sits in the positioned region
@@ -2190,7 +2190,7 @@ namespace Scryber.PDF.Layout
             else if ((ablock.Owner is PDFPageHeader) || (ablock.Owner is PDFPageFooter))
                 return false;
 
-            else if (this.FullStyle.Position.PositionMode == PositionMode.Inline)
+            else if (this.FullStyle.Position.DisplayMode == DisplayMode.Inline)
                 return false;
 
             else
@@ -2525,7 +2525,7 @@ namespace Scryber.PDF.Layout
             if (position.Width.HasValue)
                 total.Width = position.Width.Value;
 
-            PDFLayoutBlock block = ((PDFLayoutBlock)joinToRegion.Parent).BeginNewBlock(this.Component, this, this.FullStyle, position.PositionMode);
+            PDFLayoutBlock block = ((PDFLayoutBlock)joinToRegion.Parent).BeginNewBlock(this.Component, this, this.FullStyle, position.DisplayMode);
             block.InitRegions(total, position, options, this.Context);
             block.BlockRepeatIndex = repeatindex;
             this.CurrentBlock = block;
@@ -2567,11 +2567,11 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
             PDFLayoutLine linetoAddTo = null;
-            PositionMode mode = options.PositionMode;
+            DisplayMode mode = options.DisplayMode;
 
             if (region.HasOpenItem)
             {
-                if (mode == PositionMode.Block)
+                if (mode == DisplayMode.Block)
                 {
                     region.CloseCurrentItem();
                     linetoAddTo = region.BeginNewLine();
@@ -2655,7 +2655,7 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            if (options.PositionMode != PositionMode.Inline)
+            if (options.DisplayMode != DisplayMode.Inline)
             {
                 if (component is IPDFImageComponent && !canfitVertical) //Did we overflow? If so recalculate an image size
                 {
@@ -2674,7 +2674,7 @@ namespace Scryber.PDF.Layout
                 linetoAddTo.AddComponentRun(component, total, border, content, total.Height, options, style);
                 
                 //Close the current line if we are a block.
-                if (options.PositionMode == PositionMode.Block)
+                if (options.DisplayMode == DisplayMode.Block)
                     linetoAddTo.Region.CloseCurrentItem();
             }
             else
@@ -2803,21 +2803,21 @@ namespace Scryber.PDF.Layout
         /// <param name="region"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        protected PDFLayoutLine GetOpenLine(Unit requiredwidth, PDFLayoutRegion region, PositionMode mode)
+        protected PDFLayoutLine GetOpenLine(Unit requiredwidth, PDFLayoutRegion region, DisplayMode mode)
         {
             PDFLayoutLine linetoAddTo;
             switch (mode)
             {
-                case PositionMode.Absolute:
-                case PositionMode.Relative:
-                case PositionMode.Block:
+                case DisplayMode.Block:
+                case DisplayMode.InlineBlock:
+                        
                     // Close the current line and start a new one
                     if (region.HasOpenItem)
                         region.CloseCurrentItem();
                     linetoAddTo = region.BeginNewLine();
                     break;
 
-                case PositionMode.Inline:
+                case DisplayMode.Inline:
                     //Check that the width fits on the current line
                     if (region.HasOpenItem && region.CurrentItem is PDFLayoutLine)
                     {
@@ -2835,7 +2835,7 @@ namespace Scryber.PDF.Layout
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("PositionMode");
+                    throw new ArgumentOutOfRangeException("mode");
             }
             return linetoAddTo;
         }

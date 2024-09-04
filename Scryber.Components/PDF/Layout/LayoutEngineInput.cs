@@ -46,7 +46,7 @@ namespace Scryber.PDF.Layout
 
             xObject.Close();
 
-            if (pos.PositionMode == Drawing.PositionMode.Block)
+            if (pos.DisplayMode == Drawing.DisplayMode.Block)
             {
                 this.CloseCurrentLine();
             }

@@ -41,7 +41,7 @@ namespace Scryber.Components
             Style inherited = base.GetBaseStyle();
             inherited.Stroke.Width = new Unit(1, PageUnits.Points);
             inherited.Stroke.Color = StandardColors.Black;
-            inherited.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
+            inherited.Position.DisplayMode = Scryber.Drawing.DisplayMode.Block;
             inherited.Fill.Style = FillType.None;
 
             return inherited;

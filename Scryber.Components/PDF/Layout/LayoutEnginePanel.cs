@@ -61,7 +61,7 @@ namespace Scryber.PDF.Layout
 
             PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = this.FullStyle.CreateColumnOptions();
-            if (pos.PositionMode != Drawing.PositionMode.Inline)
+            if (pos.DisplayMode != Drawing.DisplayMode.Inline)
             {
                 this.DoLayoutBlockComponent(pos, columns);
             }
@@ -196,7 +196,7 @@ namespace Scryber.PDF.Layout
                 CurrentBlock = containerBlock;
                 //containerRegion = this.BeginNewRelativeRegionForChild(position, this.Component, this.FullStyle);
                 containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, isfloating: false, addAssociatedRun: true);
-                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, DisplayMode.Block);
                 return containerBlock;
 
             }
@@ -206,7 +206,7 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, PositionMode.Block);
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, DisplayMode.Block);
                 CurrentBlock.BlockRepeatIndex = 0;
                 return containerBlock;
             }

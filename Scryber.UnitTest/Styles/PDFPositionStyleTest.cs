@@ -169,7 +169,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Default 
 
-            PositionMode expected = PositionMode.Block;
+            PositionMode expected = PositionMode.Static;
             Assert.AreEqual(expected, target.PositionMode);
 
             //Set value
@@ -189,7 +189,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Remove value
 
-            expected = PositionMode.Block;
+            expected = PositionMode.Static;
             target.RemovePositionMode();
             actual = target.PositionMode;
             Assert.AreEqual(expected, actual);
@@ -217,6 +217,53 @@ namespace Scryber.Core.UnitTests.Styles
             target.PositionMode = expected;
             actual = target.PositionMode;
             Assert.AreEqual(expected, actual);
+            
+        }
+
+
+        #endregion
+        
+        #region public void Position_PositionModeTest()
+
+        /// <summary>
+        ///A test for PositionMode
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_DisplayModeTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            //Default 
+
+            DisplayMode expected = DisplayMode.Block;
+            Assert.AreEqual(expected, target.DisplayMode);
+
+            //Set value
+
+            expected = DisplayMode.InlineBlock;
+            DisplayMode actual;
+            target.DisplayMode = expected;
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = DisplayMode.Invisible;
+            target.DisplayMode = expected;
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            //Remove value
+
+            expected = DisplayMode.Block;
+            target.RemoveDisplayMode();
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            // Check the X or Y setting to relative
+
+            
             
         }
 

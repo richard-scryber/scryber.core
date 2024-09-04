@@ -303,9 +303,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
-        public static readonly StyleKey<bool> PositionXObjectKey =
-            StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"xobj", PositionItemKey);
-        
+        public static readonly StyleKey<bool> PositionXObjectKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"xobj", PositionItemKey);
+
+        public static readonly StyleKey<DisplayMode> PositionDisplayKey = StyleKey.InternalCreateStyleValueKey<DisplayMode>((ObjectType)"disp", PositionItemKey);
 
         //SVG - specific x, y, r, rx, ry, cx, cy.
         // The width and height style keys are from standard as per spec - need to check with the drawing ops for this.

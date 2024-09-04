@@ -13,7 +13,7 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             bool result = true;
-            PositionMode found = PositionMode.Block;
+            PositionMode found = PositionMode.Static;
             if (reader.ReadNextValue())
             {
                 var val = reader.CurrentTextValue;
@@ -40,7 +40,7 @@ namespace Scryber.Styles.Parsing.Typed
         {
             if (null == value)
             {
-                mode = PositionMode.Block;
+                mode = PositionMode.Static;
                 return false;
             }
             else if (value is PositionMode m)
@@ -59,7 +59,7 @@ namespace Scryber.Styles.Parsing.Typed
 
         public static bool TryGetPositionMode(string value, out PositionMode mode)
         {
-            mode = PositionMode.Block;
+            mode = PositionMode.Static;
             if (string.IsNullOrEmpty(value))
                 return false;
 
@@ -73,8 +73,8 @@ namespace Scryber.Styles.Parsing.Typed
                     mode = PositionMode.Absolute;
                     return true;
 
-                case ("inline-block"):
-                    mode = PositionMode.InlineBlock;
+                case ("static"):
+                    mode = PositionMode.Static;
                     return true;
 
                 case ("fixed"):

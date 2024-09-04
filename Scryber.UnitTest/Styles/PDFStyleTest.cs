@@ -78,7 +78,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(OverflowAction.NewPage, actual.OverflowAction);
             Assert.AreEqual(OverflowSplit.Any, actual.OverflowSplit);
             Assert.AreEqual(Thickness.Empty(), actual.Padding);
-            Assert.AreEqual(PositionMode.Block, actual.PositionMode);
+            Assert.AreEqual(PositionMode.Static, actual.PositionMode);
+            Assert.AreEqual(DisplayMode.Block, actual.DisplayMode);
             Assert.IsFalse(actual.VAlign.HasValue);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
             Assert.AreEqual(null, actual.Height);
@@ -97,7 +98,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(null, actual.MaximumWidth);
 
             target = new Style();
-            target.Position.PositionMode = PositionMode.Inline;
+            target.Position.PositionMode = PositionMode.Relative;
+            target.Position.DisplayMode = DisplayMode.InlineBlock;
             target.Size.FullWidth = true;
             target.Position.HAlign = HorizontalAlignment.Center;
             target.Position.VAlign = VerticalAlignment.Middle;
@@ -155,7 +157,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)20, actual.Padding.Left);
             Assert.AreEqual((Unit)40, actual.Padding.Right);
 
-            Assert.AreEqual(PositionMode.Inline, actual.PositionMode);
+            Assert.AreEqual(PositionMode.Relative, actual.PositionMode);
+            Assert.AreEqual(DisplayMode.InlineBlock, actual.DisplayMode);
             Assert.AreEqual(VerticalAlignment.Middle, actual.VAlign);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
 
@@ -191,8 +194,9 @@ namespace Scryber.Core.UnitTests.Styles
 
             target = new Style();
 
-            target.Position.PositionMode = PositionMode.Inline; //For background and border of text, we need to be inline
-
+            target.Position.PositionMode = PositionMode.Relative; //For background and border of text, we need to be inline
+            target.Position.DisplayMode = DisplayMode.Inline;
+            
             target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
 
@@ -248,7 +252,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             target = new Style();
 
-            target.Position.PositionMode = PositionMode.Block; //Background and border of text, should be ignored
+            target.Position.DisplayMode = DisplayMode.Block; //Background and border of text, should be ignored
 
             target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;

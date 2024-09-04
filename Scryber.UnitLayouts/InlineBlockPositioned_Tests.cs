@@ -125,7 +125,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = 10,
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 //Margins = new Thickness(5)
@@ -220,7 +220,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight * 2,
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
             };
@@ -235,7 +235,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight / 2,
                 Width = 50,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
             };
@@ -254,7 +254,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = (lineHeight * 3) - 10, //take off the margins.
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
                 Margins = 5
@@ -363,7 +363,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight * 2,
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 VerticalAlignment = vAlign
@@ -380,7 +380,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight / 2,
                 Width = 50,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
                 VerticalAlignment = vAlign
@@ -400,7 +400,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = (lineHeight * 3) - 10, //take off the margins
                 Width = 100 - 10, //take off the margins
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
                 VerticalAlignment = vAlign,
@@ -698,7 +698,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight * 2,
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 VerticalAlignment = VerticalAlignment.Top
@@ -715,7 +715,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight / 2,
                 Width = 50,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
                 VerticalAlignment = VerticalAlignment.Top
@@ -734,7 +734,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = (lineHeight * 3) - 10, //take off the margins
                 Width = 100 - 10, //take off the margins
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
                 VerticalAlignment = VerticalAlignment.Top,
@@ -1032,7 +1032,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight * 2,
                 Width = 100,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 VerticalAlignment = vAlign
@@ -1049,7 +1049,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = lineHeight / 2,
                 Width = 50,
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Aqua,
                 VerticalAlignment = vAlign
@@ -1069,7 +1069,7 @@ namespace Scryber.UnitLayouts
             {
                 Height = (lineHeight * 3) - 10, //take off the margins
                 Width = 100 - 10, //take off the margins
-                PositionMode = Drawing.PositionMode.InlineBlock,
+                DisplayMode = Drawing.DisplayMode.InlineBlock,
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Lime,
                 VerticalAlignment = vAlign,

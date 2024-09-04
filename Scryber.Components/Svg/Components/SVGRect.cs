@@ -198,7 +198,7 @@ namespace Scryber.Svg.Components
             {
                 if (this.Visible == false)
                     return "none";
-                else if (this.Style.TryGetValue(StyleKeys.PositionModeKey, out StyleValue<PositionMode> posValue))
+                else if (this.Style.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> posValue))
                     return posValue.Value(this.Style).ToString().ToLower();
                 else
                     return "inline";
@@ -210,10 +210,10 @@ namespace Scryber.Svg.Components
                 else if (value == "none")
                     this.Visible = false;
                 else if (value == "initial")
-                    this.Style.SetValue(StyleKeys.PositionModeKey, PositionMode.Inline);
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Inline);
 
-                else if (PositionMode.TryParse(value, true, out PositionMode parsed))
-                    this.Style.SetValue(StyleKeys.PositionModeKey, parsed);
+                else if (DisplayMode.TryParse(value, true, out DisplayMode parsed))
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, parsed);
                 else
                     throw new ArgumentOutOfRangeException("The value '" + value + "' is not supported for the display");
 

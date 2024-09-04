@@ -34,6 +34,11 @@ namespace Scryber.PDF
         /// Gets or sets the position mode
         /// </summary>
         public PositionMode PositionMode { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the display mode
+        /// </summary>
+        public DisplayMode DisplayMode { get; set; }
 
         /// <summary>
         /// Gets or set the float mode for this component
@@ -234,7 +239,8 @@ namespace Scryber.PDF
         /// </summary>
         public PDFPositionOptions()
         {
-            this.PositionMode = Drawing.PositionMode.Block;
+            this.PositionMode = Drawing.PositionMode.Static;
+            this.DisplayMode = DisplayMode.Block;
             this.OverflowAction = Drawing.OverflowAction.NewPage;
             this.OverflowSplit = Drawing.OverflowSplit.Any;
             this.ColumnCount = 1;

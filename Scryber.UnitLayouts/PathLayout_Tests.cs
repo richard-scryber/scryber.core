@@ -206,7 +206,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Line();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -218,7 +218,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Line();
             path2.Height = 20;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -230,7 +230,7 @@ namespace Scryber.UnitLayouts
 
             var path3 = new Line();
             path3.Height = 20;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             path3.FullWidth = true;
             page.Contents.Add(path3);
 
@@ -244,7 +244,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Line();
             path4.Height = 20;
             path4.Width = 200;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path4);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -379,7 +379,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Line();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             path.Padding = new Drawing.Thickness(10);
             path.BackgroundColor = Drawing.StandardColors.White;
             page.Contents.Add(path);
@@ -396,7 +396,7 @@ namespace Scryber.UnitLayouts
             path2.Height = 20;
             path2.Padding = new Drawing.Thickness(10);
             path2.BackgroundColor = Drawing.StandardColors.White;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -411,7 +411,7 @@ namespace Scryber.UnitLayouts
             path3.Height = 20;
             path3.Padding = new Drawing.Thickness(10);
             path3.BackgroundColor = Drawing.StandardColors.White;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             path3.FullWidth = true;
             page.Contents.Add(path3);
 
@@ -428,7 +428,7 @@ namespace Scryber.UnitLayouts
             path4.Width = 200;
             path4.BackgroundColor = Drawing.StandardColors.White;
             path4.Padding = new Drawing.Thickness(10);
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path4);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -735,7 +735,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Ellipse();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
             //TODO: Sort out the overflow
@@ -750,7 +750,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Ellipse();
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -766,7 +766,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Ellipse();
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -781,7 +781,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Ellipse();
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -798,7 +798,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Ellipse();
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1136,7 +1136,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Rectangle();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
             //TODO: Sort out the overflow
@@ -1151,7 +1151,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Rectangle();
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1167,7 +1167,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Rectangle();
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1182,7 +1182,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Rectangle();
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -1199,7 +1199,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Rectangle();
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1361,7 +1361,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Polygon() { VertexCount = 5, Closed = true, VertexStep = 2};
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
             //TODO: Sort out the overflow
@@ -1376,7 +1376,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Polygon() { VertexCount = 3, Closed = true, VertexStep = 1 };
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1392,7 +1392,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Polygon() { VertexCount = 6, Closed = true, VertexStep = 2 };
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1407,7 +1407,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Polygon() { VertexCount = 7, Closed = true, VertexStep = 1 };
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -1424,7 +1424,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Polygon() { VertexCount = 8, Closed = true, VertexStep = 2 };
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));

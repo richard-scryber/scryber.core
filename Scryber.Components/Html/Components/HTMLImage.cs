@@ -114,7 +114,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Position.PositionMode = PositionMode.Inline;
+            style.Position.DisplayMode = DisplayMode.Inline;
             return style;
         }
 

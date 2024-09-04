@@ -257,44 +257,50 @@ namespace Scryber.Drawing
 
     public enum PositionMode
     {
+        /// <summary>
+        /// Default positioning within the flow of the content
+        /// </summary>
+        Static = 0,
 
         /// <summary>
         /// A postion that is set explicitly on the page, no matter where its parent is
         /// </summary>
-        Fixed,
+        Fixed = 1,
 
         /// <summary>
         /// A postion that is set relative to this Components (first positioned) parent position.
         /// </summary>
-        Absolute,
+        Absolute = 2,
 
         /// <summary>
         /// A block that still maintains the space used, but is shifted by the position
         /// </summary>
-        Relative,
+        Relative = 3
 
-        /// <summary>
-        /// A block element breaks is rendered on it's own line
-        /// </summary>
-        Block,
+    }
 
+    public enum DisplayMode
+    {
         /// <summary>
         /// No Expicit postion - if it fits next to the last component on the current line, then it will be appended,
         /// otherwise a new line will be created. Following elements will be appended to the same line
         /// </summary>
-        Inline,
-
+        Inline = 0,
+        
         /// <summary>
         /// A block that sits on the current line of either a fixed size, or taking the space up that it's internal contents need.
         /// </summary>
-        InlineBlock,
-
+        InlineBlock = 1,
+        
+        /// <summary>
+        /// A block element breaks any current line is rendered on it's own, with any positioning
+        /// </summary>
+        Block = 2,
+        
         /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
-        Invisible
-
-        //TODO:Float - Appears at the current position with content flowing around it
+        Invisible = 10
     }
 
     public enum FloatMode

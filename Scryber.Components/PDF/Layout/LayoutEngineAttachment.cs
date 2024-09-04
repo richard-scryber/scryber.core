@@ -59,7 +59,7 @@ namespace Scryber.PDF.Layout
                     y = (opts.GetLineHeight() - h) - opts.GetDescender();
                 
 
-                PDFLayoutLine curLine = this.GetOpenLine(w, curReg, PositionMode.Inline);
+                PDFLayoutLine curLine = this.GetOpenLine(w, curReg, DisplayMode.Inline);
                 Rect total = new Rect(0, y, w, h);
 
                 curLine.AddComponentRun(this.Component, total, Rect.Empty, total, total.Height, pos, this.FullStyle);

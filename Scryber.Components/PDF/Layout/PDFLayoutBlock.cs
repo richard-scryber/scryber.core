@@ -871,9 +871,9 @@ namespace Scryber.PDF.Layout
         /// <param name="owner"></param>
         /// <param name="fullstyle"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewBlock(IComponent owner, IPDFLayoutEngine engine, Style fullstyle, DisplayMode mode)
         {
-            if (mode == PositionMode.Inline)
+            if (mode == DisplayMode.Inline)
                 throw RecordAndRaise.ArgumentOutOfRange("mode", Errors.CannotBeginABlockThatIsInline);
             //else if (mode == PositionMode.Absolute)
             //    throw RecordAndRaise.ArgumentOutOfRange("mode",Errors.AbsolutePositioningBlocksRegisterWithTheLayoutPage);
@@ -904,7 +904,7 @@ namespace Scryber.PDF.Layout
         /// <param name="fullstyle"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, Style fullstyle, PositionMode mode)
+        public PDFLayoutBlock BeginNewContainerBlock(ContainerComponent owner, IPDFLayoutEngine engine, Style fullstyle, DisplayMode mode)
         {
             PDFLayoutBlock block = this.BeginNewBlock(owner, engine, fullstyle, mode);
             block.IsContainer = true;
@@ -956,7 +956,7 @@ namespace Scryber.PDF.Layout
             {
                 if (pos.X.HasValue)
                 {
-                    if (pos.PositionMode == PositionMode.InlineBlock)
+                    if (pos.DisplayMode == DisplayMode.InlineBlock)
                         pos.X = null;
                     else
                     {
@@ -966,8 +966,7 @@ namespace Scryber.PDF.Layout
                 }
                 else if (pos.Right.HasValue)
                 {
-                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
-                        pos.PositionMode == PositionMode.Inline)
+                    if (pos.PositionMode == PositionMode.Static)
                         pos.X = null;
                     else
                     {
@@ -978,8 +977,7 @@ namespace Scryber.PDF.Layout
 
                 if (pos.Y.HasValue)
                 {
-                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
-                        pos.PositionMode == PositionMode.Inline)
+                    if (pos.PositionMode == PositionMode.Static)
                         pos.Y = null;
                     else
                     {
@@ -989,8 +987,7 @@ namespace Scryber.PDF.Layout
                 }
                 else if (pos.Bottom.HasValue)
                 {
-                    if (pos.PositionMode == PositionMode.InlineBlock || pos.PositionMode == PositionMode.Block ||
-                        pos.PositionMode == PositionMode.Inline)
+                    if (pos.PositionMode == PositionMode.Static)
                         pos.Y = null;
                     else
                     {
@@ -1031,7 +1028,7 @@ namespace Scryber.PDF.Layout
             if (addAssociatedRun)
             {
                 PDFLayoutPositionedRegionRun run; 
-                if (pos.PositionMode == PositionMode.InlineBlock)
+                if (pos.DisplayMode == DisplayMode.InlineBlock)
                     run = beforeline.AddInlineBlockRun(created, comp);
                 else
                 {

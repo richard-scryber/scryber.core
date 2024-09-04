@@ -888,12 +888,20 @@ namespace Scryber.Styles
         {
             PDFPositionOptions options = new PDFPositionOptions();
             StyleValue<PositionMode> posmode;
+            StyleValue<DisplayMode> dispMode;
+            
             StyleValue<bool> xobj;
 
             if (this.TryGetValue(StyleKeys.PositionModeKey, out posmode))
                 options.PositionMode = posmode.Value(this);
             else
-                options.PositionMode = PositionMode.Block;
+                options.PositionMode = PositionMode.Static;
+
+            if (this.TryGetValue(StyleKeys.PositionDisplayKey, out dispMode))
+                options.DisplayMode = dispMode.Value(this);
+            else
+                options.DisplayMode = DisplayMode.Block;
+            
 
             StyleValue<bool> b;
             if (isInPositioned || options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
@@ -1256,7 +1264,7 @@ namespace Scryber.Styles
             options.Stroke = this.DoCreateStrokePen();
             
             //If we are inline positioned - then add any padding, background and border
-            if (this.TryGetValue(StyleKeys.PositionModeKey, out StyleValue<PositionMode> mode) && mode.Value(this) == PositionMode.Inline)
+            if (this.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> mode) && mode.Value(this) == DisplayMode.Inline)
             {
                 options.Padding = this.DoCreatePaddingThickness();
                 options.Background = this.DoCreateBackgroundBrush();
