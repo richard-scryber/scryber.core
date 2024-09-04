@@ -184,6 +184,13 @@ namespace Scryber.PDF.Layout
 
         protected virtual Native.PDFObjectRef OutputAsXObject(PDFRenderContext context, PDFWriter writer)
         {
+            //save current running context
+            
+            var prevOffset = context.Offset;
+            var prevSpace = context.Space;
+            var prevGraphics = context.Graphics;
+            var prevMatrix = context.RenderMatrix;
+            
             // set up the new xObject
             
             var xObj = writer.BeginObject();
@@ -192,15 +199,23 @@ namespace Scryber.PDF.Layout
                 : null;
             writer.BeginStream(xObj, filters);
 
+            
             this.Location = context.Offset.Offset(0, this.Line.OffsetY);
-            var prevSpace = context.Space;
-            var prevGraphics = context.Graphics;
+            
+            context.Offset = Point.Empty;
+            var bounds = this.Region.TotalBounds;
+            this.Location = this.Location.Offset(bounds.Location);
+            
+            //Set the bounds to zero as we will render withing the xObject and translate afterwards.
+            
+            bounds.X = 0;
+            bounds.Y = 0;
+            this.Region.TotalBounds = bounds;
 
             using (var g = this.CreateXObjectGraphics(writer, context.StyleStack, context))
             {
                 context.Graphics = g;
-                context.Offset = Point.Empty;
-                var prev = context.RenderMatrix;
+                
                 
                 //store the offsets so that they can be used when calculating the render bounds.
                 if(null == context.RenderMatrix)
@@ -212,26 +227,27 @@ namespace Scryber.PDF.Layout
                 context.RenderMatrix.SetTranslation(this.Location.X, this.Location.Y);
                 
                 this.Region.OutputToPDF(context, writer);
-
-                context.RenderMatrix = prev;
+                
             }
 
-            //write the xObjectContent
+            //write the xObject render action
+            
             var len = writer.EndStream();
             writer.BeginDictionary();
             this.WriteXObjectDictionaryContent(context, writer, len, filters);
             writer.EndDictionary();
             writer.EndObject();
             
-
+            this.WriteXObjectDo(context, writer);
             
 
             //restore graphics
-            context.Offset = this.Location;
+            context.Offset = prevOffset;
             context.Graphics = prevGraphics;
             context.Space = prevSpace;
+            context.RenderMatrix = prevMatrix;
             
-            this.WriteXObjectDo(context, writer);
+            
             
             return xObj;
 
@@ -293,6 +309,15 @@ namespace Scryber.PDF.Layout
             }
             else
             {
+                var line = this.Line;
+                var idx = line.Runs.IndexOf(this);
+                var i = 0;
+                var offsetX = Unit.Zero;
+                while (i < idx)
+                {
+                    offsetX += line.Runs[i].Width;
+                    i++;
+                }
                 //Bounding box includes any margins.
                 vp = new Rect(
                     Unit.Empty, Unit.Empty, 

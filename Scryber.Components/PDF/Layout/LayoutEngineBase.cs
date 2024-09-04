@@ -1736,6 +1736,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFLayoutRegion xObj = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            
             return xObj;
         }
 
