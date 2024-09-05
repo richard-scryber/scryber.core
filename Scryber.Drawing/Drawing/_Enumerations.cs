@@ -298,6 +298,11 @@ namespace Scryber.Drawing
         Block = 2,
         
         /// <summary>
+        /// Specific dispaly mode that will vertically align content within a cell.
+        /// </summary>
+        TableCell = 4,
+        
+        /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
         Invisible = 10

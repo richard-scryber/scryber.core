@@ -24,6 +24,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.CodeDom;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Scryber.Drawing
 {
@@ -920,6 +921,22 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public static Unit Round(Unit unit, int dps)
+
+        /// <summary>
+        /// Rounds the unit to the specific decimal places - will always return a value in points
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="dps"></param>
+        /// <returns></returns>
+        public static Unit Round(Unit unit, int dps)
+        {
+            return new Unit(Math.Round(unit.PointsValue, dps), PageUnits.Points);
+        }
+
+        #endregion
+        
+
         #region IsRelativeUnit(Unit) + 1 overload
 
         /// <summary>
@@ -1281,6 +1298,6 @@ namespace Scryber.Drawing
         public const string RelativeViewPortMaxPostfix = "vmax";
 
 
-
+        
     }
 }

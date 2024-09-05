@@ -838,10 +838,11 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            bool applyAlignments = this.ShouldApplyAlignment();
+            bool applyHAlignments = this.ShouldApplyHorizontalAlignment();
+            bool applyVAlignments = this.ShouldApplyVerticalAlignment();
             Unit yoffset = origYoffset;
 
-            if (applyAlignments)
+            if (applyVAlignments)
             {
                 VerticalAlignment v = this.VAlignment;
                 if (v != VerticalAlignment.Top)
@@ -886,7 +887,7 @@ namespace Scryber.PDF.Layout
                
 
                 ///Individually calculate each lines horizontal offset
-                if (applyAlignments && h != HorizontalAlignment.Left)
+                if (applyHAlignments && h != HorizontalAlignment.Left)
                 {
                     Unit width = this.UnusedBounds.Width;
                     Unit right = Unit.Zero;
@@ -963,7 +964,7 @@ namespace Scryber.PDF.Layout
         /// and the contents within that block are not of our concern.
         /// </summary>
         /// <returns></returns>
-        private bool ShouldApplyAlignment()
+        private bool ShouldApplyHorizontalAlignment()
         {
             if (this.PositionMode == PositionMode.Fixed || this.PositionMode == Drawing.PositionMode.Absolute)
                 return false;
@@ -977,6 +978,33 @@ namespace Scryber.PDF.Layout
             }
             else
                 return true;
+        }
+        
+        /// <summary>
+        /// Checks if this region should apply allignements - if we are a positioned region then we do not 
+        /// as the content of this region (and it should only be 1 block) will specify position data
+        /// and the contents within that block are not of our concern.
+        /// </summary>
+        /// <returns></returns>
+        private bool ShouldApplyVerticalAlignment()
+        {
+            if (this.DisplayMode == DisplayMode.TableCell)
+                return true;
+            else
+                return false;
+            
+            // if (this.PositionMode == PositionMode.Fixed || this.PositionMode == Drawing.PositionMode.Absolute)
+            //     return false;
+            // else if(this.PositionMode == PositionMode.Relative)
+            // {
+            //     return false; //Check with relative unit tests.
+            // }
+            // else if (this.IsExplicitLayout)
+            // {
+            //     return false; //canvas should not be aligned.
+            // }
+            // else
+            //     return true;
         }
 
         /// <summary>

@@ -558,7 +558,7 @@ namespace Scryber.PDF.Layout
                 }
                 if (null != brush)
                 {
-                    if (this.Lines.Count > 1  && this.Line.HAlignment != HorizontalAlignment.Justified)
+                    if (this.Lines.Count > 1  && this.Line.HAlignment != HorizontalAlignment.Justified && this.Line.HAlignment != HorizontalAlignment.Right)
                         padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
                     
                     if (rad > 0)
@@ -662,7 +662,7 @@ namespace Scryber.PDF.Layout
                     {
                         var padRect = lineRect.Clone();
 
-                        if (isLastRunOnLine && this.Line.HAlignment != HorizontalAlignment.Justified)
+                        if (isLastRunOnLine && this.Line.HAlignment != HorizontalAlignment.Justified && this.Line.HAlignment != HorizontalAlignment.Right)
                         {
                             //add extra space for the left side bearing of the first character so the last of the line ends correctly
                             padRect.Width += this.TextRenderOptions.GetLeftSideBearing(); 

@@ -181,6 +181,19 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region public void SetOffsetX(Unit x)
+        
+        /// <summary>
+        /// Updates any X offset for this component run before rendering
+        /// </summary>
+        /// <param name="x"></param>
+        public void SetOffsetX(Unit x)
+        {
+            this.TotalBounds = this.TotalBounds.Offset(x, 0);
+        }
+        
+        #endregion
+
         #region public override void PushComponentLayout(PDFLayoutContext context, PDFUnit xoffset, PDFUnit yoffset)
 
         /// <summary>

@@ -674,7 +674,12 @@ namespace Scryber.PDF.Layout
         private bool MovesWithLayout()
         {
             PositionMode mode = this.Position.PositionMode;
-            return mode != PositionMode.Absolute;
+            if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
+                return false;
+            else if (this.IsExplicitLayout)
+                return false;
+            else
+                return true;
         }
 
         #endregion
@@ -956,7 +961,7 @@ namespace Scryber.PDF.Layout
             {
                 if (pos.X.HasValue)
                 {
-                    if (pos.DisplayMode == DisplayMode.InlineBlock)
+                    if (pos.PositionMode == PositionMode.Static)
                         pos.X = null;
                     else
                     {
@@ -1028,7 +1033,7 @@ namespace Scryber.PDF.Layout
             if (addAssociatedRun)
             {
                 PDFLayoutPositionedRegionRun run; 
-                if (pos.DisplayMode == DisplayMode.InlineBlock)
+                if ((pos.PositionMode == PositionMode.Static || pos.PositionMode == PositionMode.Relative) && pos.DisplayMode == DisplayMode.InlineBlock)
                     run = beforeline.AddInlineBlockRun(created, comp);
                 else
                 {

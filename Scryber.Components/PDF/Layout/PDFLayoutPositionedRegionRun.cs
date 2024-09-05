@@ -199,18 +199,46 @@ namespace Scryber.PDF.Layout
                 : null;
             writer.BeginStream(xObj, filters);
 
-            
-            this.Location = context.Offset.Offset(0, this.Line.OffsetY);
-            
-            context.Offset = Point.Empty;
+            var location = Point.Empty;
             var bounds = this.Region.TotalBounds;
-            this.Location = this.Location.Offset(bounds.Location);
+            
+            
+            if (this.PositionOptions.PositionMode == PositionMode.Fixed)
+            {
+                if (this.PositionOptions.X.HasValue)
+                    location.X = this.PositionOptions.X.Value;
+                if (this.PositionOptions.Y.HasValue)
+                    location.Y = this.PositionOptions.Y.Value;
+
+            }
+            else if (this.PositionOptions.PositionMode == PositionMode.Absolute)
+            {
+                
+            }
+            else if (this.PositionOptions.PositionMode == PositionMode.Relative)
+            {
+                
+            }
+            else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+            {
+                location = context.Offset.Offset(this.OffsetX, this.Line.OffsetY);
+                location = location.Offset(bounds.Location);
+            }
+
+            context.Offset = Point.Empty;
+            this.Location = location;
+            
+            
+            
             
             
             //Set the bounds to zero as we will render withing the xObject and translate afterwards.
             
             bounds.X = 0;
             bounds.Y = 0;
+            bounds.Width += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+            bounds.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+            
             this.Region.TotalBounds = bounds;
 
             using (var g = this.CreateXObjectGraphics(writer, context.StyleStack, context))
@@ -313,9 +341,9 @@ namespace Scryber.PDF.Layout
             {
                 //Bounding box includes any margins.
                 vp = new Rect(
-                    Unit.Empty, Unit.Empty, 
-                    this.Region.Width + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
-                    this.Region.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
+                    Unit.Empty, Unit.Empty,
+                    this.Region.TotalBounds.Width, this.Region.TotalBounds.Height); // + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
+                    //this.Region.TotalBounds.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
             }
             
             return vp;

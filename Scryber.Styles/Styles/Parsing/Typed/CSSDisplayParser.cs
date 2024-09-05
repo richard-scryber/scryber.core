@@ -74,6 +74,9 @@ namespace Scryber.Styles.Parsing.Typed
                 case ("block"):
                     display = DisplayMode.Block;
                     return true;
+                case("table-cell"):
+                    display = DisplayMode.TableCell;
+                    return true;
                 case ("none"):
                     display = DisplayMode.Invisible;
                     return true;

@@ -3240,5 +3240,203 @@ namespace Scryber.UnitLayouts
             
             
         }
+        
+        
+         [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Inline_22_NestedImagesLastLargeSmallMixedRight()
+        {
+            var path = AssertGetContentFile("Inline_22_NestedImagesLastLargeSmallMixedRight");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_Inline_22_NestedImagesLastLargeSmallMixedRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            
+            
+
+
+            //Both images of different (scaled) heights should be on the baseline.
+            
+            
+            var nest = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(4, line.Runs.Count);
+            
+            var imgDim = new Size(682, 452);
+
+            var spanBegin = line.Runs[0] as PDFLayoutInlineBegin;
+            Assert.IsNotNull(spanBegin);
+
+            
+            
+            
+
+            var runningWidth = Unit.Zero;
+            
+            
+            //0 = start span
+            //1 = text begin
+            var begin = line.Runs[1] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            var lead = begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize();
+            var halfLead = lead / 2;
+            var descend = begin.TextRenderOptions.GetDescender();
+            
+            var baseline = 50 - halfLead - descend;
+            Assert.AreEqual(baseline, line.BaseLineOffset);
+            
+            //top position
+            baseline = begin.TextRenderOptions.GetBaselineOffset();
+            Assert.AreEqual(baseline + 30, begin.StartTextCursor.Height); // + body margin
+            Assert.AreEqual(30 + line.RightInset, begin.StartTextCursor.Width); // + body margin and right align
+            
+            //2 = text chars
+            var chars = line.Runs[2] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            
+            
+            //confirm the render bounds rect for the first span - body margins and on the full baseline.
+            var left = (Unit)30 + line.RightInset; //body margins
+            var width = chars.Width; //left without lsb - as right aligned
+            var height = begin.TextRenderOptions.GetSize() * 1.2;
+            var top = 30 + ((50 - height)/2); //margins + leading space
+            CheckRenderBounds(begin.Owner, 0, left, top, width, height);
+            
+            
+            //3 = new line
+            var newLine = line.Runs[3] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(50, newLine.NewLineOffset.Height);
+            var diff = newLine.NextLineSpacer.Line.Width - line.Width; //newline width - curr line width gives the offset
+            Assert.AreEqual(diff, newLine.NewLineOffset.Width); //offset is right aligned
+            
+            
+            
+            //
+            // second line - simple
+            //
+            
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //0 = spacer
+            var spacer = line.Runs[0] as PDFTextRunSpacer;
+            Assert.IsNotNull(spacer);
+            Assert.AreEqual(0, spacer.Width);
+            
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual(line.Width, chars.Width);
+            
+            newLine = line.Runs[2] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            Assert.AreEqual(50, newLine.NewLineOffset.Height);
+            diff = newLine.NextLineSpacer.Line.Width - line.Width;
+            
+            Assert.AreEqual(diff, newLine.NewLineOffset.Width);
+
+            top += 50;
+            
+            //second arangement on begin owner, left margin, shift down 50, container width and line height
+            CheckRenderBounds(begin.Owner, 1,  85.90547336350005, top, chars.Width, height);
+            
+            
+            //
+            // third line - span cont. + img + whitespace + image
+            //
+            
+            line = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(9, line.Runs.Count);
+            
+            //0 = spacer
+            spacer = line.Runs[0] as PDFTextRunSpacer;
+            Assert.IsNotNull(spacer);
+            Assert.AreEqual(0, spacer.Width);
+            
+            //1 = chars
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            
+            //2 = end text
+            
+
+            top += 50;
+            
+            //third arangement on begin owner, left margin, shift down 50, character width and line height
+            CheckRenderBounds(begin.Owner, 2, 284.360732966, top , chars.Width, height);
+
+            runningWidth = chars.Width + line.RightInset;
+            
+            //3 = large image
+            var imgRun = line.Runs[3] as PDFLayoutComponentRun;
+            
+            Assert.IsNotNull(imgRun);
+            Assert.AreEqual(runningWidth, imgRun.TotalBounds.X);
+            
+            Assert.AreEqual(100, imgRun.TotalBounds.Y); //top align + 2 lines down
+            Assert.AreEqual(100, imgRun.TotalBounds.Height);
+            var imgW = (100 / imgDim.Height.PointsValue) * imgDim.Width.PointsValue;
+            Assert.AreEqual(Math.Round(imgW, 5), Math.Round(imgRun.TotalBounds.Width.PointsValue, 5)); //approx equal to 5 decimal places
+            
+            
+            //confirm the render bounds rect for the first image
+            left = 30 + runningWidth ; //body margins
+            top = 30 + 100; //body margins + 3 lines
+            width = imgRun.TotalBounds.Width;
+            height = 100;
+            CheckRenderBounds(imgRun.Owner, 0, left, top, width, height);
+
+            runningWidth += imgRun.TotalBounds.Width;
+            
+            //4 begin whitespace
+            //5 text whitespace
+            var whiteSpace = line.Runs[5] as PDFTextRunCharacter;
+            Assert.IsNotNull(whiteSpace);
+            runningWidth += whiteSpace.Width;
+            
+            //6 = end whitespace
+            
+            //7 = small image
+            imgRun = line.Runs[7] as PDFLayoutComponentRun;
+            Assert.IsNotNull(imgRun);
+            Assert.AreEqual(runningWidth, imgRun.TotalBounds.X);
+            Assert.AreEqual(10, imgRun.TotalBounds.Height);
+            Assert.AreEqual(100 + line.BaseLineOffset - 10, imgRun.TotalBounds.Y); //sits on the baseline, so top is - 10
+            imgW = (10 / imgDim.Height.PointsValue) * imgDim.Width.PointsValue;
+            Assert.AreEqual(Math.Round(imgW, 5), Math.Round(imgRun.TotalBounds.Width.PointsValue, 5)); //approx equal to 5 decimal places
+            
+            
+            //confirm the render bounds rect for the second image 
+            left = 30 + runningWidth ; //body margins
+            top = 30 + 100 + line.BaseLineOffset - 10 ; //body margins + 2 lines and baseline - height
+            width = imgRun.TotalBounds.Width;
+            height = 10;
+            CheckRenderBounds(imgRun.Owner, 0, left, top, width, height);
+
+
+            //8 - end span
+            Assert.IsInstanceOfType<PDFLayoutInlineEnd>(line.Runs[8]);
+            
+            
+            
+        }
+        
     }
 }

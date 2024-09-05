@@ -162,6 +162,7 @@ namespace Scryber.Components
             style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (Unit)1;
+            style.Position.DisplayMode = DisplayMode.TableCell;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
             return style;
         }

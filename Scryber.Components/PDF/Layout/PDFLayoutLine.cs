@@ -951,6 +951,19 @@ namespace Scryber.PDF.Layout
                         this.RightInset = pushOffset;
                         pushedRight = true;
                     }
+                    else if (run is PDFLayoutComponentRun comp)
+                    {
+                        comp.SetOffsetX( comp.OffsetX + pushOffset);
+                        pushedRight = true;
+                    }
+                    else if (run is PDFLayoutInlineBlockRun ib)
+                    {
+                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                    }
+                    else if (run is PDFLayoutPositionedRegionRun posRun)
+                    {
+                        
+                    }
                 }
             }
             else
@@ -989,18 +1002,27 @@ namespace Scryber.PDF.Layout
                     }
                 }
 
-                if (this.Runs.Count > 3)
+                foreach (var run in this.Runs)
                 {
-                    //complex line - shift any inner begin runs to the right as well
-                    foreach (var run in this.Runs)
+                    if (run is PDFTextRunBegin begin)
                     {
-                        if (run is PDFTextRunBegin begin)
-                        {
-                            begin.LineInset += pushOffset;
-                            pushedRight = true;
-                        }
+                        begin.LineInset += pushOffset;
+                        pushedRight = true;
+                    }
+                    else if (run is PDFLayoutComponentRun comp)
+                    {
+                        comp.SetOffsetX( comp.OffsetX + pushOffset);
+                    }
+                    else if (run is PDFLayoutInlineBlockRun ib)
+                    {
+                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                    }
+                    else if (run is PDFLayoutPositionedRegionRun posRun)
+                    {
+                        
                     }
                 }
+
             }
             return pushedRight;
         }
@@ -1080,6 +1102,20 @@ namespace Scryber.PDF.Layout
                         this.RightInset = pushOffset;
                         pushedCenter = true;
                     }
+                    else if (run is PDFLayoutComponentRun comp)
+                    {
+                        comp.SetOffsetX( comp.OffsetX + pushOffset);
+                        pushedCenter = true;
+                    }
+                    else if (run is PDFLayoutInlineBlockRun ib)
+                    {
+                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                        pushedCenter = true;
+                    }
+                    else if (run is PDFLayoutPositionedRegionRun posRun)
+                    {
+                        
+                    }
                 }
             }
             else
@@ -1117,6 +1153,14 @@ namespace Scryber.PDF.Layout
                         {
                             begin.LineInset += pushOffset;
                             pushedCenter = true;
+                        }
+                        else if (run is PDFLayoutComponentRun comp)
+                        {
+                            comp.SetOffsetX( comp.OffsetX + pushOffset);
+                        }
+                        else if (run is PDFLayoutInlineBlockRun ib)
+                        {
+                            ib.SetOffsetX(ib.OffsetX + pushOffset);
                         }
                     }
                 }

@@ -35,11 +35,18 @@ namespace Scryber.PDF.Layout
         }
 
         private Unit _offsetY = Unit.Zero;
+        private Unit _offsetX = Unit.Zero;
 
         public override Unit OffsetY
         {
             get { return this._offsetY; }
         }
+
+        public override Unit OffsetX
+        {
+            get { return this._offsetX; }
+        }
+        
 
         public PDFLayoutInlineBlockRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner, PDFPositionOptions position)
             : base(region, line, owner, position)
@@ -53,6 +60,20 @@ namespace Scryber.PDF.Layout
         {
             this._offsetY = y;
         }
+        
+        
+        #region public void SetOffsetX(Unit x)
+        
+        /// <summary>
+        /// Updates any X offset for this component run before rendering
+        /// </summary>
+        /// <param name="x"></param>
+        public void SetOffsetX(Unit x)
+        {
+            this._offsetX = x;
+        }
+        
+        #endregion
 
         public override Drawing.Unit Height
         {
@@ -92,8 +113,11 @@ namespace Scryber.PDF.Layout
             xoffset = Unit.Zero;
             yoffset = this.Line.OffsetY;
             
-            if (this.OffsetY > Unit.Zero)
+            if (this.OffsetY != Unit.Zero)
                 yoffset +=  this.OffsetY;
+            
+            if (this.OffsetX != Unit.Zero)
+                xoffset += this.OffsetX;
 
             xoffset += this.PositionOptions.Margins.Left;
             yoffset += this.PositionOptions.Margins.Top;
