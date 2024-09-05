@@ -206,6 +206,7 @@ namespace Scryber.PDF.Layout
             var bounds = this.Region.TotalBounds;
             this.Location = this.Location.Offset(bounds.Location);
             
+            
             //Set the bounds to zero as we will render withing the xObject and translate afterwards.
             
             bounds.X = 0;
@@ -225,7 +226,8 @@ namespace Scryber.PDF.Layout
                     context.RenderMatrix = context.RenderMatrix.Clone();
                 }
                 context.RenderMatrix.SetTranslation(this.Location.X, this.Location.Y);
-                
+                this.PositionOptions.X = 0;
+                this.PositionOptions.Y = 0;
                 this.Region.OutputToPDF(context, writer);
                 
             }
@@ -309,15 +311,6 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                var line = this.Line;
-                var idx = line.Runs.IndexOf(this);
-                var i = 0;
-                var offsetX = Unit.Zero;
-                while (i < idx)
-                {
-                    offsetX += line.Runs[i].Width;
-                    i++;
-                }
                 //Bounding box includes any margins.
                 vp = new Rect(
                     Unit.Empty, Unit.Empty, 

@@ -90,10 +90,13 @@ namespace Scryber.PDF.Layout
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Drawing.Unit xoffset, Drawing.Unit yoffset)
         {
             xoffset = Unit.Zero;
+            yoffset = this.Line.OffsetY;
+            
             if (this.OffsetY > Unit.Zero)
-                yoffset = this.Line.OffsetY + this.OffsetY;
-            else
-                yoffset = this.Line.OffsetY;
+                yoffset +=  this.OffsetY;
+
+            xoffset += this.PositionOptions.Margins.Left;
+            yoffset += this.PositionOptions.Margins.Top;
 
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
         }

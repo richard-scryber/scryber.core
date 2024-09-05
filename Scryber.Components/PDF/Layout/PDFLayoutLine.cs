@@ -406,9 +406,20 @@ namespace Scryber.PDF.Layout
                     rect.X = currWidth;
                     blockRun.Region.TotalBounds = rect;
 
-                    //pick the first vertical alignment for the line.
-                    if (blockRun.PositionOptions.VAlign.HasValue && !valign.HasValue)
+                    if (blockRun.PositionOptions.VAlign.HasValue)
                         valign = blockRun.PositionOptions.VAlign.Value;
+
+                    //pick the first vertical alignment for the line.
+                    if (!blockRun.PositionOptions.VAlign.HasValue ||
+                        blockRun.PositionOptions.VAlign.Value == VerticalAlignment.Baseline)
+                    {
+                        itemH = blockRun.Height + maxDescender;
+
+                        if (itemH > maxHeight)
+                            maxHeight = itemH;
+                        
+                        maxBaselineComponent = Unit.Max(maxBaselineComponent, blockRun.Height);
+                    }
                 }
                 else if (run is PDFLayoutComponentRun compRun)
                 {
@@ -437,6 +448,26 @@ namespace Scryber.PDF.Layout
 
                     if (xobjRun.PositionOptions.VAlign.HasValue) // && !valign.HasValue)
                         valign = xobjRun.PositionOptions.VAlign.Value;
+                }
+                else if (run is PDFLayoutPositionedRegionRun posRun)
+                {
+                    isComplex = true;
+
+                    if (posRun.IsFloating == false && posRun.Region.VAlignment == VerticalAlignment.Baseline &&
+                        (posRun.Region.PositionMode == PositionMode.Relative ||
+                         posRun.Region.PositionMode == PositionMode.Static))
+                    {
+                        //affects the line height, so adjust
+                        itemH = (posRun.Height + 40) + maxDescender;
+
+                        if (itemH > maxHeight)
+                        {
+                            maxHeight = itemH;
+                        }
+                        
+                        maxBaselineComponent = Unit.Max(maxBaselineComponent, posRun.Height);
+                        
+                    }
                 }
                 else if (run is PDFTextRunNewLine nl)
                 {

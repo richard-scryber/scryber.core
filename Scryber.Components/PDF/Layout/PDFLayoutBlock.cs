@@ -159,15 +159,15 @@ namespace Scryber.PDF.Layout
 
         #region public PDFRect TotalBounds { get; set;}
 
-        private Rect _total = Rect.Empty;
+        private Rect _tot = Rect.Empty;
 
         /// <summary>
         /// Gets the absolute bounds (inc margins and padding) for this block
         /// </summary>
         public Rect TotalBounds 
         {
-            get { return _total; }
-            set { _total = value; }
+            get { return _tot; }
+            set { _tot = value; }
         }
 
         #endregion
