@@ -185,6 +185,7 @@ namespace Scryber.PDF.Layout
         protected virtual Native.PDFObjectRef OutputAsXObject(PDFRenderContext context, PDFWriter writer)
         {
             //save current running context
+            var posReg = this.Region as PDFLayoutPositionedRegion;
             
             var prevOffset = context.Offset;
             var prevSpace = context.Space;
@@ -213,17 +214,56 @@ namespace Scryber.PDF.Layout
             }
             else if (this.PositionOptions.PositionMode == PositionMode.Absolute)
             {
-                
+                if (this.PositionOptions.X.HasValue)
+                    location.X = this.PositionOptions.X.Value;
+                if (this.PositionOptions.Y.HasValue)
+                    location.Y = this.PositionOptions.Y.Value;
+
+                if (null != posReg)
+                {
+                    if (posReg.RelativeTo != null)
+                    {
+                        
+                    }
+                    
+                }
             }
             else if (this.PositionOptions.PositionMode == PositionMode.Relative)
             {
+                PDFLayoutBlock relativeTo;
+
+                if (null != posReg && posReg.RelativeTo != null)
+                {
+                    relativeTo = posReg.RelativeTo;
+                }
+                else
+                {
+                    relativeTo = this.Line.GetParentBlock();
+                }
+
+                location = relativeTo.PagePosition;
+                location.X += relativeTo.Position.Padding.Left;
+                location.Y += relativeTo.Position.Padding.Right;
                 
+                //location = location.Offset(context.Offset);
+                location = location.Offset(this.OffsetX, this.Line.OffsetY);
+                location = location.Offset(bounds.Location);
+
+                // if (this.PositionOptions.Y.HasValue)
+                //     location.Y += this.PositionOptions.Y.Value;
+
+                if (this.PositionOptions.X.HasValue)
+                    location.X += this.PositionOptions.X.Value;
+
             }
             else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
             {
                 location = context.Offset.Offset(this.OffsetX, this.Line.OffsetY);
                 location = location.Offset(bounds.Location);
             }
+
+            
+            
 
             context.Offset = Point.Empty;
             this.Location = location;
@@ -236,9 +276,19 @@ namespace Scryber.PDF.Layout
             
             bounds.X = 0;
             bounds.Y = 0;
-            bounds.Width += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
-            bounds.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
             
+            if (this.PositionOptions.PositionMode == PositionMode.Static || this.PositionOptions.PositionMode == PositionMode.Relative)
+            {
+                //as we are part of the flow add the margins
+                bounds.Width += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+                bounds.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+            }
+            else if (this.PositionOptions.PositionMode == PositionMode.Fixed)
+            {
+                //not sure why, but it works.
+                bounds.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+            }
+
             this.Region.TotalBounds = bounds;
 
             using (var g = this.CreateXObjectGraphics(writer, context.StyleStack, context))
@@ -303,12 +353,22 @@ namespace Scryber.PDF.Layout
 
 
                 //Set the transformation matrix for the current offset independent of the matrix for the view-box
+                
+                //Y is from the bottom of the page.
 
                 var origin = new Point(0, context.PageSize.Height);
                 origin.Y -= this.Region.Height;
-                //Y origin takes account of the margins as from the bottom up (so need to be included)
-                origin.Y -= this.Location.Y + (this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
-                //X origin does not need margins as from the left.
+                
+                
+                origin.Y -= this.Location.Y;
+                
+                //Y origin takes account of the margins as from the bottom up (so need to be included if we are inline with the content)
+                
+                if (this.PositionOptions.PositionMode == PositionMode.Static ||
+                    this.PositionOptions.PositionMode == PositionMode.Relative)
+                    origin.Y -= (this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
+                
+                //X origin does not need margins as all measurement in PDF from the left.
                 origin.X += this.Location.X;
                 
                 if(!origin.IsZero)
@@ -417,8 +477,15 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                sz = new Size(this.Region.Width + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
-                    this.Region.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
+                sz = this.Region.TotalBounds.Size;
+                
+                // if (this.PositionOptions.PositionMode == PositionMode.Static)
+                // {
+                //     sz.Width += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+                //     sz.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+                // }
+                // sz = new Size(this.Region.Width + this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right, 
+                //     this.Region.Height + this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom);
             }
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
         }
