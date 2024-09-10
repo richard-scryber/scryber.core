@@ -238,6 +238,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BreakBefore, new CSSColumnBreakBeforeParser());
 
             all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
+            
 
             all.Add(CSSStyleItems.StrokeColor, new CSSStrokeColorParser());
             all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());

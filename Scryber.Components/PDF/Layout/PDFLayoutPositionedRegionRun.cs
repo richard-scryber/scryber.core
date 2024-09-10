@@ -186,7 +186,7 @@ namespace Scryber.PDF.Layout
         {
             //save current running context
             var posReg = this.Region as PDFLayoutPositionedRegion;
-            
+            PDFLayoutBlock relativeTo = null;
             var prevOffset = context.Offset;
             var prevSpace = context.Space;
             var prevGraphics = context.Graphics;
@@ -214,24 +214,93 @@ namespace Scryber.PDF.Layout
             }
             else if (this.PositionOptions.PositionMode == PositionMode.Absolute)
             {
-                if (this.PositionOptions.X.HasValue)
-                    location.X = this.PositionOptions.X.Value;
-                if (this.PositionOptions.Y.HasValue)
-                    location.Y = this.PositionOptions.Y.Value;
-
-                if (null != posReg)
+                if (null != posReg && posReg.RelativeTo != null)
+                    relativeTo = posReg.RelativeTo;
+                
+                
+                if (null != relativeTo)
                 {
-                    if (posReg.RelativeTo != null)
+                    if (relativeTo.Position.PositionMode == PositionMode.Static)
                     {
-                        
+                        if (this.PositionOptions.X.HasValue)
+                            location.X = this.PositionOptions.X.Value;
+                        else if (this.PositionOptions.Right.HasValue)
+                        {
+                            var containerWidth = relativeTo.Width;
+                            var myWidth = this.Region.TotalBounds.Width;
+                            var right = containerWidth - myWidth;
+                            right -= this.PositionOptions.Right.Value;
+                            location.X = right;
+                        }
+                        else
+                        {
+                            //TODO: calculate the actual offset of the current line.
+                        }
+                        if (this.PositionOptions.Y.HasValue)
+                            location.Y = this.PositionOptions.Y.Value;
+                        else if (this.PositionOptions.Bottom.HasValue)
+                        {
+                            var containerHeight = relativeTo.Height;
+                            var myHeight = this.Region.TotalBounds.Height;
+                            var bottom = containerHeight - myHeight;
+                            bottom -= this.PositionOptions.Bottom.Value;
+                            location.Y += bottom;
+                        }
+                        else
+                        {
+                            //TODO: calculate the vertical offset of the current line.
+                        }
                     }
-                    
+                    else
+                    {
+                        location.X += relativeTo.PagePosition.X + posReg.RelativeOffset.X;
+
+                        location.Y += relativeTo.PagePosition.Y + posReg.RelativeOffset.Y;
+
+                        if (this.PositionOptions.X.HasValue)
+                            location.X += this.PositionOptions.X.Value;
+                        else if (this.PositionOptions.Right.HasValue)
+                        {
+                            var containerWidth = relativeTo.Width;
+                            var myWidth = this.Region.TotalBounds.Width;
+                            var right = containerWidth - myWidth;
+                            right -= this.PositionOptions.Right.Value;
+                            location.X += right;
+                        }
+                        else
+                        {
+                            
+                        }
+
+                        if (this.PositionOptions.Y.HasValue)
+                            location.Y += this.PositionOptions.Y.Value;
+                        else if (this.PositionOptions.Bottom.HasValue)
+                        {
+                            var containerHeight = relativeTo.Height;
+                            var myHeight = this.Region.TotalBounds.Height;
+                            var bottom = containerHeight - myHeight;
+                            bottom -= this.PositionOptions.Bottom.Value;
+                            location.Y += bottom;
+                        }
+                    }
                 }
+                else
+                {
+                    //absolute to the page
+                    if (this.PositionOptions.X.HasValue)
+                        location.X = this.PositionOptions.X.Value;
+                    if (this.PositionOptions.Y.HasValue)
+                        location.Y = this.PositionOptions.Y.Value;
+                }
+                
+                
+
+                posReg.RelativeTo = null; //clear this out as we are xObject and will use the location in the transform matrix
+                
             }
             else if (this.PositionOptions.PositionMode == PositionMode.Relative)
             {
-                PDFLayoutBlock relativeTo;
-
+                
                 if (null != posReg && posReg.RelativeTo != null)
                 {
                     relativeTo = posReg.RelativeTo;
@@ -242,6 +311,7 @@ namespace Scryber.PDF.Layout
                 }
 
                 location = relativeTo.PagePosition;
+                
                 location.X += relativeTo.Position.Padding.Left;
                 location.Y += relativeTo.Position.Padding.Right;
                 
@@ -253,7 +323,18 @@ namespace Scryber.PDF.Layout
                 //     location.Y += this.PositionOptions.Y.Value;
 
                 if (this.PositionOptions.X.HasValue)
+                {
                     location.X += this.PositionOptions.X.Value;
+                }
+                else if (this.PositionOptions.Right.HasValue)
+                {
+                    location.X -= this.PositionOptions.Right.Value;
+                }
+
+                if (this.PositionOptions.Y.HasValue == false && this.PositionOptions.Bottom.HasValue)
+                {
+                    location.Y -= this.PositionOptions.Bottom.Value;
+                }
 
             }
             else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
@@ -287,6 +368,11 @@ namespace Scryber.PDF.Layout
             {
                 //not sure why, but it works.
                 bounds.Height += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+            }
+            else if (this.PositionOptions.PositionMode == PositionMode.Absolute)
+            {
+                posReg.RelativeTo = null; //remove any relative to as we are inside an XObject - that will set up the position in the transformation matrix
+                posReg.RelativeOffset = Point.Empty;
             }
 
             this.Region.TotalBounds = bounds;
@@ -326,7 +412,8 @@ namespace Scryber.PDF.Layout
             context.Graphics = prevGraphics;
             context.Space = prevSpace;
             context.RenderMatrix = prevMatrix;
-            
+
+            posReg.RelativeTo = relativeTo;
             
             
             return xObj;

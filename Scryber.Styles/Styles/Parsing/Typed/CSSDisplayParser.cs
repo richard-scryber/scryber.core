@@ -26,7 +26,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, value, DoConvertPosition);
                 }
-                if (TryGetDisplayEnum(value, out display))
+                else if (TryGetDisplayEnum(value, out display))
                 {
                     this.SetValue(onStyle, display);
                     result = true;

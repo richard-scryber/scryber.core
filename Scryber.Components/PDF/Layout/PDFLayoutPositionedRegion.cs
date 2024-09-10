@@ -137,6 +137,7 @@ namespace Scryber.PDF.Layout
 
             var xoffset = (this.RelativeTo.PagePosition.X + this.RelativeTo.Position.Margins.Left);
             var yoffset = (this.RelativeTo.PagePosition.Y + this.RelativeTo.Position.Margins.Top);
+            
             if (this.PositionOptions.FloatMode == FloatMode.None)
             {
                 bounds.X = xoffset;
@@ -169,6 +170,47 @@ namespace Scryber.PDF.Layout
                 
                 relativeOffset.X = 0;
             }
+            else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+            {
+                //We need to calculate the left offset.
+                
+                var line = this.AssociatedRun.Line;
+
+                var width = Unit.Zero;
+                var extra = Unit.Zero;
+                foreach (var run in line.Runs)
+                {
+                    if(run == this.AssociatedRun)
+                        break;
+                    
+                    width += run.Width;
+                    
+                    if (run is PDFTextRunCharacter character)
+                        width += character.ExtraSpace;
+                }
+
+                switch (line.HAlignment)
+                {
+                    case HorizontalAlignment.Right:
+                        width += line.AvailableWidth;
+                        break;
+                    case HorizontalAlignment.Center:
+                        width += line.AvailableWidth / 2.0;
+                        break;
+                    
+                    case HorizontalAlignment.Justified:
+                    case HorizontalAlignment.Left:
+                    default:
+                        //do nothing as already calculated
+                        break;
+                }
+
+                
+
+                relativeOffset.X += width;
+                bounds.X += this.RelativeTo.Position.Padding.Left;
+
+            }
             else if(!this.RelativeTo.Position.Padding.IsEmpty)
             {
                 //we have no horizontal offset so we include the padding
@@ -188,6 +230,12 @@ namespace Scryber.PDF.Layout
                 bottom -= this.PositionOptions.Bottom.Value;
                 bounds.Y = bottom - this.Height;
                 relativeOffset.Y = 0;
+            }
+            else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+            {
+                //We need to calculate the left offset.
+                var line = this.AssociatedRun.Line;
+                relativeOffset.Y -= line.Height;
             }
             else if(!this.RelativeTo.Position.Padding.IsEmpty)
             {

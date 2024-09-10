@@ -6311,6 +6311,228 @@ namespace Scryber.UnitLayouts
         
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void Absolute_72_InlineBlockNestedMarginsTest()
+        {
+            var path = AssertGetContentFile("Absolute_72_InlineBlockNestedMargins");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteInlineBlock_72_NestedMargins.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var block = layout.AllPages[0].ContentBlock;
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+
+            Assert.IsNotNull(content);
+
+            //absolute block should be inset the width of the characters before - so get this first
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            //inline begin, text begin, chars
+            var chars = line.Runs[2] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            var width = chars.Width;
+            
+            //white space is added after the span
+            chars = line.Runs[6] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            width += chars.Width;
+            
+
+            Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
+            Unit xOffset = width; //before chars
+            Unit height = 15;
+            //Unit width = layout.AllPages[0].Width; //ignores the margin width
+
+            yOffset += 20 + 10; //body and nest Margins;
+            xOffset += 20 + 20; //body and nest Margins;
+
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            //Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+            
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            //Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_73_InlineBlockNestedMarginsRightAlignTest()
+        {
+            var path = AssertGetContentFile("Absolute_73_InlineBlockNestedMarginsRightAlign");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteInlineBlock_73_NestedMarginsRightAlign.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var block = layout.AllPages[0].ContentBlock;
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+
+            Assert.IsNotNull(content);
+
+            //absolute block should be inset the width of the characters before - so get this first
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            //inline begin, text begin, chars
+            var chars = line.Runs[2] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            var width = chars.Width;
+            
+            //white space is added after the span
+            chars = line.Runs[6] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            width += chars.Width;
+            
+
+            Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
+            Unit xOffset = width; //before chars
+            Unit height = 15;
+            //Unit width = layout.AllPages[0].Width; //ignores the margin width
+
+            yOffset += 20 + 10; //body and nest Margins;
+            xOffset += 20 + 20 + line.AvailableWidth; //body and nest Margins + right alignment space;
+
+            Assert.AreEqual(line.AvailableWidth, line.FullWidth - line.Width); //quick confirmation of right align
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            //Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+            
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            //Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void Absolute_74_InlineBlockNestedMarginsCentreAlignTest()
+        {
+            var path = AssertGetContentFile("Absolute_74_InlineBlockNestedMarginsCentreAlign");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Positioned_AbsoluteInlineBlock_74_NestedMarginsCentreAlign.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout not captured");
+            var block = layout.AllPages[0].ContentBlock;
+            block = block.Columns[0].Contents[1] as PDFLayoutBlock;
+            var content = block.PositionedRegions[0] as PDFLayoutPositionedRegion;
+
+            Assert.IsNotNull(content);
+
+            //absolute block should be inset the width of the characters before - so get this first
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            //inline begin, text begin, chars
+            var chars = line.Runs[2] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            var width = chars.Width;
+            
+            //white space is added after the span
+            chars = line.Runs[6] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            width += chars.Width;
+            
+
+            Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
+            Unit xOffset = width; //before chars
+            Unit height = 15;
+            //Unit width = layout.AllPages[0].Width; //ignores the margin width
+
+            yOffset += 20 + 10; //body and nest Margins;
+            xOffset += 20 + 20 + (line.AvailableWidth / 2.0); //body and nest Margins + right alignment space;
+
+            Assert.AreEqual(line.AvailableWidth, line.FullWidth - line.Width); //quick confirmation of right align
+            Assert.AreEqual(yOffset, content.TotalBounds.Y);
+            Assert.AreEqual(xOffset, content.TotalBounds.X);
+            Assert.AreEqual(height, content.TotalBounds.Height);
+            //Assert.AreEqual(width, content.TotalBounds.Width);
+
+            block = content.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+
+            //Block is at offset 0,0 relative to the positioned region
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
+            Assert.AreEqual(height, block.TotalBounds.Height);
+
+            //Arrangement is for links and inner content references
+            var div = block.Owner as Div;
+            var arrange = div.GetFirstArrangement();
+            
+
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            //Assert.AreEqual(width, arrange.RenderBounds.Width);
+
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void Absolute_99_BlockDeepNestedPositionedNestedAbsoluteTopLeft()
         {
             var path = AssertGetContentFile("Absolute_99_BlockPositionDeepNestedInAbsoluteTopLeft");
