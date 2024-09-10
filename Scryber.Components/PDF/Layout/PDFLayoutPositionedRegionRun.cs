@@ -185,13 +185,12 @@ namespace Scryber.PDF.Layout
         protected virtual Native.PDFObjectRef OutputAsXObject(PDFRenderContext context, PDFWriter writer)
         {
             //save current running context
-            var posReg = this.Region as PDFLayoutPositionedRegion;
-            PDFLayoutBlock relativeTo = null;
+            
             var prevOffset = context.Offset;
             var prevSpace = context.Space;
             var prevGraphics = context.Graphics;
             var prevMatrix = context.RenderMatrix;
-            
+            var removeMarginsForArrangement = false;
             // set up the new xObject
             
             var xObj = writer.BeginObject();
@@ -199,17 +198,92 @@ namespace Scryber.PDF.Layout
                 ? this.Page.PageCompressionFilters
                 : null;
             writer.BeginStream(xObj, filters);
-
-            var location = Point.Empty;
             var bounds = this.Region.TotalBounds;
+            
+            var posReg = this.Region as PDFLayoutPositionedRegion;
+            PDFLayoutBlock relativeTo = null;
+            var location = Point.Empty;
+            
             
             
             if (this.PositionOptions.PositionMode == PositionMode.Fixed)
             {
+                removeMarginsForArrangement = true;
                 if (this.PositionOptions.X.HasValue)
+                {
                     location.X = this.PositionOptions.X.Value;
+                }
+                else if (this.PositionOptions.Right.HasValue)
+                {
+                    location.X = this.GetLayoutPage().Width -
+                                 (this.PositionOptions.Right.Value + this.Region.TotalBounds.Width);
+                }
+                else
+                {
+                    //for fixed we are not relative but the regions total bounds contains the calculated location.
+                    location.X = this.Region.TotalBounds.X;
+
+
+                    if (this.PositionOptions.DisplayMode == DisplayMode.Inline ||
+                        this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+                    {
+                        //as we are inline we need to check the inset from the start of the line
+                        
+                        var width = Unit.Zero;
+                        foreach (var run in this.Line.Runs)
+                        {
+                            if (run == this)
+                            {
+                                break;
+                            }
+
+                            width += run.Width;
+
+                            if (run is PDFTextRunCharacter character)
+                                width += character.ExtraSpace;
+                        }
+                        
+                        // update x based on alignment
+                        switch (this.Line.HAlignment)
+                        {
+                            case HorizontalAlignment.Right:
+                                width += this.Line.AvailableWidth;
+                                location.X += width;
+                                break;
+                            case HorizontalAlignment.Center:
+                                width += this.Line.AvailableWidth / 2.0;
+                                location.X += width;
+                                break;
+                            default:
+                                location.X += width;
+                                break;
+                        }
+                    }
+                }
+
                 if (this.PositionOptions.Y.HasValue)
+                {
                     location.Y = this.PositionOptions.Y.Value;
+                    location.Y += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+                    
+                }
+                else if (this.PositionOptions.Bottom.HasValue)
+                {
+                    location.Y = this.GetLayoutPage().Height -
+                                 (this.Region.TotalBounds.Height + this.PositionOptions.Bottom.Value);
+                }
+                else
+                {
+                    location.Y = this.Region.TotalBounds.Y;
+                    location.Y += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom; 
+                    
+                    if (this.PositionOptions.DisplayMode == DisplayMode.Inline ||
+                        this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
+                    {
+                        //inline so positioned at the top of the line
+                        location.Y -= this.Line.Height;
+                    }
+                }
 
             }
             else if (this.PositionOptions.PositionMode == PositionMode.Absolute)
@@ -234,8 +308,40 @@ namespace Scryber.PDF.Layout
                         }
                         else
                         {
-                            //TODO: calculate the actual offset of the current line.
+                            var width = Unit.Zero;
+                            foreach (var run in this.Line.Runs)
+                            {
+                                if (run == this)
+                                {
+                                    break;
+                                }
+
+                                width += run.Width;
+
+                                if (run is PDFTextRunCharacter character)
+                                    width += character.ExtraSpace;
+                            }
+
+                            switch (this.Line.HAlignment)
+                            {
+                                case HorizontalAlignment.Right:
+                                    width += this.Line.AvailableWidth;
+                                    location.X += width;
+                                    break;
+                                case HorizontalAlignment.Center:
+                                    width += this.Line.AvailableWidth / 2.0;
+                                    location.X += width;
+                                    break;
+                                default:
+                                    location.X += width;
+                                    break;
+                            }
+
+                            location.X += this.PositionOptions.Margins.Left;
+
                         }
+                        
+                        
                         if (this.PositionOptions.Y.HasValue)
                             location.Y = this.PositionOptions.Y.Value;
                         else if (this.PositionOptions.Bottom.HasValue)
@@ -248,7 +354,9 @@ namespace Scryber.PDF.Layout
                         }
                         else
                         {
-                            //TODO: calculate the vertical offset of the current line.
+                            //no explicit verical position so we position ourselves from the top of the line.
+                            location.Y -= this.Line.Height;
+                            location.Y += this.PositionOptions.Margins.Top;
                         }
                     }
                     else
@@ -269,7 +377,36 @@ namespace Scryber.PDF.Layout
                         }
                         else
                         {
-                            
+                            var width = Unit.Zero;
+                            foreach (var run in this.Line.Runs)
+                            {
+                                if (run == this)
+                                {
+                                    break;
+                                }
+
+                                width += run.Width;
+
+                                if (run is PDFTextRunCharacter character)
+                                    width += character.ExtraSpace;
+                            }
+
+                            switch (this.Line.HAlignment)
+                            {
+                                case HorizontalAlignment.Right:
+                                    width += this.Line.AvailableWidth;
+                                    location.X += width;
+                                    break;
+                                case HorizontalAlignment.Center:
+                                    width += this.Line.AvailableWidth / 2.0;
+                                    location.X += width;
+                                    break;
+                                default:
+                                    location.X += width;
+                                    break;
+                            }
+
+                            location.X += this.PositionOptions.Margins.Left;
                         }
 
                         if (this.PositionOptions.Y.HasValue)
@@ -281,6 +418,12 @@ namespace Scryber.PDF.Layout
                             var bottom = containerHeight - myHeight;
                             bottom -= this.PositionOptions.Bottom.Value;
                             location.Y += bottom;
+                        }
+                        else
+                        {
+                            //no explicit verical position so we position ourselves from the top of the line.
+                            location.Y -= this.Line.Height;
+                            location.Y += this.PositionOptions.Margins.Top;
                         }
                     }
                 }
@@ -389,9 +532,18 @@ namespace Scryber.PDF.Layout
                 {
                     context.RenderMatrix = context.RenderMatrix.Clone();
                 }
-                context.RenderMatrix.SetTranslation(this.Location.X, this.Location.Y);
+
+                if (removeMarginsForArrangement)
+                {
+                    //in certain circumstances - fixed, inline block, with no position - we have added the margins as these form part of the block total size.
+                    //and should be removed before the render bounds are applied to the component via the contextRenderMatrix
+                    location.Y -= this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+                }
+
+                context.RenderMatrix.SetTranslation(location.X, location.Y);
                 this.PositionOptions.X = 0;
                 this.PositionOptions.Y = 0;
+                
                 this.Region.OutputToPDF(context, writer);
                 
             }
@@ -420,6 +572,8 @@ namespace Scryber.PDF.Layout
 
             
         }
+
+        
         
         protected virtual bool WriteXObjectDo(PDFRenderContext context, PDFWriter writer)
         {

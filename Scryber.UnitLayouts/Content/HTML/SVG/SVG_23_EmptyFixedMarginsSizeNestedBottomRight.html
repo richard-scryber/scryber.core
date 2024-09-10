@@ -1,0 +1,45 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+   <style type="text/css">
+
+      body{
+         margin: 30pt;
+         border: solid 1pt red;
+         line-height: 30pt;
+         font-family: sans-serif;
+         font-size: 20pt;
+         text-align: left;
+      }
+
+      .positioned{
+         margin: 10pt;
+         border: solid 1pt green;
+         padding: 0pt;
+         position: fixed;
+         bottom: 10pt;
+         right: 20pt;
+      }
+
+      #nest{
+         border: solid 1pt blue;
+         padding: 10pt;
+         position: relative;
+      }
+
+   </style>
+
+</head>
+<body>
+Before the nesting
+<div id="nest" >
+   A line of text that flows down and then some content<br/>
+   before<svg class="positioned"  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" width="100" height="120"
+              xmlns:xlink="http://www.w3.org/1999/xlink"    >
+</svg>After the SVG that flows down on to multiple lines in the content of the page.
+</div>
+After the nesting
+</body>
+</html>
+
