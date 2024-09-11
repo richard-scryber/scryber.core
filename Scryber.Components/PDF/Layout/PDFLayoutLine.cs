@@ -420,6 +420,10 @@ namespace Scryber.PDF.Layout
                         
                         maxBaselineComponent = Unit.Max(maxBaselineComponent, blockRun.Height);
                     }
+                    else if (rect.Height > maxHeight)
+                    {
+                        maxHeight = rect.Height;
+                    }
                 }
                 else if (run is PDFLayoutComponentRun compRun)
                 {
@@ -678,8 +682,16 @@ namespace Scryber.PDF.Layout
                             componentRun.SetOffsetY(top);
                             break;
                         case VerticalAlignment.Middle:
-                            top = (totalHeight - componentRun.Height) / 2;
-                            componentRun.SetOffsetY(top);
+                            if (componentRun.Height >= totalHeight)
+                            {
+                                componentRun.SetOffsetY(0);
+                            }
+                            else
+                            {
+                                top = (totalHeight - componentRun.Height);
+                                top /= 2.0;
+                                componentRun.SetOffsetY(top);
+                            }
                             break;
                         case VerticalAlignment.Bottom:
                             top = totalHeight - componentRun.Height;
@@ -697,12 +709,33 @@ namespace Scryber.PDF.Layout
                 }
                 else if (run is PDFLayoutInlineBlockRun ibRun)
                 {
+                    Unit offset;
                     var valign = ibRun.PositionOptions.VAlign ?? (explicitAlign ?? VerticalAlignment.Baseline);
                     switch (valign)
                     {
+                        case(VerticalAlignment.Bottom):
+                            offset = totalHeight;
+                            offset -= ibRun.Height;
+                            ibRun.SetOffsetY(offset);
+                            break;
+                        case(VerticalAlignment.Top):
+                            ibRun.SetOffsetY(0);
+                            break;
+                        case(VerticalAlignment.Middle):
+                            if (ibRun.Height >= totalHeight)
+                            {
+                                ibRun.SetOffsetY(0);
+                            }
+                            else
+                            {
+                                offset = (totalHeight - ibRun.Height);
+                                offset /= 2.0;
+                                ibRun.SetOffsetY(offset);
+                            }
+                            break;
                         case (VerticalAlignment.Baseline):
                         default:
-                            var offset = baselineOffset;
+                            offset = baselineOffset;
                             offset -= ibRun.Height;
                             ibRun.SetOffsetY(offset);
                             break;
@@ -938,7 +971,7 @@ namespace Scryber.PDF.Layout
 
         internal bool RightAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit leftInset, Unit rightInset, List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
         {
-            var pushOffset = this.AvailableWidth;
+            var pushOffset = availableSpace;
             var pushedRight = false;
             if (this.LineIndex == 0  || (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunBegin))
             {
@@ -1089,7 +1122,7 @@ namespace Scryber.PDF.Layout
         
         internal bool CenterAlignContent(Unit totalWidth, Unit currentWidth, Unit availableSpace, Unit leftInset, Unit rightInset, List<PDFTextRunCharacter> runCache, PDFLayoutContext context)
         {
-            var pushOffset = this.AvailableWidth / 2;
+            var pushOffset = availableSpace / 2;
             var pushedCenter = false;
             if (this.LineIndex == 0 || (this.Runs.Count > 0 && this.Runs[0] is PDFTextRunBegin))
             {
@@ -1234,7 +1267,7 @@ namespace Scryber.PDF.Layout
             bool shouldJustify = all;
 
             PDFLayoutRun last = this.Runs[this.Runs.Count - 1];
-            if (last is PDFTextRunNewLine && (last as PDFTextRunNewLine).IsHardReturn == false)
+            if (last is PDFTextRunNewLine && (last as PDFTextRunNewLine).IsHardReturn == false) //TODO: Support justify-all
                 shouldJustify = true;
 
 

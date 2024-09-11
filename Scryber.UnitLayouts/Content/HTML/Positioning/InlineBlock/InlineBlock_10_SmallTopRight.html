@@ -15,21 +15,23 @@
         body{
             font-size: 20pt;
             font-family: sans-serif;
+            margin: 20pt;
         }
         
         .nest{
             border: solid 1pt green;
             height: 400pt;
+            text-align: right;
         }
 
 
         .ib {
             display: inline-block;
             border: solid 1px red;
-            width: 120pt;
-            padding:10pt;
-            vertical-align: baseline;
-            box-sizing: border-box;
+            padding:5pt;
+            font-size: 10pt;
+            line-height: 12pt;
+            vertical-align: top;
         }
     </style>
 </head>
@@ -37,8 +39,8 @@
     <h5>Block below is inline-block positioned to the page, with a width and height</h5>
     <div class="nest">
         Before the inlining block.
-        <img src="../../../images/toroid32.png" style="width: 100pt; height: 60pt;" />
-        <div class="ib">Inline block that overflows the available space.</div>
+        <img src="../../../images/toroid32.png" style="height: 60pt; border: solid 1pt blue" />
+        <div class="ib">Inline.</div>
         <span style="font-size: 30pt;" >After the inline block, flowing onto a new line with the required offset</span>
     </div>
 </body>

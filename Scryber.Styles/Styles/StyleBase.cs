@@ -906,6 +906,8 @@ namespace Scryber.Styles
             StyleValue<bool> b;
             if (isInPositioned || options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
                 options.FillWidth = false;
+            else if (options.DisplayMode == DisplayMode.Inline || options.DisplayMode == DisplayMode.InlineBlock)
+                options.FillWidth = false;
             else if (this.TryGetValue(StyleKeys.SizeFullWidthKey, out b))
                 options.FillWidth = b.Value(this);
 
