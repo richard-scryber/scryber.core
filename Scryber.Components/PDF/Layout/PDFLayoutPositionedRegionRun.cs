@@ -144,6 +144,11 @@ namespace Scryber.PDF.Layout
                 yoffset = 0;
                 
             }
+            else if (this.PositionOptions.FloatMode != FloatMode.None)
+            {
+                xoffset = 0;
+                yoffset = 0;
+            }
 
             this.Region.PushComponentLayout(context, pageIndex, xoffset, yoffset);
             this.Page = context.DocumentLayout.CurrentPage;
@@ -166,6 +171,7 @@ namespace Scryber.PDF.Layout
             {
                 context.Offset = Point.Empty;
             }
+            
 
             Native.PDFObjectRef oref;
             if (this.RenderAsXObject)

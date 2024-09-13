@@ -16,32 +16,42 @@
             font-size: 20pt;
             font-family: sans-serif;
             margin: 20pt;
-            border: solid 1pt blue;
         }
         
         .nest{
             border: solid 1pt green;
             height: 400pt;
+            margin: 20pt;
+            padding: 10pt;
         }
 
 
         .ib {
             display: inline-block;
             border: solid 1px red;
-            margin: 10pt;
             padding:5pt;
-            font-size: 10pt;
-            line-height: 12pt;
-            vertical-align: top;
+            margin: 10pt;
+            font-size: 12pt;
+            line-height: 15pt;
+            width: 200pt;
+        }
+        
+        .float{
+            width: 60pt;
+            float: left;
+            border: solid 1pt blue;
+            margin-right: 10pt;
         }
     </style>
 </head>
 <body>
     <h5>Block below is inline-block positioned to the page, with a width and height</h5>
     <div class="nest">
-        Before the inlining block.
-        <img src="../../../images/toroid32.png" style="height: 60pt; border: solid 1pt blue" />
-        <div class="ib">Inline.</div>
+        Before the inline block.
+        <div class="ib">
+            <img class="float" style="width: 100pt" src="../../../images/toroid32.png" />
+            <span>Inline block that overflows the available space and will flow naturally onto a new line in the available space.</span>
+        </div>
         <span style="font-size: 30pt;" >After the inline block, flowing onto a new line with the required offset</span>
     </div>
 </body>

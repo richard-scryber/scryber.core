@@ -664,7 +664,10 @@ namespace Scryber.UnitLayouts
             
             using (var ms = DocStreams.GetOutputStream("InlineBlock_07_SmallTop.pdf"))
             {
-                
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
@@ -718,11 +721,11 @@ namespace Scryber.UnitLayouts
             var innerChars = innerLine.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(innerChars);
 
-            var innerWidth = innerChars.Width + 5 + 5; //chars + padding
-            var innerHeight = innerLine.Height + 5 + 5;
+            var innerWidth = innerChars.Width + 5 + 5 + 20; //chars + padding + margins
+            var innerHeight = innerLine.Height + 5 + 5 + 20;//chars + padding + margins
             
             Assert.AreEqual(innerWidth, posReg.TotalBounds.Width);
-            Assert.AreEqual(innerHeight, posReg.TotalBounds.Height); //3 lines + 10pt padding
+            Assert.AreEqual(innerHeight, posReg.TotalBounds.Height);
             
 
 
@@ -745,7 +748,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(3, line.Runs.Count);
             var chars2 = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(chars2);
-            Assert.AreEqual("block, flowing onto a new line with the", chars2.Characters);
+            Assert.AreEqual("inline block, flowing onto a new line with", chars2.Characters);
 
             var comp = posReg.Owner as Component;
             Assert.IsNotNull(comp);
@@ -753,13 +756,13 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(arrange);
 
             var bounds = arrange.RenderBounds; //relative to the page
-            var xOffset = 20 + chars.Width + ws.Width + img.Width; // page margins, text and image width
-            var yOffset = 30 + 20 + 20; //top so - h5 & margins + page margins 
+            var xOffset = 20 + chars.Width + ws.Width + img.Width + 10; // page margins, text, image width and left margin
+            var yOffset = 30 + 20 + 20 + 10; //top so - h5 & margins + page margins and top margin
             
             Assert.AreEqual(xOffset, bounds.X);
             Assert.AreEqual(yOffset, bounds.Y);
-            Assert.AreEqual(innerWidth, bounds.Width);
-            Assert.AreEqual(innerHeight, bounds.Height);
+            Assert.AreEqual(innerWidth - 20, bounds.Width); //render bounds without margins
+            Assert.AreEqual(innerHeight - 20, bounds.Height); //render bounds without margins
             
         }
         
@@ -1210,6 +1213,235 @@ namespace Scryber.UnitLayouts
             
         }
         
+         [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlock_12_WidthToAvailableMiddle()
+        {
+            var path = AssertGetContentFile("InlineBlock_12_WidthToAvailableMiddle");
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("InlineBlock_12_WidthToAvailableMiddle.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            
+
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            //The inline block should now
+            // text begin, text chars, text end, img component run, whitespace begin, whitespace chars, whitespace end = 7
+            Assert.AreEqual(7, line.Runs.Count);
+            
+            //top aligned image and push the content of the inline block down.
+            var bottom = 60; 
+           
+            Assert.AreEqual(bottom, line.Height);
+            
+            //Now onto the second line.
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            // inline positioned block , whitespace begin, whitespace chars, whitespace end, inline start, text start, new line = 7 
+            Assert.AreEqual(7, line.Runs.Count);
+            Assert.AreEqual(60, line.OffsetY);
+           
+            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
+            var ws = line.Runs[2] as PDFTextRunCharacter;
+            
+            Assert.IsNotNull(ws);
+            Assert.IsNotNull(posRun);
+
+            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            var posReg = nest.PositionedRegions[0];
+
+            
+
+            Assert.AreEqual(0, posReg.TotalBounds.X);//moved onto a new line
+            Assert.AreEqual(0, posReg.TotalBounds.Y); //offset by the previous line height
+
+            Assert.IsTrue(posReg.Width > 480);
+            Assert.IsTrue(posReg.Width < line.FullWidth);
+            
+            Assert.AreEqual(30 + 10 + 20, posReg.TotalBounds.Height); //2 lines + 5pt padding + 10pt margins
+            Assert.AreEqual(1, posReg.Contents.Count);
+
+
+            
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(posBlock);
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(posReg.TotalBounds.Height, posBlock.Height);
+            Assert.AreEqual(posReg.Width, posBlock.Width);
+            Assert.AreEqual(1, posBlock.Columns.Length);
+            Assert.AreEqual(2, posBlock.Columns[0].Contents.Count); //on two lines
+
+            
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            
+            
+            //third line
+
+            line = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(60 + 60, line.OffsetY); //The image height + the inline block height (inc. margins)
+            
+            
+            //spacer, chars, new line
+            Assert.AreEqual(3, line.Runs.Count);
+            var chars2 = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars2);
+            Assert.AreEqual("After the inline block, flowing onto a", chars2.Characters);
+
+            var comp = posReg.Owner as Component;
+            Assert.IsNotNull(comp);
+            var arrange = comp.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+
+            var bounds = arrange.RenderBounds;
+            var xOffset = 20 + 20 + 10 + 10 ; // page margins + nest margin + nest padding + ib margin
+            var yOffset = 20 + 50 + 30 + 60 + 10; //page margins, h5 + margins, nest margins and padding, line height, ib margin
+            
+            Assert.AreEqual(xOffset, bounds.X);
+            Assert.AreEqual(yOffset, bounds.Y);
+            Assert.AreEqual(posBlock.Width - 20, bounds.Width); //inline width - margins
+            Assert.AreEqual(30 + 10, bounds.Height); //2 lines + padding (no margins)
+            
+        }
+        
+        
+        
+         [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void InlineBlock_13_ExplicitWidthAndFloat()
+        {
+            var path = AssertGetContentFile("InlineBlock_13_ExplicitWidthAndFloat");
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("InlineBlock_13_ExplicitWidthAndFloat.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var content = layout.AllPages[0].ContentBlock;
+
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+            Assert.AreEqual(0, content.PositionedRegions.Count);
+            
+
+            var nest = content.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(1, nest.PositionedRegions.Count);
+
+            var line = nest.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            //The inline block should now
+            // text begin, text chars, text end, img component run, whitespace begin, whitespace chars, whitespace end = 7
+            Assert.AreEqual(7, line.Runs.Count);
+            
+            //top aligned image and push the content of the inline block down.
+            var bottom = 60; 
+           
+            Assert.AreEqual(bottom, line.Height);
+            
+            //Now onto the second line.
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            // inline positioned block , whitespace begin, whitespace chars, whitespace end, inline start, text start, new line = 7 
+            Assert.AreEqual(7, line.Runs.Count);
+            Assert.AreEqual(60, line.OffsetY);
+           
+            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
+            var ws = line.Runs[2] as PDFTextRunCharacter;
+            
+            Assert.IsNotNull(ws);
+            Assert.IsNotNull(posRun);
+
+            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            var posReg = nest.PositionedRegions[0];
+
+            
+
+            Assert.AreEqual(0, posReg.TotalBounds.X);//moved onto a new line
+            Assert.AreEqual(0, posReg.TotalBounds.Y); //offset by the previous line height
+
+            Assert.IsTrue(posReg.Width > 480);
+            Assert.IsTrue(posReg.Width < line.FullWidth);
+            
+            Assert.AreEqual(30 + 10 + 20, posReg.TotalBounds.Height); //2 lines + 5pt padding + 10pt margins
+            Assert.AreEqual(1, posReg.Contents.Count);
+
+
+            
+            var posBlock = posReg.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(posBlock);
+            Assert.AreEqual(0, posBlock.OffsetX);
+            Assert.AreEqual(0, posBlock.OffsetY);
+            Assert.AreEqual(posReg.TotalBounds.Height, posBlock.Height);
+            Assert.AreEqual(posReg.Width, posBlock.Width);
+            Assert.AreEqual(1, posBlock.Columns.Length);
+            Assert.AreEqual(2, posBlock.Columns[0].Contents.Count); //on two lines
+
+            
+            var newLine = line.Runs[6] as PDFTextRunNewLine;
+            Assert.IsNotNull(newLine);
+            
+            
+            //third line
+
+            line = nest.Columns[0].Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(60 + 60, line.OffsetY); //The image height + the inline block height (inc. margins)
+            
+            
+            //spacer, chars, new line
+            Assert.AreEqual(3, line.Runs.Count);
+            var chars2 = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars2);
+            Assert.AreEqual("After the inline block, flowing onto a", chars2.Characters);
+
+            var comp = posReg.Owner as Component;
+            Assert.IsNotNull(comp);
+            var arrange = comp.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+
+            var bounds = arrange.RenderBounds;
+            var xOffset = 20 + 20 + 10 + 10 ; // page margins + nest margin + nest padding + ib margin
+            var yOffset = 20 + 50 + 30 + 60 + 10; //page margins, h5 + margins, nest margins and padding, line height, ib margin
+            
+            Assert.AreEqual(xOffset, bounds.X);
+            Assert.AreEqual(yOffset, bounds.Y);
+            Assert.AreEqual(posBlock.Width - 20, bounds.Width); //inline width - margins
+            Assert.AreEqual(30 + 10, bounds.Height); //2 lines + padding (no margins)
+            
+        }
         
         
         

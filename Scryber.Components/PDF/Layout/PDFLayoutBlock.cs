@@ -207,7 +207,11 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the position options for this block
         /// </summary>
-        public PDFPositionOptions Position { get; protected set; }
+        public PDFPositionOptions Position
+        {
+            get; 
+            protected set;
+        }
 
         #endregion
 
@@ -216,7 +220,10 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets or sets the total used size
         /// </summary>
-        public Size Size { get; set; }
+        public Size Size { 
+            get; 
+            set; 
+        }
 
         #endregion
 
@@ -647,7 +654,7 @@ namespace Scryber.PDF.Layout
             }
 
             this.Size = this.TotalBounds.Size;
-            this.Size = this.Size.Subtract(this.Position.Padding);
+            //this.Size = this.Size.Subtract(this.Position.Padding);
 
             xoffset = 0;
             yoffset = 0;
@@ -930,6 +937,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public PDFLayoutRegion BeginNewPositionedRegion(PDFPositionOptions pos, PDFLayoutPage page, IComponent comp, Style full, bool isfloating, bool addAssociatedRun = true)
         {
+            
+            //TODO: IMPORTANT -  Move this to the Layout engine - as we have already done the segregation on the position mode - so we can size it from there.
+            
             PDFLayoutRegion before = this.CurrentRegion;
             PDFLayoutLine beforeline = before.CurrentItem as PDFLayoutLine;
             if (null == beforeline)
@@ -948,10 +958,22 @@ namespace Scryber.PDF.Layout
                 space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
 
             }
-            // else if (pos.PositionMode == PositionMode.InlineBlock)
-            // {
-            //     space = new Rect(Unit.Zero, Unit.Zero, page.Width, page.Height);
-            // }
+             else if (pos.DisplayMode == DisplayMode.InlineBlock)
+             {
+                 space = new Rect(Point.Empty, this.AvailableBounds.Size);
+
+                 // if (this.CurrentRegion != null && this.CurrentRegion.CurrentItem != null &&
+                 //     this.CurrentRegion.CurrentItem is PDFLayoutLine currLine)
+                 // {
+                 //     if (pos.Width.HasValue)
+                 //         space.Width = pos.Width.Value;
+                 //     else if (pos.MinimumWidth.HasValue == false)
+                 //     {
+                 //         //As an inline block on a current line without specific widths
+                 //         space.Width = currLine.AvailableWidth;
+                 //     }
+                 // }
+             }
             else
                 //Block sizing
                 space = new Rect(Point.Empty, this.AvailableBounds.Size);

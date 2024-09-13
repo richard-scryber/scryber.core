@@ -80,11 +80,15 @@ namespace Scryber.PDF.Layout
             get
             {
                 //In normal relative or absolute positioning margins are ignored.
-                //But inline blocks shoud account for them
+                //But inline blocks shoud account for them.
                 var h = this.Region.Height;
                 
-                if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
-                    h += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+                if (this.PositionOptions.Height.HasValue)
+                {
+                    if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
+                        h += this.PositionOptions.Margins.Top + this.PositionOptions.Margins.Bottom;
+                }
+
                 return h;
             }
         }
@@ -96,8 +100,15 @@ namespace Scryber.PDF.Layout
             get
             {
                 var w = this.Region.Width;
-                if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
-                    w += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+                
+                if (this.PositionOptions.Width.HasValue)
+                {
+                    //if there is an explicit width on the region then we need to add the margins
+                    //for an inline block.
+                    if (this.PositionOptions != null && this.PositionOptions.Margins.IsEmpty == false)
+                        w += this.PositionOptions.Margins.Left + this.PositionOptions.Margins.Right;
+                }
+
                 return w;
             }
         }
@@ -119,8 +130,8 @@ namespace Scryber.PDF.Layout
             if (this.OffsetX != Unit.Zero)
                 xoffset += this.OffsetX;
 
-            xoffset += this.PositionOptions.Margins.Left;
-            yoffset += this.PositionOptions.Margins.Top;
+            //xoffset += this.PositionOptions.Margins.Left;
+            //yoffset += this.PositionOptions.Margins.Top;
 
             base.DoPushComponentLayout(context, pageIndex, xoffset, yoffset);
         }

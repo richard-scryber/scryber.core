@@ -173,7 +173,6 @@ namespace Scryber.PDF.Layout
             else if (this.PositionOptions.DisplayMode == DisplayMode.InlineBlock)
             {
                 //We need to calculate the left offset.
-                
                 var line = this.AssociatedRun.Line;
 
                 var width = Unit.Zero;
@@ -423,7 +422,7 @@ namespace Scryber.PDF.Layout
                 }
                 else if (this.PositionOptions.FloatMode == FloatMode.Left)
                 {
-                    //Todo - push the floating block to the right.
+                    // nothing to do for the left.
                 }
 
                 if (this.IsExplicitLayout)

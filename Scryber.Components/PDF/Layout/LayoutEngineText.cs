@@ -376,7 +376,7 @@ namespace Scryber.PDF.Layout
             var metrics = this.Context.Graphics.GetCurrentFontMetrics();
 
             Unit inset = Unit.Zero;
-            if (line.IsEmpty == false)
+            if (line.HasInlineContent)
                 inset = line.Width;
             else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.DisplayMode != DisplayMode.Inline || started))
             {
@@ -639,7 +639,7 @@ namespace Scryber.PDF.Layout
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
             if (this.CurrentLine != null &&
-                (this.CurrentLine.IsEmpty || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
+                (!this.CurrentLine.HasInlineContent || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
             {
                 if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
                     chars = chars.TrimStart(WhiteSpaceChars);
@@ -886,7 +886,7 @@ namespace Scryber.PDF.Layout
                 return false;
             else if (chars[start + count - 1] == '-') //broken just after a hyphen is allowed
                 return false;
-            else if (this.CurrentLine.IsEmpty == false)
+            else if (this.CurrentLine.HasInlineContent)
                 return true;
             else
                 return false;
@@ -903,7 +903,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private bool IsEmptyLine()
         {
-            if (this.CurrentLine.IsEmpty)
+            if (this.CurrentLine.HasInlineContent == false)
                 return true;
             else
             {
@@ -1127,7 +1127,7 @@ namespace Scryber.PDF.Layout
             if (null == line) //It's a block not a line
                 return false;
 
-            else if (line.IsEmpty) //empty so true
+            else if (line.HasInlineContent == false) //empty so true
                 return true;
 
             if (line.Runs.Count != 2)

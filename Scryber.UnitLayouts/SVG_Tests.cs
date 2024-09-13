@@ -503,7 +503,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX);
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -624,7 +624,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX);
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -746,7 +746,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX);
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -869,7 +869,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset + line.AvailableWidth, posRun.OffsetX); //right align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -992,7 +992,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset + (line.AvailableWidth / 2), posRun.OffsetX); //centre align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -1116,7 +1116,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -1241,7 +1241,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -1630,7 +1630,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             
@@ -1766,7 +1766,7 @@ namespace Scryber.UnitLayouts
             Unit width = 100 + 20; //width + margins
             
             Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(line.BaseLineOffset - height, posRun.OffsetY); //svg is sat at the top
+            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
             Assert.AreEqual(width, posRun.Width);
             Assert.AreEqual(height, posRun.Height);
             

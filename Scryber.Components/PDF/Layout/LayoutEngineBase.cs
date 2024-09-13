@@ -1038,7 +1038,9 @@ namespace Scryber.PDF.Layout
                     this.Context.PositionDepth -= 1;
 
                 if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
+                {
                     posReg.AssociatedRun.Close();
+                }
 
                 if (positioned.Contents.Count == 0 && positioned.Floats == null)
                 {
@@ -1064,6 +1066,10 @@ namespace Scryber.PDF.Layout
                     }
                     
                 }
+                else if (positioned.DisplayMode == DisplayMode.InlineBlock)
+                {
+                    this.UpdateInlineBlockPosition(positioned as PDFLayoutPositionedRegion, options);
+                }
                 
                 //If we are relative and we some transformations to apply
                 if (options.HasTransformation)
@@ -1078,6 +1084,55 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected virtual void UpdateInlineBlockPosition(PDFLayoutPositionedRegion positioned,
+            PDFPositionOptions options)
+        {
+            if (positioned.DisplayMode == DisplayMode.InlineBlock)
+            {
+                var block = this.CurrentBlock;
+                if (null == block)
+                    block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                if (null == block) 
+                    return;
+
+                //anything with an explicit width will automatically be handled.
+                if (positioned.PositionOptions.Width.HasValue)
+                    return;
+                
+                var reg = block.CurrentRegion;
+                
+                var line = reg.CurrentItem as PDFLayoutLine;
+
+                if (line != null && positioned.Width > line.AvailableWidth)
+                {
+                    
+                    if (positioned.Width > line.FullWidth)
+                    {
+                        if (line.Runs.Count == 1) //it's just the run and it's simply too big so, do nothing.
+                            return;
+                    }
+
+                    if (reg.AvailableHeight < positioned.Height)
+                    {
+                        bool newPage;
+                        if (!this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
+                        {
+                            return;
+                        }
+                    }
+                    
+                    line.Runs.Remove(positioned.AssociatedRun);
+                    
+                    var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+                            
+                    
+                    newLine.Runs.Add(positioned.AssociatedRun);
+                    positioned.AssociatedRun.SetParent(newLine);
+
+                }
+            }
+        }
+        
         #region protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
         
         protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
@@ -1714,14 +1769,47 @@ namespace Scryber.PDF.Layout
             if (pos.FloatMode == FloatMode.Left)
             {
                 var yoffset = region.UsedSize.Height;
-                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && !line.IsEmpty)
-                    yoffset += line.Height;
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && line.Runs.Count > 0)
+                {
+                    var hasContent = false;
+                    //check for an empty line.
+                    
+                    foreach (var run in line.Runs)
+                    {
+                        if (run is PDFLayoutPositionedRegionRun positionedRegionRun)
+                        {
+                            if (positionedRegionRun.IsFloating)
+                            {
+                                //continue
+                            }
+                            else if (positionedRegionRun.Region.PositionMode == PositionMode.Fixed ||
+                                     positionedRegionRun.Region.PositionMode == PositionMode.Absolute)
+                            {
+                                //continue
+                            }
+                            else
+                            {
+                                hasContent = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            hasContent = true;
+                            break;
+                        }
+                    }
+
+                    if (hasContent)
+                        yoffset += line.Height;
+                }
+
                 pos.X = region.GetLeftInset(yoffset, 1.0);
             }
             else if (pos.FloatMode == FloatMode.Right)
             {
                 var yoffset = region.UsedSize.Height;
-                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && !line.IsEmpty)
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && line.HasInlineContent)
                     yoffset += line.Height;
                 pos.Right = region.GetRightInset(yoffset, 1.0);
             }

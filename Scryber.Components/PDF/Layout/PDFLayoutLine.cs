@@ -223,14 +223,14 @@ namespace Scryber.PDF.Layout
         #endregion
 
 
-        #region public bool IsEmpty {get;}
+        #region public bool HasInlineContent {get;}
 
         /// <summary>
         /// Returns true if this is an empty line - does not have any runs on it
         /// </summary>
-        public bool IsEmpty
+        public bool HasInlineContent
         {
-            get { return this._runs == null || this._runs.Count == 0; }
+            get { return this._runs != null && this._runs.Count > 0; }
         }
 
         #endregion
@@ -1466,7 +1466,7 @@ namespace Scryber.PDF.Layout
         {
             if (this.VAlignment == VerticalAlignment.Top)
                 return false;
-            if (this.IsEmpty == true || this.Runs.Count < 2)
+            if (this.HasInlineContent == false || this.Runs.Count < 2)
                 return false;
             else
             {

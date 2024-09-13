@@ -1108,6 +1108,10 @@ namespace Scryber.Styles
                 //absolute and fixed knock out any float
                 if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
                     options.FloatMode = FloatMode.None;
+                //otherwise if we are actually floating - then we are always a block.
+                else if (options.FloatMode != FloatMode.None)
+                    options.DisplayMode = DisplayMode.Block;
+                    
             }
 
             // transformations
