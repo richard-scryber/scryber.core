@@ -419,6 +419,27 @@ namespace Scryber.PDF.Layout
                                                  (this.RelativeTo.Position.Margins.Right + this.RelativeTo.Position.Padding.Right) +
                                                  (this.RelativeTo.Width - this.Width) -
                                                  this.PositionOptions.Right;
+                    
+                    if (this.RelativeTo.Position.ColumnCount > 1)
+                    {
+                        //Check if we are not on the last column.
+                        //If not then move left by the width of the columns and teh alley width
+                        
+                        var region = this.AssociatedRun.Line.Region;
+                        var index = region.ColumnIndex;
+                        var count = this.RelativeTo.Position.ColumnCount - 1;
+                        var columnOptions = this.RelativeTo.FullStyle.CreateColumnOptions();
+                        
+                        var inset = Unit.Zero;
+                        while (count > index)
+                        {
+                            inset += this.RelativeTo.Columns[count].TotalBounds.Width;
+                            inset += columnOptions.AlleyWidth;
+                            count--;
+                        }
+
+                        this.PositionOptions.X -= inset;
+                    }
                 }
                 else if (this.PositionOptions.FloatMode == FloatMode.Left)
                 {
