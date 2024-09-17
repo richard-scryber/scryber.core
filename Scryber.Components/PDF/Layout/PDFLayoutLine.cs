@@ -239,6 +239,15 @@ namespace Scryber.PDF.Layout
         /// Gets or sets any right inset (from a float:right) that was applied to the newline offset.
         /// </summary>
         public Unit RightInset { get; set; }
+
+        /// <summary>
+        /// Gets or sets any left inset (from a float:left) that was applied to a text run begin
+        /// </summary>
+        public Unit LeftInset
+        {
+            get; 
+            set;
+        }
         
         
         protected Unit? ExtraCharacterSpace { get; set; }
@@ -367,7 +376,11 @@ namespace Scryber.PDF.Layout
         #endregion
 
 
-        private void EnsureAllRunsOnSameLevel()
+        /// <summary>
+        /// Repositions the runs on the line to ensure all baselines are matched
+        /// </summary>
+        /// <param name="forceUpdate"></param>
+        private void EnsureAllRunsOnSameLevel(bool forceUpdate = false)
         {
             Unit totalHeight = Unit.Zero;
             Unit maxHeight = Unit.Zero;
@@ -488,7 +501,7 @@ namespace Scryber.PDF.Layout
 
 
 
-            if (isComplex)
+            if (isComplex || forceUpdate)
             {
                 if (!valign.HasValue) //default
                     valign = VerticalAlignment.Baseline;
@@ -584,6 +597,7 @@ namespace Scryber.PDF.Layout
                     }
                 }
             }
+            
             
         }
 
@@ -917,6 +931,16 @@ namespace Scryber.PDF.Layout
                 }
             }
             this.Runs.Add(run);
+        }
+
+        public virtual void RemoveRun(PDFLayoutRun run)
+        {
+            if (this.Runs.Remove(run))
+            {
+                string msg = String.Empty;
+                if (this.IsClosed)
+                    this.EnsureAllRunsOnSameLevel(forceUpdate: true);
+            }
         }
 
         /// <summary>

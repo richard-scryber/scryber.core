@@ -58,11 +58,11 @@ namespace Scryber.PDF.Layout
         /// <param name="yoffset"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public Unit ApplyWidthInset(Unit available, Unit yoffset, Unit height)
+        public Unit ApplyWidthInset(Unit available, Unit yoffset, Unit height, out Unit leftOffset)
         {
             Unit inset = Unit.Zero;
 
-            var leftOffset = this.GetLeftOffset(0, yoffset, height);
+            leftOffset = this.GetLeftOffset(0, yoffset, height);
             var rightInset = this.GetRightInset(0, yoffset, height);
 
             available -= (leftOffset + rightInset);

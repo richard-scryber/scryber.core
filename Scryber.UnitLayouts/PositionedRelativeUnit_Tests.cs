@@ -976,7 +976,7 @@ namespace Scryber.UnitLayouts
             };
             wrapper.Contents.Add(floating);
 
-            floating.Contents.Add(new TextLiteral("40% width and 10% height floating in the margins"));
+            floating.Contents.Add(new TextLiteral("40% width and 8% height floating in the margins"));
 
             wrapper.Contents.Add("This is a long text run that should flow nicely around the 50% width, and 8% height floating div on the page");
 
@@ -1013,11 +1013,11 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, wrapperBlock.PositionedRegions.Count);
             region = wrapperBlock.PositionedRegions[0];
 
-            Assert.AreEqual(width, region.Width); //without the margins
-            Assert.AreEqual(height, region.Height); //without the margins
+            Assert.AreEqual(width + 20, region.Width); //with the margins
+            Assert.AreEqual(height + 20, region.Height); //with the margins
 
-            Assert.AreEqual(30, region.TotalBounds.Y); //After the first line
-            Assert.AreEqual(0, region.TotalBounds.X);
+            Assert.AreEqual(50, region.TotalBounds.Y); //After the first line + margins
+            Assert.AreEqual(20, region.TotalBounds.X); //Margin and padding inset
             Assert.AreEqual(1, region.Contents.Count);
 
             var floatBlock = region.Contents[0];
@@ -1044,7 +1044,7 @@ namespace Scryber.UnitLayouts
             section.BackgroundColor = StandardColors.Silver;
             section.VerticalAlignment = VerticalAlignment.Middle;
             section.HorizontalAlignment = HorizontalAlignment.Center;
-
+            section.DisplayMode = DisplayMode.TableCell;
             doc.Pages.Add(section);
 
             Div wrapper = new Div()
@@ -1055,7 +1055,8 @@ namespace Scryber.UnitLayouts
                 BorderWidth = 1,
                 BorderColor = StandardColors.Blue,
                 VerticalAlignment = VerticalAlignment.Middle,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Center,
+                DisplayMode = DisplayMode.TableCell
             };
 
             section.Contents.Add(wrapper);
@@ -1067,7 +1068,9 @@ namespace Scryber.UnitLayouts
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 VerticalAlignment = VerticalAlignment.Middle,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Center,
+                DisplayMode = DisplayMode.TableCell
+                
             };
             wrapper.Contents.Add(relative);
 

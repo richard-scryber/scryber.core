@@ -156,6 +156,7 @@ namespace Scryber.PDF.Layout
             {
                 if (row.Visible == false)
                     continue;
+                
 
                 _rowIndex = index;
                 this.DoLayoutTableRow(row, index, false);

@@ -719,6 +719,9 @@ namespace Scryber.PDF.Layout
             }
             else
                 full = this.FullStyle;
+            
+            if(!ShouldLayoutComponent(comp, full))
+                return;
 
             CheckForPrecedingInlineWhitespace(comp, full);
 
@@ -765,6 +768,25 @@ namespace Scryber.PDF.Layout
             if(null != artefacts)
                 comp.CloseLayoutArtefacts(this.Context, artefacts, full);
 
+        }
+
+        protected virtual bool ShouldLayoutComponent(Component comp, Style full)
+        {
+            if (comp.Visible == false)
+            {
+                return false;
+            }
+            else if (null != full)
+            {
+                StyleValue<DisplayMode> display;
+
+                if (full.TryGetValue(StyleKeys.PositionDisplayKey, out display) &&
+                    display.Value(full) == DisplayMode.Invisible)
+                    return false;
+                
+            }
+
+            return true;
         }
 
         private static bool IsStyled(IComponent comp)
@@ -968,6 +990,8 @@ namespace Scryber.PDF.Layout
                 else if (options.DisplayMode == DisplayMode.InlineBlock)
                 {
                     positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
+                    if(null == positioned)
+                        return;
                 }
                 else if (options.FloatMode != FloatMode.None)
                 {
@@ -1028,10 +1052,11 @@ namespace Scryber.PDF.Layout
             //close any relative or absolute region
             if (null != positioned)
             {
-                if (positioned.IsClosed) //we have overflowed and need to get the latest.
-                    positioned = this.CurrentBlock.PositionedRegions.Last();
-
-
+                if (positioned.IsClosed && positioned.PositionMode == PositionMode.Relative) //we have overflowed (only relative can cause an overflow) and need to get the latest.
+                {
+                   positioned = this.CurrentBlock.PositionedRegions.Last();
+                }
+                
                 positioned.Close();
 
                 if (decrementDepthAfter)
@@ -1084,51 +1109,101 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        protected virtual void UpdateInlineBlockPosition(PDFLayoutPositionedRegion positioned,
-            PDFPositionOptions options)
+        protected virtual void UpdateInlineBlockPosition(PDFLayoutPositionedRegion positioned, PDFPositionOptions options)
         {
-            if (positioned.DisplayMode == DisplayMode.InlineBlock)
+ 
+            var block = this.CurrentBlock;
+            if (null == block)
+                block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            if (null == block) 
+                return;
+            
+            var reg = block.CurrentRegion;
+            if(null == reg)
+                return;
+            
+            bool newPage;
+            var line = reg.CurrentItem as PDFLayoutLine;
+            
+            //check the height - if it's not explicit
+            if (!positioned.PositionOptions.Height.HasValue)
             {
-                var block = this.CurrentBlock;
-                if (null == block)
-                    block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-                if (null == block) 
-                    return;
-
-                //anything with an explicit width will automatically be handled.
-                if (positioned.PositionOptions.Width.HasValue)
-                    return;
-                
-                var reg = block.CurrentRegion;
-                
-                var line = reg.CurrentItem as PDFLayoutLine;
-
-                if (line != null && positioned.Width > line.AvailableWidth)
+                var h = positioned.Height;
+                if (h > reg.AvailableHeight)
                 {
-                    
+                    //to high to fit the available space (if we are not clipped.
+                    if (!this.IsLastInClippedBlock(reg))
+                    {
+                        var origBlock = block;
+                        var origReg = reg;
+                        
+                        line.RemoveRun(positioned.AssociatedRun);//remove it before closing
+                        
+                        if (this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
+                        {
+                            origBlock.PositionedRegions.Remove(positioned);
+                            block.PositionedRegions.Add(positioned);
+                            positioned.SetParent(block);
+
+                            var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+                            newLine.AddRun(positioned.AssociatedRun);
+                            positioned.AssociatedRun.SetParent(newLine);
+                        }
+                        
+                    }
+                }
+            }
+            
+
+            //check the width - if it's not explicit
+            if (!positioned.PositionOptions.Width.HasValue)
+            {
+                if (line != null && line.AvailableWidth < 0) //we are beyond the available width
+                {
+
                     if (positioned.Width > line.FullWidth)
                     {
                         if (line.Runs.Count == 1) //it's just the run and it's simply too big so, do nothing.
                             return;
                     }
 
-                    if (reg.AvailableHeight < positioned.Height)
+                    //no height available and we are not clipping
+                    if (reg.AvailableHeight < positioned.Height && !this.IsLastInClippedBlock(reg))
                     {
-                        bool newPage;
-                        if (!this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
-                        {
-                            return;
-                        }
-                    }
-                    
-                    line.Runs.Remove(positioned.AssociatedRun);
-                    
-                    var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
-                            
-                    
-                    newLine.Runs.Add(positioned.AssociatedRun);
-                    positioned.AssociatedRun.SetParent(newLine);
+                        var origBlock = block;
+                        var origReg = reg;
 
+                        line.RemoveRun(positioned.AssociatedRun);
+
+                        if (this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
+                        {
+
+                            //just move the inline block
+                            origBlock.PositionedRegions.Remove(positioned);
+                            block.PositionedRegions.Add(positioned);
+                            positioned.SetParent(block);
+
+                            var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+
+                            newLine.AddRun(positioned.AssociatedRun);
+                            positioned.AssociatedRun.SetParent(newLine);
+                        }
+
+                    }
+                    else
+                    {
+                        //We are wider than available width, but we have height to accomodate the block below.
+                        //so just move to a new line.
+                        
+                        line.RemoveRun(positioned.AssociatedRun);
+                        
+                        if (!line.IsClosed)
+                            line.Close();
+
+                        var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+                        newLine.AddRun(positioned.AssociatedRun);
+                        positioned.AssociatedRun.SetParent(newLine);
+                    }
                 }
             }
         }
@@ -1561,6 +1636,7 @@ namespace Scryber.PDF.Layout
                 offset.Y = newRegion.UsedSize.Height;
                 
                 positioned.RelativeOffset = offset;
+                
                 return true;
             }
             else
@@ -1747,6 +1823,49 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
+
+            var line = last.CurrentRegion.CurrentItem as PDFLayoutLine;
+
+            if (pos.Height.HasValue && last.CurrentRegion.AvailableHeight < pos.Height)
+            {
+                if (line != null)
+                {
+                    last.CurrentRegion.CloseCurrentItem();
+                }
+
+                var region = last.CurrentRegion;
+                var block = last;
+                var newPage = false;
+                if (this.IsLastInClippedBlock(region))
+                {
+                    //We are ok, as we are clipped. Just continue
+                }
+                else if (this.MoveToNextRegion(pos.Height.Value, ref region, ref block, out newPage))
+                {
+                    last = block;
+                }
+                else
+                {
+                    this.ContinueLayout = false;
+                    return null;
+                }
+
+            }
+            if (pos.Width.HasValue)
+            {
+                //we have an explicit width so check if we have an open line with the available width.
+                
+                if (null != line && line.Runs.Count > 0)
+                {
+                    if (line.AvailableWidth < pos.Width)
+                    {
+                        //we cannot fit, so create a new line.
+                        last.CurrentRegion.CloseCurrentItem();
+                        last.CurrentRegion.BeginNewLine(1);
+                    }
+                }
+            }
+
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return ib;
         }
@@ -2228,6 +2347,70 @@ namespace Scryber.PDF.Layout
         //
         // overflow methods
         //
+        
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of block that is clipped. This means we just continue with the layout
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInClippedRegion(PDFLayoutBlock block)
+        {
+            if (_cachedIsInClipped.HasValue)
+                return _cachedIsInClipped.Value;
+            
+            var isInClipped = false;
+            
+            while (null != block)
+            {
+                if (block.Position.OverflowAction == OverflowAction.Clip
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    isInClipped = true;
+                    break;
+                }
+
+                block = block.GetParentBlock();
+            }
+
+            _cachedIsInClipped = isInClipped;
+            return isInClipped;
+        }
+
+        private bool? _cachedIsPositioned;
+        private bool? _cachedIsInClipped;
+
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInAbsoluteOrRelativeRegion(PDFLayoutBlock block)
+        {
+            if (_cachedIsPositioned.HasValue)
+                return _cachedIsPositioned.Value;
+            
+            var ispositioned = false;
+            
+            
+            while (null != block)
+            {
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed)
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
+                else if (block.Position.DisplayMode == DisplayMode.InlineBlock &&
+                         block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
+
+                block = block.GetParentBlock();
+            }
+
+            _cachedIsPositioned = ispositioned;
+            return ispositioned;
+        }
         
         #region protected bool IsLastInClippedBlock(PDFLayoutRegion container)
 

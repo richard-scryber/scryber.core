@@ -829,14 +829,13 @@ namespace Scryber.PDF.Layout
             var block = this.CurrentLine.Region.GetParentBlock();
             while (null != block)
             {
-                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed)
-                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed))
+                    //&& block.CurrentRegion == block.Columns[block.Columns.Length - 1])
                 {
                     ispositioned = true;
                     break;
                 }
-                else if (block.Position.DisplayMode == DisplayMode.InlineBlock &&
-                         block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                else if (block.Position.DisplayMode == DisplayMode.InlineBlock)
                 {
                     ispositioned = true;
                     break;

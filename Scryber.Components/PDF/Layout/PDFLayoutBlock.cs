@@ -960,7 +960,10 @@ namespace Scryber.PDF.Layout
             }
              else if (pos.DisplayMode == DisplayMode.InlineBlock)
              {
-                 space = new Rect(Point.Empty, this.AvailableBounds.Size);
+                 space = new Rect(Point.Empty, AvailableBounds.Size);
+                 
+                 if (this.Columns.Length > 1)
+                     space.Width = this.CurrentRegion.Width;
 
                  // if (this.CurrentRegion != null && this.CurrentRegion.CurrentItem != null &&
                  //     this.CurrentRegion.CurrentItem is PDFLayoutLine currLine)

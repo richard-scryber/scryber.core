@@ -92,6 +92,9 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected override void DoLayoutComponent()
         {
+            if(!this.ShouldLayoutComponent(this.Component, this.FullStyle))
+                return;
+            
             IDisposable record = this.Context.PerformanceMonitor.Record(PerformanceMonitorType.Layout_Pages, "Page " + this.Component.ID);
 
             //Take a copy of the style stack for the header and footer

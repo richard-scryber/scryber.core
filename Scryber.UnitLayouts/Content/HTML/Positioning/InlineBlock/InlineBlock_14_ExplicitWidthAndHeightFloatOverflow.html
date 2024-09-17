@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+        "http://www.w3.org/TR/html4/strict.dtd">
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
 
@@ -17,10 +17,9 @@
             font-family: sans-serif;
             margin: 20pt;
         }
-        
+
         .nest{
             border: solid 1pt green;
-            height: 400pt;
             margin: 20pt;
             padding: 10pt;
         }
@@ -34,27 +33,34 @@
             font-size: 12pt;
             line-height: 15pt;
             width: 200pt;
+            height: 100pt;
             vertical-align: bottom;
         }
-        
+
         .float{
             width: 60pt;
             float: left;
             border: solid 1pt blue;
             margin-right: 10pt;
         }
+
+        .push-down{
+            height: 660pt;
+            border: solid 1pt blue;
+        }
     </style>
 </head>
 <body>
-    <h5>Block below is inline-block positioned to the page, with a width and height</h5>
-    <div class="nest">
-        Before the inline block.
-        <div class="ib">
-            <img class="float" src="../../../images/toroid32.png" />
-            <span>Inline block that overflows the available space and will flow naturally onto a new line in the available space.</span>
-        </div>
-        <span style="font-size: 30pt;" >After the inline block, flowing onto a new line with the required offset</span>
+<h5>Block below is inline-block positioned to the page, with a width and height</h5>
+<div class="nest">
+    <div class="push-down" >This block pushes the float down until it cannot fit on the page</div>
+    Before the inline block.
+    <div class="ib">
+        <img class="float" src="../../../images/toroid32.png" />
+        <span>Inline block that overflows the available space and will flow naturally onto a new line in the available space.</span>
     </div>
+    <span style="font-size: 30pt;" >After the inline block, flowing onto a new line with the required offset</span>
+</div>
 </body>
 </html>
 
