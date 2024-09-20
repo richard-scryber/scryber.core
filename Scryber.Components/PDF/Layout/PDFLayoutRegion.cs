@@ -884,8 +884,10 @@ namespace Scryber.PDF.Layout
             foreach (PDFLayoutItem item in this.Contents)
             {
                 Unit actYOffset = yoffset + item.OffsetY;
+                
                 var line = item as PDFLayoutLine;
-
+                var block = item as PDFLayoutBlock;
+                
                 Unit xInset = 0;
 
                 if (null != line)
@@ -966,6 +968,11 @@ namespace Scryber.PDF.Layout
                     
                     itemXOffset = itemXOffset + space;
                 }
+                else if (null != block && block.Position.Width.HasValue)
+                {
+                    //This is a block with a width - check the margin auto values to see if we need to align it.
+                }
+                
 
                 lastXInset = xInset;
                 item.PushComponentLayout(context, pageIndex, itemXOffset, yoffset);
@@ -1005,7 +1012,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private bool ShouldApplyVerticalAlignment()
         {
-            if (this.DisplayMode == DisplayMode.TableCell)
+            if (this.Parent is PDFLayoutBlock block && block.Position.DisplayMode == DisplayMode.TableCell && block.Position.PositionMode == PositionMode.Static)
                 return true;
             else
                 return false;

@@ -11,6 +11,7 @@ namespace Scryber.Styles.Parsing.Typed
         private StyleKey<Unit> _top;
         private StyleKey<Unit> _bottom;
 
+        
         public CSSThicknessAllParser(string cssAttr, StyleKey<Unit> all, StyleKey<Unit> left, StyleKey<Unit> top, StyleKey<Unit> right, StyleKey<Unit> bottom)
             : base(cssAttr)
         {

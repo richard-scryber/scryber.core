@@ -963,8 +963,13 @@ namespace Scryber.Styles
             // Width
             if (this.TryGetValue(StyleKeys.SizeWidthKey, out unit))
             {
-                options.Width = unit.Value(this);
-                options.FillWidth = false;
+                if (Unit.IsAutoValue(unit.Value(this)))
+                    options.FillWidth = true;
+                else
+                {
+                    options.Width = unit.Value(this);
+                    options.FillWidth = false;
+                }
             }
             else
                 options.Width = null;
@@ -972,7 +977,14 @@ namespace Scryber.Styles
             // Height
             if (this.TryGetValue(StyleKeys.SizeHeightKey, out unit))
             {
-                options.Height = unit.Value(this);
+                if (Unit.IsAutoValue(unit.Value(this)))
+                {
+                    ; //default is to shrink anyway
+                }
+                else
+                {
+                    options.Height = unit.Value(this);
+                }
             }
             else
                 options.Height = null;
@@ -1076,15 +1088,44 @@ namespace Scryber.Styles
 
             //margins
 
-            if (this.TryGetThickness(StyleKeys.MarginsItemKey.Inherited, StyleKeys.MarginsAllKey, StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey, StyleKeys.MarginsRightKey, out thickness))
+            if (this.TryGetThickness(StyleKeys.MarginsItemKey.Inherited, StyleKeys.MarginsAllKey,
+                    StyleKeys.MarginsTopKey, StyleKeys.MarginsLeftKey, StyleKeys.MarginsBottomKey,
+                    StyleKeys.MarginsRightKey, out thickness))
+            {
+                if (Unit.IsAutoValue(thickness.Top))
+                {
+                    thickness.Top = Unit.Zero;
+                }
+
+                if (Unit.IsAutoValue(thickness.Bottom))
+                {
+                    thickness.Bottom = Unit.Zero;
+                }
+
+                if (Unit.IsAutoValue(thickness.Left))
+                {
+                    thickness.Left = Unit.Zero;
+                    options.AutoMarginLeft = true;
+                }
+
+                if (Unit.IsAutoValue(thickness.Right))
+                {
+                    thickness.Right = Unit.Zero;
+                    options.AutoMarginRight = true;
+                }
                 options.Margins = thickness;
+            }
             else
                 options.Margins = Thickness.Empty();
 
             //padding
 
-            if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey, StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey, StyleKeys.PaddingRightKey, out thickness))
+            if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey,
+                    StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey,
+                    StyleKeys.PaddingRightKey, out thickness))
+            {
                 options.Padding = thickness;
+            }
             else
                 options.Padding = Thickness.Empty();
 

@@ -65,7 +65,7 @@ namespace Scryber.Drawing
 
         private PageUnits _units;
         /// <summary>
-        /// Gets the defined measurement units of the PDFUnit
+        /// Gets the defined measurement units of the Unit
         /// </summary>
         public PageUnits Units
         {
@@ -333,7 +333,7 @@ namespace Scryber.Drawing
 
         
 
-        #region bool Equals(PDFUnit unit) + 1 overload
+        #region bool Equals(Unit unit) + 1 overload
 
         public bool Equals(Unit unit)
         {
@@ -375,7 +375,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region int CompareTo(PDFUnit unit) + 1 overload
+        #region int CompareTo(Unit unit) + 1 overload
 
         public int CompareTo(Unit unit)
         {
@@ -395,7 +395,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Empty {get;}
+        #region public static Unit Empty {get;}
 
         private static Unit _empty = new Unit();
         public static Unit Empty
@@ -405,7 +405,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Zero {get;}
+        #region public static Unit Zero {get;}
 
         private static Unit _zero = new Unit(0, PageUnits.Points);
 
@@ -416,7 +416,24 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static int Compare(PDFUnit one, PDFUnit two)
+        #region MyRegion
+
+        
+
+        #endregion
+        
+        /// <summary>
+        /// Gets the 'auto' unit value that can be compared and will be used if set.
+        /// </summary>
+        public static Unit Auto
+        {
+            get
+            {
+                return new Unit(AutoValue, PageUnits.Points);
+            }
+        }
+
+        #region public static int Compare(Unit one, Unit two)
 
         public static int Compare(Unit one, Unit two)
         {
@@ -689,7 +706,7 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Convert(PDFUnit unit, PageUnits tounits)
+        #region public static Unit Convert(Unit unit, PageUnits tounits)
 
         public static Unit Convert(Unit unit, PageUnits tounits)
         {
@@ -767,7 +784,10 @@ namespace Scryber.Drawing
             double val;
             int offset = 0;
             //if (IsRelativeValue(value, out val, out unit))
-            //    return new PDFUnit(val, unit);
+            //    return new Unit(val, unit);
+
+            if (IsAutoValue(value))
+                return new Unit(AutoValue, PageUnits.Points);
 
             val = GetNumber(ref offset, value);
             if (offset < value.Length)
@@ -776,6 +796,11 @@ namespace Scryber.Drawing
                 unit = PageUnits.Points;
 
             return new Unit(val, unit);
+        }
+
+        private static bool IsAutoValue(string value)
+        {
+            return string.Equals("auto", value);
         }
 
         private static bool IsRelativeFontSizeValue(string value, out double val, out PageUnits unit)
@@ -876,7 +901,7 @@ namespace Scryber.Drawing
                 case (RelativeViewPortMaxPostfix):
                     return PageUnits.ViewPortMax;
                 default:
-                    throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt..)"), "value");
+                    throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "Unit", "nnn[.nnn](mm|in|pt..)"), "value");
 
             }
         }
@@ -899,7 +924,7 @@ namespace Scryber.Drawing
             while (end < value.Length);
 
             if (end == start)
-                throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
+                throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "Unit", "nnn[.nnn](mm|in|pt)"), "value");
 
             offset = end;
 
@@ -915,7 +940,7 @@ namespace Scryber.Drawing
             }
             
             
-            throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "PDFUnit", "nnn[.nnn](mm|in|pt)"), "value");
+            throw new ArgumentException(String.Format(Errors.CouldNotParseValue_3, value, "Unit", "nnn[.nnn](mm|in|pt)"), "value");
 
         }
 
@@ -935,7 +960,21 @@ namespace Scryber.Drawing
         }
 
         #endregion
-        
+
+        #region public static bool IsAutoValue(Unit unit)
+
+
+        public static bool IsAutoValue(Unit value)
+        {
+            if (value.PointsValue == AutoValue) //we want an explicit and direct comparison
+                return true;
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
 
         #region IsRelativeUnit(Unit) + 1 overload
 
@@ -955,7 +994,7 @@ namespace Scryber.Drawing
         /// <summary>
         /// Returns true if the PageUnit dimension is defined as relative to other graphic content
         /// </summary>
-        /// <param name="unit">The PageUnit to check</param>
+        /// <param name="units">The PageUnits to check</param>
         /// <returns>True if the dimension is relative</returns>
         public static bool IsRelativeUnit(PageUnits units)
         {
@@ -971,10 +1010,10 @@ namespace Scryber.Drawing
         // factory methods
         //
 
-        #region public static PDFUnit Pt(double value)
+        #region public static Unit Pt(double value)
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Points
+        /// Creates a new Unit with the specified value in Points
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -984,7 +1023,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Points
+        /// Creates a new Unit with the specified value in Points
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -995,15 +1034,24 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region public static Unit Px(double value)
+        
+        /// <summary>
+        /// Returns a new unit with the points value dimension
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static Unit Px(double value)
         {
             return new Unit(value, PageUnits.Pixel);
         }
+        
+        #endregion
 
-        #region public static PDFUnit Inch(double value)
+        #region public static Unit Inch(double value)
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Inches
+        /// Creates a new Unit with the specified value in Inches
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1013,7 +1061,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Inches
+        /// Creates a new Unit with the specified value in Inches
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1024,10 +1072,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Mm(double value)
+        #region public static Unit Mm(double value)
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Millimeters
+        /// Creates a new Unit with the specified value in Millimeters
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1037,7 +1085,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new PDFUnit with the specified value in Millimeters
+        /// Creates a new Unit with the specified value in Millimeters
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1048,10 +1096,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Percent(double value)
+        #region public static Unit Percent(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified percentage value
+        /// Creates a new relative Unit with the specified percentage value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1061,7 +1109,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified percentage value
+        /// Creates a new relative Unit with the specified percentage value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1072,10 +1120,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Ex(double value)
+        #region public static Unit Ex(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified lowercase ex height value
+        /// Creates a new relative Unit with the specified lowercase ex height value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1085,7 +1133,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified lowercase ex height value
+        /// Creates a new relative Unit with the specified lowercase ex height value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1096,10 +1144,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Em(double value)
+        #region public static Unit Em(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified uppercase em height value
+        /// Creates a new relative Unit with the specified uppercase em height value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1109,7 +1157,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified uppercase em height value
+        /// Creates a new relative Unit with the specified uppercase em height value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1120,10 +1168,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit RootEm(double value)
+        #region public static Unit RootEm(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified uppercase em height value based on the default font size
+        /// Creates a new relative Unit with the specified uppercase em height value based on the default font size
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1133,7 +1181,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified uppercase em height value based on the default font size
+        /// Creates a new relative Unit with the specified uppercase em height value based on the default font size
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1144,10 +1192,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Ch(double value)
+        #region public static Unit Ch(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified zero char width value
+        /// Creates a new relative Unit with the specified zero char width value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1157,7 +1205,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified zero char value
+        /// Creates a new relative Unit with the specified zero char value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1168,10 +1216,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Vh(double value)
+        #region public static Unit Vh(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified viewport height value (page height
+        /// Creates a new relative Unit with the specified viewport height value (page height
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1181,7 +1229,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified viewport height value (page height)
+        /// Creates a new relative Unit with the specified viewport height value (page height)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1192,10 +1240,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Vh(double value)
+        #region public static Unit Vh(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified viewport width value (page width)
+        /// Creates a new relative Unit with the specified viewport width value (page width)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1205,7 +1253,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit for the specified viewport width value (page width)
+        /// Creates a new relative Unit for the specified viewport width value (page width)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1216,10 +1264,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Vmin(double value)
+        #region public static Unit Vmin(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified smallest viewport value (page width or height)
+        /// Creates a new relative Unit with the specified smallest viewport value (page width or height)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1229,7 +1277,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit for the specified smallest viewport value (page width or height)
+        /// Creates a new relative Unit for the specified smallest viewport value (page width or height)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1240,10 +1288,10 @@ namespace Scryber.Drawing
 
         #endregion
 
-        #region public static PDFUnit Vmax(double value)
+        #region public static Unit Vmax(double value)
 
         /// <summary>
-        /// Creates a new relative PDFUnit with the specified largest viewport value (page width or height)
+        /// Creates a new relative Unit with the specified largest viewport value (page width or height)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1253,7 +1301,7 @@ namespace Scryber.Drawing
         }
 
         /// <summary>
-        /// Creates a new relative PDFUnit for the specified largest viewport value (page width or height)
+        /// Creates a new relative Unit for the specified largest viewport value (page width or height)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -1284,6 +1332,10 @@ namespace Scryber.Drawing
         public const string ExplicitPixelPostFix = "px";
         public const string PointPostFix = "pt";
 
+        /// <summary>
+        /// The value designated as auto, that is supported for some dimensions. As this is Epsilon - if auto is not supported, it will still be considered as close to Zero as negligable.
+        /// </summary>
+        public const double AutoValue = DoublePrecision * 2.0;
 
         public const PageUnits RelativeStart = PageUnits.Percent;
 

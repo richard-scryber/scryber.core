@@ -1188,7 +1188,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Parse("000123.456", new Unit(123.456));
             Parse("-1.5in", new Unit(-1.5, PageUnits.Inches));
             Parse("234567890123.12345mm", new Unit(234567890123.12345, PageUnits.Millimeters));
-
+            
+            var parsed = Parse("auto", Unit.Auto);
+            Assert.IsTrue(Unit.IsAutoValue(parsed));
+            
             try
             {
                 Parse("ThisIsAFailpt", new Unit());
@@ -1199,6 +1202,7 @@ namespace Scryber.Core.UnitTests.Drawing
                 TestContext.WriteLine("Failed Parse ArgumentException caught correctly");
             }
 
+            
         }
 
         private Unit Parse(string value, Unit expected)
@@ -1464,7 +1468,6 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #region PDFUnit.Zero test
 
-
         /// <summary>
         ///A test for Zero
         ///</summary>
@@ -1478,6 +1481,40 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(expected, actual, "Returned Zero was not 0pts");
             Assert.AreEqual(expected.PointsValue, actual.PointsValue);
             Assert.AreEqual(expected.Units, actual.Units);
+
+        }
+
+        #endregion
+
+        #region PDFUnit.Auto tests
+        
+        /// <summary>
+        ///A test for Zero
+        ///</summary>
+        [TestMethod()]
+        [TestCategory(TestCategory)]
+        public void Auto_Test()
+        {
+            Unit actual;
+            actual = Unit.Auto;
+
+            Unit expected = new Unit(Unit.AutoValue, PageUnits.Points);
+            Assert.AreEqual(actual, expected, "Auto matched the value");
+            
+            Unit zero = Unit.Zero;
+            Assert.AreNotEqual(zero, actual, "Auto matched against Zero");
+            
+            Assert.IsTrue(Unit.IsAutoValue(actual));
+            Assert.IsFalse(Unit.IsAutoValue(Unit.Zero));
+
+            Unit prec = new Unit(Unit.DoublePrecision, PageUnits.Pixel);
+            Assert.IsFalse(Unit.IsAutoValue(prec));
+            
+            Unit inch = new Unit(Unit.AutoValue, PageUnits.Inches);
+            Assert.IsFalse(Unit.IsAutoValue(inch));
+            
+            Assert.AreNotEqual(actual, prec);
+            Assert.AreNotEqual(actual, inch);
 
         }
 

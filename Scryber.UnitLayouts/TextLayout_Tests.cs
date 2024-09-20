@@ -527,7 +527,7 @@ namespace Scryber.UnitLayouts
 
             var pgHeight = layout.AllPages[0].Size.Height - pg.Margins.Top - pg.Margins.Bottom;
             var lineCount = 4.0;
-            var offsetY = pgHeight.PointsValue - (lineCount * lead);
+            double offsetY = 0; // pgHeight.PointsValue - (lineCount * lead);
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights
@@ -592,7 +592,7 @@ namespace Scryber.UnitLayouts
 
             //divide all the space by 2 and this should be our middle start point;
             var half = all / 2.0;
-            var offsetY = half;
+            double offsetY = 0; //should not affect the text
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights

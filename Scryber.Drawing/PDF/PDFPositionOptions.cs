@@ -125,6 +125,16 @@ namespace Scryber.PDF
         public bool FillWidth { get; set; }
 
         /// <summary>
+        /// If true then the margins are automatically applied when the component has a width. Right align, unless AutoMarginsRight is true - then centerd.
+        /// </summary>
+        public bool AutoMarginLeft { get; set; }
+        
+        /// <summary>
+        /// If true then the margins are automatically applied when the component has a width. Requires AutoMarginsLeft to have any impact and centre the content
+        /// </summary>
+        public bool AutoMarginRight { get; set; }
+        
+        /// <summary>
         /// Gets or sets the overflow action to be taken when the available space is reached
         /// </summary>
         public OverflowAction OverflowAction { get; set; }
@@ -140,6 +150,11 @@ namespace Scryber.PDF
         /// Gets or sets any margins
         /// </summary>
         public Thickness Margins { get; set; }
+        
+        /// <summary>
+        /// Gets or sets any auto magin sizing on the component.
+        /// </summary>
+        public Sides MarginsAutoSides { get; set; }
 
         /// <summary>
         /// Gets or sets any padding

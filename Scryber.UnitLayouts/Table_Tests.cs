@@ -296,6 +296,124 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void SimpleTable3Row3CellsFullWidthTextRightBottom()
+        {
+            const int PageWidth = 400;
+            const int PageHeight = 500;
+            //const int CellWidth = 50;
+            const int CellHeight = 50;
+            const int CellCount = 3;
+            const int RowCount = 3;
+            const int CellPadding = 4;
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.FontSize = 10;
+            section.Style.PageStyle.Width = PageWidth;
+            section.Style.PageStyle.Height = PageHeight;
+            doc.Pages.Add(section);
+
+            var tbl = new TableGrid();
+            tbl.FullWidth = true;
+            section.Contents.Add(tbl);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var row = new TableRow();
+                tbl.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var cell = new TableCell();
+                    cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
+                    //cell.Width = CellWidth;
+                    cell.Height = CellHeight;
+                    cell.Padding = CellPadding;
+                    cell.HorizontalAlignment = HorizontalAlignment.Right;
+                    cell.VerticalAlignment = VerticalAlignment.Bottom;
+                    row.Cells.Add(cell);
+
+                }
+
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Table_3Row3CellsFullWidthTextRightBottom.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+
+            Assert.IsNotNull(tblBlock);
+            Assert.AreEqual(PageWidth, tblBlock.Width);
+            Assert.AreEqual(CellHeight * RowCount, tblBlock.Height);
+
+            Assert.AreEqual(RowCount, tblBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tblBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock);
+                Assert.AreEqual(PageWidth, rowBlock.Width);
+                Assert.AreEqual(CellHeight, rowBlock.Height);
+
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                var rowXOffset = Unit.Zero;
+                
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var column = rowBlock.Columns[c];
+                    Assert.IsNotNull(column);
+
+                    Assert.AreEqual(1, column.Contents.Count);
+                    var cellBlock = column.Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(cellBlock);
+
+                    Assert.AreEqual(CellHeight, cellBlock.Height);
+                    Assert.AreEqual((double)PageWidth / (double)CellCount, cellBlock.Width);
+
+                    Assert.AreEqual(1, cellBlock.Columns[0].Contents.Count);
+
+                    var line = cellBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                    Assert.AreEqual(3, line.Runs.Count);
+                    var chars = (line.Runs[1] as PDFTextRunCharacter);
+                    Assert.IsNotNull(chars);
+                    Assert.AreEqual("Cell " + r + "." + c, chars.Characters);
+                    
+                    
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                    var begin = line.Runs[0] as PDFTextRunBegin;
+                    Assert.IsNotNull(begin);
+                    
+                    //check bottom alignment
+                    Unit yOffset = CellHeight - CellPadding - line.Height;
+                    yOffset += (CellHeight * r); //add preceeding rows
+                    yOffset += line.BaseLineOffset; //move down to the baseline for the actual offset
+                    
+                    Assert.AreEqual(yOffset, begin.StartTextCursor.Height);
+                    
+                    
+                    //check right alignment
+                    Unit xOffset = cellBlock.Width - CellPadding - chars.Width;
+                    xOffset += rowXOffset;
+                    Assert.AreEqual(xOffset, begin.StartTextCursor.Width);
+
+                    //update the running total for the next check on X
+                    rowXOffset += cellBlock.Width;
+                }
+            }
+
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void SimpleTable3Row3CellsFixedTableWidth()
         {
             const int PageWidth = 400;

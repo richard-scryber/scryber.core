@@ -66,7 +66,7 @@ namespace Scryber.Drawing
         ViewPortWidth = 9,
         ViewPortHeight = 10,
         ViewPortMin = 11,
-        ViewPortMax = 12
+        ViewPortMax = 12,
     }
 
     
