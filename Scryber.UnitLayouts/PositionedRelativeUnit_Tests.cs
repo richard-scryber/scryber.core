@@ -1062,8 +1062,8 @@ namespace Scryber.UnitLayouts
             Div relative = new Div()
             {
                 ID = "inner_relative",
-                Height = new Unit(50, PageUnits.Percent),
-                // Width = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent), 
+                Width = new Unit(50, PageUnits.Percent),
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
                 Margins = Unit.Auto
@@ -1071,7 +1071,7 @@ namespace Scryber.UnitLayouts
             
             wrapper.Contents.Add(relative);
 
-            relative.Contents.Add(new TextLiteral("25% width and 25% height with margins"));
+            relative.Contents.Add(new TextLiteral("25% width and 25% height with auto margins"));
 
 
             using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainer.pdf"))
@@ -1096,7 +1096,7 @@ namespace Scryber.UnitLayouts
             Unit expectedWidth = 600 / 2.0;
             Unit expectedHeight = 800 / 2.0;
             Unit expectedX = (parentBoundsWidth - expectedWidth) / 2;
-            Unit expectedY = (parentBoundsHeight - expectedHeight) / 2;
+            Unit expectedY = 0; //auto margins vertical = 0
 
             Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
             Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
@@ -1113,7 +1113,7 @@ namespace Scryber.UnitLayouts
             expectedHeight = expectedHeight / 2.0;
 
             expectedX = (parentBoundsWidth - expectedWidth) / 2;
-            expectedY = (parentBoundsHeight - expectedHeight) / 2;
+            expectedY = 0; //auto margins verical = 0
 
             Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
             Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");

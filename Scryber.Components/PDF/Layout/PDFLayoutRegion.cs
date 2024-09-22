@@ -970,7 +970,24 @@ namespace Scryber.PDF.Layout
                 }
                 else if (null != block && block.Position.Width.HasValue)
                 {
+                    var w = block.Position.Width.Value;
                     //This is a block with a width - check the margin auto values to see if we need to align it.
+                    if (block.Position.AutoMarginLeft)
+                    {
+                        var left = this.TotalBounds.Width - w;
+                        
+                        if (block.Position.AutoMarginRight)
+                        {
+                            //both left and right so centre align
+                            left /= 2;
+                        }
+
+                        var bounds = block.TotalBounds;
+                        bounds.X += left;
+                        
+                        block.TotalBounds = bounds;
+
+                    }
                 }
                 
 
