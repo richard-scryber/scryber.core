@@ -912,7 +912,12 @@ namespace Scryber.Styles
                 options.FillWidth = b.Value(this);
 
             if (this.TryGetValue(StyleKeys.PositionXObjectKey, out xobj))
+            {
                 options.XObjectRender = xobj.Value(this);
+                
+                if (options.DisplayMode == DisplayMode.Inline)
+                    options.DisplayMode = DisplayMode.InlineBlock; //XObjects should always be either as a block, or as an inline-block.
+            }
             else
             {
                 options.XObjectRender = false;

@@ -29,6 +29,17 @@ namespace Scryber.Svg.Layout
 
 		protected Size UsedSize { get; set; }
 
+		protected override void DoLayoutComponent()
+		{
+			StyleValue<DisplayMode> mode;
+			if (this.FullStyle.TryGetValue(StyleKeys.PositionDisplayKey, out mode))
+			{
+				if(mode.Value(this.FullStyle) == DisplayMode.Inline)
+					this.FullStyle.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.InlineBlock);
+			}
+			base.DoLayoutComponent();
+		}
+
 		protected override void DoLayoutChildren()
 		{
 			this.UsedSize = Size.Empty;
@@ -99,6 +110,7 @@ namespace Scryber.Svg.Layout
 				if (full.TryGetValue(StyleKeys.SVGGeometryYKey, out dim))
 					loc.Y = dim.Value(full);
 
+				reg.CloseCurrentItem();
 				
 				if (reg.IsClosed == false)
 					reg.Close();

@@ -38,7 +38,7 @@ namespace Scryber.Styles.Parsing.Typed
                     exprs[count] = str;
                     count++;
                 }
-                else if (CSSThicknessValueParser.ParseThicknessValue(str, Unit.Zero, out found))
+                else if (CSSThicknessValueParser.ParseThicknessValue(str, Unit.AutoValue, out found))
                 {
                     all[count] = found;
                     count++;
@@ -205,9 +205,9 @@ namespace Scryber.Styles.Parsing.Typed
             else if (value is IFormattable)
             {
                 var str = ((IFormattable)value).ToString(null, System.Globalization.CultureInfo.InvariantCulture);
-                return CSSThicknessValueParser.ParseThicknessValue(str, Unit.Zero, out converted);
+                return CSSThicknessValueParser.ParseThicknessValue(str, Unit.AutoValue, out converted);
             }
-            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.Zero, out converted))
+            else if (CSSThicknessValueParser.ParseThicknessValue(value.ToString(), Unit.AutoValue, out converted))
             {
                 return true;
             }

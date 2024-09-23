@@ -228,7 +228,7 @@ namespace Scryber.UnitLayouts
             var w = lchars.Width;
             var x = lcontent.Width - w; //as we are right aligned, then x is offset the with of the chars.
             var h = linner.Height;
-            var y = lcontent.Height - linner.Height; //as we are bottom aligned, then the y offset is the height of the div - line height.
+            var y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -298,7 +298,7 @@ namespace Scryber.UnitLayouts
             var w = lchars.Width;
             var x = (lcontent.Width - w)/2; //as we are center aligned, then x is offset half the with of the chars.
             var h = linner.Height;
-            var y = (lcontent.Height - linner.Height)/2; //as we are middle aligned, then the y offset is half the height of the div - line height.
+            Unit y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -539,7 +539,7 @@ namespace Scryber.UnitLayouts
             var w = lchars.Width + ltextSpaceLeft.Width + ltextSpaceRight.Width;
             var h = linner.Height;
             var x = lcontent.Width - (w + lchars2.Width); //right align with the extra characters
-            var y = lcontent.Height - (linner.Height * 2.0); //bottom align with the 2 line heights
+            var y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -615,7 +615,7 @@ namespace Scryber.UnitLayouts
             Unit space = 4;
             var x = lcontent.Width - (w + space); //as we are right aligned, then x is offset the with of the chars + the padding.
             var h = linner.Height;
-            var y = lcontent.Height - (linner.Height * 2); //as we are bottom aligned, then the y offset is the height of the div - 2 x line height.
+            Unit y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -727,7 +727,7 @@ namespace Scryber.UnitLayouts
             Unit padd = 4;
             var x = lcontent.Width - (w + padd); //as we are right aligned, then x is offset the with of the chars.
             var h = linner.Height;
-            var y = lcontent.Height - (linner.Height * 4); //as we are bottom aligned, then the y offset is the height of the div - 4 x line height.
+            Unit y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -977,7 +977,7 @@ namespace Scryber.UnitLayouts
             Unit padd = 4;
             var x = lcontent.Width - (w + padd); //as we are right aligned, then x is offset the with of the chars.
             var h = linner.Height;
-            var y = lcontent.Height - (linner.Height * 6); //as we are bottom aligned, then the y offset is the height of the div - 2 x line height.
+            Unit y =0; //at the top.
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -1118,7 +1118,7 @@ namespace Scryber.UnitLayouts
             
             var x = llitChars.Width + (space/2); //as we are centre aligned, then x is the width of the first span + half the remaining space.
             var h = linner.Height;
-            var y = (lcontent.Height - (linner.Height * 6)) / 2; //as we are centre aligned, then the y offset is half the height of the div - 6 x line height.
+            Unit y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 
@@ -1257,7 +1257,7 @@ namespace Scryber.UnitLayouts
             Unit padd = 4;
             var x = llitChars.Width + llitChars.ExtraSpace; // as we are justified, then x is offset the width of the chars and their extra space.
             var h = linner.Height;
-            var y = (lcontent.Height - (linner.Height * 6)) / 2; //as we are centre aligned, then the y offset is the height of the div - 6 x line height, then halved for the centre.
+            Unit y = 0; //at the top
 
             Assert.AreEqual(3, ltextStart.CalculatedBounds.Length);
 

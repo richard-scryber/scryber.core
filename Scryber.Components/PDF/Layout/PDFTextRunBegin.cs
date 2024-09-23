@@ -412,37 +412,17 @@ namespace Scryber.PDF.Layout
 
             //Set the arrangement for this text run
             Component owner = this.Owner as Component;
-            // THIS IS NOT DONE ON THER RENDER BACKGROUND SO THAT INDIVIDUAL LINES AND OFFSETS FROM FLOATS ARE CAPTURED
-            // if (owner != null && null != this._caclulatedBounds)
-            // {
-            //     for (int i = 0; i < this._caclulatedBounds.Length; i++)
-            //     {
-            //         Rect b = this._caclulatedBounds[i];
-            //         if (b.IsEmpty == false)
-            //         {
-            //             if (i == 0)
-            //                 b.X += this.LineInset;
-            //
-            //             b.X += context.Offset.X;
-            //             b.Y += context.Offset.Y;
-            //             owner.SetArrangement(context, context.FullStyle, b);
-            //         }
-            //     }
-            //    
-            // }
+            
 
             
 
             bounds.X += this.LineInset;
-            //bounds.Y += this.OffsetY;
             Size cursor = new Size(bounds.X,bounds.Y);
 
 
             //pdf text rendering is done from the baseline, we need the rendering to appear to start from the top
             //so add the ascent of the font metrics
-
-            //Previous 27 Feb 20
-            //cursor.Height += this.TextRenderOptions.Font.FontMetrics.Ascent;
+            
 
             //With mixed content
             cursor.Height += this.Line.BaseLineOffset;
@@ -457,11 +437,10 @@ namespace Scryber.PDF.Layout
             context.Graphics.BeginText();
 
             var block = this.GetParentBlock();
-
-            //if (null != block && block.Position != null && block.Position.TransformMatrix != null)
-            //    context.Graphics.SetTransformationMatrix(block.Position.TransformMatrix, true, false);
+            
 
             context.Graphics.SetTextRenderOptions(this.TextRenderOptions, bounds);
+            
             if (_hascustomspace && this.TextRenderOptions.CharacterSpacing.HasValue == false && this.TextRenderOptions.WordSpacing.HasValue == false)
                 context.Graphics.SetTextSpacing(this._wordspace, this._charspace, this.TextRenderOptions.Font.Size);
 
@@ -529,7 +508,7 @@ namespace Scryber.PDF.Layout
                 
             
 
-            if (this.HasCustomSpace && this.LineInset > pad.Left)
+            if (this.LineInset > pad.Left)
             {
                 //We are not the first run on the line, so we use the inset to know where we are.
                 rect.X = this.LineInset - pad.Left;
