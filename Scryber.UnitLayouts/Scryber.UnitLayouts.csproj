@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
+    <Folder Include="Content\HTML\Transform\" />
     <Folder Include="Content\Images\" />
     <Folder Include="Content\HTML\Positioning\Fixed\" />
   </ItemGroup>
