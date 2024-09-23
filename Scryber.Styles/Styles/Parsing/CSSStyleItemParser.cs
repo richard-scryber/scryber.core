@@ -233,8 +233,12 @@ namespace Scryber.Styles.Parsing
             part = part.ToLower();
 
             //TODO: THis is really covered now with the Unit.TryParse and can be simplified
-
-            if (EndsWithRelativeUnit(part))
+            if (part == "auto")
+            {
+                unit = Unit.Auto;
+                return true;
+            }
+            else if (EndsWithRelativeUnit(part))
             {
                 if (Unit.TryParse(part, out unit))
                     return true;
