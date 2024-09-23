@@ -1033,7 +1033,7 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void BlockPercentRelativeToSizedContainer()
+        public void BlockPercentRelativeToSizedContainerAutoBoth()
         {
 
             Document doc = new Document();
@@ -1074,7 +1074,7 @@ namespace Scryber.UnitLayouts
             relative.Contents.Add(new TextLiteral("25% width and 25% height with auto margins"));
 
 
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainer.pdf"))
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerAutoBoth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -1122,7 +1122,199 @@ namespace Scryber.UnitLayouts
         }
 
 
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BlockPercentRelativeToSizedContainerAutoOne()
+        {
 
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 30;
+            section.Margins = 0;
+            //section.Padding = 10;
+            section.BackgroundColor = StandardColors.Silver;
+            
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div()
+            {
+                ID = "wrapper", 
+                Width = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = StandardColors.Blue,
+                Margins = new Thickness(Unit.Auto, Unit.Auto, Unit.Auto, 0) //left = 0, right = auto = left align
+            };
+
+            section.Contents.Add(wrapper);
+            Div relative = new Div()
+            {
+                ID = "inner_relative",
+                Height = new Unit(50, PageUnits.Percent), 
+                Width = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                Margins = new Thickness(Unit.Auto, 0, Unit.Auto, Unit.Auto) //right 0, left auto = right align.
+            };
+            
+            wrapper.Contents.Add(relative);
+
+            relative.Contents.Add(new TextLiteral("25% width and 25% height with auto margins"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerAutoOne.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Unit parentBoundsWidth = 600;
+            Unit parentBoundsHeight = 800;
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            
+
+            Assert.AreEqual(1, wrapperBlock.Columns.Length);
+            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
+
+            Unit expectedWidth = 600 / 2.0;
+            Unit expectedHeight = 800 / 2.0;
+            Unit expectedX = 0; // first is left align
+            Unit expectedY = 0; //auto margins vertical = 0
+
+            Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
+            Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
+            Assert.AreEqual(expectedX, wrapperBlock.TotalBounds.X, "X Value did not match on wrapper");
+            Assert.AreEqual(expectedY, wrapperBlock.TotalBounds.Y, "Y Value did not match on wrapper");
+
+            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(relativeBlock);
+
+            parentBoundsWidth = expectedWidth;
+            parentBoundsHeight = expectedHeight;
+
+            expectedWidth = expectedWidth / 2.0;
+            expectedHeight = expectedHeight / 2.0;
+
+            expectedX = (parentBoundsWidth - expectedWidth); //inner is right align
+            expectedY = 0; //auto margins verical = 0
+
+            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
+            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");
+            Assert.AreEqual(expectedX, relativeBlock.TotalBounds.X, "X Value did not match on inner");
+            Assert.AreEqual(expectedY, relativeBlock.TotalBounds.Y, "Y Value did not match on inner");
+        }
+
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BlockAutoRelativeToSizedContainerFullWidth()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 30;
+            section.Margins = 0;
+            //section.Padding = 10;
+            section.BackgroundColor = StandardColors.Silver;
+            
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div()
+            {
+                ID = "wrapper", 
+                Width = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = StandardColors.Blue,
+                Margins = new Thickness(Unit.Auto, Unit.Auto, Unit.Auto, 0) //left = 0, right = auto = left align
+            };
+
+            section.Contents.Add(wrapper);
+            //Force the explicit layout of a span as a full width block
+            Span relative = new Span()
+            {
+                ID = "inner_relative",
+                Height = new Unit(50, PageUnits.Percent), 
+                DisplayMode = DisplayMode.Block, //force the block
+                Width = Unit.Auto, //should be full width to the container - but not go beyond the margins
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                Margins = 10 //
+            };
+            
+            wrapper.Contents.Add(relative);
+
+            relative.Contents.Add(new TextLiteral("full width and 25% height with 10pt margins"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerFullWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Unit parentBoundsWidth = 600;
+            Unit parentBoundsHeight = 800;
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            
+
+            Assert.AreEqual(1, wrapperBlock.Columns.Length);
+            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
+
+            Unit expectedWidth = 600 / 2.0;
+            Unit expectedHeight = 800 / 2.0;
+            Unit expectedX = 0; // first is left align
+            Unit expectedY = 0; //auto margins vertical = 0
+
+            Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
+            Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
+            Assert.AreEqual(expectedX, wrapperBlock.TotalBounds.X, "X Value did not match on wrapper");
+            Assert.AreEqual(expectedY, wrapperBlock.TotalBounds.Y, "Y Value did not match on wrapper");
+
+            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(relativeBlock);
+
+            parentBoundsWidth = expectedWidth;
+            parentBoundsHeight = expectedHeight;
+
+            expectedWidth = expectedWidth ; //full width
+            expectedHeight = (expectedHeight / 2.0) + 20; //50% of container + margins
+
+            expectedX = 0; //inner is right align
+            expectedY = 0; //auto margins verical = 0
+
+            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
+            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");
+            Assert.AreEqual(expectedX, relativeBlock.TotalBounds.X, "X Value did not match on inner");
+            Assert.AreEqual(expectedY, relativeBlock.TotalBounds.Y, "Y Value did not match on inner");
+
+            //Check the render bounds for the margins
+            var arrange = relative.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            Assert.AreEqual(10, arrange.RenderBounds.X);
+            Assert.AreEqual(10, arrange.RenderBounds.Y);
+            Assert.AreEqual(expectedWidth-20, arrange.RenderBounds.Width);
+            Assert.AreEqual(expectedHeight - 20, arrange.RenderBounds.Height);
+            
+        }
 
 
     }
