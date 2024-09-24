@@ -198,8 +198,22 @@ namespace Scryber.PDF
             }
             else if (rsrc is PDFLayoutXObjectResource xobj)
             {
-                bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Layout.Owner.ID));
-                cell.Contents.Add(bold);
+                if (null == xobj.Layout)
+                {
+                    if (null == xobj.Renderer)
+                        bold.Contents.Add(new TextLiteral("Layout xObject - unknown owner"));
+                    else
+                    {
+                        bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Renderer.Owner.ID));
+                    }
+
+                    cell.Contents.Add(bold);
+                }
+                else
+                {
+                    bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Layout.Owner.ID));
+                    cell.Contents.Add(bold);
+                }
             }
 
             row.Cells.Add(cell);

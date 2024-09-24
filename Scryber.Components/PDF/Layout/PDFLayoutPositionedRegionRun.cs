@@ -47,8 +47,8 @@ namespace Scryber.PDF.Layout
 
         public bool RenderAsXObject
         {
-            get;
-            set;
+            get { return false;}
+            set { }
         }
         
         

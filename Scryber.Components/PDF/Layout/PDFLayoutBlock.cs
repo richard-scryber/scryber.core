@@ -1111,6 +1111,7 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            
             bool logdebug = context.ShouldLogDebug;
             
             Component component = this.Owner as Component;
@@ -1129,11 +1130,13 @@ namespace Scryber.PDF.Layout
             Style fullstyle = this.FullStyle;
             if (null == fullstyle)
                 throw new NullReferenceException(Errors.ThisBlockDoesNotHaveAnyStyle);
+            
             PDFPositionOptions position = this.Position;
             if (null == position)
                 throw new NullReferenceException(Errors.ThisBlockDoesNotHaveAnyPostionOptions);
 
             bool render = this.ShouldOutput(context);
+            
             //Check that this content should be rendered
             if (!render)
             {
@@ -1141,7 +1144,17 @@ namespace Scryber.PDF.Layout
                     context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Skipping the output of block " + this.ToString() + " because it has height '0' or it is not marked as visible.");
                 return null;
             }
+            
+            var oref = this.DoOutputAsBlock(context, writer);
+            return oref;
+            
 
+            //This has moved into the DoOutputAsBlock
+            //Leaving as comments to validate before removal.
+            
+            /*
+             
+             
             Style prevStyle = context.FullStyle;
             Size prevSize = context.Space;
             Point prevLoc = context.Offset;
@@ -1181,14 +1194,7 @@ namespace Scryber.PDF.Layout
 
                         //set any explicit position offsets
 
-                        //if (position.X.HasValue)
-                        //{
-                        //    posOffsetX = ((float)position.X.Value.PointsValue);
-                        //}
-                        //if (position.Y.HasValue)
-                        //{
-                        //   posOffsetY = ((float)position.Y.Value.PointsValue);
-                        //}
+                        
 
                         full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
 
@@ -1401,15 +1407,195 @@ namespace Scryber.PDF.Layout
             }
 
             return null;
+            
+            */
         }
 
         
-#endregion
+        #endregion
+
+        protected virtual PDFObjectRef DoOutputToXObject(PDFRenderContext context, PDFWriter writer)
+        {
+            using (var renderer = this.CreateXObject(context, writer))
+            {
+                renderer.SetupGraphics(this.Position, this.TotalBounds);
+
+                this.OutputInnerContent(context, writer);
+                
+                renderer.ReleaseGraphics();
+                return renderer.RenderReference;
+                
+            }
+        }
+
+        private PDFXObjectRenderer CreateXObject(PDFRenderContext context, PDFWriter writer)
+        {
+            return new PDFXObjectRenderer(this.Owner, this, this.Position, context, writer);
+        }
+
+        protected virtual PDFObjectRef DoOutputAsBlock(PDFRenderContext context, PDFWriter writer)
+        {
+            bool logdebug = context.ShouldLogDebug;
+            bool hasTransform = false;
+            bool hasClipping = false;
+            Style prevStyle = context.FullStyle;
+            Size prevSize = context.Space;
+            Point prevLoc = context.Offset;
+            var component = this.Owner as Component;
+            
+            try
+            {
+                context.FullStyle = this.FullStyle;
+
+                if (this.Position.HasTransformation)
+                {
+                    hasTransform = this.SetupBlockTransformation(context, writer);
+                }
+                else if (this.Position.PositionMode == PositionMode.Relative)
+                {
+                    this.UpdateOffsetForRelativeBlock(context, writer);
+                }
+                
+                Rect total = this.TotalBounds;
+                total = total.Offset(context.Offset);
+
+                Rect borderRect = total.Inset(this.Position.Margins);
+                Rect contentRect = borderRect.Inset(this.Position.Padding);
+                
+                //save this location before rendering any inner content as the actual point on the page.
+                this.PagePosition = total.Location;
+                
+                //Get the border to draw
+                PDFPenBorders border = this.FullStyle.CreateBorderPen();
+                //Get the background brush
+                PDFBrush background = this.FullStyle.CreateBackgroundBrush();
+                
+                //set up any clipping
+                if (this.Position.OverflowAction == OverflowAction.Clip)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
+                    
+                    hasClipping = this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                    
+                }
+                else if(this.Position.ClipInset.IsEmpty == false)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect + " as we have a non-zero clipping rect");
+                    
+                    hasClipping  = this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                }
+                
+                if (null != background)
+                {
+                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
+                }
+                
+                //update the offsets and size to our content rect
+                
+                context.Offset = contentRect.Location;
+                context.Space = contentRect.Size;
+                
+                //Perform the atual writing of this blocks inner conntent
+                if (this.ShouldOutputAsXObject(context))
+                {
+                    this.DoOutputToXObject(context, writer);
+                }
+                else
+                {
+                    this.OutputInnerContent(context, writer);
+                }
+
+                //restore the state in reverse order.
+                
+                if (hasClipping)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Releasing the clipping rectangle " + borderRect);
+                    
+                    this.ReleaseClipping(context);
+                }
+                
+
+                if (null != border)
+                {
+                    if(logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
+                    
+                    this.OutputBorder(background, border, context, borderRect);
+                }
+                
+                if (null != component)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the arrangement of block " + this.ToString() + " back with component " + component.UniqueID + " for content rectangle " + contentRect.ToString());
+
+                    if (null != context.RenderMatrix)
+                        borderRect = context.RenderMatrix.TransformBounds(borderRect);
+                    
+                    component.SetArrangement(context, this.FullStyle, borderRect);
+                }
+                
+                
+                PDFPen grid = this.FullStyle.CreateOverlayGridPen();
+                //If we need to draw the overlay grid - do it last
+                
+                if (null != grid)
+                {
+                    PDFPen major = this.FullStyle.CreateOverlayGridPen(forMajor: true);
+                    
+                    OverlayGridStyle over = this.FullStyle.OverlayGrid;
+                    
+                    this.OutputOverlayGrid(grid, major, over, context, total);
+                    if (over.HighlightColumns)
+                        this.OutputRegionOverlay(over, context, contentRect);
+                }
+                
+                
+                if (hasTransform)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Restoring the transformation matrix for " + this.ToString());
+                    
+                    this.TeardownBlockTransformation(context, writer);
+                }
+
+            }
+            catch (PDFRenderException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PDFRenderException(
+                    "Could not output the block '" + this.ToString() + "'. See the inner exception for more details.",
+                    ex);
+            }
+            finally
+            {
+                context.Space = prevSize;
+                context.Offset = prevLoc;
+                context.FullStyle = prevStyle;
+            }
+
+            if (logdebug)
+            {
+                if (null != this.Owner)
+                    context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Finished writing Block for: " + this.Owner.ID);
+                else
+                    context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Finished writing un-owned Block");
+            }
+
+            return null;
+        }
+        
+        
 
         #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
-        /// Renders the inner content in this block
+        /// Renders the inner content regions in this block
         /// </summary>
         /// <param name="context"></param>
         /// <param name="writer"></param>
@@ -1464,6 +1650,234 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Checks the state of the position and render options, and returns true, if this block should be rendered as an xObject (outside of the current stream of drawing instructions)
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldOutputAsXObject(PDFRenderContext context)
+        {
+            var xObj = false;
+            
+            if (this.Position.XObjectRender)
+            {
+                return true;
+                //we should be as an xObject.
+                
+                //if we are relative or static and displayed as a block then we should do it here.
+                if (this.Position.PositionMode == PositionMode.Relative ||
+                    this.Position.PositionMode == PositionMode.Static)
+                {
+                    if (this.Position.DisplayMode == DisplayMode.Block)
+                        xObj = true;
+                }
+                else
+                {
+                    //the xObject rendering should be handled by a positioned region run that references this block.
+                }
+            }
+
+            return xObj;
+        }
+
+        #region protected virtual void UpdateOffsetForRelativeBlock(PDFRenderContext context, PDFWriter writer)
+        
+        /// <summary>
+        /// Applies any relative mode positioning to the current context offset, so further rendering will be done at the changed location.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        protected virtual void UpdateOffsetForRelativeBlock(PDFRenderContext context, PDFWriter writer)
+        {
+            var position = this.Position;
+            var offset = context.Offset;
+            
+            if (position.X.HasValue)
+            {
+                offset.X += position.X.Value;
+            }
+            else if (position.Right.HasValue)
+            {
+                offset.X -= position.Right.Value;
+            }
+            if (position.Y.HasValue)
+            {
+                offset.Y += position.Y.Value;
+            }
+            else if(position.Bottom.HasValue)
+            {
+                offset.Y -= position.Bottom.Value;
+            }
+            
+            context.Offset = offset;
+        }
+        
+        #endregion
+        
+        #region SetupBlockTransformation / TeardownBlockTransformation
+
+        /// <summary>
+        /// Sets up the current transformation matrix on the 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
+        protected bool SetupBlockTransformation(PDFRenderContext context, PDFWriter writer)
+        {
+            var transformed = false;
+            
+            if (context.ShouldLogDebug)
+                context.TraceLog.Begin(TraceLevel.Verbose, LOG_CATEGORY,
+                    "Setting the transformation matrix (including offsets) for " + this.Owner.ToString() + " and any ");
+
+            else if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY,
+                    "Setting the Graphics state transformation matrix for " + this.Owner.ToString() +
+                    " and any children to " + this.Position.TransformMatrix);
+
+            if (null == this.Position.TransformMatrix)
+                throw new NullReferenceException(
+                    "The was no PDF Transformation matrix on the position to set up the Block transformation - method should not be called in this state.");
+
+            //Start with the original transformation matrix
+            PDFTransformationMatrix
+                full = this.Position.TransformMatrix
+                    .Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
+            
+            if (full.IsIdentity)
+            {
+                //Do Nothing
+            }
+            else if (full.Transformations == MatrixTransformTypes.IsTranslation && this.Owner is Svg.Components.SVGText)
+            {
+                //TODO: Take this out and make the SVGText a Component run rather than a block.
+                //Just a translation of some text so quicker to just offset the translation by the height of the block
+                var offsetX = 0;
+                var offsetY = this.TotalBounds.Height.PointsValue;
+                full = full.Clone();
+
+                float posOffsetX = 0.0F;
+                float posOffsetY = 0.0F;
+
+                //save the graphics state
+                context.Graphics.SaveGraphicsState();
+                
+                //set any explicit position offsets
+
+                full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
+
+                context.Graphics.SetTransformationMatrix(full, true, true);
+                this.Position.TransformMatrix = full;
+                this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
+                
+                //we want to return true - to tear it down afterwards
+                transformed = true;
+            }
+            else
+            {
+
+                //distance to move the block so that any rotaion, scale or skew happens around the origin (bottom left of the shape)
+                Unit offsetToOriginX = this.TotalBounds.X - context.Offset.X;
+                Unit offsetToOriginY = this.TotalBounds.Y + context.Offset.Y + this.TotalBounds.Height;
+                //offsetToOriginY -= context.PageSize.Height.PointsValue;
+                if (this.Position.X.HasValue)
+                    offsetToOriginX += 0.0; // position.X.Value;
+                if (this.Position.Y.HasValue)
+                    offsetToOriginY += 0.0; // position.Y.Value;
+
+                //Defaulting to transforming around the centre of the shape if we have a rotation
+
+                offsetToOriginX += this.TotalBounds.Width / 2;
+                offsetToOriginY -= this.TotalBounds.Height / 2;
+
+
+                float actualOffsetX = (float)context.Graphics.GetXPosition(offsetToOriginX).Value;
+                float actualOffsetY = (float)context.Graphics.GetYPosition(offsetToOriginY).Value;
+
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Debug, LOG_CATEGORY,
+                        "Transformation matrix to move to origin calculated to (" + actualOffsetX + ", " +
+                        actualOffsetY + ")");
+
+
+
+                float posOffsetX = 0.0F;
+                float posOffsetY = 0.0F;
+
+                //set any explicit position offsets
+
+                if (this.Position.X.HasValue)
+                {
+                    posOffsetX = ((float)this.Position.X.Value.PointsValue);
+                }
+
+                if (this.Position.Y.HasValue)
+                {
+                    posOffsetY = ((float)this.Position.Y.Value.PointsValue);
+                }
+
+                //Set the translation to the origin and the explicit position
+                full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
+                        "Final transformation matrix to move to, transform, and move back from origin calculated to " +
+                        full);
+
+                //save the current state
+                
+                context.Graphics.SaveGraphicsState();
+                
+                //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
+                //within the centre of the container
+
+                context.Graphics.SaveTranslationOffset(
+                    actualOffsetX,
+                    actualOffsetY);
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
+                        "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
+
+                //apply the actual transformation
+                context.Graphics.SetTransformationMatrix(full, true, true);
+                //save state
+
+                //Save the newly caclulated values back on the block.
+                this.Position.TransformMatrix = full;
+                this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+                transformed = true;
+            }
+
+            return transformed;
+        }
+        
+        /// <summary>
+        /// Tears down any previous transformation - should only be called if the SetupBlockTransformation returned true
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        protected void TeardownBlockTransformation(PDFRenderContext context, PDFWriter writer)
+        {
+            try
+            {
+                context.Graphics.RestoreTranslationOffset();
+                context.Graphics.RestoreGraphicsState();
+
+                if (context.ShouldLogDebug)
+                    context.TraceLog.End(TraceLevel.Warning, LOG_CATEGORY,
+                        "Reset the graphics state transformation for " + this.Owner.ToString());
+            }
+            catch (Exception)
+            {
+                ;//suck it up - we don't want this to propogate
+            }
+        }
+        
+        #endregion
+        
 
         #region private void OutputRegionOverlay(PDFOverlayGridStyle grid, PDFRenderContext context, PDFRect contentRect)
 
@@ -1667,11 +2081,4 @@ namespace Scryber.PDF.Layout
 
     }
 
-    /// <summary>
-    /// Represents a collection of blocks
-    /// </summary>
-    public class PDFLayoutBlockCollection : List<PDFLayoutBlock>
-    {
-
-    }
 }

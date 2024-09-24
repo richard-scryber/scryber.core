@@ -459,7 +459,7 @@ namespace Scryber.PDF.Layout
                         maxBaselineComponent = Unit.Max(maxBaselineComponent, compRun.Height);
                     }
                 }
-                else if (run is PDFLayoutXObject xobjRun)
+                else if (run is PDFLayoutXObjectRun xobjRun)
                 {
                     isComplex = true;
 
@@ -816,9 +816,9 @@ namespace Scryber.PDF.Layout
             return end;
         }
 
-        public PDFLayoutXObject AddXObjectRun(IPDFLayoutEngine engine, IComponent component, PDFLayoutRegion container, PDFPositionOptions options, Style full)
+        public PDFLayoutXObjectRun AddXObjectRun(IPDFLayoutEngine engine, IComponent component, PDFLayoutRegion container, PDFPositionOptions options, Style full)
         {
-            PDFLayoutXObject xobject = new PDFLayoutXObject(this, container, options, component);
+            PDFLayoutXObjectRun xobject = new PDFLayoutXObjectRun(this, container, options, component);
             this.Runs.Add(xobject);
             return xobject;
         }
@@ -1400,7 +1400,7 @@ namespace Scryber.PDF.Layout
                                 blockrun.Region.TotalBounds = bounds;
                             }
                         }
-                        else if (cur is PDFLayoutXObject xobj)
+                        else if (cur is PDFLayoutXObjectRun xobj)
                         {
                             
                         }

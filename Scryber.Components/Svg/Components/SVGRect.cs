@@ -327,5 +327,21 @@ namespace Scryber.Svg.Components
                 BuildRoundRectPath(path, points, xRadius, yRadius, style, end);
             }
         }
+
+        protected override void SetArrangement(ComponentArrangement arrange)
+        {
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+
+            base.SetArrangement(arrange);
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace Scryber.PDF.Layout
         protected override void DoLayoutChildren()
         {
             PDFPositionOptions position = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
-            PDFLayoutXObject canvas = null;
+            PDFLayoutXObjectRun canvas = null;
             if (position.ViewPort.HasValue)
             {
                 canvas = this.ApplyViewPort(position, position.ViewPort.Value);
@@ -103,7 +103,7 @@ namespace Scryber.PDF.Layout
         }
 
 
-        protected virtual PDFLayoutXObject ApplyViewPort(PDFPositionOptions oldpos, Rect viewPort)
+        protected virtual PDFLayoutXObjectRun ApplyViewPort(PDFPositionOptions oldpos, Rect viewPort)
         {
             //Set the size to the viewport size
             var newpos = oldpos.Clone();
@@ -133,7 +133,7 @@ namespace Scryber.PDF.Layout
 
             
 
-            PDFLayoutXObject xObj = this.Line.AddXObjectRun(this, this.Component, container, newpos, this.FullStyle);
+            PDFLayoutXObjectRun xObj = this.Line.AddXObjectRun(this, this.Component, container, newpos, this.FullStyle);
             //begin.Matrix = PDFTransformationMatrix.Identity();
             //begin.Matrix.SetTranslation(50, 50);
 

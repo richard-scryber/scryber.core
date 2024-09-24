@@ -14,7 +14,7 @@ namespace Scryber.PDF.Layout
     /// <summary>
     /// Implements an Form XObject where the content is rendered into a separate 
     /// </summary>
-    public class PDFLayoutXObject : PDFLayoutRun, IResourceContainer
+    public class PDFLayoutXObjectRun : PDFLayoutRun, IResourceContainer
     {
         
 
@@ -23,7 +23,7 @@ namespace Scryber.PDF.Layout
         private PDFLayoutPage _page;
         private PDFPositionOptions _position;
 
-        public PDFLayoutXObject(PDFLayoutLine parent, PDFLayoutRegion childContainer, PDFPositionOptions position, IComponent owner) 
+        public PDFLayoutXObjectRun(PDFLayoutLine parent, PDFLayoutRegion childContainer, PDFPositionOptions position, IComponent owner) 
             :base(parent, owner as IComponent)
         {
             this._childContainer = childContainer;

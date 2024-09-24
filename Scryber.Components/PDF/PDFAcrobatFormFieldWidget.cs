@@ -27,7 +27,7 @@ namespace Scryber.PDF
             get { return this._states.Values.AsEnumerable<IResourceContainer>(); }
         }
 
-        private Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObject> _states;
+        private Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun> _states;
 
         private Drawing.Point _location;
         private Drawing.Size _size;
@@ -40,11 +40,11 @@ namespace Scryber.PDF
             this.Value = value;
             this.FieldOptions = options;
             this.FieldType = type;
-            this._states = new Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObject>();
+            this._states = new Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun>();
             this.DefaultValue = defaultValue;
         }
 
-        public void SetAppearance(FormFieldAppearanceState state, PDFLayoutXObject xObject, Layout.PDFLayoutPage page, Styles.Style style)
+        public void SetAppearance(FormFieldAppearanceState state, PDFLayoutXObjectRun xObject, Layout.PDFLayoutPage page, Styles.Style style)
         {
             this._states[state] = xObject;
             if (state == FormFieldAppearanceState.Normal)

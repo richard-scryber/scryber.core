@@ -31,10 +31,13 @@ namespace Scryber.Drawing
         
         private List<Path> _paths = new List<Path>();
         private Stack<Path> _stack = new Stack<Path>();
-        private Rect _bounds;
         private Point _cursor;
         private Point _lasthandle;
         private GraphicFillMode _mode = GraphicFillMode.Winding;
+        
+        //set the top left and bottom right to opposite values.
+        private Point _topLeft = new Point(Double.MaxValue, Double.MaxValue);
+        private Point _bottomRight = new Point(0.0, 0.0); 
 
         public GraphicFillMode Mode
         {
@@ -42,10 +45,10 @@ namespace Scryber.Drawing
             set { _mode = value; }
         }
 
-        public List<Path> Paths
-        {
-            get { return _paths; }
-        }
+        // public List<Path> Paths
+        // {
+        //     get { return _paths; }
+        // }
 
         public IEnumerable<Path> SubPaths
         {
@@ -83,12 +86,24 @@ namespace Scryber.Drawing
             get { return this._stack.Count > 0; }
         }
 
+        
+
         /// <summary>
         /// Gets the bounds of this path
         /// </summary>
         public Rect Bounds
         {
-            get { return _bounds; }
+            get
+            {
+                if(this._paths == null || this._paths.Count == 0)
+                    return Rect.Empty;
+                
+                var x = _topLeft.X;
+                var y = _topLeft.Y;
+                var w = _bottomRight.X - _topLeft.X;
+                var h = _bottomRight.Y - _topLeft.Y;
+                return new Rect(x, y, w, h);
+            }
         }
 
         public ObjectType Type
@@ -116,7 +131,7 @@ namespace Scryber.Drawing
 
             _stack = new Stack<Path>();
             _stack.Push(p);
-            _bounds = Rect.Empty;
+
         }
 
         public void MoveTo(Point start)
@@ -445,10 +460,14 @@ namespace Scryber.Drawing
 
         private void IncludeInBounds(Point pt)
         {
-            if (_bounds.Width < pt.X)
-                _bounds.Width = pt.X;
-            if (_bounds.Height < pt.Y)
-                _bounds.Height = pt.Y;
+            if (pt.X < _topLeft.X)
+                _topLeft.X = pt.X;
+            if (pt.Y < _topLeft.Y)
+                _topLeft.Y = pt.Y;
+            if (pt.X > _bottomRight.X)
+                _bottomRight.X = pt.X;
+            if (pt.Y > _bottomRight.Y)
+                _bottomRight.Y = pt.Y;
         }
 
         private Point ConvertDeltaToActual(Point delta)
@@ -464,7 +483,7 @@ namespace Scryber.Drawing
         public Point[] GetAllPoints()
         {
             List<Point> pts = new List<Point>();
-            foreach (Path path in this.Paths)
+            foreach (Path path in this.SubPaths)
             {
                 path.FillAllPoints(pts);
             }

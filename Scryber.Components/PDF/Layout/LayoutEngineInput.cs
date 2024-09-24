@@ -31,7 +31,7 @@ namespace Scryber.PDF.Layout
         {
             PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
-            PDFLayoutXObject xObject = this.CreateAndAddInput(pos);
+            PDFLayoutXObjectRun xObject = this.CreateAndAddInput(pos);
             _addedProxyText = false;
 
             if(string.IsNullOrEmpty(this.Field.Value))
@@ -101,7 +101,7 @@ namespace Scryber.PDF.Layout
             line.AddMarkedContentEnd(this, bmc);
         }
 
-        private PDFLayoutXObject CreateAndAddInput(PDFPositionOptions pos)
+        private PDFLayoutXObjectRun CreateAndAddInput(PDFPositionOptions pos)
         {
             PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
@@ -111,7 +111,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutRegion container = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage, this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
 
             this.Line = containerRegion.CurrentItem as PDFLayoutLine;
-            PDFLayoutXObject begin = this.Line.AddXObjectRun(this, this.Field, container, pos, this.FullStyle);
+            PDFLayoutXObjectRun begin = this.Line.AddXObjectRun(this, this.Field, container, pos, this.FullStyle);
 
             return begin;
         }

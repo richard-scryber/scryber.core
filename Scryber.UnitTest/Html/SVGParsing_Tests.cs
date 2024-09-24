@@ -6,6 +6,7 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Svg.Components;
 using System.IO;
+using System.Linq;
 using Scryber.PDF.Layout;
 
 namespace Scryber.Core.UnitTests.Html
@@ -262,9 +263,10 @@ namespace Scryber.Core.UnitTests.Html
             var path = grp.Contents[1] as SVGPath;
             Assert.IsNotNull(path);
             Assert.IsNotNull(path.PathData);
-            Assert.AreEqual(1, path.PathData.Paths.Count);
+            var paths = path.PathData.SubPaths.ToArray();
+            Assert.AreEqual(1, paths.Length);
 
-            var opPath = path.PathData.Paths[0];
+            var opPath = paths[0];
             Assert.AreEqual(3, opPath.Operations.Count);
 
             var opMove = opPath.Operations[0] as PathMoveData;
@@ -312,9 +314,10 @@ namespace Scryber.Core.UnitTests.Html
             path = grp.Contents[1] as SVGPath;
             Assert.IsNotNull(path);
             Assert.IsNotNull(path.PathData);
-            Assert.AreEqual(1, path.PathData.Paths.Count);
+            paths = path.PathData.SubPaths.ToArray();
+            Assert.AreEqual(1, paths.Length);
 
-            opPath = path.PathData.Paths[0];
+            opPath = paths[0];
             Assert.AreEqual(3, opPath.Operations.Count);
 
             opMove = opPath.Operations[0] as PathMoveData;
