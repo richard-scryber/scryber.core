@@ -1246,7 +1246,7 @@ namespace Scryber.PDF.Layout
                 if (options.Bottom.HasValue)
                 {
                     var h = pg.Height;
-                    h -= (options.Bottom.Value + positioned.TotalBounds.Height);
+                    h -= (options.Bottom.Value + positioned.TotalBounds.Height + options.Margins.Top + options.Margins.Bottom);
 
                     bounds.Y = h;
                 }

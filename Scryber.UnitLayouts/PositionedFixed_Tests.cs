@@ -3008,18 +3008,18 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(content);
 
 
-            Unit yOffset = layout.AllPages[0].Height - (80 + 15);//explicit bottom fixed value
-            Unit xOffset = layout.AllPages[0].Width - (70 + 150); //explicit right fixed value
-            Unit height = 15;
-            Unit width = 150; //explicit width
+            Unit yOffset = layout.AllPages[0].Height - (20 + 120 + 20);//explicit bottom fixed value
+            Unit xOffset = layout.AllPages[0].Width - (20 + 100 + 20); //explicit right fixed value
+            Unit height = 120; //explicit height
+            Unit width = 100; //explicit width
 
 
 
 
             Assert.AreEqual(yOffset, content.TotalBounds.Y);
             Assert.AreEqual(xOffset, content.TotalBounds.X);
-            Assert.AreEqual(height, content.TotalBounds.Height);
-            Assert.AreEqual(width, content.TotalBounds.Width);
+            Assert.AreEqual(height , content.TotalBounds.Height);
+            Assert.AreEqual(width + 20, content.TotalBounds.Width);
 
             block = content.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(block);
@@ -3027,8 +3027,8 @@ namespace Scryber.UnitLayouts
             //Block is at offset 0,0 relative to the positioned region
             Assert.AreEqual(0, block.TotalBounds.X);
             Assert.AreEqual(0, block.TotalBounds.Y);
-            Assert.AreEqual(height, block.TotalBounds.Height);
-            Assert.AreEqual(width, block.TotalBounds.Width);
+            Assert.AreEqual(height + 20, block.TotalBounds.Height);
+            Assert.AreEqual(width + 20, block.TotalBounds.Width);
 
             //Arrangement is for links and inner content references
             var div = block.Owner as Div;
@@ -3037,8 +3037,8 @@ namespace Scryber.UnitLayouts
 
 
             Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset + 10, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset + 10, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
 
