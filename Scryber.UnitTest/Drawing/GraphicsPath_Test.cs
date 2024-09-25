@@ -715,6 +715,8 @@ namespace Scryber.Core.UnitTests.Drawing
             GraphicsPath target = new GraphicsPath();
             Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
+            Rect bounds = target.Bounds;
+            Assert.AreEqual(Rect.Empty, bounds);
 
             Point pos = new Point(10, 10);
             target.MoveTo(pos);
@@ -729,7 +731,7 @@ namespace Scryber.Core.UnitTests.Drawing
             handleEnd = handleEnd.Offset(pos);
             handleStart = handleStart.Offset(pos);
 
-            Rect bounds = target.Bounds;
+            bounds = target.Bounds;
 
             Assert.AreEqual(10, bounds.X);
             Assert.AreEqual(10, bounds.Y);

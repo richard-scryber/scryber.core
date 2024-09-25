@@ -683,8 +683,6 @@ namespace Scryber.PDF.Layout
             PositionMode mode = this.Position.PositionMode;
             if (mode == PositionMode.Absolute || mode == PositionMode.Fixed)
                 return false;
-            else if (this.IsExplicitLayout)
-                return false;
             else
                 return true;
         }

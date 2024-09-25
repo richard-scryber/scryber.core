@@ -241,6 +241,7 @@ namespace Scryber.PDF.Layout
                 var background = this.FullStyle.CreateBackgroundBrush();
 
                 Rect borderRect = new Rect(loc, size);
+                
                 if (null != background)
                     this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
                 
@@ -254,6 +255,7 @@ namespace Scryber.PDF.Layout
                 //Set the offset, size and full style on the context
                 context.Offset = loc;
                 context.Space = size;
+                
                 context.FullStyle = this.FullStyle;
                 if (context.ShouldLogDebug)
                     context.TraceLog.Begin(TraceLevel.Verbose, "Layout Item", "Beginning the rendering the referenced component " + this.Owner + " with context offset of " + context.Offset + " and space " + context.Space);
@@ -265,6 +267,16 @@ namespace Scryber.PDF.Layout
                 Component owner = this.Owner as Component;
                 if (null != owner)
                 {
+                    var block = this.GetParentBlock();
+                    
+                    if (block.IsExplicitLayout)
+                    {
+                        //we are explicit so we are always zero - need to take into account page locations
+
+                        borderRect.X += block.PagePosition.X + block.Position.Margins.Left;
+                        borderRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                    }
+                    
                     owner.SetArrangement(context, context.FullStyle, borderRect);
                 }
 

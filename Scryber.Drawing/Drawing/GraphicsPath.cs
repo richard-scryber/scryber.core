@@ -97,12 +97,16 @@ namespace Scryber.Drawing
             {
                 if(this._paths == null || this._paths.Count == 0)
                     return Rect.Empty;
-                
-                var x = _topLeft.X;
-                var y = _topLeft.Y;
-                var w = _bottomRight.X - _topLeft.X;
-                var h = _bottomRight.Y - _topLeft.Y;
-                return new Rect(x, y, w, h);
+                else if (this._paths.Count == 1 && this._paths[0].Count == 0)
+                    return Rect.Empty;
+                else
+                {
+                    var x = _topLeft.X;
+                    var y = _topLeft.Y;
+                    var w = _bottomRight.X - _topLeft.X;
+                    var h = _bottomRight.Y - _topLeft.Y;
+                    return new Rect(x, y, w, h);
+                }
             }
         }
 
