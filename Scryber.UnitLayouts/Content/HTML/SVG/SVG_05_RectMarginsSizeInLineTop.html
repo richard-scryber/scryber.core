@@ -10,17 +10,13 @@
          line-height: 30pt;
          font-family: sans-serif;
          font-size: 20pt;
-         text-align: justify;
       }
       
       .positioned{
          margin: 10pt;
          border: solid 1pt green;
          padding: 10pt;
-         vertical-align: middle;
-         position: absolute;
-         top: 20pt;
-         left: 10pt;
+         vertical-align: top;
       }
       
    </style>
@@ -32,7 +28,9 @@
   
    <svg class="positioned"  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" width="100" height="120"  
          xmlns:xlink="http://www.w3.org/1999/xlink"    >
-   </svg>After the SVG that flows down on to multiple lines in the content of the page.
+      <rect height="30" width="40" x="30" y="20" stroke="black" stroke-width="1pt" fill="transparent"  />
+   </svg>
+   After the SVG that flows down on to multiple lines in the content of the page.
 </body>
 </html>
 

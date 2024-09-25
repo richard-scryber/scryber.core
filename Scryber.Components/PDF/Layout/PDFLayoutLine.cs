@@ -1015,7 +1015,7 @@ namespace Scryber.PDF.Layout
                     }
                     else if (run is PDFLayoutInlineBlockRun ib)
                     {
-                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                        ib.SetOffsetX(ib.OffsetX + pushOffset + ib.PositionOptions.Margins.Left + ib.PositionOptions.Margins.Right);
                     }
                     else if (run is PDFLayoutPositionedRegionRun posRun)
                     {
@@ -1072,7 +1072,7 @@ namespace Scryber.PDF.Layout
                     }
                     else if (run is PDFLayoutInlineBlockRun ib)
                     {
-                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                        ib.SetOffsetX(ib.OffsetX + pushOffset  + ib.PositionOptions.Margins.Left + ib.PositionOptions.Margins.Right);
                     }
                     else if (run is PDFLayoutPositionedRegionRun posRun)
                     {
@@ -1166,7 +1166,7 @@ namespace Scryber.PDF.Layout
                     }
                     else if (run is PDFLayoutInlineBlockRun ib)
                     {
-                        ib.SetOffsetX(ib.OffsetX + pushOffset);
+                        ib.SetOffsetX(ib.OffsetX + pushOffset  + ib.PositionOptions.Margins.Left + ib.PositionOptions.Margins.Right);
                         pushedCenter = true;
                     }
                     else if (run is PDFLayoutPositionedRegionRun posRun)
@@ -1217,7 +1217,7 @@ namespace Scryber.PDF.Layout
                         }
                         else if (run is PDFLayoutInlineBlockRun ib)
                         {
-                            ib.SetOffsetX(ib.OffsetX + pushOffset);
+                            ib.SetOffsetX(ib.OffsetX + pushOffset  + ib.PositionOptions.Margins.Left + ib.PositionOptions.Margins.Right);
                         }
                     }
                 }

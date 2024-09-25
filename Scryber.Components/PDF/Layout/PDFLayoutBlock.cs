@@ -1680,7 +1680,7 @@ namespace Scryber.PDF.Layout
         }
 
         #region protected virtual void UpdateOffsetForRelativeBlock(PDFRenderContext context, PDFWriter writer)
-        
+
         /// <summary>
         /// Applies any relative mode positioning to the current context offset, so further rendering will be done at the changed location.
         /// </summary>
@@ -1690,7 +1690,7 @@ namespace Scryber.PDF.Layout
         {
             var position = this.Position;
             var offset = context.Offset;
-            
+
             if (position.X.HasValue)
             {
                 offset.X += position.X.Value;
@@ -1699,18 +1699,21 @@ namespace Scryber.PDF.Layout
             {
                 offset.X -= position.Right.Value;
             }
+
             if (position.Y.HasValue)
             {
-                offset.Y += position.Y.Value;
+                if (this.Position.DisplayMode == DisplayMode.Block) //special case - otherwise this is usually taken care of in the positioned region run
+                    offset.Y += position.Y.Value; //when we are block display mode then we don't have a positioned region
             }
-            else if(position.Bottom.HasValue)
+            else if (position.Bottom.HasValue)
             {
                 offset.Y -= position.Bottom.Value;
             }
-            
+
+
             context.Offset = offset;
         }
-        
+
         #endregion
         
         #region SetupBlockTransformation / TeardownBlockTransformation
