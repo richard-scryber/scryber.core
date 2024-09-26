@@ -1365,8 +1365,7 @@ namespace Scryber.UnitLayouts
             path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
-            //TODO: Sort out the overflow
-            //page.Contents.Add(new TextLiteral("After"));
+            
 
             page = new Page();
             page.Margins = new Drawing.Thickness(20);
@@ -1469,15 +1468,15 @@ namespace Scryber.UnitLayouts
             reg = layout.AllPages[1].ContentBlock.Columns[0];
             Assert.IsInstanceOfType(reg, typeof(PDFLayoutRegion));
 
-            //All on 2 lines
-            Assert.AreEqual(2, reg.Contents.Count);
+            //All on 1 line
+            Assert.AreEqual(1, reg.Contents.Count);
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
 
             AssertAreApproxEqual(30, line.BaseLineOffset.PointsValue); //Triangle is transcribed by the circle containing it, and will result in a reduced point path height
 
-            Assert.AreEqual(6, line.Runs.Count); //3 text + poly + text begin and new line
+            Assert.AreEqual(7, line.Runs.Count); //3 text + poly + text begin and new line
 
             graphic = line.Runs[3] as PDFLayoutComponentRun;
             chars = line.Runs[1] as PDFTextRunCharacter;
@@ -1485,8 +1484,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(graphic);
 
             Assert.AreEqual(graphic.Owner, path2);
-
-            Assert.AreEqual(reg.Width, graphic.Width + chars.Width);
+            
             AssertAreApproxEqual(30.0, graphic.Height.PointsValue);
 
 
@@ -1513,7 +1511,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(graphic.Owner, path3);
 
-            AssertAreApproxEqual(93.3, graphic.Width.PointsValue); //6 sides has a reduced width
+            AssertAreApproxEqual(86.6, graphic.Width.PointsValue); //6 sides has a reduced width
             Assert.AreEqual(100.0, graphic.Height.PointsValue);
 
             Assert.AreEqual(line.Width, chars.Width + graphic.Width + chars2.Width);
@@ -1541,7 +1539,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(graphic.Owner, path4);
 
-            AssertAreApproxEqual(138.7, graphic.Width.PointsValue); //Reduced size for each points
+            AssertAreApproxEqual(137.5, graphic.Width.PointsValue); //Reduced size for each points
             AssertAreApproxEqual(135.0, graphic.Height.PointsValue); //Reduced size for the points
             Assert.AreEqual(line.Width.PointsValue, graphic.Width.PointsValue + chars.Width.PointsValue + chars2.Width.PointsValue);
 

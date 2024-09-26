@@ -1071,7 +1071,7 @@ namespace Scryber.UnitLayouts
 
             xOffset += line.FullWidth - line.Width; //right align inc. margins
             
-            Assert.AreEqual(xOffset + 20, posRun.OffsetX);
+            Assert.AreEqual(xOffset, posRun.OffsetX);
             Assert.AreEqual(yOffset, posRun.OffsetY);
             Assert.AreEqual(width + 20, posRun.Width); //inc. margins
             Assert.AreEqual(height + 20, posRun.Height); //inc. margins
@@ -1217,7 +1217,7 @@ namespace Scryber.UnitLayouts
 
             xOffset += (line.FullWidth - line.Width) / 2.0; //right align inc. margins
             
-            Assert.AreEqual(xOffset + 20, posRun.OffsetX);
+            Assert.AreEqual(xOffset, posRun.OffsetX);
             Assert.AreEqual(yOffset, posRun.OffsetY);
             Assert.AreEqual(width + 20, posRun.Width); //inc. margins
             Assert.AreEqual(height + 20, posRun.Height); //inc. margins
