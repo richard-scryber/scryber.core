@@ -943,18 +943,49 @@ namespace Scryber.PDF.Layout
                             lastwasapplied = didjustify;
                             space = 0;
                         }
-                        space = 0; // reset space to zero as already accounted for.
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
                     }
                     else if(h == HorizontalAlignment.Center)
                     {
                         if (null != line)
                         {
-                            
                             bool didcenter = line.CenterAlignContent(width, item.Width, space, xInset, right, cache, context);
-
                             lastwasapplied = didcenter;
                             space = 0;
                         }
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
                     }
                     else if (h == HorizontalAlignment.Right)
                     {
@@ -964,6 +995,23 @@ namespace Scryber.PDF.Layout
                             lastwasapplied = didright;
                             space = 0;
                         }
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
                     }
                     
                     itemXOffset = itemXOffset + space;

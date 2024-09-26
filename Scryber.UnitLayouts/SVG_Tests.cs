@@ -3492,13 +3492,13 @@ namespace Scryber.UnitLayouts
         
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void SVG_24_EmptyFixedMarginsSizeNestedTextRight()
+        public void SVG_24_RectFixedMarginsSizeNestedTextRight()
         {
-            var path = AssertGetContentFile("SVG_24_EmptyFixedMarginsSizeNestedTextRight");
+            var path = AssertGetContentFile("SVG_24_RectFixedMarginsSizeNestedTextRight");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("SVG_24_EmptyFixedMarginsSizeNestedTextRight.pdf"))
+            using (var ms = DocStreams.GetOutputStream("SVG_24_RectFixedMarginsSizeNestedTextRight.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -3515,138 +3515,149 @@ namespace Scryber.UnitLayouts
             var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
             Assert.IsNotNull(content);
             Assert.AreEqual(3, content.Contents.Count);
-            
-            //nestng content
-            var nest = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsNotNull(nest);
 
-            content = nest.Columns[0];
-            Assert.IsNotNull(content);
-            Assert.AreEqual(3, content.Contents.Count);
-            
-            
-            
-            //first line is text
+            //outer first line
             var line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(3, line.Runs.Count);
 
-            var baseline = line.BaseLineOffset;
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
             
-            //second line has the text, svg and more text
-            line = content.Contents[1] as PDFLayoutLine;
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(7, line.Runs.Count);
-
-            var begin = line.Runs[0] as PDFTextRunBegin;
-            var chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-
-            //positioned svg should be on 
+            
             var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             Assert.IsInstanceOfType(posRun.Owner, typeof(SVGCanvas));
             
-            
 
-            //default size is 300x150
+            //explicit size is 100x120
             
             Unit yOffset = 0;
-            Unit xOffset = 0; 
-            Unit height = 0; //run for absolute takes no space
-            Unit width = 0; //run for absolute takes no space
-            
-            Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
-            Assert.AreEqual(width, posRun.Width);
-            Assert.AreEqual(height, posRun.Height);
+            Unit xOffset = 0;
+            Unit height = 120;
+            Unit width = 100;
+
             
             
-            //As we are middle aligned, then baseline height should be half the height of the SVG
-            Assert.AreEqual(30, line.Height);
-            
-            
+            Assert.AreEqual(xOffset, posRun.OffsetX);
+            Assert.AreEqual(yOffset, posRun.OffsetY);
+            Assert.AreEqual(0, posRun.Width); //absolute - so no size in the line
+            Assert.AreEqual(0, posRun.Height); //absolute - so no size in the line
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
             Assert.IsTrue(nest.HasPositionedRegions);
             Assert.AreEqual(1, nest.PositionedRegions.Count);
             var pos = nest.PositionedRegions[0] as PDFLayoutPositionedRegion;
             Assert.IsNotNull(pos);
             Assert.AreEqual(posRun, pos.AssociatedRun);
             Assert.AreEqual(1, pos.Contents.Count);
+            Assert.IsFalse(posRun.RenderAsXObject);
 
-            width = 120;
-            height = 140;
+            var chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
             
-            var bbox = posRun.RenderBoundingBox;
-            Assert.AreEqual(xOffset, bbox.X);
-            Assert.AreEqual(yOffset, bbox.Y);
-            Assert.AreEqual(width, bbox.Width);
-            Assert.AreEqual(height, bbox.Height);
+            
             
             var svgBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(svgBlock);
             Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            yOffset = 30; //second line
             
             
-            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y);
-            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X);
-            Assert.AreEqual(width, svgBlock.TotalBounds.Width);
-            Assert.AreEqual(height, svgBlock.TotalBounds.Height);
+            Assert.AreEqual(0, svgBlock.TotalBounds.Y); //absolute
+            Assert.AreEqual(0, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 20, svgBlock.TotalBounds.Width); //inc. margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
             Assert.AreEqual(1, svgBlock.Columns.Length);
-            Assert.AreEqual(0, svgBlock.Columns[0].Contents.Count);
-
-            xOffset = 30 + 10; //page + padding
-            yOffset = 30 + 30 + 30 + 10; //page + outerline + one line of text + padding
-            height = 120; //render bounds does not include margins
-            width = 100;
-
-            var beforeWidth = Unit.Zero;
-            chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            beforeWidth = chars.Width;
-
-            xOffset += beforeWidth; //without position, inline block is placed as per the line inset.
-            xOffset += line.AvailableWidth; //right aligned text
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
             
-            xOffset += 10; //svg margins
-            yOffset += 10; //svg margins
+            
 
             //Arrangement is for links and inner content references
             var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
-            var arrange = svg.GetFirstArrangement();
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
 
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset = 30 + 10 + 10; //absolute position - page margins + padding + svg margins
+            
             Assert.IsNotNull(arrange);
-            //TODO: Figure out why this is wrong, and the only one that is wrong.
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); //add top offset
-            Assert.AreEqual(Unit.Round(xOffset, 4), Unit.Round(arrange.RenderBounds.X, 4)); //right align - account for double inaccuracy
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
             
-            //check the xObject - second after the font
-            Assert.AreEqual(2, doc.SharedResources.Count);
-            var xObj = doc.SharedResources[1] as PDFLayoutXObjectResource;
-            Assert.IsNotNull(xObj);
-            Assert.IsTrue(xObj.Registered);
-            Assert.AreEqual(posRun, xObj.Layout);
-            Assert.IsNotNull(posRun.RenderReference);
+            //check the xObject
+            Assert.AreEqual(3, doc.SharedResources.Count);
             
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
             
-            //check the last line is standard height
-            var nl = line.Runs[6] as PDFTextRunNewLine;
-            Assert.IsNotNull(nl);
-            //half the top line height + half space around the line + font ascent = baseline offset.
-            Assert.AreEqual(30, nl.NewLineOffset.Height); 
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 20, bbox.Width);
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
         }
         
         
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void SVG_25_EmptyFixedMarginsSizeNestedTextCentre()
+        public void SVG_25_RectFixedMarginsSizeNestedTextCentre()
         {
-            var path = AssertGetContentFile("SVG_25_EmptyFixedMarginsSizeNestedTextCentre");
+            var path = AssertGetContentFile("SVG_25_RectFixedMarginsSizeNestedTextCentre");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("SVG_25_EmptyFixedMarginsSizeNestedTextCentre.pdf"))
+            using (var ms = DocStreams.GetOutputStream("SVG_25_RectFixedMarginsSizeNestedTextCentre.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -3663,138 +3674,149 @@ namespace Scryber.UnitLayouts
             var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
             Assert.IsNotNull(content);
             Assert.AreEqual(3, content.Contents.Count);
-            
-            //nestng content
-            var nest = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsNotNull(nest);
 
-            content = nest.Columns[0];
-            Assert.IsNotNull(content);
-            Assert.AreEqual(3, content.Contents.Count);
-            
-            
-            
-            //first line is text
+            //outer first line
             var line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(3, line.Runs.Count);
 
-            var baseline = line.BaseLineOffset;
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(3, nest.Columns[0].Contents.Count);
             
-            //second line has the text, svg and more text
-            line = content.Contents[1] as PDFLayoutLine;
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(7, line.Runs.Count);
-
-            var begin = line.Runs[0] as PDFTextRunBegin;
-            var chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-
-            //positioned svg should be on 
+            
             var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             Assert.IsInstanceOfType(posRun.Owner, typeof(SVGCanvas));
             
-            
 
-            //default size is 300x150
+            //explicit size is 100x120
             
             Unit yOffset = 0;
-            Unit xOffset = 0; 
-            Unit height = 0; //run for absolute takes no space
-            Unit width = 0; //run for absolute takes no space
-            
-            Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
-            Assert.AreEqual(width, posRun.Width);
-            Assert.AreEqual(height, posRun.Height);
+            Unit xOffset = 0;
+            Unit height = 120;
+            Unit width = 100;
+
             
             
-            //As we are middle aligned, then baseline height should be half the height of the SVG
-            Assert.AreEqual(30, line.Height);
-            
-            
+            Assert.AreEqual(xOffset, posRun.OffsetX);
+            Assert.AreEqual(yOffset, posRun.OffsetY);
+            Assert.AreEqual(0, posRun.Width); //absolute - so no size in the line
+            Assert.AreEqual(0, posRun.Height); //absolute - so no size in the line
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
             Assert.IsTrue(nest.HasPositionedRegions);
             Assert.AreEqual(1, nest.PositionedRegions.Count);
             var pos = nest.PositionedRegions[0] as PDFLayoutPositionedRegion;
             Assert.IsNotNull(pos);
             Assert.AreEqual(posRun, pos.AssociatedRun);
             Assert.AreEqual(1, pos.Contents.Count);
+            Assert.IsFalse(posRun.RenderAsXObject);
 
-            width = 120;
-            height = 140;
+            var chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
             
-            var bbox = posRun.RenderBoundingBox;
-            Assert.AreEqual(xOffset, bbox.X);
-            Assert.AreEqual(yOffset, bbox.Y);
-            Assert.AreEqual(width, bbox.Width);
-            Assert.AreEqual(height, bbox.Height);
+            
             
             var svgBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(svgBlock);
             Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            yOffset = 30; //second line
             
             
-            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y);
-            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X);
-            Assert.AreEqual(width, svgBlock.TotalBounds.Width);
-            Assert.AreEqual(height, svgBlock.TotalBounds.Height);
+            Assert.AreEqual(0, svgBlock.TotalBounds.Y); //absolute
+            Assert.AreEqual(0, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 20, svgBlock.TotalBounds.Width); //inc. margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
             Assert.AreEqual(1, svgBlock.Columns.Length);
-            Assert.AreEqual(0, svgBlock.Columns[0].Contents.Count);
-
-            xOffset = 30 + 10; //page + padding
-            yOffset = 30 + 30 + 30 + 10; //page + outerline + one line of text + padding
-            height = 120; //render bounds does not include margins
-            width = 100;
-
-            var beforeWidth = Unit.Zero;
-            chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            beforeWidth = chars.Width;
-
-            xOffset += beforeWidth; //without position, inline block is placed as per the line inset.
-            xOffset += line.AvailableWidth / 2; //center alignment
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
             
-            xOffset += 10; //svg margins
-            yOffset += 10; //svg margins
+            
 
             //Arrangement is for links and inner content references
             var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
-            var arrange = svg.GetFirstArrangement();
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
 
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset = 30 + 10 + 10; //absolute position - page margins + padding + svg margins
+            
             Assert.IsNotNull(arrange);
-            //TODO: Figure out why this is wrong, and the only one that is wrong.
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); //add top offset
-            Assert.AreEqual(Unit.Round(xOffset, 4), Unit.Round(arrange.RenderBounds.X, 4)); //centre align - account for double inaccuracy
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
             
-            //check the xObject - second after the font
-            Assert.AreEqual(2, doc.SharedResources.Count);
-            var xObj = doc.SharedResources[1] as PDFLayoutXObjectResource;
-            Assert.IsNotNull(xObj);
-            Assert.IsTrue(xObj.Registered);
-            Assert.AreEqual(posRun, xObj.Layout);
-            Assert.IsNotNull(posRun.RenderReference);
+            //check the xObject
+            Assert.AreEqual(3, doc.SharedResources.Count);
             
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
             
-            //check the last line is standard height
-            var nl = line.Runs[6] as PDFTextRunNewLine;
-            Assert.IsNotNull(nl);
-            //half the top line height + half space around the line + font ascent = baseline offset.
-            Assert.AreEqual(30, nl.NewLineOffset.Height); 
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 20, bbox.Width);
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
         }
         
         
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void SVG_26_EmptyBlockMarginsSizeNestedTextCentre()
+        public void SVG_26_RectBlockMarginsAutoSizeNestedTextCentre()
         {
-            var path = AssertGetContentFile("SVG_26_EmptyBlockMarginsSizeNestedTextCentre");
+            var path = AssertGetContentFile("SVG_26_RectBlockMarginsAutoSizeNestedTextCentre");
 
             var doc = Document.ParseDocument(path);
 
-            using (var ms = DocStreams.GetOutputStream("SVG_26_EmptyBlockMarginsSizeNestedTextCentre.pdf"))
+            using (var ms = DocStreams.GetOutputStream("SVG_26_RectBlockMarginsAutoSizeNestedTextCentre.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
                 doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
@@ -3807,132 +3829,1070 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
             
-            Assert.Inconclusive("Need to sort the render as XObject and then positioning");
-
             Assert.IsNotNull(layout, "Layout not captured");
             var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
             Assert.IsNotNull(content);
             Assert.AreEqual(3, content.Contents.Count);
-            
-            //nestng content
-            var nest = layout.AllPages[0].ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
-            Assert.IsNotNull(nest);
 
-            content = nest.Columns[0];
-            Assert.IsNotNull(content);
-            Assert.AreEqual(3, content.Contents.Count);
-            
-            
-            
-            //first line is text
+            //outer first line
             var line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(3, line.Runs.Count);
 
-            var baseline = line.BaseLineOffset;
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
             
-            //second line has the text, svg and more text
-            line = content.Contents[1] as PDFLayoutLine;
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            Assert.AreEqual(7, line.Runs.Count);
-
-            var begin = line.Runs[0] as PDFTextRunBegin;
-            var chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-
-            //positioned svg should be on 
-            var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
-            Assert.IsInstanceOfType(posRun.Owner, typeof(SVGCanvas));
+            Assert.AreEqual(3, line.Runs.Count);
             
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
             
 
-            //default size is 300x150
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
             
-            Unit yOffset = 0;
-            Unit xOffset = 0; 
-            Unit height = 0; //run for absolute takes no space
-            Unit width = 0; //run for absolute takes no space
+            //explicit size is 100x120
             
-            Assert.AreEqual(xOffset, posRun.OffsetX); //justify align
-            Assert.AreEqual(yOffset, posRun.OffsetY); //svg is sat at the top
-            Assert.AreEqual(width, posRun.Width);
-            Assert.AreEqual(height, posRun.Height);
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
             
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 20 - 100) / 2.0; //centre so - half width - padding and svg width
+            Unit height = 120;
+            Unit width = 100;
             
-            //As we are middle aligned, then baseline height should be half the height of the SVG
-            Assert.AreEqual(30, line.Height);
-            
-            
-            Assert.IsTrue(nest.HasPositionedRegions);
-            Assert.AreEqual(1, nest.PositionedRegions.Count);
-            var pos = nest.PositionedRegions[0] as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(pos);
-            Assert.AreEqual(posRun, pos.AssociatedRun);
-            Assert.AreEqual(1, pos.Contents.Count);
-
-            width = 120;
-            height = 140;
-            
-            var bbox = posRun.RenderBoundingBox;
-            Assert.AreEqual(xOffset, bbox.X);
-            Assert.AreEqual(yOffset, bbox.Y);
-            Assert.AreEqual(width, bbox.Width);
-            Assert.AreEqual(height, bbox.Height);
-            
-            var svgBlock = pos.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(svgBlock);
             Assert.IsTrue(svgBlock.IsExplicitLayout);
+
             
-            
-            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y);
-            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X);
-            Assert.AreEqual(width, svgBlock.TotalBounds.Width);
-            Assert.AreEqual(height, svgBlock.TotalBounds.Height);
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //auto margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
             Assert.AreEqual(1, svgBlock.Columns.Length);
-            Assert.AreEqual(0, svgBlock.Columns[0].Contents.Count);
-
-            xOffset = 30 + 10; //page + padding
-            yOffset = 30 + 30 + 30 + 10; //page + outerline + one line of text + padding
-            height = 120; //render bounds does not include margins
-            width = 100;
-
-            var beforeWidth = Unit.Zero;
-            chars = line.Runs[1] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            beforeWidth = chars.Width;
-
-            xOffset += beforeWidth; //without position, inline block is placed as per the line inset.
-            xOffset += line.AvailableWidth / 2; //center alignment
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
             
-            xOffset += 10; //svg margins
-            yOffset += 10; //svg margins
+            
 
             //Arrangement is for links and inner content references
             var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
-            var arrange = svg.GetFirstArrangement();
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
 
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
             Assert.IsNotNull(arrange);
-            //TODO: Figure out why this is wrong, and the only one that is wrong.
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y); //add top offset
-            Assert.AreEqual(Unit.Round(xOffset, 4), Unit.Round(arrange.RenderBounds.X, 4)); //centre align - account for double inaccuracy
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(height, arrange.RenderBounds.Height);
             Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
             
-            //check the xObject - second after the font
+            //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            var xObj = doc.SharedResources[1] as PDFLayoutXObjectResource;
-            Assert.IsNotNull(xObj);
-            Assert.IsTrue(xObj.Registered);
-            Assert.AreEqual(posRun, xObj.Layout);
-            Assert.IsNotNull(posRun.RenderReference);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width, bbox.Width); //no horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_27_RectBlockMarginLeftAutoSizeNestedTextCentre()
+        {
+            var path = AssertGetContentFile("SVG_27_RectBlockMarginLeftAutoSizeNestedTextCentre");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_27_RectBlockMarginLeftAutoSizeNestedTextCentre.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 10 - 20 - 100); //right align so - width - padding and svg width + right margin
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 10 , svgBlock.TotalBounds.Width); //auto margins left only
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
             
             
-            //check the last line is standard height
-            var nl = line.Runs[6] as PDFTextRunNewLine;
-            Assert.IsNotNull(nl);
-            //half the top line height + half space around the line + font ascent = baseline offset.
-            Assert.AreEqual(30, nl.NewLineOffset.Height); 
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
+            
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_28_RectBlockMarginsAutoSizeNestedTextRight()
+        {
+            var path = AssertGetContentFile("SVG_28_RectBlockMarginsAutoSizeNestedTextRight");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_28_RectBlockMarginsAutoSizeNestedTextRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 20 - 100) / 2.0; //centre so - half width - padding and svg width
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //auto margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width, bbox.Width); //no horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height);
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_29_RectBlockMarginLeftAutoSizeNestedTextRight()
+        {
+            var path = AssertGetContentFile("SVG_29_RectBlockMarginLeftAutoSizeNestedTextRight");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_29_RectBlockMarginLeftAutoSizeNestedTextRight.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 10 - 20 - 100); //right align so - width - padding and svg width + right margin
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 10 , svgBlock.TotalBounds.Width); //auto margins left only
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_30_RectBlockMarginsAutoSizeNestedTextJustify()
+        {
+            var path = AssertGetContentFile("SVG_30_RectBlockMarginsAutoSizeNestedTextJustify");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_30_RectBlockMarginsAutoSizeNestedTextJustify.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 20 - 100) / 2.0; //centre so - half width - padding and svg width
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //auto margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width, bbox.Width); //no horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height);
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_31_RectBlockMarginLeftAutoSizeNestedTextJustify()
+        {
+            var path = AssertGetContentFile("SVG_31_RectBlockMarginLeftAutoSizeNestedTextJustify");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_31_RectBlockMarginLeftAutoSizeNestedTextJustify.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 10 - 20 - 100); //right align so - width - padding and svg width + right margin
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 10 , svgBlock.TotalBounds.Width); //auto margins left only
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_32_RectBlockMarginsAutoSizeNestedTextLeft()
+        {
+            var path = AssertGetContentFile("SVG_32_RectBlockMarginsAutoSizeNestedTextLeft");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_32_RectBlockMarginsAutoSizeNestedTextLeft.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 20 - 100) / 2.0; //centre so - half width - padding and svg width
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //auto margins
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width, bbox.Width); //no horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void SVG_33_RectBlockMarginLeftAutoSizeNestedTextLeft()
+        {
+            var path = AssertGetContentFile("SVG_33_RectBlockMarginLeftAutoSizeNestedTextLeft");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_33_RectBlockMarginLeftAutoSizeNestedTextLeft.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.IsNotNull(layout, "Layout not captured");
+            var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(5, nest.Columns[0].Contents.Count);
+            
+
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //inner second line
+            line = nest.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
+            
+            //explicit size is 100x120
+            
+            var svgBlock = nest.Columns[0].Contents[2] as PDFLayoutBlock;
+            
+            Unit yOffset = 60; //second line
+            Unit xOffset = (nest.Width - 10 - 20 - 100); //right align so - width - padding and svg width + right margin
+            Unit height = 120;
+            Unit width = 100;
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width + 10 , svgBlock.TotalBounds.Width); //auto margins left only
+            Assert.AreEqual(height + 20, svgBlock.TotalBounds.Height); //inc. margins
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
+            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+
+            
+            yOffset = 30 + 30 + 10 + 60 + 10; //absolute position - page margins, outer line, padding, 3rd line offset in nest + svg margins
+            xOffset += 30 + 10; //absolute = page margins + left padding
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //check the xObject
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            var bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height + 20, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the svg rect
+            line = svgBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+
+            var bounds = compRun.TotalBounds;
+            //These are zero as it does not take any space on the line
+            Assert.AreEqual(0, bounds.X);
+            Assert.AreEqual(0, bounds.Y);
+            Assert.AreEqual(0, bounds.Width); 
+            Assert.AreEqual(0, bounds.Height);
+            
+            Assert.IsInstanceOfType<Component>(compRun.Owner);
+            var owner = compRun.Owner as Component;
+            Assert.IsNotNull(owner);
+
+            xOffset +=  30; // + x pos
+            yOffset +=  20; // + y pos
+            
+            arrange = owner.GetFirstArrangement() as ComponentMultiArrangement;
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(40, arrange.RenderBounds.Width);
+            Assert.AreEqual(30, arrange.RenderBounds.Height); 
         }
     }
 }
