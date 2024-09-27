@@ -5,36 +5,43 @@ using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.Svg.Components;
 
 namespace Scryber.Svg.Layout
 {
     public class TSpanLayoutEngine : LayoutEnginePanel
     {
+        public SVGText TextContainer { get; set; }
+        
         public TSpanLayoutEngine(ContainerComponent container, IPDFLayoutEngine parent)
             : base(container, parent)
         {
+            this.TextContainer = (SVGText)container;
+            
         }
 
-        protected override void DoLayoutComponent()
+        protected override void DoLayoutChildren()
         {
-            base.DoLayoutComponent();
-        }
-
-        protected override void DoLayoutAChild(IComponent comp, Style full)
-        {
+            var full = this.FullStyle;
+            
             var textAnchor = full.GetValue(StyleKeys.TextAnchorKey, TextAnchor.Start);
             var domBase = full.GetValue(StyleKeys.DominantBaselineKey, DominantBaseline.Auto);
 
             Unit yVal = full.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
             Unit xVal = full.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
-
-            base.DoLayoutAChild(comp, full);
-            
-           
-
             
             var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
             var reg = block.CurrentRegion;
+            
+            base.DoLayoutChildren();
+            
+            if (!reg.IsClosed)
+                reg.Close();
+
+            block.Close();
+            this.TextContainer.TextBlock = block;
+
+            var b = block.Height;
 
             if (textAnchor == TextAnchor.Middle || textAnchor == TextAnchor.End)
             {
@@ -52,7 +59,7 @@ namespace Scryber.Svg.Layout
                 if (textAnchor == TextAnchor.Middle)
                     maxW = maxW / 2;
 
-                block.Position.X = (block.Position.X ?? Unit.Zero) - maxW;
+                //block.Position.X = (block.Position.X ?? Unit.Zero) - maxW;
                 var orig = block.TotalBounds;
                 var update = new Rect(orig.X - maxW, orig.Y, orig.Width, orig.Height);
                 block.TotalBounds = update;
@@ -67,6 +74,7 @@ namespace Scryber.Svg.Layout
                 txt = begin.TextRenderOptions;
                 var met = txt.Font.FontMetrics;
 
+                var baseline = first.BaseLineOffset;
                 //In SVG the x,y position is based on the baseline of the text
                 //So we need to adjust for this (rather than the x,y being for the bounding box
 
@@ -82,31 +90,36 @@ namespace Scryber.Svg.Layout
                     defaultShift = -(met.TotalLineHeight - (met.BaseLineOffset + met.Descent));
                 }
 
+                var space = (first.Height - begin.TextRenderOptions.GetSize()) / 2;
 
-                Unit offset = Unit.Zero;
+                //offsetY is by default expressed as the actual Y position for the baseline of the text.
+                //our block is top left - so offsetY is the position - the top to the baseline.
+                Unit offsetY = yVal - first.BaseLineOffset + space;
+                
+                Unit offsetX = xVal;
 
                 switch (domBase)
                 {
                     case DominantBaseline.Central:
                         //central to the M height
-                        offset = met.Ascent / 2.0;
+                        offsetY += met.Ascent / 2.0;
                         break;
                     case DominantBaseline.Middle:
                         //middle to the x height
-                        offset = met.ExHeight / 2.0;
+                        offsetY += met.ExHeight / 2.0;
                         break;
                     case DominantBaseline.Hanging:
                         //top of the bounding box
-                        offset = met.Ascent;
+                        offsetY += met.Ascent;
                         break;
                     case DominantBaseline.Mathematical:
                         //top of tghe x height
-                        offset = met.ExHeight;
+                        offsetY += met.ExHeight;
                         break;
                     case DominantBaseline.Text_After_Edge:
                     case DominantBaseline.Ideographic:
                         //include the descender
-                        offset = -met.Descent;
+                        offsetY += -met.Descent;
                         break;
                     case DominantBaseline.Alphabetic:
                         //same as auto or text top - normal position of the default shift
@@ -114,7 +127,7 @@ namespace Scryber.Svg.Layout
                         
                     case DominantBaseline.Text_Before_Edge:
                         //full ascender height 
-                        offset = met.EmHeight;
+                        offsetY += met.EmHeight;
                         break;
 
                     case DominantBaseline.Text_Top:
@@ -124,10 +137,23 @@ namespace Scryber.Svg.Layout
                         break;
                 }
 
-                block.Position.Y = (block.Position.Y ?? Unit.Zero) + offset;
-                var orig = block.TotalBounds;
-                var update = new Rect(orig.X, orig.Y + offset + defaultShift, orig.Width, orig.Height);
+                //Add the Y position as the baseline.
+                
 
+                
+                var orig = block.TotalBounds;
+                var update = new Rect(orig.X + offsetX, orig.Y + offsetY + defaultShift, orig.Width, orig.Height);
+
+                //check the textLength
+
+                if (this.TextContainer.TextLength != Unit.Auto)
+                {
+                    update = this.UpdateCharsWidthForTextLength(this.TextContainer, first, update);
+                    Unit required;
+                    
+                    
+                }
+                
                 if (block.Position.TransformMatrix != null)
                 {
                     if (yVal != Unit.Zero)
@@ -141,6 +167,78 @@ namespace Scryber.Svg.Layout
             }
 
             
+        }
+
+        protected virtual Rect UpdateCharsWidthForTextLength(SVGText text, PDFLayoutLine onLine, Rect origBounds)
+        {
+            Rect newBounds = origBounds;
+            Unit requiredWidth = text.TextLength;
+            
+            if (text.TextLength.IsRelative)
+            {
+                if (text.TextLength.Units != PageUnits.Percent)
+                {
+                    this.Context.TraceLog.Add(TraceLevel.Warning, "TSpan Layout", "The only supported relative units to TSpan is percent");
+                    return newBounds;
+                }
+                else
+                {
+                    requiredWidth = requiredWidth * (text.TextLength.Value / 100.0);
+                }
+            }
+
+            Unit currWidth = origBounds.Width;
+            int count = CountCharsOnLine(onLine);
+
+            if (text.LengthAdjust == TextLengthAdjustType.Spacing)
+            {
+                Unit extra = (requiredWidth - currWidth) / count;
+                foreach (var run in onLine.Runs)
+                {
+                    if (run is PDFTextRunCharacter chars)
+                    {
+                        chars.ExtraSpace = extra * chars.Characters.Length;
+                    }
+                    else if (run is PDFTextRunBegin begin)
+                    {
+                        begin.SetTextSpacing(extra, extra);
+                    }
+                    
+                }
+            }
+            else
+            {
+                var stretch = requiredWidth.PointsValue / currWidth.PointsValue;
+                foreach (var run in onLine.Runs)
+                {
+                    if (run is PDFTextRunCharacter chars)
+                    {
+                        chars.ExtraSpace = chars.Characters.Length * (stretch - 1.0);
+                    }
+                    else if (run is PDFTextRunBegin begin)
+                    {
+                        begin.TextRenderOptions.CharacterHScale = stretch;
+                    }
+                    
+                }
+            }
+
+            newBounds.Width = requiredWidth;
+            return newBounds;
+        }
+
+        private int CountCharsOnLine(PDFLayoutLine onLine)
+        {
+            int total = 0;
+            foreach (var run in onLine.Runs)
+            {
+                if (run is PDFTextRunCharacter chars)
+                {
+                    total += chars.Characters.Length;
+                }
+            }
+
+            return total;
         }
 
         protected virtual void AdjustContainerForTextBaseline(PDFPositionOptions pos, IComponent comp, Style full)

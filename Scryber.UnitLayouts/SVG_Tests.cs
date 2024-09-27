@@ -17,7 +17,7 @@ namespace Scryber.UnitLayouts
     [TestClass()]
     public class SVG_Tests
     {
-        const string TestCategoryName = "Layout SVG";
+        const string TestCategoryName = "SVG Layout";
 
         PDFLayoutDocument layout;
 

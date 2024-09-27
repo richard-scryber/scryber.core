@@ -64,6 +64,20 @@ namespace Scryber.Svg.Components
             return rect;
         }
 
-        
+
+        protected override void SetArrangement(ComponentArrangement arrange)
+        {
+            var path = this.Path;
+
+            if (null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange);
+        }
     }
 }

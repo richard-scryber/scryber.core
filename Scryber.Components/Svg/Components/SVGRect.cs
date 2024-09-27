@@ -247,9 +247,9 @@ namespace Scryber.Svg.Components
 
         protected override void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
-            if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusXKey))
+            if (this.Style.IsValueDefined(StyleKeys.SVGGeometryRadiusXKey))
                 this.BuildRoundRectPath(path, points, style, end);
-            else if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusYKey))
+            else if (this.Style.IsValueDefined(StyleKeys.SVGGeometryRadiusYKey))
                 this.BuildRoundRectPath(path, points, style, end);
             else
                 base.BuildPath(path, points, style, end);
@@ -309,10 +309,10 @@ namespace Scryber.Svg.Components
             
             StyleValue<Unit> found;
             
-            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out found))
+            if (style.TryGetValue(StyleKeys.SVGGeometryRadiusXKey, out found))
                 xRadius = found.Value(style);
 
-            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out found))
+            if (style.TryGetValue(StyleKeys.SVGGeometryRadiusYKey, out found))
                 yRadius = found.Value(style);
             else
                 yRadius = xRadius;

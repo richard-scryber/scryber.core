@@ -42,7 +42,8 @@ namespace Scryber.Svg.Components
                 for (int i = 0; i < this.Points.Count; i++)
                 {
                     var pt = this.Points[i];
-                    pt = pt.Offset(-xoffset, -yoffset);
+                    
+                    //pt = pt.Offset(-xoffset, -yoffset);
 
                     if (i == 0)
                         path.MoveTo(pt);
@@ -75,26 +76,26 @@ namespace Scryber.Svg.Components
             }
 
             return new Rect(minx, miny, maxx - minx, maxy - miny);
-
             
         }
-    }
 
-
-    [PDFParsableComponent("polygon")]
-    public class SVGPolygon : SVGPolyLine
-    {
-
-
-        public SVGPolygon(): base()
-        { }
-
-        protected override GraphicsPath CreatePath(Size available, Style fullstyle)
+        protected override void SetArrangement(ComponentArrangement arrange)
         {
-            GraphicsPath path = base.CreatePath(available, fullstyle);
-            path.ClosePath(true);
-
-            return path;
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange);
         }
     }
+
+
+    
 }

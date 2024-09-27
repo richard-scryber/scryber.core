@@ -36,9 +36,21 @@ namespace Scryber.Svg.Components
             return this.PathData;
         }
 
-        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
+
+        protected override void SetArrangement(ComponentArrangement arrange)
         {
-            return base.GetAppliedStyle(forComponent, baseStyle);
+            var path = this.PathData;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange);
         }
     }
 }

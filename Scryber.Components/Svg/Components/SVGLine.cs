@@ -38,18 +38,51 @@ namespace Scryber.Svg.Components
 
         protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            //We use top left zero based moving and line
-            var bounds = this.GetBounds();
-            var x1 = this.X1 - bounds.X;
-            var x2 = this.X2 - bounds.X;
-            var y1 = this.Y1 - bounds.Y;
-            var y2 = this.Y2 - bounds.Y;
+            var x1 = this.X1;
+            var x2 = this.X2;
+            var y1 = this.Y1;
+            var y2 = this.Y2;
 
             var path = new GraphicsPath();
             path.MoveTo(new Point(x1,y1));
             path.LineTo(new Point(x2, y2));
 
             return path;
+        }
+
+        protected override void SetArrangement(ComponentArrangement arrange)
+        {
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+
+                if (bounds.Width < 1.0)
+                {
+                    StyleValue<Unit> strokeWidth;
+                    if (arrange.FullStyle.TryGetValue(StyleKeys.StrokeWidthKey, out strokeWidth))
+                        bounds.Width = strokeWidth.Value(arrange.FullStyle);
+                    else
+                        bounds.Width = 1; //vertical line - so give it a nominal width
+                }
+                else if (bounds.Height < 1.0)
+                {  
+                    StyleValue<Unit> strokeWidth;
+                    if (arrange.FullStyle.TryGetValue(StyleKeys.StrokeWidthKey, out strokeWidth))
+                        bounds.Height = strokeWidth.Value(arrange.FullStyle);
+                    else
+                        bounds.Height = 1; //horizontal line - so give it a nominal width
+                    
+                }
+                
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange);
         }
     }
 }

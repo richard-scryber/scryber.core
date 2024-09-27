@@ -1531,7 +1531,17 @@ namespace Scryber.PDF.Layout
 
                     if (null != context.RenderMatrix)
                         borderRect = context.RenderMatrix.TransformBounds(borderRect);
-                    
+
+                    var block = this.GetParentBlock();
+
+                    if (null != block && block.IsExplicitLayout)
+                    {
+                        //we are explicit so we are always zero - need to take into account page locations
+
+                        borderRect.X += block.PagePosition.X + block.Position.Margins.Left;
+                        borderRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                    }
+
                     component.SetArrangement(context, this.FullStyle, borderRect);
                 }
                 

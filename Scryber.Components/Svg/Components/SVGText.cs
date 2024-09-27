@@ -13,10 +13,25 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("width")]
-        public override Unit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { 
+            get => Unit.Zero;
+            set
+            {
+                ;
+            }
+        }
 
+        /// <summary>
+        /// Not supported
+        /// </summary>
         [PDFAttribute("height")]
-        public override Unit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { 
+            get => Unit.Zero;
+            set
+            {
+                ;
+            } 
+        }
 
         [PDFAttribute("x")]
         public override Unit X {
@@ -50,6 +65,30 @@ namespace Scryber.Svg.Components
             }
         }
 
+        private Unit _textLength = Unit.Auto;
+        
+        [PDFAttribute("textLength")]
+        public Unit TextLength
+        {
+            get
+            {
+                return _textLength;
+            }
+            set
+            {
+                _textLength = value;
+            }
+        }
+
+        private TextLengthAdjustType _lengthAdjust = TextLengthAdjustType.Spacing;
+
+        [PDFAttribute("lengthAdjust")]
+        public TextLengthAdjustType LengthAdjust
+        {
+            get { return _lengthAdjust; }
+            set { _lengthAdjust = value; }
+        }
+
 
         [PDFAttribute("text-anchor")]
         public TextAnchor TextAnchor
@@ -67,11 +106,37 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.TextAnchorKey, value);
             }
         }
-
+        
         public void RemoveTextAnchor()
         {
             this.Style.RemoveValue(StyleKeys.TextAnchorKey);
         }
+
+        [PDFAttribute("letter-spacing")]
+        public Unit LetterSpacing
+        {
+            get
+            {
+                StyleValue<Unit> spacing;
+                if (this.Style.TryGetValue(StyleKeys.TextCharSpacingKey, out spacing))
+                    return spacing.Value(this.Style);
+                else
+                {
+                    return Unit.Zero;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TextCharSpacingKey, value);
+            }
+        }
+
+        public void RemoveLetterSpacing()
+        {
+            this.Style.RemoveValue(StyleKeys.TextCharSpacingKey);
+        }
+
+        
 
         [PDFAttribute("dominant-baseline")]
         public DominantBaseline DominantBaseline
@@ -113,6 +178,10 @@ namespace Scryber.Svg.Components
             }
         }
 
+        /// <summary>
+        /// Set to the block that contains this text - so it can be referred to later.
+        /// </summary>
+        internal PDFLayoutBlock TextBlock { get; set; }
 
         public SVGText() : base(ObjectTypes.Text)
         {
@@ -123,6 +192,7 @@ namespace Scryber.Svg.Components
         {
             var style = base.GetBaseStyle();
             style.Position.DisplayMode = DisplayMode.Block;
+            style.Position.PositionMode = PositionMode.Absolute;
             style.Padding.Right = 4;
             style.Text.WrapText = Text.WordWrap.NoWrap;
             style.Text.PositionFromBaseline = true;
@@ -147,6 +217,33 @@ namespace Scryber.Svg.Components
         }
 
         #endregion
+
+
+        protected override void SetArrangement(ComponentArrangement arrange)
+        {
+            var bounds = arrange.RenderBounds;
+
+           
+             arrange.RenderBounds = bounds;
+            
+            base.SetArrangement(arrange);
+        }
+
+        protected virtual SVGCanvas GetSVGCanvasParent()
+        {
+            var parent = this.Parent;
+            while (null != parent)
+            {
+                if (parent is SVGCanvas canvas)
+                    return canvas;
+                else
+                {
+                    parent = parent.Parent;
+                }
+            }
+
+            return null;
+        }
     }
 
     public class TextLiteralList : ComponentWrappingList<TextLiteral>

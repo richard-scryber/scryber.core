@@ -176,4 +176,11 @@ namespace Scryber
         Replace
     }
 
+
+    public enum TextLengthAdjustType
+    {
+        Spacing,
+        SpacingAndGlyphs
+    }
+
 }
