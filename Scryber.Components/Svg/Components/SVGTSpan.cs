@@ -50,6 +50,94 @@ namespace Scryber.Svg.Components
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
+        [PDFAttribute("x")]
+        public Unit X {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
+            }
+        }
+
+        [PDFAttribute("y")]
+        public Unit Y {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
+        }
+        
+        [PDFAttribute("dx")]
+        public Unit DeltaX {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryDeltaXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryDeltaXKey, value);
+            }
+        }
+
+        [PDFAttribute("dy")]
+        public Unit DeltaY {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryDeltaYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
+        }
+
+        private Unit _textLength = Unit.Auto;
+        
+        [PDFAttribute("textLength")]
+        public Unit TextLength
+        {
+            get
+            {
+                return _textLength;
+            }
+            set
+            {
+                _textLength = value;
+            }
+        }
+
+        private TextLengthAdjustType _lengthAdjust = TextLengthAdjustType.Spacing;
+
+        [PDFAttribute("lengthAdjust")]
+        public TextLengthAdjustType LengthAdjust
+        {
+            get { return _lengthAdjust; }
+            set { _lengthAdjust = value; }
+        }
+        
         public SVGTextSpan() : base()
         {
 

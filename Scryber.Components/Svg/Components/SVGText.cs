@@ -4,6 +4,7 @@ using Scryber.Styles;
 using Scryber.Components;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
+using Scryber.Text;
 
 
 namespace Scryber.Svg.Components
@@ -62,6 +63,38 @@ namespace Scryber.Svg.Components
             set
             {
                 this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
+        }
+        
+        [PDFAttribute("dx")]
+        public Unit DeltaX {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryDeltaXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryDeltaXKey, value);
+            }
+        }
+
+        [PDFAttribute("dy")]
+        public Unit DeltaY {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryDeltaYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryDeltaYKey, value);
             }
         }
 
@@ -196,6 +229,12 @@ namespace Scryber.Svg.Components
             style.Padding.Right = 4;
             style.Text.WrapText = Text.WordWrap.NoWrap;
             style.Text.PositionFromBaseline = true;
+            style.Text.Leading = Unit.Auto;
+            style.Text.CharacterSpacing = 0;
+            style.Text.WordSpacing = 0;
+            style.Text.Decoration = TextDecoration.None;
+            style.Text.FirstLineInset = 0;
+            style.Text.PreserveWhitespace = true;
             return style;
         }
 

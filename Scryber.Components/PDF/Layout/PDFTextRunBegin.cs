@@ -24,6 +24,7 @@ using Scryber.Drawing;
 using Scryber.Components;
 using Scryber.Expressive.Functions.Date;
 using Scryber.PDF.Graphics;
+using Scryber.Svg.Components;
 
 namespace Scryber.PDF.Layout
 {
@@ -409,6 +410,8 @@ namespace Scryber.PDF.Layout
             Rect bounds = this.TotalBounds;
             bounds.X += context.Offset.X;
             bounds.Y += context.Offset.Y;
+
+            
 
             //Set the arrangement for this text run
             Component owner = this.Owner as Component;

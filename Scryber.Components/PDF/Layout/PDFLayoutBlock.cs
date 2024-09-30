@@ -25,6 +25,7 @@ using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.Components;
 using Scryber.PDF.Graphics;
+using Scryber.Svg.Components;
 
 namespace Scryber.PDF.Layout
 {
@@ -1456,6 +1457,19 @@ namespace Scryber.PDF.Layout
                 
                 Rect total = this.TotalBounds;
                 total = total.Offset(context.Offset);
+                
+                if (this.Owner is SVGText svgText)
+                {
+                    if (svgText.DeltaX != Unit.Zero)
+                    {
+                        total.X += svgText.DeltaX;
+                    }
+
+                    if (svgText.DeltaY != Unit.Zero)
+                    {
+                        total.Y += svgText.DeltaY;
+                    }
+                }
 
                 Rect borderRect = total.Inset(this.Position.Margins);
                 Rect contentRect = borderRect.Inset(this.Position.Padding);
@@ -1492,7 +1506,11 @@ namespace Scryber.PDF.Layout
                 
                 //update the offsets and size to our content rect
                 
+                
                 context.Offset = contentRect.Location;
+                
+                
+                
                 context.Space = contentRect.Size;
                 
                 //Perform the atual writing of this blocks inner conntent

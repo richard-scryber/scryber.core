@@ -1395,7 +1395,13 @@ namespace Scryber.Styles
 
             StyleValue<Unit> lead;
             if (this.TryGetValue(StyleKeys.TextLeadingKey, out lead))
-                options.Leading = lead.Value(this);
+            {
+                var value = lead.Value(this);
+                if (Unit.IsAutoValue(value))
+                    options.Leading = null;
+                else
+                    options.Leading = value;
+            }
 
             StyleValue<Text.TextDecoration> decor;
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))

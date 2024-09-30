@@ -27,7 +27,7 @@ namespace Scryber.Svg.Components
         {
             var a = this.MemberwiseClone() as SVGAnchor;
             a.Parent = null;
-            if(this.Style.HasValues)
+            if(this.HasStyle && this.Style.HasValues)
             {
                 a.Style = new Style();
                 this.Style.MergeInto(a.Style);
