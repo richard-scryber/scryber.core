@@ -1900,5 +1900,177 @@ namespace Scryber.UnitLayouts
             
              
         }
+        
+        [TestMethod]
+        [TestCategory(TestCategoryName)]
+        public void SVGComponents_26_Text_Spans()
+        {
+            var path = AssertGetContentFile("SVGComponents_26_Text_Spans");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVGComponents_26_Text_Spans.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            Assert.AreEqual(1, line.Runs.Count); //text
+            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(posRun);
+
+            var text = posRun.Owner as Svg.Components.SVGText;
+            Assert.IsNotNull(text);
+
+            var pos = posRun.Region;
+            var posBlock = pos.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(posBlock);
+            Assert.AreEqual(1, posBlock.Columns[0].Contents.Count);
+            line = posBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line); //this is the actual text line.
+            Assert.AreEqual(9, line.Runs.Count);
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            
+            
+            var arrange = text.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            //body margins and padding, svg margins, x position
+            var xOffset = 10 + 10 + 30 + 20;
+            
+            //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
+            var yOffset = 10 + 10 + 15 + 30 + 40 - 11;
+            
+            
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            
+            Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
+            Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
+            
+        }
+        
+        [TestMethod]
+        [TestCategory(TestCategoryName)]
+        public void SVGComponents_27_Text_SpansDelta()
+        {
+            var path = AssertGetContentFile("SVGComponents_27_Text_SpansDelta");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVGComponents_27_Text_SpansDelta.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            
+            Assert.AreEqual(2, block.Columns[0].Contents.Count);
+
+            var line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            
+            Assert.AreEqual(1, line.Runs.Count); //text
+            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
+            Assert.IsNotNull(posRun);
+
+            var text = posRun.Owner as Svg.Components.SVGText;
+            Assert.IsNotNull(text);
+
+            var pos = posRun.Region;
+            var posBlock = pos.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(posBlock);
+            Assert.AreEqual(1, posBlock.Columns[0].Contents.Count);
+            line = posBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line); //this is the actual text line.
+            Assert.AreEqual(9, line.Runs.Count);
+            
+            var begin = line.Runs[0] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
+            
+            
+            var arrange = text.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            //body margins and padding, svg margins, x position
+            Unit xOffset = 10 + 10 + 30 + 20;
+            
+            //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
+            Unit yOffset = 10 + 10 + 15 + 30 + 40 - 11;
+            
+            
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            
+            Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
+            Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
+
+            var span0 = text.Content[0] as TextLiteral; // A line
+            var span1 = text.Content[1] as SVGTextSpan; // with
+            var span2 = text.Content[2] as SVGTextSpan; // spans
+            
+            Assert.IsNotNull(span0);
+            Assert.IsNotNull(span1);
+            Assert.IsNotNull(span2);
+            arrange = span0.GetFirstArrangement();
+
+            xOffset = 107 + 5;
+            yOffset = 94 - 10;
+            
+            
+            //with
+            arrange = span1.GetFirstArrangement();
+            //delta Y = -10
+            Assert.AreEqual(Unit.Round(yOffset , 0), Unit.Round(arrange.RenderBounds.Y, 0));
+            //delta X = 5
+            Assert.AreEqual(Unit.Round( xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
+
+            yOffset = 95;
+            xOffset = 148; 
+            
+            
+            //spans
+            arrange = span2.GetFirstArrangement();
+            
+
+            Assert.AreEqual(Unit.Round(yOffset  , 0), Unit.Round(arrange.RenderBounds.Y, 0));
+
+            Assert.AreEqual(Unit.Round(xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
+
+        }
     }
 }

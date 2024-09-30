@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using Scryber.PDF.Layout;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -169,6 +170,60 @@ namespace Scryber.Svg.Layout
             
         }
 
+        protected override void DoLayoutAChild(IComponent comp, Style full)
+        {
+            base.DoLayoutAChild(comp, full);
+
+            //Alter any spacing for an inner Text Span
+            if (comp is SVGTextSpan tspan)
+            {
+
+                if (tspan.TextLength != Unit.Auto) //safe as not CSS
+                {
+                    //we have a specific length to adjust to.
+                    //so get the line and characters to alter
+                    var block = this.CurrentBlock.LastOpenBlock();
+                    
+                    if (null == block)
+                        block = this.CurrentBlock;
+                    
+                    if (null != block && block.IsClosed == false)
+                    {
+                        var region = block.CurrentRegion;
+                        var line = region.CurrentItem as PDFLayoutLine;
+
+                        if (null != line && line.Runs.Count > 3)
+                        {
+                            var chars = line.Runs[line.Runs.Count - 2] as PDFTextRunCharacter; //-1 is end, so -2 is the chars
+                            var begin = line.Runs[line.Runs.Count - 3] as PDFTextRunBegin;
+                            
+                            if (null != chars && null != begin)
+                            {
+                                var origW = chars.Width;
+                                var newW = tspan.TextLength;
+                                var count = chars.Characters.Length;
+                                
+                                if (tspan.LengthAdjust == TextLengthAdjustType.Spacing)
+                                {
+                                    chars.ExtraSpace = newW - origW;
+                                    var extra = chars.ExtraSpace / count;
+                                    begin.TextRenderOptions.CharacterSpacing = extra;
+                                    begin.TextRenderOptions.WordSpacing = extra;
+                                    begin.SetTextSpacing(chars.ExtraSpace / count, chars.ExtraSpace / count);
+                                }
+                                else
+                                {
+                                    var stretch = newW.PointsValue / origW.PointsValue;
+                                    chars.ExtraSpace = chars.Characters.Length * (stretch - 1.0);
+                                    begin.TextRenderOptions.CharacterHScale = stretch;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected virtual Rect UpdateCharsWidthForTextLength(SVGText text, PDFLayoutLine onLine, Rect origBounds)
         {
             Rect newBounds = origBounds;
@@ -201,6 +256,8 @@ namespace Scryber.Svg.Layout
                     }
                     else if (run is PDFTextRunBegin begin)
                     {
+                        begin.TextRenderOptions.CharacterSpacing = extra;
+                        begin.TextRenderOptions.WordSpacing = extra;
                         begin.SetTextSpacing(extra, extra);
                     }
                     

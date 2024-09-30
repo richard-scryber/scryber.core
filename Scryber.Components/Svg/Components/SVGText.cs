@@ -234,7 +234,7 @@ namespace Scryber.Svg.Components
             style.Text.WordSpacing = 0;
             style.Text.Decoration = TextDecoration.None;
             style.Text.FirstLineInset = 0;
-            style.Text.PreserveWhitespace = true;
+            style.Text.PreserveWhitespace = false;
             return style;
         }
 
@@ -248,41 +248,13 @@ namespace Scryber.Svg.Components
 
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            //TODO: Support the use of measurement from the baseline and the text positioning content
-            // e.g. text-anchor, text-length
-            //https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text
-
             return new Scryber.Svg.Layout.TSpanLayoutEngine(this, parent);
         }
 
         #endregion
 
 
-        protected override void SetArrangement(ComponentArrangement arrange)
-        {
-            var bounds = arrange.RenderBounds;
-
-           
-             arrange.RenderBounds = bounds;
-            
-            base.SetArrangement(arrange);
-        }
-
-        protected virtual SVGCanvas GetSVGCanvasParent()
-        {
-            var parent = this.Parent;
-            while (null != parent)
-            {
-                if (parent is SVGCanvas canvas)
-                    return canvas;
-                else
-                {
-                    parent = parent.Parent;
-                }
-            }
-
-            return null;
-        }
+        
     }
 
     public class TextLiteralList : ComponentWrappingList<TextLiteral>

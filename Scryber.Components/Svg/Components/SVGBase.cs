@@ -3,6 +3,7 @@ using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Native;
 using Scryber.Styles;
+using FontStyle = Scryber.Drawing.FontStyle;
 
 namespace Scryber.Svg.Components
 {
@@ -112,6 +113,20 @@ namespace Scryber.Svg.Components
         {
             get => base.FontSize;
             set => base.FontSize = value;
+        }
+
+        [PDFAttribute("font-weight")]
+        public override int FontWeight
+        {
+            get => base.FontWeight;
+            set => base.FontWeight = value;
+        }
+
+        [PDFAttribute("font-style")]
+        public override FontStyle FontStyle
+        {
+            get => base.FontStyle;
+            set => base.FontStyle = value;
         }
 
         [PDFAttribute("transform")]
