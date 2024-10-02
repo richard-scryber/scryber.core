@@ -23,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber;
 using Scryber.Drawing;
+using Scryber.Svg;
 
 namespace Scryber.Styles
 {
@@ -312,6 +313,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey SVGGeometryKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSVGGeometry, NOT_INHERITED);
 
+        public static readonly StyleKey<bool> SVGGeometryInUseKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"guse", StyleKeys.SVGGeometryKey);
+        
         public static readonly StyleKey<Unit> SVGGeometryXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmxp", SVGGeometryKey
                                                                 , new StyleKeyFlattenHorizontalValue());
 
@@ -342,7 +345,21 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
 
+        public static readonly StyleKey<SVGFillValue> SVGFillKey = StyleKey.InternalCreateStyleValueKey<SVGFillValue>((ObjectType)"gfil", SVGGeometryKey);
         
+        public static readonly StyleKey<Unit> SVGGeometryGradientX1Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggx1", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientX2Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggx2", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientY1Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggy1", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientY2Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggy2", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<GradientSpreadMode> SVGGeometryGradientSpreadModeKey = StyleKey.InternalCreateStyleValueKey<GradientSpreadMode>((ObjectType)"ggsm", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<GradientUnitType> SVGGeometryGradientUnitKey = StyleKey.InternalCreateStyleValueKey<GradientUnitType>((ObjectType)"ggut", StyleKeys.SVGGeometryKey);
+
+        public static readonly StyleKey<Unit> SVGGradientStopOffsetKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"gsof", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<Color> SVGGradientStopColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"gsco", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<double> SVGGradientStopOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"gsop", StyleKeys.SVGGeometryKey);
+
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);

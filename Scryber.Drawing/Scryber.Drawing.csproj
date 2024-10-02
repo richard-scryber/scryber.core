@@ -43,7 +43,6 @@
     <Folder Include="Text\_FontResources\Symbol\" />
     <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
-    <Folder Include="Svg\" />
     <Folder Include="PDF\Graphics\" />
   </ItemGroup>
   <ItemGroup>

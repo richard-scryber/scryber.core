@@ -137,7 +137,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderTopStyle, new CSSBorderTopStyleParser());
             all.Add(CSSStyleItems.BorderBottomStyle, new CSSBorderBottomStyleParser());
 
-            all.Add(CSSStyleItems.FillColor, new CSSFillColourParser());
+            all.Add(CSSStyleItems.FillColor, new CSSFillColorParser());
 
 
             all.Add(CSSStyleItems.Background, new CSSBackgroundParser());

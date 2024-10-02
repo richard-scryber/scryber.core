@@ -216,8 +216,13 @@ namespace Scryber.Svg.Components
         /// </summary>
         internal PDFLayoutBlock TextBlock { get; set; }
 
-        public SVGText() : base(ObjectTypes.Text)
+        public SVGText() : this(ObjectTypes.Text)
         {
+        }
+
+        protected SVGText(ObjectType type) : base(type)
+        {
+            
         }
 
 
@@ -225,6 +230,10 @@ namespace Scryber.Svg.Components
         {
             var style = base.GetBaseStyle();
             style.Position.DisplayMode = DisplayMode.Block;
+            
+            //Internal flag to identify that we use the SVGGeometry
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            
             style.Position.PositionMode = PositionMode.Absolute;
             style.Padding.Right = 4;
             style.Text.WrapText = Text.WordWrap.NoWrap;

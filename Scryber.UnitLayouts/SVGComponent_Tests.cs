@@ -2069,7 +2069,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(Unit.Round(yOffset  , 0), Unit.Round(arrange.RenderBounds.Y, 0));
 
-            Assert.AreEqual(Unit.Round(xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
+            Assert.AreEqual(Unit.Round( xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
 
         }
     }

@@ -414,8 +414,7 @@ namespace Scryber
     }
 
     #endregion
-
-
+    
     #region public interface IPDFSignatureFormField : IPDFFormField
 
     /// <summary>

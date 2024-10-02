@@ -361,6 +361,13 @@ namespace Scryber
         string GetIncrementID(ObjectType type);
 
         /// <summary>
+        /// Returns any component registered with the document with a specific ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        IComponent FindComponentById(string id);
+
+        /// <summary>
         /// Gets the current conformance mode (strict or lax)
         /// </summary>
         ParserConformanceMode ConformanceMode { get; }

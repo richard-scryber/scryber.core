@@ -270,20 +270,20 @@ namespace Scryber.Svg.Components
         // fill
 
         [PDFAttribute("fill")]
-        public Color FillColor
+        public SVGFillValue FillColor
         {
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.FillColorKey, StandardColors.Black);
+                    return this.Style.GetValue(StyleKeys.SVGFillKey, SVGFillColorValue.Black);
                 else
                 {
-                    return StandardColors.Black;
+                    return SVGFillColorValue.Black;
                 }
             }
             set
             {
-                this.Style.SetValue(StyleKeys.FillColorKey, value);
+                this.Style.SetValue(StyleKeys.SVGFillKey, value);
             }
         }
 

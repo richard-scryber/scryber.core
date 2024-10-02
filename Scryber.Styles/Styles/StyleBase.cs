@@ -27,6 +27,7 @@ using Scryber.Drawing;
 using Scryber.PDF.Graphics;
 using Scryber.PDF;
 using Scryber.PDF.Resources;
+using Scryber.Svg;
 
 namespace Scryber.Styles
 {
@@ -2114,8 +2115,18 @@ namespace Scryber.Styles
                     return null;
             }
 
+            bool useSVG = this.GetValue(StyleKeys.SVGGeometryInUseKey, false);
+            
+            //check for the SVG requirement
+            if (useSVG)
+            {
+                var fillValue = this.GetValue(StyleKeys.SVGFillKey, SVGFillColorValue.Black);
+                var opacityValue = this.GetValue(StyleKeys.FillOpacityKey, 1.0);
+
+                return fillValue.GetBrush(opacityValue);
+            }
             //If we have an image source and we are set to use an image fill style (or it has not been specified)
-            if ((this).TryGetValue(StyleKeys.FillImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value(this)) && (fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Image))
+            else if ((this).TryGetValue(StyleKeys.FillImgSrcKey, out imgsrc) && !string.IsNullOrEmpty(imgsrc.Value(this)) && (fillstyle == null || fillstyle.Value(this) == Drawing.FillType.Image))
             {
                 PatternRepeat repeat = PatternRepeat.RepeatBoth;
                 StyleValue<PatternRepeat> repeatValue;

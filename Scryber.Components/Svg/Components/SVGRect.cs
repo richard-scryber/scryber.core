@@ -1,4 +1,5 @@
 ﻿using System;
+using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
 
@@ -141,7 +142,23 @@ namespace Scryber.Svg.Components
         // fill
 
         [PDFAttribute("fill")]
-        public override Color FillColor { get => base.FillColor; set => base.FillColor = value; }
+        public SVGFillValue FillValue
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGFillKey, SVGFillColorValue.Black);
+                else
+                {
+                    return SVGFillColorValue.Black;
+                    
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.SVGFillKey, value);
+            }
+        }
 
         [PDFAttribute("fill-opacity")]
         public override double FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
@@ -342,6 +359,70 @@ namespace Scryber.Svg.Components
             }
 
             base.SetArrangement(arrange);
+        }
+
+        private Style _applied;
+        
+        public override Style GetAppliedStyle()
+        {
+            if (null == _applied)
+            {
+                var style = base.GetAppliedStyle();
+                this.ResolveStyleReferences(style);
+                _applied = style;
+            }
+
+            return _applied;
+        }
+
+        protected void ResolveStyleReferences(Style forStyle)
+        {
+            StyleValue<SVGFillValue> value;
+            if (forStyle.TryGetValue(StyleKeys.SVGFillKey, out value))
+            {
+                var gradient = value.GetValue(forStyle) as SVGFillReferenceValue;
+                if (null != gradient)
+                {
+                    var svg = this.GetRootSVGCanvas();
+                    SVGFillBase fill;
+                    if (gradient.Value.StartsWith("#"))
+                    {
+                        fill = svg.FindAComponentById(gradient.Value.Substring(1)) as SVGFillBase;
+                    }
+                    else
+                    {
+                        fill = svg.FindAComponentByName(gradient.Value) as SVGFillBase;
+                    }
+
+                    if (null != fill)
+                    {
+                        var bounds = new Rect(Unit.Zero, Unit.Zero, svg.Width, svg.Height);
+                        gradient.Adapter = fill.CreateBrush(bounds);
+                    }
+                }
+            }
+        }
+        
+        
+
+        private SVGCanvas GetRootSVGCanvas()
+        {
+            var parent = this.Parent;
+            while (null != parent)
+            {
+                if (parent is SVGCanvas canvas)
+                    return canvas; //TODO: need a reference to the root, not just the parent.
+                else parent = parent.Parent;
+            }
+            //should always be inside an SVG
+            return null;
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            return style;
         }
     }
 }

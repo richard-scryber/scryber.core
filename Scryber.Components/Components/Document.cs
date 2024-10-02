@@ -2705,8 +2705,10 @@ namespace Scryber.Components
                 return null;
         }
 
-        
-
+        IComponent IDocument.FindComponentById(string id)
+        {
+            return this.FindAComponentById(id);
+        }
         #endregion
 
         #region  public PDFComponent FindAComponentByName(string name) + 1 overload

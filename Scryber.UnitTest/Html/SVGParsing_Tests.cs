@@ -7,7 +7,9 @@ using Scryber.Drawing;
 using Scryber.Svg.Components;
 using System.IO;
 using System.Linq;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Layout;
+using Scryber.Svg;
 
 namespace Scryber.Core.UnitTests.Html
 {
@@ -220,6 +222,352 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(svg);
         }
         
+        [TestMethod]
+        public void SVGFillColor()
+        {
+            var svgString = @"
+<svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""border: solid 1px
+                lime;"" >
+              <rect id='rect1' width=""100"" height=""80"" x=""10"" y=""10"" fill=""red"" fill-opacity=""1""></rect>
+              <rect id='rect2' width=""100"" height=""80"" x=""10"" y=""80"" fill=""#ABABAB"" fill-opacity=""0.5""></rect>
+            </svg>
+";
+            
+            SVGCanvas svg = null;
+            try
+            {
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                svg = (SVGCanvas)component;
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+            }
+            catch
+            {
+                Assert.Fail("Svg image has not been parsed");
+            }
+
+            Assert.AreEqual(5, svg.Contents.Count);
+            //0 = whitespace
+            var rect1 = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect1);
+            Assert.AreEqual("rect1", rect1.ID);
+            
+            Assert.IsNotNull(rect1.FillValue);
+            var colVal = rect1.FillValue as SVGFillColorValue;
+            Assert.IsNotNull(colVal);
+            Assert.AreEqual(StandardColors.Red, colVal.FillColor);
+            Assert.AreEqual("red", colVal.Value);
+            
+            //2 = whitespace
+
+            var rect2 = svg.Contents[3] as SVGRect;
+            Assert.IsNotNull(rect2);
+            Assert.AreEqual("rect2", rect2.ID);
+            Assert.IsNotNull(rect2.FillValue);
+            
+            colVal = rect2.FillValue as SVGFillColorValue;
+            Assert.IsNotNull(colVal);
+            Assert.AreEqual("rgb(171,171,171)", colVal.FillColor.ToString());
+            Assert.AreEqual("#ABABAB", colVal.Value);
+            
+
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Margins = 20;
+
+            pg.Contents.Add(svg);
+
+            using (var stream = DocStreams.GetOutputStream("SVGParsing_FillColor.pdf"))
+            {
+                doc.LayoutComplete += DocOnFillColorLayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(_layoutDocument);
+            Assert.AreEqual(1, _layoutDocument.AllPages.Count);
+            var content = _layoutDocument.AllPages[0].ContentBlock;
+            Assert.IsNotNull(content);
+            Assert.IsTrue(content.HasPositionedRegions);
+            var canvas = content.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(canvas);
+            Assert.AreEqual(svg, canvas.Owner);
+
+            var line = canvas.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            var compRun1 = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun1);
+            Assert.AreEqual(rect1, compRun1.Owner);
+            var arrange = rect1.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            var brush = arrange.FullStyle.CreateFillBrush() as PDFSolidBrush;
+            Assert.IsNotNull(brush);
+            Assert.AreEqual(StandardColors.Red, brush.Color);
+            Assert.AreEqual(1.0, brush.Opacity);
+
+            line = canvas.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            var compRun2 = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun2);
+            Assert.AreEqual(rect2, compRun2.Owner);
+            arrange = rect2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            brush = arrange.FullStyle.CreateFillBrush() as PDFSolidBrush;
+            Assert.IsNotNull(brush);
+            Assert.AreEqual("rgb(171,171,171)", brush.Color.ToString());
+            Assert.AreEqual(0.5, brush.Opacity);
+        }
+        
+        [TestMethod]
+        public void SVGFillLinearGradient()
+        {
+            var svgString = @"
+<svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""border: solid 1px
+                lime;"" >
+              <defs>
+                <linearGradient id=""grad1"" x1=""0.5"" x2=""0.5"" y1=""0"" y2=""1"">
+                    <stop offset=""0.3"" stop-color=""red"" />
+                    <stop offset=""0.5"" stop-color=""white""  />
+                    <stop offset=""0.7"" stop-color=""blue"" />
+                </linearGradient>
+               </defs>
+              <rect id='rect1' width=""100"" height=""80"" x=""10"" y=""10"" fill=""url(#grad1)"" fill-opacity=""1""></rect>
+            </svg>
+";
+            
+            SVGCanvas svg = null;
+            try
+            {
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                svg = (SVGCanvas)component;
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+            }
+            catch
+            {
+                Assert.Fail("Svg image has not been parsed");
+            }
+
+            Assert.AreEqual(4, svg.Contents.Count);
+            
+            //0 = whitespace
+            var defs = svg.Definitions;
+            Assert.IsNotNull(defs);
+            Assert.AreEqual(3, defs.Count);
+            var grad = defs[1] as SVGLinearGradient;
+            Assert.AreEqual("grad1", grad.ID);
+            
+            var rect1 = svg.Contents[2] as SVGRect;
+            Assert.IsNotNull(rect1);
+            Assert.AreEqual("rect1", rect1.ID);
+            
+            Assert.IsNotNull(rect1.FillValue);
+            var gradVal = rect1.FillValue as SVGFillReferenceValue;
+            Assert.IsNotNull(gradVal);
+            Assert.IsNull(gradVal.Adapter); //should be null at this stage
+            Assert.AreEqual("#grad1", gradVal.Value);
+            
+            //3 = whitespace
+
+            
+            
+
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Margins = 20;
+
+            pg.Contents.Add(svg);
+
+            using (var stream = DocStreams.GetOutputStream("SVGParsing_FillLinearGradient.pdf"))
+            {
+                doc.LayoutComplete += DocOnFillColorLayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(_layoutDocument);
+            Assert.AreEqual(1, _layoutDocument.AllPages.Count);
+            var content = _layoutDocument.AllPages[0].ContentBlock;
+            Assert.IsNotNull(content);
+            Assert.IsTrue(content.HasPositionedRegions);
+            var canvas = content.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(canvas);
+            Assert.AreEqual(svg, canvas.Owner);
+
+            var line = canvas.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            var compRun1 = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun1);
+            Assert.AreEqual(rect1, compRun1.Owner);
+            var arrange = rect1.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            var brush = arrange.FullStyle.CreateFillBrush() as PDFBrush;
+            var gradbrush = brush as PDFGradientLinearBrush;
+            Assert.IsNotNull(gradbrush);
+            
+            Assert.AreEqual(5, gradbrush.Colors.Length);
+            
+            //auto added for padding
+            Assert.AreEqual(StandardColors.Red, gradbrush.Colors[0].Color);
+            Assert.AreEqual(0.0, gradbrush.Colors[0].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.Red, gradbrush.Colors[1].Color);
+            Assert.AreEqual(0.3, gradbrush.Colors[1].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.White, gradbrush.Colors[2].Color);
+            Assert.AreEqual(0.5, gradbrush.Colors[2].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[3].Color);
+            Assert.AreEqual(0.7, gradbrush.Colors[3].Distance.Value);
+            
+            //Auto added for padding
+            Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[4].Color);
+            Assert.AreEqual(1.0, gradbrush.Colors[4].Distance.Value);
+            
+            //Assert.AreEqual(StandardColors.Red, brush.Color);
+            //Assert.AreEqual(1.0, brush.Opacity);
+
+            //line = canvas.Columns[0].Contents[1] as PDFLayoutLine;
+            //Assert.IsNotNull(line);
+            //var compRun2 = line.Runs[0] as PDFLayoutComponentRun;
+            //Assert.IsNotNull(compRun2);
+            
+            //Assert.AreEqual(rect2, compRun2.Owner);
+            //arrange = rect2.GetFirstArrangement();
+            //Assert.IsNotNull(arrange);
+            //var solidbrush = arrange.FullStyle.CreateFillBrush() as PDFSolidBrush;
+            //Assert.IsNotNull(brush);
+            //Assert.AreEqual("rgb(171,171,171)", solidbrush.Color.ToString());
+            //Assert.AreEqual(0.5, solidbrush.Opacity);
+        }
+        
+        [TestMethod]
+        public void SVGFillRepeatingLinearGradient()
+        {
+            var svgString = @"
+<svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""border: solid 1px
+                lime;"" >
+              <defs>
+                <linearGradient id=""grad1"" x1=""0.1"" x2=""1"" y1=""0.1"" y2=""0.4"" spreadMethod=""repeat"" >
+                    <stop offset=""0.3"" stop-color=""red"" />
+                    <stop offset=""0.5"" stop-color=""white""  />
+                    <stop offset=""0.7"" stop-color=""blue"" />
+                </linearGradient>
+               </defs>
+              <rect id='rect1' width=""100"" height=""80"" x=""10"" y=""10"" fill=""url(#grad1)"" fill-opacity=""1""></rect>
+            </svg>
+";
+            
+            SVGCanvas svg = null;
+            try
+            {
+                var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+                svg = (SVGCanvas)component;
+                Assert.IsInstanceOfType(svg, typeof(SVGCanvas));
+            }
+            catch
+            {
+                Assert.Fail("Svg image has not been parsed");
+            }
+
+            Assert.AreEqual(4, svg.Contents.Count);
+            
+            //0 = whitespace
+            var defs = svg.Definitions;
+            Assert.IsNotNull(defs);
+            Assert.AreEqual(3, defs.Count);
+            var grad = defs[1] as SVGLinearGradient;
+            Assert.AreEqual("grad1", grad.ID);
+            
+            var rect1 = svg.Contents[2] as SVGRect;
+            Assert.IsNotNull(rect1);
+            Assert.AreEqual("rect1", rect1.ID);
+            
+            Assert.IsNotNull(rect1.FillValue);
+            var gradVal = rect1.FillValue as SVGFillReferenceValue;
+            Assert.IsNotNull(gradVal);
+            Assert.IsNull(gradVal.Adapter); //should be null at this stage
+            Assert.AreEqual("#grad1", gradVal.Value);
+            
+            //3 = whitespace
+
+            
+            
+
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Margins = 20;
+
+            pg.Contents.Add(svg);
+
+            using (var stream = DocStreams.GetOutputStream("SVGParsing_FillLinearGradient.pdf"))
+            {
+                doc.LayoutComplete += DocOnFillColorLayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(_layoutDocument);
+            Assert.AreEqual(1, _layoutDocument.AllPages.Count);
+            var content = _layoutDocument.AllPages[0].ContentBlock;
+            Assert.IsNotNull(content);
+            Assert.IsTrue(content.HasPositionedRegions);
+            var canvas = content.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(canvas);
+            Assert.AreEqual(svg, canvas.Owner);
+
+            var line = canvas.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            var compRun1 = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun1);
+            Assert.AreEqual(rect1, compRun1.Owner);
+            var arrange = rect1.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            var brush = arrange.FullStyle.CreateFillBrush() as PDFBrush;
+            var gradbrush = brush as PDFGradientLinearBrush;
+            Assert.IsNotNull(gradbrush);
+            
+            Assert.AreEqual(5, gradbrush.Colors.Length);
+            
+            //auto added for padding
+            Assert.AreEqual(StandardColors.Red, gradbrush.Colors[0].Color);
+            Assert.AreEqual(0.0, gradbrush.Colors[0].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.Red, gradbrush.Colors[1].Color);
+            Assert.AreEqual(0.3, gradbrush.Colors[1].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.White, gradbrush.Colors[2].Color);
+            Assert.AreEqual(0.5, gradbrush.Colors[2].Distance.Value);
+            
+            Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[3].Color);
+            Assert.AreEqual(0.7, gradbrush.Colors[3].Distance.Value);
+            
+            //Auto added for padding
+            Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[4].Color);
+            Assert.AreEqual(1.0, gradbrush.Colors[4].Distance.Value);
+            
+            //Assert.AreEqual(StandardColors.Red, brush.Color);
+            //Assert.AreEqual(1.0, brush.Opacity);
+
+            //line = canvas.Columns[0].Contents[1] as PDFLayoutLine;
+            //Assert.IsNotNull(line);
+            //var compRun2 = line.Runs[0] as PDFLayoutComponentRun;
+            //Assert.IsNotNull(compRun2);
+            
+            //Assert.AreEqual(rect2, compRun2.Owner);
+            //arrange = rect2.GetFirstArrangement();
+            //Assert.IsNotNull(arrange);
+            //var solidbrush = arrange.FullStyle.CreateFillBrush() as PDFSolidBrush;
+            //Assert.IsNotNull(brush);
+            //Assert.AreEqual("rgb(171,171,171)", solidbrush.Color.ToString());
+            //Assert.AreEqual(0.5, solidbrush.Opacity);
+        }
+
+        private PDF.Layout.PDFLayoutDocument _layoutDocument;
+        
+        private void DocOnFillColorLayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _layoutDocument = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+
         /// <summary>
         /// Test case for Issue #107
         /// </summary>
@@ -952,6 +1300,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(ctranslateX, matrix.Components[4]);
             Assert.AreEqual(-ctranslateY, matrix.Components[5]);
         }
+        
 
         [TestMethod]
         public void SVGLineChart()

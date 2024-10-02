@@ -1160,7 +1160,7 @@ namespace Scryber.Components
         /// Gets the Defined Style for this Component (Style Items that are to be applied directly)
         /// </summary>
         /// <returns></returns>
-        public Style GetAppliedStyle()
+        public virtual Style GetAppliedStyle()
         {
             if (null == _appliedStyle)
             {

@@ -196,6 +196,11 @@ namespace Scryber
         public static readonly ObjectType ShapeTriangle = (ObjectType)"tria";
         public static readonly ObjectType ShapeRectangle = (ObjectType)"rect";
 
+        public static readonly ObjectType LinearGradient = (ObjectType)"ling";
+        public static readonly ObjectType LinearGradientStop = (ObjectType)"ligs";
+        
+        public static readonly ObjectType RadialGradient = (ObjectType)"radg";
+
 
 
     }

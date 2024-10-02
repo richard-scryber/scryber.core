@@ -94,11 +94,24 @@ namespace Scryber.Svg.Components
 
         // fill
 
+        
+
         [PDFAttribute("fill")]
-        public override Color FillColor
+        public SVGFillValue Fill
         {
-            get => base.FillColor;
-            set => base.FillColor = value;
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGFillKey, null);
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGFillKey, value);
+            }
         }
 
         [PDFAttribute("font-family")]
@@ -161,6 +174,13 @@ namespace Scryber.Svg.Components
         public SVGBase(ObjectType type)
             : base(type)
         {
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            return style;
         }
 
 

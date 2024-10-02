@@ -258,6 +258,15 @@ namespace Scryber.Svg.Components
             return false;
         }
 
+        public override Component FindAComponentById(string id)
+        {
+            IComponent found;
+            if (this.TryFindComponentByID(id, out found))
+                return found as Component;
+            else
+                return base.FindAComponentById(id);
+        }
+
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             return new LayoutEngineSVG(this, parent);

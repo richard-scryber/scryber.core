@@ -567,6 +567,19 @@ namespace Scryber.Drawing
         FarthestCorner
     }
 
+    public enum GradientSpreadMode
+    {
+        Pad,
+        Reflect,
+        Repeat
+    }
+
+    public enum GradientUnitType
+    {
+        ObjectBoundingBox,
+        UserSpaceOnUse
+    }
+
 
     /// <summary>
     /// The supported types of style content values

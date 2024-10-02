@@ -20,6 +20,7 @@ namespace Scryber.Svg.Components
             var style = base.GetBaseStyle();
             style.Fill.RemoveColor();
             style.Text.RemoveDecoration();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
             return style;
         }
 
@@ -39,5 +40,6 @@ namespace Scryber.Svg.Components
         {
             return this.Clone();
         }
+        
     }
 }
