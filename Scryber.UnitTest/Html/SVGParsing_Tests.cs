@@ -324,7 +324,7 @@ namespace Scryber.Core.UnitTests.Html
 <svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""border: solid 1px
                 lime;"" >
               <defs>
-                <linearGradient id=""grad1"" x1=""0.5"" x2=""0.5"" y1=""0"" y2=""1"">
+                <linearGradient id=""grad1"" x1=""0"" x2=""0.5"" y1=""0"" y2=""1"">
                     <stop offset=""0.3"" stop-color=""red"" />
                     <stop offset=""0.5"" stop-color=""white""  />
                     <stop offset=""0.7"" stop-color=""blue"" />
@@ -446,13 +446,13 @@ namespace Scryber.Core.UnitTests.Html
 <svg xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" style=""border: solid 1px
                 lime;"" >
               <defs>
-                <linearGradient id=""grad1"" x1=""0.1"" x2=""1"" y1=""0.1"" y2=""0.4"" spreadMethod=""repeat"" >
-                    <stop offset=""0.3"" stop-color=""red"" />
+                <linearGradient id=""grad1"" x1=""0"" x2=""1"" y1=""0.5"" y2=""0.3"" spreadMethod=""pad""  >
+                    <stop offset=""0.1"" stop-color=""red"" />
                     <stop offset=""0.5"" stop-color=""white""  />
-                    <stop offset=""0.7"" stop-color=""blue"" />
+                    <stop offset=""1"" stop-color=""blue"" />
                 </linearGradient>
                </defs>
-              <rect id='rect1' width=""100"" height=""80"" x=""10"" y=""10"" fill=""url(#grad1)"" fill-opacity=""1""></rect>
+              <rect id='rect1' width=""100"" height=""100"" x=""10"" y=""10"" fill=""url(#grad1)"" fill-opacity=""1""></rect>
             </svg>
 ";
             
@@ -498,9 +498,13 @@ namespace Scryber.Core.UnitTests.Html
             pg.Margins = 20;
 
             pg.Contents.Add(svg);
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 10;
 
-            using (var stream = DocStreams.GetOutputStream("SVGParsing_FillLinearGradient.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGParsing_FillRepeatingLinearGradient.pdf"))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.LayoutComplete += DocOnFillColorLayoutComplete;
                 doc.SaveAsPDF(stream);
             }

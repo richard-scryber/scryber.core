@@ -113,17 +113,26 @@ namespace Scryber.Drawing
             }
             else
             {
-                List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
+                List<PDFGradientFunction> functions = new List<PDFGradientFunction>();
                 List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
                 double boundsValue = 1.0 / (this.Colors.Count - 1);
 
                 for (int i = 1; i < this.Colors.Count; i++)
                 {
-                    functions.Add(new PDFGradientFunction2(this.Colors[i - 1].Color, this.Colors[i].Color));
-
+                    
+                    var color0 = this.Colors[i - 1];
+                    var color1 = this.Colors[i];
+                    
+                    //we have a single gradient from the previous color to this color.
+                    //color 0 is specified at the start of the domain, so has a color, but no bounds.
+                    //last color is at the end of the domain, so no bounds either
+                    
+                    functions.Add(new PDFGradientFunction2(color0.Color, color1.Color));
+                    
                     if (i < this.Colors.Count - 1)
                     {
-                        bounds.Add(new PDFGradientFunctionBoundary(boundsValue * i));
+                        var distance = color1.Distance ?? boundsValue * i;
+                        bounds.Add(new PDFGradientFunctionBoundary(distance));
                     }
                 }
 
@@ -180,8 +189,8 @@ namespace Scryber.Drawing
                 for (int i = 1; i < this.Colors.Count; i++)
                 {
                     var col = this.Colors[i];
-                    if (col.Distance.HasValue)
-                        curr = total + (col.Distance.Value / 100);
+                    if (col.Distance.HasValue && col.Distance.Value < 1.0)
+                        curr = total + col.Distance.Value;
                     else if (total == 0.0 && curr == 0.0)
                         curr = total + (1.0 / this.Colors.Count);
                     else

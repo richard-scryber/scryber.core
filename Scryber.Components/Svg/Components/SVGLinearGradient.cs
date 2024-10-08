@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Xml.Schema;
 using Scryber.PDF.Graphics;
+using Scryber.PDF.Resources;
 using Scryber.Styles;
 
 namespace Scryber.Svg.Components;
@@ -184,6 +186,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
     }
 
 
+    
     protected virtual GradientLinearDescriptor CreateDescriptor(Rect totalbounds)
     {
         Unit x1 = Unit.Zero;
@@ -237,44 +240,100 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         }
 
         Scryber.Drawing.GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
-        descriptor.Angle = this.GetGradientAngle(x1, x2, y1, y2, type, totalbounds);
-        descriptor.Repeating = (mode == GradientSpreadMode.Repeat);
+
+        descriptor.Angle = this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
+        //get the length of a unit box
+        maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(0.0, 0.0, 1.0, 1.0), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
+        length = 1; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
+
+        if (length <= 0)
+            length = maxLen;
+        
+        descriptor.Repeating = false; //we add our own stops based on the mode.
         List<GradientColor> colors = new List<GradientColor>(this.Stops.Count);
         
+        
+
         if (this.Stops.Count > 1)
         {
+            int count = 1;
+            double factor = 1.0;
+            if (mode == GradientSpreadMode.Repeat)
+            {
+                factor = length / maxLen;
+                count = (int)Math.Ceiling(Math.Abs(maxLen / length));
+            }
             
             Unit offset = Unit.Zero;
-            
-            
-            foreach (var stop in this.Stops)
+            var total = Unit.Zero;
+            var index = 0;
+            while (index < count)
             {
-                offset = stop.Offset;
-                if (offset.IsRelative)
+
+                foreach (var stop in this.Stops)
                 {
-                    if (offset.Units == PageUnits.Percent)
-                        offset = new Unit(offset.Value / 100.0);
-                    else
-                        continue; //we can only use % relative values
+                    offset = stop.Offset;
+                    if (offset.IsRelative)
+                    {
+                        if (offset.Units == PageUnits.Percent)
+                            offset = new Unit(offset.Value / 100.0);
+                        else
+                            continue; //we can only use % relative values
+                    }
+
+                    
+                    var distance = (index + offset.PointsValue) * factor;
+
+                    
+                    
+                    GradientColor color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
+                    colors.Add(color);
+
+                    if (distance >= 1.0)
+                    {
+                        index = count;
+                        break;
+                    }
                 }
 
-                GradientColor color = new GradientColor(stop.StopColor, offset.PointsValue, stop.StopOpacity);
-                colors.Add(color);
-            }
+                if (mode == GradientSpreadMode.Pad)
+                {
+                    if (offset.Value < 1.0)
+                    {
+                        var last = this.Stops[this.Stops.Count - 1];
+                        GradientColor lastColor = new GradientColor(last.StopColor, 1.0, last.StopOpacity);
+                        colors.Add(lastColor);
+                    }
+                    //this is will stop the while loop
+                    total = maxLen;
+                }
+                else if (mode == GradientSpreadMode.Reflect && total < maxLen)
+                {
+                    //TODO: reverse the order and go again
+                }
+                else
+                {
+                    //add the length to the total, so can we continue on if needed
+                    total += length;
+                }
 
-            if (offset.Value < 1.0)
-            {
-                var last = this.Stops[this.Stops.Count - 1];
-                GradientColor lastColor = new GradientColor(last.StopColor, 1.0, last.StopOpacity);
-                colors.Add(lastColor);
+                index++;
             }
         }
-        else
+        else if(this.Stops.Count == 1)
         {
             var stop = this.Stops[0];
             GradientColor one = new GradientColor(stop.StopColor, 0, stop.StopOpacity);
             colors.Add(one);
             GradientColor two = new GradientColor(stop.StopColor, 1.0, stop.StopOpacity);
+            colors.Add(two);
+        }
+        else
+        {
+            //No stops defined so we just go black
+            GradientColor one = new GradientColor(StandardColors.Black, 0, 1.0);
+            colors.Add(one);
+            GradientColor two = new GradientColor(StandardColors.Black, 1.0, 1.0);
             colors.Add(two);
         }
         
@@ -285,7 +344,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         
     }
 
-    private double GetGradientAngle(Unit x1, Unit x2, Unit y1, Unit y2, GradientUnitType type, Rect bounds)
+    private double GetGradientAngle(Unit x1, Unit x2, Unit y1, Unit y2, GradientUnitType type, out double length, out double maxLen)
     {
         //TODO: consider the type of object bounds and make relative to that.
         
@@ -301,41 +360,61 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         
         if (x2.IsRelative)
         {
-            if (x1.Units == PageUnits.Percent)
-                x1 = new Unit(x1.Value / 100.0);
+            if (x2.Units == PageUnits.Percent)
+                x2 = new Unit(x1.Value / 100.0);
             else
             {
-                x1 = Unit.Zero;
+                x2 = new Unit(1.0);
             }
         }
         if (y1.IsRelative)
         {
-            if (x1.Units == PageUnits.Percent)
-                x1 = new Unit(x1.Value / 100.0);
+            if (y1.Units == PageUnits.Percent)
+                y1 = new Unit(x1.Value / 100.0);
             else
             {
-                x1 = Unit.Zero;
+                y1 = Unit.Zero;
             }
         }
         if (y2.IsRelative)
         {
-            if (x1.Units == PageUnits.Percent)
-                x1 = new Unit(x1.Value / 100.0);
+            if (y2.Units == PageUnits.Percent)
+                y2 = new Unit(x1.Value / 100.0);
             else
             {
-                x1 = Unit.Zero;
+                y2 = new Unit(1.0);
             }
         }
-        
-        
-        var deltax = x2 - x1;
-        var deltay = y2 - y1;
 
-        var radians = Math.Atan2(deltay.Value, deltax.Value);
+
+        var deltax = (x2 - x1).PointsValue;
+        var deltay = (y2 - y1).PointsValue;
+
+        var radians = Math.Atan2(deltay, deltax);
         var degrees = radians * (180.0 / Math.PI);
+        length = Math.Sqrt((deltax * deltax) + (deltay * deltay));
         
         //zero = vertical
-        return degrees + 90;
+        degrees = degrees + 90;
+        if (degrees < 0)
+            degrees += 360;
+
+        if (deltax == 0)
+        {
+            maxLen = 1.0;
+        }
+        else if (deltay == 0)
+        {
+            maxLen = 1.0;
+        }
+        else
+        {
+            var cos = 1/Math.Cos(radians);
+            var sin = 1/Math.Sin(radians);
+            maxLen = Math.Min(cos, sin);
+        }
+
+        return degrees;
     }
 
 

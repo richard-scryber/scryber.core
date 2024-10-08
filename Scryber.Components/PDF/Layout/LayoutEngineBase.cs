@@ -804,7 +804,8 @@ namespace Scryber.PDF.Layout
 
         #region protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
 
-        private DisplayMode _lastPositionMode = DisplayMode.Block;
+        private DisplayMode _lastDisplayMode = DisplayMode.Block;
+        private PositionMode _lastPositionMode = PositionMode.Static;
         private Whitespace _lastWhitespace = null;
 
         /// <summary>
@@ -817,8 +818,10 @@ namespace Scryber.PDF.Layout
         protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
         {
             var currentIsText = IsText(current);
-            var nextPosMode = currentIsText ? DisplayMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
-            if (_lastPositionMode == DisplayMode.Inline || _lastPositionMode == DisplayMode.InlineBlock)
+            var nextDisplayMode = currentIsText ? DisplayMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+            var nextPosMode = currentFullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
+            
+            if (_lastDisplayMode == DisplayMode.Inline || _lastDisplayMode == DisplayMode.InlineBlock)
             {
                 if (current is Whitespace ws)
                 {
@@ -827,9 +830,10 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    if (_lastPositionMode == DisplayMode.Inline || _lastPositionMode == DisplayMode.InlineBlock)
+                    if ((_lastDisplayMode == DisplayMode.Inline || _lastDisplayMode == DisplayMode.InlineBlock) 
+                        && (_lastPositionMode == PositionMode.Relative || _lastPositionMode == PositionMode.Static))
                     {
-                        //We are inline
+                        //We are taking up space on the line
                         if (null != _lastWhitespace && _lastWhitespace.ReaderFormat != TextFormat.Plain)
                         {
                             //we have had a whitespace before
@@ -837,7 +841,8 @@ namespace Scryber.PDF.Layout
                             {
                                 //Do Nothing as the text spacing should be handled by this component
                             }
-                            else if (nextPosMode == DisplayMode.Inline || nextPosMode == DisplayMode.InlineBlock)
+                            else if ((nextDisplayMode == DisplayMode.Inline || nextDisplayMode == DisplayMode.InlineBlock) && 
+                                     (nextPosMode == PositionMode.Relative || nextPosMode == PositionMode.Static))
                             {
                                 TextLiteral literal = new TextLiteral(" ", TextFormat.Plain);
                                 literal.Parent = current.Parent;
@@ -849,8 +854,6 @@ namespace Scryber.PDF.Layout
                                 
                                 //build the full style and layout the whitespace
                                 var literalFullStyle = this.BuildFullStyle(literal);
-                                var text = literalFullStyle.CreateTextOptions();
-                                var w = text.GetZeroCharWidth();
                                 
                                 this.DoLayoutTextComponent(literal, literalFullStyle);
                                 
@@ -864,9 +867,10 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            //Save the last position mode (always)
+            //Save the last position and display mode (if we interact with the line content)
+            _lastDisplayMode = nextDisplayMode; 
             _lastPositionMode = nextPosMode;
-
+            
         }
 
         #endregion

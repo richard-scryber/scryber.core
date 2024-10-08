@@ -6342,10 +6342,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             var width = chars.Width;
             
-            //white space is added after the span
-            chars = line.Runs[6] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            width += chars.Width;
+            
             
 
             Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
@@ -6416,10 +6413,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             var width = chars.Width;
             
-            //white space is added after the span
-            chars = line.Runs[6] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            width += chars.Width;
+            
             
 
             Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
@@ -6490,12 +6484,6 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(chars);
             var width = chars.Width;
             
-            //white space is added after the span
-            chars = line.Runs[6] as PDFTextRunCharacter;
-            Assert.IsNotNull(chars);
-            width += chars.Width;
-            
-
             Unit yOffset = new Unit(10 + 10 + 30);//h5 top & bottom margin + h5 line height. (no span line height as absolute and inline-block together).
             Unit xOffset = width; //before chars
             Unit height = 15;

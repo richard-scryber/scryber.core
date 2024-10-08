@@ -905,7 +905,13 @@ namespace Scryber.Styles
             
 
             StyleValue<bool> b;
-            if (isInPositioned || options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+            if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+            {
+                options.FillWidth = false;
+                if (options.DisplayMode == DisplayMode.Inline || options.DisplayMode == DisplayMode.TableCell)
+                    options.DisplayMode = DisplayMode.Block;
+            }
+            else if (isInPositioned)
                 options.FillWidth = false;
             else if (options.DisplayMode == DisplayMode.Inline || options.DisplayMode == DisplayMode.InlineBlock)
                 options.FillWidth = false;

@@ -1,0 +1,44 @@
+﻿<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Whitespace Document</title>
+    <style>
+        h2 {
+            font-size: 16pt;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        #columns{
+            column-count: 1;
+            border: solid 1px red;
+            margin: 0;
+        }
+
+        .wrapped {
+            border: solid 1pt red;
+            margin: 0;
+            font-size: 12pt;
+        }
+        
+        .abs{
+            position: absolute;
+            top: 100pt;
+            left: 100pt;
+            border: solid 1pt green;
+        }
+        
+    </style>
+</head>
+<body style='padding: 10pt'>
+    <div class="wrapped">
+        <div>This is a long line of text that should wrap on multiple</div>
+        <span class="abs">Absolute</span>
+        <span class="abs">Second Absolute</span>
+    </div>
+    <div class="wrapped" >
+        <span>After the absolute block</span>
+    </div>
+
+    
+</body>
+</html>
