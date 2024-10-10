@@ -62,7 +62,7 @@ namespace Scryber.Svg.Components
             return rect;
         }
 
-        protected override void SetArrangement(ComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             var path = this.Path;
             
@@ -70,12 +70,16 @@ namespace Scryber.Svg.Components
             if(null != path)
             {
                 var bounds = path.Bounds;
+                
+                if (null != context.RenderMatrix)
+                    bounds = context.RenderMatrix.TransformBounds(bounds);
+                
                 bounds.X += arrange.RenderBounds.X;
                 bounds.Y += arrange.RenderBounds.Y;
                 arrange.RenderBounds = bounds;
             }
             
-            base.SetArrangement(arrange);
+            base.SetArrangement(arrange, context);
         }
     }
 }

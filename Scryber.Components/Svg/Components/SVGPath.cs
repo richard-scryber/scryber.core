@@ -2,6 +2,7 @@
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.PDF;
 
 namespace Scryber.Svg.Components
 {
@@ -37,7 +38,7 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override void SetArrangement(ComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             var path = this.PathData;
             
@@ -45,12 +46,16 @@ namespace Scryber.Svg.Components
             if(null != path)
             {
                 var bounds = path.Bounds;
+                
+                if (null != context.RenderMatrix)
+                    bounds = context.RenderMatrix.TransformBounds(bounds);
+                
                 bounds.X += arrange.RenderBounds.X;
                 bounds.Y += arrange.RenderBounds.Y;
                 arrange.RenderBounds = bounds;
             }
             
-            base.SetArrangement(arrange);
+            base.SetArrangement(arrange, context);
         }
     }
 }

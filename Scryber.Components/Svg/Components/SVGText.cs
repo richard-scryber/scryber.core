@@ -225,6 +225,7 @@ namespace Scryber.Svg.Components
             
         }
 
+        
 
         protected override Style GetBaseStyle()
         {
@@ -245,6 +246,11 @@ namespace Scryber.Svg.Components
             style.Text.FirstLineInset = 0;
             style.Text.PreserveWhitespace = false;
             return style;
+        }
+
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
+        {
+            base.SetArrangement(arrange, context);
         }
 
 

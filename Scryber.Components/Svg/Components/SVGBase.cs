@@ -1,6 +1,7 @@
 ﻿using System;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using FontStyle = Scryber.Drawing.FontStyle;
@@ -201,5 +202,7 @@ namespace Scryber.Svg.Components
         {
             return this.Clone();
         }
+
+        
     }
 }

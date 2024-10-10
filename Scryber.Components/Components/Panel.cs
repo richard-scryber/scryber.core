@@ -149,11 +149,7 @@ namespace Scryber.Components
 
         #endregion
 
-        protected override void SetArrangement(ComponentArrangement arrange)
-        {
-            base.SetArrangement(arrange);
-        }
-
+        
         
     }
 

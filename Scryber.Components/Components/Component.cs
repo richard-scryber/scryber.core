@@ -1415,7 +1415,7 @@ namespace Scryber.Components
             arrange.PageIndex = context.PageIndex;
             arrange.RenderBounds = borderBounds;
             arrange.FullStyle = style;
-            this.SetArrangement(arrange);
+            this.SetArrangement(arrange, context);
             return arrange;
         }
         
@@ -1424,7 +1424,7 @@ namespace Scryber.Components
         /// Sets an arrangement for this component
         /// </summary>
         /// <param name="arrange"></param>
-        protected virtual void SetArrangement(ComponentArrangement arrange)
+        protected virtual void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             if (arrange is ComponentMultiArrangement)
             {

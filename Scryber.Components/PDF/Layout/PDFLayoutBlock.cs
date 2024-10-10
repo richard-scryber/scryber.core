@@ -1428,10 +1428,11 @@ namespace Scryber.PDF.Layout
                     this.TotalBounds = bounds;
                 }
                 renderer.SetupGraphics(this.Position, this.TotalBounds);
-
-                this.OutputInnerContent(context, writer);
                 
+                this.OutputInnerContent(context, writer);
+
                 renderer.ReleaseGraphics();
+                
                 return renderer.RenderReference;
                 
             }

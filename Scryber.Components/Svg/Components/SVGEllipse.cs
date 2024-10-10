@@ -65,7 +65,7 @@ namespace Scryber.Svg.Components
         }
 
 
-        protected override void SetArrangement(ComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             var path = this.Path;
 
@@ -77,7 +77,7 @@ namespace Scryber.Svg.Components
                 arrange.RenderBounds = bounds;
             }
             
-            base.SetArrangement(arrange);
+            base.SetArrangement(arrange, context);
         }
     }
 }
