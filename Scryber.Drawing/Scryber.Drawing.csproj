@@ -41,7 +41,6 @@
     <Folder Include="Text\_FontResources\Courier\" />
     <Folder Include="Text\_FontResources\Zaph\" />
     <Folder Include="Text\_FontResources\Symbol\" />
-    <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
     <Folder Include="PDF\Graphics\" />
   </ItemGroup>

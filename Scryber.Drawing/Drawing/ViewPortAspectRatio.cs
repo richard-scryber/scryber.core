@@ -1,25 +1,23 @@
 ﻿using System;
 using Scryber.Drawing;
-using Scryber.Styles;
 
 
-namespace Scryber.Svg.Components
+namespace Scryber.Drawing
 {
     [PDFParsableValue()]
-    public struct SVGAspectRatio
+    public struct ViewPortAspectRatio
     {
 
-        public static readonly StyleKey<SVGAspectRatio> AspectRatioStyleKey = StyleKey.CreateStyleValueKey<SVGAspectRatio>((ObjectType)"SVar", StyleKeys.PositionItemKey);
-
+        
         public AspectRatioAlign Align { get; set; }
 
         public AspectRatioMeet Meet { get; set; }
 
-        public SVGAspectRatio(AspectRatioAlign align) : this(align, AspectRatioMeet.Meet)
+        public ViewPortAspectRatio(AspectRatioAlign align) : this(align, AspectRatioMeet.Meet)
         {
         }
 
-        public SVGAspectRatio(AspectRatioAlign align, AspectRatioMeet meet)
+        public ViewPortAspectRatio(AspectRatioAlign align, AspectRatioMeet meet)
         {
             this.Align = align;
             this.Meet = meet;
@@ -40,22 +38,22 @@ namespace Scryber.Svg.Components
             }
         }
 
-        public static SVGAspectRatio Default
+        public static ViewPortAspectRatio Default
         {
-            get { return new SVGAspectRatio(AspectRatioAlign.xMidYMid, AspectRatioMeet.Meet); }
+            get { return new ViewPortAspectRatio(AspectRatioAlign.xMidYMid, AspectRatioMeet.Meet); }
         }
 
-        public static SVGAspectRatio None
+        public static ViewPortAspectRatio None
         {
-            get { return new SVGAspectRatio(AspectRatioAlign.None); }
+            get { return new ViewPortAspectRatio(AspectRatioAlign.None); }
         }
 
         private static char[] _whitespaceSplitter = new char[] {' '};
-        public static SVGAspectRatio Parse(string value)
+        public static ViewPortAspectRatio Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
-                return new SVGAspectRatio(AspectRatioAlign.None);
+                return new ViewPortAspectRatio(AspectRatioAlign.None);
             }
             else
             {
@@ -70,16 +68,16 @@ namespace Scryber.Svg.Components
                     var two = each[1]; //safe with this, as we have definitely got at least 2
 
                     if (Enum.TryParse(one, true, out align) && Enum.TryParse(two, true, out meet))
-                        return new SVGAspectRatio(align, meet);
+                        return new ViewPortAspectRatio(align, meet);
                     else
-                        throw new PDFParserException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
+                        throw new PDFException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
                 }
                 else if(Enum.TryParse(value, true, out align))
                 {
-                    return new SVGAspectRatio(align, AspectRatioMeet.Meet);
+                    return new ViewPortAspectRatio(align, AspectRatioMeet.Meet);
                 }
                 else
-                    throw new PDFParserException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
+                    throw new PDFException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
             }
         }
 

@@ -594,5 +594,26 @@ namespace Scryber.Drawing
         Attribute,
         Quote
     }
+    
+    public enum AspectRatioAlign : byte
+    {
+        None,
+        xMinYMin,
+        xMidYMin,
+        xMaxYMin,
+        xMinYMid,
+        xMidYMid,
+        xMaxYMid,
+        xMinYMax,
+        xMidYMax,
+        xMaxYMax
+    }
+
+    public enum AspectRatioMeet : byte
+    {
+        None,
+        Meet,
+        Slice
+    }
 
 }

@@ -1417,6 +1417,16 @@ namespace Scryber.PDF.Layout
         {
             using (var renderer = this.CreateXObject(context, writer))
             {
+                var bounds = this.TotalBounds;
+                var pos = this.FullStyle.CreatePostionOptions(true);
+                
+                if (pos.ViewPort.HasValue)
+                {
+                    var vp = pos.ViewPort.Value;
+                    bounds.Width = vp.Width;
+                    bounds.Height = vp.Height;
+                    this.TotalBounds = bounds;
+                }
                 renderer.SetupGraphics(this.Position, this.TotalBounds);
 
                 this.OutputInnerContent(context, writer);

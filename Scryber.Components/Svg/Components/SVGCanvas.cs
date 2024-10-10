@@ -150,26 +150,26 @@ namespace Scryber.Svg.Components
         #region public SVGAspectRatio PreserveAspectRatio
 
         [PDFAttribute("preserveAspectRatio")]
-        public SVGAspectRatio PreserveAspectRatio
+        public ViewPortAspectRatio PreserveAspectRatio
         {
             get
             {
                 if (this.HasStyle)
                 {
-                    return this.Style.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
+                    return this.Style.GetValue(StyleKeys.ViewPortAspectRatioStyleKey, ViewPortAspectRatio.Default);
                 }
                 else
-                    return SVGAspectRatio.Default;
+                    return ViewPortAspectRatio.Default;
             }
             set
             {
-                this.Style.SetValue(SVGAspectRatio.AspectRatioStyleKey, value);
+                this.Style.SetValue(StyleKeys.ViewPortAspectRatioStyleKey, value);
             }
         }
 
         public void RemoveAspectRatio()
         {
-            this.Style.RemoveValue(SVGAspectRatio.AspectRatioStyleKey);
+            this.Style.RemoveValue(StyleKeys.ViewPortAspectRatioStyleKey);
         }
 
         #endregion

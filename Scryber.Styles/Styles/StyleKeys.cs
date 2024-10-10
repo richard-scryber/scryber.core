@@ -302,6 +302,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Rect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<Rect>((ObjectType)"vwpt", PositionItemKey);
 
+        public static readonly StyleKey<ViewPortAspectRatio> ViewPortAspectRatioStyleKey =
+            StyleKey.InternalCreateStyleValueKey<ViewPortAspectRatio>((ObjectType)"vpar", PositionItemKey);
+        
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
         public static readonly StyleKey<bool> PositionXObjectKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"xobj", PositionItemKey);
@@ -344,6 +347,7 @@ namespace Scryber.Styles
                                                                 , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
+        
 
         public static readonly StyleKey<SVGFillValue> SVGFillKey = StyleKey.InternalCreateStyleValueKey<SVGFillValue>((ObjectType)"gfil", SVGGeometryKey);
         

@@ -170,7 +170,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         this.Writer.BeginStream(this.RenderReference, this.Filters);
         
         
-        this.XObjectGraphics = PDFGraphics.Create(this.Writer, false, this, DrawingOrigin.TopLeft, this.Context.Space,
+        this.XObjectGraphics = PDFGraphics.Create(this.Writer, false, this, DrawingOrigin.TopLeft, totalBounds.Size,
             this.Context);
         
         this.xObjectSize = totalBounds.Size;
@@ -183,7 +183,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         else
             matrix = matrix.Clone();
 
-        //TODO: calculate viewbax scale etc.
+        matrix = this.CalculateViewPortMatrix(matrix, this.Position, totalBounds.Location, totalBounds.Size);
         
         this.xObjectMatrix = matrix;
        
@@ -216,6 +216,45 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
 
         
     }
+    
+    protected virtual PDFTransformationMatrix CalculateViewPortMatrix(PDFTransformationMatrix original,
+        PDFPositionOptions positionOptions, Point location, Size totalSize)
+    {
+        if (!positionOptions.ViewPort.HasValue)
+            return original;
+        else
+        {
+            var aspect = positionOptions.ViewPortRatio;
+            
+            var srcWidth = positionOptions.ViewPort.Value.Width;
+            var srcHeight = positionOptions.ViewPort.Value.Height;
+            var destWidth = positionOptions.Width ?? srcWidth;
+            var destHeight = positionOptions.Height ?? srcHeight;
+            
+            var newMatrix = original.Clone();
+            var dest = new Size(destWidth, destHeight);
+            
+            if (aspect.Align == AspectRatioAlign.None)
+            {
+                ViewPortAspectRatio.ApplyMaxNonUniformScaling(newMatrix, new Size(destWidth, destHeight),
+                    positionOptions.ViewPort.Value);
+            }
+            else if (aspect.Meet == AspectRatioMeet.Meet)
+            {
+                ViewPortAspectRatio.ApplyUniformScaling(newMatrix, new Size(destWidth, destHeight),
+                    positionOptions.ViewPort.Value,
+                    aspect.Align);
+            }
+            else //stretch
+            {
+                ViewPortAspectRatio.ApplyUniformStretching(newMatrix, new Size(destWidth, destHeight),
+                    positionOptions.ViewPort.Value,
+                    aspect.Align);
+            }
+            
+            return newMatrix;
+        }
+    }
 
     protected Rect GetBoundingBox()
     {
@@ -227,12 +266,12 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         writer.WriteDictionaryNameEntry("Type", "XObject");
         writer.WriteDictionaryNameEntry("Subtype", "Form");
 
-        // if (null != this.xObjectMatrix)
-        // {
-        //     writer.BeginDictionaryEntry("Matrix");
-        //     writer.WriteArrayRealEntries(this.xObjectMatrix.Components);
-        //     writer.EndDictionaryEntry();
-        // }
+        if (null != this.xObjectMatrix)
+        {
+            writer.BeginDictionaryEntry("Matrix");
+            writer.WriteArrayRealEntries(this.xObjectMatrix.Components, "#0.0000");
+            writer.EndDictionaryEntry();
+        }
 
         var bbox = this.GetBoundingBox();
         this.xObjectResource.BoundingBox = bbox;

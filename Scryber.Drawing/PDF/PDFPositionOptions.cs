@@ -119,6 +119,9 @@ namespace Scryber.PDF
         /// </summary>
         public Rect? ViewPort { get; set; }
 
+        public ViewPortAspectRatio ViewPortRatio { get; set; } = ViewPortAspectRatio.Default;
+
+        
         /// <summary>
         /// Gets or sets if these options specifiy that the copmonent these options refer to should fill the available horizontal space
         /// </summary>

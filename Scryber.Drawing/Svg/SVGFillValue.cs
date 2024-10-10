@@ -57,6 +57,7 @@ namespace Scryber.Svg
             switch (value)
             {
                 case ("none"):
+                case("transparent"):
                     brush = null;
                     return true;
                 case ("context-fill"):

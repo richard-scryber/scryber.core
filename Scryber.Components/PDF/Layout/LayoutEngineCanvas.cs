@@ -64,7 +64,7 @@ namespace Scryber.PDF.Layout
 
                 canvas.OutPutName = (PDFName)this.Context.Document.GetIncrementID(ObjectTypes.CanvasXObject);
                 //var rsrc = new PDFLayoutXObjectResource(PDFResource.XObjectResourceType, ((Canvas)Component).UniqueID, canvas);
-                var ratio = this.FullStyle.GetValue(SVGAspectRatio.AspectRatioStyleKey, SVGAspectRatio.Default);
+                var ratio = this.FullStyle.GetValue(StyleKeys.ViewPortAspectRatioStyleKey, ViewPortAspectRatio.Default);
 
                 var size = new Size(canvas.Width, canvas.Height);
                 canvas.Matrix = CalculateMatrix(size, position.ViewPort.Value, ratio);
@@ -77,22 +77,22 @@ namespace Scryber.PDF.Layout
         }
 
 
-        private PDFTransformationMatrix CalculateMatrix(Size available, Rect view, SVGAspectRatio ratio)
+        private PDFTransformationMatrix CalculateMatrix(Size available, Rect view, ViewPortAspectRatio ratio)
         {
             
             PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
             
             if (ratio.Align == AspectRatioAlign.None)
             {
-                SVGAspectRatio.ApplyMaxNonUniformScaling(matrix, available, view);
+                ViewPortAspectRatio.ApplyMaxNonUniformScaling(matrix, available, view);
             }
             else if (ratio.Meet == AspectRatioMeet.Meet)
             {
-                SVGAspectRatio.ApplyUniformScaling(matrix, available, view, ratio.Align);
+                ViewPortAspectRatio.ApplyUniformScaling(matrix, available, view, ratio.Align);
             }
             else if (ratio.Meet == AspectRatioMeet.Slice)
             {
-                SVGAspectRatio.ApplyUniformStretching(matrix, available, view, ratio.Align);
+                ViewPortAspectRatio.ApplyUniformStretching(matrix, available, view, ratio.Align);
             }
             else throw new ArgumentOutOfRangeException(nameof(ratio));
 

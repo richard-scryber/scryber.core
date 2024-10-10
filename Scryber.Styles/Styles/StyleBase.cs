@@ -1039,9 +1039,17 @@ namespace Scryber.Styles
 
             StyleValue<Rect> rect;
             if (this.TryGetValue(StyleKeys.PositionViewPort, out rect))
+            {
                 options.ViewPort = rect.Value(this);
+                
+                //As we have a view port - then check the alignment ratios.
 
-            
+                if (this.TryGetValue(StyleKeys.ViewPortAspectRatioStyleKey, out var aspect))
+                {
+                    options.ViewPortRatio = aspect.Value(this);
+                }
+            }
+
             //alignment
 
             StyleValue<VerticalAlignment> valign;
