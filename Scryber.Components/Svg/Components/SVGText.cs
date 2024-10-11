@@ -269,7 +269,25 @@ namespace Scryber.Svg.Components
         #endregion
 
 
-        
+        public override SVGBase Clone()
+        {
+            var text = base.Clone() as SVGText;
+            text.InnerContent = new ComponentList(text, this.Type);
+            
+            for (int i = 0; i < this.InnerContent.Count; i++)
+            {
+                var clonable = this.InnerContent[i] as ICloneable;
+                if(null == clonable)
+                    continue;
+                var comp = clonable.Clone() as Component;
+                if(null == comp)
+                    continue;
+                
+                text.InnerContent.Add(comp);
+            }
+
+            return text;
+        }
     }
 
     public class TextLiteralList : ComponentWrappingList<TextLiteral>

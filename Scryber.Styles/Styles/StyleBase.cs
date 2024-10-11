@@ -235,7 +235,7 @@ namespace Scryber.Styles
                     style.InheritedValues.SetPriorityValue(kvp.Key, kvp.Value, kvp.Value.Priority);
                 }
             }
-
+            
 
         }
 
