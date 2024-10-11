@@ -191,7 +191,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         this.Context.Offset = Point.Empty;
         this.Context.Space = this.xObjectSize;
         this.Context.Graphics = this.XObjectGraphics;
-        this.Context.RenderMatrix = this.xObjectMatrix;
+        this.Context.RenderMatrix = matrix;
     }
 
 

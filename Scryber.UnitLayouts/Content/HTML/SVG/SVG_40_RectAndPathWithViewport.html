@@ -15,7 +15,7 @@
       
       .positioned{
          margin: 10pt;
-         border: solid 1pt green;
+         border: solid 1pt red;
          vertical-align: middle;
          display: block;
          
@@ -33,11 +33,18 @@
 <body>
    Before the nesting
    <div id="nest" >
-      Before the SVG
+      Before the SVG - default aspect ratio
       <svg class="positioned"  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt"  
-            viewBox="0 0 440 500" preserveAspectRatio="none"
+            viewBox="0 0 440 500"
            xmlns:xlink="http://www.w3.org/1999/xlink"    >
-         <rect height="300" width="400" x="20" y="20" stroke="black" stroke-width="1" fill="transparent"  />
+         <rect height="300" width="400" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5"  />
+         <text x="20" y="20" dominant-baseline="hanging" textLength="400" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
+      </svg>
+      SVG aspect ratio of none
+      <svg class="positioned"  version="1.1" id="Canvas2" xmlns="http://www.w3.org/2000/svg" width="150pt" height="100pt"
+           viewBox="0 0 440 500" preserveAspectRatio="none"
+           xmlns:xlink="http://www.w3.org/1999/xlink"    >
+         <rect height="300" width="400" x="20" y="20" stroke="black" stroke-width="1" fill="green" fill-opacity="0.5"  />
          <text x="20" y="20" dominant-baseline="hanging" textLength="400" lengthAdjust="spacingAndGlyphs" font-size="40" text-anchor="start">Scaled Text</text>
       </svg>
       After the SVG that flows down on to multiple lines in the content of the page.

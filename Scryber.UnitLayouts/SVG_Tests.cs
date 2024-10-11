@@ -4929,7 +4929,7 @@ namespace Scryber.UnitLayouts
             //nested block
             var nest = content.Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(nest);
-            Assert.AreEqual(4, nest.Columns[0].Contents.Count);
+            Assert.AreEqual(6, nest.Columns[0].Contents.Count);
             
 
             //inner first line
@@ -4981,7 +4981,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNull(arrange.NextArrangement);
             
             //check the xObject
-            Assert.AreEqual(2, doc.SharedResources.Count);
+            Assert.AreEqual(3, doc.SharedResources.Count);
             
             var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
@@ -5013,6 +5013,97 @@ namespace Scryber.UnitLayouts
             
             var components = renderer.xObjectMatrix.Components;
 
+            var evenscale = 0.2; //The scale is proportional and based on the height
+            
+            Assert.AreEqual(evenscale, Math.Round(components[0], 4));
+            Assert.AreEqual(0.0, components[1]);
+            Assert.AreEqual(0.0, components[2]);
+            Assert.AreEqual(evenscale, Math.Round(components[3], 4));
+            
+            //we should have a translation in the x direction of half the space
+            width = 440.0 * evenscale;
+            xOffset = 150 - width;
+            xOffset /= 2;
+            Assert.AreEqual(xOffset, components[4]);
+            
+            //yOffset is 0
+            Assert.AreEqual(0.0, Math.Round(components[5], 4));
+            
+            
+            //Next line after svg
+            line = content.Contents[2] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+            
+            //Second SVG
+            svgBlock = nest.Columns[0].Contents[3] as PDFLayoutBlock;
+            
+            yOffset = 30 + 100 + 20 + 30; //first line + svg & margins + second line
+            xOffset = 0; //block own line
+            height = 500; // this is the viewbox height
+            width = 440; //this is the viewBox width
+            
+            Assert.IsNotNull(svgBlock);
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            
+            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
+            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
+            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //viewbox
+            Assert.AreEqual(height , svgBlock.TotalBounds.Height); //viewbox
+            Assert.AreEqual(1, svgBlock.Columns.Length);
+            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+            
+            
+
+            //Arrangement is for links and inner content references
+            svg = layout.DocumentComponent.FindAComponentById("Canvas2") as SVGCanvas;
+            arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+            
+            
+            yOffset += 30 + 30 + 10 + 10; // add page margins, outer line, padding, second svg margins
+            xOffset += 30 + 10 + 10; //page margins + left padding + nest padding
+            width = 150; //should be back to the output width (transformed)
+            height = 100; //should be back to the output height (transformed)
+            
+            Assert.IsNotNull(arrange);
+            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
+            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
+            Assert.AreEqual(height, arrange.RenderBounds.Height);
+            Assert.AreEqual(width, arrange.RenderBounds.Width);
+            Assert.IsNull(arrange.NextArrangement);
+            
+            //second xObject rsrc
+            rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv2") as PDFLayoutXObjectResource;
+            Assert.IsNotNull(rsrc);
+            
+            bbox = rsrc.BoundingBox;
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(440.0, bbox.Width); //no horizontal margins
+            Assert.AreEqual(500, bbox.Height);
+            
+            Assert.IsTrue(rsrc.Registered);
+            Assert.IsNull(rsrc.Layout);
+            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
+            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            
+            //check the renderer for bbox and matrix
+            
+            renderer = rsrc.Renderer as PDFXObjectRenderer;
+            Assert.IsNotNull(renderer);
+            Assert.IsNotNull(renderer.xObjectMatrix);
+
+            bbox = renderer.RenderBoundingBox;
+            
+            Assert.AreEqual(0, bbox.X);
+            Assert.AreEqual(0, bbox.Y);
+            Assert.AreEqual(440.0, bbox.Width); //no horizontal margins
+            Assert.AreEqual(500, bbox.Height);
+            
+            components = renderer.xObjectMatrix.Components;
+            
+            
             var xscale = Math.Round(width.PointsValue / 440.0, 4);
             Assert.AreEqual(xscale, Math.Round(components[0], 4)); //0.3409
             
@@ -5050,12 +5141,10 @@ namespace Scryber.UnitLayouts
             width = 400.0 * xscale;
             height = 300.0 * yscale;
             
-            xOffset = 20.0 * xscale;
-            yOffset = 20.0 * yscale;
+            xOffset += 20.0 * xscale;
+            yOffset += 20.0 * yscale;
             
-            //the following offsets are outside of the transformation
-            xOffset += 30 + 10 + 10; //page margins + left padding + nest padding
-            yOffset += 30 + 30 + 10 + 30 + 10; //page margins, outer line, padding, 2nd line offset in nest + svg margins
+            
 
             Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(bounds.Width.PointsValue));
             Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(bounds.Height.PointsValue));
@@ -5084,7 +5173,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(Math.Round(yOffset.PointsValue) - 1, Math.Round(arrange.RenderBounds.Y.PointsValue)); //there is extra padding for the hanging baseline offset.
             Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue)); //same width as using textLength property.
         }
-        
+
         [TestCategory(TestCategoryName)]
         [TestMethod]
         public void SVG_41_RectAndPathWithViewportAndRatio()
@@ -5105,7 +5194,7 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
             Assert.IsNotNull(content);
             Assert.AreEqual(3, content.Contents.Count);
@@ -5119,159 +5208,603 @@ namespace Scryber.UnitLayouts
             var nest = content.Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(nest);
             Assert.AreEqual(4, nest.Columns[0].Contents.Count);
-            
+
 
             //inner first line
             line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(3, line.Runs.Count);
-            
+
 
             Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
             Assert.IsFalse(nest.HasPositionedRegions);
-            
-            //explicit size is 100x120
-            
-            var svgBlock = nest.Columns[0].Contents[1] as PDFLayoutBlock;
-            
-            Unit yOffset = 30; //first line
+
+            var table = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(table);
+            Assert.AreEqual(1, table.Columns.Length);
+            //2 rows
+            Assert.AreEqual(2, table.Columns[0].Contents.Count);
+
+            //All svgs should have the same bounds within their container
+
+            Unit yOffset = 14; //first line
             Unit xOffset = 0; //block own line
-            Unit height = 500; // this is the viewbox height
-            Unit width = 440; //this is the viewBox width
-            
-            Assert.IsNotNull(svgBlock);
-            Assert.IsTrue(svgBlock.IsExplicitLayout);
+            Unit height = 240; // this is the viewbox height
+            Unit width = 240; //this is the viewBox width
 
-            
-            Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y); //After second line
-            Assert.AreEqual(xOffset, svgBlock.TotalBounds.X); //absolute
-            Assert.AreEqual(width , svgBlock.TotalBounds.Width); //viewbox
-            Assert.AreEqual(height , svgBlock.TotalBounds.Height); //viewbox
-            Assert.AreEqual(1, svgBlock.Columns.Length);
-            Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
-            
-            
+            var svgs = new List<PDFLayoutBlock>();
+            PDFLayoutBlock svgBlock = null;
 
-            //Arrangement is for links and inner content references
-            var svg = layout.DocumentComponent.FindAComponentById("Canvas1") as SVGCanvas;
-            var arrange = svg.GetFirstArrangement() as ComponentMultiArrangement;
+            for (var r = 0; r < 2; r++)
+            {
+                var row = table.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.IsNotNull(row);
+                Assert.AreEqual(3, row.Columns.Length);
 
-            
-            yOffset = 30 + 30 + 10 + 30 + 10; //page margins, outer line, padding, 2nd line offset in nest + svg margins
-            xOffset += 30 + 10 + 10; //page margins + left padding + nest padding
-            width = 150; //should be back to the output width (transformed)
-            height = 100; //should be back to the output height (transformed)
-            
-            Assert.IsNotNull(arrange);
-            Assert.AreEqual(yOffset, arrange.RenderBounds.Y);
-            Assert.AreEqual(xOffset, arrange.RenderBounds.X);
-            Assert.AreEqual(height, arrange.RenderBounds.Height);
-            Assert.AreEqual(width, arrange.RenderBounds.Width);
-            Assert.IsNull(arrange.NextArrangement);
+                for (var c = 0; c < 3; c++)
+                {
+                    Assert.AreEqual(1, row.Columns[c].Contents.Count);
+
+                    //cell r,c
+                    var cell = row.Columns[c].Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(cell);
+                    Assert.AreEqual(1, cell.Columns.Length);
+                    Assert.AreEqual(2, cell.Columns[0].Contents.Count);
+
+                    //div with text above
+                    var topBlock = cell.Columns[0].Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(topBlock);
+
+                    svgBlock = cell.Columns[0].Contents[1] as PDFLayoutBlock;
+
+                    Assert.IsNotNull(svgBlock);
+                    Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+                    Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y);
+                    Assert.AreEqual(xOffset, svgBlock.TotalBounds.X);
+                    Assert.AreEqual(width, svgBlock.TotalBounds.Width);
+                    Assert.AreEqual(height, svgBlock.TotalBounds.Height);
+                    Assert.AreEqual(1, svgBlock.Columns.Length);
+                    Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+
+                    svgs.Add(svgBlock);
+                }
+
+            }
+
+            Assert.AreEqual(6, svgs.Count);
+
+            var scale = 100.0 / 240.0;
+            width = 200 * scale; //actual rect width
+            height = 200 * scale; //actual rect height
             
             //check the xObject
-            Assert.AreEqual(2, doc.SharedResources.Count);
+            Assert.AreEqual(7, doc.SharedResources.Count);
+
+            //first = left positioned
+            svgBlock = svgs[0];
+            var svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas11", svg.ID);
             
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
-            Assert.IsNotNull(rsrc);
+            var ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            //0 = whitespace
+            var rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            
+            var arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.X, Math.Round(arrange.RenderBounds.X.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.Y, Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+            //second = middle top positioned
+            svgBlock = svgs[1];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas12", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
 
             
-            var bbox = rsrc.BoundingBox;
-            Assert.AreEqual(0, bbox.X);
-            Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(440.0, bbox.Width); //no horizontal margins
-            Assert.AreEqual(500, bbox.Height);
+            //centre = half (viewPort - width) * transform scale
             
-            Assert.IsTrue(rsrc.Registered);
-            Assert.IsNull(rsrc.Layout);
-            Assert.AreEqual(svgBlock, rsrc.Renderer.Layout);
-            Assert.IsNotNull(rsrc.Renderer.RenderReference);
+            var posOffset = Math.Round((ownerBounds.Width.PointsValue - width.PointsValue) / 2);
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
             
-            //check the renderer for bbox and matrix
             
-            var renderer = rsrc.Renderer as PDFXObjectRenderer;
-            Assert.IsNotNull(renderer);
-            Assert.IsNotNull(renderer.xObjectMatrix);
+            //third = right top positioned
+            svgBlock = svgs[2];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas13", svg.ID);
 
-            bbox = renderer.RenderBoundingBox;
             
-            Assert.AreEqual(0, bbox.X);
-            Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(440.0, bbox.Width); //no horizontal margins
-            Assert.AreEqual(500, bbox.Height);
-            
-            var components = renderer.xObjectMatrix.Components;
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
 
-            var xscale = Math.Round(width.PointsValue / 440.0, 4);
-            Assert.AreEqual(xscale, Math.Round(components[0], 4)); //0.3409
             
-            Assert.AreEqual(0.0, components[1]);
-            Assert.AreEqual(0.0, components[2]);
+            //right = half (viewPort - width - scale) * transform scale
+            width = 200 * scale;
             
-            var yscale = Math.Round(height.PointsValue / 500.0, 4);
-            Assert.AreEqual(yscale, Math.Round(components[3], 4)); //0.2000
+            //20 is remainder of right sapce betwen the rect and the svg boundary
+            posOffset = Math.Round((ownerBounds.Width.PointsValue - width.PointsValue - (20 * scale)));
             
-            Assert.AreEqual(0.0, components[4]);
-            Assert.AreEqual(0.0, components[5]);
+            //0 = whitespace
             
-            //check that the svg rect is possitioned and SCALED correctly
-            var block = renderer.Layout as PDFLayoutBlock;
-            Assert.IsNotNull(block);
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
             
-            Assert.AreEqual(1, block.Columns.Length);
-            Assert.AreEqual(1, block.Columns[0].Contents.Count);
             
-            line = block.Columns[0].Contents[0] as PDFLayoutLine;
+            //
+            // second row
+            // vertical alignment
+            //
+
+            //first top aligned
+            
+            svgBlock = svgs[3];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas21", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+            Assert.AreEqual(255, ownerBounds.Y);
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            
+            arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.X, Math.Round(arrange.RenderBounds.X.PointsValue));
+            //Doesn't correlate - off by the inverse height
+//            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.Y, Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+            //second = middle top positioned
+            svgBlock = svgs[4];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas22", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+
+            
+            //centre = half (viewPort - width) * transform scale
+            width = 200 * scale;
+            
+            posOffset = Math.Round(ownerBounds.Height.PointsValue - height.PointsValue);
+            posOffset /= 2;
+            //posOffset += 20 * scale; //offset after we have the bounds relative bounds
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.X.PointsValue));
+//            Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + posOffset ), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            //third = right top positioned
+            svgBlock = svgs[5];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas23", svg.ID);
+
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+
+            
+            //right = half (viewPort - width - scale) * transform scale
+            width = 200 * scale;
+            
+            //20 is remainder of right sapce betwen the rect and the svg boundary
+            posOffset = ownerBounds.Height.PointsValue - height.PointsValue;
+            
+            //0 = whitespace
+            
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.X.PointsValue));
+ //           Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + posOffset), Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+
+ Assert.Inconclusive(
+     "Y offsets in the renderbounds of viewport scaled SVG's are not correct - need to set the inverse matrix so the correct Y position is calculated - applied to links in SVG's");
+
+        }
+        
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod]
+        public void SVG_42_RectAndPathWithViewportAndRatioSlice()
+        {
+            var path = AssertGetContentFile("SVG_42_RectAndPathWithViewportAndRatioSlice");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVG_42_RectAndPathWithViewportAndRatioSlice.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = true;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+             var content = layout.AllPages[0].ContentBlock.Columns[0] as PDFLayoutRegion;
+            Assert.IsNotNull(content);
+            Assert.AreEqual(3, content.Contents.Count);
+
+            //outer first line
+            var line = content.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
 
-            Assert.AreEqual(2, line.Runs.Count);
-            var compRun = line.Runs[0] as PDFLayoutComponentRun;
-            Assert.IsNotNull(compRun);
+            //nested block
+            var nest = content.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(nest);
+            Assert.AreEqual(4, nest.Columns[0].Contents.Count);
 
-            var svgRect = compRun.Owner as SVGRect;
-            Assert.IsNotNull(svgRect);
 
-            arrange = svgRect.GetFirstArrangement() as ComponentMultiArrangement;
-            Assert.IsNotNull(arrange);
+            //inner first line
+            line = content.Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
 
-            var bounds = arrange.RenderBounds;
-            //svg rect is specified as 400 wide, then scaled in the view
-            width = 400.0 * xscale;
-            height = 300.0 * yscale;
-            
-            xOffset = 20.0 * xscale;
-            yOffset = 20.0 * yscale;
-            
-            //the following offsets are outside of the transformation
-            xOffset += 30 + 10 + 10; //page margins + left padding + nest padding
-            yOffset += 30 + 30 + 10 + 30 + 10; //page margins, outer line, padding, 2nd line offset in nest + svg margins
 
-            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(bounds.Width.PointsValue));
-            Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(bounds.Height.PointsValue));
-            
-            Assert.AreEqual(Math.Round(xOffset.PointsValue), Math.Round(bounds.X.PointsValue));
-            Assert.AreEqual(Math.Round(yOffset.PointsValue), Math.Round(bounds.Y.PointsValue));
-            
-            //Check the text
-            
-            var posRun = line.Runs[1] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
-            
-            var pos = posRun.Region as PDFLayoutPositionedRegion;
-            Assert.IsNotNull(pos);
-            
-            block = pos.Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
+            Assert.IsFalse(layout.AllPages[0].ContentBlock.HasPositionedRegions);
+            Assert.IsFalse(nest.HasPositionedRegions);
 
-            var text = block.Owner as SVGText;
-            Assert.IsNotNull(text);
-
-            arrange = text.GetFirstArrangement() as ComponentMultiArrangement;
-            Assert.IsNotNull(arrange);
+            var table = nest.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(table);
+            Assert.AreEqual(1, table.Columns.Length);
             
-            Assert.AreEqual(Math.Round(xOffset.PointsValue), Math.Round(arrange.RenderBounds.X.PointsValue));
-            Assert.AreEqual(Math.Round(yOffset.PointsValue) - 1, Math.Round(arrange.RenderBounds.Y.PointsValue)); //there is extra padding for the hanging baseline offset.
-            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue)); //same width as using textLength property.
+            //2 rows
+            Assert.AreEqual(3, table.Columns[0].Contents.Count);
+
+            //All svgs should have the same bounds within their container
+
+            Unit yOffset = 14; //first line
+            Unit xOffset = 0; //block own line
+            Unit height = 240; // this is the viewbox height
+            Unit width = 240; //this is the viewBox width
+
+            var svgs = new List<PDFLayoutBlock>();
+            PDFLayoutBlock svgBlock = null;
+
+            for (var r = 0; r < 3; r++)
+            {
+                var row = table.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.IsNotNull(row);
+                Assert.AreEqual(3, row.Columns.Length);
+
+                for (var c = 0; c < 3; c++)
+                {
+                    Assert.AreEqual(1, row.Columns[c].Contents.Count);
+
+                    //cell r,c
+                    var cell = row.Columns[c].Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(cell);
+                    Assert.AreEqual(1, cell.Columns.Length);
+                    Assert.AreEqual(2, cell.Columns[0].Contents.Count);
+
+                    //div with text above
+                    var topBlock = cell.Columns[0].Contents[0] as PDFLayoutBlock;
+                    Assert.IsNotNull(topBlock);
+
+                    svgBlock = cell.Columns[0].Contents[1] as PDFLayoutBlock;
+
+                    Assert.IsNotNull(svgBlock);
+                    Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+                    Assert.AreEqual(yOffset, svgBlock.TotalBounds.Y);
+                    Assert.AreEqual(xOffset, svgBlock.TotalBounds.X);
+                    Assert.AreEqual(width, svgBlock.TotalBounds.Width);
+                    Assert.AreEqual(height, svgBlock.TotalBounds.Height);
+                    Assert.AreEqual(1, svgBlock.Columns.Length);
+                    Assert.AreEqual(1, svgBlock.Columns[0].Contents.Count);
+
+                    svgs.Add(svgBlock);
+                }
+
+            }
+
+            Assert.AreEqual(9, svgs.Count);
+
+            var scale = 150.0 / 240.0; //maxed
+            width = 200 * scale; //actual rect width
+            height = 200 * scale; //actual rect height
+            
+            //check the xObject
+            Assert.AreEqual(10, doc.SharedResources.Count);
+
+            //
+            // first row - all the same, top aligned with a scale of 150/240
+            
+            //first = left positioned
+            svgBlock = svgs[0];
+            var svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas11", svg.ID);
+            
+            var ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            //0 = whitespace
+            var rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            
+            var arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.X + 1, Math.Round(arrange.RenderBounds.X.PointsValue)); //1+ for rounding
+            //Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.Y, Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+            //second = middle top positioned
+            svgBlock = svgs[1];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas12", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            
+            //centre = half (viewPort - width) * transform scale
+
+            var posOffset = 20 * scale;
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            //Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            //third = right top positioned
+            svgBlock = svgs[2];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas13", svg.ID);
+
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            
+            //right = half (viewPort - width - scale) * transform scale
+            width = 200 * scale;
+            
+            
+            
+            //0 = whitespace
+            
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            //Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            //
+            // second row
+            // vertical alignment
+            //
+
+            //first left aligned and overflow
+            
+            svgBlock = svgs[3];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas21", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+            Assert.AreEqual(255, ownerBounds.Y);
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            
+            arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.X + 1, Math.Round(arrange.RenderBounds.X.PointsValue)); //+1 for rounding
+            
+//            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.Y, Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+            //second = middle top positioned
+            svgBlock = svgs[4];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas22", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+
+            
+            //centre = half (viewPort - width) * transform scale
+            width = 200 * scale;
+            
+            posOffset = Math.Round(ownerBounds.Width.PointsValue - width.PointsValue);
+            posOffset /= 2;
+            //posOffset += 20 * scale; //offset after we have the bounds relative bounds
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+//            Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + posOffset ), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            //third = right top positioned
+            svgBlock = svgs[5];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas23", svg.ID);
+
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(100, ownerBounds.Width);
+            Assert.AreEqual(150, ownerBounds.Height);
+
+            
+            //right = half (viewPort - width - scale) * transform scale
+            width = 200 * scale;
+            
+            //20 is remainder of right sapce betwen the rect and the svg boundary
+            posOffset = ownerBounds.Width.PointsValue - width.PointsValue;
+            
+            //0 = whitespace
+            
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(height.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset - (20 * scale)), Math.Round(arrange.RenderBounds.X.PointsValue));
+ //           Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + posOffset), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+ 
+ //
+            // first row - all the same, top aligned with a scale of 150/240
+            
+            //first = left positioned
+            svgBlock = svgs[6];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas31", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            
+            arrange = rect.GetFirstArrangement();
+            
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(200 * scale), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.X + 1, Math.Round(arrange.RenderBounds.X.PointsValue)); //1+ for rounding
+            //Assert.AreEqual(Math.Round(20 * scale) + ownerBounds.Y, Math.Round(arrange.RenderBounds.Y.PointsValue));
+
+            //second = middle top positioned
+            svgBlock = svgs[7];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas32", svg.ID);
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            
+            //centre = half (viewPort - width) * transform scale
+
+            posOffset = 20 * scale;
+            
+            //0 = whitespace
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            //Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            //third = right top positioned
+            svgBlock = svgs[8];
+            svg = svgBlock.Owner as SVGCanvas;
+            Assert.IsNotNull(svg);
+            Assert.AreEqual("Canvas33", svg.ID);
+
+            
+            ownerBounds = svg.GetFirstArrangement().RenderBounds;
+            Assert.AreEqual(150, ownerBounds.Width);
+            Assert.AreEqual(100, ownerBounds.Height);
+
+            
+            //right = half (viewPort - width - scale) * transform scale
+            width = 200 * scale;
+            
+            
+            
+            //0 = whitespace
+            
+            rect = svg.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect);
+            arrange = rect.GetFirstArrangement();
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Width.PointsValue));
+            Assert.AreEqual(Math.Round(width.PointsValue), Math.Round(arrange.RenderBounds.Height.PointsValue));
+            Assert.AreEqual(Math.Round(ownerBounds.X.PointsValue + posOffset), Math.Round(arrange.RenderBounds.X.PointsValue));
+            //Assert.AreEqual(Math.Round(ownerBounds.Y.PointsValue + (20 * scale)), Math.Round(arrange.RenderBounds.Y.PointsValue));
+            
+            
+            
+            Assert.Inconclusive("Y offsets in the renderbounds of viewport scaled SVG's are not correct - need to set the inverse matrix so the correct Y position is calculated - applied to links in SVG's");
         }
     }
 }
