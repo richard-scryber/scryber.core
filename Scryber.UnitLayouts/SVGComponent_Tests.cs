@@ -5,6 +5,8 @@ using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
 using Scryber.PDF.Resources;
+using Scryber.Styles;
+using Scryber.Svg;
 using Scryber.Svg.Components;
 
 namespace Scryber.UnitLayouts
@@ -2093,6 +2095,171 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var svgBlock = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(svgBlock.Owner, typeof(SVGCanvas));
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            var svgBounds = ((SVGCanvas)svgBlock.Owner).GetFirstArrangement().RenderBounds;
+
+            var contents = svgBlock.Columns[0].Contents;
+            Assert.AreEqual(2, contents.Count);
+            var line = contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(0, line.Height);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGRect));
+            
+            var rect = (SVGRect)compRun.Owner;
+            var arrange = rect.GetFirstArrangement();
+            var renderBounds = arrange.RenderBounds;
+
+            var expectedBounds = new Rect();
+            expectedBounds.X = svgBounds.X + 20;
+            expectedBounds.Y += svgBounds.Y + 20;
+            expectedBounds.Width = 40;
+            expectedBounds.Height = 30;
+            
+            Assert.AreEqual(expectedBounds, renderBounds);
+
+            var style = arrange.FullStyle;
+            var fill = style.GetValue(StyleKeys.SVGFillKey, null);
+            Assert.IsNull(fill); //no fill set on the base rect
+            
+
+            //Now check the use reference - a placeholder component with a componentrun for the layout of the rect.
+            line = contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGRect));
+            
+            rect = (SVGRect)compRun.Owner;
+            Assert.AreNotEqual("Rect", rect.ID); //should change the id
+            arrange = rect.GetFirstArrangement();
+            renderBounds = arrange.RenderBounds;
+
+            expectedBounds = new Rect();
+            expectedBounds.X = svgBounds.X + 20 + 10; //the x and y are added to the existing position
+            expectedBounds.Y += svgBounds.Y + 20 + 15;
+            expectedBounds.Width = 40; //the explicit width should be ignored, as a width is set on the base rect.
+            expectedBounds.Height = 30;
+            
+            Assert.AreEqual(expectedBounds, renderBounds);
+            
+            //check that the fill has been applied.
+            style = arrange.FullStyle;
+            fill = style.GetValue(StyleKeys.SVGFillKey, null);
+            Assert.IsNotNull(fill); //no fill set on the base rect
+            Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
+            Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
+            Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
+            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+        }
+        
+        
+        [TestMethod]
+        [TestCategory(TestCategoryName)]
+        public void SVGComponents_31_Use_Circle()
+        {
+            var path = AssertGetContentFile("SVGComponents_31_Use_Circle");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVGComponents_31_Use_Circle.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var svgBlock = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(svgBlock.Owner, typeof(SVGCanvas));
+            Assert.IsTrue(svgBlock.IsExplicitLayout);
+
+            var svgBounds = ((SVGCanvas)svgBlock.Owner).GetFirstArrangement().RenderBounds;
+
+            var contents = svgBlock.Columns[0].Contents;
+            Assert.AreEqual(2, contents.Count);
+            var line = contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(0, line.Height);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGCircle));
+            
+            var circle = (SVGCircle)compRun.Owner;
+            var arrange = circle.GetFirstArrangement();
+            var renderBounds = arrange.RenderBounds;
+
+            var expectedBounds = new Rect();
+            //cx = 20, cy = 30, r = 20;
+            expectedBounds.X = svgBounds.X + 20 - 20;
+            expectedBounds.Y += svgBounds.Y + 30 - 20;
+            expectedBounds.Width = 40;
+            expectedBounds.Height = 40;
+            
+            Assert.AreEqual(expectedBounds, renderBounds);
+
+            var style = arrange.FullStyle;
+            var fill = style.GetValue(StyleKeys.SVGFillKey, null);
+            Assert.IsNull(fill); //no fill set on the base rect
+            
+
+            //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
+            line = contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+            
+            compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGCircle));
+            
+            circle = (SVGCircle)compRun.Owner;
+            arrange = circle.GetFirstArrangement();
+            renderBounds = arrange.RenderBounds;
+
+            expectedBounds = new Rect();
+            expectedBounds.X = svgBounds.X + 10; //the x and y are added to the existing position
+            expectedBounds.Y += svgBounds.Y + 10 + 15;
+            expectedBounds.Width = 40; //the explicit radius should be ignored, as a is set on the base circle.
+            expectedBounds.Height = 40;
+            
+            Assert.AreEqual(expectedBounds, renderBounds);
+            
+            //check that the fill has been applied.
+            style = arrange.FullStyle;
+            fill = style.GetValue(StyleKeys.SVGFillKey, null);
+            Assert.IsNotNull(fill); //no fill set on the base rect
+            Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
+            Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
+            Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
+            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
         }
     }
 }

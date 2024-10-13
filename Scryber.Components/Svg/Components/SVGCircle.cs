@@ -13,13 +13,56 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public Unit CentreX { get; set; }
+        public Unit CentreX 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreXKey, value);
+            }
+        }
 
         [PDFAttribute("cy")]
-        public Unit CenterY { get; set; }
+        public Unit CenterY { get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreYKey, value);
+            } 
+        }
 
         [PDFAttribute("r")]
-        public Unit Radius { get; set; }
+        public Unit Radius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusKey, value);
+            } 
+        }
 
 
         public SVGCircle()

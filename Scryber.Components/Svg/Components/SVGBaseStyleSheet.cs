@@ -61,7 +61,6 @@ public class SVGBaseStyleSheet : StyleGroup
     {
         StyleDefn defn = new StyleDefn();
         defn.Match = new StyleMatcher(new StyleSelector() { AppliedElement = "circle" });
-        defn.SetValue(StyleKeys.SVGFillKey, new SVGFillColorValue(StandardColors.Black, "black"));
         defn.SetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
         defn.SetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
         

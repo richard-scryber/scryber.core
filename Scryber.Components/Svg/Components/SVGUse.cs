@@ -520,11 +520,13 @@ namespace Scryber.Svg.Components
                 {
                     if (key.Equals(StyleKeys.SVGGeometryXKey))
                     {
-                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryXKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryCentreXKey, tocomponent);
                     }
                     else if (key.Equals(StyleKeys.SVGGeometryYKey))
                     {
-                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryYKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryCentreYKey, tocomponent);
                     }
                     else
                     {
@@ -540,32 +542,33 @@ namespace Scryber.Svg.Components
             }
         }
 
-        private void AddStyleValues(StyleKey<Unit> key, IStyledComponent toComponent)
+        private void AddStyleValues(StyleKey<Unit> mykey, StyleKey<Unit> componentKey, IStyledComponent toComponent)
         {
             StyleValue<Unit> value;
             StyleValue<Unit> toAdd;
-            if (toComponent.Style.TryGetValue(key, out value))
+            if (toComponent.Style.TryGetValue(componentKey, out value))
             {
                 Unit u1 = value.Value(toComponent.Style);
                 
-                if (this.Style.TryGetValue(key, out toAdd))
+                if (this.Style.TryGetValue(mykey, out toAdd))
                 {
                     //we have both so add them together
                     Unit u2 = toAdd.Value(this.Style);
                     Unit total = u1 + u2;
-                    toComponent.Style.SetValue(key, total);
+                    toComponent.Style.SetValue(componentKey, total);
                 }
                 else
                 {
                     //only the component has the value
-                    toComponent.Style.SetValue(key, u1);
+                    toComponent.Style.SetValue(componentKey, u1);
                 }
             }
-            else if (this.Style.TryGetValue(key, out toAdd))
+            else if (this.Style.TryGetValue(mykey, out toAdd))
             {
                 //only we have the value
-                toComponent.Style.SetValue(key, toAdd.Value(this.Style));
+                toComponent.Style.SetValue(componentKey, toAdd.Value(this.Style));
             }
+            
         }
     }
 
