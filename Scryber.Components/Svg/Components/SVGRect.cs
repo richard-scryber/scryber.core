@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
@@ -7,7 +8,7 @@ using Scryber.PDF;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("rect")]
-    public class SVGRect : Scryber.Components.Rectangle
+    public class SVGRect : Scryber.Components.Rectangle, ICloneable
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -426,11 +427,27 @@ namespace Scryber.Svg.Components
             return null;
         }
 
-        protected override Style GetBaseStyle()
+        public SVGRect Clone()
         {
-            var style = base.GetBaseStyle();
-            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
-            return style;
+            var clone = (SVGRect)this.MemberwiseClone();
+            clone.Style = new Style();
+            
+            if(this.HasStyle)
+               this.Style.MergeInto(clone.Style);
+
+            return clone;
         }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        // protected override Style GetBaseStyle()
+        // {
+        //     var style = base.GetBaseStyle();
+        //     style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+        //     return style;
+        // }
     }
 }

@@ -1427,7 +1427,13 @@ namespace Scryber.PDF.Layout
                     bounds.Height = vp.Height;
                     this.TotalBounds = bounds;
                 }
-                renderer.SetupGraphics(this.Position, this.TotalBounds);
+                else
+                {
+                    bounds.Width -= this.Position.Margins.Left + this.Position.Margins.Right;
+                    bounds.Height -= this.Position.Margins.Top + this.Position.Margins.Bottom;
+                }
+                
+                renderer.SetupGraphics(this.Position, bounds);
                 
                 this.OutputInnerContent(context, writer);
 

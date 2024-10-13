@@ -17,6 +17,7 @@
            width: 100pt;
            height: 100pt;
            display: block;
+           position: relative;
            border: solid 1pt silver;
            background-color: #AAA;
        }
@@ -24,10 +25,13 @@
 </head>
 <body>
 Before the SVG
-    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg"
+    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" 
          xmlns:xlink="http://www.w3.org/1999/xlink"    >
-      <rect height="30" width="40" x="40" y="50" stroke="black" stroke-width="1pt" fill="transparent" />
-   </svg>
+        
+        <rect id="Rect" height="30" width="40" x="20" y="20" stroke="black" stroke-width="1pt" />
+        <use href="#Rect" x="10" y="10" width="60" fill="blue" fill-opacity="0.5" />
+    </svg>
+
 After the SVG
 </body>
 </html>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Scryber.Components;
+using Scryber.Data;
 using Scryber.Styles;
 using Scryber.Drawing;
 
@@ -93,21 +95,21 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> x;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionXKey, out x))
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SVGGeometryXKey, out x))
                     return x.Value(this.Style);
                 else
                     return Unit.Empty;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.PositionXKey, value);
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
             }
         }
 
         /// <summary>
         /// Gets the flag to identify if the X position has been set for this Page Component
         /// </summary>
-        public virtual bool HasX => this.HasStyle && this._style.IsValueDefined(StyleKeys.PositionXKey);
+        public virtual bool HasX => this.HasStyle && this._style.IsValueDefined(StyleKeys.SVGGeometryXKey);
 
         #endregion
 
@@ -124,14 +126,14 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> y;
-                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.PositionYKey, out y))
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.SVGGeometryYKey, out y))
                     return y.Value(this.Style);
                 else
                     return Unit.Empty;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.PositionYKey, value);
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
             }
         }
 
@@ -143,7 +145,7 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> x;
-                return this.HasStyle && this._style.IsValueDefined(StyleKeys.PositionYKey);
+                return this.HasStyle && this._style.IsValueDefined(StyleKeys.SVGGeometryYKey);
             }
         }
 
@@ -225,6 +227,220 @@ namespace Scryber.Svg.Components
 
         #endregion
 
+        [PDFAttribute("rx")]
+        public Unit CornerRadiusX
+        {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
+            }
+        }
+
+        [PDFAttribute("ry")]
+        public Unit CornerRadiusY
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusYKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set => this.Style.SetValue(StyleKeys.SVGGeometryRadiusYKey, value);
+        }
+
+        // stroke
+
+        [PDFAttribute("stroke")]
+        public Color StrokeColor
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent);
+                else
+                {
+                    return StandardColors.Transparent;
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.StrokeColorKey, value);
+            }
+        }
+
+        [PDFAttribute("stroke-width")]
+        public Unit StrokeWidth 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.StrokeWidthKey, Unit.Zero);
+                else
+                {
+                    return Unit.Zero;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.StrokeWidthKey, value);
+            }
+        }
+
+        
+        [PDFAttribute("stroke-linecap")]
+        public LineCaps StrokeLineCap
+        {
+            get { return this.Style.Stroke.LineCap; }
+            set { this.Style.Stroke.LineCap = value; }
+        }
+
+        [PDFAttribute("stroke-dasharray")]
+        public Dash StrokeDashPattern
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.StrokeDashKey, Dash.None);
+                else
+                {
+                    return Dash.None;
+                }
+            }
+            set
+            {
+                if (null != value)
+                    this.Style.SetValue(StyleKeys.StrokeDashKey, value);
+                else if(this.HasStyle)
+                {
+                    this.Style.RemoveValue(StyleKeys.StrokeDashKey);
+                }
+            }
+        }
+
+
+
+        // fill
+
+        [PDFAttribute("fill")]
+        public SVGFillValue FillValue
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGFillKey, SVGFillColorValue.Black);
+                else
+                {
+                    return SVGFillColorValue.Black;
+                    
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.SVGFillKey, value);
+            }
+        }
+
+        [PDFAttribute("fill-opacity")]
+        public double FillOpacity
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.FillOpacityKey, 1.0);
+                else
+                {
+                    return 1.0;
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.FillOpacityKey, value);
+            }
+        }
+
+        [PDFAttribute("fill-rule")]
+        public string FillRule
+        {
+            get
+            {
+
+                if (this.Style.TryGetValue(StyleKeys.GraphicFillModeKey, out StyleValue<GraphicFillMode> mode))
+                {
+                    switch (mode.Value(this.Style))
+                    {
+                        case GraphicFillMode.EvenOdd: return "evenodd";
+                        default: return "nonzero";
+                    }
+                }
+                else
+                    return "nonzero";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    this.Style.RemoveValue(StyleKeys.GraphicFillModeKey);
+                else if(value == "evenodd")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.EvenOdd);
+                else if(value == "nonzero")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.Winding);
+
+            }
+        }
+
+        [PDFAttribute("transform")]
+        public TransformOperation TransformMatrix
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
+
+        [PDFAttribute("display")]
+        public string Display
+        {
+            get
+            {
+                if (this.Visible == false)
+                    return "none";
+                else if (this.Style.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> posValue))
+                    return posValue.Value(this.Style).ToString().ToLower();
+                else
+                    return "inline";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value == "inherit")
+                    this.Style.RemoveValue(StyleKeys.PositionModeKey);
+                else if (value == "none")
+                    this.Visible = false;
+                else if (value == "initial")
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Inline);
+
+                else if (DisplayMode.TryParse(value, true, out DisplayMode parsed))
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, parsed);
+                else
+                    throw new ArgumentOutOfRangeException("The value '" + value + "' is not supported for the display");
+
+            }
+
+        }
 
         public SVGUse()
         {
@@ -275,50 +491,80 @@ namespace Scryber.Svg.Components
 
         protected IEnumerable<IComponent> GetClonedContent(IComponent found)
         {
+            IComponent copy;
             if (found is ICloneable)
-                found = (found as ICloneable).Clone() as IComponent;
+            {
+                copy = (IComponent)(found as ICloneable).Clone();
 
-            if (found is IStyledComponent)
-                this.ApplySizeStyle(found as IStyledComponent);
-            
-            
-            return new IComponent[] { found };
+                if (copy is IStyledComponent)
+                    this.ApplyStyle(copy as IStyledComponent);
+                
+                copy.ID = Document.GetIncrementID(copy.Type);
+
+                return new IComponent[] { copy };
+            }
+            else
+            {
+                throw new ArgumentException(
+                    "The provided component is not cloneable - so cannot be referenced in a use component", nameof(found));
+            }
         }
 
-        private void ApplySizeStyle(IStyledComponent found)
+        private void ApplyStyle(IStyledComponent tocomponent)
         {
             StyleValue<Unit> val;
 
-            if(this.HasX)
+            if (this.HasStyle)
             {
-                if (found.HasStyle && found.Style.TryGetValue(StyleKeys.PositionXKey, out val))
-                    found.Style.SetValue(StyleKeys.PositionXKey, val.Value(found.Style) + this.X);
-                else
-                    found.Style.SetValue(StyleKeys.PositionXKey, this.X);
+                foreach (var key in this.Style.Keys)
+                {
+                    if (key.Equals(StyleKeys.SVGGeometryXKey))
+                    {
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, tocomponent);
+                    }
+                    else if (key.Equals(StyleKeys.SVGGeometryYKey))
+                    {
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, tocomponent);
+                    }
+                    else
+                    {
+                        if (tocomponent.Style.IsValueDefined(key) == false)
+                        {
+                            //unlike css if the value is not defined on the cloned component, then we copy it across.
+                            //This cloned component does not have the value, so we apply it.
+                            key.CopyValue(this.Style, tocomponent.Style);
+                        }
+                        
+                    }
+                }
             }
+        }
 
-            if (this.HasY)
+        private void AddStyleValues(StyleKey<Unit> key, IStyledComponent toComponent)
+        {
+            StyleValue<Unit> value;
+            StyleValue<Unit> toAdd;
+            if (toComponent.Style.TryGetValue(key, out value))
             {
-                if (found.HasStyle && found.Style.TryGetValue(StyleKeys.PositionYKey, out val))
-                    found.Style.SetValue(StyleKeys.PositionYKey, val.Value(found.Style) + this.Y);
+                Unit u1 = value.Value(toComponent.Style);
+                
+                if (this.Style.TryGetValue(key, out toAdd))
+                {
+                    //we have both so add them together
+                    Unit u2 = toAdd.Value(this.Style);
+                    Unit total = u1 + u2;
+                    toComponent.Style.SetValue(key, total);
+                }
                 else
-                    found.Style.SetValue(StyleKeys.PositionYKey, this.Y);
+                {
+                    //only the component has the value
+                    toComponent.Style.SetValue(key, u1);
+                }
             }
-
-            if (this.HasWidth)
+            else if (this.Style.TryGetValue(key, out toAdd))
             {
-                if (found.HasStyle && found.Style.TryGetValue(StyleKeys.SizeWidthKey, out val))
-                    found.Style.SetValue(StyleKeys.SizeWidthKey, val.Value(found.Style) + this.Width);
-                else
-                    found.Style.SetValue(StyleKeys.SizeWidthKey, this.Width);
-            }
-
-            if (this.HasHeight)
-            {
-                if (found.HasStyle && found.Style.TryGetValue(StyleKeys.SizeHeightKey, out val))
-                    found.Style.SetValue(StyleKeys.SizeHeightKey, val.Value(found.Style) + this.Height);
-                else
-                    found.Style.SetValue(StyleKeys.SizeHeightKey, this.Height);
+                //only we have the value
+                toComponent.Style.SetValue(key, toAdd.Value(this.Style));
             }
         }
     }

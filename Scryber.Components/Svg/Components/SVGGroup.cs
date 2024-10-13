@@ -24,7 +24,7 @@ namespace Scryber.Svg.Components
         public override SVGBase Clone()
         {
             SVGGroup clone = base.Clone() as SVGGroup;
-            clone.InnerContent = new ComponentList(clone, this.Type);
+            clone.InnerContent = new ComponentList(clone, this.InnerContent.Type);
             
 
             for (int i = 0; i < this.Contents.Count; i++)

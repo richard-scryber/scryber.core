@@ -442,6 +442,12 @@ namespace Scryber.Styles
 
         #endregion
 
+        public virtual bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            //Base implementation does nothing and returns false
+            return false;
+        }
+        
         public virtual void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             //Does nothing in the default implementation
@@ -462,6 +468,17 @@ namespace Scryber.Styles
         {
         }
 
+        public override bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            StyleValue<T> value;
+            if (fromStyle.TryGetValue(this, out value))
+            {
+                toStyle.SetValue(this, value.Value(fromStyle));
+                return true;
+            }
+            else
+                return base.CopyValue(fromStyle, toStyle);
+        }
     }
 
     public delegate void FlattenUnits<T>(Style style, StyleKey<T> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize);

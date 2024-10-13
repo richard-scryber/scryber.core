@@ -2072,5 +2072,27 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(Unit.Round( xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
 
         }
+
+        [TestMethod]
+        [TestCategory(TestCategoryName)]
+        public void SVGComponents_30_Use_Rect()
+        {
+            var path = AssertGetContentFile("SVGComponents_30_Use_Rect");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("SVGComponents_30_Use_Rect.pdf"))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
     }
 }

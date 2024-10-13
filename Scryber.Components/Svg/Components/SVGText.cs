@@ -230,21 +230,21 @@ namespace Scryber.Svg.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            style.Position.DisplayMode = DisplayMode.Block;
+            //style.Position.DisplayMode = DisplayMode.Block;
             
             //Internal flag to identify that we use the SVGGeometry
-            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
-            
-            style.Position.PositionMode = PositionMode.Absolute;
-            style.Padding.Right = 4;
-            style.Text.WrapText = Text.WordWrap.NoWrap;
-            style.Text.PositionFromBaseline = true;
-            style.Text.Leading = Unit.Auto;
-            style.Text.CharacterSpacing = 0;
-            style.Text.WordSpacing = 0;
-            style.Text.Decoration = TextDecoration.None;
-            style.Text.FirstLineInset = 0;
-            style.Text.PreserveWhitespace = false;
+            // style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            //
+            // style.Position.PositionMode = PositionMode.Absolute;
+            // style.Padding.Right = 4;
+            // style.Text.WrapText = Text.WordWrap.NoWrap;
+            // style.Text.PositionFromBaseline = true;
+            // style.Text.Leading = Unit.Auto;
+            // style.Text.CharacterSpacing = 0;
+            // style.Text.WordSpacing = 0;
+            // style.Text.Decoration = TextDecoration.None;
+            // style.Text.FirstLineInset = 0;
+            // style.Text.PreserveWhitespace = false;
             return style;
         }
 

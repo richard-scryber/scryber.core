@@ -28,7 +28,7 @@ namespace Scryber.Styles
     /// <summary>
     /// Abstract base class for all style values. The generic type PDFStyeValue&lt;T&gt; is the concrete implementation for strongly typed values
     /// </summary>
-    public abstract class StyleValueBase
+    public abstract class StyleValueBase : ICloneable
     {
         public StyleKey Key { get; set; }
 
@@ -48,6 +48,11 @@ namespace Scryber.Styles
         public abstract object GetValue(Style forStyle);
 
 
+        public object Clone()
+        {
+            return this.CloneWithPriority(this.Priority);
+        }
+        
         public StyleValueBase CloneWithPriority(int priority)
         {
             var instance = this.MemberwiseClone() as StyleValueBase;

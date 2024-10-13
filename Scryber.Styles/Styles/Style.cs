@@ -40,7 +40,7 @@ namespace Scryber.Styles
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Style : StyleBase, IBindableComponent
     {
-        #region InnerClass - StateList
+        #region InnerClass - StatedStyle
 
         /// <summary>
         /// A linked list of states with styles associated. Accessed via the Styles.GetState() method.
@@ -1016,6 +1016,58 @@ namespace Scryber.Styles
 
         #endregion
 
+        public IEnumerable<StyleKey> Keys
+        {
+            get
+            {
+                var all = new List<StyleKey>(this.ValueCount);
+                if(this.InheritedValues.Count > 0)
+                    all.AddRange(this.InheritedValues.Keys);
+                if(this.DirectValues.Count > 0)
+                    all.AddRange(this.DirectValues.Keys);
+                return all;
+            }
+        }
+
+        // SVG
+
+        #region IsSVGGeomertry
+        
+        /// <summary>
+        /// Returns true if this style has the SVGGeomery flag - if set then some syle values should not cascade normally
+        /// </summary>
+        public bool IsSVGGeometry
+        {
+            get
+            {
+                StyleValue<bool> value;
+                if (this.TryGetValue(StyleKeys.SVGGeometryInUseKey, out value))
+                    return value.Value(this);
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                if (value)
+                {
+                    this.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+                }
+                else
+                {
+                    this.SetValue(StyleKeys.SVGGeometryInUseKey, false);
+                }
+            }
+        }
+
+        public void RemoveSVGGeometry()
+        {
+            this.RemoveValue(StyleKeys.SVGGeometryInUseKey);
+        }
+        
+        #endregion
+        
         //
         // .ctors
         //
@@ -1041,7 +1093,11 @@ namespace Scryber.Styles
             this.OnDataBound(context);
         }
 
-        
+
+        public bool CopyValue(StyleKey key, Style from)
+        {
+            return key.CopyValue(from, this);
+        }
         
         //
         // createXXX methods

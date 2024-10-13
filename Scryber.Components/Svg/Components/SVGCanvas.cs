@@ -11,6 +11,12 @@ namespace Scryber.Svg.Components
     public class SVGCanvas : Scryber.Components.Canvas
     {
 
+        //pre-defined width and heights
+        //based on html defaults
+        
+        public static readonly Unit DefaultWidth = new Unit(300);
+        public static readonly Unit DefaultHeight = new Unit(150);
+
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
@@ -211,6 +217,7 @@ namespace Scryber.Svg.Components
 
         public SVGCanvas()
         {
+            this.Styles.Add(SVGBaseStyleSheet.Default);
         }
 
         protected override Style GetBaseStyle()
@@ -220,8 +227,8 @@ namespace Scryber.Svg.Components
             style.Position.DisplayMode = DisplayMode.InlineBlock;
             style.Overflow.Action = OverflowAction.Clip;
             style.Overflow.Split = OverflowSplit.Never;
-            style.Size.Width = 300;
-            style.Size.Height = 150;
+            style.Size.Width = SVGCanvas.DefaultWidth;
+            style.Size.Height = SVGCanvas.DefaultHeight;
             style.Position.XObject= true;
             
             return style;
