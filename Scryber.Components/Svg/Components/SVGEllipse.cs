@@ -13,16 +13,74 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public Unit CentreX { get; set; }
+        public Unit CentreX 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreXKey, value);
+            }
+        }
 
         [PDFAttribute("cy")]
-        public Unit CenterY { get; set; }
+        public Unit CenterY { get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreYKey, value);
+            } 
+        }
 
         [PDFAttribute("rx")]
-        public Unit RadiusX { get; set; }
-
+        public Unit RadiusX
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
+            } 
+        }
+        
         [PDFAttribute("ry")]
-        public Unit RadiusY { get; set; }
+        public Unit RadiusY
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusYKey, value);
+            } 
+        }
 
 
         public SVGEllipse()

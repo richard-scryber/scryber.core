@@ -323,6 +323,12 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Unit> SVGGeometryYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmyp", SVGGeometryKey
                                                                 , new StyleKeyFlattenVerticalValue());
+        
+        public static readonly StyleKey<Unit> SVGGeometryX2Key = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmx2", SVGGeometryKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryY2Key = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmy2", SVGGeometryKey
+            , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> SVGGeometryDeltaXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmdx", SVGGeometryKey
             , new StyleKeyFlattenHorizontalValue());

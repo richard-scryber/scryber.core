@@ -11,16 +11,75 @@ namespace Scryber.Svg.Components
     public class SVGLine : SVGShape
     {
         [PDFAttribute("x1")]
-        public Unit X1 { get; set; }
-
-        [PDFAttribute("x2")]
-        public Unit X2 { get; set; }
+        public Unit X1 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
+            }
+        }
 
         [PDFAttribute("y1")]
-        public Unit Y1 { get; set; }
+        public Unit Y1 { 
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            } 
+        }
 
+        [PDFAttribute("x2")]
+        public Unit X2
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryX2Key, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryX2Key, value);
+            } 
+        }
+        
         [PDFAttribute("y2")]
-        public Unit Y2 { get; set; }
+        public Unit Y2
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryY2Key, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryY2Key, value);
+            } 
+        }
 
         public SVGLine() : base(ObjectTypes.ShapeLine)
         {
@@ -39,11 +98,29 @@ namespace Scryber.Svg.Components
 
         protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            var x1 = this.X1;
-            var x2 = this.X2;
-            var y1 = this.Y1;
-            var y2 = this.Y2;
-
+            Unit x1, x2, y1, y2;
+            StyleValue<Unit> found;
+            if (fullstyle.TryGetValue(StyleKeys.SVGGeometryXKey, out found))
+                x1 = found.Value(fullstyle);
+            else
+                return null;
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGGeometryX2Key, out found))
+                x2 = found.Value(fullstyle);
+            else
+                return null;
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGGeometryYKey, out found))
+                y1 = found.Value(fullstyle);
+            else
+                return null;
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGGeometryY2Key, out found))
+                y2 = found.Value(fullstyle);
+            else
+                return null;
+            
+            
             var path = new GraphicsPath();
             path.MoveTo(new Point(x1,y1));
             path.LineTo(new Point(x2, y2));

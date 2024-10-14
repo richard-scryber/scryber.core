@@ -276,6 +276,24 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.StrokeColorKey, value);
             }
         }
+        
+        [PDFAttribute("stroke-opacity")]
+        public double StrokeOpacity
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.StrokeOpacityKey, 1.0);
+                else
+                {
+                    return 1.0;
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.StrokeOpacityKey, value);
+            }
+        }
 
         [PDFAttribute("stroke-width")]
         public Unit StrokeWidth 
@@ -522,11 +540,13 @@ namespace Scryber.Svg.Components
                     {
                         this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryXKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryCentreXKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryX2Key, tocomponent);
                     }
                     else if (key.Equals(StyleKeys.SVGGeometryYKey))
                     {
                         this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryYKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryCentreYKey, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryY2Key, tocomponent);
                     }
                     else
                     {

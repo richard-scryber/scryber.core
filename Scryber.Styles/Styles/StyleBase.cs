@@ -1944,6 +1944,9 @@ namespace Scryber.Styles
                 if (width.Value(this) <= 0)
                     return null;
 
+                if (this.TryGetValue(StyleKeys.SVGGeometryInUseKey, out var inUse) && inUse.Value(this) == true)
+                    return null; //for SVG - if color is not set then no stroke
+
                 pen = new PDFSolidPen()
                 {
                     Color = (null == c) ? StandardColors.Black : c.Value(this),
