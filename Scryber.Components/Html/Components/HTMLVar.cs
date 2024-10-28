@@ -45,6 +45,15 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        private string _dataId;
+
+        [PDFAttribute("data-id")]
+        public string DataID
+        {
+            get { return _dataId; }
+            set { this._dataId = value; }
+        }
+
         private object _dataValue;
 
         [PDFAttribute("data-value", BindingOnly = true)]
@@ -78,9 +87,9 @@ namespace Scryber.Html.Components
 
         protected override void OnDataBound(DataContext context)
         {
-            if(this.DataValue != null && this.HasID)
+            if(this.DataValue != null && !string.IsNullOrEmpty(this.DataID))
             {
-                this.Document.Params[this.ID] = this.DataValue;
+                this.Document.Params[this.DataID] = this.DataValue;
             }
 
             base.OnDataBound(context);

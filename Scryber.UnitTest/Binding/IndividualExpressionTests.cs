@@ -84,6 +84,79 @@ namespace Scryber.Core.UnitTests.Binding
 
 
         }
+
+        [TestMethod]
+        public void DictionaryPropertyTest()
+        {
+            var content = GetContent("model.nested['p1']");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("DictionaryPropertyAccessor.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "one");
+        }
+        
+        [TestMethod]
+        public void HexNumberTest()
+        {
+            var parsed = Convert.ToInt32("0xFFFF", 16);
+            
+            var content = GetContent("0xFFF0 &amp; 17");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("BinaryNotationNumber.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "16");
+        }
+        
+        [TestMethod]
+        public void BinaryNumberTest()
+        {
+            var parsed = Convert.ToInt32("1111", 2);
+            
+            var content = GetContent("0b0110 &amp; 7");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("BinaryNotationNumber.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "6");
+        }
+        
+        [TestMethod]
+        public void BinaryParamTest()
+        {
+            
+            var content = GetContent("integer(paramValue) &amp; 7");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+            doc.Params["paramValue"] = "0b0110";
+            using ( var output = DocStreams.GetOutputStream("BinaryNotationNumber.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "6");
+        }
 	}
 }
 

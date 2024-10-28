@@ -202,7 +202,18 @@ namespace Scryber.Expressive
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
 
                     tokens.Dequeue();
-
+                    if (currentToken.CurrentToken.StartsWith("0b"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken.Substring(2), 2);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
+                    else if (currentToken.CurrentToken.StartsWith("0x"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken, 16);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
                     if (int.TryParse(currentToken.CurrentToken, NumberStyles.Any, this.context.DecimalCurrentCulture, out var intValue))
                     {
                         leftHandSide = new ConstantValueExpression(intValue);
