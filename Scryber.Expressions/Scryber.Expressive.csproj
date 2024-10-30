@@ -21,7 +21,6 @@
     <Folder Include="Expressive\" />
     <Folder Include="Expressive\Exceptions\" />
     <Folder Include="Expressive\Functions\CSS\" />
-    <Folder Include="Expressive\Functions\Coalesce\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -88,7 +88,17 @@ namespace Scryber.Expressive.Helpers
 
 				else if(item is System.Text.Json.JsonElement element)
 				{
-
+					if (element.ValueKind == System.Text.Json.JsonValueKind.Array)
+					{
+						foreach (var inner in element.EnumerateArray())
+						{
+							count += callback(inner, variables, context);
+						}
+					}
+					else
+					{
+						count += callback(element, variables, context);
+					}
 				}
 #endif
 

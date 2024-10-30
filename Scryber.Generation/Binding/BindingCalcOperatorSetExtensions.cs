@@ -28,7 +28,7 @@ namespace Scryber.Binding
             //Bitwise
             _all.Add(new BitwiseAndOperator());
             _all.Add(new BitwiseOrOperator());
-            _all.Add(new BitwiseExclusiveOrOperator());
+            //_all.Add(new BitwiseExclusiveOrOperator()); - Conflict of operator with Exponent, so leaving out
             _all.Add(new LeftShiftOperator());
             _all.Add(new RightShiftOperator());
             //Conditional
@@ -47,6 +47,7 @@ namespace Scryber.Binding
             _all.Add(new DivideOperator());
             _all.Add(new ModulusOperator());
             _all.Add(new MultiplyOperator());
+            _all.Add(new ExponentOperator());
             //Relational
             _all.Add(new EqualOperator());
             _all.Add(new GreaterThanOperator());
