@@ -19,6 +19,10 @@ namespace Scryber.Expressive.Functions.Conversion
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }
 
+            
+            else if (objectToConvert is DateTime dt)
+                return (decimal)dt.Ticks / TimeSpan.TicksPerMillisecond;
+
             return Convert.ToDecimal(objectToConvert, context.CurrentCulture);
         }
 

@@ -23,7 +23,7 @@ namespace Scryber.Core.UnitTests.Binding
       {""name"": ""Second Item"", ""index"": 3},
       {""name"": ""Third Item"", ""index"": 2}
     ],
-      
+    ""days"": [""sun"",""mon"",""tues"",""wed"",""thur"",""fri"",""sat""],
     ""nested"" : {
       ""p1"" : ""one"",
       ""p2"" : ""two""
@@ -167,7 +167,7 @@ namespace Scryber.Core.UnitTests.Binding
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
             doc.Params["model"] = GetData();
 
-            using ( var output = DocStreams.GetOutputStream("BinaryNotationNumber.pdf"))
+            using ( var output = DocStreams.GetOutputStream("ExponentOperatorNumber.pdf"))
             {
                 doc.SaveAsPDF(output);
             }
@@ -175,6 +175,305 @@ namespace Scryber.Core.UnitTests.Binding
             var h1 = doc.FindAComponentById("boundContent") as Head1;
             AssertBoundContent(h1, "6250000");
         }
+        
+        [TestMethod]
+        public void SubStringFunctionTest()
+        {
+            
+            var content = GetContent("substring(concat(model.array), 0 , 4)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("SubStringFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "1011");
+        }
+        
+        [TestMethod]
+        public void DayOfYearFunctionTest()
+        {
+            
+            var content = GetContent("dayOfYear(date())");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("DayOfYearFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, DateTime.Now.DayOfYear.ToString());
+        }
+        
+        [TestMethod]
+        public void IfErrorFunctionTest()
+        {
+            
+            var content = GetContent("iferror(model['notset'], model.number)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("IfErrorFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "20.9");
+        }
+        
+        [TestMethod]
+        public void InArrayFunctionTest()
+        {
+            
+            var content = GetContent("in(12,model.array)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("InArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "True");
+        }
+        
+        [TestMethod]
+        public void AverageArrayFunctionTest()
+        {
+            
+            var content = GetContent("average(model.array)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("InArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "11");
+        }
+
+        [TestMethod]
+        public void AverageOfArrayFunctionTest()
+        {
+            
+            var content = GetContent("averageof(model.days, length(.))");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("InArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "3.2857142857");
+        }
+        
+        [TestMethod]
+        public void CountArrayFunctionTest()
+        {
+            
+            var content = GetContent("count(model.items)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("InArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "3");
+        }
+        
+        [TestMethod]
+        public void InvalidLinkTest()
+        {
+            var content = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Paperwork Expressions</title>
+</head>
+<body>
+    <div class='sub-group seealso-group' >
+        <template id='seealso-group' data-bind='{{links}}'>
+            <a href='{{.notset}}' >Not Valid</a>
+          </template>
+      </div>
+</body>
+</html>";
+            
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            
+            doc.Params["links"] = new string[] {"one", "two"};
+            using ( var output = DocStreams.GetOutputStream("InvalidLinksTest.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+        }
+        
+        [TestMethod]
+        public void ConcatFunctionTest()
+        {
+            
+            var content = GetContent("concat('hello ',array, '!')");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+            doc.Params["array"] = new char[] {'w', 'o', 'r', 'l', 'd'};
+            using ( var output = DocStreams.GetOutputStream("ConcatFunctionNumber.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "hello world!");
+        }
+        
+        private string GetLookupContent(string expression)
+        {
+            var content = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Paperwork Expressions</title>
+</head>
+<body>
+    <var data-id='allFuncs' data-value='{{collect(eachOf(model.sections, .funcs))}}' />
+    <var data-id='notFound' data-value='{{notFoundText}}' />
+    <div class='sub-group seealso-group' >
+        <h5 class='sub-group-title'>See Also</h5>
+          <template id='seealso-group' data-bind='{{seeAlso}}'>
+            <var data-id='lookup' data-value='{{.}}' />
+            <var data-id='refFunc' data-value='{{firstWhere(allFuncs, .id == lookup) ?? notFoundText}}' hidden='hidden' />
+            <p id='{{lookup}}' >{{lookup}} - {{refFunc.name}}</p>
+          </template>
+      </div>
+</body>
+</html>";
+
+            return content;
+        }
+        
+        [TestMethod]
+        public void FirstWhereLookupFunctionTest()
+        {
+            //store all the functions in the 'allFuncs' variable.
+            //bind on the seeAlso values (2 found, 1 not)
+            //store the current value in 'lookup'
+            //find the first function where id = the lookup value.
+            //output the lookup and the name from the first found func
+            
+            var content = GetLookupContent("");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetCollectData();
+            doc.Params["seeAlso"] = new string[] {"divide_op","and","or_op"};
+            doc.Params["notFoundText"] = new { name = "[Not Found]" };
+            
+            using ( var output = DocStreams.GetOutputStream("FirstWhereLookup.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var p1 = doc.FindAComponentById("divide_op") as Paragraph;
+            Assert.AreEqual(3, p1.Contents.Count);
+            Assert.AreEqual("divide_op", (p1.Contents[0] as TextLiteral).Text);
+            Assert.AreEqual(" - ", (p1.Contents[1] as TextLiteral).Text);
+            Assert.AreEqual("Divide (/) operator", (p1.Contents[2] as TextLiteral).Text);
+            
+            
+            var p2 = doc.FindAComponentById("and") as Paragraph;
+            Assert.AreEqual(3, p2.Contents.Count);
+            Assert.AreEqual("and", (p2.Contents[0] as TextLiteral).Text);
+            Assert.AreEqual(" - ", (p2.Contents[1] as TextLiteral).Text);
+            Assert.AreEqual("And (&&) operator", (p2.Contents[2] as TextLiteral).Text);
+            
+            var p3 = doc.FindAComponentById("or_op") as Paragraph;
+            Assert.AreEqual(3, p3.Contents.Count);
+            Assert.AreEqual("or_op", (p3.Contents[0] as TextLiteral).Text);
+            Assert.AreEqual(" - ", (p3.Contents[1] as TextLiteral).Text);
+            Assert.AreEqual("[Not Found]", (p3.Contents[2] as TextLiteral).Text);
+        }
+        
+        private const string func_Names = "Plus (+) operator,Minus (-) operator,Multiply (*) operator,Divide (/) operator,Modulo (%) operator,Exponent (^) operator,Bitwise And (&) operator,Bitwise Or (|) operator,Bitwise Shift Left (<<) operator,Bitwise Shift Right (>>) operator,Null coalescing (??) operator,Combining binary operators,Equal (==) operator,Not Equal (!=) operator,Less than (<) operator,More than (>) operator,Less than or equal (<=) operator,Greater than or equal(>=) operator,And (&&) operator,Or (||) operator,Not (!) operator,Boolean Function,Date Function,Decimal Function,Double Function,Integer Function,String Function";
+
+        private const string sortedSectionNames =
+            "Binary Operators,Conversion Functions,Logical Operators,Relational Operators";
+        
+        private object GetCollectData()
+        {
+            object parsed = System.Text.Json.JsonSerializer.Deserialize(collectdata, typeof(object));
+            return parsed;
+        }
+        
+        
+        
+        [TestMethod]
+        public void CollectFunctionTest()
+        {
+            //get each of the func arrays in the model.sections.
+            //collect each array together into a single array.
+            //for each of the names in the items in this array
+            //join as a single string
+            
+            var content = GetContent("join(',',eachOf(collect(eachOf(model.sections, .funcs)), .name))");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetCollectData();
+
+            using ( var output = DocStreams.GetOutputStream("CollectFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            
+            //and compare to the known value of each of the function names.
+            
+            AssertBoundContent(h1, func_Names);
+        }
+        
+        [TestMethod]
+        public void SortFunctionTest()
+        {
+            //get each of the func arrays in the model.sections.
+            //collect each array together into a single array.
+            //for each of the names in the items in this array
+            //join as a single string
+            
+            var content = GetContent("join(',',eachOf(sortBy(model.sections, .name), .name))");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetCollectData();
+
+            using ( var output = DocStreams.GetOutputStream("SortByFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            
+            //and compare to the known value of each of the function names.
+            
+            AssertBoundContent(h1, sortedSectionNames);
+        }
+        
         
         string collectdata = @"{
        ""sections"": [
@@ -898,66 +1197,6 @@ namespace Scryber.Core.UnitTests.Binding
         }
     ]
 }";
-        private const string func_Names = "Plus (+) operator,Minus (-) operator,Multiply (*) operator,Divide (/) operator,Modulo (%) operator,Exponent (^) operator,Bitwise And (&) operator,Bitwise Or (|) operator,Bitwise Shift Left (<<) operator,Bitwise Shift Right (>>) operator,Null coalescing (??) operator,Combining binary operators,Equal (==) operator,Not Equal (!=) operator,Less than (<) operator,More than (>) operator,Less than or equal (<=) operator,Greater than or equal(>=) operator,And (&&) operator,Or (||) operator,Not (!) operator,Boolean Function,Date Function,Decimal Function,Double Function,Integer Function,String Function";
-
-        private const string sortedSectionNames =
-            "Binary Operators,Conversion Functions,Logical Operators,Relational Operators";
-        
-        private object GetCollectData()
-        {
-            object parsed = System.Text.Json.JsonSerializer.Deserialize(collectdata, typeof(object));
-            return parsed;
-        }
-        
-        [TestMethod]
-        public void CollectFunctionTest()
-        {
-            //get each of the func arrays in the model.sections.
-            //collect each array together into a single array.
-            //for each of the names in the items in this array
-            //join as a single string
-            
-            var content = GetContent("join(',',eachOf(collect(eachOf(model.sections, .funcs)), .name))");
-            using var stream = new System.IO.StringReader(content);
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
-            doc.Params["model"] = GetCollectData();
-
-            using ( var output = DocStreams.GetOutputStream("CollectFunction.pdf"))
-            {
-                doc.SaveAsPDF(output);
-            }
-            
-            var h1 = doc.FindAComponentById("boundContent") as Head1;
-            
-            //and compare to the known value of each of the function names.
-            
-            AssertBoundContent(h1, func_Names);
-        }
-        
-        [TestMethod]
-        public void SortFunctionTest()
-        {
-            //get each of the func arrays in the model.sections.
-            //collect each array together into a single array.
-            //for each of the names in the items in this array
-            //join as a single string
-            
-            var content = GetContent("join(',',eachOf(sortBy(model.sections, .name), .name))");
-            using var stream = new System.IO.StringReader(content);
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
-            doc.Params["model"] = GetCollectData();
-
-            using ( var output = DocStreams.GetOutputStream("SortByFunction.pdf"))
-            {
-                doc.SaveAsPDF(output);
-            }
-            
-            var h1 = doc.FindAComponentById("boundContent") as Head1;
-            
-            //and compare to the known value of each of the function names.
-            
-            AssertBoundContent(h1, sortedSectionNames);
-        }
 	}
 }
 

@@ -46,7 +46,9 @@ namespace Scryber.Binding
             _all.Add(new AddMonthsFunction());
             _all.Add(new AddSecondsFunction());
             _all.Add(new AddYearsFunction());
-            _all.Add(new DayOfFunction());
+            _all.Add(new DayOfMonthFunction());
+            _all.Add(new DayOfWeekFunction());
+            _all.Add(new DayOfYearFunction());
             _all.Add(new DaysBetweenFunction());
             _all.Add(new HourOfFunction());
             _all.Add(new HoursBetweenFunction());
@@ -54,10 +56,11 @@ namespace Scryber.Binding
             _all.Add(new MillisecondsBetweenFunction());
             _all.Add(new MinuteOfFunction());
             _all.Add(new MinutesBetweenFunction());
-            _all.Add(new MonthOfFunction());
+            _all.Add(new MonthOfYearFunction());
             _all.Add(new SecondOfFunction());
             _all.Add(new SecondsBetweenFunction());
             _all.Add(new YearOfFunction());
+
             // Mathematical
             _all.Add(new AbsFunction());
             _all.Add(new AcosFunction());
@@ -119,7 +122,9 @@ namespace Scryber.Binding
             _all.Add(new LengthFunction());
             _all.Add(new PadLeftFunction());
             _all.Add(new PadRightFunction());
-            _all.Add(new RegexFunction());
+            _all.Add(new RegexMatchesFunction());
+            _all.Add(new RegexIsMatchFunction());
+            _all.Add(new RegexSwapFunction());
             _all.Add(new StartsWithFunction());
             _all.Add(new SubstringFunction());
             _all.Add(new ConcatFunction());
@@ -130,8 +135,8 @@ namespace Scryber.Binding
             _all.Add(new ToUpperFunction());
             _all.Add(new ToLowerFunction());
             _all.Add(new TrimFunction());
-            _all.Add(new TrimLeftFunction());
-            _all.Add(new TrimRightFunction());
+            _all.Add(new TrimStartFunction());
+            _all.Add(new TrimEndFunction());
 
             //css
             _all.Add(new VarFunction());

@@ -3,7 +3,7 @@ using Scryber.Expressive.Expressions;
 
 namespace Scryber.Expressive.Functions.String
 {
-    public class TrimRightFunction : FunctionBase
+    public class TrimStartFunction : FunctionBase
     {
         #region FunctionBase Members
 
@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.String
         {
             get
             {
-                return "TrimRight";
+                return "TrimStart";
             }
         }
 
@@ -37,7 +37,7 @@ namespace Scryber.Expressive.Functions.String
                 text = value.ToString();
             }
 
-            return text?.TrimEnd();
+            return text?.TrimStart();
             
         }
 

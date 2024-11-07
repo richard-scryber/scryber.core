@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace Scryber.Expressive.Functions.Date
 {
-    public class DayOfFunction : FunctionBase
+    public class MonthOfYearFunction : FunctionBase
     {
         #region FunctionBase Members
 
-        public override string Name => "DayOf";
+        public override string Name => "MonthOf";
 
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
@@ -20,7 +20,8 @@ namespace Scryber.Expressive.Functions.Date
 
             var date = Convert.ToDateTime(dateObject, context.CurrentCulture);
 
-            return date.Day;
+            return date.Month;
+            
         }
 
         #endregion

@@ -29,6 +29,8 @@ namespace Scryber.Expressive.Functions.Conversion
                         return Convert.ToInt32(str.Substring(2), 2);
                 }
             }
+            else if (objectToConvert is DateTime dt)
+                return (int)(dt.Ticks / TimeSpan.TicksPerMillisecond);
 
             return Convert.ToInt32(objectToConvert, context.CurrentCulture);
         }

@@ -19,13 +19,13 @@ namespace Scryber.Expressive.Helpers
 			//TODO: Change this to a wrapping ICollection class, rather than creating a new array list (as could be exhaustive)
 			else if (value is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
 			{
-				var all = new ArrayList(jele.GetArrayLength());
-				
-				foreach (var inner in jele.EnumerateArray())
-				{
-					all.Add(inner);
-				}
-				collection = all;
+				//var all = new ArrayList(jele.GetArrayLength());
+				collection = jele.EnumerateArray();
+				// foreach (var inner in jele.EnumerateArray())
+				// {
+				// 	all.Add(inner);
+				// }
+				// collection = all;
 				return true;
 			}
 

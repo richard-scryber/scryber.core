@@ -238,6 +238,11 @@ namespace Scryber.Components
 
                 action = remote;
             }
+            else if (context.Conformance == ParserConformanceMode.Lax)
+            {
+                context.TraceLog.Add(TraceLevel.Warning, "Link", "No action type could be determined on the link " + this.UniqueID );
+                action = null;
+            }
             else
                 throw RecordAndRaise.Argument("actiontype");
 
