@@ -41,12 +41,19 @@ namespace Scryber.Expressive.Functions.Relational
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
 
-                    if (null == max)
-                        max = one;
+					if (null == max)
+					{
+						max = one;
+					}
+                    else if (max is string || one is string)
+                    {
+	                    if (string.Compare(max.ToString(), one.ToString(), context.EqualityStringComparison) < 0)
+		                    max = one.ToString();
+                    }
                     else
                         max = Comparison.CompareUsingMostPreciseType(max, one, context) > 0 ? max : one;
 
-     //               if (one is IComparable compare)
+					//if (one is IComparable compare)
 					//{
 					//	if (null == max)
 					//		max = compare;
@@ -56,6 +63,11 @@ namespace Scryber.Expressive.Functions.Relational
 					
 					
 				}
+			}
+			else
+			{
+				CurrentDataExpression.SetCurrentData(value, variables);
+				max = lookup.Evaluate(variables);
 			}
 
 			return max;

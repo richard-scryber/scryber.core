@@ -293,13 +293,67 @@ namespace Scryber.Core.UnitTests.Binding
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
             doc.Params["model"] = GetData();
 
-            using ( var output = DocStreams.GetOutputStream("InArrayFunction.pdf"))
+            using ( var output = DocStreams.GetOutputStream("CountArrayFunction.pdf"))
             {
                 doc.SaveAsPDF(output);
             }
             
             var h1 = doc.FindAComponentById("boundContent") as Head1;
             AssertBoundContent(h1, "3");
+        }
+        
+        [TestMethod]
+        public void MaxArrayFunctionTest()
+        {
+            
+            var content = GetContent("max(model.array)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("MaxArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "12");
+        }
+        
+        [TestMethod]
+        public void MaxItemsFunctionTest()
+        {
+            
+            var content = GetContent("max(10, 13.4, null, 12, 11)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("MaxItemsFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "13.4");
+        }
+        
+        [TestMethod]
+        public void MaxStringsFunctionTest()
+        {
+            
+            var content = GetContent("max(model.array, model.days, null, 'one')");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("MaxItemsFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "wed");
         }
         
         [TestMethod]
