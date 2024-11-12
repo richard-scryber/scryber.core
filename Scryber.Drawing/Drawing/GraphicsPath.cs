@@ -26,7 +26,7 @@ namespace Scryber.Drawing
     /// Contains path drawing operations
     /// </summary>
     [PDFParsableValue()]
-    public class GraphicsPath : ITypedObject
+    public class GraphicsPath : ITypedObject, ICloneable
     {
         
         private List<Path> _paths = new List<Path>();
@@ -109,7 +109,13 @@ namespace Scryber.Drawing
                 }
             }
         }
+        
+        /// <summary>
+        /// Gets or sets any render matrix to be applied to the path data when rendering
+        /// </summary>
+        public PDFTransformationMatrix PathMatrix { get; set; }
 
+        
         public ObjectType Type
         {
             get { return ObjectTypes.GraphicsPath; }
@@ -122,6 +128,30 @@ namespace Scryber.Drawing
             : this(ObjectTypes.GraphicsPath)
         {
 
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public GraphicsPath Clone()
+        {
+            var newPath = (GraphicsPath)this.MemberwiseClone();
+            
+            if (null != this.PathMatrix)
+                newPath.PathMatrix = this.PathMatrix.Clone();
+            
+            if (null != this._paths)
+            {
+                newPath._paths = new List<Path>(this._paths.Count);
+                foreach (var p in this._paths)
+                {
+                    newPath._paths.Add(p.Clone());
+                }
+            }
+
+            return newPath;
         }
 
         /// <summary>

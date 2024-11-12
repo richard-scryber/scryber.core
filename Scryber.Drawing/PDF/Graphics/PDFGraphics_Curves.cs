@@ -343,6 +343,9 @@ namespace Scryber.PDF.Graphics
                 brush.SetUpGraphics(this, bounds);
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
+            
+            if(null != path.PathMatrix)
+                this.SetTransformationMatrix(path.PathMatrix, false, true);
 
             Point cursor = Point.Empty;
 
@@ -358,11 +361,14 @@ namespace Scryber.PDF.Graphics
             else if (null != pen)
                 this.RenderStrokePathOp();
 
+            //Transformation matrix will be released with restore graphics state
             
             if (null != brush)
                 brush.ReleaseGraphics(this, bounds);
             if (null != pen)
                 pen.ReleaseGraphics(this, bounds);
+            
+            
         }
 
         private void RenderPathData(Point location, Path p, ref Point cursor)

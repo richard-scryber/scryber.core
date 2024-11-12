@@ -541,12 +541,26 @@ namespace Scryber.Svg.Components
                         this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryXKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryCentreXKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryX2Key, tocomponent);
+
+                        if (tocomponent is ISVGOffsetShape offsetShape)
+                        {
+                            var xValue = this.Style.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
+                            offsetShape.ShapeOffset = new Point(offsetShape.ShapeOffset.X + xValue,
+                                offsetShape.ShapeOffset.Y);
+                        }
                     }
                     else if (key.Equals(StyleKeys.SVGGeometryYKey))
                     {
                         this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryYKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryCentreYKey, tocomponent);
                         this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryY2Key, tocomponent);
+                        
+                        if (tocomponent is ISVGOffsetShape offsetShape)
+                        {
+                            var yValue = this.Style.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+                            offsetShape.ShapeOffset = new Point(offsetShape.ShapeOffset.X,
+                                offsetShape.ShapeOffset.Y + yValue);
+                        }
                     }
                     else
                     {
@@ -558,6 +572,8 @@ namespace Scryber.Svg.Components
                         }
                         
                     }
+                    
+                    
                 }
             }
         }

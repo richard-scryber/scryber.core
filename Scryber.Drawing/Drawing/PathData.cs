@@ -42,6 +42,11 @@ namespace Scryber.Drawing
         }
 
         public abstract void FillAllPoints(List<Point> points);
+
+        public virtual PathData Clone()
+        {
+            return (PathData)this.MemberwiseClone();
+        }
     }
 
     #endregion
@@ -74,6 +79,17 @@ namespace Scryber.Drawing
         {
             if (null != this.InnerPath)
                 this.InnerPath.FillAllPoints(points);
+        }
+
+        public override PathData Clone()
+        {
+            
+            var sub = (PathSubPathData)base.Clone();
+            
+            if (null != this.InnerPath)
+                sub.InnerPath = this.InnerPath.Clone();
+            
+            return sub;
         }
     }
 

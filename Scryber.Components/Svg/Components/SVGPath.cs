@@ -7,7 +7,7 @@ using Scryber.PDF;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("path")]
-    public class SVGPath : SVGShape
+    public class SVGPath : SVGIrregularShape
     {
 
         
@@ -29,11 +29,21 @@ namespace Scryber.Svg.Components
 
         protected override Rect GetBounds()
         {
-            return this.PathData.Bounds;
+            var rect = this.PathData.Bounds;
+            rect = rect.Offset(this.ShapeOffset);
+            return rect;
         }
 
         protected override Drawing.GraphicsPath CreatePath(Drawing.Size available, Style fullstyle)
         {
+            if (!this.ShapeOffset.IsZero)
+            {
+                if (null == this.PathData.PathMatrix)
+                    this.PathData.PathMatrix = new PDFTransformationMatrix();
+                
+                this.PathData.PathMatrix.SetTranslation(this.ShapeOffset.X, 0 - this.ShapeOffset.Y);
+            }
+            
             return this.PathData;
         }
 
@@ -56,6 +66,14 @@ namespace Scryber.Svg.Components
             }
             
             base.SetArrangement(arrange, context);
+        }
+
+        public override SVGBase Clone()
+        {
+            var path = (SVGPath)base.Clone();
+            path.ShapeOffset = this.ShapeOffset;
+            path.PathData = this.PathData.Clone();
+            return path;
         }
     }
 }

@@ -6,7 +6,7 @@ using Scryber.PDF;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("polyline")]
-    public class SVGPolyLine : SVGShape
+    public class SVGPolyLine : SVGIrregularShape
     {
         [PDFAttribute("points")]
         public PDFPointList Points { get; set; }
@@ -32,8 +32,9 @@ namespace Scryber.Svg.Components
         {
             var bounds = this.GetBounds();
 
-            var xoffset = bounds.X.PointsValue;
-            var yoffset = bounds.Y.PointsValue;
+            var xoffset = this.ShapeOffset.X;
+            var yoffset = this.ShapeOffset.Y;
+            
 
             GraphicsPath path = new GraphicsPath();
 
@@ -43,7 +44,7 @@ namespace Scryber.Svg.Components
                 {
                     var pt = this.Points[i];
                     
-                    //pt = pt.Offset(-xoffset, -yoffset);
+                    pt = pt.Offset(xoffset, yoffset);
 
                     if (i == 0)
                         path.MoveTo(pt);
