@@ -1138,41 +1138,50 @@ namespace Scryber.Styles
             else
                 options.Margins = Thickness.Empty();
 
-            //padding
 
-            if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey,
-                    StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey,
-                    StyleKeys.PaddingRightKey, out thickness))
+
+            if (options.XObjectRender) 
             {
-                options.Padding = thickness;
+                //padding, columns, float do not apply to xObject rendering.
             }
             else
-                options.Padding = Thickness.Empty();
-
-            //columns
-
-            StyleValue<int> colcount;
-            if (this.TryGetValue(StyleKeys.ColumnCountKey, out colcount) && colcount.Value(this) > 0)
-                options.ColumnCount = colcount.Value(this);
-
-            if (this.TryGetValue(StyleKeys.ColumnAlleyKey, out unit))
-                options.AlleyWidth = unit.Value(this);
-
-            // float
-
-            StyleValue<FloatMode> floatm;
-            if (this.TryGetValue(StyleKeys.PositionFloat, out floatm))
             {
-                options.FloatMode = floatm.Value(this);
-                options.FillWidth = false;
-                
-                //absolute and fixed knock out any float
-                if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
-                    options.FloatMode = FloatMode.None;
-                //otherwise if we are actually floating - then we are always a block.
-                else if (options.FloatMode != FloatMode.None)
-                    options.DisplayMode = DisplayMode.Block;
-                    
+                //padding
+                if (this.TryGetThickness(StyleKeys.PaddingItemKey.Inherited, StyleKeys.PaddingAllKey,
+                        StyleKeys.PaddingTopKey, StyleKeys.PaddingLeftKey, StyleKeys.PaddingBottomKey,
+                        StyleKeys.PaddingRightKey, out thickness))
+                {
+                    options.Padding = thickness;
+                }
+                else
+                    options.Padding = Thickness.Empty();
+
+
+                //columns
+
+                StyleValue<int> colcount;
+                if (this.TryGetValue(StyleKeys.ColumnCountKey, out colcount) && colcount.Value(this) > 0)
+                    options.ColumnCount = colcount.Value(this);
+
+                if (this.TryGetValue(StyleKeys.ColumnAlleyKey, out unit))
+                    options.AlleyWidth = unit.Value(this);
+
+                // float
+
+                StyleValue<FloatMode> floatm;
+                if (this.TryGetValue(StyleKeys.PositionFloat, out floatm))
+                {
+                    options.FloatMode = floatm.Value(this);
+                    options.FillWidth = false;
+
+                    //absolute and fixed knock out any float
+                    if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+                        options.FloatMode = FloatMode.None;
+                    //otherwise if we are actually floating - then we are always a block.
+                    else if (options.FloatMode != FloatMode.None)
+                        options.DisplayMode = DisplayMode.Block;
+
+                }
             }
 
             // transformations

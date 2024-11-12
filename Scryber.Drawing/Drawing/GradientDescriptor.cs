@@ -198,7 +198,7 @@ namespace Scryber.Drawing
                     
                     bounds.Add(new PDFGradientFunctionBoundary(curr));
                 }
-                total = curr;
+                total += curr;
             }
 
             return bounds;

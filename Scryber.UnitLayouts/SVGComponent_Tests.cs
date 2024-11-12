@@ -2493,9 +2493,9 @@ namespace Scryber.UnitLayouts
             
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
-            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPolyLine));
             
-            var gline = (SVGLine)compRun.Owner;
+            var gline = (SVGPolyLine)compRun.Owner;
             var arrange = gline.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
 
@@ -2522,7 +2522,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
             
-            gline = (SVGLine)compRun.Owner;
+            gline = (SVGPolyLine)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 

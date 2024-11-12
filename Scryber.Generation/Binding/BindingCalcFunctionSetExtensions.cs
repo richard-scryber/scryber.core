@@ -103,6 +103,7 @@ namespace Scryber.Binding
             _all.Add(new CountOfFunction());
             //coalesce
             _all.Add(new CollectFunction());
+            _all.Add(new ReverseFunction());
             _all.Add(new EachFunction());
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());

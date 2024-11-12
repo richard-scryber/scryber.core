@@ -2963,6 +2963,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void LinearGradientTest()
         {
+            Assert.Fail("Falls into never ending loop after updates to SVG gradients.");
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradients.html",
                 this.TestContext);
             using (var sr = new System.IO.StreamReader(path))
@@ -3031,6 +3032,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void RadialGradientTest()
         {
+            Assert.Fail("Falls into never ending loop after updates to SVG gradients.");
+            
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RadialGradients.html",
                 this.TestContext);
             

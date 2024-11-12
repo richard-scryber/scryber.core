@@ -265,8 +265,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -399,8 +399,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -544,8 +544,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -691,8 +691,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width , bbox.Width);
+            Assert.AreEqual(height , bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -836,8 +836,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -982,8 +982,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1128,8 +1128,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1274,8 +1274,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1420,8 +1420,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1570,8 +1570,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1717,8 +1717,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -1864,8 +1864,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2023,8 +2023,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2181,8 +2181,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2339,8 +2339,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2497,8 +2497,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2656,8 +2656,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2814,8 +2814,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -2973,8 +2973,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3131,8 +3131,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3291,8 +3291,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3451,8 +3451,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3610,8 +3610,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3769,8 +3769,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 20, bbox.Width);
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -3906,7 +3906,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
             Assert.AreEqual(width, bbox.Width); //no horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4040,8 +4040,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4178,7 +4178,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
             Assert.AreEqual(width, bbox.Width); //no horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4313,8 +4313,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4450,7 +4450,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
             Assert.AreEqual(width, bbox.Width); //no horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4585,8 +4585,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4722,7 +4722,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
             Assert.AreEqual(width, bbox.Width); //no horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);
@@ -4857,8 +4857,8 @@ namespace Scryber.UnitLayouts
             var bbox = rsrc.BoundingBox;
             Assert.AreEqual(0, bbox.X);
             Assert.AreEqual(0, bbox.Y);
-            Assert.AreEqual(width + 10, bbox.Width); //right horizontal margins
-            Assert.AreEqual(height + 20, bbox.Height);
+            Assert.AreEqual(width, bbox.Width); //right horizontal margins
+            Assert.AreEqual(height, bbox.Height);
             
             Assert.IsTrue(rsrc.Registered);
             Assert.IsNull(rsrc.Layout);

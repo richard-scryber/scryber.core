@@ -15,7 +15,7 @@
       .positioned{
          margin: 10pt;
          border: solid 1pt green;
-         padding: 10pt;
+         padding: 10pt; /* should be ignored */
          vertical-align: bottom;
       }
       
@@ -25,7 +25,6 @@
 <body>
    A line of text that flows down and then some content<br/>
    before
-  
    <svg class="positioned"  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" width="100" height="120"  
          xmlns:xlink="http://www.w3.org/1999/xlink"    >
       <rect height="30" width="40" x="30" y="20" stroke="black" stroke-width="1pt" fill="transparent"  />

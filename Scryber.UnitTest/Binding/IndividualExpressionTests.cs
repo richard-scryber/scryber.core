@@ -357,6 +357,60 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod]
+        public void MinOfStringsFunctionTest()
+        {
+            
+            var content = GetContent("minof(collect(9,model.array,13, -10), if(. > 0, ., null))");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("MinOfItemsFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "9");
+        }
+        
+        [TestMethod]
+        public void MedianMixedArrayFunctionTest()
+        {
+            
+            var content = GetContent("median(9, model.array, 13, 101)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("MedianMixedArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "11.5");
+        }
+        
+        [TestMethod]
+        public void ModeMixedArrayFunctionTest()
+        {
+            
+            var content = GetContent("mode(model.array, 13, 11)");
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using ( var output = DocStreams.GetOutputStream("ModeMixedArrayFunction.pdf"))
+            {
+                doc.SaveAsPDF(output);
+            }
+            
+            var h1 = doc.FindAComponentById("boundContent") as Head1;
+            AssertBoundContent(h1, "11");
+        }
+        
+        [TestMethod]
         public void InvalidLinkTest()
         {
             var content = @"<html xmlns='http://www.w3.org/1999/xhtml'>

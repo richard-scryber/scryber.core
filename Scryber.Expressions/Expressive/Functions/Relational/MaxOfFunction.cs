@@ -45,6 +45,10 @@ namespace Scryber.Expressive.Functions.Relational
 					{
 						max = one;
 					}
+					else if (null == one)
+					{
+						continue;
+					}
                     else if (max is string || one is string)
                     {
 	                    if (string.Compare(max.ToString(), one.ToString(), context.EqualityStringComparison) < 0)
