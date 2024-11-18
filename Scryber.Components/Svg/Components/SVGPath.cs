@@ -56,7 +56,7 @@ namespace Scryber.Svg.Components
             if(null != path)
             {
                 var bounds = path.Bounds;
-                
+                bounds = bounds.Offset(this.ShapeOffset);
                 if (null != context.RenderMatrix)
                     bounds = context.RenderMatrix.TransformBounds(bounds);
                 

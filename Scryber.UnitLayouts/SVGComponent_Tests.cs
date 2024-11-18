@@ -2500,11 +2500,19 @@ namespace Scryber.UnitLayouts
             var renderBounds = arrange.RenderBounds;
 
             var expectedBounds = new Rect();
-            //cx = 20, cy = 30, r = 20;
-            expectedBounds.X = svgBounds.X + 15;
-            expectedBounds.Y += svgBounds.Y + 20;
-            expectedBounds.Width = 25;
-            expectedBounds.Height = 10;
+            
+            //
+            //viewbox = 200,
+            //width = 100,
+            //
+            // so all actual sizes within the SVG should also be halved.
+            //
+            
+            
+            expectedBounds.X = svgBounds.X + (100 / 2); 
+            expectedBounds.Y += svgBounds.Y + 0;
+            expectedBounds.Width = (100 / 2);
+            expectedBounds.Height = (100 / 2);
             
             Assert.AreEqual(expectedBounds, renderBounds);
 
@@ -2520,17 +2528,17 @@ namespace Scryber.UnitLayouts
             
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
-            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPolyLine));
             
             gline = (SVGPolyLine)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
             expectedBounds = new Rect();
-            expectedBounds.X = svgBounds.X + 15 + 10; //the x and y are added to the existing position
-            expectedBounds.Y += svgBounds.Y  + 20 + 15;
-            expectedBounds.Width = 25; //the whole of the line should move (as the same angle)
-            expectedBounds.Height = 10; //so same width and height
+            expectedBounds.X = svgBounds.X + (100 + 10)/2; //the x and y are added to the existing position
+            expectedBounds.Y += svgBounds.Y  + (35.0 / 2);
+            expectedBounds.Width = (100 / 2); //the whole of the line should move (as the same angle)
+            expectedBounds.Height = (100 / 2); //so same width and height
             
             Assert.AreEqual(expectedBounds, renderBounds);
             
@@ -2589,18 +2597,26 @@ namespace Scryber.UnitLayouts
             
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
-            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPolyLine));
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPath));
             
-            var gline = (SVGPolyLine)compRun.Owner;
+            var gline = (SVGPath)compRun.Owner;
             var arrange = gline.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
 
             var expectedBounds = new Rect();
-            //cx = 20, cy = 30, r = 20;
-            expectedBounds.X = svgBounds.X + 15;
-            expectedBounds.Y += svgBounds.Y + 20;
-            expectedBounds.Width = 25;
-            expectedBounds.Height = 10;
+            
+            //
+            //viewbox = 200,
+            //width = 100,
+            //
+            // so all actual sizes within the SVG should also be halved.
+            //
+            
+            
+            expectedBounds.X = svgBounds.X + (10 / 2); 
+            expectedBounds.Y += svgBounds.Y + (10 / 2);
+            expectedBounds.Width = (80 / 2);
+            expectedBounds.Height = (80 / 2);
             
             Assert.AreEqual(expectedBounds, renderBounds);
 
@@ -2616,17 +2632,16 @@ namespace Scryber.UnitLayouts
             
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
-            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
+            Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPath));
             
-            gline = (SVGPolyLine)compRun.Owner;
+            gline = (SVGPath)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
-            expectedBounds = new Rect();
-            expectedBounds.X = svgBounds.X + 15 + 10; //the x and y are added to the existing position
-            expectedBounds.Y += svgBounds.Y  + 20 + 15;
-            expectedBounds.Width = 25; //the whole of the line should move (as the same angle)
-            expectedBounds.Height = 10; //so same width and height
+            expectedBounds.X = expectedBounds.X  + (20 / 2); 
+            expectedBounds.Y = expectedBounds.Y  + (35.0 / 2);
+            expectedBounds.Width = (80 / 2); //the whole of the line should move (as the same angle)
+            expectedBounds.Height = (80 / 2); //so same width and height
             
             Assert.AreEqual(expectedBounds, renderBounds);
             
@@ -2637,9 +2652,9 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
-            Assert.AreEqual(0.5, style.GetValue(StyleKeys.StrokeOpacityKey, 0.1)); //the opacity should be applied
+            Assert.AreEqual(10.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Blue, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(0.5, style.GetValue(StyleKeys.StrokeOpacityKey, 0.5)); //the opacity should be applied
         }
     }
 }

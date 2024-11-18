@@ -336,16 +336,17 @@ namespace Scryber.PDF.Graphics
 
         private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
         {
-
             Rect bounds = new Rect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
             
             if (null != brush)
                 brush.SetUpGraphics(this, bounds);
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
-            
-            if(null != path.PathMatrix)
+
+            if (null != path.PathMatrix)
+            {
                 this.SetTransformationMatrix(path.PathMatrix, false, true);
+            }
 
             Point cursor = Point.Empty;
 
