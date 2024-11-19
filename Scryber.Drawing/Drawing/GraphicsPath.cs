@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using Scryber.PDF.Graphics;
 using System.Text;
 
 namespace Scryber.Drawing

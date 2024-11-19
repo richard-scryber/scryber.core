@@ -1191,8 +1191,11 @@ namespace Scryber.Styles
 
             if (this.IsValueDefined(StyleKeys.TransformOperationKey))
             {
-                TransformOperation op = this.GetValue(StyleKeys.TransformOperationKey, null);
-                transform = op.GetMatrix(MatrixOrder.Append);
+                TransformOperationSet op = this.GetValue(StyleKeys.TransformOperationKey, null);
+                
+                transform = new PDFTransformationMatrix();
+                
+                //op.GetMatrix(MatrixOrder.Append);
 
                 if (transform.IsIdentity)
                     transform = null; //identity will do nothing

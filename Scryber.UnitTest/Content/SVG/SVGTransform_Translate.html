@@ -6,6 +6,8 @@
     <style>
         svg {
             background-color: #AAA;
+            width: 300pt;
+            height: 300pt;
         }
 
         .box {
@@ -30,10 +32,13 @@
     </style>
 </head>
 <body title="Rotation Samples" >
-    <p title="Rotated text">Rotated text below</p>
 
-    <div id="mydiv" style="color:blue;  background-color: orange; padding: 5px;
-                    top: 50px; left: 100px; height: 100px; width:200px;
-                    vertical-align:middle; text-align:center;" >This is some text</div>
+    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+          xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <polyline id="Poly" points="100,100 150,25 150,75 200,0"
+                  stroke="black" stroke-width="1pt" />
+        <use href="#Poly" transform="translate(50, 50)" fill="blue" fill-opacity="0.5" stroke="blue" stroke-opacity="0.5" stroke-width="10pt" />
+    </svg>
+    
 </body>
 </html>

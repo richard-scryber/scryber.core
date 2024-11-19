@@ -1714,9 +1714,9 @@ namespace Scryber.Components
         #region public TransformOperation TransformOperation {get;set;}
 
         /// <summary>
-        /// Gets or sets the transform operation. NOTE setting will prepend the value onto the chain of any existing values. Set to null or use RemoveTransformOperation() to clear completely.
+        /// Gets or sets the transform operation.
         /// </summary>
-        public virtual TransformOperation TransformOperation
+        public virtual Scryber.Drawing.TransformOperationSet TransformOperation
         {
             get
             {
@@ -1731,8 +1731,6 @@ namespace Scryber.Components
                     this.Style.RemoveValue(StyleKeys.TransformOperationKey);
                 else
                 {
-                    var prev = this.Style.GetValue(StyleKeys.TransformOperationKey, null);
-                    value.Append(prev);
                     this.Style.SetValue(StyleKeys.TransformOperationKey, value);
                 }
                     

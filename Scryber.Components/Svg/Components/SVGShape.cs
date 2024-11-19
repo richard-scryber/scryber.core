@@ -53,9 +53,10 @@ namespace Scryber.Svg.Components
                 var transform = fullstyle.GetValue(StyleKeys.TransformOperationKey, null);
                 if(transform != null)
                 {
-                    var matrix = transform.GetMatrix(MatrixOrder.Append);
-                    graphics.SaveGraphicsState();
-                    graphics.SetTransformationMatrix(matrix, false, true);
+                    throw new InvalidOperationException("Need to set the graphics state here");
+                    //var matrix = transform.GetMatrix(context.Graphics, MatrixOrder.Append);
+                    //graphics.SaveGraphicsState();
+                    //graphics.SetTransformationMatrix(matrix, false, true);
                 }
 
                 PDFBrush brush = fullstyle.CreateFillBrush();

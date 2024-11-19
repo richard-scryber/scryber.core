@@ -613,7 +613,7 @@ namespace Scryber.Styles
 
         public static readonly StyleKey TransformItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleTransform, NOT_INHERITED);
 
-        public static readonly StyleKey<TransformOperation> TransformOperationKey = StyleKey.InternalCreateStyleValueKey<TransformOperation>((ObjectType)"trop", TransformItemKey);
+        public static readonly StyleKey<Scryber.Drawing.TransformOperationSet> TransformOperationKey = StyleKey.InternalCreateStyleValueKey<TransformOperationSet>((ObjectType)"trop", TransformItemKey);
 
         public static readonly StyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((ObjectType)"orig", TransformItemKey);
 

@@ -195,7 +195,7 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("transform")]
-        public TransformOperation TransformMatrix
+        public Scryber.Drawing.TransformOperationSet TransformMatrix
         {
             get
             {

@@ -52,7 +52,6 @@
     <Folder Include="Content\Markdown\" />
     <Folder Include="Content\PDFX\" />
     <Folder Include="Content\HTML\Fragments\" />
-    <Folder Include="Content\SVG\" />
     <Folder Include="Imaging\" />
     <Folder Include="Common\" />
     <Folder Include="Content\HTML\CribSheet\" />

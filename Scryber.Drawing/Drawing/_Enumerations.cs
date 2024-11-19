@@ -364,6 +364,12 @@ namespace Scryber.Drawing
         /// as per the baseline of a font with descenders below the the y position.
         /// </summary>
         Text_Top,
+        
+        /// <summary>
+        /// Aligns the text position
+        /// as per the baseline of a font with descenders below the the y position.
+        /// </summary>
+        Text_Bottom,
 
         /// <summary>
         /// Aligns the text to the middle of the lowercase x character height, based on the y position and the font size.
@@ -511,6 +517,8 @@ namespace Scryber.Drawing
         CenterMiddle,
         Origin
     }
+
+    
 
     /// <summary>
     /// Defines a type of supported gradient

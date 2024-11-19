@@ -144,27 +144,18 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("transform")]
-        public string Transform
+        public Scryber.Drawing.TransformOperationSet Transform
         {
             get
             {
-                if (null == this.TransformOperation)
-                    return string.Empty;
+                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style);
                 else
-                {
-                    return this.TransformOperation.ToString();
-                }
+                    return null;
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    this.RemoveTransformOperation();
-                }
-                else
-                {
-                    this.TransformOperation = TransformOperation.Parse(value);
-                }
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
             }
         }
         

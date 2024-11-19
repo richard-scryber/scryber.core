@@ -39,7 +39,7 @@ namespace Scryber.Svg.Components
             if (!this.ShapeOffset.IsZero)
             {
                 if (null == this.PathData.PathMatrix)
-                    this.PathData.PathMatrix = new PDFTransformationMatrix();
+                    this.PathData.PathMatrix = new Scryber.PDF.Graphics.PDFTransformationMatrix();
                 
                 this.PathData.PathMatrix.SetTranslation(this.ShapeOffset.X, 0 - this.ShapeOffset.Y);
             }

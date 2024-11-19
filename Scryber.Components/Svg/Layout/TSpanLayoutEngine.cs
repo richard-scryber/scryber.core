@@ -132,6 +132,7 @@ namespace Scryber.Svg.Layout
                         break;
 
                     case DominantBaseline.Text_Top:
+                    case DominantBaseline.Text_Bottom:
                     case DominantBaseline.Auto:
                     default:
                         //normal position of the default shift

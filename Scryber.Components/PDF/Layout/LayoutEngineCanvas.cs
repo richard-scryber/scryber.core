@@ -77,10 +77,10 @@ namespace Scryber.PDF.Layout
         }
 
 
-        private PDFTransformationMatrix CalculateMatrix(Size available, Rect view, ViewPortAspectRatio ratio)
+        private Scryber.PDF.Graphics.PDFTransformationMatrix CalculateMatrix(Size available, Rect view, ViewPortAspectRatio ratio)
         {
             
-            PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
+            var matrix = Scryber.PDF.Graphics.PDFTransformationMatrix.Identity();
             
             if (ratio.Align == AspectRatioAlign.None)
             {

@@ -1684,42 +1684,44 @@ body.grey div.reverse{
             var t4 = found[3].GetValue(StyleKeys.TransformOperationKey, null);
             var multiple = found[4].GetValue(StyleKeys.TransformOperationKey, null);
 
-            Assert.IsNotNull(t1);
-            Assert.AreEqual(TransformType.Rotate, t1.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 10, 4), Math.Round(t1.Value1, 4));
-            Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
-
-            Assert.IsNotNull(t2);
-            Assert.AreEqual(TransformType.Skew, t2.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
-
-            Assert.IsNotNull(t3);
-            Assert.AreEqual(TransformType.Translate, t3.Type);
-            Assert.AreEqual(Math.Round(10.0, 4), Math.Round(t3.Value1, 4));
-            Assert.AreEqual(-Math.Round(15.0, 4), Math.Round(t3.Value2, 4));
-
-            Assert.IsNotNull(t4);
-            Assert.AreEqual(TransformType.Scale, t4.Type);
-            Assert.AreEqual(Math.Round(1.0, 4), Math.Round(t4.Value1, 4));
-            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(t4.Value2, 4));
-
-            Assert.IsNotNull(multiple);
-            Assert.AreEqual(TransformType.Rotate, multiple.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 20, 4), Math.Round(multiple.Value1, 4));
-            Assert.IsFalse(TransformOperation.IsSet(multiple.Value2));
-            Assert.IsNotNull(multiple.Next);
-
-            multiple = multiple.Next;
-            Assert.AreEqual(TransformType.Scale, multiple.Type);
-            Assert.AreEqual(Math.Round(2.0, 4), Math.Round(multiple.Value1, 4));
-            Assert.AreEqual(Math.Round(4.0, 4), Math.Round(multiple.Value2, 4));
-            Assert.IsNotNull(multiple.Next);
-
-            multiple = multiple.Next;
-            Assert.AreEqual(TransformType.Translate, multiple.Type);
-            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(multiple.Value1, 4));
-            Assert.AreEqual(-Math.Round(20.0, 4), Math.Round(multiple.Value2, 4));
+            Assert.Fail("Need to resolve the parsing");
+            
+            // Assert.IsNotNull(t1);
+            // Assert.AreEqual(TransformType.Rotate, t1.Type);
+            // Assert.AreEqual(-Math.Round((Math.PI / 180) * 10, 4), Math.Round(t1.Value1, 4));
+            // //Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
+            //
+            // Assert.IsNotNull(t2);
+            // Assert.AreEqual(TransformType.Skew, t2.Type);
+            // Assert.AreEqual(-Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
+            // Assert.AreEqual(-Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
+            //
+            // Assert.IsNotNull(t3);
+            // Assert.AreEqual(TransformType.Translate, t3.Type);
+            // Assert.AreEqual(Math.Round(10.0, 4), Math.Round(t3.Value1, 4));
+            // Assert.AreEqual(-Math.Round(15.0, 4), Math.Round(t3.Value2, 4));
+            //
+            // Assert.IsNotNull(t4);
+            // Assert.AreEqual(TransformType.Scale, t4.Type);
+            // Assert.AreEqual(Math.Round(1.0, 4), Math.Round(t4.Value1, 4));
+            // Assert.AreEqual(Math.Round(5.0, 4), Math.Round(t4.Value2, 4));
+            //
+            // Assert.IsNotNull(multiple);
+            // Assert.AreEqual(TransformType.Rotate, multiple.Type);
+            // Assert.AreEqual(-Math.Round((Math.PI / 180) * 20, 4), Math.Round(multiple.Value1, 4));
+            // //Assert.IsFalse(TransformOperation.IsSet(multiple.Value2));
+            // Assert.IsNotNull(multiple.Next);
+            //
+            // multiple = multiple.Next;
+            // Assert.AreEqual(TransformType.Scale, multiple.Type);
+            // Assert.AreEqual(Math.Round(2.0, 4), Math.Round(multiple.Value1, 4));
+            // Assert.AreEqual(Math.Round(4.0, 4), Math.Round(multiple.Value2, 4));
+            // Assert.IsNotNull(multiple.Next);
+            //
+            // multiple = multiple.Next;
+            // Assert.AreEqual(TransformType.Translate, multiple.Type);
+            // Assert.AreEqual(Math.Round(5.0, 4), Math.Round(multiple.Value1, 4));
+            // Assert.AreEqual(-Math.Round(20.0, 4), Math.Round(multiple.Value2, 4));
         }
 
         [TestMethod()]

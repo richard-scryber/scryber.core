@@ -1,6 +1,6 @@
 ﻿using System;
 using Scryber.Drawing;
-
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {

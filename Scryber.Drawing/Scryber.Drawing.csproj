@@ -42,7 +42,6 @@
     <Folder Include="Text\_FontResources\Zaph\" />
     <Folder Include="Text\_FontResources\Symbol\" />
     <Folder Include="PDF\Resources\" />
-    <Folder Include="PDF\Graphics\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Text\_FontResources\Helvetica\Helvetica.ttf" />

@@ -1751,7 +1751,7 @@ namespace Scryber.PDF.Layout
 
             //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
 
-            PDFTransformationMatrix matrix = pos.TransformMatrix;
+            Scryber.PDF.Graphics.PDFTransformationMatrix matrix = pos.TransformMatrix;
 
             Rect bounds = new Rect(Point.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
             Rect transformed = matrix.TransformBounds(bounds, TransformationOrigin.CenterMiddle);

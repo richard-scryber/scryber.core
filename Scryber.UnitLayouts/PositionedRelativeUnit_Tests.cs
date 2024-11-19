@@ -207,7 +207,7 @@ namespace Scryber.UnitLayouts
             };
 
             //rotate about 28 degrees
-            relative.TransformOperation = new Styles.TransformOperation(TransformType.Rotate, 0.5F, 0.0F);
+            //relative.TransformOperation = new Styles.TransformOperation(TransformType.Rotate, 0.5F, 0.0F);
 
             relative.Contents.Add(new TextLiteral("min width and height"));
             section.Contents.Add(relative);
@@ -218,7 +218,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive("Need to support the transformation");
+            Assert.Fail("Need to support the transformation");
             
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];

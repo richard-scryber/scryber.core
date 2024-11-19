@@ -19,10 +19,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Scryber.PDF.Graphics;
+using Scryber.Drawing;
 
-namespace Scryber.Drawing
+namespace Scryber.PDF.Graphics
 {
+    /// <summary>
+    /// A low level wrapper for a 2D matrix supporting the writing to PDF of the individual matrix componets (values) to a pdf stream,
+    /// and calculating transformed values from the matrix
+    /// </summary>
     public class PDFTransformationMatrix : IPDFGraphicsAdapter, ICloneable
     {
 

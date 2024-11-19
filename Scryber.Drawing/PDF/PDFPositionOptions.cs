@@ -207,7 +207,7 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets any transformation matrix
         /// </summary>
-        public PDFTransformationMatrix TransformMatrix
+        public Scryber.PDF.Graphics.PDFTransformationMatrix TransformMatrix
         {
             get;
             set;

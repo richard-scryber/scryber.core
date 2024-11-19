@@ -23,7 +23,7 @@ namespace Scryber.PDF.Resources
         
         public Rect BoundingBox { get; set; }
             
-        public PDFTransformationMatrix ViewMatrix { get; set; }
+        public Scryber.PDF.Graphics.PDFTransformationMatrix ViewMatrix { get; set; }
         
         public PDFLayoutXObjectResource(string type, string key, PDFLayoutPositionedRegionRun layout) : base(ObjectTypes.CanvasXObject)
         {
