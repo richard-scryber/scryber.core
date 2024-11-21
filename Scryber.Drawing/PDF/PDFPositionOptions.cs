@@ -207,30 +207,26 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets any transformation matrix
         /// </summary>
-        public Scryber.PDF.Graphics.PDFTransformationMatrix TransformMatrix
+        public Scryber.Drawing.TransformOperationSet Transformations
         {
             get;
             set;
         }
 
-    
-        /* Not currently supported
-         * 
         
         /// <summary>
         /// Gets or sets the origin for any transformation
         /// </summary>
-        public TransformationOrigin TransformationOrigin { get; set; }
+        public Scryber.Drawing.TransformOrigin TransformationOrigin { get; set; }
 
-        *
-        */
+        
 
         /// <summary>
         /// Returns true if these position options have an explict non-identity transformation matrix
         /// </summary>
         public bool HasTransformation
         {
-            get { return null != this.TransformMatrix && !this.TransformMatrix.IsIdentity; }
+            get { return null != this.Transformations && !this.Transformations.IsIdentity; }
         }
 
         /// <summary>

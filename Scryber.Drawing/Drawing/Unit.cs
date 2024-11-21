@@ -1006,6 +1006,92 @@ namespace Scryber.Drawing
 
         #endregion
 
+        public static Unit FlattenVerticalValue(Unit dim, Size page, Size container, Size font, Unit rootFont)
+        {
+            Unit result;
+            switch (dim.Units)
+            {
+                case PageUnits.Percent:
+                    result = dim.ToAbsolute(container.Height);
+                    break;
+                case PageUnits.EMHeight:
+                    result = dim.ToAbsolute(font.Height);
+                    break;
+                case PageUnits.EXHeight:
+                    //HACK: Assuming the width of a zero is the same size as an 'x' character high. Not usually a bad assumption
+                    result = dim.ToAbsolute(font.Width);
+                    break;
+                case PageUnits.ZeroWidth:
+                    result = dim.ToAbsolute(font.Width);
+                    break;
+                case PageUnits.RootEMHeight:
+                    result = dim.ToAbsolute(rootFont);
+                    break;
+                case PageUnits.ViewPortWidth:
+                    result = dim.ToAbsolute(page.Width);
+                    break;
+                case PageUnits.ViewPortHeight:
+                    result = dim.ToAbsolute(page.Height);
+                    break;
+                case PageUnits.ViewPortMin:
+                    Unit min = Unit.Min(page.Height, page.Width);
+                    result = dim.ToAbsolute(min);
+                    break;
+                case PageUnits.ViewPortMax:
+                    Unit max = Unit.Max(page.Height, page.Width);
+                    result = dim.ToAbsolute(max);
+                    break;
+                default:
+                    result = dim;
+                    break;
+            }
+
+            return result;
+        }
+        
+        public static Unit FlattenHorizontalValue(Unit dim, Size page, Size container, Size font, Unit rootFont)
+        {
+            
+            Unit result;
+            switch (dim.Units)
+            {
+                case PageUnits.Percent:
+                    result = dim.ToAbsolute(container.Width);
+                    break;
+                case PageUnits.EMHeight:
+                    result = dim.ToAbsolute(font.Height);
+                    break;
+                case PageUnits.EXHeight:
+                    //HACK: Assuming the width of a zero is the same size as an 'x' character high. Not usually a bad assumption
+                    result = dim.ToAbsolute(font.Width);
+                    break;
+                case PageUnits.ZeroWidth:
+                    result = dim.ToAbsolute(font.Width);
+                    break;
+                case PageUnits.RootEMHeight:
+                    result = dim.ToAbsolute(rootFont);
+                    break;
+                case PageUnits.ViewPortWidth:
+                    result = dim.ToAbsolute(page.Width);
+                    break;
+                case PageUnits.ViewPortHeight:
+                    result = dim.ToAbsolute(page.Height);
+                    break;
+                case PageUnits.ViewPortMin:
+                    Unit min = Unit.Min(page.Height, page.Width);
+                    result = dim.ToAbsolute(min);
+                    break;
+                case PageUnits.ViewPortMax:
+                    Unit max = Unit.Max(page.Height, page.Width);
+                    result = dim.ToAbsolute(max);
+                    break;
+                default:
+                    result = dim;
+                    break;
+            }
+
+            return result;
+        }
         //
         // factory methods
         //

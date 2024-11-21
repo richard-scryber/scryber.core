@@ -68,89 +68,12 @@ namespace Scryber.Styles
 
         public static Unit FlattenHorizontalValue(Unit dim, Size page, Size container, Size font, Unit rootFont)
         {
-            
-            Unit result;
-            switch (dim.Units)
-            {
-                case PageUnits.Percent:
-                    result = dim.ToAbsolute(container.Width);
-                    break;
-                case PageUnits.EMHeight:
-                    result = dim.ToAbsolute(font.Height);
-                    break;
-                case PageUnits.EXHeight:
-                    //HACK: Assuming the width of a zero is the same size as an 'x' character high. Not usually a bad assumption
-                    result = dim.ToAbsolute(font.Width);
-                    break;
-                case PageUnits.ZeroWidth:
-                    result = dim.ToAbsolute(font.Width);
-                    break;
-                case PageUnits.RootEMHeight:
-                    result = dim.ToAbsolute(rootFont);
-                    break;
-                case PageUnits.ViewPortWidth:
-                    result = dim.ToAbsolute(page.Width);
-                    break;
-                case PageUnits.ViewPortHeight:
-                    result = dim.ToAbsolute(page.Height);
-                    break;
-                case PageUnits.ViewPortMin:
-                    Unit min = Unit.Min(page.Height, page.Width);
-                    result = dim.ToAbsolute(min);
-                    break;
-                case PageUnits.ViewPortMax:
-                    Unit max = Unit.Max(page.Height, page.Width);
-                    result = dim.ToAbsolute(max);
-                    break;
-                default:
-                    result = dim;
-                    break;
-            }
-
-            return result;
+            return Unit.FlattenHorizontalValue(dim, page, container, font, rootFont);
         }
         
         public static Unit FlattenVerticalValue(Unit dim, Size page, Size container, Size font, Unit rootFont)
         {
-            Unit result;
-            switch (dim.Units)
-            {
-                case PageUnits.Percent:
-                    result = dim.ToAbsolute(container.Height);
-                    break;
-                case PageUnits.EMHeight:
-                    result = dim.ToAbsolute(font.Height);
-                    break;
-                case PageUnits.EXHeight:
-                    //HACK: Assuming the width of a zero is the same size as an 'x' character high. Not usually a bad assumption
-                    result = dim.ToAbsolute(font.Width);
-                    break;
-                case PageUnits.ZeroWidth:
-                    result = dim.ToAbsolute(font.Width);
-                    break;
-                case PageUnits.RootEMHeight:
-                    result = dim.ToAbsolute(rootFont);
-                    break;
-                case PageUnits.ViewPortWidth:
-                    result = dim.ToAbsolute(page.Width);
-                    break;
-                case PageUnits.ViewPortHeight:
-                    result = dim.ToAbsolute(page.Height);
-                    break;
-                case PageUnits.ViewPortMin:
-                    Unit min = Unit.Min(page.Height, page.Width);
-                    result = dim.ToAbsolute(min);
-                    break;
-                case PageUnits.ViewPortMax:
-                    Unit max = Unit.Max(page.Height, page.Width);
-                    result = dim.ToAbsolute(max);
-                    break;
-                default:
-                    result = dim;
-                    break;
-            }
-
-            return result;
+            return Unit.FlattenVerticalValue(dim, page, container, font, rootFont);
         }
 
         public static Unit FlattenFontValue(Unit dim, Size page, Size container, Size font, Unit rootFont)
@@ -366,6 +289,47 @@ namespace Scryber.Styles
             }
         }
     }
-    
+
+    public class StyleKeyTransformOperationFlattener : IStyleKeyFlattenValue<TransformOperationSet>
+    {
+        public TransformOperationSet FlattenValue(TransformOperationSet known, Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            return known.CloneAndFlatten(pageSize, containerSize, font, rootFont);
+            return known;
+            //throw new NotImplementedException();
+        }
+
+        public void SetFlattenedValue(Style onStyle, StyleKey<TransformOperationSet> key, Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            TransformOperationSet set = onStyle.GetValue(key, null);
+            if (set != null)
+            {
+                set = set.CloneAndFlatten(pageSize, containerSize, font, rootFont);
+                onStyle.SetValue(key, set);
+            }
+            //throw new NotImplementedException();
+        }
+    }
+
+    public class StyleKeyTransformOriginFlattener : IStyleKeyFlattenValue<TransformOrigin>
+    {
+        public TransformOrigin FlattenValue(TransformOrigin known, Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            return known.CloneAndFlatten(pageSize, containerSize, font, rootFont);
+            return known;
+            //throw new NotImplementedException();
+        }
+
+        public void SetFlattenedValue(Style onStyle, StyleKey<TransformOrigin> key, Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            TransformOrigin origin = onStyle.GetValue(key, null);
+            if (origin != null)
+            {
+                origin = origin.CloneAndFlatten(pageSize, containerSize, font, rootFont);
+                onStyle.SetValue(key, origin);
+            }
+            //throw new NotImplementedException();
+        }
+    }
     
 }

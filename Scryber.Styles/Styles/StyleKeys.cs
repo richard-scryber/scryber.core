@@ -613,9 +613,11 @@ namespace Scryber.Styles
 
         public static readonly StyleKey TransformItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleTransform, NOT_INHERITED);
 
-        public static readonly StyleKey<Scryber.Drawing.TransformOperationSet> TransformOperationKey = StyleKey.InternalCreateStyleValueKey<TransformOperationSet>((ObjectType)"trop", TransformItemKey);
+        public static readonly StyleKey<Scryber.Drawing.TransformOperationSet> TransformOperationKey = StyleKey.InternalCreateRelativeStyleValueKey<TransformOperationSet>((ObjectType)"trop", TransformItemKey,
+            new StyleKeyTransformOperationFlattener());
 
-        public static readonly StyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((ObjectType)"orig", TransformItemKey);
+        public static readonly StyleKey<TransformOrigin> TransformOriginKey = StyleKey.InternalCreateRelativeStyleValueKey<TransformOrigin>((ObjectType)"orig", TransformItemKey,
+            new StyleKeyTransformOriginFlattener());
 
         //FontFace
 

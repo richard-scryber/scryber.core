@@ -886,14 +886,14 @@ namespace Scryber.PDF.Layout
         {
             var page = this.DocumentLayout.CurrentPage;
             var pgSize = page.Size;
-            var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
-            Size containerSize;
-            if (null != container)
-                containerSize = container.CurrentRegion.TotalBounds.Size;
-            else if (null != page.CurrentBlock)
-                containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
-            else
-                containerSize = page.Size;
+            // var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
+            // Size containerSize;
+            // if (null != container)
+            //     containerSize = container.CurrentRegion.TotalBounds.Size;
+            // else if (null != page.CurrentBlock)
+            //     containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
+            // else
+            //     containerSize = page.Size;
 
             var font = this.FullStyle.CreateTextOptions();
 
@@ -929,6 +929,20 @@ namespace Scryber.PDF.Layout
                         {
                             sz.Width += container.Position.Padding.Left + container.Position.Padding.Right;
                         }
+                        break;
+                    }
+                    else if (container.Position.XObjectRender)
+                    {
+                        if (container.Position.ViewPort.HasValue)
+                        {
+                            sz = container.Position.ViewPort.Value.Size;
+                        }
+                        else
+                        {
+                            sz = new Size(container.Position.Width.Value, container.Position.Height.Value);
+                        }
+
+                        foundRelative = true;
                         break;
                     }
                     container = container.Parent as PDFLayoutBlock;
@@ -1747,14 +1761,16 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.TransformMatrix.ToString() + " to the bounds for block " + relBlock.ToString());
+            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.Transformations.ToString() + " to the bounds for block " + relBlock.ToString());
 
             //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
 
-            Scryber.PDF.Graphics.PDFTransformationMatrix matrix = pos.TransformMatrix;
-
+            Scryber.Drawing.TransformOperationSet transform = pos.Transformations;
             Rect bounds = new Rect(Point.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
-            Rect transformed = matrix.TransformBounds(bounds, TransformationOrigin.CenterMiddle);
+
+            
+            var matrix = transform.GetTransformationMatrix(Context.Graphics.ContainerSize, pos.TransformationOrigin);
+            var transformed = matrix.TransformBounds(bounds);
 
             Unit xpos = transformed.X;
             Unit ypos = transformed.Y;

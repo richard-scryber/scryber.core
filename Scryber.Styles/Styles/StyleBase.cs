@@ -1186,26 +1186,31 @@ namespace Scryber.Styles
 
             // transformations
 
-            PDFTransformationMatrix transform = null;
+            TransformOperationSet transforms = null;
             
 
             if (this.IsValueDefined(StyleKeys.TransformOperationKey))
             {
-                TransformOperationSet op = this.GetValue(StyleKeys.TransformOperationKey, null);
+                transforms = this.GetValue(StyleKeys.TransformOperationKey, null);
                 
-                transform = new PDFTransformationMatrix();
+                if (transforms.IsIdentity)
+                    transforms = null; //identity will do nothing
                 
-                //op.GetMatrix(MatrixOrder.Append);
-
-                if (transform.IsIdentity)
-                    transform = null; //identity will do nothing
 
                 //otherwise make sure we are positioned as absolute or relative.
                 else if (options.PositionMode != PositionMode.Absolute || options.PositionMode != PositionMode.Fixed)
+                {
                     options.PositionMode = PositionMode.Absolute;
+
+                    var origin = this.GetValue(StyleKeys.TransformOriginKey, null);
+                    if (null != origin)
+                    {
+                        options.TransformationOrigin = origin;
+                    }
+                }
             }
 
-            options.TransformMatrix = transform;
+            options.Transformations = transforms;
 
             return options;
         }

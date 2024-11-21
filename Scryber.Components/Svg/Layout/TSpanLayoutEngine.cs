@@ -81,7 +81,7 @@ namespace Scryber.Svg.Layout
 
                 Unit defaultShift; 
 
-                if (block.Position.TransformMatrix != null && block.Position.TransformMatrix.IsIdentity == false){
+                if (block.Position.Transformations != null && block.Position.Transformations.IsIdentity == false){
                     //case for the transform only where we should consider the full block height that is transformed.
                     defaultShift = met.BaseLineOffset;
                 }
@@ -156,7 +156,7 @@ namespace Scryber.Svg.Layout
                     
                 }
                 
-                if (block.Position.TransformMatrix != null)
+                if (block.Position.Transformations != null)
                 {
                     if (yVal != Unit.Zero)
                         update.Y += yVal;

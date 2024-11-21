@@ -1780,28 +1780,31 @@ namespace Scryber.PDF.Layout
             else if (context.ShouldLogVerbose)
                 context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY,
                     "Setting the Graphics state transformation matrix for " + this.Owner.ToString() +
-                    " and any children to " + this.Position.TransformMatrix);
+                    " and any children to " + this.Position.Transformations);
 
-            if (null == this.Position.TransformMatrix)
+            if (null == this.Position.Transformations)
                 throw new NullReferenceException(
                     "The was no PDF Transformation matrix on the position to set up the Block transformation - method should not be called in this state.");
 
             //Start with the original transformation matrix
-            PDFTransformationMatrix
-                full = this.Position.TransformMatrix
-                    .Clone(); // offsetToActual * (this.Position.TransformMatrix * offsetToOrigin);
+            TransformOperationSet
+                full = this.Position.Transformations;
+                    
             
             if (full.IsIdentity)
             {
                 //Do Nothing
             }
-            else if (full.Transformations == MatrixTransformTypes.Translation && this.Owner is Svg.Components.SVGText)
+            else if (this.Owner is Svg.Components.SVGText)
             {
+                throw new NotImplementedException("Need to sort or atleast check the transformation of the SVGText");
+                
                 //TODO: Take this out and make the SVGText a Component run rather than a block.
                 //Just a translation of some text so quicker to just offset the translation by the height of the block
+                
                 var offsetX = 0;
                 var offsetY = this.TotalBounds.Height.PointsValue;
-                full = full.Clone();
+                //full = full.Clone();
 
                 float posOffsetX = 0.0F;
                 float posOffsetY = 0.0F;
@@ -1811,11 +1814,11 @@ namespace Scryber.PDF.Layout
                 
                 //set any explicit position offsets
 
-                full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
+                //full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
 
-                context.Graphics.SetTransformationMatrix(full, true, true);
-                this.Position.TransformMatrix = full;
-                this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
+                //context.Graphics.SetTransformationMatrix(full, true, true);
+                //this.Position.TransformMatrix = full;
+                //this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
                 
                 //we want to return true - to tear it down afterwards
                 transformed = true;
@@ -1864,8 +1867,10 @@ namespace Scryber.PDF.Layout
                     posOffsetY = ((float)this.Position.Y.Value.PointsValue);
                 }
 
+                throw new NotImplementedException("Need to check the matrix transformations");
+                
                 //Set the translation to the origin and the explicit position
-                full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
+                //full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
 
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
@@ -1888,12 +1893,12 @@ namespace Scryber.PDF.Layout
                         "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
 
                 //apply the actual transformation
-                context.Graphics.SetTransformationMatrix(full, true, true);
+                //context.Graphics.SetTransformationMatrix(full, true, true);
                 //save state
 
                 //Save the newly caclulated values back on the block.
-                this.Position.TransformMatrix = full;
-                this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+                //this.Position.TransformMatrix = full;
+                //this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
                 transformed = true;
             }
 

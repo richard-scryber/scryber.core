@@ -10,6 +10,7 @@ using System.Linq;
 using Scryber.PDF.Graphics;
 using Scryber.PDF.Layout;
 using Scryber.Svg;
+using Path = Scryber.Components.Path;
 using TransformMatrixOperation = Scryber.Styles.TransformMatrixOperation;
 using TransformOperation = Scryber.Drawing.TransformOperation;
 
@@ -1089,7 +1090,72 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(fiftyPcnt, parsed.HorizontalOrigin);
             Assert.AreEqual(fiftyPcnt, parsed.VerticalOrigin);
         }
+
         
+        [TestMethod]
+        public void SVGTransformFlattenRelative()
+        {
+            string transformOps = "translate(20%, 10%)";
+            var rectStyle = new StyleDefn(".rect");
+            rectStyle.SetValue(StyleKeys.TransformOperationKey, TransformOperationSet.Parse(transformOps));
+
+            
+            var doc = new HTMLDocument();
+            doc.Styles.Add(rectStyle);
+            
+            var body = new HTMLBody()
+            {
+                Margins = Thickness.Empty(),
+                Padding = Thickness.Empty()
+            };
+            
+            doc.Body = body;
+
+            var svg = new SVGCanvas()
+            {
+                Width = 300, 
+                Height = 400, 
+                BorderColor = StandardColors.Red, 
+                BorderWidth = 1
+            };
+            body.Contents.Add(svg);
+
+            SVGPath path = new SVGPath()
+            {
+                PathData = Scryber.Drawing.GraphicsPath.Parse("M 10,30 A 20,20 0,0,1 50,30 A 20,20 0,0,1 90,30 Q 90,60 50,90 Q 10,60 10,30 z"),
+                StyleClass = "rect"
+            };
+            svg.Contents.Add(path);
+            
+            using (var stream = DocStreams.GetOutputStream("SVGTransformTranslateRelative.pdf"))
+            {
+                body.Style.OverlayGrid.ShowGrid = true;
+                body.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                body.Style.OverlayGrid.GridMajorCount = 5;
+                body.Style.OverlayGrid.GridSpacing = 10;
+                
+                doc.SaveAsPDF(stream);
+            }
+
+            var arrange = path.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            var full = arrange.FullStyle;
+            Assert.IsNotNull(full);
+            Assert.IsTrue(full.IsValueDefined(StyleKeys.TransformOperationKey));
+            var set = full.GetValue(StyleKeys.TransformOperationKey, null);
+            Assert.IsNotNull(set);
+            Assert.IsNotNull(set.Root);
+            var transform = set.Root as TransformTranslateOperation;
+            Assert.IsNotNull(transform);
+            var bounds = path.PathData.Bounds;
+            Assert.AreEqual(Unit.Pt(60), transform.XOffset); //20% of 300
+            Assert.AreEqual(Unit.Pt(40), transform.YOffset); //10% of 300
+            Assert.AreEqual(bounds.X + 60, arrange.RenderBounds.X); //bounds.x + XOffset
+            Assert.AreEqual(bounds.Y + 40, arrange.RenderBounds.Y); //bounds.y + YOffset
+            Assert.AreEqual(bounds.Width, arrange.RenderBounds.Width); //unchanged
+            Assert.AreEqual(bounds.Height, arrange.RenderBounds.Height);
+            
+        }
         
 
         [TestMethod]

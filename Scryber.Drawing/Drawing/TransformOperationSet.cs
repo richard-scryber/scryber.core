@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Scryber.OpenType;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {
@@ -17,6 +18,20 @@ namespace Scryber.Drawing
         /// Gets or sets the root of the linked list of TransformOperations
         /// </summary>
         public TransformOperation Root { get; set; }
+        
+
+        public bool IsIdentity
+        {
+            get
+            {
+                if (null == Root)
+                    return true;
+                else
+                {
+                    return this.Root.IsIdentity;
+                }
+            }
+        }
 
         public void AppendOperation(TransformOperation op)
         {
@@ -29,6 +44,56 @@ namespace Scryber.Drawing
             {
                 curr.AppendTransformation(op);
             }
+        }
+
+        public TransformOperationSet CloneAndFlatten(Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            TransformOperationSet clone = (TransformOperationSet)this.MemberwiseClone();
+            if (null != this.Root)
+            {
+                clone.Root = this.Root.CloneValuesAndFlatten(pageSize, containerSize, font, rootFont);
+            }
+
+            return clone;
+        }
+
+        public Scryber.PDF.Graphics.PDFTransformationMatrix GetTransformationMatrix(Size containerSize, TransformOrigin origin)
+        {
+            Matrix2D matrix = Matrix2D.Identity;
+            DrawingOrigin drawFrom = DrawingOrigin.BottomLeft;
+            
+            if (origin != null)
+            {
+                //TODO apply the offset to 
+            }
+            else
+            {
+                //default PDF Origin is bottom left.
+                //default SVG Origin in Top left
+                //so move there
+                matrix.Translate(0, containerSize.Height.PointsValue);
+            }
+
+            if (null != this.Root)
+            {
+                
+                matrix = this.Root.GetMatrix(matrix, drawFrom);
+            }
+
+            if (origin != null)
+            {
+                //TODO: re-apply the offset back to the position.
+                
+            }
+            else
+            {
+                var moveBack = Matrix2D.Identity;
+                moveBack.Translate(0, 0- containerSize.Height.PointsValue);
+                
+                matrix = Matrix2D.Multiply(matrix, moveBack);
+            }
+
+            return new PDFTransformationMatrix(matrix);
         }
 
 #region Parsing
@@ -429,7 +494,6 @@ namespace Scryber.Drawing
         
         
 #endregion
-
 
 
         public override string ToString()

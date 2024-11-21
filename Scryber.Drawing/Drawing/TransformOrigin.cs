@@ -25,6 +25,21 @@ namespace Scryber.Drawing
             this.VerticalOrigin = vOrigin;
         }
 
+        public TransformOrigin CloneAndFlatten(Size pageSize, Size containerSize, Size font, Unit rootFont)
+        {
+            var clone = (TransformOrigin)this.MemberwiseClone();
+            if (clone.HorizontalOrigin.IsRelative)
+            {
+                clone.HorizontalOrigin = Unit.FlattenHorizontalValue(clone.HorizontalOrigin, pageSize, containerSize, font, rootFont);
+            }
+
+            if (clone.VerticalOrigin.IsRelative)
+            {
+                clone.VerticalOrigin = Unit.FlattenVerticalValue(clone.HorizontalOrigin, pageSize, containerSize, font, rootFont);
+            }
+            return clone;
+        }
+
         public static TransformOrigin Parse(string value)
         {
             TransformOrigin parsed;
