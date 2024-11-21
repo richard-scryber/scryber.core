@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
     <title></title>
     <style>
+        
+        body {
+            font: 100 12pt 'Roboto';
+            padding: 20pt;
+        }
+        
         svg {
             background-color: #AAA;
             width: 150pt;
@@ -21,52 +27,49 @@
         }
     </style>
     <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
-    <style>
-        
-        body {
-            font: 100 12pt 'Roboto';
-            padding: 20pt;
-        }
-
-        #Poly-1{
-            transform: rotate(-15deg);
-        }
-        
-        use, #Poly2{
-            transform: rotate(15deg);
-        }
-
-        #Poly3{
-            transform: translate(0pt, 20pt) rotate(15deg) ;
-        }
-        #Poly4{
-            transform: rotate(45deg);
-        }
-        #Poly5{
-             transform: rotate(60deg);
-         }
-        #Poly6{
-              transform: rotate(75deg);
-          }
-        #Poly7{
-               transform: rotate(90deg);
-           }
-    </style>
+    
 </head>
 <body title="Rotation Samples" >
 
     <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
           xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <style>
+
+            #Poly-1{
+                transform: rotate(-15deg);
+            }
+
+            use, #Poly2{
+                transform: rotate(15deg);
+            }
+
+            #Poly3{
+                transform: skew(5deg);
+            }
+            #Poly4{
+                transform: skew(10deg);
+            }
+            #Poly5{
+                transform: skew(15deg);
+            }
+            #Poly6{
+                transform: rotate(75deg);
+            }
+            #Poly7{
+                transform: rotate(90deg);
+            }
+            
+        </style>
         <polyline id="Poly" points="100,100 150,25 150,75 200,0"
-                  fill="black" stroke-width="1pt" />
+                  fill="black" stroke-width="1" />
         <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
-                  fill="#222" stroke-width="1pt"  />
+                  fill="#222" stroke-width="1"  />
         <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
-                  fill="red" stroke-width="1pt"  />
-<!--        <polyline id="Poly4" points="100,100 150,25 150,75 200,0"-->
-<!--                  fill="#666" stroke-width="1pt"  />-->
-<!--        <polyline id="Poly5" points="100,100 150,25 150,75 200,0"-->
-<!--                  fill="#888" stroke-width="1pt"  />-->
+                  fill="red" stroke-width="1"   />
+        <polyline id="Poly4" points="100,100 150,25 150,75 200,0"
+                  fill="#666" stroke-width="1pt"  />
+        <polyline id="Poly5" points="100,100 150,25 150,75 200,0"
+                  fill="#888" stroke-width="1pt"  />
 <!--        <polyline id="Poly6" points="100,100 150,25 150,75 200,0"-->
 <!--                  fill="#AAA" stroke-width="1pt"  />-->
 <!--        <polyline id="Poly7" points="100,100 150,25 150,75 200,0"-->

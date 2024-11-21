@@ -46,14 +46,12 @@ namespace Scryber.Drawing
 
         public Matrix2D GetMatrix(Matrix2D mapping, DrawingOrigin origin)
         {
+            //TODO: check the order of application.
+            mapping = this.DoGetMatrix(mapping, origin);
             
             if (null != this.NextOp)
                 mapping = this.NextOp.GetMatrix(mapping, origin);
-            
-            //TODO: check the order of application.
-            mapping = this.DoGetMatrix(mapping, origin);
 
-            
             return mapping;
 
         }
@@ -122,10 +120,10 @@ namespace Scryber.Drawing
 
         protected override Matrix2D DoGetMatrix(Matrix2D matrix, DrawingOrigin origin)
         {
-            var rotate = Matrix2D.Identity;
+            //var rotate = Matrix2D.Identity;
             var angle = origin == DrawingOrigin.BottomLeft ? (0 - this.AngleRadians) :  this.AngleRadians;
-            rotate.Rotate(angle);
-            matrix = Matrix2D.Multiply(matrix, rotate);
+            matrix.Rotate(angle);
+            //matrix = Matrix2D.Multiply(matrix, rotate);
             
             return base.DoGetMatrix(matrix, origin);
         }
@@ -167,10 +165,10 @@ namespace Scryber.Drawing
             
             x = this.XOffset.PointsValue;
 
-            y = (origin == DrawingOrigin.BottomLeft) ? this.YOffset.PointsValue : 0 - this.YOffset.PointsValue;
+            y = (origin == DrawingOrigin.BottomLeft) ? 0 - this.YOffset.PointsValue : this.YOffset.PointsValue;
             
-            translate.Translate(x,y);
-            matrix = Matrix2D.Multiply(matrix, translate);
+            matrix.Translate(x,y);
+            //matrix = Matrix2D.Multiply(matrix, translate);
             
             return base.DoGetMatrix(matrix, origin);
         }
@@ -207,6 +205,14 @@ namespace Scryber.Drawing
             
             base.ToString(appendTo);
         }
+        
+        protected override Matrix2D DoGetMatrix(Matrix2D matrix, DrawingOrigin origin)
+        {
+            var y = 0; //this.XAngleRadians;
+            var x = 0 -this.YAngleRadians;
+            matrix.Skew(x, y);
+            return base.DoGetMatrix(matrix, origin);
+        }
 
         protected override TransformOperation CloneAndFlatten(Size page, Size container, Size font, Unit rootFont)
         {
@@ -238,6 +244,14 @@ namespace Scryber.Drawing
             appendTo.Append(")");
 
             base.ToString(appendTo);
+        }
+
+        protected override Matrix2D DoGetMatrix(Matrix2D matrix, DrawingOrigin origin)
+        {
+            var x = this.XScaleValue;
+            var y = this.YScaleValue;
+            matrix.Scale(x, y);
+            return base.DoGetMatrix(matrix, origin);
         }
 
         protected override TransformOperation CloneAndFlatten(Size page, Size container, Size font, Unit rootFont)

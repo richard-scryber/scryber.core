@@ -397,6 +397,9 @@ namespace Scryber.Drawing
             values = values.Trim();
             double x;
             double y;
+            bool xPcent = false;
+            bool yPcent = false;
+            
             if (values.IndexOf(',') > 0 || values.IndexOf(' ') > 0)
             {
                 if (xOnly || yOnly)
@@ -407,6 +410,18 @@ namespace Scryber.Drawing
                 var xS = all[0].Trim();
                 var yS = all[1].Trim();
 
+                if (xS.EndsWith("%"))
+                {
+                    xPcent = true;
+                    xS = xS.Substring(0, xS.Length - 1);
+                }
+
+                if (yS.EndsWith("%"))
+                {
+                    yPcent = true;
+                    yS = yS.Substring(0, yS.Length -1);
+                }
+
                 if (!double.TryParse(xS, out x))
                     return null;
 
@@ -415,6 +430,14 @@ namespace Scryber.Drawing
             }
             else
             {
+                if (values.EndsWith("%"))
+                {
+                    values = values.Substring(0, values.Length - 1);
+                    xPcent = true;
+                    yPcent = true;
+                }
+                
+
                 if (!double.TryParse(values, out x))
                     return null;
 
@@ -431,6 +454,16 @@ namespace Scryber.Drawing
                 {
                     y = x;
                 }
+            }
+
+            if (xPcent)
+            {
+                x = x / 100.0;
+            }
+
+            if (yPcent)
+            {
+                y = y / 100.0;
             }
 
             return new TransformScaleOperation(x, y);
