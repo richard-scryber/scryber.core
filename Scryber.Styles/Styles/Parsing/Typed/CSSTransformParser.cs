@@ -35,7 +35,11 @@ namespace Scryber.Styles.Parsing.Typed
                     if(bound)
                         throw new ArgumentOutOfRangeException("Cannot bind individual transforms within multiple operations. Consider using a concat expression to build the string");
 
-                    full = parsed;
+                    if (null != full)
+                        full.AppendOperation(parsed.Root);
+                    else
+                        full = parsed;
+                    
                     result = true;
                 }
                 else

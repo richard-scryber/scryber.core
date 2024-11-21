@@ -46,11 +46,13 @@ namespace Scryber.Drawing
 
         public Matrix2D GetMatrix(Matrix2D mapping, DrawingOrigin origin)
         {
-            //TODO: check the order of application.
-            mapping = this.DoGetMatrix(mapping, origin);
             
             if (null != this.NextOp)
                 mapping = this.NextOp.GetMatrix(mapping, origin);
+            
+            //TODO: check the order of application.
+            mapping = this.DoGetMatrix(mapping, origin);
+
             
             return mapping;
 
