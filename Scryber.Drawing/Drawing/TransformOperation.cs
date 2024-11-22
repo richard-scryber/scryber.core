@@ -292,6 +292,23 @@ namespace Scryber.Drawing
             
         }
 
+        protected override Matrix2D DoGetMatrix(Matrix2D matrix, DrawingOrigin origin)
+        {
+            var d = this.MatrixValues;
+            if (d != null && d.Length == 6)
+            {
+                Matrix2D full = new Matrix2D(d[0], 0-d[1], 0-d[2], d[3], d[4], 0-d[5]);
+                if (matrix.IsIdentity)
+                    matrix = full;
+                else
+                {
+                    matrix = Matrix2D.Multiply(matrix, full);
+                }
+            }
+
+            return base.DoGetMatrix(matrix, origin);
+        }
+
         protected override TransformOperation CloneAndFlatten(Size page, Size container, Size font, Unit rootFont)
         {
             TransformMatrixOperation matrix = (TransformMatrixOperation)this.MemberwiseClone();

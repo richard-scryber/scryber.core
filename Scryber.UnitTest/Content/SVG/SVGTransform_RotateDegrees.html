@@ -44,13 +44,13 @@
             }
 
             #Poly3{
-                transform: skew(10deg, 10deg);
+                /*transform: matrix(1,0,0,1,20,20);*/
             }
             #Poly4{
-                transform: skew(20deg, 20deg);
+                transform: matrix(0.866,-0.5,0.5,0.866,0,100);
             }
             #Poly5{
-                transform: skew(30deg, 30deg);
+                transform: matrix(1,0,0,1,40,40);
             }
             #Poly6{
                 transform: rotate(75deg);
@@ -61,15 +61,15 @@
             
         </style>
         <polyline id="Poly" points="100,100 150,25 150,75 200,0"
-                  fill="black" stroke-width="1" />
+                  fill="black" stroke-width="1" transform="translate(0,100)" />
 <!--        <polyline id="Poly2" points="100,100 150,25 150,75 200,0"-->
 <!--                  fill="#222" stroke-width="1"  />-->
-        <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
-                  fill="red" stroke-width="1"   />
+<!--        <polyline id="Poly3" points="100,100 150,25 150,75 200,0"-->
+<!--                  fill="red" stroke-width="1"   />-->
         <polyline id="Poly4" points="100,100 150,25 150,75 200,0"
-                  fill="#666" stroke-width="1pt"  />
-        <polyline id="Poly5" points="100,100 150,25 150,75 200,0"
-                  fill="#888" stroke-width="1pt"  />
+                  fill="green" stroke-width="1pt"  />
+<!--        <polyline id="Poly5" points="100,100 150,25 150,75 200,0"-->
+<!--                  fill="#888" stroke-width="1pt"  />-->
 <!--        <polyline id="Poly6" points="100,100 150,25 150,75 200,0"-->
 <!--                  fill="#AAA" stroke-width="1pt"  />-->
 <!--        <polyline id="Poly7" points="100,100 150,25 150,75 200,0"-->
