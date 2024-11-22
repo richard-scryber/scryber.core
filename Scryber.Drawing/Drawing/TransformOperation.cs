@@ -208,9 +208,12 @@ namespace Scryber.Drawing
         
         protected override Matrix2D DoGetMatrix(Matrix2D matrix, DrawingOrigin origin)
         {
-            var y = 0; //this.XAngleRadians;
-            var x = 0 -this.YAngleRadians;
+            Matrix2D skew = Matrix2D.Identity;
+            var x = Math.Tan(0 -this.XAngleRadians);
+            var y = Math.Tan(0 - this.YAngleRadians);
+            
             matrix.Skew(x, y);
+            
             return base.DoGetMatrix(matrix, origin);
         }
 
