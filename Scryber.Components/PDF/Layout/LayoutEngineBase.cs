@@ -2278,6 +2278,9 @@ namespace Scryber.PDF.Layout
             Style prev = this.FullStyle;
             this.FullStyle = style;
 
+            //Allow the container to apply any styles needed from the context or our applied style
+            if(invisible is IPassThroughStyleContainer passThrough)
+                passThrough.ApplyStylesToChildren(this, this.Context, style);
             
 
             //Extract the collection of child components in this container

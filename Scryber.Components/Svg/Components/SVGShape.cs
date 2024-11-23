@@ -30,6 +30,18 @@ namespace Scryber.Svg.Components
             set { this.Path = value; }
         }
 
+        protected PDFTransformationMatrix DrawingTransformMatrix
+        {
+            get;
+            set;
+        }
+
+        protected Rect DrawingTransformBounds
+        {
+            get;
+            set;
+        }
+
 
         protected abstract GraphicsPath CreatePath(Size available, Style fullstyle);
 
@@ -59,6 +71,11 @@ namespace Scryber.Svg.Components
                     var matrix = transform.GetTransformationMatrix(size, origin);
                     graphics.SaveGraphicsState();
                     graphics.SetTransformationMatrix(matrix, false, true);
+
+                    var bounds = this.Path.Bounds;
+                    var transformed = matrix.TransformBounds(bounds);
+                    this.DrawingTransformMatrix = matrix;
+                    this.DrawingTransformBounds = transformed;
                 }
 
                 PDFBrush brush = fullstyle.CreateFillBrush();

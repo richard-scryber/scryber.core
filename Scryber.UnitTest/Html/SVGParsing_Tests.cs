@@ -1183,7 +1183,7 @@ namespace Scryber.Core.UnitTests.Html
         }
         
         [TestMethod]
-        public void SVGTransformRotateDegrees()
+        public void SVGTransformOperationRotateDegrees()
         {
 
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateDegrees.html",
@@ -1197,15 +1197,255 @@ namespace Scryber.Core.UnitTests.Html
                 doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
                 
                 
-                using (var stream = DocStreams.GetOutputStream("SVGTransformRotateDegrees.pdf"))
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationRotateDegrees.pdf"))
                 {
                     doc.SaveAsPDF(stream);
                 }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
                 
-                Assert.Inconclusive("No Checks made");
+                var poly2 = doc.FindAComponentById("Poly2");
+                Assert.IsNotNull(poly2);
+                
+                var poly3 = doc.FindAComponentById("Poly3");
+                Assert.IsNotNull(poly3);
+                
+                var poly4 = doc.FindAComponentById("Poly4");
+                Assert.IsNotNull(poly4);
+                
+                var poly5 = doc.FindAComponentById("Poly5");
+                Assert.IsNotNull(poly5);
+                
+                var poly6 = doc.FindAComponentById("Poly6");
+                Assert.IsNotNull(poly6);
+                
+                var poly7 = doc.FindAComponentById("Poly7");
+                Assert.IsNotNull(poly7);
+
+                var poly_1 = doc.FindAComponentById("Poly-1");
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) *15.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                //TODO: check the render bounds
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 30.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly4.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 45.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly5.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 60.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly6.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 75.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly7.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 90.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * -15.0, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
             }
         }
 
+        [TestMethod]
+        public void SVGTransformOperationTranslate()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_Translate.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationTranslate.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var use_1 = doc.FindAComponentById("Poly-1") as SVGUse;
+                Assert.IsNotNull(use_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var translate = transform.Root as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(50, translate.XOffset);
+                Assert.AreEqual(0, translate.YOffset);
+                Assert.IsNull(translate.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                translate = transform.Root as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(50, translate.XOffset);
+                Assert.AreEqual(50, translate.YOffset);
+                Assert.IsNull(translate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                translate = transform.Root as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(0, translate.XOffset);
+                Assert.AreEqual(50, translate.YOffset);
+                Assert.IsNull(translate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use_1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use_1.Contents.Count);
+                var poly_1 = use_1.Contents[0];
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                translate = transform.Root as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(-50, translate.XOffset);
+                Assert.AreEqual(0, translate.YOffset);
+                Assert.IsNull(translate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
         [TestMethod]
         public void SVGInsert()
         {

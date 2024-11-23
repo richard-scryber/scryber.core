@@ -189,6 +189,11 @@ namespace Scryber.Svg.Components
             return c;
         }
 
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
+        {
+            base.SetArrangement(arrange, context);
+        }
+
         object ICloneable.Clone()
         {
             return this.Clone();

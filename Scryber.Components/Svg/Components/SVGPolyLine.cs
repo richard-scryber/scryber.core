@@ -88,7 +88,18 @@ namespace Scryber.Svg.Components
             if(null != path)
             {
                 var bounds = path.Bounds;
-                
+
+                if (null != this.DrawingTransformMatrix)
+                {
+                    bounds = this.DrawingTransformBounds;
+                    var tl = new Point(bounds.X, bounds.Y);
+                    var tr = new Point(bounds.X + bounds.Width, bounds.Y);
+                    var bl = new Point(bounds.X, bounds.Y + bounds.Height);
+                    var br = new Point(bounds.X + bounds.Width, bounds.Y + bounds.Height);
+
+                    bounds = Rect.Bounds(tl, tr, bl, br);
+                }
+
                 if (null != context.RenderMatrix)
                     bounds = context.RenderMatrix.TransformBounds(bounds);
                 

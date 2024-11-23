@@ -266,6 +266,11 @@ namespace Scryber
 
     #endregion
 
+    public interface IPassThroughStyleContainer : IInvisibleContainer
+    {
+        void ApplyStylesToChildren(IPDFLayoutEngine engine, PDFLayoutContext context, Style toPass);
+    }
+
     #region public interface IDataSetProviderCommand
 
     /// <summary>

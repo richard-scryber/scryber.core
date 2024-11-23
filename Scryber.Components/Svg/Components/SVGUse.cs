@@ -5,11 +5,13 @@ using Scryber.Components;
 using Scryber.Data;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("use")]
-    public class SVGUse : Scryber.Components.PlaceHolder
+    public class SVGUse : Scryber.Components.PlaceHolder, IPassThroughStyleContainer, IStyledComponent
     {
 
         #region public string HRef {get;set;}
@@ -227,6 +229,7 @@ namespace Scryber.Svg.Components
 
         #endregion
 
+        #region 
         [PDFAttribute("rx")]
         public Unit CornerRadiusX
         {
@@ -243,6 +246,8 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
             }
         }
+        
+        #endregion
 
         [PDFAttribute("ry")]
         public Unit CornerRadiusY
@@ -459,6 +464,16 @@ namespace Scryber.Svg.Components
             }
 
         }
+        
+
+        /// <summary>
+        /// Gets the actual SVG component this Use statement was referencing.
+        /// </summary>
+        internal IComponent CopiedComponent
+        {
+            get;
+            private set;
+        }
 
         public SVGUse()
         {
@@ -515,10 +530,14 @@ namespace Scryber.Svg.Components
                 copy = (IComponent)(found as ICloneable).Clone();
 
                 if (copy is IStyledComponent)
-                    this.ApplyStyle(copy as IStyledComponent);
-                
-                copy.ID = Document.GetIncrementID(copy.Type);
+                {
+                    //removing this for the layout engine
+                    //this.ApplyStyle(copy as IStyledComponent);
+                }
 
+                copy.ID = Document.GetIncrementID(copy.Type);
+                this.CopiedComponent = copy;
+                
                 return new IComponent[] { copy };
             }
             else
@@ -528,19 +547,25 @@ namespace Scryber.Svg.Components
             }
         }
 
-        private void ApplyStyle(IStyledComponent tocomponent)
+        public void ApplyStylesToChildren(IPDFLayoutEngine engine, PDFLayoutContext context, Style fullStyle)
+        {
+            if (null != this.CopiedComponent && this.CopiedComponent is IStyledComponent styled)
+                this.ApplyStyle(styled, fullStyle);
+        }
+
+        private void ApplyStyle(IStyledComponent tocomponent, Style style)
         {
             StyleValue<Unit> val;
-
-            if (this.HasStyle)
+            
+            if (null != style && style.HasValues)
             {
-                foreach (var key in this.Style.Keys)
+                foreach (var key in style.Keys)
                 {
                     if (key.Equals(StyleKeys.SVGGeometryXKey))
                     {
-                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryXKey, tocomponent);
-                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryCentreXKey, tocomponent);
-                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryX2Key, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryXKey, tocomponent, style);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryCentreXKey, tocomponent, style);
+                        this.AddStyleValues(StyleKeys.SVGGeometryXKey, StyleKeys.SVGGeometryX2Key, tocomponent, style);
 
                         if (tocomponent is ISVGOffsetShape offsetShape)
                         {
@@ -551,13 +576,13 @@ namespace Scryber.Svg.Components
                     }
                     else if (key.Equals(StyleKeys.SVGGeometryYKey))
                     {
-                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryYKey, tocomponent);
-                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryCentreYKey, tocomponent);
-                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryY2Key, tocomponent);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryYKey, tocomponent, style);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryCentreYKey, tocomponent, style);
+                        this.AddStyleValues(StyleKeys.SVGGeometryYKey, StyleKeys.SVGGeometryY2Key, tocomponent, style);
                         
                         if (tocomponent is ISVGOffsetShape offsetShape)
                         {
-                            var yValue = this.Style.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+                            var yValue = style.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
                             offsetShape.ShapeOffset = new Point(offsetShape.ShapeOffset.X,
                                 offsetShape.ShapeOffset.Y + yValue);
                         }
@@ -568,7 +593,7 @@ namespace Scryber.Svg.Components
                         {
                             //unlike css if the value is not defined on the cloned component, then we copy it across.
                             //This cloned component does not have the value, so we apply it.
-                            key.CopyValue(this.Style, tocomponent.Style);
+                            key.CopyValue(style, tocomponent.Style);
                         }
                         
                     }
@@ -578,7 +603,7 @@ namespace Scryber.Svg.Components
             }
         }
 
-        private void AddStyleValues(StyleKey<Unit> mykey, StyleKey<Unit> componentKey, IStyledComponent toComponent)
+        private void AddStyleValues(StyleKey<Unit> mykey, StyleKey<Unit> componentKey, IStyledComponent toComponent, Style fromStyle)
         {
             StyleValue<Unit> value;
             StyleValue<Unit> toAdd;
@@ -586,10 +611,10 @@ namespace Scryber.Svg.Components
             {
                 Unit u1 = value.Value(toComponent.Style);
                 
-                if (this.Style.TryGetValue(mykey, out toAdd))
+                if (fromStyle.TryGetValue(mykey, out toAdd))
                 {
                     //we have both so add them together
-                    Unit u2 = toAdd.Value(this.Style);
+                    Unit u2 = toAdd.Value(fromStyle);
                     Unit total = u1 + u2;
                     toComponent.Style.SetValue(componentKey, total);
                 }
@@ -602,10 +627,12 @@ namespace Scryber.Svg.Components
             else if (this.Style.TryGetValue(mykey, out toAdd))
             {
                 //only we have the value
-                toComponent.Style.SetValue(componentKey, toAdd.Value(this.Style));
+                toComponent.Style.SetValue(componentKey, toAdd.Value(fromStyle));
             }
             
         }
+
+        
     }
 
     

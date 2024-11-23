@@ -88,6 +88,10 @@ namespace Scryber.Svg.Layout
 
 			if (comp is IInvisibleContainer container)
 			{
+				//Allow the container to apply any styles needed from the context or our applied style
+				if (container is IPassThroughStyleContainer passThrough)
+					passThrough.ApplyStylesToChildren(this, this.Context, full);
+				
 				ComponentList contents;
 				if (this.TryGetComponentChildren(container, out contents))
 					this.DoLayoutChildren(contents);

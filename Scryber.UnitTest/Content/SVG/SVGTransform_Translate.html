@@ -29,15 +29,45 @@
             padding: 20pt;
         }
         
+        svg{
+            width: 150pt;
+            height: 150pt;
+        }
+        
     </style>
 </head>
 <body title="Rotation Samples" >
 
     <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
           xmlns:xlink="http://www.w3.org/1999/xlink"    >
-        <polyline id="Poly" points="100,100 150,25 150,75 200,0"
-                  stroke="black" stroke-width="1pt" />
-        <use href="#Poly" transform="translate(50, 50)" fill="blue" fill-opacity="0.5" stroke="blue" stroke-opacity="0.5" stroke-width="10pt" />
+        <style>
+
+            #Poly{
+            }
+
+            #Poly1{
+                fill: #F33;
+            }
+
+            #Poly2{
+                fill: #F66;
+            }
+            #Poly3{
+                fill: #F99;
+            }
+            
+            #Poly-1{
+                fill: #A00;
+            }
+            
+        </style>
+        
+        <polyline id="Poly" points="100, 100 150, 25 150,75 200,0"
+                  stroke-width="1" />
+        <use id="Poly1" href="#Poly" transform="translate(50 0)" />
+        <use id="Poly2" href="#Poly" transform="translate(50 50)"/>
+        <use id="Poly3" href="#Poly" transform="translate(0 50)" />
+        <use id="Poly-1" href="#Poly" transform="translate(-50 0)" />
     </svg>
     
 </body>
