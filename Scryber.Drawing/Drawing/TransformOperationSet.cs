@@ -5,13 +5,14 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {
+
+    public delegate TransformOperation TransformOperationParser(string arguments, bool xOnly, bool yOnly);
     
     /// <summary>
     /// A wrapper for a set of individual matrix operations on a component or graphic element such as rotate, translate, scale, skew.
-    /// The values of the operations are held as a linked list of TransformOperations.
-    /// To get the actual matrix - It can be converted to a <see cref="Scryber.PDF.Graphics.PDFTransformationMatrix"/> using the GetMatrixMethod.
+    /// The values of the operations are held as a linked list of TransformOperations. Use the SVGTransformOperationSet or the CSSTransformOperationSet for the Parsing static methods.
+    /// To get the actual 2D matrix - It can be converted to a <see cref="Scryber.PDF.Graphics.PDFTransformationMatrix"/> using the GetMatrixMethod.
     /// </summary>
-    [PDFParsableValue()]
     public class TransformOperationSet
     {
         /// <summary>
@@ -116,19 +117,9 @@ namespace Scryber.Drawing
             return success;
         }
 
-        public static TransformOperationSet Parse(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return new TransformOperationSet();
+        
 
-            TransformOperationSet root = new TransformOperationSet();
-            
-            TransformOperationSet.ParseIntoSet(root, value);
-
-            return root;
-        }
-
-        private static bool ParseIntoSet(TransformOperationSet set, string value)
+        protected static bool ParseIntoSet(TransformOperationSet set, string value, TransformOperationParser rotate = null, TransformOperationParser translate = null, TransformOperationParser scale = null, TransformOperationParser skew = null, TransformOperationParser matrix = null)
         {
             MatrixTransformTypes type;
             TransformOperation operation = null;
@@ -241,8 +232,46 @@ namespace Scryber.Drawing
 
                 var values = str.Substring(opLength, end - opLength).Trim();
                 str = str.Substring(end + 1).Trim();
-
-                var op = ParseOperation(type, values, xOnly, yOnly);
+                TransformOperation op;
+                
+                switch (type)
+                {
+                    case(MatrixTransformTypes.Rotate):
+                        if (rotate != null)
+                            op = rotate(values, xOnly, yOnly);
+                        else
+                            op = ParseRotateOperation(values);
+                        break;
+                    case(MatrixTransformTypes.Scaling):
+                        if (scale != null)
+                            op = scale(values, xOnly, yOnly);
+                        else
+                            op = ParseScalingOperation(values, xOnly, yOnly);
+                        break;
+                    case(MatrixTransformTypes.Skew):
+                        if (skew != null)
+                            op = skew(values, xOnly, yOnly);
+                        else
+                            op = ParseSkewOperation(values, xOnly, yOnly);
+                        break;
+                    case(MatrixTransformTypes.Translation):
+                        if (translate != null)
+                            op = translate(values, xOnly, yOnly);
+                        else
+                            op = ParseTranslateOperation(values, xOnly, yOnly);
+                        break;
+                    case(MatrixTransformTypes.Matrix):
+                        if (matrix != null)
+                            op = matrix(values, xOnly, yOnly);
+                        else
+                            op = ParseMatrixOperation(values);
+                        break;
+                    default: 
+                        op = null;
+                        break;
+                }
+                
+                
                 
                 if (op != null)
                 {
@@ -259,31 +288,7 @@ namespace Scryber.Drawing
 
             
         }
-
-        private static TransformOperation ParseOperation(MatrixTransformTypes type, string values, bool xOnly, bool yOnly)
-        {
-            switch (type)
-            {
-                case(MatrixTransformTypes.Unknown):
-                    return null;
-                
-                case(MatrixTransformTypes.Rotate):
-                    return ParseRotateOperation(values);
-                case(MatrixTransformTypes.Scaling):
-                    return ParseScalingOperation(values, xOnly, yOnly);
-                case(MatrixTransformTypes.Skew):
-                    return ParseSkewOperation(values, xOnly, yOnly);
-                case(MatrixTransformTypes.Translation):
-                    return ParseTranslateOperation(values, xOnly, yOnly);
-                case(MatrixTransformTypes.Matrix):
-                    return ParseMatrixOperation(values);
-                case(MatrixTransformTypes.Identity):
-                default: 
-                    return null;
-            }
-            
-            return null;
-        }
+        
         
         private static readonly char[] paramSplitters = new char[] { ',', ' ' };
 
@@ -473,7 +478,7 @@ namespace Scryber.Drawing
         public const string TurnsIdentifier = "turn";
         public const string RadiansIdentifier = "rad";
 
-        private const double DegressToRadians = Math.PI / 180;
+        protected const double DegressToRadians = Math.PI / 180;
         private static TransformOperation ParseRotateOperation(string values)
         {
             values = values.Trim();
@@ -485,7 +490,7 @@ namespace Scryber.Drawing
         }
 
 
-        private static bool ParseAngleValue(string value, out double radians)
+        protected static bool ParseAngleValue(string value, out double radians)
         {
             if (value.EndsWith(DegreesIdentifier))
             {

@@ -46,7 +46,6 @@ namespace Scryber.Svg.Layout
 			this.CurrentBlock.IsExplicitLayout = true;
 			this.CurrentBlock.CurrentRegion.IsExplicitLayout = true;
 			
-			
 			this.ContinueLayout = true;
 			
 			if (this.TryGetComponentChildren(this.Component, out ComponentList children))

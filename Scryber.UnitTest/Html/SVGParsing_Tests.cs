@@ -125,7 +125,7 @@ namespace Scryber.Core.UnitTests.Html
             //rotate examples
             string toParse = "rotate(3.142)";
             
-            var parsed = TransformOperationSet.Parse(toParse);
+            var parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             var root = parsed.Root;
@@ -135,7 +135,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(3.142, rotate.AngleRadians);
             
             toParse = "rotate(-0.5turn) ";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -145,7 +145,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(-3.142, Math.Round(rotate.AngleRadians, 3));
 
             toParse = "rotate(180deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -155,7 +155,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(3.142, Math.Round(rotate.AngleRadians, 3));
 
             toParse = "scale(1)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -166,7 +166,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue));
             
             toParse = "scale(0.7)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.7, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scale(1.3, 0.4)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -188,7 +188,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.4, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scale(-0.5,1)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -199,7 +199,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scaleX(0.7)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -211,7 +211,7 @@ namespace Scryber.Core.UnitTests.Html
             
             
             toParse = "scaleX(1.3)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -222,7 +222,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scaleX(-0.5)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -233,7 +233,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "skew(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -243,8 +243,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
-            toParse = "skew(15deg, 15deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skew(15, 15)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -256,30 +256,21 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
 
-            toParse = "skew(-0.06turn, 18deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skew(-6, 18)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             skew = root as TransformSkewOperation;
             Assert.IsNotNull(skew);
             
-            Assert.AreEqual(Math.Round((-0.06 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(-6 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(Math.Round(18 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
             
-            toParse = "skew(.312rad)";
-            parsed = TransformOperationSet.Parse(toParse);
-            Assert.IsNotNull(parsed);
-            Assert.IsNotNull(parsed.Root);
-            root = parsed.Root;
-            skew = root as TransformSkewOperation;
-            Assert.IsNotNull(skew);
-            
-            Assert.AreEqual(0.312, Math.Round(skew.XAngleRadians, 5));
-            Assert.AreEqual(0.312, Math.Round(skew.YAngleRadians, 5));
+           
             
             toParse = "skewX(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -289,8 +280,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
-            toParse = "skewX(-0.6turn)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewX(-6)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -298,11 +289,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(skew);
             
             
-            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(-6 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0.0, skew.YAngleRadians);
             
-            toParse = "skewX(35deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewX(35)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -313,19 +304,19 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0.0, skew.YAngleRadians);
 
-            toParse = "skewX(.234rad)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewX(234)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             skew = root as TransformSkewOperation;
             Assert.IsNotNull(skew);
             
-            Assert.AreEqual(0.234, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(234 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skewY(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -335,8 +326,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
-            toParse = "skewY(-0.6turn)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewY(-6)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -344,11 +335,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(skew);
             
             
-            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(Math.Round(-6 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
             Assert.AreEqual(0.0, skew.XAngleRadians);
             
-            toParse = "skewY(35deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewY(35)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -359,19 +350,19 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
             Assert.AreEqual(0.0, skew.XAngleRadians);
 
-            toParse = "skewY(.234rad)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "skewY(234)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             skew = root as TransformSkewOperation;
             Assert.IsNotNull(skew);
             
-            Assert.AreEqual(0.234, Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(Math.Round(234 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
             Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
             
-            toParse = "translate(200px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translate(200)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -379,11 +370,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
 
-            Assert.AreEqual(Unit.Px(200), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(200), translate.XOffset);
             Assert.AreEqual(Unit.Zero, translate.YOffset);
 
-            toParse = "translate(50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translate(50)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -391,11 +382,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
 
-            Assert.AreEqual(Unit.Percent(50), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(50), translate.XOffset);
             Assert.AreEqual(Unit.Zero, translate.YOffset);
             
-            toParse = "translate(100pt,200pt)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translate(100,200)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -406,8 +397,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(100), translate.XOffset);
             Assert.AreEqual(Unit.Pt(200), translate.YOffset);
             
-            toParse = "translate(100px,50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translate(100,50)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -415,11 +406,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
 
-            Assert.AreEqual(Unit.Px(100), translate.XOffset);
-            Assert.AreEqual(Unit.Percent(50), translate.YOffset);
+            Assert.AreEqual(Unit.Pt(100), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(50), translate.YOffset);
             
-            toParse = "translate(-30%, 210.5px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translate(-30, 210.5)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -427,11 +418,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
 
-            Assert.AreEqual(Unit.Percent(-30), translate.XOffset);
-            Assert.AreEqual(Unit.Px(210.5), translate.YOffset);
+            Assert.AreEqual(Unit.Pt(-30), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(210.5), translate.YOffset);
             
             toParse = "translate(30%, -50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -443,7 +434,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Percent(-50), translate.YOffset);
             
             toParse = "translateX(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -453,41 +444,41 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.XOffset);
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
-            toParse = "translateX(42px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateX(42)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             translate = root as TransformTranslateOperation;
             Assert.IsNotNull(translate);
 
-            Assert.AreEqual(Unit.Px(42.0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(42), translate.XOffset);
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
-            toParse = "translateX(-2.1rem)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateX(-2.1)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             translate = root as TransformTranslateOperation;
             Assert.IsNotNull(translate);
 
-            Assert.AreEqual(Unit.RootEm(-2.1), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(-2.1), translate.XOffset);
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
-            toParse = "translateX(3ch)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateX(3)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
             translate = root as TransformTranslateOperation;
             Assert.IsNotNull(translate);
 
-            Assert.AreEqual(Unit.Ch(3), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(3), translate.XOffset);
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateY(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -497,8 +488,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.XOffset);
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
-            toParse = "translateY(42px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateY(42)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -506,10 +497,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
             Assert.AreEqual(Unit.Pt(0), translate.XOffset);
-            Assert.AreEqual(Unit.Px(42.0), translate.YOffset);
+            Assert.AreEqual(Unit.Pt(42.0), translate.YOffset);
             
-            toParse = "translateY(-2.1rem)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateY(-2.1)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -517,10 +508,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
 
             Assert.AreEqual(Unit.Pt(0), translate.XOffset);
-            Assert.AreEqual(Unit.RootEm(-2.1), translate.YOffset);
+            Assert.AreEqual(Unit.Pt(-2.1), translate.YOffset);
             
-            toParse = "translateY(3ch)";
-            parsed = TransformOperationSet.Parse(toParse);
+            toParse = "translateY(3)";
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -528,10 +519,10 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(translate);
             
             Assert.AreEqual(Unit.Pt(0), translate.XOffset);
-            Assert.AreEqual(Unit.Ch(3), translate.YOffset);
+            Assert.AreEqual(Unit.Pt(3), translate.YOffset);
             
             toParse = "matrix(1, 0, 0, 1, 0, 0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -547,7 +538,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, matrix.MatrixValues[5]);
             
             toParse = "matrix(0.4, 0, 0.5, 1.2, 60, 10)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -563,7 +554,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10.0, matrix.MatrixValues[5]);
             
             toParse = "matrix(0.1, 1, -0.3, 1, 20, 20.2)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -585,7 +576,7 @@ namespace Scryber.Core.UnitTests.Html
             //rotate examples
             string toParse = "rotate(3.142)";
             
-            var parsed = TransformOperationSet.Parse(toParse);
+            var parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             var root = parsed.Root;
@@ -595,7 +586,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(3.142, rotate.AngleRadians);
             
             toParse = "rotate(-0.5turn) ";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -605,7 +596,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(-3.142, Math.Round(rotate.AngleRadians, 3));
 
             toParse = "rotate(180deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -615,7 +606,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(3.142, Math.Round(rotate.AngleRadians, 3));
 
             toParse = "scale(1)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -626,7 +617,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue));
             
             toParse = "scale(0.7)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -637,7 +628,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.7, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scale(1.3 0.4)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -648,7 +639,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.4, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scale(-0.5 1)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -659,7 +650,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scaleX(0.7)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -671,7 +662,7 @@ namespace Scryber.Core.UnitTests.Html
             
             
             toParse = "scaleX(1.3)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -682,7 +673,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "scaleX(-0.5)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -693,7 +684,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
             
             toParse = "skew(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -704,7 +695,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skew(15deg 15deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -717,7 +708,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
 
             toParse = "skew(-0.06turn 18deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -728,7 +719,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Math.Round(18 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skew(.312rad)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -739,7 +730,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.312, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skewX(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -750,7 +741,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skewX(-0.6turn)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -762,7 +753,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, skew.YAngleRadians);
             
             toParse = "skewX(35deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -774,7 +765,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, skew.YAngleRadians);
 
             toParse = "skewX(.234rad)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -785,7 +776,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skewY(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -796,7 +787,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
             
             toParse = "skewY(-0.6turn)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -808,7 +799,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, skew.XAngleRadians);
             
             toParse = "skewY(35deg)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -820,7 +811,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, skew.XAngleRadians);
 
             toParse = "skewY(.234rad)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -831,7 +822,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
             
             toParse = "translate(200px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -843,7 +834,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Zero, translate.YOffset);
 
             toParse = "translate(50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -855,7 +846,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Zero, translate.YOffset);
             
             toParse = "translate(100pt 200pt)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -867,7 +858,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(200), translate.YOffset);
             
             toParse = "translate(100px 50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -879,7 +870,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Percent(50), translate.YOffset);
             
             toParse = "translate(-30%  210.5px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -891,7 +882,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Px(210.5), translate.YOffset);
             
             toParse = "translate(30%    -50%)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -903,7 +894,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Percent(-50), translate.YOffset);
             
             toParse = "translateX(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -914,7 +905,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateX(42px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -925,7 +916,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateX(-2.1rem)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -936,7 +927,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateX(3ch)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -947,7 +938,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateY(0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -958,7 +949,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Pt(0), translate.YOffset);
             
             toParse = "translateY(42px)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -969,7 +960,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Px(42.0), translate.YOffset);
             
             toParse = "translateY(-2.1rem)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -980,7 +971,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.RootEm(-2.1), translate.YOffset);
             
             toParse = "translateY(3ch)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -991,7 +982,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(Unit.Ch(3), translate.YOffset);
             
             toParse = "matrix(1 0 0 1 0 0)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -1007,7 +998,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(0.0, matrix.MatrixValues[5]);
             
             toParse = "matrix(0.4  0  0.5  1.2 60 10)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -1023,7 +1014,7 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(10.0, matrix.MatrixValues[5]);
             
             toParse = "matrix(0.1, 1 -0.3, 1 20 20.2)";
-            parsed = TransformOperationSet.Parse(toParse);
+            parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             root = parsed.Root;
@@ -1043,7 +1034,7 @@ namespace Scryber.Core.UnitTests.Html
         {
             string toParse = " translate(100pt, 30pt) rotate(20deg) scale(2) translate(-100pt, 30pt)";
             
-            var parsed = TransformOperationSet.Parse(toParse);
+            var parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
             var curr = parsed.Root;
@@ -1097,7 +1088,7 @@ namespace Scryber.Core.UnitTests.Html
         {
             string transformOps = "translate(20%, 10%)";
             var rectStyle = new StyleDefn(".rect");
-            rectStyle.SetValue(StyleKeys.TransformOperationKey, TransformOperationSet.Parse(transformOps));
+            rectStyle.SetValue(StyleKeys.TransformOperationKey, SVGTransformOperationSet.Parse(transformOps));
 
             
             var doc = new HTMLDocument();
@@ -1158,29 +1149,6 @@ namespace Scryber.Core.UnitTests.Html
         }
         
 
-        [TestMethod]
-        public void SVGTransformTranslate()
-        {
-
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_Translate.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
-                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
-                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
-                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
-                
-                
-                using (var stream = DocStreams.GetOutputStream("SVGTransformTranslate.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-                
-                Assert.Inconclusive("No Checks made");
-            }
-        }
         
         [TestMethod]
         public void SVGTransformOperationRotateDegrees()
@@ -1223,8 +1191,8 @@ namespace Scryber.Core.UnitTests.Html
                 var poly7 = doc.FindAComponentById("Poly7");
                 Assert.IsNotNull(poly7);
 
-                var poly_1 = doc.FindAComponentById("Poly-1");
-                Assert.IsNotNull(poly_1);
+                var use_1 = doc.FindAComponentById("Poly-1") as SVGUse;
+                Assert.IsNotNull(use_1);
 
                 Unit marginX = 20;
                 Unit marginY = 20;
@@ -1306,6 +1274,11 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.IsNull(rotate.NextOp);
                 
                 bounds = arrange.RenderBounds;
+
+                arrange = use_1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use_1.Contents.Count);
+                var poly_1 = use_1.Contents[0];
                 
                 arrange = poly_1.GetFirstArrangement();
                 Assert.IsNotNull(arrange);
@@ -1325,6 +1298,154 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+        [TestMethod]
+        public void SVGTransformOperationRotateRadians()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateRadians.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationRotateRadians.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+                
+                var poly2 = doc.FindAComponentById("Poly2");
+                Assert.IsNotNull(poly2);
+                
+                var poly3 = doc.FindAComponentById("Poly3");
+                Assert.IsNotNull(poly3);
+                
+                var poly4 = doc.FindAComponentById("Poly4");
+                Assert.IsNotNull(poly4);
+                
+                var poly5 = doc.FindAComponentById("Poly5");
+                Assert.IsNotNull(poly5);
+                
+                var poly6 = doc.FindAComponentById("Poly6");
+                Assert.IsNotNull(poly6);
+                
+                var poly7 = doc.FindAComponentById("Poly7");
+                Assert.IsNotNull(poly7);
+
+                var use_1 = doc.FindAComponentById("Poly-1") as SVGUse;
+                Assert.IsNotNull(use_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(0.26, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                //TODO: check the render bounds
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(0.52, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly4.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(0.78, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly5.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(1.04, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly6.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(1.40, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly7.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(1.66, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+
+                arrange = use_1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use_1.Contents.Count);
+                var poly_1 = use_1.Contents[0];
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual(-0.26, rotate.AngleRadians);
+                Assert.IsNull(rotate.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+        
         [TestMethod]
         public void SVGTransformOperationTranslate()
         {
@@ -1357,8 +1478,8 @@ namespace Scryber.Core.UnitTests.Html
                 var use3 = doc.FindAComponentById("Poly3") as SVGUse;
                 Assert.IsNotNull(use3);
                 
-                var use_1 = doc.FindAComponentById("Poly-1") as SVGUse;
-                Assert.IsNotNull(use_1);
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
 
                 Unit marginX = 20;
                 Unit marginY = 20;
@@ -1424,10 +1545,6 @@ namespace Scryber.Core.UnitTests.Html
                 
                 bounds = arrange.RenderBounds;
                 
-                arrange = use_1.GetFirstArrangement();
-                Assert.IsNull(arrange);
-                Assert.AreEqual(1, use_1.Contents.Count);
-                var poly_1 = use_1.Contents[0];
                 
                 arrange = poly_1.GetFirstArrangement();
                 Assert.IsNotNull(arrange);
@@ -1446,6 +1563,989 @@ namespace Scryber.Core.UnitTests.Html
                 
             }
         }
+        
+        [TestMethod]
+        public void SVGTransformOperationScaleOne()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_ScaleOne.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationScaleOne.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.5, scale.XScaleValue);
+                Assert.AreEqual(1.5, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(2.0, scale.XScaleValue);
+                Assert.AreEqual(2.0, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(3.0, scale.XScaleValue);
+                Assert.AreEqual(3.0, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(0.5, scale.XScaleValue);
+                Assert.AreEqual(0.5, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+        
+        
+        [TestMethod]
+        public void SVGTransformOperationScaleBoth()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_ScaleBoth.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationScaleBoth.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.5, scale.XScaleValue);
+                Assert.AreEqual(0.75, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(2.0, scale.XScaleValue);
+                Assert.AreEqual(1.0, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(3.0, scale.XScaleValue);
+                Assert.AreEqual(1.5, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                scale = transform.Root as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(0.85, scale.XScaleValue);
+                Assert.AreEqual(0.65, scale.YScaleValue);
+                Assert.IsNull(scale.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+        
+        [TestMethod]
+        public void SVGTransformOperationSkewOneX()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewOneX.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationSkewOneX.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+                const double Deg2Rad = Math.PI / 180;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(20 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(0, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(40 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(0, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(60 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(0, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(-20 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(0, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+        
+        [TestMethod]
+        public void SVGTransformOperationSkewOneY()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewOneY.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationSkewOneY.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+                const double Deg2Rad = Math.PI / 180;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(20 * Deg2Rad, skew.YAngleRadians);
+                Assert.AreEqual(0, skew.XAngleRadians);
+                Assert.IsNull(skew.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(40 * Deg2Rad, skew.YAngleRadians);
+                Assert.AreEqual(0, skew.XAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(60 * Deg2Rad, skew.YAngleRadians);
+                Assert.AreEqual(0, skew.XAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(-20 * Deg2Rad, skew.YAngleRadians);
+                Assert.AreEqual(0, skew.XAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+        
+        
+        [TestMethod]
+        public void SVGTransformOperationSkewBoth()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewBoth.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationSkewBoth.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+                const double Deg2Rad = Math.PI / 180;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(20 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(10 * Deg2Rad, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(40 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(20 * Deg2Rad, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(60 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(30 * Deg2Rad, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                skew = transform.Root as TransformSkewOperation;
+                Assert.IsNotNull(skew);
+                Assert.AreEqual(-20 * Deg2Rad, skew.XAngleRadians);
+                Assert.AreEqual(-10 * Deg2Rad, skew.YAngleRadians);
+                Assert.IsNull(skew.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+            }
+        }
+        
+        
+        [TestMethod]
+        public void SVGTransformOperationMatrix()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_Matrix.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationMatrix.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+
+                var use1 = doc.FindAComponentById("Poly1") as SVGUse;
+                Assert.IsNotNull(use1);
+                
+                var use2 = doc.FindAComponentById("Poly2") as SVGUse;
+                Assert.IsNotNull(use2);
+                
+                var use3 = doc.FindAComponentById("Poly3") as SVGUse;
+                Assert.IsNotNull(use3);
+                
+                var poly_1 = doc.FindAComponentById("Poly-1") as SVGPolyLine;
+                Assert.IsNotNull(poly_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 20, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = use1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use1.Contents.Count);
+                var poly1 = use1.Contents[0];
+                
+                arrange = poly1.GetFirstArrangement();
+                
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var matrix = transform.Root as Scryber.Drawing.TransformMatrixOperation;
+                Assert.IsNotNull(matrix);
+                var comps = matrix.MatrixValues;
+                Assert.AreEqual(6, comps.Length);
+                Assert.AreEqual(1.2, comps[0]);
+                Assert.AreEqual(1, comps[1]);
+                Assert.AreEqual(-1, comps[2]);
+                Assert.AreEqual(1.2, comps[3]);
+                Assert.AreEqual(30.0, comps[4]);
+                Assert.AreEqual(40.0, comps[5]);
+                Assert.IsNull(matrix.NextOp);
+
+                arrange = use2.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use2.Contents.Count);
+                var poly2 = use2.Contents[0];
+                
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                matrix = transform.Root as Scryber.Drawing.TransformMatrixOperation;
+                Assert.IsNotNull(matrix);
+                comps = matrix.MatrixValues;
+                Assert.AreEqual(6, comps.Length);
+                Assert.AreEqual(1.4, comps[0]);
+                Assert.AreEqual(1, comps[1]);
+                Assert.AreEqual(-1, comps[2]);
+                Assert.AreEqual(1.4, comps[3]);
+                Assert.AreEqual(40.0, comps[4]);
+                Assert.AreEqual(50.0, comps[5]);
+                Assert.IsNull(matrix.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = use3.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use3.Contents.Count);
+                var poly3 = use3.Contents[0];
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                matrix = transform.Root as Scryber.Drawing.TransformMatrixOperation;
+                Assert.IsNotNull(matrix);
+                comps = matrix.MatrixValues;
+                Assert.AreEqual(6, comps.Length);
+                Assert.AreEqual(1.6, comps[0]);
+                Assert.AreEqual(1, comps[1]);
+                Assert.AreEqual(-1, comps[2]);
+                Assert.AreEqual(1.6, comps[3]);
+                Assert.AreEqual(50.0, comps[4]);
+                Assert.AreEqual(60.0, comps[5]);
+                Assert.IsNull(matrix.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                matrix = transform.Root as Scryber.Drawing.TransformMatrixOperation;
+                Assert.IsNotNull(matrix);
+                comps = matrix.MatrixValues;
+                Assert.AreEqual(6, comps.Length);
+                Assert.AreEqual(0.8, comps[0]);
+                Assert.AreEqual(1, comps[1]);
+                Assert.AreEqual(-1, comps[2]);
+                Assert.AreEqual(0.8, comps[3]);
+                Assert.AreEqual(10.0, comps[4]);
+                Assert.AreEqual(20.0, comps[5]);
+                Assert.IsNull(matrix.NextOp);
+                
+                bounds = arrange.RenderBounds;
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+
+        
+        [TestMethod]
+        public void SVGTransformOperationMultipleChained()
+        {
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_MultipleChained.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+                
+                
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationMultipleChained.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var poly = doc.FindAComponentById("Poly");
+                Assert.IsNotNull(poly);
+                
+                var poly2 = doc.FindAComponentById("Poly2");
+                Assert.IsNotNull(poly2);
+                
+                var poly3 = doc.FindAComponentById("Poly3");
+                Assert.IsNotNull(poly3);
+                
+                var poly4 = doc.FindAComponentById("Poly4");
+                Assert.IsNotNull(poly4);
+                
+                var poly5 = doc.FindAComponentById("Poly5");
+                Assert.IsNotNull(poly5);
+                
+                var poly6 = doc.FindAComponentById("Poly6");
+                Assert.IsNotNull(poly6);
+                
+                var poly7 = doc.FindAComponentById("Poly7");
+                Assert.IsNotNull(poly7);
+
+                var use_1 = doc.FindAComponentById("Poly-1") as SVGUse;
+                Assert.IsNotNull(use_1);
+
+                Unit marginX = 20;
+                Unit marginY = 20;
+                Rect orig;
+
+                var arrange = poly.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var bounds = arrange.RenderBounds;
+                orig = bounds;
+                
+                Assert.AreEqual(marginX + 50, bounds.X);
+                Assert.AreEqual(marginY + 0, bounds.Y);
+                Assert.AreEqual(50, bounds.Width);
+                Assert.AreEqual(50, bounds.Height);
+
+                arrange = poly2.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                var transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                var rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) *10.0, rotate.AngleRadians);
+                var translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(10, translate.XOffset);
+                Assert.AreEqual(20, translate.YOffset);
+                var scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.1, scale.XScaleValue);
+                Assert.AreEqual(1.1, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                //TODO: check the render bounds
+                
+                arrange = poly3.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 20.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(20, translate.XOffset);
+                Assert.AreEqual(30, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.2, scale.XScaleValue);
+                Assert.AreEqual(1.2, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly4.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 30.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(30, translate.XOffset);
+                Assert.AreEqual(40, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.3, scale.XScaleValue);
+                Assert.AreEqual(1.3, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly5.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 40.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(40, translate.XOffset);
+                Assert.AreEqual(50, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.4, scale.XScaleValue);
+                Assert.AreEqual(1.4, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly6.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 50.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(50, translate.XOffset);
+                Assert.AreEqual(60, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.5, scale.XScaleValue);
+                Assert.AreEqual(1.5, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                
+                arrange = poly7.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * 60.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(60, translate.XOffset);
+                Assert.AreEqual(70, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(1.6, scale.XScaleValue);
+                Assert.AreEqual(1.6, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+
+                arrange = use_1.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                Assert.AreEqual(1, use_1.Contents.Count);
+                var poly_1 = use_1.Contents[0];
+                
+                arrange = poly_1.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                transform = arrange.FullStyle.GetValue(StyleKeys.TransformOperationKey, null);
+                Assert.IsNotNull(transform);
+                rotate = transform.Root as TransformRotateOperation;
+                Assert.IsNotNull(rotate);
+                Assert.AreEqual((Math.PI / 180 ) * -10.0, rotate.AngleRadians);
+                Assert.IsNotNull(rotate.NextOp);
+                translate = rotate.NextOp as TransformTranslateOperation;
+                Assert.IsNotNull(translate);
+                Assert.AreEqual(-10, translate.XOffset);
+                Assert.AreEqual(-20, translate.YOffset);
+                scale = translate.NextOp as TransformScaleOperation;
+                Assert.IsNotNull(scale);
+                Assert.AreEqual(0.9, scale.XScaleValue);
+                Assert.AreEqual(0.9, scale.YScaleValue);
+                
+                bounds = arrange.RenderBounds;
+                
+                
+                //TODO: Calculate the outer resultant render matrix for each of the palylines.
+                
+                
+            }
+        }
+
+        [TestMethod]
+        public void SVGTransformOperationComponents()
+        {
+            //Anchor
+            //Canvas
+            //Circle
+            //Elipse
+            //Group
+            //Line
+            //Path
+            //Polygon
+            //PolyLine
+            //Rect
+            //Text
+            //TSpan
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_TransformComponents.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+
+
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationTransformComponents.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+                
+                
+            }
+            
+            
+        }
+        
+        
         [TestMethod]
         public void SVGInsert()
         {

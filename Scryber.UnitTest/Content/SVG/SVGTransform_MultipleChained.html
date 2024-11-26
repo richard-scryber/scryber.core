@@ -36,43 +36,25 @@
         <style>
             
 
-            use, #Poly2{
-                transform: rotate(15deg);
-            }
-
-            #Poly3{
-                transform: rotate(30deg)
-            }
-            #Poly4{
-                transform: rotate(45deg);
-            }
-            #Poly5{
-                transform: rotate(60deg);
-            }
-            #Poly6{
-                transform: rotate(75deg);
-            }
-            #Poly7{
-                transform: rotate(90deg);
-            }
+            
             
         </style>
         <polyline id="Poly" points="100,100 150,25 150,75 200,0"
                   fill="black" stroke-width="1" />
         <polyline id="Poly2" points="100,100 150,25 150,75 200,0"
-                  fill="#F00" stroke-width="1"  />
+                  fill="#F00" stroke-width="1" transform="rotate(10) translate(10,20)  scale(1.1)"  />
         <polyline id="Poly3" points="100,100 150,25 150,75 200,0"
-                  fill="#F33" stroke-width="1"   />
+                  fill="#F33" stroke-width="1" transform="rotate(20) translate(20,30)  scale(1.2)"  />
         <polyline id="Poly4" points="100,100 150,25 150,75 200,0"
-                  fill="#F66" stroke-width="1pt"  />
+                  fill="#F66" stroke-width="1pt" transform="rotate(30) translate(30,40)  scale(1.3)" />
         <polyline id="Poly5" points="100,100 150,25 150,75 200,0"
-                  fill="#F99" stroke-width="1pt"  />
+                  fill="#F99" stroke-width="1pt" transform="rotate(40) translate(40,50) scale(1.4)" />
         <polyline id="Poly6" points="100,100 150,25 150,75 200,0"
-                  fill="#FAA" stroke-width="1pt"  />
+                  fill="#FAA" stroke-width="1pt" transform="rotate(50) translate(50,60) scale(1.5)" />
         <polyline id="Poly7" points="100,100 150,25 150,75 200,0"
-                  fill="#FCC" stroke-width="1pt"  />
-        <use id="Poly-1" href="#Poly" transform="rotate(-15)"
-                  fill="#600" stroke-width="1pt"  />
+                  fill="#FCC" stroke-width="1pt" transform="rotate(60) translate(60,70) scale(1.6)" />
+        <use id="Poly-1" href="#Poly"
+                  fill="#600" stroke-width="1pt" transform="rotate(-10) translate(-10,-20) scale(0.9)"  />
     </svg>
     
 </body>

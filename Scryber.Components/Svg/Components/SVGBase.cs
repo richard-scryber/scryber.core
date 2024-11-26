@@ -144,12 +144,12 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("transform")]
-        public Scryber.Drawing.TransformOperationSet Transform
+        public SVGTransformOperationSet Transform
         {
             get
             {
                 if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
-                    return value.Value(this.Style);
+                    return value.Value(this.Style) as SVGTransformOperationSet;
                 else
                     return null;
             }

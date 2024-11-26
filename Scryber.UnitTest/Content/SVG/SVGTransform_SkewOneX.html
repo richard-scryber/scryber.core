@@ -38,10 +38,13 @@
 </head>
 <body title="Rotation Samples" >
 
-    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+    <svg id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
           xmlns:xlink="http://www.w3.org/1999/xlink"    >
         <style>
 
+            polyline{
+                fill-opacity: 0.5;
+            }
             #Poly{
             }
 
@@ -64,11 +67,11 @@
         
         <polyline id="Poly" points="100, 100 150, 25 150,75 200,0"
                   stroke-width="1" />
-        <use id="Poly1" href="#Poly" transform="translate(50)" />
-        <use id="Poly2" href="#Poly" transform="translate(50 50)"/>
-        <use id="Poly3" href="#Poly" transform="translate(0 50)" />
+        <use id="Poly1" href="#Poly" transform="skewX(20)" />
+        <use id="Poly2" href="#Poly" transform="skewX(40)"/>
+        <use id="Poly3" href="#Poly" transform="skewX(60)" />
         <polyline id="Poly-1" points="100, 100 150, 25 150,75 200,0"
-                  stroke-width="1"  transform="translate(-50 0)" />
+                  stroke-width="1"  transform="skewX(-20)" />
     </svg>
     
 </body>

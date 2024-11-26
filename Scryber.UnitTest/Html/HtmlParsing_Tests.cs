@@ -26,6 +26,7 @@ using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
 using Scryber.PDF.Secure;
+using Scryber.Html;
 using System.Collections;
 
 
@@ -1271,6 +1272,466 @@ namespace Scryber.Core.UnitTests.Html
             }
 
             Assert.Inconclusive();
+        }
+        
+        [TestMethod]
+        public void CSSTransformParsing()
+        {
+            //rotate examples
+            string toParse = "rotate(3.142)";
+            
+            var parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            var root = parsed.Root;
+            var rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(3.142, rotate.AngleRadians);
+            
+            toParse = "rotate(-0.5turn) ";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(-3.142, Math.Round(rotate.AngleRadians, 3));
+
+            toParse = "rotate(180deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(3.142, Math.Round(rotate.AngleRadians, 3));
+
+            toParse = "scale(1)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.0, Math.Round(scale.XScaleValue));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue));
+            
+            toParse = "scale(0.7)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(0.7, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(0.7, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scale(1.3, 0.4)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.3, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(0.4, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scale(-0.5,1)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(-0.5, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scaleX(0.7)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(0.7, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            
+            toParse = "scaleX(1.3)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.3, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scaleX(-0.5)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(-0.5, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "skew(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skew(15deg, 15deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            const double Deg2Rad = Math.PI / 180.0;
+
+            Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+
+            toParse = "skew(-0.06turn, 18deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(Math.Round((-0.06 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(18 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skew(.312rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.312, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.312, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewX(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewX(-0.6turn)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.YAngleRadians);
+            
+            toParse = "skewX(35deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.YAngleRadians);
+
+            toParse = "skewX(.234rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.234, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewY(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewY(-0.6turn)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.XAngleRadians);
+            
+            toParse = "skewY(35deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.XAngleRadians);
+
+            toParse = "skewY(.234rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.234, Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            
+            toParse = "translate(200px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Px(200), translate.XOffset);
+            Assert.AreEqual(Unit.Zero, translate.YOffset);
+
+            toParse = "translate(50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(50), translate.XOffset);
+            Assert.AreEqual(Unit.Zero, translate.YOffset);
+            
+            toParse = "translate(100pt,200pt)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Pt(100), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(200), translate.YOffset);
+            
+            toParse = "translate(100px,50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Px(100), translate.XOffset);
+            Assert.AreEqual(Unit.Percent(50), translate.YOffset);
+            
+            toParse = "translate(-30%, 210.5px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(-30), translate.XOffset);
+            Assert.AreEqual(Unit.Px(210.5), translate.YOffset);
+            
+            toParse = "translate(30%, -50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(30), translate.XOffset);
+            Assert.AreEqual(Unit.Percent(-50), translate.YOffset);
+            
+            toParse = "translateX(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(42px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Px(42.0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(-2.1rem)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.RootEm(-2.1), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(3ch)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Ch(3), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateY(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateY(42px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Px(42.0), translate.YOffset);
+            
+            toParse = "translateY(-2.1rem)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.RootEm(-2.1), translate.YOffset);
+            
+            toParse = "translateY(3ch)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Ch(3), translate.YOffset);
+            
+            toParse = "matrix(1, 0, 0, 1, 0, 0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(1.0, matrix.MatrixValues[0]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[3]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[5]);
+            
+            toParse = "matrix(0.4, 0, 0.5, 1.2, 60, 10)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(0.4, matrix.MatrixValues[0]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(0.5, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.2, matrix.MatrixValues[3]);
+            Assert.AreEqual(60.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(10.0, matrix.MatrixValues[5]);
+            
+            toParse = "matrix(0.1, 1, -0.3, 1, 20, 20.2)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(0.1, matrix.MatrixValues[0]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(-0.3, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[3]);
+            Assert.AreEqual(20.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(20.2, matrix.MatrixValues[5]);
         }
 
         [TestMethod()]
