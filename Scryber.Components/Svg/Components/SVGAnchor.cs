@@ -9,6 +9,22 @@ namespace Scryber.Svg.Components
     [PDFParsableComponent("a")]
     public class SVGAnchor : HTMLAnchor, ICloneable
     {
+        
+        [PDFAttribute("transform")]
+        public SVGTransformOperationSet Transform
+        {
+            get
+            {
+                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style) as SVGTransformOperationSet;
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
 
         public SVGAnchor()
         {

@@ -27,7 +27,7 @@ namespace Scryber.PDF.Layout
             :base(parent, owner as IComponent)
         {
             this._childContainer = childContainer;
-            this._resources = new PDFResourceList(this, false);
+            this._resources = (owner is IResourceContainer container) ? container.Resources : new PDFResourceList(this, false);
             this.SubType = "Form";
             this.Matrix = PDFTransformationMatrix.Identity();
             this._position = position;
@@ -46,6 +46,10 @@ namespace Scryber.PDF.Layout
 
         public PDFPositionOptions PositionOptions { get { return _position; } }
 
+        public PDFResourceList Resources
+        {
+            get { return _resources; }
+        }
 
         private Unit? _explicitH;
         private Unit? _explicitW;

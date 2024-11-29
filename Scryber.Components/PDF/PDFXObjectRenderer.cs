@@ -119,7 +119,12 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         this.Layout = forLayout ?? throw new ArgumentNullException(nameof(forLayout));
         this.Context = context ?? throw new ArgumentNullException(nameof(context));
         this.Writer = writer ?? throw new ArgumentNullException(nameof(writer));
-        this.Resources = new PDFResourceList(this, false);
+        
+        if (owner is IResourceContainer rsrcContainer)
+            this.Resources = rsrcContainer.Resources;
+        else
+            this.Resources = new PDFResourceList(this, false);
+        
         this.Position = position ?? throw new ArgumentNullException(nameof(position));
         this.OutputName = (PDFName)owner.Document.GetIncrementID(owner.Type);
     }
@@ -293,6 +298,12 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         {
             var res = this.Resources.WriteResourceList(this.Context, writer);
             writer.WriteDictionaryObjectRefEntry("Resources", res);
+        }
+        else if (this.Owner is IResourceContainer rsrc)
+        {
+            
+             var res = rsrc.Resources.WriteResourceList(this.Context, writer);
+             writer.WriteDictionaryObjectRefEntry("Resources", res);
         }
 
         if (null != filters && filters.Length > 0)

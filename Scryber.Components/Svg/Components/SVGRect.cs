@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Native;
 
 namespace Scryber.Svg.Components
 {
@@ -195,12 +196,12 @@ namespace Scryber.Svg.Components
         }
 
         [PDFAttribute("transform")]
-        public Scryber.Drawing.TransformOperationSet TransformMatrix
+        public SVGTransformOperationSet Transform
         {
             get
             {
                 if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
-                    return value.Value(this.Style);
+                    return value.Value(this.Style) as SVGTransformOperationSet;
                 else
                     return null;
             }
@@ -411,8 +412,35 @@ namespace Scryber.Svg.Components
                 }
             }
         }
-        
-        
+
+        public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            bool hasTransform = false;
+            
+            if (context.FullStyle != null &&
+                context.FullStyle.TryGetValue(StyleKeys.TransformOperationKey, out var transformValue))
+            {
+                var transform = transformValue.Value(context.FullStyle);
+                if (null != transform && !transform.IsIdentity)
+                {
+                    hasTransform = true;
+                    var origin = context.FullStyle.GetValue(StyleKeys.TransformOriginKey, null);
+                    var matrix = transform.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+                    context.Graphics.SaveGraphicsState();
+                    context.Graphics.SetTransformationMatrix(matrix, false, true);
+                }
+            }
+            
+            var oref = base.OutputToPDF(context, writer);
+
+            if (hasTransform)
+            {
+                context.Graphics.RestoreGraphicsState();
+            }
+
+            return oref;
+        }
+
 
         private SVGCanvas GetRootSVGCanvas()
         {

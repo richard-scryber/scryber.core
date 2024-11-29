@@ -158,6 +158,22 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.TransformOperationKey, value);
             }
         }
+
+        [PDFAttribute("transform-origin")]
+        public TransformOrigin TransformOrigin
+        {
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOriginKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOriginKey, value);
+            }
+        }
         
 
         // font

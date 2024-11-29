@@ -3,12 +3,14 @@ using Scryber.Styles;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("svg")]
-    public class SVGCanvas : Scryber.Components.Canvas
+    public class SVGCanvas : Scryber.Components.Canvas, IResourceContainer
     {
 
         //pre-defined width and heights
@@ -263,6 +265,69 @@ namespace Scryber.Svg.Components
 
             found = null;
             return false;
+        }
+        
+        //
+        // resources and artefacts
+        //
+
+        #region public PDFResourceList Resources {get;set;} + DoInitResources()
+
+        /// <summary>
+        /// private instance variable to hold the list of resources
+        /// </summary>
+        private PDFResourceList _resources;
+        
+        /// <summary>
+        /// Gets the list of resources this page and its contents use 
+        /// </summary>
+        /// <remarks>Also implements the IPDFResourceContainer interface</remarks>
+        [System.ComponentModel.Browsable(false)]
+        public PDFResourceList Resources
+        {
+            get 
+            {
+                if (_resources == null)
+                    _resources = this.DoInitResources();
+                return _resources;
+            }
+            protected set { _resources = value; }
+        }
+
+        /// <summary>
+        /// Virtual method that creates a new PDFResourceList for holding a pages resources.
+        /// </summary>
+        /// <returns>A new PDFResourceList</returns>
+        protected virtual PDFResourceList DoInitResources()
+        {
+            PDFResourceList list = new PDFResourceList(this);
+            return list;
+        }
+
+        #endregion
+
+        IDocument IResourceContainer.Document
+        {
+            get
+            {
+                return this.Document;
+            }
+        }
+
+        public string Register(ISharedResource rsrc)
+        {
+            return this.Register((PDFResource)rsrc).Value;
+        }
+        
+        public PDFName Register(PDFResource reference)
+        {
+            if (null == reference.Name || string.IsNullOrEmpty(reference.Name.Value))
+            {
+                string name = this.Document.GetIncrementID(reference.Type);
+                reference.Name = (PDFName)name;
+            }
+            reference.RegisterUse(this.Resources,this);
+            return reference.Name;
         }
 
         public override Component FindAComponentById(string id)

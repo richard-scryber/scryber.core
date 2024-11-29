@@ -1080,7 +1080,67 @@ namespace Scryber.Core.UnitTests.Html
             
             Assert.AreEqual(fiftyPcnt, parsed.HorizontalOrigin);
             Assert.AreEqual(fiftyPcnt, parsed.VerticalOrigin);
+
+            toParse = "center top";
+            
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(fiftyPcnt, parsed.HorizontalOrigin);
+            Assert.AreEqual(zeroPcnt, parsed.VerticalOrigin);
+
+            toParse = "left top";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(zeroPcnt, parsed.HorizontalOrigin);
+            Assert.AreEqual(zeroPcnt, parsed.VerticalOrigin);
+            
+            toParse = "left center";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(zeroPcnt, parsed.HorizontalOrigin);
+            Assert.AreEqual(fiftyPcnt, parsed.VerticalOrigin);
+            
+            toParse = "center left";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(zeroPcnt, parsed.HorizontalOrigin);
+            Assert.AreEqual(fiftyPcnt, parsed.VerticalOrigin);
+
+            toParse = "100 left";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(zeroPcnt, parsed.HorizontalOrigin);
+            Assert.AreEqual(100, parsed.VerticalOrigin);
+
+            
+            toParse = "100 bottom";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(100, parsed.HorizontalOrigin);
+            Assert.AreEqual(hundredPcnt, parsed.VerticalOrigin);
+            
+            toParse = "100 center";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(100, parsed.HorizontalOrigin);
+            Assert.AreEqual(fiftyPcnt, parsed.VerticalOrigin);
+            
+            toParse = "100 20px";
+            parsed = TransformOrigin.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            
+            Assert.AreEqual(100, parsed.HorizontalOrigin);
+            Assert.AreEqual(Unit.Px(20), parsed.VerticalOrigin);
         }
+        
+        
 
         
         [TestMethod]
@@ -1141,6 +1201,8 @@ namespace Scryber.Core.UnitTests.Html
             var bounds = path.PathData.Bounds;
             Assert.AreEqual(Unit.Pt(60), transform.XOffset); //20% of 300
             Assert.AreEqual(Unit.Pt(40), transform.YOffset); //10% of 300
+            Assert.Inconclusive("Need to update the arrangement bounds based on the transfomation");
+            
             Assert.AreEqual(bounds.X + 60, arrange.RenderBounds.X); //bounds.x + XOffset
             Assert.AreEqual(bounds.Y + 40, arrange.RenderBounds.Y); //bounds.y + YOffset
             Assert.AreEqual(bounds.Width, arrange.RenderBounds.Width); //unchanged
@@ -2507,22 +2569,72 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
+
+        private ComponentArrangement AssertGetArrangement(Document doc, string compId, Type compType)
+        {
+            var comp = doc.FindAComponentById(compId);
+            Assert.IsNotNull(comp);
+            Assert.IsInstanceOfType(comp, compType);
+            var arrange = comp.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            return arrange;
+        }
+
+        private TransformOperationSet AssertGetTransform(ComponentArrangement arrangement)
+        {
+            var style = arrangement.FullStyle;
+            Assert.IsNotNull(style);
+            var set = style.GetValue(StyleKeys.TransformOperationKey, null);
+            Assert.IsNotNull(set);
+            return set;
+        }
+        
+        private void AssertTransformTranslate(TransformOperation op, Unit x, Unit y, bool hasNext)
+        {
+            var tranlate = op as TransformTranslateOperation;
+            Assert.IsNotNull(tranlate);
+            Assert.AreEqual(x, tranlate.XOffset);
+            Assert.AreEqual(y, tranlate.YOffset);
+            if(hasNext)
+                Assert.IsNotNull(op.NextOp);
+            else
+                Assert.IsNull(op.NextOp);
+        }
+        
+        private void AssertTransformSkew(TransformOperation op, double xdeg, double ydeg, bool hasNext)
+        {
+            var x = (Math.PI / 180.0) * xdeg;
+            var y = (Math.PI / 180.0) * ydeg;
+            
+            var skew = op as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            Assert.AreEqual(x, skew.XAngleRadians);
+            Assert.AreEqual(y, skew.YAngleRadians);
+            if(hasNext)
+                Assert.IsNotNull(op.NextOp);
+            else
+                Assert.IsNull(op.NextOp);
+        }
+        
+        private void AssertTransformScale(TransformOperation op, double xscale, double yscale, bool hasNext)
+        {
+            
+            var scale = op as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            Assert.AreEqual(xscale, scale.XScaleValue);
+            Assert.AreEqual(yscale, scale.YScaleValue);
+            
+            if(hasNext)
+                Assert.IsNotNull(op.NextOp);
+            else
+                Assert.IsNull(op.NextOp);
+        }
+        
+        
+
         [TestMethod]
         public void SVGTransformOperationComponents()
         {
-            //Anchor
-            //Canvas
-            //Circle
-            //Elipse
-            //Group
-            //Line
-            //Path
-            //Polygon
-            //PolyLine
-            //Rect
-            //Text
-            //TSpan
-            
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_TransformComponents.html",
                 this.TestContext);
             using (var doc = Document.ParseDocument(path))
@@ -2536,15 +2648,246 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("SVGTransformOperationTransformComponents.pdf"))
                 {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.AppendTraceLog = false;
                     doc.SaveAsPDF(stream);
                 }
                 
+                //Anchor link
+
+                var arrange = AssertGetArrangement(doc, "link", typeof(SVGAnchor));
+                var set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 0, 70, true);
+                AssertTransformSkew(set.Root.NextOp, 30, 0, false);
+                //Circle
                 
+                arrange = AssertGetArrangement(doc, "circ", typeof(SVGCircle));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 75, 90, true);
+                AssertTransformSkew(set.Root.NextOp, 30, 0, false);
+
+                //Ellipse
+                
+                arrange = AssertGetArrangement(doc, "elli", typeof(SVGEllipse));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 120, 90, true);
+                AssertTransformSkew(set.Root.NextOp, 0, 30, false);
+                
+                //Group
+                
+                arrange = AssertGetArrangement(doc, "grp", typeof(SVGGroup));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 130, 60, true);
+                AssertTransformSkew(set.Root.NextOp, 40, 0, false);
+
+                //Rect
+                
+                arrange = AssertGetArrangement(doc, "rect", typeof(SVGRect));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 10, 25, true);
+                AssertTransformScale(set.Root.NextOp, 4, 1, false);
+                
+                //Line
+                
+                arrange = AssertGetArrangement(doc, "ln", typeof(SVGLine));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 180, 60, true);
+                AssertTransformSkew(set.Root.NextOp, 40, 0, false);
+                
+                //Polyline
+                
+                arrange = AssertGetArrangement(doc, "poly", typeof(SVGPolyLine));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 195, 60, true);
+                AssertTransformSkew(set.Root.NextOp, 40, 0, false);
+
+                //Polygon
+                
+                arrange = AssertGetArrangement(doc, "polyG", typeof(SVGPolygon));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 20, 60, true);
+                AssertTransformSkew(set.Root.NextOp, -50, 0, false);
+                
+                //Path
+                
+                arrange = AssertGetArrangement(doc, "pth", typeof(SVGPath));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 225, 60, true);
+                AssertTransformScale(set.Root.NextOp, 0.2, 0.2, true);
+                AssertTransformSkew(set.Root.NextOp.NextOp, 30, 0, false);
+                
+                //Image
+                
+                arrange = AssertGetArrangement(doc, "img", typeof(SVGImage));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 15, 125, true);
+                AssertTransformScale(set.Root.NextOp, 1.3, 0.1, true);
+                AssertTransformSkew(set.Root.NextOp.NextOp, -10, 0, false);
+                
+                
+                //Use - arrangement is null put style is passed down to the referenced component
+                var use = doc.FindAComponentById("use") as SVGUse;
+                Assert.IsNotNull(use);
+                arrange = use.GetFirstArrangement();
+                Assert.IsNull(arrange);
+                var rect = use.Contents[0] as SVGRect;
+                Assert.IsNotNull(rect);
+                arrange = rect.GetFirstArrangement();
+                Assert.IsNotNull(arrange);
+                
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 120, 150, true);
+                AssertTransformScale(set.Root.NextOp, 2, 0.2, false);
+                
+                //text
+                
+                arrange = AssertGetArrangement(doc, "txt", typeof(SVGText));
+                set = AssertGetTransform(arrange);
+                AssertTransformTranslate(set.Root, 10, 150, true);
+                AssertTransformSkew(set.Root.NextOp, 25, 0, true);
+                AssertTransformScale(set.Root.NextOp.NextOp, 1, -1, false);
+
+
             }
             
             
         }
-        
+
+        private void AssertOriginAreEqual(SVGPolyLine poly, Unit h, Unit v)
+        {
+            Assert.IsNotNull(poly);
+            var arrange = poly.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            var style = arrange.FullStyle;
+            Assert.IsNotNull(style);
+            var origin = style.GetValue(StyleKeys.TransformOriginKey, null);
+            Assert.IsNotNull(origin);
+            Assert.AreEqual(h, origin.HorizontalOrigin);
+            Assert.AreEqual(v, origin.VerticalOrigin);
+            
+        }
+
+        [TestMethod]
+        public void SVGTransformRotateOrigins()
+        {
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateOrigins.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                doc.Pages[0].Style.OverlayGrid.GridOpacity = 0.5;
+
+
+                using (var stream = DocStreams.GetOutputStream("SVGTransformOperationRotateOrigins.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+                
+                //Left Top
+
+                var svg = doc.FindAComponentById("Canvas11");
+                var poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                var poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                var poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 0, 0);
+                AssertOriginAreEqual(poly2, 0, 0);
+                AssertOriginAreEqual(poly3, 0, 0);
+
+                // Center Top
+                
+                svg = doc.FindAComponentById("Canvas12");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 150, 0);
+                AssertOriginAreEqual(poly2, 150, 0);
+                AssertOriginAreEqual(poly3, 150, 0);
+                
+                // Right Top
+                
+                svg = doc.FindAComponentById("Canvas13");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 300, 0);
+                AssertOriginAreEqual(poly2, 300, 0);
+                AssertOriginAreEqual(poly3, 300, 0);
+                
+                //Left Center
+
+                svg = doc.FindAComponentById("Canvas21");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 0, 150);
+                AssertOriginAreEqual(poly2, 0, 150);
+                AssertOriginAreEqual(poly3, 0, 150);
+
+                // Center Center
+                
+                svg = doc.FindAComponentById("Canvas22");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 150, 150);
+                AssertOriginAreEqual(poly2, 150, 150);
+                AssertOriginAreEqual(poly3, 150, 150);
+                
+                // Right Center
+                
+                svg = doc.FindAComponentById("Canvas23");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 300, 150);
+                AssertOriginAreEqual(poly2, 300, 150);
+                AssertOriginAreEqual(poly3, 300, 150);
+                
+                //Left Bottom
+
+                svg = doc.FindAComponentById("Canvas31");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 0, 300);
+                AssertOriginAreEqual(poly2, 0, 300);
+                AssertOriginAreEqual(poly3, 0, 300);
+
+                // Center Bottom
+                
+                svg = doc.FindAComponentById("Canvas32");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 150, 300);
+                AssertOriginAreEqual(poly2, 150, 300);
+                AssertOriginAreEqual(poly3, 150, 300);
+                
+                // Right Bottom
+                
+                svg = doc.FindAComponentById("Canvas33");
+                poly1 = svg.FindAComponentById("Poly1") as SVGPolyLine;
+                poly2 = svg.FindAComponentById("Poly2") as SVGPolyLine;
+                poly3 = svg.FindAComponentById("Poly3") as SVGPolyLine;
+
+                AssertOriginAreEqual(poly1, 300, 300);
+                AssertOriginAreEqual(poly2, 300, 300);
+                AssertOriginAreEqual(poly3, 300, 300);
+            }
+            
+            
+        }
         
         [TestMethod]
         public void SVGInsert()

@@ -1797,7 +1797,11 @@ namespace Scryber.PDF.Layout
             }
             else if (this.Owner is Svg.Components.SVGText)
             {
-                throw new NotImplementedException("Need to sort or atleast check the transformation of the SVGText");
+                
+                var origin = this.Position.TransformationOrigin;
+                var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+                
+                //throw new NotImplementedException("Need to sort or atleast check the transformation of the SVGText");
                 
                 //TODO: Take this out and make the SVGText a Component run rather than a block.
                 //Just a translation of some text so quicker to just offset the translation by the height of the block
@@ -1816,7 +1820,7 @@ namespace Scryber.PDF.Layout
 
                 //full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
 
-                //context.Graphics.SetTransformationMatrix(full, true, true);
+                context.Graphics.SetTransformationMatrix(matrix, true, true);
                 //this.Position.TransformMatrix = full;
                 //this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
                 
@@ -1867,7 +1871,9 @@ namespace Scryber.PDF.Layout
                     posOffsetY = ((float)this.Position.Y.Value.PointsValue);
                 }
 
-                throw new NotImplementedException("Need to check the matrix transformations");
+                var origin = this.Position.TransformationOrigin;
+                var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+
                 
                 //Set the translation to the origin and the explicit position
                 //full.SetTranslation(actualOffsetX + posOffsetX, actualOffsetY - posOffsetY);
@@ -1875,7 +1881,7 @@ namespace Scryber.PDF.Layout
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
                         "Final transformation matrix to move to, transform, and move back from origin calculated to " +
-                        full);
+                        matrix);
 
                 //save the current state
                 
@@ -1884,21 +1890,21 @@ namespace Scryber.PDF.Layout
                 //mark all future drawing offsets - as these will happen from the page origin now (bottom left)
                 //within the centre of the container
 
-                context.Graphics.SaveTranslationOffset(
-                    actualOffsetX,
-                    actualOffsetY);
+                // context.Graphics.SaveTranslationOffset(
+                //     actualOffsetX,
+                //     actualOffsetY);
 
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY,
                         "Translation offset set to " + (actualOffsetX).ToString() + ", " + (actualOffsetY).ToString());
 
                 //apply the actual transformation
-                //context.Graphics.SetTransformationMatrix(full, true, true);
+                context.Graphics.SetTransformationMatrix(matrix, true, true);
                 //save state
 
                 //Save the newly caclulated values back on the block.
                 //this.Position.TransformMatrix = full;
-                //this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
+                this.TransformedOffset = new Point(actualOffsetX, actualOffsetY);
                 transformed = true;
             }
 

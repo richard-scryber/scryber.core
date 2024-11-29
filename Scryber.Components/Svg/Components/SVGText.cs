@@ -144,6 +144,58 @@ namespace Scryber.Svg.Components
         {
             this.Style.RemoveValue(StyleKeys.TextAnchorKey);
         }
+        
+        [PDFAttribute("text-decoration")]
+        public string TextDecoration
+        {
+            get
+            {
+                StyleValue<TextDecoration> found;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextDecorationKey, out found))
+                {
+                    
+                    switch (found.Value(this.Style))
+                    {
+                        case Text.TextDecoration.None:
+                            return "none";
+                        case Text.TextDecoration.Overline:
+                            return "overline";
+                        case Text.TextDecoration.Underline:
+                            return "underline";
+                        case Text.TextDecoration.StrikeThrough:
+                            return "line-through";
+                        default:
+                            return string.Empty;
+                    }
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            set
+            {
+                TextDecoration parsed;
+                switch (value)
+                {
+                    case "none":
+                        parsed = Text.TextDecoration.None;
+                        break;
+                    case "overline":
+                        parsed = Text.TextDecoration.Overline;
+                        break ;
+                    case "underline" :
+                        parsed = Text.TextDecoration.Underline;
+                        break;
+                    case "line-through" :
+                        parsed = Text.TextDecoration.StrikeThrough;
+                        break ;
+                    default:
+                        return;
+                }
+                this.Style.SetValue(StyleKeys.TextDecorationKey, parsed);
+            }
+        }
 
         [PDFAttribute("letter-spacing")]
         public Unit LetterSpacing

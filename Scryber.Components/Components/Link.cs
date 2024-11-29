@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Scryber.Styles;
 using Scryber.PDF;
@@ -267,6 +268,7 @@ namespace Scryber.Components
                                            PDFAction action, List<object> entries, 
                                            PDFLayoutPage pg, ComponentList contents)
         {
+            
             foreach (Component comp in contents)
             {
                 PDFAnnotationLinkEntry annot;
@@ -275,9 +277,12 @@ namespace Scryber.Components
                 {
                     FillActionAnnotations(context, style, action, entries, pg, inner);
                 }
+                else if (comp.Type == ObjectTypes.Whitespace)
+                {
+                    //Skip
+                }
                 else
                 {
-                    //TODO: Test with data source within link
                     annot = new PDFAnnotationLinkEntry(comp, style);
                     annot.Action = action;
 

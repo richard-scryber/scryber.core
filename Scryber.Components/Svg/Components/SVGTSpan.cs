@@ -2,6 +2,8 @@
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber;
+
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("tspan")]
@@ -358,7 +360,57 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.FontStyleKey, value);
             }
         }
-        
+        [PDFAttribute("text-decoration")]
+        public string TextDecoration
+        {
+            get
+            {
+                StyleValue<Scryber.Text.TextDecoration> found;
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TextDecorationKey, out found))
+                {
+                    
+                    switch (found.Value(this.Style))
+                    {
+                        case Scryber.Text.TextDecoration.None:
+                            return "none";
+                        case Scryber.Text.TextDecoration.Overline:
+                            return "overline";
+                        case Scryber.Text.TextDecoration.Underline:
+                            return "underline";
+                        case Scryber.Text.TextDecoration.StrikeThrough:
+                            return "line-through";
+                        default:
+                            return string.Empty;
+                    }
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            set
+            {
+                Scryber.Text.TextDecoration parsed;
+                switch (value)
+                {
+                    case "none":
+                        parsed = Scryber.Text.TextDecoration.None;
+                        break;
+                    case "overline":
+                        parsed = Scryber.Text.TextDecoration.Overline;
+                        break ;
+                    case "underline" :
+                        parsed = Scryber.Text.TextDecoration.Underline;
+                        break;
+                    case "line-through" :
+                        parsed = Scryber.Text.TextDecoration.StrikeThrough;
+                        break ;
+                    default:
+                        return;
+                }
+                this.Style.SetValue(StyleKeys.TextDecorationKey, parsed);
+            }
+        }
         
         public SVGTextSpan() : base()
         {

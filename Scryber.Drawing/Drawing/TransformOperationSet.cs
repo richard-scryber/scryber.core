@@ -62,24 +62,35 @@ namespace Scryber.Drawing
         {
             Matrix2D matrix = Matrix2D.Identity;
             DrawingOrigin drawFrom = DrawingOrigin.BottomLeft;
+
+            
+            Unit centreX, centerY;
             
             if (origin != null)
             {
                 //TODO apply the offset to 
+                centreX = origin.GetHorizontalOffset(containerSize, drawFrom);
+                centerY = origin.GetVerticalOffset(containerSize, drawFrom);
             }
             else
             {
                 //default PDF Origin is bottom left.
                 //default SVG Origin in Top left
                 //so move there
-                matrix.Translate(0, containerSize.Height.PointsValue);
+                centreX = 0;
+                centerY = containerSize.Height;
             }
+            
+            //matrix.Translate(0, containerSize.Height.PointsValue); - working top left
+            matrix.Translate(centreX.PointsValue, centerY.PointsValue);
 
             if (null != this.Root)
             {
                 
                 matrix = this.Root.GetMatrix(matrix, drawFrom);
             }
+
+            origin = null;
 
             if (origin != null)
             {
@@ -89,8 +100,7 @@ namespace Scryber.Drawing
             else
             {
                 var moveBack = Matrix2D.Identity;
-                moveBack.Translate(0, 0- containerSize.Height.PointsValue);
-                
+                moveBack.Translate(0 - centreX.PointsValue, 0- centerY.PointsValue);
                 matrix = Matrix2D.Multiply(matrix, moveBack);
             }
 

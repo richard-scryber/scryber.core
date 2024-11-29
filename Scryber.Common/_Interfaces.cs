@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Scryber.Logging;
+using Scryber.PDF.Resources;
 
 namespace Scryber
 {
@@ -391,6 +392,8 @@ namespace Scryber
     {
 
         IDocument Document { get; }
+        
+        PDFResourceList Resources { get; }
 
         string Register(ISharedResource rsrc);
 

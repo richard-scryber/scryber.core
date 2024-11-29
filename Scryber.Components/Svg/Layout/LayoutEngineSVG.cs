@@ -126,6 +126,40 @@ namespace Scryber.Svg.Layout
 			{
 				this.DoLayoutPathComponent(path, full);
 			}
+			else if (comp is IPDFImageComponent img)
+			{
+				this.DoLayoutImageComponent(img, full);
+				return;
+				
+				var imgx = img.GetImageObject(this.Context, full);
+				if (null == imgx)
+				{
+					if(this.Context.ShouldLogMessage)
+						this.Context.TraceLog.Add(TraceLevel.Message, "SVG", "No image data for component " + img.ID + ". No layout required");
+				}
+				else
+				{
+					var pos = full.CreatePostionOptions(this.Context.PositionDepth > 0);
+					var block = this.CurrentBlock;
+					var reg = block.BeginNewPositionedRegion(pos, block.GetLayoutPage(), comp, full, false, true) as PDFLayoutPositionedRegion;
+					reg.IsExplicitLayout = true;
+					
+					var loc = Point.Empty;
+					StyleValue<Unit> dim;
+					if (full.TryGetValue(StyleKeys.SVGGeometryXKey, out dim))
+						loc.X = dim.Value(full);
+					if (full.TryGetValue(StyleKeys.SVGGeometryYKey, out dim))
+						loc.Y = dim.Value(full);
+
+					reg.CloseCurrentItem();
+				
+					if (reg.IsClosed == false)
+						reg.Close();
+
+					reg.RelativeOffset = loc;
+					reg.RelativeTo = block;
+				}
+			}
 			
             //base.DoLayoutAChild(comp, full);
         }
