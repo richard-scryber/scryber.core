@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+using Scryber.PDF.Native;
 
 namespace Scryber
 {
@@ -46,6 +48,29 @@ namespace Scryber
         ImageData LoadImageData(IDocument document, IComponent owner, string path);
     }
 
+    /// <summary>
+    /// Defines the base capability of a Path Adorner that add graphic features to an individual path.
+    /// </summary>
+    public interface IPathAdorner
+    {
+        PDFName OutputAdornment(PDFGraphics toGraphics, PathAdornmentInfo info, ContextBase context);
+    }
+
+    public class PathAdornmentInfo
+    {
+        public Point Location { get; private set; }
+        public double AngleRadians { get; private set; }
+        public PDFBrush CurrentBrush { get; private set; }
+        public PDFPen CurrentPen { get; private set; }
+
+        public PathAdornmentInfo(Point location, double angleRadians, PDFBrush brush, PDFPen pen)
+        {
+            this.Location = location;
+            this.AngleRadians = angleRadians;
+            this.CurrentBrush = brush;
+            this.CurrentPen = pen;
+        }
+    }
 
     
 }

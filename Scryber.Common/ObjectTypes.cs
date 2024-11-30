@@ -192,6 +192,7 @@ namespace Scryber
         public static readonly ObjectType ShapeElipse = (ObjectType)"elps";
         public static readonly ObjectType ShapePath = (ObjectType)"path";
         public static readonly ObjectType ShapePolygon = (ObjectType)"poly";
+        public static readonly ObjectType ShapePolyline = (ObjectType)"poll";
         public static readonly ObjectType ShapePolygram = (ObjectType)"polg";
         public static readonly ObjectType ShapeTriangle = (ObjectType)"tria";
         public static readonly ObjectType ShapeRectangle = (ObjectType)"rect";
@@ -200,6 +201,7 @@ namespace Scryber
         public static readonly ObjectType LinearGradientStop = (ObjectType)"ligs";
         
         public static readonly ObjectType RadialGradient = (ObjectType)"radg";
+        public static readonly ObjectType Marker = (ObjectType)"mker";
 
 
 

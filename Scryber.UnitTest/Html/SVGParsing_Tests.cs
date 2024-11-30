@@ -118,6 +118,28 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
+        
+        [TestMethod]
+        public void SVGMarkers_Line()
+        {
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_Line.html",
+                this.TestContext);
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                using (var stream = DocStreams.GetOutputStream("SVGMarkers_Line.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                    
+                    var section = doc.Pages[0] as Section;
+                    Assert.IsNotNull(section);
+                    var clock = section.Contents[3] as Canvas;
+                    
+                    
+                }
+            }
+        }
 
         [TestMethod]
         public void SVGTransformParsing()

@@ -343,6 +343,17 @@ namespace Scryber.PDF.Graphics
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
 
+            
+            PathAdornmentInfo info = null;
+                        
+            if (path.HasAdornments)
+            {
+                info = new PathAdornmentInfo(location, 0, brush, pen);
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.Before);
+
+            }
+            
+            
             if (null != path.PathMatrix)
             {
                 this.SetTransformationMatrix(path.PathMatrix, false, true);
@@ -364,12 +375,17 @@ namespace Scryber.PDF.Graphics
 
             //Transformation matrix will be released with restore graphics state
             
+            
+
+            if (null != info)
+            {
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.After);
+            }
+            
             if (null != brush)
                 brush.ReleaseGraphics(this, bounds);
             if (null != pen)
                 pen.ReleaseGraphics(this, bounds);
-            
-            
         }
 
         private void RenderPathData(Point location, Path p, ref Point cursor)

@@ -12,10 +12,14 @@ namespace Scryber.Svg.Components
         public PDFPointList Points { get; set; }
 
         public SVGPolyLine()
-            : base(ObjectTypes.ShapePolygon)
+            : this(ObjectTypes.ShapePolyline)
         {
         }
 
+        protected SVGPolyLine(ObjectType type) : base(type)
+        {
+            
+        }
 
         protected override void OnPreLayout(LayoutContext context)
         {

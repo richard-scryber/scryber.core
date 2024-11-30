@@ -588,6 +588,21 @@ namespace Scryber.Drawing
         UserSpaceOnUse
     }
 
+    public enum AdornmentOrder
+    {
+        Before,
+        After
+    }
+
+    [Flags]
+    public enum AdornmentPlacements
+    {
+        None = 0,
+        Start = 1,
+        Middle = 2,
+        End = 4,
+    }
+
 
     /// <summary>
     /// The supported types of style content values

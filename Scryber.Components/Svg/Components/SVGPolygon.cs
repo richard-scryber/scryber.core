@@ -7,7 +7,7 @@ public class SVGPolygon : SVGPolyLine
 {
 
 
-    public SVGPolygon(): base()
+    public SVGPolygon(): base(ObjectTypes.ShapePolygon)
     { }
 
     protected override GraphicsPath CreatePath(Size available, Style fullstyle)

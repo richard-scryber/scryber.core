@@ -200,7 +200,7 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                if (this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
                     return value.Value(this.Style) as SVGTransformOperationSet;
                 else
                     return null;
@@ -208,6 +208,22 @@ namespace Scryber.Svg.Components
             set
             {
                 this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
+        
+        [PDFAttribute("transform-origin")]
+        public TransformOrigin TransformOrigin
+        {
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOriginKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOriginKey, value);
             }
         }
 

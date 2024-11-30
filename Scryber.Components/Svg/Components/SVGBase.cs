@@ -176,8 +176,6 @@ namespace Scryber.Svg.Components
         }
         
 
-        // font
-
 
         public SVGBase(ObjectType type)
             : base(type)
@@ -213,6 +211,42 @@ namespace Scryber.Svg.Components
         object ICloneable.Clone()
         {
             return this.Clone();
+        }
+        
+        public static bool TryFindMarkerInParent(Component parent,  string nameOrId, out SVGMarker found)
+        {
+            var canvas = parent;
+            while (!(canvas is SVGCanvas))
+            {
+                canvas = canvas.Parent;
+                if (null == canvas)
+                    throw new InvalidOperationException("Cannot find markers outside of the components heirarchy");
+
+            }
+            
+            if (nameOrId.StartsWith("#"))
+            {
+                if (canvas.FindAComponentById(nameOrId.Substring(1)) is SVGMarker marker)
+                {
+                    found = marker;
+                    return true;
+                }
+            }
+            else if (Uri.IsWellFormedUriString(nameOrId, UriKind.Absolute))
+            {
+                throw new ArgumentException("Loading of markers from a uri is not (currently) supported");
+            }
+            else
+            {
+                if (canvas.FindAComponentByName(nameOrId) is SVGMarker marker)
+                {
+                    found = marker;
+                    return true;
+                }
+            }
+
+            found = null;
+            return false;
         }
 
         

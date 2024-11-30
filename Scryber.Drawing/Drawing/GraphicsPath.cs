@@ -32,6 +32,7 @@ namespace Scryber.Drawing
         
         private List<Path> _paths = new List<Path>();
         private Stack<Path> _stack = new Stack<Path>();
+        private PathMultiAdornment _addornments; 
         private Point _cursor;
         private Point _lasthandle;
         private GraphicFillMode _mode = GraphicFillMode.Winding;
@@ -87,6 +88,29 @@ namespace Scryber.Drawing
             get { return this._stack.Count > 0; }
         }
 
+        public bool HasAdornments
+        {
+            get { return this._addornments != null; }
+        }
+
+        public void OutputAdornments(PDFGraphics graphics, PathAdornmentInfo info, ContextBase context,
+            AdornmentOrder currentOrder)
+        {
+            if (null != this._addornments)
+            {
+                //TODO: use the inner path to calculate the angles as we go from start to end.
+                
+                var currentPlacement = AdornmentPlacements.Start;
+                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+
+                currentPlacement = AdornmentPlacements.Middle;
+                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                
+                currentPlacement = AdornmentPlacements.End;
+                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+            }
+        }
+
         
 
         /// <summary>
@@ -129,6 +153,17 @@ namespace Scryber.Drawing
             : this(ObjectTypes.GraphicsPath)
         {
 
+        }
+
+        public void AddAdornment(IPathAdorner adorner, AdornmentOrder order, AdornmentPlacements placements)
+        {
+            if(null != this._addornments)
+                this._addornments.Append(adorner, order, placements);
+            else
+            {
+                this._addornments = new PathMultiAdornment(adorner, order, placements);
+            }
+                
         }
 
         object ICloneable.Clone()

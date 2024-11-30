@@ -81,6 +81,43 @@ namespace Scryber.Svg.Components
             } 
         }
 
+        [PDFAttribute("marker-start")]
+        public SVGMarkerValue MarkerStart
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerStartKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerStartKey, value);
+            } 
+        }
+
+        [PDFAttribute("marker-end")]
+        public SVGMarkerValue MarkerEnd
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerEndKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerEndKey, value);
+            } 
+        }
+
+        
         public SVGLine() : base(ObjectTypes.ShapeLine)
         {
         }
@@ -125,7 +162,30 @@ namespace Scryber.Svg.Components
             path.MoveTo(new Point(x1,y1));
             path.LineTo(new Point(x2, y2));
 
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerStartKey, out var start))
+            {
+                var adorner = start.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    path.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.Start);
+                }
+            }
+
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerEndKey, out var end))
+            {
+                var adorner = end.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    path.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.End);
+                }
+            }
+
             return path;
+        }
+
+        protected bool TryFindMarker(string nameOrId, out SVGMarker marker)
+        {
+            return SVGBase.TryFindMarkerInParent(this.Parent,  nameOrId, out marker);
         }
 
         protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
