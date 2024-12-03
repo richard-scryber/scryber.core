@@ -68,7 +68,7 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     }
     
     [PDFAttribute("refY")]
-    public Unit X2 {
+    public Unit RefY {
         get
         {
             if (this.HasStyle)
@@ -268,13 +268,21 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     }
 
 
-    protected virtual void OutputMarkerDraw(Size size, PathAdornmentInfo info, PDFGraphics graphics, ContextBase context)
+    protected virtual void OutputMarkerDraw(Size size, PathAdornmentInfo info, PDFGraphics graphics,
+        ContextBase context)
     {
         this._markerResource.EnsureRendered(context, graphics.Writer);
+
+
+        //info.Location = new Point(90, 90);
         graphics.SaveGraphicsState();
         var matrix = this.ApplyTransformation(graphics, size, info);
         graphics.PaintXObject(this._markerResource);
         graphics.RestoreGraphicsState();
+
+
+
+
 
     }
 
@@ -282,10 +290,13 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     {
         
         var transform = new SVGTransformOperationSet();
-        var origin = new TransformOrigin(0, 0);
-        
-        transform.AppendOperation(new TransformTranslateOperation(info.Location.X, info.Location.Y));
+        var origin = new TransformOrigin(0,  graphics.ContainerSize.Height );
 
+        
+        transform.AppendOperation(new TransformRotateOperation(info.AngleRadians));
+        transform.AppendOperation(new TransformTranslateOperation(info.Location.X,
+            info.Location.Y - graphics.ContainerSize.Height));
+        
         var matrix = transform.GetTransformationMatrix(graphics.ContainerSize, origin);
         
         graphics.SetTransformationMatrix(matrix, true, true);
@@ -422,7 +433,16 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
                 xScale = mkw / vbw;
                 yScale = mkh / vbh;
 
+                var offsetX = 0.0 - this._marker.RefX;
+                if (offsetX != 0.0)
+                    offsetX *= xScale;
+
+                var offsetY = 0.0 - this._marker.RefY;
+                if (offsetY != 0.0)
+                    offsetY *= yScale;
+
                 matrix.SetScale((float)xScale, (float)yScale);
+                matrix.SetTranslation(offsetX, offsetY);
             }
             
             writer.WriteArrayRealEntries(matrix.Components);

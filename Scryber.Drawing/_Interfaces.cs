@@ -58,8 +58,8 @@ namespace Scryber
 
     public class PathAdornmentInfo
     {
-        public Point Location { get; private set; }
-        public double AngleRadians { get; private set; }
+        public Point Location { get;  set; }
+        public double AngleRadians { get;  set; }
         public PDFBrush CurrentBrush { get; private set; }
         public PDFPen CurrentPen { get; private set; }
 

@@ -47,6 +47,16 @@ namespace Scryber.Drawing
         {
             return (PathData)this.MemberwiseClone();
         }
+
+        public virtual Point GetLocation(Point start, Point end, AdornmentPlacements placement)
+        {
+            return start;
+        }
+
+        public virtual double GetAngle(Point start, Point end)
+        {
+            return 0;
+        }
     }
 
     #endregion
@@ -62,6 +72,17 @@ namespace Scryber.Drawing
         public override void FillAllPoints(List<Point> points)
         {
             points.Add(this.MoveTo);
+        }
+
+        public override Point GetLocation(Point start, Point end, AdornmentPlacements placement)
+        {
+            return this.MoveTo;
+        }
+
+        public override double GetAngle(Point start, Point end)
+        {
+            //reverse angle - just testing
+            return (Math.PI / 180.0) * -135.0;
         }
     }
 
@@ -107,6 +128,21 @@ namespace Scryber.Drawing
         {
             points.Add(LineTo);
         }
+        
+        public override Point GetLocation(Point start, Point end, AdornmentPlacements placement)
+        {
+            if (placement == AdornmentPlacements.Start)
+                return start;
+            else
+                return this.LineTo;
+        }
+
+        public override double GetAngle(Point start, Point end)
+        {
+            //reverse angle - just testing
+            return (Math.PI / 180.0) * 45.0;
+        }
+        
     }
 
     #endregion

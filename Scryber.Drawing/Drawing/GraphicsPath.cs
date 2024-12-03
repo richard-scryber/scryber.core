@@ -98,19 +98,50 @@ namespace Scryber.Drawing
         {
             if (null != this._addornments)
             {
-                //TODO: use the inner path to calculate the angles as we go from start to end.
                 
                 var cursor = info.Location;
+                var start = cursor;
+                
                 foreach (var subPath in this.SubPaths)
                 {
-                    var currentPlacement = AdornmentPlacements.Start;
-                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                    var count = subPath.Operations.Count;
+                    for (var i = 0; i < count; i++)
+                    {
+                        var op = subPath.Operations[i];
+                        var end = cursor;
+                        
+                        if (i == 0)
+                        {
+                            //Do nothing except update the cursor
+                            cursor = op.GetLocation(start, end, AdornmentPlacements.Start);
+                        }
+                        else if (i == 1)
+                        {
+                            info.Location = op.GetLocation(start, end, AdornmentPlacements.Start);
+                            info.AngleRadians = op.GetAngle(start, end); //auto-start-reverse
+                            cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, AdornmentPlacements.Start);
+                        }
 
-                    currentPlacement = AdornmentPlacements.Middle;
-                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
-                
-                    currentPlacement = AdornmentPlacements.End;
-                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                        if (i > 0 && i < count - 1)
+                        {
+                            // mid point
+                            info.Location = op.GetLocation(start, end, AdornmentPlacements.Middle);
+                            info.AngleRadians = op.GetAngle(start, end); //auto-start-reverse
+                            cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, AdornmentPlacements.Middle);
+                        }
+
+                        if (i == count - 1)
+                        {
+                            //last
+                            info.Location = op.GetLocation(start, end, AdornmentPlacements.End);
+                            info.AngleRadians = op.GetAngle(start, end); //auto-start-reverse
+                            cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, AdornmentPlacements.End);
+                        }
+
+                        start = cursor;
+                        cursor = end;
+                    }
+                    
                 }
                 
             }
