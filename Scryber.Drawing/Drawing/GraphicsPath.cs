@@ -100,14 +100,19 @@ namespace Scryber.Drawing
             {
                 //TODO: use the inner path to calculate the angles as we go from start to end.
                 
-                var currentPlacement = AdornmentPlacements.Start;
-                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                var cursor = info.Location;
+                foreach (var subPath in this.SubPaths)
+                {
+                    var currentPlacement = AdornmentPlacements.Start;
+                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
 
-                currentPlacement = AdornmentPlacements.Middle;
-                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                    currentPlacement = AdornmentPlacements.Middle;
+                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
                 
-                currentPlacement = AdornmentPlacements.End;
-                this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                    currentPlacement = AdornmentPlacements.End;
+                    cursor = this._addornments.EnsureAdornments(graphics, info, context, currentOrder, currentPlacement);
+                }
+                
             }
         }
 

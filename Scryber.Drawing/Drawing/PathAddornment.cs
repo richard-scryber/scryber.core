@@ -17,13 +17,25 @@ namespace Scryber.Drawing
             this.Placement = placements;
         }
 
-        public virtual void EnsureAdornments(PDFGraphics inGraphics, PathAdornmentInfo info, ContextBase context,
+        /// <summary>
+        /// Renders any adornments that are relevant for the current order and placement using the info and returns the final point in the path that was used.
+        /// </summary>
+        /// <param name="inGraphics"></param>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        /// <param name="currentOrder"></param>
+        /// <param name="currentPlacement"></param>
+        /// <returns></returns>
+        public virtual Point EnsureAdornments(PDFGraphics inGraphics, PathAdornmentInfo info, ContextBase context,
             AdornmentOrder currentOrder, AdornmentPlacements currentPlacement)
         {
             if (currentOrder == this.Order && (currentPlacement & this.Placement) > 0)
             {
                 this.Addorner.OutputAdornment(inGraphics, info, context);
             }
+
+            //TODO: Update this based on the path and adorner data.
+            return info.Location;
         }
         
     }
@@ -43,15 +55,17 @@ namespace Scryber.Drawing
             
         }
 
-        public override void EnsureAdornments(PDFGraphics inGraphics, PathAdornmentInfo info, ContextBase context, AdornmentOrder currentOrder,
+        public override Point EnsureAdornments(PDFGraphics inGraphics, PathAdornmentInfo info, ContextBase context, AdornmentOrder currentOrder,
             AdornmentPlacements currentPlacement)
         {
-            base.EnsureAdornments(inGraphics, info, context, currentOrder, currentPlacement);
+            var loc = base.EnsureAdornments(inGraphics, info, context, currentOrder, currentPlacement);
             
             if(null != this.Next)
             {
-                this.Next.EnsureAdornments(inGraphics, info, context, currentOrder, currentPlacement);
+                loc =this.Next.EnsureAdornments(inGraphics, info, context, currentOrder, currentPlacement);
             }
+
+            return loc;
         }
 
         public void Append(IPathAdorner adorner, AdornmentOrder order, AdornmentPlacements placements)

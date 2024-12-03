@@ -20,7 +20,10 @@ namespace Scryber.Svg.Components
 
         protected GraphicsPath Path
         {
-            get { return _path; }
+            get
+            {
+                return _path;
+            }
             set { _path = value; }
         }
 
@@ -59,6 +62,11 @@ namespace Scryber.Svg.Components
             var graphics = context.Graphics;
             if (null == graphics)
                 throw new ArgumentNullException("context.Graphics");
+
+            if (null == this.Path)
+            {
+                this.Path = this.CreatePath(context.Space, context.FullStyle);
+            }
 
             if (null != this.Path)
             {
