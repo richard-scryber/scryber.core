@@ -32,6 +32,60 @@ namespace Scryber.Svg.Components
             get { return this.Path; }
             set { this.Path = value; }
         }
+        
+        [PDFAttribute("marker-start")]
+        public SVGMarkerValue MarkerStart
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerStartKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerStartKey, value);
+            } 
+        }
+        
+        [PDFAttribute("marker-mid")]
+        public SVGMarkerValue MarkerMiddle
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerMidKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerMidKey, value);
+            } 
+        }
+
+        [PDFAttribute("marker-end")]
+        public SVGMarkerValue MarkerEnd
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerEndKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerEndKey, value);
+            } 
+        }
 
         protected PDFTransformationMatrix DrawingTransformMatrix
         {

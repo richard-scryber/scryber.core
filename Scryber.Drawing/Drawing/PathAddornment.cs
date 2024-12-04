@@ -37,6 +37,43 @@ namespace Scryber.Drawing
             //TODO: Update this based on the path and adorner data.
             return info.Location;
         }
+
+        public virtual bool HasStarts(AdornmentOrder order)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & AdornmentPlacements.Start) > 0)
+                    return true;
+            }
+
+            return false;
+
+        }
+        
+        public virtual bool HasMids(AdornmentOrder order)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & AdornmentPlacements.Middle) > 0)
+                    return true;
+            }
+
+            return false;
+
+        }
+        
+        public virtual bool HasEnds(AdornmentOrder order)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & AdornmentPlacements.End) > 0)
+                    return true; 
+                
+            }
+
+            return false;
+
+        }
         
     }
     
@@ -78,6 +115,36 @@ namespace Scryber.Drawing
             {
                 this.Next.Append(adorner, order, placements);
             }
+        }
+
+        public override bool HasStarts(AdornmentOrder order)
+        {
+            if (base.HasStarts(order))
+                return true;
+            else if (null != this.Next)
+                return this.Next.HasStarts(order);
+            else
+                return false;
+        }
+
+        public override bool HasMids(AdornmentOrder order)
+        {
+            if (base.HasMids(order))
+                return true;
+            else if (null != this.Next)
+                return this.Next.HasMids(order);
+            else
+                return false;
+        }
+
+        public override bool HasEnds(AdornmentOrder order)
+        {
+            if (base.HasEnds(order))
+                return true;
+            else if (null != this.Next)
+                return this.Next.HasEnds(order);
+            else
+                return false;
         }
     }
 

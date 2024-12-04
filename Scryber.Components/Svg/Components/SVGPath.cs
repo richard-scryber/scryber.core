@@ -33,6 +33,11 @@ namespace Scryber.Svg.Components
             rect = rect.Offset(this.ShapeOffset);
             return rect;
         }
+        
+        protected bool TryFindMarker(string nameOrId, out SVGMarker marker)
+        {
+            return SVGBase.TryFindMarkerInParent(this.Parent,  nameOrId, out marker);
+        }
 
         protected override Drawing.GraphicsPath CreatePath(Drawing.Size available, Style fullstyle)
         {
@@ -42,6 +47,33 @@ namespace Scryber.Svg.Components
                     this.PathData.PathMatrix = new Scryber.PDF.Graphics.PDFTransformationMatrix();
                 
                 this.PathData.PathMatrix.SetTranslation(this.ShapeOffset.X, 0 - this.ShapeOffset.Y);
+            }
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerStartKey, out var start))
+            {
+                var adorner = start.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    this.PathData.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.Start);
+                }
+            }
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerMidKey, out var mid))
+            {
+                var adorner = mid.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    this.PathData.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.Middle);
+                }
+            }
+
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerEndKey, out var end))
+            {
+                var adorner = end.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    this.PathData.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.End);
+                }
             }
             
             return this.PathData;
