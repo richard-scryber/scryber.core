@@ -87,6 +87,8 @@ namespace Scryber.Svg.Components
             } 
         }
 
+        
+
         protected PDFTransformationMatrix DrawingTransformMatrix
         {
             get;

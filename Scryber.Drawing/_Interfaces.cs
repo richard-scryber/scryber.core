@@ -23,6 +23,7 @@ using System.Text;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
 using Scryber.PDF.Native;
+using Scryber.Svg;
 
 namespace Scryber
 {
@@ -53,6 +54,7 @@ namespace Scryber
     /// </summary>
     public interface IPathAdorner
     {
+        AdornmentOrientationValue Orientation { get; }
         PDFName OutputAdornment(PDFGraphics toGraphics, PathAdornmentInfo info, ContextBase context);
     }
 
@@ -62,13 +64,22 @@ namespace Scryber
         public double AngleRadians { get;  set; }
         public PDFBrush CurrentBrush { get; private set; }
         public PDFPen CurrentPen { get; private set; }
+        
+        public double? ExplicitAngle { get; private set; }
+        
+        public bool ReverseAngleAtStart { get; private set; }
 
-        public PathAdornmentInfo(Point location, double angleRadians, PDFBrush brush, PDFPen pen)
+        public PathAdornmentInfo(Point initialLocation, double? initialAngle, bool reverseAngleAtStart, PDFBrush brush, PDFPen pen)
         {
-            this.Location = location;
-            this.AngleRadians = angleRadians;
             this.CurrentBrush = brush;
             this.CurrentPen = pen;
+            this.Location = initialLocation;
+            
+            if (initialAngle.HasValue)
+                this.AngleRadians = initialAngle.Value;
+            
+            this.ExplicitAngle = initialAngle;
+            this.ReverseAngleAtStart = reverseAngleAtStart;
         }
     }
 

@@ -136,6 +136,15 @@ namespace Scryber.Svg.Components
                     path.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.Start);
                 }
             }
+            
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerMidKey, out var mid))
+            {
+                var adorner = mid.Value(fullstyle);
+                if (!string.IsNullOrEmpty(adorner.MarkerReference) && this.TryFindMarker(adorner.MarkerReference, out var marker))
+                {
+                    path.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.Middle);
+                }
+            }
 
             if (fullstyle.TryGetValue(StyleKeys.SVGMarkerEndKey, out var end))
             {
@@ -145,6 +154,7 @@ namespace Scryber.Svg.Components
                     path.AddAdornment(marker, AdornmentOrder.After, AdornmentPlacements.End);
                 }
             }
+            
 
             return path;
         }

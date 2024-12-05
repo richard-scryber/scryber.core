@@ -139,7 +139,22 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     }
 
     [PDFAttribute("orient")]
-    public string Orient { get; set; }
+    public override AdornmentOrientationValue Orientation
+    {
+        get
+        {
+            if (this.HasStyle)
+                return this.Style.GetValue(StyleKeys.SVGMarkerOrientationKey, AdornmentOrientationValue.Default);
+            else
+            {
+                return AdornmentOrientationValue.Default;
+            }
+        }
+        set
+        {
+            this.Style.SetValue(StyleKeys.SVGMarkerOrientationKey, value);
+        } 
+    }
 
 
     [PDFArray(typeof(Component))]

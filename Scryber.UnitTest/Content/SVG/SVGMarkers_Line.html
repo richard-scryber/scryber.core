@@ -15,7 +15,7 @@
         <defs>
             <marker id="arrow" refX="5" refY="5" 
                     viewBox="0 0 10 10" markerWidth="5" markerHeight="5"
-                    orient="auto-start-reverse">
+                    orient="auto">
                 <path d="M 0 1 L 10 5 L 0 8 z" stroke-width="0.3" stroke="black" fill="red" />
             </marker>
             <marker id="circle" refX="5" refY="5"
@@ -25,7 +25,7 @@
             </marker>
         </defs>
 
-<!--        <line x1="50" y1="10" x2="50" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />-->
+        <line x1="50" y1="10" x2="50" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />
 <!--        -->
 
 <!--        <line x1="35" y1="10" x2="65" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />-->
@@ -43,30 +43,52 @@
 
 <!--        <line x1="10" y1="70" x2="90" y2="30" stroke="blue" marker-end="url(#arrow)" marker-start="url(#arrow)" />-->
 
-        <path
-                d="M 110 10
-       C 120 20, 130 20, 140 10
-       C 150 0, 160 0, 170 10
-       C 180 20, 190 20, 200 10"
-                stroke="black"
-                fill="none"
-                marker-start="url(#arrow)"
-                marker-mid="url(#arrow)"
-                marker-end="url(#arrow)" />
+<!--        <path-->
+<!--                d="M 110 10-->
+<!--       C 120 20, 130 20, 140 10-->
+<!--       C 150 0, 160 0, 170 10-->
+<!--       C 180 20, 190 20, 200 10"-->
+<!--                stroke="black"-->
+<!--                fill="none"-->
+<!--                marker-start="url(#arrow)"-->
+<!--                marker-mid="url(#arrow)"-->
+<!--                marker-end="url(#arrow)" />-->
 
 <!--        <path-->
 <!--                fill="none"-->
 <!--                stroke="red"-->
 <!--                d="M 10,30-->
-<!--       A 20,20 0,0,1 50,30-->
+<!--       A 20,20 0 0 1 50,30-->
 <!--       A 20,20 0,0,1 90,30-->
 <!--       Q 90,60 50,90-->
 <!--       Q 10,60 10,30 z-->
 <!--       "-->
 <!--                marker-start="url(#arrow)"-->
 <!--                marker-mid="url(#arrow)"-->
-<!--                marker-end="url(#arrow)"-->
 <!--                transform="translate(140, 40) scale(0.5)" />-->
+        
+<!--        <circle r="35" cx="165" cy="60" fill="none" stroke="blue" stroke-width="1"  marker-start="url(#arrow)"  />-->
+
+        <path
+                fill="none"
+                stroke="red"
+                d="M 10,10 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       M 40,20 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       M 50,50 h 10
+       m-20,10 h 10
+       m-20,10 h 10
+       m-20,10 h 10" transform="translate(160, 10)" marker-start="url(#arrow)" marker-mid="url(#arrow)" marker-end="url(#arrow)" />
+        
+<!--        <path-->
+<!--                fill="none"-->
+<!--                stroke="green"-->
+<!--                d="M 10,10 h 10-->
+<!--       m  0,10 h 10" transform="translate(160, 10)" marker-start="url(#arrow)" marker-mid="url(#arrow)" marker-end="url(#arrow)" />-->
         
     </svg>
     <p>This is after the svg canvas</p>

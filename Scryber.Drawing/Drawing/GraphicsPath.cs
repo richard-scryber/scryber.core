@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using Scryber.PDF.Graphics;
 using System.Text;
+using Scryber.Svg;
 
 namespace Scryber.Drawing
 {
@@ -93,6 +94,8 @@ namespace Scryber.Drawing
             get { return this._addornments != null; }
         }
 
+        public AdornmentOrientationValue AdornmentOrientation { get; set; }
+
         public void OutputAdornments(PDFGraphics graphics, PathAdornmentInfo info, ContextBase context,
             AdornmentOrder currentOrder)
         {
@@ -108,6 +111,8 @@ namespace Scryber.Drawing
                 
                 foreach (var subPath in this.SubPaths)
                 {
+                    //TODO: There is a more efficient loop but it's ok.
+                    
                     var count = subPath.Operations.Count;
                     for (var i = 0; i < count; i++)
                     {
@@ -116,25 +121,27 @@ namespace Scryber.Drawing
                         
                         if (i == 0)
                         {
-                            //Do nothing
+                            //Do nothing but will be remembered as the previous.
                         }
-                        else if (i == 1)
+                        
+                        if (i == 1)
                         {
                             if (hasStarts)
                             {
-                                op.UpdateAdornmentInfo(prev, info, AdornmentPlacements.Start);
+                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.Start);
                                 this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
                                     AdornmentPlacements.Start);
                             }
                         }
 
-                        if (i > 0 && i < count - 1)
+                        if (i > 1 && i < count)
                         {
                             if (hasMids)
                             {
-                                op.UpdateAdornmentInfo(prev, info, AdornmentPlacements.Middle);
+                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.Middle);
                                 this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
                                     AdornmentPlacements.Middle);
+
                             }
                         }
 
@@ -142,7 +149,7 @@ namespace Scryber.Drawing
                         {
                             if (hasEnds)
                             {
-                                op.UpdateAdornmentInfo(prev, info, AdornmentPlacements.End);
+                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.End);
                                 this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
                                     AdornmentPlacements.End);
                             }
@@ -154,6 +161,12 @@ namespace Scryber.Drawing
                 }
                 
             }
+        }
+
+        protected virtual void UpdateAdornmentInfoForVertex(PathData previous, PathData next, Path inPath, int index,
+            PathAdornmentInfo info, AdornmentPlacements placement)
+        {
+            next.UpdateAdornmentInfo(previous, info, placement);
         }
 
         
@@ -206,6 +219,7 @@ namespace Scryber.Drawing
                 this._addornments.Append(adorner, order, placements);
             else
             {
+                this.AdornmentOrientation = adorner.Orientation;
                 this._addornments = new PathMultiAdornment(adorner, order, placements);
             }
                 

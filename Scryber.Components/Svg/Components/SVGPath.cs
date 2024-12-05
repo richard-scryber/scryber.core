@@ -76,6 +76,11 @@ namespace Scryber.Svg.Components
                 }
             }
             
+            if (fullstyle.TryGetValue(StyleKeys.SVGMarkerOrientationKey, out var orient))
+            {
+                this.PathData.AdornmentOrientation = orient.Value(fullstyle);
+            }
+            
             return this.PathData;
         }
 

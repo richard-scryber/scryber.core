@@ -370,6 +370,7 @@ namespace Scryber.Styles
         
         public static readonly StyleKey<double> SVGGradientStopOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"gsop", StyleKeys.SVGGeometryKey);
 
+        
         public static readonly StyleKey<SVGMarkerValue> SVGMarkerStartKey =
             StyleKey.InternalCreateStyleValueKey<SVGMarkerValue>((ObjectType)"gmst", StyleKeys.SVGGeometryKey);
         
@@ -378,6 +379,9 @@ namespace Scryber.Styles
         public static readonly StyleKey<SVGMarkerValue> SVGMarkerEndKey =
             StyleKey.InternalCreateStyleValueKey<SVGMarkerValue>((ObjectType)"gmed", StyleKeys.SVGGeometryKey);
         
+        public static readonly StyleKey<AdornmentOrientationValue> SVGMarkerOrientationKey = 
+            StyleKey.InternalCreateStyleValueKey<AdornmentOrientationValue>((ObjectType)"gmov", StyleKeys.SVGGeometryKey);
+            
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);

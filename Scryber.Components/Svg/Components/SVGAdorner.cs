@@ -13,6 +13,8 @@ public abstract class SVGAdorner : Scryber.Components.ContainerComponent, IPathA
     {
         
     }
+    
+    public abstract AdornmentOrientationValue Orientation { get; set; }
 
     public abstract PDFName OutputAdornment(PDFGraphics toGraphics, PathAdornmentInfo info, ContextBase context);
 }

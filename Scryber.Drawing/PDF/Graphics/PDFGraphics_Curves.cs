@@ -23,6 +23,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.Svg;
 
 namespace Scryber.PDF.Graphics
 {
@@ -345,18 +346,28 @@ namespace Scryber.PDF.Graphics
 
             
             PathAdornmentInfo info = null;
-                        
-            if (path.HasAdornments)
-            {
-                info = new PathAdornmentInfo(location, 0, brush, pen);
-                path.OutputAdornments(this, info, this.Context, AdornmentOrder.Before);
-
-            }
+            
             
             
             if (null != path.PathMatrix)
             {
                 this.SetTransformationMatrix(path.PathMatrix, false, true);
+            }
+            
+            if (path.HasAdornments)
+            {
+                AdornmentOrientationValue orientation = path.AdornmentOrientation;
+                double? angle;
+                if (orientation.HasAngle)
+                    angle = orientation.AngleRadians;
+                else
+                    angle = null;
+                
+                bool reverse = orientation.IsReverseAtStart;
+
+                info = new PathAdornmentInfo(location, angle, reverse, brush, pen);
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.Before);
+
             }
 
             Point cursor = Point.Empty;
