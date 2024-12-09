@@ -103,6 +103,8 @@ namespace Scryber.Drawing
             {
                 
                 PathData prev = null;
+                PathData curr = null;
+               
                 var hasStarts = this._addornments.HasStarts(currentOrder);
                 var hasMids = this._addornments.HasMids(currentOrder);
                 var hasEnds = this._addornments.HasEnds(currentOrder);
@@ -112,36 +114,85 @@ namespace Scryber.Drawing
                 foreach (var subPath in this.SubPaths)
                 {
                     //TODO: There is a more efficient loop but it's ok.
+                    int currIndex = 0;
                     
                     var count = subPath.Operations.Count;
+                    if(count < 1)
+                        continue;
+
+                    // if (count == 1)
+                    // {
+                    //     //Just one so pick the best placements and draw it.
+                    //     
+                    //     if (hasStarts)
+                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
+                    //             AdornmentPlacements.Start, currentOrder, graphics, context);
+                    //     else if(hasEnds)
+                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
+                    //             AdornmentPlacements.End, currentOrder, graphics, context);
+                    //     else
+                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
+                    //             AdornmentPlacements.Middle, currentOrder, graphics, context);
+                    // }
+                    // else
+                    // {
+                    //     while (currIndex < count)
+                    //     {
+                    //         curr = subPath.Operations[currIndex];
+                    //         var next = currIndex < count - 1 ? subPath.Operations[currIndex + 1] : null;
+                    //         
+                    //
+                    //         currIndex++;
+                    //         prev = curr;
+                    //     }
+                    //
+                    //     var firstIsMove = false;
+                    //     if (hasStarts)
+                    //     {
+                    //         curr = subPath.Operations[currIndex];
+                    //         while (curr.Type == PathDataType.Move)
+                    //         {
+                    //             curr = subPath.Operations[++currIndex];
+                    //         }
+                    //
+                    //     }
+                    // }
+
+                    bool firstIsMove = false;
+
+                    
                     for (var i = 0; i < count; i++)
                     {
                         var op = subPath.Operations[i];
-                       
+                        var next = (i < count - 1) ? subPath.Operations[i + 1] : null;
                         
                         if (i == 0)
                         {
-                            //Do nothing but will be remembered as the previous.
+                            if (op.Type == PathDataType.Move)
+                            {
+                                firstIsMove = true;
+                                //Do nothing but will be remembered as the previous.
+                            }
+                            else if(hasStarts)
+                            {
+                                UpdateAdornmentForVertex(null, op, next, subPath, i, info, AdornmentPlacements.Start, currentOrder, graphics, context);
+                            }
+                            
                         }
                         
                         if (i == 1)
                         {
-                            if (hasStarts)
+                            if ((hasStarts && firstIsMove))
                             {
-                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.Start);
-                                this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
-                                    AdornmentPlacements.Start);
+                                UpdateAdornmentForVertex(prev, op, next, subPath, i, info, AdornmentPlacements.Start, currentOrder, graphics, context);
                             }
                         }
 
-                        if (i > 1 && i < count)
+                        if (i > 0 && i < count)
                         {
                             if (hasMids)
                             {
-                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.Middle);
-                                this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
-                                    AdornmentPlacements.Middle);
-
+                                UpdateAdornmentForVertex(prev, op, next,  subPath, i, info, AdornmentPlacements.Middle, currentOrder, graphics, context);
                             }
                         }
 
@@ -149,9 +200,7 @@ namespace Scryber.Drawing
                         {
                             if (hasEnds)
                             {
-                                UpdateAdornmentInfoForVertex(prev, op, subPath, i, info, AdornmentPlacements.End);
-                                this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
-                                    AdornmentPlacements.End);
+                                UpdateAdornmentForVertex(prev, op,  next, subPath, i, info, AdornmentPlacements.End, currentOrder, graphics, context);
                             }
                         }
 
@@ -163,10 +212,12 @@ namespace Scryber.Drawing
             }
         }
 
-        protected virtual void UpdateAdornmentInfoForVertex(PathData previous, PathData next, Path inPath, int index,
-            PathAdornmentInfo info, AdornmentPlacements placement)
+        protected virtual void UpdateAdornmentForVertex(PathData previous, PathData current, PathData next,
+            Path inPath, int index,
+            PathAdornmentInfo info, AdornmentPlacements placement, AdornmentOrder order, PDFGraphics graphics, ContextBase context)
         {
-            next.UpdateAdornmentInfo(previous, info, placement);
+            current.UpdateAdornmentInfo(previous, info, placement);
+            this._addornments.EnsureAdornments(graphics, info, context, order, placement);
         }
 
         

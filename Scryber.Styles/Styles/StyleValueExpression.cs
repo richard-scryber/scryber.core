@@ -184,6 +184,11 @@ namespace Scryber.Styles
 
             this.EnsureExpression(forStyle);
 
+            if (null == this._variableProvider)
+                throw new InvalidOperationException(
+                    "The variable provider has not be set on the style value for key '" + key.ToString() +
+                    "'. Ensure that any included styles have been data bound");
+
             this._variableProvider.AddRelativeCallback((Unit relativeValue) =>
             {
                 if (relativeValue.IsRelative)

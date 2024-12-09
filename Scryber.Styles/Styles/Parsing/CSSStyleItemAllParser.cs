@@ -244,6 +244,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());
             all.Add(CSSStyleItems.StrokeWidth, new CSSStrokeWidthParser());
             all.Add(CSSStyleItems.StrokeDash, new CSSStrokeDashParser());
+            all.Add(CSSStyleItems.StrokeDashOffset, new CSSStrokeDashOffsetParser());
             all.Add(CSSStyleItems.StrokeLineCap, new CSSStrokeLineCapParser());
             all.Add(CSSStyleItems.StrokeLineJoin, new CSSStrokeLineJoinParser());
 

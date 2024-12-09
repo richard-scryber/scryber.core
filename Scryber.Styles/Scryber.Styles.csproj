@@ -24,7 +24,4 @@
   <ItemGroup>
     <None Remove="Styles\Parsing\Typed\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Styles\Parsing\Typed\" />
-  </ItemGroup>
 </Project>

@@ -130,6 +130,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 using (var stream = DocStreams.GetOutputStream("SVGMarkers_Line.pdf"))
                 {
+                    doc.AutoBind = true;
                     doc.SaveAsPDF(stream);
                     
                     var section = doc.Pages[0] as Section;

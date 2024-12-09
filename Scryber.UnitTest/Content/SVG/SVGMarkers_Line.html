@@ -7,6 +7,17 @@
     <style>
         .canvas{ background-color: #AAA; margin: 20pt;}
         
+        p{
+            font-size: 14pt;
+        }
+        
+        @media pdf {
+            
+            p{
+                font-size: calc(1rem * 1.4);
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -24,51 +35,66 @@
                 <circle r="4" cx="5" cy="5" stroke-width="1" stroke="black" fill="blue" />
             </marker>
         </defs>
+        <style>
+            circle{
+                stroke-dasharray: 220;
+                stroke-dashoffset: 55;
+                stroke: blue;
+            }
+            
+            @media print {
 
-        <line x1="50" y1="10" x2="50" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+                circle{
+                    stroke-dasharray: 220;
+                    stroke-dashoffset: calc(220 - 55);
+                    stroke: red;
+                }
+            }
+        </style>
+
+        <line x1="50" y1="10" x2="50" y2="90" stroke="silver"  marker-mid="url(#arrow)" />
         
 
-        <line x1="35" y1="10" x2="65" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="35" y1="10" x2="65" y2="90" stroke="silver" marker-mid="url(#arrow)" />
 
-        <line x1="65" y1="10" x2="35" y2="90" stroke="silver" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="65" y1="10" x2="35" y2="90" stroke="silver" marker-mid="url(#arrow)" />
         
         
-        <line x1="10" y1="10" x2="90" y2="90" stroke="black" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="10" y1="10" x2="90" y2="90" stroke="black" marker-mid="url(#arrow)" />
 
-        <line x1="10" y1="20" x2="90" y2="80" stroke="black" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="10" y1="20" x2="90" y2="80" stroke="black" marker-mid="url(#arrow)" />
 
-        <line x1="10" y1="30" x2="90" y2="70" stroke="green" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="10" y1="30" x2="90" y2="70" stroke="green" marker-mid="url(#arrow)" />
 
-        <line x1="20" y1="50" x2="80" y2="50" stroke="green" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="20" y1="50" x2="80" y2="50" stroke="green" marker-mid="url(#arrow)" />
 
-        <line x1="10" y1="70" x2="90" y2="30" stroke="blue" marker-end="url(#arrow)" marker-start="url(#arrow)" />
+        <line x1="10" y1="70" x2="90" y2="30" stroke="blue" marker-mid="url(#arrow)" />
 
-<!--        <path-->
-<!--                d="M 110 10-->
-<!--       C 120 20, 130 20, 140 10-->
-<!--       C 150 0, 160 0, 170 10-->
-<!--       C 180 20, 190 20, 200 10"-->
-<!--                stroke="black"-->
-<!--                fill="none"-->
-<!--                marker-start="url(#arrow)"-->
-<!--                marker-mid="url(#arrow)"-->
-<!--                marker-end="url(#arrow)" />-->
+        <!-- wavy line -->
+        <path
+                d="M 110 10
+       C 120 20, 130 20, 140 10
+       C 150 0, 160 0, 170 10
+       C 180 20, 190 20, 200 10"
+                stroke="black"
+                fill="none"
+                marker-mid="url(#arrow)" />
 
+        <!-- heart -->
         <path
                 fill="none"
                 stroke="red"
-                d="M 10,30
+                d="M 0,0 M 10,30
        A 20,20 0 0 1 50,30
        A 20,20 0,0,1 90,30
        Q 90,60 50,90
        Q 10,60 10,30 z
-       "
-                marker-start="url(#arrow)"
-                marker-mid="url(#arrow)"
+       " marker-start="url(#arrow)"
                 transform="translate(130, 30) scale(0.6)" />
         
-        <circle r="35" cx="160" cy="60" fill="none" stroke="blue" stroke-width="1"  marker-start="url(#arrow)"  />
+        <circle r="35" cx="160" cy="60" fill="none" stroke-width="1"  marker-start="url(#arrow)"  />
 
+        <!-- many arrows -->
         <path
                 fill="none"
                 stroke="red"
@@ -82,13 +108,8 @@
        M 50,50 h 10
        m-20,10 h 10
        m-20,10 h 10
-       m-20,10 h 10" transform="translate(170, 10)" marker-start="url(#arrow)" marker-mid="url(#arrow)" marker-end="url(#arrow)" />
+       m-20,10 h 10" transform="translate(170, 10)" marker-start="url(#arrow)" marker-mid="url(#arrow)"  />
         
-<!--        <path-->
-<!--                fill="none"-->
-<!--                stroke="green"-->
-<!--                d="M 10,10 h 10-->
-<!--       m  0,10 h 10" transform="translate(160, 10)" marker-start="url(#arrow)" marker-mid="url(#arrow)" marker-end="url(#arrow)" />-->
         
     </svg>
     <p>This is after the svg canvas</p>

@@ -414,6 +414,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Dash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", StrokeItemKey);
 
+        public static readonly StyleKey<Unit> StrokeDashOffsetKey =
+            StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"dsof", StrokeItemKey);
+            
         public static readonly StyleKey<LineCaps> StrokeEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", StrokeItemKey);
 
         public static readonly StyleKey<LineJoin> StrokeJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", StrokeItemKey);

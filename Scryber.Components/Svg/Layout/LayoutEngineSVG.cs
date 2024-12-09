@@ -13,11 +13,13 @@ namespace Scryber.Svg.Layout
 	{
 
 		public bool ContainedInParentSVG { get; set; }
+		
 
 		public LayoutEngineSVG(SVGCanvas canvas, IPDFLayoutEngine parent)
 			: base(canvas, parent)
 		{
-			this.ContainedInParentSVG = (parent is LayoutEngineSVG);
+			this.ContainedInParentSVG = (parent is LayoutEngineSVG engineSvg);
+			canvas.ContainedInParentSVG = this.ContainedInParentSVG;
 		}
 
 		public LayoutEngineSVG(SVGGroup group, IPDFLayoutEngine parent)
@@ -28,6 +30,8 @@ namespace Scryber.Svg.Layout
 		}
 
 		protected Size UsedSize { get; set; }
+
+		
 
 		protected override void DoLayoutComponent()
 		{

@@ -1887,6 +1887,7 @@ namespace Scryber.Styles
 
             StyleValue<LineType> penstyle;
             StyleValue<Dash> dash;
+            StyleValue<Unit> dashOffset;
             StyleValue<Color> c;
             StyleValue<Unit> width;
 
@@ -1914,11 +1915,41 @@ namespace Scryber.Styles
                 else if (penstyle.Value(this) == LineType.Dash)
                 {
                     if (this.TryGetValue(StyleKeys.StrokeDashKey, out dash))
-                        pen = new PDFDashPen(dash.Value(this))
+                    {
+                        var dashpen = new PDFDashPen(dash.Value(this))
                         {
                             Color = (null == c) ? StandardColors.Black : c.Value(this),
-                            Width = (null == width) ? 1.0 : width.Value(this)
+                            Width = (null == width) ? 1.0 : width.Value(this),
                         };
+
+                        if (this.TryGetValue(StyleKeys.StrokeDashOffsetKey, out dashOffset))
+                        {
+                            double phase;
+                            var offset = dashOffset.Value(this);
+                            if (offset.IsRelative)
+                            {
+                                if (offset.Units == PageUnits.Percent)
+                                {
+                                    phase = (offset.Value / 100) * dashpen.Dash.PatternTotal;
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException(
+                                        "The only supported relative units for a dash offset are % (percentage)");
+                                }
+                            }
+                            else
+                            {
+                                phase = offset.PointsValue;
+                            }
+
+                            dashpen.Dash = new Dash(dashpen.Dash.Pattern, (int) phase);
+
+
+                        }
+
+                        pen = dashpen;
+                    }
                     else // set as Dash, but there is none so use default
                         pen = new PDFDashPen(DefaultDash)
                         {
@@ -1937,7 +1968,29 @@ namespace Scryber.Styles
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
-                pen = new PDFDashPen(dash.Value(this))
+                double phase = 0;
+                if (this.TryGetValue(StyleKeys.StrokeDashOffsetKey, out dashOffset))
+                {
+                    var offset = dashOffset.Value(this);
+                    if (offset.IsRelative)
+                    {
+                        if (offset.Units == PageUnits.Percent)
+                        {
+                            phase = (offset.Value / 100) * dash.Value(this).PatternTotal;
+                        }
+                        else
+                        {
+                            throw new NotSupportedException(
+                                "The only supported relative units for a dash offset are % (percentage)");
+                        }
+                    }
+                    else
+                    {
+                        phase = offset.PointsValue;
+                    }
+                }
+
+                pen = new PDFDashPen(new Dash(dash.Value(this).Pattern, (int) phase))
                 {
                     Color = (null == c) ? StandardColors.Black : c.Value(this),
                     Width = (null == width) ? 1.0 : width.Value(this)

@@ -406,20 +406,22 @@ namespace Scryber.Drawing
         {
             
             info.Location = Point.Empty;
-            Point start = previous.GetLocation(null, AdornmentPlacements.End);
+            Point start = previous == null ? Point.Empty : previous.GetLocation(null, AdornmentPlacements.End);
             Point end;
             double angle;
+
+            PathBezierCurveData[] myquads;
             
-            var quads = PathDataHelper.GetBezierCurvesForArc(start, this).ToArray();
             if (placement == AdornmentPlacements.Start)
             {
-                var first = quads[0];
-                end = first.StartHandle;
-                
                 if (info.ExplicitAngle.HasValue)
                     angle = info.ExplicitAngle.Value;
                 else
+                {
+                    var quad = PathDataHelper.GetBezierCurvesForArc(start, this).First();
+                    end = quad.StartHandle;
                     angle = GetAngle(previous, start, end, placement, info.ReverseAngleAtStart);
+                }
 
                 info.Location = start;
                 info.AngleRadians = angle;
@@ -427,7 +429,7 @@ namespace Scryber.Drawing
             }
             else if(placement == AdornmentPlacements.End)
             {
-                var last = quads[quads.Length - 1];
+                var last = PathDataHelper.GetBezierCurvesForArc(start, this).Last();
                 end = last.EndPoint;
                 start = last.EndHandle;
                 
@@ -442,81 +444,22 @@ namespace Scryber.Drawing
             }
             else
             {
-                
-                var last = quads[quads.Length - 1];
+                var last = PathDataHelper.GetBezierCurvesForArc(start, this).Last();
                 end = last.EndPoint;
                 start = last.EndHandle;
                 
                 if (info.ExplicitAngle.HasValue)
                     angle = info.ExplicitAngle.Value;
                 else
+                {
                     angle = GetAngle(previous, start, end, placement, false);
+                }
 
                 info.Location = end;
                 info.AngleRadians = angle;
                 return true;
             }
             
-            // Point start;
-            // Point end;
-            // double angle;
-            // if (placement == AdornmentPlacements.Start)
-            // {
-            //     start = previous?.GetLocation(previous, AdornmentPlacements.End) ?? Point.Empty;
-            //     if (this.HasStartHandle)
-            //     {
-            //         end = this.StartHandle;
-            //     }
-            //     else if (this.HasEndHandle)
-            //     {
-            //         end = this.EndHandle;
-            //     }
-            //     else
-            //     {
-            //         end = this.EndPoint;
-            //     }
-            //
-            //     if (info.ExplicitAngle.HasValue)
-            //         angle = info.ExplicitAngle.Value;
-            //     else
-            //         angle = this.GetAngle(start, end, placement, info.ReverseAngleAtStart);
-            // }
-            // else
-            // {
-            //     end = this.EndPoint;
-            //     
-            //     if (this.HasEndHandle)
-            //     {
-            //         start = this.EndHandle;
-            //     }
-            //     else if (this.HasStartHandle)
-            //     {
-            //         start = this.StartHandle;
-            //     }
-            //     else
-            //     {
-            //         start = previous?.GetLocation(previous, AdornmentPlacements.End) ?? Point.Empty;
-            //     }
-            //
-            //     if (info.ExplicitAngle.HasValue)
-            //         angle = info.ExplicitAngle.Value;
-            //     else
-            //         angle = this.GetAngle(start, end, placement, info.ReverseAngleAtStart);
-            // }
-            //
-            //
-            //
-            // if (placement == AdornmentPlacements.Start)
-            // {
-            //     info.Location = start;
-            // }
-            // else
-            // {
-            //     info.Location = end;
-            // }
-            // info.AngleRadians = angle;
-            
-            return true;
         }
         
     }
@@ -551,6 +494,42 @@ namespace Scryber.Drawing
             points.Add(this.EndPoint);
         }
 
+        public override bool UpdateAdornmentInfo(PathData previous, PathAdornmentInfo info, AdornmentPlacements placement)
+        {
+            Point start = previous == null ? Point.Empty : previous.GetLocation(null, AdornmentPlacements.End);
+            Point end;
+            double angle;
+            
+            if (placement == AdornmentPlacements.Middle)
+            {
+                var quads = PathDataHelper.GetBezierCurvesForQuadratic(start, this).ToArray();
+                var last = quads[quads.Length - 1];
+                end = last.EndPoint;
+                start = last.EndHandle;
+                angle = this.GetAngle(previous, start, end, AdornmentPlacements.Middle, false);
+
+                info.AngleRadians = angle;
+                info.Location = end;
+                return true;
+            }
+            else if (placement == AdornmentPlacements.End)
+            {
+                var quads = PathDataHelper.GetBezierCurvesForQuadratic(start, this).ToArray(); 
+                var last = quads[quads.Length - 1];
+                end = last.EndPoint;
+                start = last.EndHandle;
+                angle = this.GetAngle(previous, start, end, AdornmentPlacements.End, false);
+
+                info.AngleRadians = angle;
+                info.Location = end;
+                return true;
+            }
+            else
+            {
+                var result = base.UpdateAdornmentInfo(previous, info, placement);
+                return result;
+            }
+        }
     }
 
     #endregion

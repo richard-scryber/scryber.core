@@ -183,6 +183,7 @@ namespace Scryber.Svg.Components
         #endregion
 
         //style attributes
+        
 
         [PDFAttribute("width")]
         public override Unit Width { get => base.Width; set => base.Width = value; }
@@ -217,6 +218,20 @@ namespace Scryber.Svg.Components
 
         #endregion
 
+        /// <summary>
+        /// Gets the flag to indicate if this SVG is contained in another canvas, or a root SVG canvas.
+        /// Default is false, set by the LayoutEngineSVG to true its the parent engine is another SVG.
+        /// </summary>
+        public bool ContainedInParentSVG { get; internal set; }
+        
+        /// <summary>
+        /// Gets or sets the flag to indicate if this SVG is discreet - i.e. referenced from an image url or similar
+        /// </summary>
+        /// <remarks>
+        /// If this is a discree SVG then the Style building will block up to the parent. If not then styles will be built including other css references.
+        /// </remarks>
+        public bool IsDiscreetSVG { get; set; }
+        
         public SVGCanvas()
         {
             this.Styles.Add(SVGBaseStyleSheet.Default);
@@ -351,7 +366,11 @@ namespace Scryber.Svg.Components
             {
                 this.Styles.MergeInto(baseStyle, forComponent);
             }
-            return base.GetAppliedStyle(forComponent, baseStyle);
+
+            if (this.IsDiscreetSVG)
+                return baseStyle;
+            else
+                return base.GetAppliedStyle(forComponent, baseStyle);
         }
     }
 }
