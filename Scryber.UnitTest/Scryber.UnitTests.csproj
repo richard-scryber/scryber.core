@@ -55,7 +55,6 @@
     <Folder Include="Imaging\" />
     <Folder Include="Common\" />
     <Folder Include="Content\HTML\CribSheet\" />
-    <Folder Include="SVG\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />

@@ -601,6 +601,7 @@ namespace Scryber.Drawing
         Start = 1,
         Middle = 2,
         End = 4,
+        All = Start + Middle + End
     }
 
 

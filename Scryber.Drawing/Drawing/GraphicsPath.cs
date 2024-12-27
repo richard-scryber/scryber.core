@@ -99,6 +99,7 @@ namespace Scryber.Drawing
         public void OutputAdornments(PDFGraphics graphics, PathAdornmentInfo info, ContextBase context,
             AdornmentOrder currentOrder)
         {
+            
             if (null != this._addornments)
             {
                 
@@ -110,6 +111,21 @@ namespace Scryber.Drawing
                 var hasEnds = this._addornments.HasEnds(currentOrder);
                 
                 if(!hasStarts && !hasMids && !hasEnds) return; //no need to enumerate
+
+                
+                var builder = new VertexBuilder(hasStarts, hasMids, hasEnds, info.ReverseAngleAtStart, info.ExplicitAngle);
+                var all = builder.CollectVertices(this);
+
+                foreach (var vertex in all)
+                {
+                    info.AngleRadians = vertex.Angle;
+                    info.Location = vertex.Location;
+                    
+                    this._addornments.EnsureAdornments(graphics, info, context, currentOrder, AdornmentPlacements.All);
+                }
+                
+                return;
+                
                 
                 foreach (var subPath in this.SubPaths)
                 {
@@ -120,6 +136,7 @@ namespace Scryber.Drawing
                     if(count < 1)
                         continue;
 
+                    
                     // if (count == 1)
                     // {
                     //     //Just one so pick the best placements and draw it.
@@ -164,8 +181,20 @@ namespace Scryber.Drawing
                     for (var i = 0; i < count; i++)
                     {
                         var op = subPath.Operations[i];
-                        var next = (i < count - 1) ? subPath.Operations[i + 1] : null;
                         
+                        PathData next;
+                        if (i == count - 1)
+                        {
+                            if (op.Type == PathDataType.Close)
+                                next = subPath.Operations[0]; //a close so the next will be back to  the start
+                            else
+                                next = null;
+                        }
+                        else
+                        {
+                            next = subPath.Operations[i + 1];
+                        }
+
                         if (i == 0)
                         {
                             if (op.Type == PathDataType.Move)
@@ -175,7 +204,7 @@ namespace Scryber.Drawing
                             }
                             else if(hasStarts)
                             {
-                                UpdateAdornmentForVertex(null, op, next, subPath, i, info, AdornmentPlacements.Start, currentOrder, graphics, context);
+                                UpdateAdornmentForVertex(null, op, next, info, AdornmentPlacements.Start, currentOrder, graphics, context);
                             }
                             
                         }
@@ -184,26 +213,31 @@ namespace Scryber.Drawing
                         {
                             if ((hasStarts && firstIsMove))
                             {
-                                UpdateAdornmentForVertex(prev, op, next, subPath, i, info, AdornmentPlacements.Start, currentOrder, graphics, context);
+                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Start, currentOrder, graphics, context);
                             }
-                        }
-
-                        if (i > 0 && i < count)
-                        {
-                            if (hasMids)
+                            else if (!firstIsMove && hasMids)
                             {
-                                UpdateAdornmentForVertex(prev, op, next,  subPath, i, info, AdornmentPlacements.Middle, currentOrder, graphics, context);
+                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Middle, currentOrder, graphics, context);
                             }
                         }
-
+                        
                         if (i == count - 1)
                         {
                             if (hasEnds)
                             {
-                                UpdateAdornmentForVertex(prev, op,  next, subPath, i, info, AdornmentPlacements.End, currentOrder, graphics, context);
+                                UpdateAdornmentForVertex(prev, op,  next, info, AdornmentPlacements.End, currentOrder, graphics, context);
                             }
                         }
-
+                        else
+                        {
+                            if (hasMids && i > 1)
+                            {
+                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Middle,
+                                        currentOrder, graphics, context);
+                                
+                            }
+                        }
+                        
                         prev = op;
                     }
                     
@@ -211,12 +245,13 @@ namespace Scryber.Drawing
                 
             }
         }
+        
+        
 
         protected virtual void UpdateAdornmentForVertex(PathData previous, PathData current, PathData next,
-            Path inPath, int index,
             PathAdornmentInfo info, AdornmentPlacements placement, AdornmentOrder order, PDFGraphics graphics, ContextBase context)
         {
-            current.UpdateAdornmentInfo(previous, info, placement);
+            current.UpdateAdornmentInfo(previous, next, info, placement);
             this._addornments.EnsureAdornments(graphics, info, context, order, placement);
         }
 
