@@ -158,7 +158,10 @@ namespace Scryber.Drawing
                     }
                     else
                     {
-                        angle = GetCombinedAngle(curr, next, location);
+                        angle = curr.GetAngle(null, location, location, AdornmentPlacements.End, false);
+                        var angle2 = next.GetAngle(curr, location, location, AdornmentPlacements.Start, false);
+                        var diff = (angle2 - angle) / 2.0;
+                        angle += diff;
                     }
                 }
                 else
@@ -185,11 +188,24 @@ namespace Scryber.Drawing
             var first = path.Operations[0];
             Double angle;
             Point location;
-            
-            if (curr.Type == PathDataType.Close)
+
+            if (curr.Type == PathDataType.Close && null != prev)  
             {
                 location = first.GetLocation(null, AdornmentPlacements.Start);
-                angle = GetCombinedAngle(prev, first, location);
+                var prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
+                if (location == prevLoc) // close does not move anywhere
+                {
+                    angle = prev.GetEndAngle(null, location, first, false) ?? 0.0;
+                }
+                else
+                {
+
+                    angle = prev.GetAngle(null, prevLoc, location, AdornmentPlacements.End, false);
+                    var loc2 = curr.GetLocation(prev, AdornmentPlacements.End);
+                    var angle2 = first.GetAngle(curr, loc2, location, AdornmentPlacements.End, false);
+                    var diff = (angle2 - angle) / 2.0;
+                    angle = angle + diff;
+                }
             }
             else
             {
@@ -203,14 +219,7 @@ namespace Scryber.Drawing
             return cursor;
         }
 
-        protected double GetCombinedAngle(PathData first, PathData second, Point point)
-        {
-
-            var angle1 = first.GetAngle(null, point, point, AdornmentPlacements.End, false);
-            var angle2 = second.GetAngle(first, point, point, AdornmentPlacements.Start, false);
-            var diff = (angle2 - angle1) / 2.0;
-            return angle1 + diff;
-        }
+        
 
         protected virtual void AddVertex(Point pt, double angle, List<AdornmentVertex> toCollection)
         {

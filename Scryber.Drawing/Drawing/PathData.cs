@@ -458,12 +458,27 @@ namespace Scryber.Drawing
             points.Add(this.EndPoint);
         }
 
+        public override Point GetLocation(PathData previous, AdornmentPlacements placement)
+        {
+            if (placement == AdornmentPlacements.End)
+                return this.EndPoint;
+            else
+                return base.GetLocation(previous, placement);
+        }
+
         public override double? GetStartAngle(PathData previous, Point start, bool reversed = false)
         {
             var quad = PathDataHelper.GetBezierCurvesForArc(start, this).First();
             var angle = GetAngle(previous, start, quad.StartHandle, AdornmentPlacements.Start, reversed);
             
             return angle;
+        }
+
+        public override double? GetEndAngle(PathData prev, Point end, PathData next, bool reversed = false)
+        {
+            var start = prev.GetLocation(null, AdornmentPlacements.End);
+            var quad = PathDataHelper.GetBezierCurvesForArc(start, this).Last();
+            return GetAngle(prev, quad.EndHandle, quad.EndPoint, AdornmentPlacements.End, reversed);
         }
 
         public override bool UpdateAdornmentInfo(PathData previous, PathData next, PathAdornmentInfo info, AdornmentPlacements placement)
@@ -635,9 +650,15 @@ namespace Scryber.Drawing
         
         public override double? GetStartAngle(PathData previous, Point start, bool reversed = false)
         {
-            var quad = PathDataHelper.GetBezierCurvesForQuadratic(start, this).First();
-            var angle = GetAngle(previous, start, quad.StartHandle, AdornmentPlacements.Start, reversed);
+            //var quad = PathDataHelper.GetBezierCurvesForQuadratic(start, this).First();
+            var angle = GetAngle(previous, start, this.ControlPoint, AdornmentPlacements.Start, reversed);
             
+            return angle;
+        }
+
+        public override double? GetEndAngle(PathData prev, Point end, PathData next, bool reversed = false)
+        {
+            var angle = GetAngle(prev, this.ControlPoint, this.EndPoint, AdornmentPlacements.End, reversed);
             return angle;
         }
 
