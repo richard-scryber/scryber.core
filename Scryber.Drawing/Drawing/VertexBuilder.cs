@@ -84,12 +84,14 @@ namespace Scryber.Drawing
         protected virtual void CollectPathVertices(Path path, Point cursor, List<AdornmentVertex> inVertices)
         {
             if (this.HasStarts)
-                this.AddStartVertexAndReturnCursor(path, cursor, inVertices);
+                cursor = this.AddStartVertexAndReturnCursor(path, cursor, inVertices);
 
+            if (this.HasMids)
+                cursor = this.AddMidVerticesAndReturnCursor(path, cursor, inVertices);
 
 
             if (this.HasEnds)
-                this.AddEndVertextAndReturnCursor(path, cursor, inVertices);
+                cursor = this.AddEndVertextAndReturnCursor(path, cursor, inVertices);
             
             return;
 
@@ -105,7 +107,7 @@ namespace Scryber.Drawing
             {
                 if (curr.Type != PathDataType.Move)
                 {
-                    angle = curr.GetAngle(null, cursor, location, AdornmentPlacements.Start, this.StartIsReversed);
+                    angle = curr.GetAngle(cursor, location, AdornmentPlacements.Start, this.StartIsReversed);
                     this.AddVertex(location, angle, inVertices);
                 }
                 else
@@ -128,7 +130,7 @@ namespace Scryber.Drawing
                 {
                     //We need to add back in the first vertex which was a move to
                     //and calculate the angle to the second point (taking into account
-                    angle = prev.GetAngle(null, cursor, location, AdornmentPlacements.Start, this.StartIsReversed);
+                    angle = prev.GetAngle(cursor, location, AdornmentPlacements.Start, this.StartIsReversed);
 
                     if (HasStarts)
                     {
@@ -158,8 +160,8 @@ namespace Scryber.Drawing
                     }
                     else
                     {
-                        angle = curr.GetAngle(null, location, location, AdornmentPlacements.End, false);
-                        var angle2 = next.GetAngle(curr, location, location, AdornmentPlacements.Start, false);
+                        angle = curr.GetAngle(location, location, AdornmentPlacements.End, false);
+                        var angle2 = next.GetAngle(location, location, AdornmentPlacements.Start, false);
                         var diff = (angle2 - angle) / 2.0;
                         angle += diff;
                     }
@@ -167,7 +169,7 @@ namespace Scryber.Drawing
                 else
                 {
                     //we have no other data than a move to, so the angle is from the origin to the move to.
-                    angle = curr.GetAngle(null, Point.Empty, location, AdornmentPlacements.End, this.StartIsReversed);
+                    angle = curr.GetAngle(Point.Empty, location, AdornmentPlacements.End, this.StartIsReversed);
                 }
                 
                 this.AddVertex(location, angle, inVertices);
@@ -200,21 +202,95 @@ namespace Scryber.Drawing
                 else
                 {
 
-                    angle = prev.GetAngle(null, prevLoc, location, AdornmentPlacements.End, false);
+                    angle = prev.GetAngle(prevLoc, location, AdornmentPlacements.End, false);
                     var loc2 = curr.GetLocation(prev, AdornmentPlacements.End);
-                    var angle2 = first.GetAngle(curr, loc2, location, AdornmentPlacements.End, false);
+                    var angle2 = first.GetAngle(loc2, location, AdornmentPlacements.End, false);
                     var diff = (angle2 - angle) / 2.0;
                     angle = angle + diff;
                 }
+
+                cursor = location;
             }
             else
             {
                 location = curr.GetLocation(prev, AdornmentPlacements.End);
-                
                 angle = curr.GetEndAngle(prev, location, first) ?? 0.0;
+
+                cursor = location;
             }
 
             this.AddVertex(location, angle, inVertices);
+            
+            return cursor;
+        }
+
+        protected Point AddMidVerticesAndReturnCursor(Path path, Point cursor, List<AdornmentVertex> inVertices)
+        {
+            if (path.Count <= 2)
+                return cursor;
+            var startIndex = 1;
+            var prev = path.Operations[0];
+            
+            var prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
+            double prevAngle = 0.0;
+            
+            if (prev.Type == PathDataType.Move)
+            {
+                startIndex++;
+                prev = path.Operations[1];
+                prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
+                prevAngle = prev.GetEndAngle(path.Operations[0], prevLoc, path.Operations[1], false) ?? 0.0;
+            }
+
+            Point location;
+            double angle;
+            
+            for (var i = startIndex; i < path.Count - 1; i++)
+            {
+                var curr = path.Operations[i];
+                location = curr.GetLocation(prev, AdornmentPlacements.Start);
+
+
+                if (curr.Type == PathDataType.Move)
+                {
+                    if (null != prev && prev.Type != PathDataType.Move)
+                    {
+                        angle = prevAngle;
+                    }
+                    else
+                    {
+                        var next = path.Operations[i + 1]; //ok as loop is to count -1
+                        angle = next.GetStartAngle(curr, location, false) ?? 0.0;
+                    }
+                }
+                else
+                {
+                    angle = curr.GetStartAngle(prev, location, false) ?? 0.0;
+                    if (prev.Type != PathDataType.Move)
+                    {
+                        prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
+                        prevAngle = prev.GetEndAngle(null, prevLoc, curr, false) ?? 0.0;
+                        var diff = (prevAngle - angle) / 2.0;
+                        angle = angle + diff;
+                    }
+                }
+
+                inVertices.Add(new AdornmentVertex(location, angle));
+                
+                prev = curr;
+                prevLoc = location;
+                prevAngle = angle;
+            }
+
+            var last = path.Operations[path.Count - 1];
+            if (last.Type != PathDataType.Close && last.Type != PathDataType.Move)
+            {
+                location = last.GetLocation(prev, AdornmentPlacements.Start);
+                angle = last.GetStartAngle(prev, location, false) ?? 0.0;
+                var diff = (prevAngle - angle) / 2.0;
+                angle = angle + diff;
+                inVertices.Add(new AdornmentVertex(location, angle));
+            }
             
             return cursor;
         }

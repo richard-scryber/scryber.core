@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='false' parser-mode='strict' log-level='verbose'  ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .canvas{ background-color: #AAA; margin: 20pt;}
+        
+        p{
+            font-size: 14pt;
+        }
+        
+        @media pdf {
+            
+            p{
+                font-size: calc(1rem * 1.4);
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <p>This is above the svg canvas</p>
+    <svg id="svgmarkers" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 100" width="500" height="200" class="canvas" >
+        <defs>
+            <marker id="arrow" refX="5" refY="5" 
+                    viewBox="0 0 10 10" markerWidth="5" markerHeight="5"
+                    orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 8 z" stroke-width="0.3" stroke="black" fill="red" />
+            </marker>
+            <marker id="circle" refX="5" refY="5"
+                    viewBox="0 0 10 10" markerWidth="6" markerHeight="6"
+                    orient="auto-start-reverse">
+                <circle r="4" cx="5" cy="5" stroke-width="1" stroke="black" fill="blue" />
+            </marker>
+        </defs>
+        <style>
+            circle{
+                stroke-dasharray: 220;
+                stroke-dashoffset: 55;
+                stroke: blue;
+            }
+            
+        </style>
+        
+        
+
+        <!-- Crossing lines  -->
+<!--        <line id="line1" x1="50" y1="10" x2="50" y2="90" stroke="silver"  marker-mid="url(#arrow)" />-->
+<!--        -->
+
+<!--        <line id="line2" x1="35" y1="10" x2="65" y2="90" stroke="silver" marker-mid="url(#arrow)" />-->
+
+<!--        <line id="line3" x1="90" y1="10" x2="10" y2="90" stroke="red" marker-mid="url(#arrow)" />-->
+<!--        -->
+<!--        -->
+<!--        <line id="line4" x1="10" y1="10" x2="90" y2="90" stroke="black" marker-mid="url(#arrow)" />-->
+
+<!--        <line id="line5" x1="10" y1="20" x2="90" y2="80" stroke="black" marker-mid="url(#arrow)" />-->
+
+<!--        <line id="line6" x1="10" y1="30" x2="90" y2="70" stroke="green" marker-mid="url(#arrow)" />-->
+
+<!--        <line id="line7" x1="20" y1="50" x2="80" y2="50" stroke="green" marker-mid="url(#arrow)" />-->
+
+<!--        <line id="line8" x1="10" y1="70" x2="90" y2="30" stroke="blue" marker-mid="url(#arrow)" />-->
+
+        <!-- wavy line -->
+<!--        <path  id="wavyline"-->
+<!--                d="M 110 10-->
+<!--       C 120 20, 130 20, 140 10-->
+<!--       C 150 0, 160 0, 170 10-->
+<!--       C 180 20, 190 20, 200 10"-->
+<!--                stroke="black"-->
+<!--                fill="none"-->
+<!--                marker-mid="url(#arrow)" />-->
+
+        <!-- above the heart -->
+<!--        <path id="aboveheart"-->
+<!--              fill="none"-->
+<!--              stroke="red"-->
+<!--              d="M 10,25-->
+<!--       A 20,15 0 0 1 50,25-->
+<!--       A 20,15 0,0,1 90,25"-->
+<!--              marker-mid="url(#arrow)" transform="translate(130, 25) scale(0.6)" />-->
+        
+        <!-- heart -->
+<!--        <path id="heart"-->
+<!--                fill="none"-->
+<!--                stroke="red"-->
+<!--                d="M 10,30-->
+<!--       A 20,20 0 0 1 50,30-->
+<!--       A 20,20 0,0,1 90,30-->
+<!--       Q 90,60 50,90-->
+<!--       Q 10,60 10,30 z" -->
+<!--                marker-mid="url(#arrow)" transform="translate(130, 30) scale(0.6)" />-->
+        
+        <!-- part circle -->
+<!--        <circle id="partcircle" r="35" cx="160" cy="60" fill="none" stroke-width="1"  marker-mid="url(#arrow)"  />-->
+
+        
+        <!-- many arrows -->
+        <path id="manyarrows"
+                fill="none"
+                stroke="red"
+                d="M 10,10 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       M 40,20 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       m  0,10 h 10
+       M 50,50 h 10
+       m-20,10 h 10
+       m-20,10 h 10
+       m-20,10 h 10" 
+                marker-mid="url(#arrow)" transform="translate(170, 10)"  />
+        
+        
+        
+        <!-- border -->
+        <rect id="surroundrect" height="90" width="240" x="5" y="5" stroke="cyan" fill="transparent" marker-mid="url(#arrow)" />
+        
+    </svg>
+    <p>This is after the svg canvas</p>
+    
+</body>
+</html>
