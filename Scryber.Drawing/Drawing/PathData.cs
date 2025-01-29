@@ -108,10 +108,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        public virtual Point GetLocation(PathData previous, AdornmentPlacements placement)
-        {
-            return Point.Empty;
-        }
+        public abstract Point GetLocation(PathData previous, AdornmentPlacements placement);
 
         public virtual double? GetStartAngle(PathData previous, Point start, bool reversed = false)
         {
@@ -190,7 +187,7 @@ namespace Scryber.Drawing
             else if (null != previous)
                 return previous.GetLocation(null, AdornmentPlacements.End);
             else
-                return base.GetLocation(previous, placement);
+                return this.MoveTo;
         }
         
         public override double? GetEndAngle(PathData prev, Point end, PathData next, bool reversed = false)
@@ -236,6 +233,16 @@ namespace Scryber.Drawing
             
             return sub;
         }
+
+        public override Point GetLocation(PathData previous, AdornmentPlacements placement)
+        {
+            if (null != this.InnerPath && this.InnerPath.Count > 0)
+                return this.InnerPath.Operations[0].GetLocation(previous, placement);
+            else
+            {
+                return Point.Empty;
+            }
+        }
     }
 
     #endregion
@@ -262,7 +269,7 @@ namespace Scryber.Drawing
             else if (null != previous)
                 return previous.GetLocation(null, AdornmentPlacements.End);
             else
-                return base.GetLocation(previous, placement);
+                return this.LineTo;
         }
 
         public override double? GetStartAngle(PathData previous, Point start, bool reversed = false)
@@ -319,6 +326,11 @@ namespace Scryber.Drawing
             points.Add(new Point(this.Rect.X + this.Rect.Width, this.Rect.Y + this.Rect.Height));
             points.Add(new Point(this.Rect.X, this.Rect.Y + this.Rect.Height));
         }
+
+        public override Point GetLocation(PathData previous, AdornmentPlacements placement)
+        {
+            return Point.Empty;
+        }
     }
 
     #endregion
@@ -370,7 +382,7 @@ namespace Scryber.Drawing
             else if (null != previous)
                 return previous.GetLocation(null, AdornmentPlacements.End);
             else
-                return base.GetLocation(previous, placement);
+                return Point.Empty;
         }
 
         public override bool UpdateAdornmentInfo(PathData previous, PathData next, PathAdornmentInfo info, AdornmentPlacements placement)
@@ -499,7 +511,7 @@ namespace Scryber.Drawing
             else if (null != previous)
                 return previous.GetLocation(null, AdornmentPlacements.End);
             else
-                return base.GetLocation(previous, placement);
+                return Point.Empty;
         }
 
         public override double? GetStartAngle(PathData previous, Point start, bool reversed = false)
@@ -708,7 +720,7 @@ namespace Scryber.Drawing
                 return previous.GetLocation(null, AdornmentPlacements.End);
             else
             {
-                return base.GetLocation(previous, placement);
+                return Point.Empty;
             }
         }
     }
@@ -801,9 +813,7 @@ namespace Scryber.Drawing
 
         public override Point GetLocation(PathData previous, AdornmentPlacements placement)
         {
-            if (placement == AdornmentPlacements.Start)
-                return base.GetLocation(previous, placement);
-            else if(null != previous)
+            if(null != previous)
             {
                 return previous.GetLocation(null, AdornmentPlacements.End);
             }

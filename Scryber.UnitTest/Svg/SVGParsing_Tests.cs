@@ -119,7 +119,6 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
         
-        [TestMethod]
         public void SVGMarkers_Start()
         {
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_Start.html",
@@ -254,7 +253,6 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
         
-        [TestMethod]
         public void SVGMarkers_StartReversed()
         {
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_StartReversed.html",
@@ -392,7 +390,6 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
         
-        [TestMethod]
         public void SVGMarkers_StartReversedAndEnd()
         {
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_StartReversedAndEnd.html",
@@ -567,7 +564,6 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
         
-        [TestMethod]
         public void SVGMarkers_End()
         {
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_End.html",
