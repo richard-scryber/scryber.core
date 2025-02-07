@@ -229,21 +229,24 @@ namespace Scryber.Drawing
             if (path.Count <= 2)
                 return cursor;
             var startIndex = 1;
-            var prev = path.Operations[0];
+            PathData prevprev = null;
+            PathData prev = path.Operations[0];
             
-            var prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
-            double prevAngle = 0.0;
+            //var prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
+            
+            Point location;
+            double angle;
             
             if (prev.Type == PathDataType.Move)
             {
                 startIndex++;
+                prevprev = prev;
                 prev = path.Operations[1];
-                prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
-                prevAngle = prev.GetEndAngle(path.Operations[0], prevLoc, path.Operations[1], false) ?? 0.0;
+                location = prev.GetLocation(null, AdornmentPlacements.End);
+                //prevAngle = prev.GetEndAngle(path.Operations[0], location, path.Operations[2], false) ?? 0.0;
             }
 
-            Point location;
-            double angle;
+            
             
             for (var i = startIndex; i < path.Count - 1; i++)
             {
@@ -253,33 +256,37 @@ namespace Scryber.Drawing
 
                 if (curr.Type == PathDataType.Move)
                 {
-                    if (null != prev && prev.Type != PathDataType.Move)
+                    var next = path.Operations[i + 1]; //ok as loop is to count -1
+                    angle = next.GetStartAngle(curr, location, false) ?? 0.0;
+                    
+                    if (prev.Type != PathDataType.Move)
                     {
-                        angle = prevAngle;
+                        var prevLoc = prev.GetLocation(prevprev, AdornmentPlacements.End);
+                        angle = prev.GetEndAngle(prevprev, prevLoc, curr, false) ?? 0.0;
+                        //var diff = (prevAngle - angle) / 2.0;
+                        //angle = angle + diff;
                     }
-                    else
-                    {
-                        var next = path.Operations[i + 1]; //ok as loop is to count -1
-                        angle = next.GetStartAngle(curr, location, false) ?? 0.0;
-                    }
+                    
+                    inVertices.Add(new AdornmentVertex(location, angle));
                 }
                 else
                 {
                     angle = curr.GetStartAngle(prev, location, false) ?? 0.0;
+                    
                     if (prev.Type != PathDataType.Move)
                     {
-                        prevLoc = prev.GetLocation(null, AdornmentPlacements.End);
-                        prevAngle = prev.GetEndAngle(null, prevLoc, curr, false) ?? 0.0;
+                        var prevLoc = prev.GetLocation(prevprev, AdornmentPlacements.End);
+                        var prevAngle = prev.GetEndAngle(prevprev, prevLoc, curr, false) ?? 0.0;
                         var diff = (prevAngle - angle) / 2.0;
                         angle = angle + diff;
                     }
+
+                    inVertices.Add(new AdornmentVertex(location, angle));
+                    
                 }
 
-                inVertices.Add(new AdornmentVertex(location, angle));
-                
+                prevprev = prev;
                 prev = curr;
-                prevLoc = location;
-                prevAngle = angle;
             }
 
             var last = path.Operations[path.Count - 1];
@@ -287,8 +294,43 @@ namespace Scryber.Drawing
             {
                 location = last.GetLocation(prev, AdornmentPlacements.Start);
                 angle = last.GetStartAngle(prev, location, false) ?? 0.0;
-                var diff = (prevAngle - angle) / 2.0;
-                angle = angle + diff;
+
+                if (prev.Type != PathDataType.Move)
+                {
+                    var prevLoc = prev.GetLocation(prevprev, AdornmentPlacements.End);
+                    var prevAngle = prev.GetEndAngle(prevprev, prevLoc, last, false) ?? 0.0;
+                    var diff = (prevAngle - angle) / 2.0;
+                    angle = angle + diff;
+                }
+                
+                inVertices.Add(new AdornmentVertex(location, angle));
+            }
+            else
+            {
+                //as per chrome if the last one is a close
+                location = last.GetLocation(prev, AdornmentPlacements.Start);
+                var first = path.Operations[0];
+                angle = prev.GetEndAngle(prevprev, location, last,  false) ?? 0.0;
+                Point firstLoc;
+
+                if (last.Type == PathDataType.Close)
+                {
+                    if(first.Type == PathDataType.Move) //the move end is counted as the first location
+                        firstLoc = first.GetLocation(last, AdornmentPlacements.End);
+                    else //just use the original cursor location as that is where the start is from
+                    {
+                        firstLoc = cursor;
+                    }
+                }
+                else //its a move
+                    firstLoc = last.GetLocation(prev, AdornmentPlacements.End);
+                
+                // if (firstLoc != location)
+                // {
+                //     var nextAngle = last.GetAngle(location, firstLoc, AdornmentPlacements.Start, false);
+                //     var diff = (angle - nextAngle) / 2.0;
+                //     angle = nextAngle + diff;
+                // }
                 inVertices.Add(new AdornmentVertex(location, angle));
             }
             
