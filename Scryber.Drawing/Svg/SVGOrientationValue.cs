@@ -21,13 +21,13 @@ namespace Scryber.Svg
 
         public static AdornmentOrientationValue Default
         {
-            get { return new AdornmentOrientationValue(); }
+            get { return new AdornmentOrientationValue(0.0); }
         }
 
         public static AdornmentOrientationValue Parse(string value)
         {
             if (string.IsNullOrEmpty(value))
-                return new AdornmentOrientationValue();
+                return new AdornmentOrientationValue(0.0);
             else if (value == "auto")
                 return new AdornmentOrientationValue() { IsReverseAtStart = false, HasAngle = false, AngleRadians = 0.0 };
             else if (value == "auto-start-reverse")

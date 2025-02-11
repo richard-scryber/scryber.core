@@ -54,6 +54,11 @@ namespace Scryber
     /// </summary>
     public interface IPathAdorner
     {
+        /// <summary>
+        /// Gets the ID of the path adornment
+        /// </summary>
+        string ID { get; }
+        
         AdornmentOrientationValue Orientation { get; }
         PDFName OutputAdornment(PDFGraphics toGraphics, PathAdornmentInfo info, ContextBase context);
     }

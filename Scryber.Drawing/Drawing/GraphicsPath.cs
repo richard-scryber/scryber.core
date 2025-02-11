@@ -112,137 +112,77 @@ namespace Scryber.Drawing
                 
                 if(!hasStarts && !hasMids && !hasEnds) return; //no need to enumerate
 
-                
-                var builder = new VertexBuilder(hasStarts, hasMids, hasEnds, info.ReverseAngleAtStart, info.ExplicitAngle);
-                var all = builder.CollectVertices(this);
-
-                foreach (var vertex in all)
+                else if (this._addornments.IsSingleAdornmentType)
                 {
-                    info.AngleRadians = vertex.Angle;
-                    info.Location = vertex.Location;
-                    
-                    this._addornments.EnsureAdornments(graphics, info, context, currentOrder, AdornmentPlacements.All);
-                }
-                
-                return;
-                
-                
-                foreach (var subPath in this.SubPaths)
-                {
-                    //TODO: There is a more efficient loop but it's ok.
-                    int currIndex = 0;
-                    
-                    var count = subPath.Operations.Count;
-                    if(count < 1)
-                        continue;
 
-                    
-                    // if (count == 1)
-                    // {
-                    //     //Just one so pick the best placements and draw it.
-                    //     
-                    //     if (hasStarts)
-                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
-                    //             AdornmentPlacements.Start, currentOrder, graphics, context);
-                    //     else if(hasEnds)
-                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
-                    //             AdornmentPlacements.End, currentOrder, graphics, context);
-                    //     else
-                    //         UpdateAdornmentForVertex(null, subPath.Operations[0], null, subPath, 0, info,
-                    //             AdornmentPlacements.Middle, currentOrder, graphics, context);
-                    // }
-                    // else
-                    // {
-                    //     while (currIndex < count)
-                    //     {
-                    //         curr = subPath.Operations[currIndex];
-                    //         var next = currIndex < count - 1 ? subPath.Operations[currIndex + 1] : null;
-                    //         
-                    //
-                    //         currIndex++;
-                    //         prev = curr;
-                    //     }
-                    //
-                    //     var firstIsMove = false;
-                    //     if (hasStarts)
-                    //     {
-                    //         curr = subPath.Operations[currIndex];
-                    //         while (curr.Type == PathDataType.Move)
-                    //         {
-                    //             curr = subPath.Operations[++currIndex];
-                    //         }
-                    //
-                    //     }
-                    // }
+                    var builder = new VertexBuilder(hasStarts, hasMids, hasEnds, info.ReverseAngleAtStart,
+                        info.ExplicitAngle);
+                    var all = builder.CollectVertices(this);
 
-                    bool firstIsMove = false;
-
-                    
-                    for (var i = 0; i < count; i++)
+                    foreach (var vertex in all)
                     {
-                        var op = subPath.Operations[i];
-                        
-                        PathData next;
-                        if (i == count - 1)
-                        {
-                            if (op.Type == PathDataType.Close)
-                                next = subPath.Operations[0]; //a close so the next will be back to  the start
-                            else
-                                next = null;
-                        }
-                        else
-                        {
-                            next = subPath.Operations[i + 1];
-                        }
+                        info.AngleRadians = vertex.Angle;
+                        info.Location = vertex.Location;
 
-                        if (i == 0)
-                        {
-                            if (op.Type == PathDataType.Move)
-                            {
-                                firstIsMove = true;
-                                //Do nothing but will be remembered as the previous.
-                            }
-                            else if(hasStarts)
-                            {
-                                UpdateAdornmentForVertex(null, op, next, info, AdornmentPlacements.Start, currentOrder, graphics, context);
-                            }
-                            
-                        }
+                        this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                            AdornmentPlacements.All);
+                    }
+                }
+                else
+                {
+                    //GO through each one in turn
+                    if (hasStarts)
+                    {
+                        var builder = new VertexBuilder(hasStarts, false, false, info.ReverseAngleAtStart,
+                            info.ExplicitAngle);
                         
-                        if (i == 1)
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
                         {
-                            if ((hasStarts && firstIsMove))
-                            {
-                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Start, currentOrder, graphics, context);
-                            }
-                            else if (!firstIsMove && hasMids)
-                            {
-                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Middle, currentOrder, graphics, context);
-                            }
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.Start);
                         }
-                        
-                        if (i == count - 1)
-                        {
-                            if (hasEnds)
-                            {
-                                UpdateAdornmentForVertex(prev, op,  next, info, AdornmentPlacements.End, currentOrder, graphics, context);
-                            }
-                        }
-                        else
-                        {
-                            if (hasMids && i > 1)
-                            {
-                                UpdateAdornmentForVertex(prev, op, next, info, AdornmentPlacements.Middle,
-                                        currentOrder, graphics, context);
-                                
-                            }
-                        }
-                        
-                        prev = op;
                     }
                     
+                    if (hasMids)
+                    {
+                        var builder = new VertexBuilder(false, hasMids, false, info.ReverseAngleAtStart,
+                            info.ExplicitAngle);
+                        
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
+                        {
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.Middle);
+                        }
+                    }
+                    
+                    if (hasEnds)
+                    {
+                        var builder = new VertexBuilder(false, false, hasEnds, info.ReverseAngleAtStart,
+                            info.ExplicitAngle);
+                        
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
+                        {
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.End);
+                        }
+                    }
                 }
-                
+
             }
         }
         

@@ -9,7 +9,7 @@ using Scryber.PDF.Native;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("rect")]
-    public class SVGRect : Scryber.Components.Rectangle, ICloneable
+    public class SVGRect : Scryber.Components.Rectangle, ICloneable, IPDFRenderComponent
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -487,6 +487,9 @@ namespace Scryber.Svg.Components
         public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             bool hasTransform = false;
+
+            if (null == this.Path)
+                this.Path = this.CreatePath(context.Space, context.FullStyle);
             
             if (context.FullStyle != null &&
                 context.FullStyle.TryGetValue(StyleKeys.TransformOperationKey, out var transformValue))

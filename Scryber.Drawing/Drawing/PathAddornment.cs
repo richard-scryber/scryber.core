@@ -10,6 +10,14 @@ namespace Scryber.Drawing
         public AdornmentOrder Order { get; set; }
 
         public AdornmentPlacements Placement { get; set; }
+        
+        /// <summary>
+        /// Returns true if there is only 1 graphic adornment type (e.g all placements use an arrow) otherwise returns false (e.g. start can be a circle and end can be a square). Inheritors can override to check any changed or referenced adornments
+        /// </summary>
+        public virtual bool IsSingleAdornmentType
+        {
+            get { return true; }
+        }
 
         protected PathAdornment(IPathAdorner adorner, AdornmentOrder order, AdornmentPlacements placements)
         {
@@ -86,11 +94,34 @@ namespace Scryber.Drawing
     public class PathMultiAdornment : PathAdornment
     {
         public PathMultiAdornment Next { get; set; }
+        
+        /// <summary>
+        /// Overrides the default implementation to check the chain of adornments so they are all matching
+        /// </summary>
+        public override bool IsSingleAdornmentType
+        {
+            get { return ConfirmIsSingleType(); }
+        }
 
         public PathMultiAdornment(IPathAdorner adorner, AdornmentOrder order, AdornmentPlacements placements) :
             base(adorner, order, placements)
         {
             
+        }
+
+        protected virtual bool ConfirmIsSingleType()
+        {
+            var curr = this.Addorner.ID;
+            var next = this.Next;
+            while (null != next)
+            {
+                if (next.Addorner.ID != curr)
+                    return false;
+                
+                next = next.Next;
+            }
+
+            return true; //all match
         }
 
         public override Point EnsureAdornments(PDFGraphics inGraphics, PathAdornmentInfo info, ContextBase context, AdornmentOrder currentOrder,
