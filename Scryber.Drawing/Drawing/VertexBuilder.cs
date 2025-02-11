@@ -219,7 +219,10 @@ namespace Scryber.Drawing
                 cursor = location;
             }
 
-            this.AddVertex(location, angle, inVertices);
+            if (this.ExplicitVertexAngle.HasValue)
+                this.AddVertex(location, this.ExplicitVertexAngle.Value, inVertices);
+            else
+                this.AddVertex(location, angle, inVertices);
             
             return cursor;
         }
@@ -266,8 +269,13 @@ namespace Scryber.Drawing
                         //var diff = (prevAngle - angle) / 2.0;
                         //angle = angle + diff;
                     }
+                    if (this.ExplicitVertexAngle.HasValue)
+                        this.AddVertex(location, this.ExplicitVertexAngle.Value, inVertices);
+                    else
+                    {
+                        this.AddVertex(location, angle, inVertices);
+                    }
                     
-                    inVertices.Add(new AdornmentVertex(location, angle));
                 }
                 else
                 {
@@ -281,7 +289,13 @@ namespace Scryber.Drawing
                         angle = angle + diff;
                     }
 
-                    inVertices.Add(new AdornmentVertex(location, angle));
+                    if (this.ExplicitVertexAngle.HasValue)
+                        this.AddVertex(location, this.ExplicitVertexAngle.Value, inVertices);
+                    else
+                    {
+                        this.AddVertex(location, angle, inVertices);
+                    }
+                    
                     
                 }
 
@@ -302,8 +316,12 @@ namespace Scryber.Drawing
                     var diff = (prevAngle - angle) / 2.0;
                     angle = angle + diff;
                 }
+
+                if (this.ExplicitVertexAngle.HasValue)
+                    this.AddVertex(location, this.ExplicitVertexAngle.Value, inVertices);
+                else
+                    this.AddVertex(location, angle, inVertices);
                 
-                inVertices.Add(new AdornmentVertex(location, angle));
             }
             else
             {
@@ -324,14 +342,11 @@ namespace Scryber.Drawing
                 }
                 else //its a move
                     firstLoc = last.GetLocation(prev, AdornmentPlacements.End);
-                
-                // if (firstLoc != location)
-                // {
-                //     var nextAngle = last.GetAngle(location, firstLoc, AdornmentPlacements.Start, false);
-                //     var diff = (angle - nextAngle) / 2.0;
-                //     angle = nextAngle + diff;
-                // }
-                inVertices.Add(new AdornmentVertex(location, angle));
+
+                if (this.ExplicitVertexAngle.HasValue)
+                    this.AddVertex(location, this.ExplicitVertexAngle.Value, inVertices);
+                else
+                    this.AddVertex(location, angle, inVertices);
             }
             
             return cursor;
