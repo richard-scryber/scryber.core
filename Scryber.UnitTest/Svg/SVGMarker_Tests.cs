@@ -684,15 +684,15 @@ namespace Scryber.Core.UnitTests.Svg
 
                     var builder = new VertexBuilder(AdornmentPlacements.Middle, false, null);
                     var vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(50, 90), vertex[0].Location);
+                    Assert.AreEqual(0, vertex.Count);
+                    
                     
                     //2Pi = 360deg
                     var full = Math.PI * 2;
                     var half = Math.PI;
                     
                     var rad = Math.PI / 2.0; //90 deg; 
-                    Assert.AreEqual(rad, vertex[0].Angle);
+                    //Assert.AreEqual(rad, vertex[0].Angle);
                     
                     //line 4 top left to bottom right
                     
@@ -705,12 +705,11 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsTrue(gpath.HasAdornments);
 
                     vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(90, 90), vertex[0].Location);
+                    Assert.AreEqual(0, vertex.Count);
 
 
-                    rad = Math.PI / 4.0; //45 deg; 
-                    Assert.AreEqual(rad, vertex[0].Angle);
+                    //rad = Math.PI / 4.0; //45 deg; 
+                    //Assert.AreEqual(rad, vertex[0].Angle);
                     
                     //line 3 rop right to bottom left
                     
@@ -723,12 +722,11 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsTrue(gpath.HasAdornments);
 
                     vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(10, 90), vertex[0].Location);
+                    Assert.AreEqual(0, vertex.Count);
                     
                     
-                    rad = Math.PI/2.0 + (Math.PI / 4.0); //135 deg; 
-                    Assert.AreEqual(rad, vertex[0].Angle);
+                    //rad = Math.PI/2.0 + (Math.PI / 4.0); //135 deg; 
+                    //Assert.AreEqual(rad, vertex[0].Angle);
                     
                     // wavyline
 
@@ -741,10 +739,15 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsTrue(gpath.HasAdornments);
 
                     vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(200, 10), vertex[0].Location);
-                    rad = - Math.PI / 4.0; //-45 deg; (as starts with a half curve and reversed) 
+                    Assert.AreEqual(2, vertex.Count);
+                    
+                    Assert.AreEqual(new Point(140, 10), vertex[0].Location);
+                    rad = 0 - Math.PI / 4.0; //-45 deg; (as starts with a half curve and reversed) 
                     Assert.AreEqual(rad, vertex[0].Angle);
+                    
+                    Assert.AreEqual(new Point(170, 10), vertex[1].Location);
+                    rad = 0 + Math.PI / 4.0; //+45 deg; (as starts with a half curve and reversed) 
+                    Assert.AreEqual(rad, vertex[1].Angle);
                     
                     // heart
 
@@ -757,10 +760,23 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsTrue(gpath.HasAdornments);
 
                     vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(10, 30), vertex[0].Location); //has a translation applied after
-                    rad = - (Math.PI / 2.0); //- 90 deg; (straight up) 
+                    Assert.AreEqual(4, vertex.Count);
+                    
+                    Assert.AreEqual(new Point(50, 30), vertex[0].Location); //has a translation applied after
+                    rad = 0; // 0 deg (straight across) 
                     Assert.AreEqual(rad, vertex[0].Angle);
+                    
+                    Assert.AreEqual(new Point(90, 30), vertex[1].Location); //has a translation applied after
+                    rad = (Math.PI / 2.0); // 90 deg; (straight down) 
+                    Assert.AreEqual(rad, vertex[1].Angle);
+                    
+                    Assert.AreEqual(new Point(50, 90), vertex[2].Location); //has a translation applied after
+                    rad =  (Math.PI); // 180 deg; (straight across back) 
+                    Assert.AreEqual(rad, vertex[2].Angle);
+                    
+                    Assert.AreEqual(new Point(10, 30), vertex[3].Location); //has a translation applied after
+                    rad = - (Math.PI / 2.0); //- 90 deg; (straight up) 
+                    Assert.AreEqual(rad, vertex[3].Angle);
                     
                     // aboveheart for an arc end
 
@@ -774,8 +790,8 @@ namespace Scryber.Core.UnitTests.Svg
 
                     vertex = builder.CollectVertices(gpath).ToList();
                     Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(90, 25), vertex[0].Location); //has a translation applied after
-                    rad = (Math.PI / 2.0); //90 deg; (straight down) 
+                    Assert.AreEqual(new Point(50, 25), vertex[0].Location); //has a translation applied after
+                    rad = 0; //0 deg; (straight across) 
                     Assert.AreEqual(rad, vertex[0].Angle);
                     
                     // manyarrows
@@ -789,10 +805,32 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsTrue(gpath.HasAdornments);
 
                     vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(30, 80), vertex[0].Location); //has a translation applied after
-                    rad = 0.0; //horizontal back
-                    Assert.AreEqual(rad, vertex[0].Angle);
+                    Assert.AreEqual(20, vertex.Count);
+                    var locs = new Point[20]
+                    {
+                        new Point(20, 10),
+                        new Point(20, 20), new Point(30, 20), 
+                        new Point(30, 30), new Point(40, 30),
+                        
+                        new Point(40, 20), new Point(50, 20), 
+                        new Point(50, 30), new Point(60, 30),
+                        new Point(60, 40), new Point(70, 40),
+                        new Point(70,50), new Point(80,50),
+                        
+                        new Point(50,50), new Point(60,50),
+                        new Point(40,60), new Point(50,60),
+                        new Point(30,70), new Point(40,70),
+                        new Point(20,80)
+                    };
+                    
+                    for(var i = 0; i < 20; i++)
+                    {
+                        Assert.AreEqual(locs[i], vertex[i].Location, "Location " + i + " failed"); //has a translation applied after
+                        rad = 0.0; //horizontal across
+                        Assert.AreEqual(rad, vertex[i].Angle, "Angle " + i + " failed");
+                    }
+                    
+                    
                     
                 }
             }
