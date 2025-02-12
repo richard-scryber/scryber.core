@@ -1314,12 +1314,14 @@ namespace Scryber.Core.UnitTests.Svg
 
                     var arrowMarker = canvas.FindAComponentById("arrow") as SVGMarker;
                     Assert.IsNotNull(arrowMarker);
+                    Assert.AreEqual(3, arrowMarker.Contents.Count);
+                    Assert.IsInstanceOfType(arrowMarker.Contents[1], typeof(SVGPath));
 
                     var circleMarker = canvas.FindAComponentById("circle") as SVGMarker;
                     Assert.IsNotNull(circleMarker);
                     Assert.AreEqual(5, circleMarker.Contents.Count);
-                    Assert.IsInstanceOfType(circleMarker.Contents[1], typeof(SVGCircle));
-                    Assert.IsInstanceOfType(circleMarker.Contents[3], typeof(SVGText));
+                    Assert.IsInstanceOfType(circleMarker.Contents[1], typeof(SVGImage));
+                    Assert.IsInstanceOfType(circleMarker.Contents[3], typeof(SVGCircle));
                     
                     var rectMarker = canvas.FindAComponentById("square") as SVGMarker;
                     Assert.IsNotNull(rectMarker);
