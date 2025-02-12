@@ -172,7 +172,15 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
 
     private PDFResourceList _resources;
 
-    PDFResourceList IResourceContainer.Resources => this._resources;
+    PDFResourceList IResourceContainer.Resources
+    {
+        get
+        {
+            if (null == this._resources)
+                this._resources = new PDFResourceList(this, false);
+            return this._resources;
+        }
+    }
 
     public SVGMarker() : this(ObjectTypes.Marker)
     {
@@ -354,7 +362,20 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
 
     public string Register(ISharedResource resource)
     {
-        return string.Empty;
+        if (null == this._resources)
+            this._resources = new PDFResourceList(this, false);
+        var rsrc = resource as PDFResource;
+        
+        if (null != rsrc)
+        {
+            rsrc.RegisterUse(this._resources, this);
+            this._resources.EnsureInList(rsrc);
+            return rsrc.Name.Value;
+        }
+        else
+        {
+            return string.Empty;
+        }
     }
     
     private class PDFMarkerXObjectResource : PDFResource

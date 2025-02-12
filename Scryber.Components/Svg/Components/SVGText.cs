@@ -4,13 +4,15 @@ using Scryber.Styles;
 using Scryber.Components;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using Scryber.Text;
 
 
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("text")]
-    public class SVGText : SVGBase, IPDFViewPortComponent
+    public class SVGText : SVGBase, IPDFViewPortComponent, IPDFRenderComponent
     {
 
         [PDFAttribute("width")]
@@ -250,6 +252,7 @@ namespace Scryber.Svg.Components
         }
 
         private TextLiteralList _inner;
+        
 
         [PDFElement()]
         [PDFArray(typeof(TextLiteral))]
@@ -340,6 +343,115 @@ namespace Scryber.Svg.Components
 
             return text;
         }
+        
+        
+        #region IPDFRenderComponent - explicit as usually handled by the layout engine
+        
+
+        PDFObjectRef IPDFRenderable.OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            if (this.Content.Count <= 0)
+                return null;
+
+            var style = context.FullStyle;
+            var textOptions = style.CreateTextOptions();
+            var stroke = style.CreateStrokePen();
+            var fill = style.CreateFillBrush();
+            var font = style.CreateFont();
+
+            var pos = new Point();
+            
+            StyleValue<Unit> value;
+            if (style.TryGetValue(StyleKeys.SVGGeometryXKey, out value))
+                pos.X = value.Value(style);
+            else if (style.TryGetValue(StyleKeys.SVGGeometryDeltaYKey, out value))
+                pos.X = context.Offset.X + value.Value(style);
+
+            if (style.TryGetValue(StyleKeys.SVGGeometryYKey, out value))
+                pos.Y = value.Value(style);
+            else if (style.TryGetValue(StyleKeys.SVGGeometryDeltaYKey, out value))
+                pos.Y = context.Offset.Y + value.Value(style);
+
+            var bounds = new Rect(pos, context.Space);
+
+            if (this._textLength != Unit.Auto)
+                bounds.Width = this.TextLength;
+            
+            var origOffset = context.Offset;
+            var origSize = context.Space;
+            context.Graphics.SaveGraphicsState();
+            
+            PDFObjectRef oref = null;
+            
+            context.Graphics.BeginText();
+            context.Offset = pos;
+            
+            try
+            {
+                
+                
+                if (null != textOptions.Font)
+                {
+                    if (null == textOptions.Font.Resource)
+                        textOptions.Font.SetResourceFont(textOptions.Font.FullName,
+                            Document.GetFontResource(textOptions.Font, true, true));
+                    
+                    textOptions.Font.Resource.RegisterUse(context.Graphics.Container.Resources, this);
+                    
+                    context.Graphics.SetCurrentFont(textOptions.Font);
+                }
+
+                if (null != textOptions.Stroke)
+                    textOptions.Stroke.SetUpGraphics(context.Graphics, bounds);
+
+                if (null != textOptions.FillBrush)
+                    textOptions.FillBrush.SetUpGraphics(context.Graphics, bounds);
+                
+                var size = new Size(pos.X, pos.Y);
+                context.Graphics.MoveTextCursor(size, true);
+            
+                
+                
+                foreach (var literal in this.Content)
+                {
+                    var reader = literal.CreateReader(context, style);
+                    char? charFitted;
+                    int fitted;
+                    
+                    while (reader.Read())
+                    {
+                        switch (reader.Value.OpType)
+                        {
+                            case PDFTextOpType.TextContent:
+                                var text = (PDFTextDrawOp) reader.Value;
+                                var chars = text.Characters;
+                                var w = context.Graphics.MeasureString(chars, 0, context.Space, textOptions,
+                                    out fitted, out charFitted);
+                                if (fitted < chars.Length)
+                                    chars = chars.Substring(0, fitted);
+                                context.Graphics.FillText(chars);
+                                break;
+                            default:
+                                //do nothing
+                            break;
+                        }
+                    }
+                    
+                }
+            }
+            finally
+            {
+                context.Graphics.EndText();
+                context.Graphics.RestoreGraphicsState();
+                
+                context.Offset = origOffset;
+                context.Space = origSize;
+            }
+
+            return oref;
+        }
+        
+        #endregion
     }
 
     public class TextLiteralList : ComponentWrappingList<TextLiteral>

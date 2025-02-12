@@ -196,6 +196,8 @@ namespace Scryber.Components
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
             {
+                img.RegisterUse(context.Graphics.Container.Resources, this);
+                
                 Point pos = context.Offset;
 
 
@@ -215,6 +217,7 @@ namespace Scryber.Components
                         graphics.SetFillOpacity(op.Value(full));
                     }
                 }
+                
                 PDFObjectRef imgref = img.EnsureRendered(context, writer);
                 graphics.PaintImageRef(img, imgsize, pos);
 
