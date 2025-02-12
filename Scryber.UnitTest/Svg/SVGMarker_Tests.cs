@@ -1328,147 +1328,51 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.IsInstanceOfType(rectMarker.Contents[3], typeof(SVGText));
 
                     var bounds = new Rect(0, 0, 10, 10);
-
-                    //line 1= vertical down
                     
-                    var line = canvas.FindAComponentById("line1") as SVGLine;
+                    
+                    var line = canvas.FindAComponentById("wavyline") as SVGPath;
                     Assert.IsNotNull(line);
+                    Assert.IsNotNull(line.MarkerStart);
+                    Assert.AreEqual("#square", line.MarkerStart.MarkerReference);
+                    
                     Assert.IsNotNull(line.MarkerMiddle);
                     Assert.AreEqual("#arrow", line.MarkerMiddle.MarkerReference);
+                    
+                    Assert.IsNotNull(line.MarkerEnd);
+                    Assert.AreEqual("#circle", line.MarkerEnd.MarkerReference);
+                    
 
                     var gpath = ((IGraphicPathComponent)line).CreatePath(bounds.Size, line.GetAppliedStyle());
                     Assert.IsTrue(gpath.HasAdornments);
 
-                    var builder = new VertexBuilder(AdornmentPlacements.Middle, false, angle);
+                    
+                    var builder = new VertexBuilder(AdornmentPlacements.Start, false, 0.0);
                     var vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(0, vertex.Count);
+                    Assert.AreEqual(1, vertex.Count);
+                    Assert.AreEqual(0.0, vertex[0].Angle);
+                    Assert.AreEqual(110, vertex[0].Location.X);
+                    Assert.AreEqual(10, vertex[0].Location.Y);
                     
-                    
-                    
-                    //line 4 top left to bottom right
-                    
-                    line = canvas.FindAComponentById("line4") as SVGLine;
-                    Assert.IsNotNull(line);
-                    Assert.IsNotNull(line.MarkerMiddle);
-                    Assert.AreEqual("#arrow", line.MarkerMiddle.MarkerReference);
-
-                    gpath = ((IGraphicPathComponent)line).CreatePath(bounds.Size, line.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
-                    vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(0, vertex.Count);
-                    
-                    
-                    //line 3 rop right to bottom left
-                    
-                    line = canvas.FindAComponentById("line3") as SVGLine;
-                    Assert.IsNotNull(line);
-                    Assert.IsNotNull(line.MarkerMiddle);
-                    Assert.AreEqual("#arrow", line.MarkerMiddle.MarkerReference);
-
-                    gpath = ((IGraphicPathComponent)line).CreatePath(bounds.Size, line.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
-                    vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(0, vertex.Count);
-                    
-                    
-                    // wavyline
-
-                    var wavy = canvas.FindAComponentById("wavyline") as SVGPath;
-                    Assert.IsNotNull(wavy);
-                    Assert.IsNotNull(wavy.MarkerMiddle);
-                    Assert.AreEqual("#arrow", wavy.MarkerMiddle.MarkerReference);
-                    
-                    gpath = ((IGraphicPathComponent)wavy).CreatePath(bounds.Size, wavy.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
+                    builder = new VertexBuilder(AdornmentPlacements.Middle, false, null);
                     vertex = builder.CollectVertices(gpath).ToList();
                     Assert.AreEqual(2, vertex.Count);
                     
-                    Assert.AreEqual(new Point(140, 10), vertex[0].Location);
-                    Assert.AreEqual(angle, vertex[0].Angle);
+                    Assert.AreEqual(0 - (Math.PI / 4.0), vertex[0].Angle);
+                    Assert.AreEqual(140, vertex[0].Location.X);
+                    Assert.AreEqual(10, vertex[0].Location.Y);
                     
-                    Assert.AreEqual(new Point(170, 10), vertex[1].Location);
-                    Assert.AreEqual(angle, vertex[1].Angle);
+                    Assert.AreEqual((Math.PI / 4.0), vertex[1].Angle);
+                    Assert.AreEqual(170, vertex[1].Location.X);
+                    Assert.AreEqual(10, vertex[1].Location.Y);
                     
-                    // heart
-
-                    var heart = canvas.FindAComponentById("heart") as SVGPath;
-                    Assert.IsNotNull(heart);
-                    Assert.IsNotNull(heart.MarkerMiddle);
-                    Assert.AreEqual("#arrow", heart.MarkerMiddle.MarkerReference);
-                    
-                    gpath = ((IGraphicPathComponent)heart).CreatePath(bounds.Size, heart.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
-                    vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(4, vertex.Count);
-                    
-                    Assert.AreEqual(new Point(50, 30), vertex[0].Location); //has a translation applied after
-                    Assert.AreEqual(angle, vertex[0].Angle);
-                    
-                    Assert.AreEqual(new Point(90, 30), vertex[1].Location); //has a translation applied after
-                    Assert.AreEqual(angle, vertex[1].Angle);
-                    
-                    Assert.AreEqual(new Point(50, 90), vertex[2].Location); //has a translation applied after
-                    Assert.AreEqual(angle, vertex[2].Angle);
-                    
-                    Assert.AreEqual(new Point(10, 30), vertex[3].Location); //has a translation applied after
-                    Assert.AreEqual(angle, vertex[3].Angle);
-                    
-                    // aboveheart for an arc end
-
-                    var above = canvas.FindAComponentById("aboveheart") as SVGPath;
-                    Assert.IsNotNull(above);
-                    Assert.IsNotNull(above.MarkerMiddle);
-                    Assert.AreEqual("#arrow", above.MarkerMiddle.MarkerReference);
-                    
-                    gpath = ((IGraphicPathComponent)above).CreatePath(bounds.Size, above.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
+                    builder = new VertexBuilder(AdornmentPlacements.End, false, null);
                     vertex = builder.CollectVertices(gpath).ToList();
                     Assert.AreEqual(1, vertex.Count);
-                    Assert.AreEqual(new Point(50, 25), vertex[0].Location); //has a translation applied after
-                    Assert.AreEqual(angle, vertex[0].Angle);
                     
-                    // manyarrows
+                    Assert.AreEqual(0 - (Math.PI / 4.0), vertex[0].Angle);
+                    Assert.AreEqual(200, vertex[0].Location.X);
+                    Assert.AreEqual(10, vertex[0].Location.Y);
 
-                    var arrows = canvas.FindAComponentById("manyarrows") as SVGPath;
-                    Assert.IsNotNull(arrows);
-                    Assert.IsNotNull(arrows.MarkerMiddle);
-                    Assert.AreEqual("#arrow", arrows.MarkerMiddle.MarkerReference);
-                    
-                    gpath = ((IGraphicPathComponent)arrows).CreatePath(bounds.Size, arrows.GetAppliedStyle());
-                    Assert.IsTrue(gpath.HasAdornments);
-
-                    vertex = builder.CollectVertices(gpath).ToList();
-                    Assert.AreEqual(20, vertex.Count);
-                    var locs = new Point[20]
-                    {
-                        new Point(20, 10),
-                        new Point(20, 20), new Point(30, 20), 
-                        new Point(30, 30), new Point(40, 30),
-                        
-                        new Point(40, 20), new Point(50, 20), 
-                        new Point(50, 30), new Point(60, 30),
-                        new Point(60, 40), new Point(70, 40),
-                        new Point(70,50), new Point(80,50),
-                        
-                        new Point(50,50), new Point(60,50),
-                        new Point(40,60), new Point(50,60),
-                        new Point(30,70), new Point(40,70),
-                        new Point(20,80)
-                    };
-                    
-                    for(var i = 0; i < 20; i++)
-                    {
-                        Assert.AreEqual(locs[i], vertex[i].Location, "Location " + i + " failed"); //has a translation applied after
-                        Assert.AreEqual(angle, vertex[i].Angle, "Angle " + i + " failed");
-                    }
-                    
-                    
-                    
                 }
             }
         }

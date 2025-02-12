@@ -133,8 +133,10 @@ namespace Scryber.Drawing
                     //GO through each one in turn
                     if (hasStarts)
                     {
-                        var builder = new VertexBuilder(hasStarts, false, false, info.ReverseAngleAtStart,
-                            info.ExplicitAngle);
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.Start);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.Start);
+                        var builder = new VertexBuilder(hasStarts, false, false, isReversed,
+                            angle);
                         
                         var all = builder.CollectVertices(this);
 
@@ -150,8 +152,10 @@ namespace Scryber.Drawing
                     
                     if (hasMids)
                     {
-                        var builder = new VertexBuilder(false, hasMids, false, info.ReverseAngleAtStart,
-                            info.ExplicitAngle);
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.Middle);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.Middle);
+                        var builder = new VertexBuilder(false, hasMids, false, isReversed,
+                            angle);
                         
                         var all = builder.CollectVertices(this);
 
@@ -167,8 +171,11 @@ namespace Scryber.Drawing
                     
                     if (hasEnds)
                     {
-                        var builder = new VertexBuilder(false, false, hasEnds, info.ReverseAngleAtStart,
-                            info.ExplicitAngle);
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.End);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.End);
+                        
+                        var builder = new VertexBuilder(false, false, hasEnds, isReversed,
+                            angle);
                         
                         var all = builder.CollectVertices(this);
 

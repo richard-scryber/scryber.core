@@ -68,7 +68,6 @@ namespace Scryber.Drawing
             }
 
             return false;
-
         }
         
         public virtual bool HasEnds(AdornmentOrder order)
@@ -82,6 +81,38 @@ namespace Scryber.Drawing
 
             return false;
 
+        }
+
+        public virtual bool IsReversed(AdornmentOrder order, AdornmentPlacements placements)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & placements) > 0)
+                    return Addorner.Orientation.IsReverseAtStart;
+            }
+            
+            return false;
+        }
+
+        public virtual double? TryGetAngle(AdornmentOrder order, AdornmentPlacements placements)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & placements) > 0 && this.Addorner.Orientation.HasAngle)
+                    return Addorner.Orientation.AngleRadians;
+            }
+
+            return null;
+        }
+
+        public bool IsMatching(AdornmentOrder order, AdornmentPlacements placement)
+        {
+            if (this.Order == order)
+            {
+                if ((this.Placement & placement) > 0)
+                    return true; 
+            }
+            return false;
         }
         
     }

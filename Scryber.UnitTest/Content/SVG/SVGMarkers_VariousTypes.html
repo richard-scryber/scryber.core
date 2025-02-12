@@ -35,14 +35,8 @@
                 <circle r="4" cx="5" cy="5" stroke-width="1" stroke="black" fill="blue" />
                 <text x="3" y="8" font-size="8" fill="white" >1</text>
             </marker>
-            <marker id="square" refX="5" refY="5"
-                    viewBox="0 0 10 10" markerWidth="6" markerHeight="6"
-                    orient="auto">
-                <circle r="4" cx="5" cy="5" stroke-width="1" stroke="red" fill="white" />
-                <text x="3" y="8" font-size="8" fill="red" >1</text>
-            </marker>
-            <marker id="square2" refX="10" refY="10"
-                    viewBox="0 0 20 20" markerWidth="10" markerHeight="10" >
+            <marker id="square" refX="10" refY="10"
+                    viewBox="0 0 20 20" markerWidth="5" markerHeight="5" >
                 <rect x="1" y="1" width="18" height="18" fill="yellow" stroke="red" stroke-width="0.5" />
                 <text x="4" y="16" fill="red" font-family="sans-serif" font-weight="600" >X</text>
             </marker>
@@ -55,9 +49,7 @@
             }
             
         </style>
-
-
-        <text x="3" y="8" font-size="6" fill="red" >1</text>
+        
         <!-- Crossing lines  -->
 <!--        <line id="line1" x1="50" y1="10" x2="50" y2="90" stroke="silver" marker-start="url(#square)" marker-end="url(#circle)" />-->
 <!--        -->
@@ -85,7 +77,8 @@
        C 180 20, 190 20, 200 10"
                 stroke="black"
                 fill="none"
-                marker-start="url(#square2)"
+                marker-start="url(#square)"
+               marker-mid="url(#arrow)"
                 marker-end="url(#circle)" />
 
         <!-- above the heart -->
