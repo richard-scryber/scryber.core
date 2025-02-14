@@ -161,7 +161,7 @@ public class SVGImage : Scryber.Components.Image
         var style = base.GetBaseStyle();
         style.Position.PositionMode = PositionMode.Absolute;
         style.Position.DisplayMode = DisplayMode.Block;
-
+        style.IsSVGGeometry = true;
         return style;
     }
 

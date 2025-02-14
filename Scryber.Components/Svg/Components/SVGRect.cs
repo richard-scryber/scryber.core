@@ -318,6 +318,15 @@ namespace Scryber.Svg.Components
         public SVGRect()
         {
         }
+        
+        
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            return style;
+        }
+
 
 
         protected override Point[] GetPoints(Rect bounds, Style style)

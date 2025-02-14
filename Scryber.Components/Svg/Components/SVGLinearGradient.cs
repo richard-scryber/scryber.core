@@ -174,7 +174,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         this.X1 = Unit.Zero;
         this.X2 = new Unit(1.0);
         this.Y1 = Unit.Zero;
-        this.Y2 = new Unit(1.0);
+        this.Y2 = new Unit(0.0);
         this.SpreadMode = GradientSpreadMode.Pad;
         this.GradientUnits = GradientUnitType.ObjectBoundingBox;
     }
@@ -192,7 +192,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         Unit x1 = Unit.Zero;
         Unit x2 = new Unit(1.0);
         Unit y1 = Unit.Zero;
-        Unit y2 = new Unit(1.0);
+        Unit y2 = Unit.Zero;
         
         GradientSpreadMode mode = GradientSpreadMode.Pad;
         GradientUnitType type = GradientUnitType.ObjectBoundingBox;
@@ -243,7 +243,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
 
         descriptor.Angle = this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
         //get the length of a unit box
-        maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(0.0, 0.0, 1.0, 1.0), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
+        maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
         length = 1; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
 
         if (length <= 0)
@@ -260,8 +260,8 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
             double factor = 1.0;
             if (mode == GradientSpreadMode.Repeat)
             {
-                factor = length / maxLen;
-                count = (int)Math.Ceiling(Math.Abs(maxLen / length));
+                factor = maxLen / length;
+                count = (int)Math.Ceiling(Math.Abs(length / maxLen));
             }
             
             Unit offset = Unit.Zero;
@@ -269,6 +269,27 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
             var index = 0;
             while (index < count)
             {
+                //Add a first color if the first stop is great than zero.
+                var first = this.Stops[0];
+                offset = first.Offset;
+                if (offset.IsRelative)
+                {
+                    if (offset.Units == PageUnits.Percent)
+                        offset = new Unit(offset.Value / 100.0);
+                    else
+                    {
+                        offset = 0;
+                    }
+                }
+
+                double distance;
+
+                if (offset > 0.0)
+                {
+                    distance = (index * factor);
+                    colors.Add(new GradientColor(first.StopColor, distance, first.StopOpacity));
+                }
+                    
 
                 foreach (var stop in this.Stops)
                 {
@@ -282,7 +303,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                     }
 
                     
-                    var distance = (index + offset.PointsValue) * factor;
+                    distance = (index + offset.PointsValue) * factor;
 
                     
                     
@@ -296,12 +317,13 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                     }
                 }
 
-                if (mode == GradientSpreadMode.Pad)
+                if (mode == GradientSpreadMode.Pad || mode == GradientSpreadMode.Repeat)
                 {
                     if (offset.Value < 1.0)
                     {
                         var last = this.Stops[this.Stops.Count - 1];
-                        GradientColor lastColor = new GradientColor(last.StopColor, 1.0, last.StopOpacity);
+                        distance = maxLen * (index + 1);
+                        GradientColor lastColor = new GradientColor(last.StopColor, distance, last.StopOpacity);
                         colors.Add(lastColor);
                     }
                     //this is will stop the while loop
@@ -338,7 +360,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         }
         
         descriptor.Colors = colors;
-
+        
         return descriptor;
         
         

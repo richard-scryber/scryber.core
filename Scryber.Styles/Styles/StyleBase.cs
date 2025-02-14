@@ -1193,7 +1193,7 @@ namespace Scryber.Styles
             {
                 transforms = this.GetValue(StyleKeys.TransformOperationKey, null);
                 
-                if (transforms.IsIdentity)
+                if (null != transforms && transforms.IsIdentity)
                     transforms = null; //identity will do nothing
                 
 

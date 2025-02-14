@@ -107,9 +107,8 @@ namespace Scryber.Drawing
             {
                 var c0 = this.Colors[0];
                 var c1 = this.Colors[1];
-                var domainStart = c0.Distance.HasValue ? (c0.Distance.Value / 100.0) : 0;
-                var domainEnd = c1.Distance.HasValue ? 1.0/(c1.Distance.Value / 100) : 1;
-                return new PDFGradientFunction2(c0.Color, c1.Color, domainStart, domainEnd, 1.0);
+                
+                return new PDFGradientFunction2(c0.Color, c1.Color);
             }
             else
             {
