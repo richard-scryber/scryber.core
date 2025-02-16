@@ -266,7 +266,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
             
             Unit offset = Unit.Zero;
             var total = Unit.Zero;
-            var index = 0;
+            var index = 0.0;
             while (index < count)
             {
                 //Add a first color if the first stop is great than zero.
@@ -286,7 +286,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
 
                 if (offset > 0.0)
                 {
-                    distance = (index * factor);
+                    distance = index / count;
                     colors.Add(new GradientColor(first.StopColor, distance, first.StopOpacity));
                 }
                     
@@ -303,7 +303,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                     }
 
                     
-                    distance = (index + offset.PointsValue) * factor;
+                    distance = (index + offset.PointsValue) / count;
 
                     
                     
@@ -322,12 +322,11 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                     if (offset.Value < 1.0)
                     {
                         var last = this.Stops[this.Stops.Count - 1];
-                        distance = maxLen * (index + 1);
+                        distance = (index + 1.0) / count;
                         GradientColor lastColor = new GradientColor(last.StopColor, distance, last.StopOpacity);
                         colors.Add(lastColor);
                     }
-                    //this is will stop the while loop
-                    total = maxLen;
+                    
                 }
                 else if (mode == GradientSpreadMode.Reflect && total < maxLen)
                 {

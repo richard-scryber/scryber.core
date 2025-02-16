@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
             Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
             
-            //2 Colo rPadded
+            //2 ColorPadded
             linear = patterns[1] as PDFLinearShadingPattern;
             Assert.IsNotNull(linear);
             
