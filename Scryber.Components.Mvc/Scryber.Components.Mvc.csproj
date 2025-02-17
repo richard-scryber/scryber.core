@@ -4,8 +4,8 @@
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>6.0.2.0-beta</PackageVersion>
-    <Version>6.0.2.0-beta</Version>
+    <PackageVersion>8.0.0.1-beta</PackageVersion>
+    <Version>8.0.0.1-beta</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
@@ -15,14 +15,17 @@ This framework is built entirely in .NET6 and Net Standard 2.0 and is released u
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
+      <PackageReadmeFile>readme.md</PackageReadmeFile>
+      <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-6.0.2.0-beta
-
-Updated to net8.0 sdk and dependencies updated to latest version.
+        
+8.0.0.1-beta
+        
+        Updated to support the .NET 8.0 framework (along with .NETStandard 2.0
+        
 
 6.0.1.0-beta
 
@@ -118,7 +121,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.9" />
-    <PackageReference Include="Scryber.Core" Version="6.0.4-beta" />
+    <PackageReference Include="Scryber.Core" Version="8.0.0.1-beta" />
   </ItemGroup>
       
   <ItemGroup>
@@ -126,9 +129,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <None Remove="SixLabors.ImageSharp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="readme.txt" pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
-    </None>
+      <None Include="readme.md" Pack="true" PackagePath="\" />
     <None Include="..\ScyberLogo2_alpha_small.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
