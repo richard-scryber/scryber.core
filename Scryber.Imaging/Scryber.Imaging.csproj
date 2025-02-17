@@ -5,6 +5,8 @@
     <RootNamespace>Scryber</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
+    <Version>8.0.0.1</Version>
+    <FileVersion>8.0.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

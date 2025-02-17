@@ -67,7 +67,7 @@ namespace Scryber.Core.UnitTests.Binding
                 var path = this.TestContext.TestRunDirectory;
 
 
-                path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
+                path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
 
                 path = System.IO.Path.GetFullPath(path);
 
@@ -110,7 +110,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
             var path = this.TestContext.TestRunDirectory;
 
-            path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images"); ;
+            path = System.IO.Path.Combine(path, "../../Scryber.UnitTest/Content/HTML/Images"); ;
 
             path = System.IO.Path.GetFullPath(path);
 

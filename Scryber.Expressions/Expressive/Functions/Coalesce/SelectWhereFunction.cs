@@ -28,11 +28,13 @@ namespace Scryber.Expressive.Functions.Coalesce
             IExpression check = parameters[1];
 
             object value = each.Evaluate(variables);
-            ArrayList matched = new ArrayList();
+            
             IEnumerable entries;
 
             if (Helpers.Collections.TryIsCollection(value, out entries))
             {
+                ArrayList matched = new ArrayList();
+                
                 foreach (var item in entries)
                 {
                     CurrentDataExpression.SetCurrentData(item, variables);

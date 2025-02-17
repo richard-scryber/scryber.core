@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.5.0-beta</PackageVersion>
+    <PackageVersion>8.0.0.1-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
@@ -14,8 +14,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
-6.0.5.0-beta
-Updated to net8.0 sdk and dependencies updated to latest version.
+8.0.0.1-beta
+Updated to net8.0 sdk and dependancies updated to the latest stable versions. 
+
 
 6.0.4.0-beta
 Big updates to whitespace handling, support for &amp;nbsp; and hyphens in line breaks.
@@ -130,12 +131,12 @@ Scryber is an advanced PDF generation engine based around HTML templates with CS
 This framework is built entirely in .NET8 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>6.0.5.0-beta</Version>
+    <Version>8.0.0.1-beta</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>6.0.5.0</FileVersion>
+    <FileVersion>8.0.0.1</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>

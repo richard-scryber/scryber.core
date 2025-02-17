@@ -49,14 +49,14 @@ namespace Scryber.Core.UnitTests.Configuration
         public void ConfigClassInitialize()
         {
             var path = this.TestContext.TestRunDirectory;
-            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../scrybersettings.json"));
+            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../Scryber.UnitTest/scrybersettings.json"));
             if (!File.Exists(path))
             {
-                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
+                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../Scryber.UnitTest/scrybersettings.json");
                 path = System.IO.Path.GetFullPath(path);
 
                 if (!File.Exists(path))
-                    throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from");
+                    throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from - " + path);
             }
 
             var builder = new ConfigurationBuilder()
