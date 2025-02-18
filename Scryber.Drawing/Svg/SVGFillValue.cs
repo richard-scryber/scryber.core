@@ -121,6 +121,11 @@ namespace Scryber.Svg
     {
         public IPDFGraphicsAdapter Adapter { get; set; }
 
+        public SVGFillReferenceValue(string reference)
+            : this(null, reference)
+        {
+        }
+
         public SVGFillReferenceValue(IPDFGraphicsAdapter adaptor, string reference) 
             : base(SVGFillType.Reference, reference)
         {

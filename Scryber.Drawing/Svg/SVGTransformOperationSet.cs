@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Resources;
 using Scryber.Drawing;
 
@@ -15,6 +16,34 @@ namespace Scryber.Svg
         public SVGTransformOperationSet() : base()
         {
 
+        }
+
+        public SVGTransformOperationSet(TransformOperation operation) : this()
+        {
+            if(null != operation)
+                this.AppendOperation(operation);
+        }
+        
+        public SVGTransformOperationSet(IEnumerable<TransformOperation> operation) : this()
+        {
+            if (null != operation)
+            {
+                foreach (var op in operation)
+                {
+                    this.AppendOperation(op);
+                }
+            }
+        }
+
+        public SVGTransformOperationSet(params TransformOperation[] operations) : this()
+        {
+            if (null != operations)
+            {
+                foreach (var op in operations)
+                {
+                    this.AppendOperation(op);
+                }
+            }
         }
 
 

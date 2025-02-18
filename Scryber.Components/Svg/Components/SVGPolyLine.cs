@@ -8,8 +8,26 @@ namespace Scryber.Svg.Components
     [PDFParsableComponent("polyline")]
     public class SVGPolyLine : SVGIrregularShape
     {
+        
+        private PDFPointList _points;
+        
+        /// <summary>
+        /// Gets or sets the list of points that this shape should render out based on teh style.
+        /// </summary>
         [PDFAttribute("points")]
-        public PDFPointList Points { get; set; }
+        public PDFPointList Points 
+        {
+            get
+            {
+                if(null == _points)
+                    _points = new PDFPointList();
+                return _points;
+            }
+            set
+            {
+                _points = value;
+            } 
+        }
 
         public SVGPolyLine()
             : this(ObjectTypes.ShapePolyline)
