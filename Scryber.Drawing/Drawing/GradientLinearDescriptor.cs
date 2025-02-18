@@ -14,6 +14,11 @@ namespace Scryber.Drawing
         public GradientLinearDescriptor() : base(GradientType.Linear)
         { }
 
+        public GradientLinearDescriptor(List<GradientColor> colors, double angle) : base(GradientType.Linear)
+        {
+            this.Colors = colors;
+            this.Angle = angle;
+        }
         
 
 

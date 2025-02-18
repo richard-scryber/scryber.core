@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml.Schema;
 using Scryber.PDF.Graphics;
 using Scryber.PDF.Resources;
 using Scryber.Styles;
+using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components;
 
@@ -239,12 +241,18 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                 type = units.Value(this.Style);
         }
 
+        if (mode == GradientSpreadMode.Pad || mode == GradientSpreadMode.Repeat) //To Remove once all the modes are done.
+        {
+            var calc = CreateGradientCalculator(mode, type, x1, x2, y1, y2);
+            return calc.CreateDescriptor(this.Stops);
+        }
+
         Scryber.Drawing.GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
 
-        descriptor.Angle = this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
+        descriptor.Angle = 0.0; // this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
         //get the length of a unit box
-        maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
-        length = 1; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
+        var maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
+        var length = 1.0; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
 
         if (length <= 0)
             length = maxLen;
@@ -365,78 +373,23 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         
     }
 
-    private double GetGradientAngle(Unit x1, Unit x2, Unit y1, Unit y2, GradientUnitType type, out double length, out double maxLen)
+    private SVGLinearGradientCalculator CreateGradientCalculator(GradientSpreadMode mode, GradientUnitType type, Unit x1, Unit x2, Unit y1, Unit y2)
     {
-        //TODO: consider the type of object bounds and make relative to that.
-        
-        if (x1.IsRelative)
+        switch (mode)
         {
-            if (x1.Units == PageUnits.Percent)
-                x1 = new Unit(x1.Value / 100.0);
-            else
-            {
-                x1 = Unit.Zero;
-            }
+            case GradientSpreadMode.Pad:
+                return new SVGLinearPaddedGradientCalculator(mode, type, x1, x2, y1, y2);
+            
+            case GradientSpreadMode.Repeat:
+                return new SVGLinearRepeatingGradientCalculator(mode, type, x1, x2, y1, y2);
+            
+            case GradientSpreadMode.Reflect:
+            default:
+                    throw new NotImplementedException();
+                break;
         }
-        
-        if (x2.IsRelative)
-        {
-            if (x2.Units == PageUnits.Percent)
-                x2 = new Unit(x1.Value / 100.0);
-            else
-            {
-                x2 = new Unit(1.0);
-            }
-        }
-        if (y1.IsRelative)
-        {
-            if (y1.Units == PageUnits.Percent)
-                y1 = new Unit(x1.Value / 100.0);
-            else
-            {
-                y1 = Unit.Zero;
-            }
-        }
-        if (y2.IsRelative)
-        {
-            if (y2.Units == PageUnits.Percent)
-                y2 = new Unit(x1.Value / 100.0);
-            else
-            {
-                y2 = new Unit(1.0);
-            }
-        }
-
-
-        var deltax = (x2 - x1).PointsValue;
-        var deltay = (y2 - y1).PointsValue;
-
-        var radians = Math.Atan2(deltay, deltax);
-        var degrees = radians * (180.0 / Math.PI);
-        length = Math.Sqrt((deltax * deltax) + (deltay * deltay));
-        
-        //zero = vertical
-        degrees = degrees + 90;
-        if (degrees < 0)
-            degrees += 360;
-
-        if (deltax == 0)
-        {
-            maxLen = 1.0;
-        }
-        else if (deltay == 0)
-        {
-            maxLen = 1.0;
-        }
-        else
-        {
-            var cos = 1/Math.Cos(radians);
-            var sin = 1/Math.Sin(radians);
-            maxLen = Math.Min(cos, sin);
-        }
-
-        return degrees;
     }
+    
 
 
     public virtual SVGLinearGradient Clone()

@@ -288,8 +288,9 @@ namespace Scryber.Svg.Components
             //style.Position.DisplayMode = DisplayMode.Block;
             
             //Internal flag to identify that we use the SVGGeometry
-            // style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
-            //
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            
+
             // style.Position.PositionMode = PositionMode.Absolute;
             // style.Padding.Right = 4;
             // style.Text.WrapText = Text.WordWrap.NoWrap;
@@ -303,11 +304,12 @@ namespace Scryber.Svg.Components
             return style;
         }
 
-        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
-        {
-            base.SetArrangement(arrange, context);
-        }
+        
 
+        public override Style GetAppliedStyle()
+        {
+            return base.GetAppliedStyle();
+        }
 
         #region IPDFViewPortComponent Members
 

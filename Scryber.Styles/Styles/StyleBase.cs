@@ -1891,6 +1891,7 @@ namespace Scryber.Styles
             StyleValue<Color> c;
             StyleValue<Unit> width;
 
+
             if (this.TryGetValue(StyleKeys.StrokeStyleKey, out penstyle))
             {
                 //We have an explict style

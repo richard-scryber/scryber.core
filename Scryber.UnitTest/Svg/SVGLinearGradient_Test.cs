@@ -42,6 +42,53 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
 
+        [TestMethod()]
+        public void SVGLinearGradientBrushes_Test()
+        {
+            
+            var doc = new Document();
+            var page = new Page();
+            page.Style.Font.FontFamily = FontSelector.Parse("Serif");
+            page.Padding = 8;
+            doc.Pages.Add(page);
+            
+            
+            var svg = new SVGCanvas() { Width = 110, Height = 110 };
+            svg.BackgroundColor = Color.Parse("#AAA");
+            page.Contents.Add(svg);
+            
+            var text = new SVGText();
+            text.Fill = new SVGFillReferenceValue(null, "#2Color");
+            text.FontFamily = FontSelector.Parse("sans-serif");
+            text.FontSize = 10;
+            text.FontWeight = FontWeights.Bold;
+            text.X = 10;
+            text.Y = 10;
+            text.Content.Add(new TextLiteral("Hello World"));
+            svg.Contents.Add(text);
+            
+            SVGRect rect = new SVGRect();
+            rect.X = 20;
+            rect.Y = 20;
+            rect.Width = 70;
+            rect.Height = 70;
+            rect.FillValue = new SVGFillReferenceValue(null, "#2Color");
+            svg.Contents.Add(rect);
+            
+            var gradient = new SVGLinearGradient();
+            gradient.ID = "2Color";
+            
+            gradient.Stops.Add(new SVGLinearGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
+            gradient.Stops.Add(new SVGLinearGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Blue});
+            svg.Contents.Add(gradient);
+            
+            using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushes.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+        }
+
         /// <summary>
         ///A test to make sure the SVG is rendered as an XObject in the PDF
         ///</summary>

@@ -468,6 +468,8 @@ namespace Scryber.PDF.Layout
             context.Graphics.SaveGraphicsState();
             context.Graphics.BeginText();
 
+            if (null != firstArrangement)
+                bounds.Size = firstArrangement.RenderBounds.Size;
 
 
             context.Graphics.SetTextRenderOptions(this.TextRenderOptions, bounds);
