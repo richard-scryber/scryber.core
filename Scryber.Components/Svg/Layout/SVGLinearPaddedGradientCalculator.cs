@@ -19,19 +19,33 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         List<GradientColor> colors = new List<GradientColor>(stops.Count);
         
         var first = stops[0];
+
+        double start = this.GradientBounds.X.PointsValue;
+
+        GradientColor color;
+        
+        if (start > 0.0)
+        {
+            color = new GradientColor(first.StopColor, 0.0, first.StopOpacity);
+            colors.Add(color);
+        }
+        
         
         double distance = ToNonRelative(first.Offset).PointsValue;
-        GradientColor color;
+        
         
         //padded so we add something from 0 to the first actual stop
         if (distance > 0.0)
         {
-            color = new GradientColor(first.StopColor, 0.0, first.StopOpacity);
+            color = new GradientColor(first.StopColor, start, first.StopOpacity);
         }
 
         foreach (var stop in stops)
         {
             distance = ToNonRelative(stop.Offset).PointsValue;
+            distance *= this.GradientBounds.Width.PointsValue;
+            distance += start;
+            
             color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
             colors.Add(color);
             
