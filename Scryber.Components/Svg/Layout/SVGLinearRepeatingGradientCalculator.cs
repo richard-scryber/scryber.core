@@ -29,6 +29,8 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
         double index = 0.0;
 
         //If we are not starting at zero, then push back another repetition
+        //TODO: Increate the size of the repetitions until we are beyond 1 then alter the bounds back so we start at the correct place.
+        
         while (index < repetitions)
         {
             this.AddRepeatingStops(index, repetitions, stops, colors);
