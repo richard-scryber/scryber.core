@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Scryber.PDF.Native;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.PDF.Resources
 {
@@ -85,6 +86,8 @@ namespace Scryber.PDF.Resources
         }
 
         #endregion
+
+        public PDFTransformationMatrix TransformationMatrix { get; set; }
 
         #region protected PDFPattern(IPDFComponent owner, PatternType type, string fullkey)
 

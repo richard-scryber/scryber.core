@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Native;
 
 namespace Scryber.Svg.Components
@@ -496,7 +497,10 @@ namespace Scryber.Svg.Components
         public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             bool hasTransform = false;
-
+            PDFTransformationMatrix origMatrix = context.RenderMatrix;
+            
+            context.Graphics.SaveGraphicsState();
+            
             if (null == this.Path)
                 this.Path = this.CreatePath(context.Space, context.FullStyle);
             
@@ -509,17 +513,14 @@ namespace Scryber.Svg.Components
                     hasTransform = true;
                     var origin = context.FullStyle.GetValue(StyleKeys.TransformOriginKey, null);
                     var matrix = transform.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
-                    context.Graphics.SaveGraphicsState();
+                    
                     context.Graphics.SetTransformationMatrix(matrix, false, true);
                 }
             }
             
             var oref = base.OutputToPDF(context, writer);
 
-            if (hasTransform)
-            {
-                context.Graphics.RestoreGraphicsState();
-            }
+           context.Graphics.RestoreGraphicsState();
 
             return oref;
         }

@@ -46,7 +46,7 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
             colors.Add(color);
         }
 
-        return new GradientLinearDescriptor(colors, this.CalculatedAngle + 90);
+        return new GradientLinearDescriptor(colors, this.CalculatedAngle);
         
         
     }

@@ -114,6 +114,7 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        
         #region protected PDFExternalGraphicsState ExternalState {get;}
 
         private PDFExternalGraphicsState _extState;
@@ -306,12 +307,15 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
-        #region SetTransformationMatrix()
+        #region SetTransformationMatrix() + ClearTransformationMatrix()
 
         private const int Matrix2DTransformationLength = 6;
 
         public void SetTransformationMatrix(PDFTransformationMatrix matrix, bool appliesToText, bool appliesToDrawing)
         {
+            if(null == matrix)
+                throw new ArgumentNullException(nameof(matrix));
+            
             double[] all = matrix.Components;
             if (all.Length != Matrix2DTransformationLength)
                 throw new IndexOutOfRangeException("A 2D transformation matrix can only have 6 values");
@@ -335,8 +339,10 @@ namespace Scryber.PDF.Graphics
 
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
             }
-
+   
         }
+
+        
 
         #endregion
 

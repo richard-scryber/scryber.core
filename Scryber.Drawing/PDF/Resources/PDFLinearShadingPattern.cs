@@ -42,6 +42,8 @@ namespace Scryber.PDF.Resources
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Type", "Pattern");
             writer.WriteDictionaryNumberEntry("PatternType", (int)this.PatternType);
+            //writer.WriteDictionaryEntry - Transformation
+            
             //Actual shading dictionary
             var shading = this.RenderShadingDictionary(context, writer);
             if (null != shading)
@@ -70,6 +72,7 @@ namespace Scryber.PDF.Resources
 
             Size graphicsSize = new Size(size.Width + offset.X, size.Height + offset.Y);
 
+            //TODO: Apply the matrix
             writer.WriteArrayRealEntries(true, offset.X.PointsValue,
                                                offset.Y.PointsValue,
                                                offset.X.PointsValue + size.Width.PointsValue,
@@ -80,9 +83,12 @@ namespace Scryber.PDF.Resources
 
             writer.BeginDictionaryEntry("Coords");
             var coords = GetCoords(offset, size, this._descriptor.Angle);
-
+            
+            
             writer.WriteArrayRealEntries(true, coords);
+            writer.EndDictionaryEntry();
 
+            
             var func = this._descriptor.GetGradientFunction(offset, size);
             if (null != func)
             {
@@ -251,57 +257,57 @@ namespace Scryber.PDF.Resources
             switch (rounded)
             {
                 case(0):
-                    //vertical up
-                    length = box.Height;
-                    start = new Point(box.X, box.Y + box.Height);
-                    end = new Point(box.X, box.Y);
-                    break;
-                
-                case(45):
-                    //bottom left to top right
-                    length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
-                    start = new Point(box.X, box.Y + box.Height);
-                    end = new Point(box.X + box.Width, box.Y);
-                    break;
-                case(90):
                     //horizontal right
                     length = box.Width;
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X + box.Width, box.Y);
                     break;
                 
-                case(135):
+                case(45):
                     //top left to bottom right
                     length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X + box.Width, box.Y + box.Height);
                     break;
-                case(180):
+                case(90):
                     //vertical down
                     length = box.Height;
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X, box.Y + box.Height);
                     break;
                 
-                case(225):
+                case(135):
                     //top right to bottom left
                     length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
                     start = new Point(box.X + box.Width, box.Y);
                     end = new Point(box.X, box.Y + box.Height);
                     break;
                 
-                case(270):
+                case(180):
                     //horizontal left
                     length = box.Width;
                     start = new Point(box.X + box.Width, box.Y);
                     end = new Point(box.X, box.Y);
                     break;
                 
-                case(315):
+                case(235):
                     //bottom right to top left
                     length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
                     start = new Point(box.X + box.Width, box.Y + box.Height);
                     end = new Point(box.X, box.Y);
+                    break;
+                case(270):
+                    //vertical up
+                    length = box.Height;
+                    start = new Point(box.X, box.Y + box.Height);
+                    end = new Point(box.X, box.Y);
+                    break;
+                
+                case(315):
+                    //bottom left to top right
+                    length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
+                    start = new Point(box.X, box.Y + box.Height);
+                    end = new Point(box.X + box.Width, box.Y);
                     break;
                 default:
                     length = GetAngularBoundingBox(box, angleDegrees, out Point midPt, out start, out end);

@@ -190,9 +190,12 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(PDFResource.PatternResourceType, canvXObj.Renderer.Resources.Types[0].Type);
             
             var patterns = canvXObj.Renderer.Resources.Types[0];
-            Assert.AreEqual(3, patterns.Count);
+            Assert.AreEqual(4, patterns.Count);
             
+            //
             //2Color
+            //
+            
             var linear = patterns[0] as PDFLinearShadingPattern;
             Assert.IsNotNull(linear);
             
@@ -208,7 +211,10 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
             Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
             
+            //
             //2 ColorPadded
+            //
+            
             linear = patterns[1] as PDFLinearShadingPattern;
             Assert.IsNotNull(linear);
             
@@ -253,7 +259,9 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
             Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
             
-            //2 color repeat
+            //
+            //2 color repeat twice
+            //
             
             linear = patterns[2] as PDFLinearShadingPattern;
             Assert.IsNotNull(linear);
@@ -263,14 +271,155 @@ namespace Scryber.Core.UnitTests.Svg
             size = linear.Size;
             Assert.AreEqual(new Size(90, -90), size); //PDF Size within XObject Canvas
             
-            //4 stops 0, 0.2, 0.8 and 1.0
-            //Aqua -> Aqua -> Blue -> Blue
+            //3 stops 0, 0.5, 0.5 and 1.0
+            //Aqua -> Blue -> Aqua -> Blue
             //Wrapped in a Function3
+            
 
             func3 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction3;
-            
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+            Assert.IsNotNull(func3);
+            Assert.AreEqual(0.0, func3.DomainStart);
+            Assert.AreEqual(1.0, func3.DomainEnd);
+            //Check bounds and ends
 
+            Assert.AreEqual(2, func3.Boundaries.Length);
+            Assert.AreEqual(0.5, func3.Boundaries[0].Bounds);
+            Assert.AreEqual(0.5, func3.Boundaries[1].Bounds);
+            
+            Assert.AreEqual(3, func3.Encodes.Length);
+            
+            
+            Assert.AreEqual(3, func3.Functions.Length);
+            Assert.AreEqual(0.0, func3.Encodes[0].Start);
+            Assert.AreEqual(1.0, func3.Encodes[0].End);
+            Assert.AreEqual(0.0, func3.Encodes[1].Start);
+            Assert.AreEqual(1.0, func3.Encodes[1].End);
+            Assert.AreEqual(0.0, func3.Encodes[2].Start);
+            Assert.AreEqual(1.0, func3.Encodes[2].End);
+            
+            
+            func2 = func3.Functions[0] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            
+            func2 = func3.Functions[1] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[2] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            //
+            //2 color repeat padded
+            //
+            
+            linear = patterns[3] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            offset = linear.Start;
+            Assert.AreEqual(new Point(310, 100), offset); //PDF Position within XObject Canvas
+            size = linear.Size;
+            Assert.AreEqual(new Size(90, -90), size); //PDF Size within XObject Canvas
+
+            //3 stops 0, 0.5, 0.5 and 1.0
+            //Aqua -> Blue -> Aqua -> Blue
+            //Wrapped in a Function3
+            
+
+            func3 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction3;
+            Assert.IsNotNull(func3);
+            Assert.AreEqual(0.0, func3.DomainStart);
+            Assert.AreEqual(1.0, func3.DomainEnd);
+            //Check bounds and ends
+
+            Assert.AreEqual(6, func3.Boundaries.Length);
+            Assert.AreEqual(0.2, func3.Boundaries[0].Bounds);
+            Assert.AreEqual(0.3, func3.Boundaries[1].Bounds);
+            Assert.AreEqual(0.5, func3.Boundaries[2].Bounds);
+            Assert.AreEqual(0.5, func3.Boundaries[3].Bounds);
+            Assert.AreEqual(0.7, func3.Boundaries[4].Bounds);
+            Assert.AreEqual(0.8, func3.Boundaries[5].Bounds);
+            
+            Assert.AreEqual(7, func3.Encodes.Length);
+            
+            Assert.AreEqual(0.0, func3.Encodes[0].Start);
+            Assert.AreEqual(1.0, func3.Encodes[0].End);
+            Assert.AreEqual(0.0, func3.Encodes[1].Start);
+            Assert.AreEqual(1.0, func3.Encodes[1].End);
+            Assert.AreEqual(0.0, func3.Encodes[2].Start);
+            Assert.AreEqual(1.0, func3.Encodes[2].End);
+            Assert.AreEqual(0.0, func3.Encodes[3].Start);
+            Assert.AreEqual(1.0, func3.Encodes[3].End);
+            Assert.AreEqual(0.0, func3.Encodes[4].Start);
+            Assert.AreEqual(1.0, func3.Encodes[4].End);
+            Assert.AreEqual(0.0, func3.Encodes[5].Start);
+            Assert.AreEqual(1.0, func3.Encodes[5].End);
+            Assert.AreEqual(0.0, func3.Encodes[6].Start);
+            Assert.AreEqual(1.0, func3.Encodes[6].End);
+            
+            Assert.AreEqual(7, func3.Functions.Length);
+            
+            func2 = func3.Functions[0] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            
+            func2 = func3.Functions[1] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[2] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[3] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            
+            func2 = func3.Functions[4] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[5] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[6] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
         }
 
 
@@ -296,16 +445,18 @@ namespace Scryber.Core.UnitTests.Svg
             text.X = 10;
             text.Y = 10;
             text.DominantBaseline = DominantBaseline.Hanging;
+            text.Transform = new SVGTransformOperationSet(new TransformTranslateOperation(50, 0));
             text.Content.Add(new TextLiteral("Hello World"));
             
             svg.Contents.Add(text);
             
             SVGRect rect = new SVGRect();
-            rect.X = 100;
+            rect.X = 110;
             rect.Y = 10;
             rect.Width = 70;
             rect.Height = 70;
             rect.FillValue = new SVGFillReferenceValue(null, "#2Color");
+            rect.Transform = new SVGTransformOperationSet(new TransformTranslateOperation(50, 0));
             svg.Contents.Add(rect);
             
             var gradient = new SVGLinearGradient();
@@ -315,7 +466,7 @@ namespace Scryber.Core.UnitTests.Svg
             gradient.Stops.Add(new SVGLinearGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
             svg.Contents.Add(gradient);
             
-            using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushes.pdf"))
+            using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushesWithTransform.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(stream);

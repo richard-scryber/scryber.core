@@ -34,6 +34,7 @@ namespace Scryber.PDF.Graphics
 
             bounds = ConvertToPageRect(graphics, bounds);
             
+            
             var linear = this.GetLinearShadingPattern(graphics, id, this._descriptor, bounds);
             if (null != linear)
             {

@@ -20,10 +20,7 @@
             text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
             
         </style>
-        <linearGradient id="2ColorBack" >
-            <stop offset="0%" stop-color="blue" />
-            <stop offset="100%" stop-color="aqua" />
-        </linearGradient>
+        
        <linearGradient id="2Color" >
            <stop offset="0%" stop-color="aqua" />
            <stop offset="100%" stop-color="blue" />
@@ -42,18 +39,19 @@
             <stop offset="100%" stop-color="blue" />
         </linearGradient>
         <rect height="90" width="90" x="210" y="10" fill="url(#2ColorRepeat)" />
-       
-<!--        <linearGradient id="2ColorRepeatShort" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0" y2="0" >-->
-<!--            <stop offset="0%" stop-color="aqua" />-->
-<!--            <stop offset="100%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="310" y="10" fill="url(#2ColorRepeatShort)" />-->
 
-<!--        <linearGradient id="2ColorRepeatShortPadded" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0" y2="0" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="410" y="10" fill="url(#2ColorRepeatShortPadded)" />-->
+        <linearGradient id="2ColorRepeatPadded" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0" >
+            <stop offset="40%" stop-color="aqua" />
+            <stop offset="60%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="90" x="310" y="10" fill="url(#2ColorRepeatPadded)" />
+
+        <linearGradient id="2ColorRepeatPaddedShort" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0" y2="0" >
+            <stop offset="40%" stop-color="aqua" />
+            <stop offset="60%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="90" x="410" y="10" fill="url(#2ColorRepeatPaddedShort)" />
+        
     </svg>
     <p title="2 Color 45 Deg Gradients">2 Color 45 Deg Gradients</p>
     <svg id="2ColorAngled" width="510" height="110" xmlns="http://www.w3.org/2000/svg" >

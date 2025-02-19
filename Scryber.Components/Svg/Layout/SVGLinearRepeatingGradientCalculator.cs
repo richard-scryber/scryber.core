@@ -35,7 +35,7 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
             index += 1.0;
         }
         
-        return new GradientLinearDescriptor(colors, this.CalculatedAngle + 90.0);
+        return new GradientLinearDescriptor(colors, this.CalculatedAngle);
 
     }
 
@@ -52,17 +52,22 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
         foreach (var stop in stops)
         {
             offset = ToNonRelative(stop.Offset).PointsValue;
-            offset = offset / repetitions;
             
-            colors.Add(new GradientColor(stop.StopColor, offset + baseOffset, stop.StopOpacity));
+            //true offset within the repetitions
+            offset = (offset / repetitions) + baseOffset;
+            
+            colors.Add(new GradientColor(stop.StopColor, offset, stop.StopOpacity));
         }
 
-        if (offset < 1.0)
+        var repeatMax = (1.0 + index) / repetitions;
+        if (offset < repeatMax)
         {
-            var lastStop = stops[stops.Count - 1];
-            offset = 1 / repetitions;
+            //we need to pad this gradient to the end of the repetition
             
-            colors.Add(new GradientColor(lastStop.StopColor, offset + baseOffset, lastStop.StopOpacity));
+            var lastStop = stops[stops.Count - 1];
+            offset = (1 / repetitions) + baseOffset;
+            
+            colors.Add(new GradientColor(lastStop.StopColor, offset, lastStop.StopOpacity));
         }
     }
 }

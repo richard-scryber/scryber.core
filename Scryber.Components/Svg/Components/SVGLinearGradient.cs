@@ -378,10 +378,10 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         switch (mode)
         {
             case GradientSpreadMode.Pad:
-                return new SVGLinearPaddedGradientCalculator(mode, type, x1, x2, y1, y2);
+                return new SVGLinearPaddedGradientCalculator(mode, type, x1, y1, x2, y2);
             
             case GradientSpreadMode.Repeat:
-                return new SVGLinearRepeatingGradientCalculator(mode, type, x1, x2, y1, y2);
+                return new SVGLinearRepeatingGradientCalculator(mode, type, x1, y1, x2, y2);
             
             case GradientSpreadMode.Reflect:
             default:

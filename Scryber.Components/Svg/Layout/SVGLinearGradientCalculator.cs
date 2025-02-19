@@ -82,7 +82,7 @@ public abstract class SVGLinearGradientCalculator
         hypotenuse = Math.Sqrt((deltax * deltax) + (deltay * deltay));
         
         //zero = vertical
-        degrees = degrees + 90;
+        // degrees = degrees + 90;
         
         if (degrees < 0)
             degrees += 360;
@@ -91,11 +91,11 @@ public abstract class SVGLinearGradientCalculator
 
         if (deltax == 0)
         {
-            longestSide = 1.0;
+            longestSide = hypotenuse;
         }
         else if (deltay == 0)
         {
-            longestSide = 1.0;
+            longestSide = hypotenuse;
         }
         else
         {
