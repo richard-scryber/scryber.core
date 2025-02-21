@@ -251,7 +251,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
 
         descriptor.Angle = 0.0; // this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
         //get the length of a unit box
-        var maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out Point maxStart, out Point maxEnd).PointsValue;
+        var maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out double patternStartOffset, out Point maxStart, out Point maxEnd).PointsValue;
         var length = 1.0; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
 
         if (length <= 0)

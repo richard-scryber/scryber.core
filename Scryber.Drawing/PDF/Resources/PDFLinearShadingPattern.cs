@@ -103,9 +103,9 @@ namespace Scryber.PDF.Resources
 
         
 
-        protected virtual double[] GetCoords(Point offset, Size size, double angle)
+        public virtual double[] GetCoords(Point offset, Size size, double angle)
         {
-            var len = GetMaxLengthBoundingBox(new Rect(offset.X, offset.Y, size.Width, size.Height), angle, out Point start,
+            var len = GetMaxLengthBoundingBox(new Rect(offset.X, offset.Y, size.Width, size.Height), angle, out double patternStartOffset, out Point start,
                 out Point end);
 
             
@@ -242,7 +242,7 @@ namespace Scryber.PDF.Resources
         /// <param name="start">The calculated start point of the line that will cover the box</param>
         /// <param name="end">The calculated end point of the line that will cover the box</param>
         /// <returns>The total length of the line.</returns>
-        public static Unit GetMaxLengthBoundingBox(Rect box, double angleDegrees, out Point start, out Point end)
+        public static Unit GetMaxLengthBoundingBox(Rect box, double angleDegrees, out double patternStartOffset, out Point start, out Point end)
         {
             
             Unit length;
@@ -252,6 +252,8 @@ namespace Scryber.PDF.Resources
             {
                 rounded -= 360;
             }
+
+            patternStartOffset = 0.0;
             
             //use a quick lookup for the simple ones.
             switch (rounded)
@@ -261,6 +263,7 @@ namespace Scryber.PDF.Resources
                     length = box.Width;
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X + box.Width, box.Y);
+                    patternStartOffset = box.X.PointsValue;
                     break;
                 
                 case(45):
@@ -268,12 +271,15 @@ namespace Scryber.PDF.Resources
                     length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X + box.Width, box.Y + box.Height);
+                    patternStartOffset = Math.Sqrt((box.X.PointsValue * box.X.PointsValue) +
+                                                   (box.Y.PointsValue * box.Y.PointsValue));
                     break;
                 case(90):
                     //vertical down
                     length = box.Height;
                     start = new Point(box.X, box.Y);
                     end = new Point(box.X, box.Y + box.Height);
+                    patternStartOffset = box.Y.PointsValue;
                     break;
                 
                 case(135):
@@ -290,7 +296,7 @@ namespace Scryber.PDF.Resources
                     end = new Point(box.X, box.Y);
                     break;
                 
-                case(235):
+                case(225):
                     //bottom right to top left
                     length = Math.Sqrt((box.Width.PointsValue * box.Width.PointsValue) + (box.Height.PointsValue *  box.Height.PointsValue));
                     start = new Point(box.X + box.Width, box.Y + box.Height);
@@ -314,7 +320,7 @@ namespace Scryber.PDF.Resources
                     break;
             }
 
-            return length;
+            return Math.Abs(length.PointsValue);
         }
 
         public static Unit GetAngularBoundingBox(Rect box, double angle, out Point midPt, out Point start, out Point end)

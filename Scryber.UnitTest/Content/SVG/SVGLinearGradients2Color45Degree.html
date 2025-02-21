@@ -14,117 +14,50 @@
     
 </head>
 <body title="SVG Samples" style="padding: 8pt;" >
-    <p title="2 Color Horizontal Gradients">2 Color Horizontal Gradients</p>
+    <p title="2 Color Horizontal Gradients">2 Color 45 Degree Gradients</p>
     <svg id="2ColorHoriz" width="550" height="110" xmlns="http://www.w3.org/2000/svg" >
         <style>
             text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
             
         </style>
 
-        <linearGradient id="2Color" x1="0" x2="1" y1="0" y2="1" >
-            <stop offset="0%" stop-color="aqua" />
-            <stop offset="100%" stop-color="blue" />
-        </linearGradient>
-        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />
-        
-       <linearGradient id="2ColorShort" x1="0.2" x2="1" y1="0" y2="1" >
-           <stop offset="0%" stop-color="aqua" />
-           <stop offset="100%" stop-color="blue" />
-       </linearGradient>
-       <rect height="90" width="80" x="100" y="10" fill="url(#2ColorShort)" />
-        
-        <linearGradient id="2ColorPadded" x1="0" x2="1" y1="0" y2="1" >
+<!--        <linearGradient id="2Color" x1="0" y1="0" x2="1" y2="1" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />-->
+
+<!--        <linearGradient id="2ColorShort" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >-->
+<!--            <stop offset="0%" stop-color="aqua" />-->
+<!--            <stop offset="100%" stop-color="blue" />-->
+<!--        </linearGradient>-->
+<!--        <rect height="90" width="80" x="100" y="10" fill="url(#2ColorShort)" />-->
+
+        <linearGradient id="2ColorPadded" x1="0" y1="0" x2="1" y2="1"  >
             <stop offset="40%" stop-color="aqua" />
             <stop offset="60%" stop-color="blue" />
         </linearGradient>
         <rect height="90" width="80" x="190" y="10" fill="url(#2ColorPadded)" />
-        
-        
-<!--        <linearGradient id="2ColorRepeat" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0" >-->
+
+
+<!--        <linearGradient id="2ColorRepeat" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0.5" >-->
 <!--            <stop offset="0%" stop-color="aqua" />-->
 <!--            <stop offset="100%" stop-color="blue" />-->
 <!--        </linearGradient>-->
 <!--        <rect height="90" width="80" x="280" y="10" fill="url(#2ColorRepeat)" />-->
 
-<!--        <linearGradient id="2ColorRepeatPadded" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0" >-->
+<!--        <linearGradient id="2ColorRepeatPadded" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0.5" >-->
 <!--            <stop offset="40%" stop-color="aqua" />-->
 <!--            <stop offset="60%" stop-color="blue" />-->
 <!--        </linearGradient>-->
 <!--        <rect height="90" width="80" x="370" y="10" fill="url(#2ColorRepeatPadded)" />-->
 
-<!--        <linearGradient id="2ColorRepeatPaddedShort" spreadMethod="repeat" x1="0.1" x2="0.3" y1="0" y2="0" >-->
+<!--        <linearGradient id="2ColorRepeatPaddedShort" spreadMethod="repeat" x1="0.1" x2="0.3" y1="0.1" y2="0.3" >-->
 <!--            <stop offset="40%" stop-color="aqua" />-->
 <!--            <stop offset="60%" stop-color="blue" />-->
 <!--        </linearGradient>-->
 <!--        <rect height="90" width="80" x="460" y="10" fill="url(#2ColorRepeatPaddedShort)" />-->
         
-    </svg>
-    <p title="2 Color 45 Deg Gradients">2 Color 45 Deg Gradients</p>
-    <svg id="2ColorAngled" width="510" height="110" xmlns="http://www.w3.org/2000/svg" >
-        <!-- 45 deg angled gradients -->
-<!--        <linearGradient id="2ColorAngle"  x1="0" x2="1" y1="0" y2="1" >-->
-<!--            <stop offset="0%" stop-color="aqua" />-->
-<!--            <stop offset="100%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="10" y="10" fill="url(#2ColorAngle)" />-->
-
-<!--        <linearGradient id="2ColorAnglePadded" x1="0" x2="1" y1="0" y2="1" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="110" y="10" fill="url(#2ColorAnglePadded)" />-->
-<!--        -->
-<!--        <linearGradient id="2ColorAngleRepeat" spreadMethod="repeat"  x1="0" x2="0.5" y1="0" y2="0.5" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="210" y="10" fill="url(#2ColorAngleRepeat)" />-->
-
-<!--        <linearGradient id="2ColorAngleRepeatShort" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >-->
-<!--            <stop offset="0%" stop-color="aqua" />-->
-<!--            <stop offset="100%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="310" y="10" fill="url(#2ColorAngleRepeatShort)" />-->
-
-<!--        <linearGradient id="2ColorAngleRepeatShortPadded" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="410" y="10" fill="url(#2ColorAngleRepeatShortPadded)" />-->
-    </svg>
-
-    <p title="2 Color -30 Deg Gradients">2 Color -30 Deg Gradients</p>
-    <svg id="2Color30Deg" width="510" height="110" xmlns="http://www.w3.org/2000/svg">
-        <!-- negative 30 deg angled gradients -->
-<!--        <linearGradient id="2Color30Angle"  x1="0" x2="1" y1="0.5" y2="0" >-->
-<!--            <stop offset="0%" stop-color="aqua" />-->
-<!--            <stop offset="100%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="10" y="10" fill="url(#2Color30Angle)" />-->
-
-<!--        <linearGradient id="2Color30AnglePadded" x1="0" x2="1" y1="0.5" y2="0" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="110" y="10" fill="url(#2Color30AnglePadded)" />-->
-
-<!--        <linearGradient id="2Color30AngleRepeat" spreadMethod="repeat"  x1="0" x2="1" y1="0.5" y2="0" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="210" y="10" fill="url(#2Color30AngleRepeat)" />-->
-
-<!--        <linearGradient id="2ColorAngleRepeatShort" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >-->
-<!--            <stop offset="0%" stop-color="aqua" />-->
-<!--            <stop offset="100%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="310" y="10" fill="url(#2ColorAngleRepeatShort)" />-->
-
-<!--        <linearGradient id="2ColorAngleRepeatShortPadded" spreadMethod="repeat" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >-->
-<!--            <stop offset="40%" stop-color="aqua" />-->
-<!--            <stop offset="60%" stop-color="blue" />-->
-<!--        </linearGradient>-->
-<!--        <rect height="90" width="90" x="410" y="10" fill="url(#2ColorAngleRepeatShortPadded)" />-->
     </svg>
     
 

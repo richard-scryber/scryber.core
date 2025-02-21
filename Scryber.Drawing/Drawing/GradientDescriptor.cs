@@ -173,7 +173,7 @@ namespace Scryber.Drawing
         /// <param name="offset">The offset of the shape in the page</param>
         /// <param name="size">The size of the shape in the page</param>
         /// <returns>A list of function boundaries</returns>
-        protected virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
+        public virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
         {
             List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
 

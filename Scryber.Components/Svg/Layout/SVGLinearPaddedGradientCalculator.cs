@@ -2,6 +2,7 @@ using Scryber.Drawing;
 using Scryber.Svg.Components;
 using System;
 using System.Collections.Generic;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Svg.Layout;
 
@@ -16,11 +17,12 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
 
     protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
     {
+        var length  = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double start,
+            out Point startPt, out Point endPt).PointsValue;
+        
         List<GradientColor> colors = new List<GradientColor>(stops.Count);
         
         var first = stops[0];
-
-        double start = this.GradientBounds.X.PointsValue;
 
         GradientColor color;
         
@@ -31,7 +33,7 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         }
         
         
-        double distance = ToNonRelative(first.Offset).PointsValue;
+        double distance = ToNonRelative(first.Offset).PointsValue + start;
         
         
         //padded so we add something from 0 to the first actual stop
@@ -43,7 +45,7 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         foreach (var stop in stops)
         {
             distance = ToNonRelative(stop.Offset).PointsValue;
-            distance *= this.GradientBounds.Width.PointsValue;
+            distance *= length;
             distance += start;
             
             color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);

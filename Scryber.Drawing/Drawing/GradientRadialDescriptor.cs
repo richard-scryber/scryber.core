@@ -41,7 +41,7 @@ namespace Scryber.Drawing
         /// <param name="offset"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        protected override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
+        public override List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
         {
             var items = base.GetRepeatingBoundaries(offset, size);
             if (this.Size != RadialSize.None && this.Size != RadialSize.FarthestCorner)
