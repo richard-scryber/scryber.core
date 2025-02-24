@@ -29,7 +29,36 @@ namespace Scryber.Core.UnitTests.Imaging
         private const ColorSpace GroupColorSpace = ColorSpace.RGB;
         private static readonly Unit GroupDisplayWidth = new Unit(2.75, PageUnits.Inches);
         private static readonly Unit GroupDisplayHeight = new Unit(2.375, PageUnits.Inches);
-        
+
+        [TestMethod]
+        public void LoadFromSixLabors()
+        {
+            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "group.png");
+            path = io.Path.GetFullPath(path);
+            
+            //Use SixLabours to load the image however you need (in this case just from a path)
+            SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(path);
+
+            //Convert the SixLabours image to PDFImageData.
+            var pdfImg = Scryber.Imaging.ImageFactoryBase.GetImageDataForImage(image, path);
+
+            var doc = new Document();
+            var page = new Page();
+            doc.Pages.Add(page);
+
+            //Create a new image component, set the data and include it on the page.
+            var img = new Scryber.Components.Image();
+            img.Data = pdfImg;
+            page.Contents.Add(img);
+
+            
+            using (var stream = DocStreams.GetOutputStream("DynamicDataImage.pdf"))
+            {
+                //Output the document to a stream as needed.
+                doc.SaveAsPDF(stream);
+            }
+            
+        }
         
         [TestMethod()]
         public void LoadPngFromFile()
