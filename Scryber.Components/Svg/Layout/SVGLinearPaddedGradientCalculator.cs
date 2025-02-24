@@ -45,7 +45,6 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         foreach (var stop in stops)
         {
             distance = ToNonRelative(stop.Offset).PointsValue;
-            distance *= length;
             distance += start;
             
             color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
