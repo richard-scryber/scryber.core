@@ -664,7 +664,9 @@ namespace Scryber.Core.UnitTests.Svg
                 Assert.AreEqual(GradientType.Linear, desc.GradientType, "Type failed for " + block.name + " at index " + i.ToString());
                 Assert.AreEqual(false, desc.Repeating, "Repeating failed for " + block.name + " at index " + i.ToString());
 
-                var func2 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction2;
+                var func = linear.Descriptor.GetGradientFunction(offset, size);
+                Assert.IsNotNull(func);
+                var func2 = func as PDFGradientFunction2;
                 Assert.IsNotNull(func2, "Function failed for " + block.name + " at index " + i.ToString());
                 Assert.AreEqual(0.0, func2.DomainStart, "Domain End failed for " + block.name + " at index " + i.ToString());
                 Assert.AreEqual(1.0, func2.DomainEnd, "Domain Start failed for " + block.name + " at index " + i.ToString());
@@ -750,11 +752,12 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(0.0, func3.DomainStart);
             Assert.AreEqual(1.0, func3.DomainEnd);
             
-            Assert.AreEqual(3, func3.Functions.Length);
+            Assert.AreEqual(4, func3.Functions.Length);
             
-            Assert.AreEqual(2, func3.Boundaries.Length);
-            Assert.AreEqual(0.2, func3.Boundaries[0].Bounds);
-            Assert.AreEqual(0.5, func3.Boundaries[1].Bounds);
+            Assert.AreEqual(3, func3.Boundaries.Length);
+            Assert.AreEqual(0.28, Math.Round(func3.Boundaries[0].Bounds, 2));
+            Assert.AreEqual(0.58, Math.Round(func3.Boundaries[1].Bounds, 2));
+            Assert.AreEqual(0.71, Math.Round(func3.Boundaries[2].Bounds, 2));
             
             func2 = func3.Functions[0] as PDFGradientFunction2;
             Assert.IsNotNull(func2);
@@ -1009,7 +1012,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(func3);
             Assert.AreEqual(0.0, func3.DomainStart);
             Assert.AreEqual(1.0, func3.DomainEnd);
-            Assert.AreEqual(19, func3.Functions.Length);
+            Assert.AreEqual(15, func3.Functions.Length);
             
              
         }

@@ -14,11 +14,21 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
     {
 
     }
+    
+    private static Rect _UnitBounds = new Rect(0, 0, 1, 1);
 
     protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
     {
+        //The unit length describes a full box length
+        var unitLength = PDFLinearShadingPattern.GetMaxLengthBoundingBox(_UnitBounds, this.CalculatedAngle, out double unitStart, 
+            out Point unitStartPoint, out Point unitEndPoint).PointsValue;
+        
+        //The bounding length is the length of the actual gradient based on any prescribed bounds.
         var length  = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double start,
             out Point startPt, out Point endPt).PointsValue;
+        
+        var max = length + start;
+        var factor = length / unitLength;
         
         List<GradientColor> colors = new List<GradientColor>(stops.Count);
         
@@ -45,16 +55,24 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         foreach (var stop in stops)
         {
             distance = ToNonRelative(stop.Offset).PointsValue;
+            distance *= factor;
             distance += start;
             
             color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
             colors.Add(color);
             
-            if(distance > 1.0)
+            if(distance > max)
                 break;
         }
 
-        if (distance < 1.0)
+        if (distance < Math.Min(max, 1.0))
+        {
+            var last = stops[stops.Count - 1];
+            color = new GradientColor(last.StopColor, Math.Min(max, 1.0), last.StopOpacity);
+            colors.Add(color);
+        }
+
+        if (max < 1.0)
         {
             var last = stops[stops.Count - 1];
             color = new GradientColor(last.StopColor, 1.0, last.StopOpacity);
