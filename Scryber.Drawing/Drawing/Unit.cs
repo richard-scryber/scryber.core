@@ -530,6 +530,16 @@ namespace Scryber.Drawing
         {
             return new Unit(left.Value * right, left.Units);
         }
+        
+        public static Unit operator *(double left, Unit right)
+        {
+            return new Unit(right.Value * left, right.Units);
+        }
+
+        public static Unit Multiply(double left, Unit right)
+        {
+            return new Unit(right.Value * left, right.Units);
+        }
 
         public static Unit operator *(Unit left, int right)
         {
