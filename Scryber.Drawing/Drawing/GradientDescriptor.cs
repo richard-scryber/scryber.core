@@ -6,6 +6,11 @@ namespace Scryber.Drawing
 {
 
 
+    /// <summary>
+    /// Base class for all gradient descriptors - Linear, linear repeating, radial and radial repeating.
+    /// </summary>
+    /// <remarks>The descriptors hold all information needed for rendering a gradient to the output stream
+    /// by the appropriate shading pattern. <see cref="Scryber.PDF.Resources.PDFLinearShadingPattern"/></remarks>
     [PDFParsableValue()]
     public abstract class GradientDescriptor
     {
@@ -62,6 +67,7 @@ namespace Scryber.Drawing
         //
         // instance method(s)
         //
+        
 
         #region public override PDFGradientFunction GetGradientFunction()
 

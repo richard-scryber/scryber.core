@@ -53,7 +53,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -73,7 +73,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -93,7 +93,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -113,7 +113,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -133,7 +133,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -153,7 +153,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -173,7 +173,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(-5, tl.X);
@@ -213,7 +213,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(-5, tl.X);
@@ -232,7 +232,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -252,7 +252,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -271,7 +271,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(-5, tl.X);
@@ -292,7 +292,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //135 = From bottom right to top left corners
             Assert.IsTrue(result);
@@ -312,7 +312,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //135 = From bottom right to top left corners
             Assert.IsTrue(result);
@@ -332,7 +332,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //135 = From bottom right to top left corners
             Assert.IsTrue(result);
@@ -352,7 +352,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //115 = From bottom right to mid top left
             Assert.IsTrue(result);
@@ -373,7 +373,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //115 = From bottom right to mid top left 
             Assert.IsTrue(result);
@@ -393,7 +393,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //155 = From top right to mid left 
             Assert.IsTrue(result);
@@ -413,7 +413,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(10, tl.X);
@@ -433,7 +433,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(15, tl.X);
@@ -452,7 +452,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -471,7 +471,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //225 = From top right to bottom left corners
             Assert.IsTrue(result);
@@ -491,7 +491,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //225 = From top right to bottom left corners
             Assert.IsTrue(result);
@@ -511,7 +511,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //225 = From top right to bottom left corners
             Assert.IsTrue(result);
@@ -532,7 +532,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //115 = From top right to mid left
             Assert.IsTrue(result);
@@ -553,7 +553,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //115 = From top right to mid left 
             Assert.IsTrue(result);
@@ -573,7 +573,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //155 = From top right to mid left 
             Assert.IsTrue(result);
@@ -593,7 +593,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -613,7 +613,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -632,7 +632,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(-5, tl.X);
@@ -652,7 +652,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -672,7 +672,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -692,7 +692,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -713,7 +713,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //285 = From top left to mid bottom
             Assert.IsTrue(result);
@@ -734,7 +734,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //285 = From top right to mid bottom 
             Assert.IsTrue(result);
@@ -754,7 +754,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //155 = From top left to mid right 
             Assert.IsTrue(result);
@@ -774,7 +774,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, tl.X);
@@ -794,7 +794,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(5, tl.X);
@@ -813,7 +813,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point tl;
             Point br;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out tl, out br);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out tl, out br);
 
             Assert.IsTrue(result);
             Assert.AreEqual(-5, tl.X);
@@ -833,7 +833,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //675 = 315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -853,7 +853,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -874,7 +874,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);
@@ -894,7 +894,7 @@ namespace Scryber.Core.UnitTests.Svg
             Point pt1;
             Point pt2;
             
-            var result = SVGLinearGradientCalculator.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
+            var result = GradientLinearDescriptor.CalculateOptimumCoords(rect, angle, out pt1, out pt2);
 
             //315 = From top left to bottom right corners
             Assert.IsTrue(result);

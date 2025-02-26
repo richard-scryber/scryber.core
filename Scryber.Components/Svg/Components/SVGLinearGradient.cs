@@ -188,7 +188,11 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
     }
 
 
-    
+    /// <summary>
+    /// Returns a linear gradient descriptor
+    /// </summary>
+    /// <param name="totalbounds"></param>
+    /// <returns></returns>
     protected virtual GradientLinearDescriptor CreateDescriptor(Rect totalbounds)
     {
         Unit x1 = Unit.Zero;
@@ -247,11 +251,16 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
             return calc.CreateDescriptor(this.Stops);
         }
 
+        else
+        {
+            return null;
+        }
+
         Scryber.Drawing.GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
 
         descriptor.Angle = 0.0; // this.GetGradientAngle(x1, x2, y1, y2, type, out double length, out double maxLen);
         //get the length of a unit box
-        var maxLen = PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out double patternStartOffset, out Point maxStart, out Point maxEnd).PointsValue;
+        var maxLen = 1.0;// PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2-y1), descriptor.Angle, out double patternStartOffset, out Point maxStart, out Point maxEnd).PointsValue;
         var length = 1.0; //TODO calculate the descriptor length // PDFLinearShadingPattern.GetMaxLengthBoundingBox(new Rect(x1, y1, x2 - x1, y2 - y1), descriptor.Angle, out Point actStart, out Point actEnd).PointsValue;
 
         if (length <= 0)

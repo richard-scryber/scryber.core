@@ -21,7 +21,10 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
     {
         List<GradientColor> colors = new List<GradientColor>();
         
-        var length = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double patternStartOffset, out Point start, out Point end);
+        GradientLinearDescriptor.CalculateOptimumCoords(this.GradientBounds, this.CalculatedAngle, out Point start, out Point end);
+        var length = GradientLinearDescriptor.GetLength(start, end);
+        
+        //var length = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double patternStartOffset, out Point start, out Point end);
         
         double scaleFactor = length.PointsValue;
         double repetitions = Math.Ceiling(Math.Abs(1.0 / scaleFactor));

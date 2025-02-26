@@ -20,14 +20,23 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
     protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
     {
         //The unit length describes a full box length
-        var unitLength = PDFLinearShadingPattern.GetMaxLengthBoundingBox(_UnitBounds, this.CalculatedAngle, out double unitStart, 
-            out Point unitStartPoint, out Point unitEndPoint).PointsValue;
+        var angle = this.CalculatedAngle;
+        GradientLinearDescriptor.CalculateOptimumCoords(_UnitBounds, angle, out Point unitStartPoint, out Point unitEndPoint);
+        var unitLength = GradientLinearDescriptor.GetLength(unitStartPoint, unitEndPoint).PointsValue;
+        
+        //var unitLength = PDFLinearShadingPattern.GetMaxLengthBoundingBox(_UnitBounds, this.CalculatedAngle, out double unitStart, 
+        //    out Point unitStartPoint, out Point unitEndPoint).PointsValue;
         
         //The bounding length is the length of the actual gradient based on any prescribed bounds.
-        var length  = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double start,
-            out Point startPt, out Point endPt).PointsValue;
+        GradientLinearDescriptor.CalculateOptimumCoords(this.GradientBounds, angle, out Point startPoint, out Point endPoint);
+        var length = GradientLinearDescriptor.GetLength(startPoint, endPoint).PointsValue;
         
-        var max = length + start;
+        // var length  = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double start,
+        //     out Point startPt, out Point endPt).PointsValue;
+
+        var patternStart = 0.0; //TODO: THis should be set to when the startpoint begins on the length of the line.
+        
+        var max = length + patternStart;
         var factor = length / unitLength;
         
         List<GradientColor> colors = new List<GradientColor>(stops.Count);
@@ -36,27 +45,27 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
 
         GradientColor color;
         
-        if (start > 0.0)
+        if (patternStart > 0.0)
         {
             color = new GradientColor(first.StopColor, 0.0, first.StopOpacity);
             colors.Add(color);
         }
         
         
-        double distance = ToNonRelative(first.Offset).PointsValue + start;
+        double distance = ToNonRelative(first.Offset).PointsValue + patternStart;
         
         
         //padded so we add something from 0 to the first actual stop
         if (distance > 0.0)
         {
-            color = new GradientColor(first.StopColor, start, first.StopOpacity);
+            color = new GradientColor(first.StopColor, patternStart, first.StopOpacity);
         }
 
         foreach (var stop in stops)
         {
             distance = ToNonRelative(stop.Offset).PointsValue;
             distance *= factor;
-            distance += start;
+            distance += patternStart;
             
             color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
             colors.Add(color);

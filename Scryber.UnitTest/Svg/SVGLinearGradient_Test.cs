@@ -652,7 +652,7 @@ namespace Scryber.Core.UnitTests.Svg
                 Assert.AreEqual(block.height, size.Height.PointsValue, "Height failed for " + block.name + " at index " + i.ToString());
                 
                 //The coodinates form 2 points that create the path the linear gradient will follow
-                var coords = linear.GetCoords(offset, size, block.angle);
+                var coords = linear.Descriptor.GetCoordsForBounds(offset, size);
                 Assert.AreEqual(4, coords.Length);
                 Assert.AreEqual(block.coords[0], coords[0],  "Coordinate 0 failed for " + block.name + " at index " + i.ToString());
                 Assert.AreEqual(block.coords[1], coords[1],  "Coordinate 1 failed for " + block.name + " at index " + i.ToString());
