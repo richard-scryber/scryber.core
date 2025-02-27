@@ -70,13 +70,13 @@ public abstract class SVGLinearGradientCalculator
 
         if (bounds.Width < 0)
         {
-            wrapped.X -= bounds.Width;
+            wrapped.X += bounds.Width;
             wrapped.Width = 0 - bounds.Width;
         }
 
         if (bounds.Height < 0)
         {
-            wrapped.Y -= bounds.Height;
+            wrapped.Y += bounds.Height;
             wrapped.Height = 0 - bounds.Height;
         }
         return wrapped;

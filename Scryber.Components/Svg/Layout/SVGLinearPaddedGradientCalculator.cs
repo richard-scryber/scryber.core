@@ -34,7 +34,9 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         // var length  = PDFLinearShadingPattern.GetMaxLengthBoundingBox(this.GradientBounds, this.CalculatedAngle, out double start,
         //     out Point startPt, out Point endPt).PointsValue;
 
-        var patternStart = 0.0; //TODO: THis should be set to when the startpoint begins on the length of the line.
+        var patternStartX = startPoint.X - unitStartPoint.X;
+        var patternStartY = startPoint.Y - unitStartPoint.Y;
+        var patternStart = GetPatternStart(unitStartPoint, startPoint, angle);
         
         var max = length + patternStart;
         var factor = length / unitLength;
@@ -90,6 +92,22 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
 
         return new GradientLinearDescriptor(colors, this.CalculatedAngle);
         
-        
+    }
+
+    protected double GetPatternStart(Point unitStartPoint, Point startPoint, double angle)
+    {
+        if (startPoint == unitStartPoint)
+            return 0.0;
+        else
+        {
+            var maxX = Unit.Max(unitStartPoint.X, startPoint.X);
+            var maxY = Unit.Max(unitStartPoint.Y, startPoint.Y);
+            var minX = Unit.Min(unitStartPoint.X, startPoint.X);
+            var minY = Unit.Min(unitStartPoint.Y, startPoint.Y);
+            
+            var x = (maxX - minX).PointsValue;
+            var y = (maxY - minY).PointsValue;
+            return Math.Sqrt(x * x + y * y);
+        }
     }
 }

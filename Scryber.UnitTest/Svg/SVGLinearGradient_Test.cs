@@ -605,7 +605,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new
                 {
                     x = 370, y = 270, width = 80, height = -80, count = 2, start = 0.0, end = 1.0, angle = 180.0,
-                    coords = new double[] { 450.0, 270.0, 370.0, 270.0 }, name = "2Left"
+                    coords = new double[] { 450.0, 190.0, 370.0, 190.0 }, name = "2Left"
                 },
                 
                 new
@@ -629,7 +629,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new
                 {
                     x = 10, y = 270, width = 80, height = -80, count = 2, start = 0.0, end = 1.0, angle = 0.0,
-                    coords = new double[] { 10.0, 270.0, 90.0, 270.0 }, name = "2Right"
+                    coords = new double[] { 10.0, 190.0, 90.0, 190.0 }, name = "2Right"
                 },
             };
             
