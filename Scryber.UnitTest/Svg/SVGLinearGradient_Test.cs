@@ -581,7 +581,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(PDFResource.PatternResourceType, canvXObj.Renderer.Resources.Types[0].Type);
             
             var patterns = canvXObj.Renderer.Resources.Types[0];
-            Assert.AreEqual(8, patterns.Count);
+            Assert.AreEqual(16, patterns.Count);
 
             var blocks = new[]
             {
@@ -675,7 +675,118 @@ namespace Scryber.Core.UnitTests.Svg
 
             }
 
+            //
+            // 3 Color Half angle gradients
+            //
             
+            blocks = [
+                new
+                {
+                    x = 10, y = 360, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 18.3,
+                    coords = new double[] { 10.0, 360.0, 106.0, 328.0 }, name = "3HalfDownRight"
+                },
+                new
+                {
+                    x = 100, y = 450, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 71.7,
+                    coords = new double[] { 100.0, 450.0, 132.0, 354.0 }, name = "3HalfRightDown"
+                },
+                
+                new
+                {
+                    x = 280, y = 450, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 108.3,
+                    coords = new double[] { 360.0, 450.0, 328.0, 354.0 }, name = "3HalfLeftDown"
+                },
+
+                new
+                {
+                    x = 370, y = 360, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 161.7,
+                    coords = new double[] { 450.0, 360.0, 354.0, 328.0 }, name = "3HalfDownLeft"
+                },
+                
+                new
+                {
+                    x = 370, y = 180, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 198.3,
+                    coords = new double[] { 450.0, 100.0, 354.0, 132.0 }, name = "3HalfUpLeft"
+                },
+                
+                new
+                {
+                    x = 280, y = 90, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 251.7,
+                    coords = new double[] { 360.0, 10.0, 328.0, 106.0 }, name = "3HalfLeftUp"
+                },
+                
+                new
+                {
+                    x = 100, y = 90, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 288.3,
+                    coords = new double[] { 100.0, 10.0, 132.0, 106.0 }, name = "3HalfRightUp"
+                },
+                
+                new
+                {
+                    x = 10, y = 180, width = 80, height = -80, count = 3, start = 0.0, end = 1.0, angle = 341.7,
+                    coords = new double[] { 10.0, 100.0, 106.0, 132.0 }, name = "3HalfUpRight"
+                }
+            ];
+            
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                var patternIndex = i + 8;
+                var linear = patterns[patternIndex] as PDFLinearShadingPattern;
+                Assert.IsNotNull(linear);
+
+                var offset = linear.Start;
+                Assert.AreEqual(block.x, offset.X.PointsValue, "X failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(block.y, offset.Y.PointsValue, "Y failed for " + block.name + " at index " + patternIndex.ToString());
+                
+                var size = linear.Size;
+                Assert.AreEqual(block.width, size.Width.PointsValue, "Width failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(block.height, size.Height.PointsValue, "Height failed for " + block.name + " at index " + patternIndex.ToString());
+                
+                //The coodinates form 2 points that create the path the linear gradient will follow
+                var coords = linear.Descriptor.GetCoordsForBounds(offset, size);
+                Assert.AreEqual(4, coords.Length);
+                Assert.AreEqual(block.coords[0], Math.Round(coords[0]),  "Coordinate 0 failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(block.coords[1], Math.Round(coords[1]),  "Coordinate 1 failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(block.coords[2], Math.Round(coords[2]),  "Coordinate 2 failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(block.coords[3], Math.Round(coords[3]),  "Coordinate 3 failed for " + block.name + " at index " + patternIndex.ToString());
+                
+                var desc = linear.Descriptor;
+                Assert.AreEqual(block.angle, Math.Round(desc.Angle, 1), "Angle failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(GradientType.Linear, desc.GradientType, "Type failed for " + block.name + " at index " + patternIndex.ToString());
+                Assert.AreEqual(false, desc.Repeating, "Repeating failed for " + block.name + " at index " + patternIndex.ToString());
+
+                var func = linear.Descriptor.GetGradientFunction(offset, size);
+                Assert.IsNotNull(func);
+                var func3 = func as PDFGradientFunction3;
+                Assert.IsNotNull(func3);
+                Assert.AreEqual(2, func3.Functions.Length);
+
+                
+                for (var f = 0; f < func3.Functions.Length; f++)
+                {
+                    var func2 = func3.Functions[f] as PDFGradientFunction2;
+                    Assert.IsNotNull(func2,
+                        "Function failed for " + block.name + " at index " + patternIndex.ToString());
+                    Assert.AreEqual(0.0, func2.DomainStart,
+                        "Domain End failed for " + block.name + " at index " + patternIndex.ToString());
+                    Assert.AreEqual(1.0, func2.DomainEnd,
+                        "Domain Start failed for " + block.name + " at index " + patternIndex.ToString());
+                    Assert.AreEqual(StandardColors.Aqua, func2.ColorZero,
+                        "Color Zero failed for " + block.name + " at index " + patternIndex.ToString());
+                    if (f == 0)
+                        Assert.AreEqual(StandardColors.Aqua, func2.ColorOne,
+                            "Color One failed for " + block.name + " at index " + patternIndex.ToString());
+                    else
+                        Assert.AreEqual(StandardColors.Maroon, func2.ColorOne,
+                            "Color One failed for " + block.name + " at index " + patternIndex.ToString());
+                }
+                
+                Assert.AreEqual(1, func3.Boundaries.Length);
+                Assert.AreEqual(0.3, Math.Round(func3.Boundaries[0].Bounds, 1));
+
+            }
+
              
         }
         
