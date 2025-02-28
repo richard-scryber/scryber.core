@@ -49,27 +49,27 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         
         if (patternStart > 0.0)
         {
-            color = new GradientColor(first.StopColor, 0.0, first.StopOpacity);
+            color = new GradientColor(GetStopColor(first), 0.0, GetStopOpacity(first));
             colors.Add(color);
         }
-        
-        
-        double distance = ToNonRelative(first.Offset).PointsValue + patternStart;
+
+
+        double distance = GetStopOffset(first);// ToNonRelative(first.Offset).PointsValue + patternStart;
         
         
         //padded so we add something from 0 to the first actual stop
         if (distance > 0.0)
         {
-            color = new GradientColor(first.StopColor, patternStart, first.StopOpacity);
+            color = new GradientColor(GetStopColor(first), patternStart, GetStopOpacity(first));
         }
 
         foreach (var stop in stops)
         {
-            distance = ToNonRelative(stop.Offset).PointsValue;
+            distance = GetStopOffset(stop); // ToNonRelative(stop.Offset).PointsValue;
             distance *= factor;
             distance += patternStart;
             
-            color = new GradientColor(stop.StopColor, Math.Min(distance, 1.0), stop.StopOpacity);
+            color = new GradientColor(GetStopColor(stop), Math.Min(distance, 1.0), GetStopOpacity(stop));
             colors.Add(color);
             
             if(distance > max)
@@ -79,14 +79,14 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
         if (distance < Math.Min(max, 1.0))
         {
             var last = stops[stops.Count - 1];
-            color = new GradientColor(last.StopColor, Math.Min(max, 1.0), last.StopOpacity);
+            color = new GradientColor(GetStopColor(last), Math.Min(max, 1.0), GetStopOpacity(last));
             colors.Add(color);
         }
 
         if (max < 1.0)
         {
             var last = stops[stops.Count - 1];
-            color = new GradientColor(last.StopColor, 1.0, last.StopOpacity);
+            color = new GradientColor(GetStopColor(last), 1.0, GetStopOpacity(last));
             colors.Add(color);
         }
 

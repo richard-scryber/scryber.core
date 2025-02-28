@@ -11,6 +11,7 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
 {
 
     private Style _style;
+    private Style _cachedFullStyle;
 
     [PDFAttribute("style")]
     public Style Style
@@ -22,6 +23,7 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
             return _style;
         }
     }
+    
 
     public bool HasStyle
     {
@@ -91,6 +93,8 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
             this.Style.SetValue(StyleKeys.SVGGradientStopOpacityKey, value);
         }
     }
+    
+    
 
     public SVGLinearGradientStop() : this(ObjectTypes.LinearGradientStop)
     {
@@ -100,6 +104,33 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
     protected SVGLinearGradientStop(ObjectType type)
         : base(type)
     {
+    }
+
+    protected override void OnPreLayout(LayoutContext context)
+    {
+        base.OnPreLayout(context);
+        
+        if(this.HasStyle)
+            context.StyleStack.Push(this.Style);
+        
+        this._cachedFullStyle = context.StyleStack.BuildFullStyle(this);
+        
+        if(this.HasStyle)
+            context.StyleStack.Pop();
+    }
+
+    public bool TryGetFullStyle(out Style fullStyle)
+    {
+        if (null == this._cachedFullStyle)
+        {
+            fullStyle = null;
+            return false;
+        }
+        else
+        {
+            fullStyle = this._cachedFullStyle;
+            return true;
+        }
     }
 
     public virtual SVGLinearGradientStop Clone()

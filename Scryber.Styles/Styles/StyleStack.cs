@@ -74,7 +74,7 @@ namespace Scryber.Styles
         }
 
         /// <summary>
-        /// Creates a new style, populates all based upon the current styles
+        /// Creates a new style, populates all based upon the current styles and flattens any relative values (percent, em, etc.) to absolute values based on the provided parameters.
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
@@ -102,6 +102,15 @@ namespace Scryber.Styles
         }
 
 
+        /// <summary>
+        /// Creates a new style, populates all based upon the current styles and flattens any relative values (percent, em, etc.) to absolute values based on the provided parameters.
+        /// Specific to a page style as there is no container.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="defaultPageSize"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="rootFont"></param>
+        /// <returns></returns>
         public Style GetFullStyleForPage(IDocumentPage page, Size defaultPageSize, Size fontSize, Unit rootFont)
         {
             Style style = BuildFullStyle(page);
@@ -116,7 +125,12 @@ namespace Scryber.Styles
         }
         
 
-        private Style BuildFullStyle(IComponent Component)
+        /// <summary>
+        /// Returns the full style for a specific component based on the current stack. NOTE this will not be flattened (relative values will still be maintained).
+        /// </summary>
+        /// <param name="Component"></param>
+        /// <returns></returns>
+        public Style BuildFullStyle(IComponent Component)
         {
             Style style = new StyleFull();
             StyleVariableSet variables = null;

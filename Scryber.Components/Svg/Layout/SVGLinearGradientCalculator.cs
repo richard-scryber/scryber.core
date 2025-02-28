@@ -7,7 +7,7 @@ namespace Scryber.Svg.Layout;
 /// <summary>
 /// Base class for the padded, repeating and reverse calculators that calculate and return the GradientLinearDescriptor to be used by grandent brushes
 /// </summary>
-public abstract class SVGLinearGradientCalculator
+public abstract class SVGLinearGradientCalculator : SVGGradientCalculator
 {
     public GradientSpreadMode Mode { get; private set; }
     

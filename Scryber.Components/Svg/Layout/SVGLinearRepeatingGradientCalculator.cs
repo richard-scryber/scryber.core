@@ -48,21 +48,22 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
     private void AddRepeatingStops(double index, double repetitions, SVGLinearGradientStopList stops, List<GradientColor> colors)
     {
         var firstStop = stops[0];
-        double offset = ToNonRelative(firstStop.Offset).PointsValue;
+        
+        double offset = GetStopOffset(firstStop);
         double baseOffset = index / repetitions;
         
         if(offset > 0.0)
-            colors.Add(new GradientColor(firstStop.StopColor, baseOffset, firstStop.StopOpacity));
+            colors.Add(new GradientColor(GetStopColor(firstStop), baseOffset, GetStopOpacity(firstStop)));
 
         
         foreach (var stop in stops)
         {
-            offset = ToNonRelative(stop.Offset).PointsValue;
+            offset = GetStopOffset(stop);
             
             //true offset within the repetitions
             offset = (offset / repetitions) + baseOffset;
             
-            colors.Add(new GradientColor(stop.StopColor, offset, stop.StopOpacity));
+            colors.Add(new GradientColor(GetStopColor(stop), offset, GetStopOpacity(stop)));
         }
 
         var repeatMax = (1.0 + index) / repetitions;
@@ -73,7 +74,7 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
             var lastStop = stops[stops.Count - 1];
             offset = (1 / repetitions) + baseOffset;
             
-            colors.Add(new GradientColor(lastStop.StopColor, offset, lastStop.StopOpacity));
+            colors.Add(new GradientColor(GetStopColor(lastStop), offset, GetStopOpacity(lastStop)));
         }
     }
 }
