@@ -789,6 +789,259 @@ namespace Scryber.Core.UnitTests.Svg
 
              
         }
+
+        [TestMethod]
+        [TestCategory("SVG")]
+        public void SVGLinearGradientLookupStyleTest()
+        {
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradientLookupStyles.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            
+            using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutputLookupStyles.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+            
+            Assert.AreEqual(3, doc.SharedResources.Count); //1 font, 1 inline blocks, 1 canvas xObj
+            
+            var canvXObj = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(canvXObj);
+            Assert.IsNotNull(canvXObj.Renderer);
+            Assert.IsInstanceOfType(canvXObj.Renderer.Owner, typeof(SVGCanvas));
+            
+            //Assert.AreEqual(svg, canvXObj.Container);
+            
+            Assert.AreEqual(1, canvXObj.Renderer.Resources.Types.Count);
+            Assert.AreEqual(PDFResource.PatternResourceType, canvXObj.Renderer.Resources.Types[0].Type);
+            
+            var patterns = canvXObj.Renderer.Resources.Types[0];
+            Assert.AreEqual(6, patterns.Count);
+            
+            //Basic 2 color
+            
+            var linear = patterns[0] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            var offset = linear.Start;
+            Assert.AreEqual(new Point(10, 100), offset); //PDF Position within XObject Canvas
+            var size = linear.Size;
+            Assert.AreEqual(new Size(80, -90), size); //PDF Size within XObject Canvas
+            
+            var func2 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            
+            //Reversed 2 color from css
+            
+            linear = patterns[1] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            offset = linear.Start;
+            Assert.AreEqual(new Point(100, 100), offset); //PDF Position within XObject Canvas
+            size = linear.Size;
+            Assert.AreEqual(new Size(60, -90), size); //PDF Size within XObject Canvas
+            
+            func2 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            
+            //3 color from css
+            
+            linear = patterns[2] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            offset = linear.Start;
+            Assert.AreEqual(new Point(190, 100), offset); //PDF Position within XObject Canvas
+            size = linear.Size;
+            Assert.AreEqual(new Size(80, -90), size); //PDF Size within XObject Canvas
+            
+            var func3 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction3;
+            Assert.IsNotNull(func3);
+            
+            Assert.AreEqual(0.0, func3.DomainStart);
+            Assert.AreEqual(1.0, func3.DomainEnd);
+            
+            Assert.AreEqual(2, func3.Functions.Length);
+            
+            Assert.AreEqual(1, func3.Boundaries.Length);
+            Assert.AreEqual(0.5, Math.Round(func3.Boundaries[0].Bounds, 2));
+            
+            
+            func2 = func3.Functions[0] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[1] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            
+            //3 color repeat from css reduced width from variable
+            
+            linear = patterns[3] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            offset = linear.Start;
+            Assert.AreEqual(new Point(280, 100), offset); //PDF Position within XObject Canvas
+            size = linear.Size;
+            Assert.AreEqual(new Size(70, -90), size); //PDF Size within XObject Canvas
+            
+            func3 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction3;
+            Assert.IsNotNull(func3);
+            
+            Assert.AreEqual(0.0, func3.DomainStart);
+            Assert.AreEqual(1.0, func3.DomainEnd);
+            
+            Assert.AreEqual(5, func3.Functions.Length);
+            
+            Assert.AreEqual(4, func3.Boundaries.Length);
+            Assert.AreEqual(0.25, Math.Round(func3.Boundaries[0].Bounds, 2));
+            Assert.AreEqual(0.5, Math.Round(func3.Boundaries[1].Bounds, 2));
+            Assert.AreEqual(0.5, Math.Round(func3.Boundaries[2].Bounds, 2));
+            Assert.AreEqual(0.75, Math.Round(func3.Boundaries[3].Bounds, 2));
+            
+            func2 = func3.Functions[0] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero); //css overriden by value
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[1] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            func2 = func3.Functions[2] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[3] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[4] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            //3 color repeat from css and padded before and after
+            
+            linear = patterns[4] as PDFLinearShadingPattern;
+            Assert.IsNotNull(linear);
+            
+            offset = linear.Start;
+            Assert.AreEqual(new Point(370, 100), offset); //PDF Position within XObject Canvas
+            size = linear.Size;
+            Assert.AreEqual(new Size(80, -90), size); //PDF Size within XObject Canvas
+            
+            func3 = linear.Descriptor.GetGradientFunction(offset, size) as PDFGradientFunction3;
+            Assert.IsNotNull(func3);
+            
+            Assert.AreEqual(0.0, func3.DomainStart);
+            Assert.AreEqual(1.0, func3.DomainEnd);
+            
+            Assert.AreEqual(9, func3.Functions.Length);
+            
+            Assert.AreEqual(8, func3.Boundaries.Length);
+            Assert.AreEqual(0.1, Math.Round(func3.Boundaries[0].Bounds, 2));
+            Assert.AreEqual(0.2, Math.Round(func3.Boundaries[1].Bounds, 2));
+            Assert.AreEqual(0.3, Math.Round(func3.Boundaries[2].Bounds, 2));
+            Assert.AreEqual(0.5, Math.Round(func3.Boundaries[3].Bounds, 2));
+            Assert.AreEqual(0.5, Math.Round(func3.Boundaries[4].Bounds, 2));
+            Assert.AreEqual(0.6, Math.Round(func3.Boundaries[5].Bounds, 2));
+            Assert.AreEqual(0.7, Math.Round(func3.Boundaries[6].Bounds, 2));
+            Assert.AreEqual(0.8, Math.Round(func3.Boundaries[7].Bounds, 2));
+            
+            func2 = func3.Functions[0] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorZero); //css overriden by value
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            func2 = func3.Functions[1] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[2] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[3] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[4] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            func2 = func3.Functions[5] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorOne);
+            
+            func2 = func3.Functions[6] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Maroon, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorOne);
+            
+            func2 = func3.Functions[7] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Aqua, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+            func2 = func3.Functions[8] as PDFGradientFunction2;
+            Assert.IsNotNull(func2);
+            Assert.AreEqual(0.0, func2.DomainStart);
+            Assert.AreEqual(1.0, func2.DomainEnd);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorZero);
+            Assert.AreEqual(StandardColors.Blue, func2.ColorOne);
+            
+        }
         
         /// <summary>
         ///A test to make sure the SVG gradients are rendered correctly at 45%

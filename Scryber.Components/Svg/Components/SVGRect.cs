@@ -525,6 +525,11 @@ namespace Scryber.Svg.Components
             return oref;
         }
 
+        protected override void OnDataBinding(DataContext context)
+        {
+            base.OnDataBinding(context);
+        }
+
 
         private SVGCanvas GetRootSVGCanvas()
         {

@@ -633,6 +633,10 @@ namespace Scryber.Generation
                     {
                         GenerateBindingExpression(reader, container, cdef, attr, value, factory);
                     }
+                    else if (ParserHelper.IsCSSVariableOrCalcExpression(ref value, out factory, this.Settings))
+                    {
+                        GenerateBindingExpression(reader, container, cdef, attr, value, factory);
+                    }
                     else
                     {
                         object actualValue;

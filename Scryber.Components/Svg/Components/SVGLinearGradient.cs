@@ -173,12 +173,6 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
 
     protected SVGLinearGradient(ObjectType type) : base(type)
     {
-        this.X1 = Unit.Zero;
-        this.X2 = new Unit(1.0);
-        this.Y1 = Unit.Zero;
-        this.Y2 = new Unit(0.0);
-        this.SpreadMode = GradientSpreadMode.Pad;
-        this.GradientUnits = GradientUnitType.ObjectBoundingBox;
     }
 
     public override PDFBrush CreateBrush(Rect totalBounds)
@@ -226,22 +220,25 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         StyleValue<GradientSpreadMode> spread;
         StyleValue<GradientUnitType> units;
         
-        if (this.HasStyle)
+        //None of the style values are inherited so we should be ok with just collecting the direct values - TBC
+        var style = this.GetAppliedStyle();
+        
+        if (null != style)
         {
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientX1Key, out value))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientX1Key, out value))
                 x1 = value.Value(this.Style);
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientX2Key, out value))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientX2Key, out value))
                 x2 = value.Value(this.Style);
             
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientY1Key, out value))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientY1Key, out value))
                 y1 = value.Value(this.Style);
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientY2Key, out value))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientY2Key, out value))
                 y2 = value.Value(this.Style);
             
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientSpreadModeKey, out spread))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientSpreadModeKey, out spread))
                 mode = spread.Value(this.Style);
             
-            if (this.Style.TryGetValue(StyleKeys.SVGGeometryGradientUnitKey, out units))
+            if (style.TryGetValue(StyleKeys.SVGGeometryGradientUnitKey, out units))
                 type = units.Value(this.Style);
         }
 
@@ -398,7 +395,6 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         }
     }
     
-
 
     public virtual SVGLinearGradient Clone()
     {

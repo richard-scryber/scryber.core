@@ -121,6 +121,11 @@ namespace Scryber.Styles
                     }
                     
                 }
+
+                //Set the value on data-binding for any attributes that have var(...) or calc(..) as their value.
+                if (null != kvp.Value && null != kvp.Value.Value)
+                    context.Items[kvp.Key] = kvp.Value.Value;
+
             }
         }
 

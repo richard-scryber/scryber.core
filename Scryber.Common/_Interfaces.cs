@@ -771,4 +771,12 @@ namespace Scryber
         TextFormat ReaderFormat { get; set; }
     }
 
+    /// <summary>
+    /// Placeholder for the Canvas - has its own styles and resources.
+    /// </summary>
+    public interface ICanvas : IResourceContainer
+    {
+        
+    }
+
 }

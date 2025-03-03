@@ -256,6 +256,17 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
             all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
+            
+            //TODO: Add all the SVG attributes
+            
+            all.Add(CSSStyleItems.GradientStopColor, new CSSSVGGradientStopColor());
+            all.Add(CSSStyleItems.GradientStopOpacity, new CSSSVGGradientStopOpacity());
+            
+            all.Add(CSSStyleItems.GradientX1Position, new CSSSVGLinearGradientX1Position());
+            all.Add(CSSStyleItems.GradientX2Position, new CSSSVGLinearGradientX2Position());
+            all.Add(CSSStyleItems.GradientY1Position, new CSSSVGLinearGradientY1Position());
+            all.Add(CSSStyleItems.GradientY2Position, new CSSSVGLinearGradientY2Position());
+            all.Add(CSSStyleItems.GradientSpreadMode, new CSSSVGLinearGradientSpreadMode());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

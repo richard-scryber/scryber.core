@@ -10,7 +10,7 @@ using Scryber.Svg.Layout;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("svg")]
-    public class SVGCanvas : Scryber.Components.Canvas, IResourceContainer
+    public class SVGCanvas : Scryber.Components.Canvas, IResourceContainer, ICanvas
     {
 
         //pre-defined width and heights
