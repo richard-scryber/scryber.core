@@ -242,15 +242,10 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                 type = units.Value(this.Style);
         }
 
-        if (mode == GradientSpreadMode.Pad || mode == GradientSpreadMode.Repeat) //To Remove once all the modes are done.
-        {
-            var calc = CreateGradientCalculator(mode, type, x1, x2, y1, y2);
-            return calc.CreateDescriptor(this.Stops);
-        }
-        else
-        {
-            return null;
-        }
+        var calc = CreateGradientCalculator(mode, type, x1, x2, y1, y2);
+            
+        return calc.CreateDescriptor(this.Stops);
+        
 
         // Scryber.Drawing.GradientLinearDescriptor descriptor = new GradientLinearDescriptor();
         //
@@ -389,6 +384,8 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                 return new SVGLinearRepeatingGradientCalculator(mode, type, x1, y1, x2, y2);
             
             case GradientSpreadMode.Reflect:
+                return new SVGLinearReflectingGradientCalculator(mode, type, x1, y1, x2, y2);
+            
             default:
                     throw new NotImplementedException();
                 break;
