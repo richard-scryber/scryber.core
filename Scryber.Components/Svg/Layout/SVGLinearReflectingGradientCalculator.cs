@@ -17,7 +17,7 @@ public class SVGLinearReflectingGradientCalculator : SVGLinearGradientCalculator
         
     }
 
-    protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
+    protected override GradientLinearDescriptor DoCreateDescriptor(SVGGradientStopList stops)
     {
         List<GradientColor> colors = new List<GradientColor>();
         
@@ -48,7 +48,7 @@ public class SVGLinearReflectingGradientCalculator : SVGLinearGradientCalculator
 
     }
 
-    private void AddRepeatingStops(double index, double repetitions, SVGLinearGradientStopList stops, List<GradientColor> colors)
+    private void AddRepeatingStops(double index, double repetitions, SVGGradientStopList stops, List<GradientColor> colors)
     {
         var firstStop = stops[0];
         
@@ -81,7 +81,7 @@ public class SVGLinearReflectingGradientCalculator : SVGLinearGradientCalculator
         }
     }
     
-    private void AddReflectedStops(double index, double repetitions, SVGLinearGradientStopList stops, List<GradientColor> colors)
+    private void AddReflectedStops(double index, double repetitions, SVGGradientStopList stops, List<GradientColor> colors)
     {
         var lastStop = stops[stops.Count - 1];
         

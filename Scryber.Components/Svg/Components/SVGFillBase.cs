@@ -13,6 +13,8 @@ public abstract class SVGFillBase : Scryber.Components.ContainerComponent
     public SVGFillBase(ObjectType type): base(type)
     {}
 
+    
+
 
     public abstract PDFBrush CreateBrush(Rect totalBounds);
 

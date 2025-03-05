@@ -364,6 +364,14 @@ namespace Scryber.Styles
         public static readonly StyleKey<GradientSpreadMode> SVGGeometryGradientSpreadModeKey = StyleKey.InternalCreateStyleValueKey<GradientSpreadMode>((ObjectType)"ggsm", StyleKeys.SVGGeometryKey);
         public static readonly StyleKey<GradientUnitType> SVGGeometryGradientUnitKey = StyleKey.InternalCreateStyleValueKey<GradientUnitType>((ObjectType)"ggut", StyleKeys.SVGGeometryKey);
 
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstXKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfx", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondXKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcx", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstYKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfy", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondYKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcy", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstRadiusKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfr", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondRadiusKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcr", StyleKeys.SVGGeometryKey);
+
+        
         public static readonly StyleKey<Unit> SVGGradientStopOffsetKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"gsof", StyleKeys.SVGGeometryKey);
         
         public static readonly StyleKey<Color> SVGGradientStopColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"gsco", StyleKeys.SVGGeometryKey);
@@ -542,6 +550,8 @@ namespace Scryber.Styles
         public static readonly StyleKey<bool> OverlayShowColumnsKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"colm", OverlayItemKey);
 
         public static readonly StyleKey<int> OverlayMajorCount = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"majc", OutlineItemKey);
+        
+        
         //Page
         public static readonly StyleKey PageItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePage, NOT_INHERITED);
 

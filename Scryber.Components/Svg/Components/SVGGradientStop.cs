@@ -7,7 +7,7 @@ using Scryber.Styles;
 namespace Scryber.Svg.Components;
 
 [PDFParsableComponent("stop")]
-public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
+public class SVGGradientStop : Component, IStyledComponent, ICloneable
 {
 
     private Style _style;
@@ -99,12 +99,10 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
     
     
 
-    public SVGLinearGradientStop() : this(ObjectTypes.LinearGradientStop)
-    {
-        
-    }
+    public SVGGradientStop() : this(ObjectTypes.GradientStop) { }
+    
 
-    protected SVGLinearGradientStop(ObjectType type)
+    protected SVGGradientStop(ObjectType type)
         : base(type)
     {
     }
@@ -150,10 +148,10 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
         base.OnDataBinding(context);
     }
     
-
-    public virtual SVGLinearGradientStop Clone()
+    
+    public virtual SVGGradientStop Clone()
     {
-        var clone = (SVGLinearGradientStop)this.MemberwiseClone();
+        var clone = (SVGGradientStop)this.MemberwiseClone();
         if (this.HasStyle)
         {
             this.Style.MergeInto(clone.Style);
@@ -170,9 +168,12 @@ public class SVGLinearGradientStop : Component, IStyledComponent, ICloneable
     
 }
 
-public class SVGLinearGradientStopList : ComponentWrappingList<SVGLinearGradientStop>
+
+
+
+public class SVGGradientStopList : ComponentWrappingList<SVGGradientStop>
 {
-    public SVGLinearGradientStopList(ComponentList innerList) : base(innerList)
+    public SVGGradientStopList(ComponentList innerList) : base(innerList)
     {
     }
 }

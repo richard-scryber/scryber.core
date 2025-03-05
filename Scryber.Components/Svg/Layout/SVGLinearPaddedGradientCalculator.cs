@@ -17,7 +17,7 @@ public class SVGLinearPaddedGradientCalculator : SVGLinearGradientCalculator
     
     private static Rect _UnitBounds = new Rect(0, 0, 1, 1);
 
-    protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
+    protected override GradientLinearDescriptor DoCreateDescriptor(SVGGradientStopList stops)
     {
         //The unit length describes a full box length
         var angle = this.CalculatedAngle;

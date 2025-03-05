@@ -7,7 +7,7 @@ namespace Scryber.Svg.Layout;
 public class SVGGradientCalculator
 {
 
-    protected double GetStopOffset(SVGLinearGradientStop stop)
+    protected double GetStopOffset(SVGGradientStop stop)
     {
         Unit value;
         if (stop.TryGetFullStyle(out Style style))
@@ -22,7 +22,7 @@ public class SVGGradientCalculator
         return ToNonRelative(value).PointsValue;
     }
 
-    protected Color GetStopColor(SVGLinearGradientStop stop)
+    protected Color GetStopColor(SVGGradientStop stop)
     {
         Color value;
         if (stop.TryGetFullStyle(out Style style))
@@ -37,7 +37,7 @@ public class SVGGradientCalculator
         return value;
     }
     
-    protected double GetStopOpacity(SVGLinearGradientStop stop)
+    protected double GetStopOpacity(SVGGradientStop stop)
     {
         Unit value;
         if (stop.TryGetFullStyle(out Style style))
@@ -62,6 +62,11 @@ public class SVGGradientCalculator
                 unit = Unit.Zero;
         }
         return unit;
+    }
+    
+    protected Point ToNonRelative(Point pt)
+    {
+        return new Point(ToNonRelative(pt.X), ToNonRelative(pt.Y));
     }
     
 }

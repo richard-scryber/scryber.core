@@ -134,6 +134,10 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
         } 
     }
     
+    /// <summary>
+    /// Not currently supported
+    /// </summary>
+    [PDFAttribute("gradientUnits")]
     public GradientUnitType GradientUnits{
         get
         {
@@ -152,17 +156,18 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
     public string TemplateHref { get; set; }
     
     
+    
 
-    private SVGLinearGradientStopList _stops;
+    private SVGGradientStopList _stops;
     
     [PDFElement("")]
-    [PDFArray(typeof(SVGLinearGradientStop))]
-    public SVGLinearGradientStopList Stops
+    [PDFArray(typeof(SVGGradientStop))]
+    public SVGGradientStopList Stops
     {
         get
         {
             if (null == this._stops)
-                this._stops = new SVGLinearGradientStopList(this.InnerContent);
+                this._stops = new SVGGradientStopList(this.InnerContent);
             return this._stops;
         }
     }

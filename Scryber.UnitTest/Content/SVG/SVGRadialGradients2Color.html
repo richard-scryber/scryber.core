@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="2 Color Horizontal Gradients">2 Color Horizontal Gradients</p>
+    <svg id="2ColorHoriz" width="550" height="110" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+            
+        </style>
+
+        <radialGradient id="2Color" spreadMethod="reflect">
+            <stop offset="10%" stop-color="gold" />
+            <stop offset="95%" stop-color="red" />
+        </radialGradient>
+
+        
+        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />
+        
+       
+        
+    </svg>
+    
+    
+    
+
+</body>
+</html>

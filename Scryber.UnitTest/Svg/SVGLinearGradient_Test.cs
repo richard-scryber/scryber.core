@@ -107,8 +107,8 @@ namespace Scryber.Core.UnitTests.Svg
             var gradient = new SVGLinearGradient();
             gradient.ID = "2Color";
             
-            gradient.Stops.Add(new SVGLinearGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
-            gradient.Stops.Add(new SVGLinearGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
+            gradient.Stops.Add(new SVGGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
+            gradient.Stops.Add(new SVGGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
             svg.Contents.Add(gradient);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushes.pdf"))
@@ -199,8 +199,8 @@ namespace Scryber.Core.UnitTests.Svg
             var gradient = new SVGLinearGradient();
             gradient.ID = "2Color";
             
-            gradient.Stops.Add(new SVGLinearGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
-            gradient.Stops.Add(new SVGLinearGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
+            gradient.Stops.Add(new SVGGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
+            gradient.Stops.Add(new SVGGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
             svg.Contents.Add(gradient);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushesWithTransform.pdf"))

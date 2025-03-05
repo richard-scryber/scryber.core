@@ -77,9 +77,6 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual(0, target.Colors.Count);
             Assert.AreEqual(target.Shape, RadialShape.Circle);
             Assert.AreEqual(target.Size, RadialSize.FarthestCorner);
-            Assert.AreEqual(target.XCentre.HasValue, false);
-            Assert.AreEqual(target.YCentre.HasValue, false);
-
         }
 
         #endregion

@@ -35,7 +35,7 @@ public abstract class SVGLinearGradientCalculator : SVGGradientCalculator
     
 
 
-    public virtual GradientLinearDescriptor CreateDescriptor(SVGLinearGradientStopList stops)
+    public virtual GradientLinearDescriptor CreateDescriptor(SVGGradientStopList stops)
     {
         if (null == stops || stops.Count < 2)
             return null;
@@ -43,7 +43,7 @@ public abstract class SVGLinearGradientCalculator : SVGGradientCalculator
             return this.DoCreateDescriptor(stops);
     }
 
-    protected abstract GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops);
+    protected abstract GradientLinearDescriptor DoCreateDescriptor(SVGGradientStopList stops);
 
 
 

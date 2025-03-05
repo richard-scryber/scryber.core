@@ -17,7 +17,7 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
         
     }
 
-    protected override GradientLinearDescriptor DoCreateDescriptor(SVGLinearGradientStopList stops)
+    protected override GradientLinearDescriptor DoCreateDescriptor(SVGGradientStopList stops)
     {
         List<GradientColor> colors = new List<GradientColor>();
         
@@ -45,7 +45,7 @@ public class SVGLinearRepeatingGradientCalculator : SVGLinearGradientCalculator
 
     }
 
-    private void AddRepeatingStops(double index, double repetitions, SVGLinearGradientStopList stops, List<GradientColor> colors)
+    private void AddRepeatingStops(double index, double repetitions, SVGGradientStopList stops, List<GradientColor> colors)
     {
         var firstStop = stops[0];
         
