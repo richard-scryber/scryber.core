@@ -18,14 +18,22 @@ public class SVGRadialPaddedGradientCalculator : SVGRadialGradientCalculator
     {
         var descriptor = new GradientRadialDescriptor(new List<GradientColor>());
         
-        //descriptor.StartCenter = this.ToNonRelative(this.FirstCentre);
-        //descriptor.EndCenter = this.ToNonRelative(this.SecondCentre);
+        descriptor.StartCenter = this.ToNonRelative(this.FirstCentre);
+        descriptor.EndCenter = this.ToNonRelative(this.SecondCentre);
 
-        //descriptor.StartRadius = this.ToNonRelative(this.FirstRadius);
-        //descriptor.EndRadius = this.ToNonRelative(this.SecondRadius);
+        descriptor.StartRadius = this.ToNonRelative(this.FirstRadius);
+        descriptor.EndRadius = this.ToNonRelative(this.SecondRadius);
 
-        descriptor.Colors.Add(new GradientColor(GetStopColor(stops[0]), 0.0, 1.0));
-        descriptor.Colors.Add(new GradientColor(GetStopColor(stops[1]), 1.0, 1.0));
+
+        for (var i = 0; i < stops.Count; i++)
+        {
+            var stop = stops[i];
+            var color = GetStopColor(stop);
+            var offset = GetStopOffset(stop);
+            var opacity = GetStopOpacity(stop);
+            
+            descriptor.Colors.Add(new GradientColor(color, offset, opacity));
+        }
 
 
         return descriptor;

@@ -7,17 +7,17 @@ namespace Scryber.Svg.Layout;
 
 public abstract class SVGRadialGradientCalculator : SVGGradientCalculator
 {
-    public GradientSpreadMode Mode { get; private set; }
+    public GradientSpreadMode Mode { get; protected set; }
     
-    public GradientUnitType UnitType { get; private set; }
+    public GradientUnitType UnitType { get; protected set; }
     
-    public Point FirstCentre { get; private set; }
+    public Point FirstCentre { get; protected set; }
     
-    public Unit FirstRadius { get; private set; }
+    public Unit FirstRadius { get; protected set; }
     
-    public Point SecondCentre { get; private set; }
+    public Point SecondCentre { get; protected set; }
     
-    public Unit SecondRadius { get; private set; }
+    public Unit SecondRadius { get; protected set; }
     
     public double CalculatedAngle { get; private set; }
 

@@ -50,25 +50,26 @@ namespace Scryber.Drawing
 
         public double[] GetCoordsForBounds(Point location, Size size, bool flip = true )
         {
+            double max = Math.Max(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue));
             double[] coords = new double[6];
             coords[0] = (location.X + (size.Width * StartCenter.X.PointsValue)).PointsValue;
             
             if (flip)
-                coords[1] = (location.Y + size.Height - (size.Height * StartCenter.Y.PointsValue)).PointsValue;
+                coords[1] = (location.Y + (size.Height * StartCenter.Y.PointsValue)).PointsValue;
             else
                 coords[1] = (location.Y + (size.Height * StartCenter.Y.PointsValue)).PointsValue;
             
-            coords[2] = (size.Width * StartRadius.PointsValue).PointsValue;
+            coords[2] = max * StartRadius.PointsValue;
             
             
             coords[3] = (location.X + (size.Width * EndCenter.X.PointsValue)).PointsValue; 
             
             if(flip)
-                coords[4] = (location.Y + size.Height - (size.Height * EndCenter.Y.PointsValue)).PointsValue;
+                coords[4] = (location.Y + (size.Height * EndCenter.Y.PointsValue)).PointsValue;
             else
                 coords[4] = (location.Y + (size.Height * EndCenter.Y.PointsValue)).PointsValue;
             
-            coords[5] = (size.Width * EndRadius.PointsValue).PointsValue;
+            coords[5] = max * EndRadius.PointsValue;
             
             return coords;
         }
