@@ -534,14 +534,14 @@ namespace Scryber.Drawing
     /// </summary>
     public enum GradientAngle
     {
-        Top = 0,
-        Left = 270,
-        Bottom = 180,
-        Right = 90,
-        Top_Left = 315,
-        Top_Right = 45,
-        Bottom_Left = 225,
-        Bottom_Right = 135
+        Top = 270,
+        Left = 180,
+        Bottom = 90,
+        Right = 0,
+        Top_Left = 225,
+        Top_Right = 315,
+        Bottom_Left = 135,
+        Bottom_Right = 45
     }
 
     /// <summary>

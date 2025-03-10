@@ -295,13 +295,55 @@ namespace Scryber.Drawing
             }
             else if (char.IsNumber(all[0], 0))
             {
-                var deg = all[0];
+                var deg = all[0].Trim();
 
                 if (deg.EndsWith("deg"))
+                {
                     deg = deg.Substring(0, deg.Length - 3);
 
-                if (!double.TryParse(deg, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out angle))
+                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out angle))
+                        return false;
+                }
+                else if (deg.EndsWith("rad"))
+                {
+                    deg = deg.Substring(0, deg.Length - 3);
+
+                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out angle))
+                        return false;
+                    
+                    angle *= 180 / Math.PI;
+                }
+                else if (deg.EndsWith("turn"))
+                {
+                    deg = deg.Substring(0, deg.Length - 4);
+                    
+                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out angle))
+                        return false;
+
+                    angle = 360 * angle;
+                   
+                }
+                else if (double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                             System.Globalization.CultureInfo.InvariantCulture, out angle))
+                {
+                    angle = 0;
+                }
+                else
+                {
                     return false;
+                };
+                
+                //0 degrees on the 
+                angle += 270;
+                
+                while(angle >= 360.0)
+                    angle -= 360.0;
+
+                while(angle < 0.0)
+                    angle += 360.0;
 
                 colorStopIndex = 1;
             }
