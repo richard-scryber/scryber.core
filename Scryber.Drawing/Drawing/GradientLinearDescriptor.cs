@@ -277,6 +277,7 @@ namespace Scryber.Drawing
         {
             linear = null;
             string[] all = _splitter.Split(value);
+            
             if (all.Length == 0)
                 return false;
 
@@ -291,6 +292,7 @@ namespace Scryber.Drawing
                     angle = (double)parsed;
                 else
                     return false;
+                
                 colorStopIndex = 1;
             }
             else if (char.IsNumber(all[0], 0))
@@ -350,19 +352,86 @@ namespace Scryber.Drawing
             else
                 angle = (double)GradientAngle.Bottom;
 
-            GradientColor[] colors = new GradientColor[all.Length - colorStopIndex];
-
-            for (int i = 0; i < colors.Length; i++)
+            List<GradientColor> colors = new List<GradientColor>(all.Length - colorStopIndex);
+            bool hasAtleastOneDistance = false;
+            
+            for (int i = colorStopIndex; i < all.Length; i++)
             {
                 GradientColor parsed;
-                if (GradientColor.TryParse(all[i + colorStopIndex], out parsed))
-                    colors[i] = parsed;
+                if (GradientColor.TryParse(all[i], out parsed))
+                {
+                    if(i == colorStopIndex && parsed.Distance > 0) // first and offset from zero - so add an initial stop for padding. 
+                        colors.Add(new GradientColor(parsed.Color, 0.0, parsed.Opacity));
+
+                    if (parsed.Distance.HasValue)
+                    {
+                        parsed.Distance = parsed.Distance / 100.0;
+                        hasAtleastOneDistance = true;
+                    }
+                    else if
+                        (i == all.Length - 1 &&
+                         hasAtleastOneDistance) //we are the last one and there are other stops with distances
+                        //so even though we don't have an explicit value we sould always be at 100%
+                    {
+                        parsed.Distance = 1.0;
+                    }
+                    
+                    colors.Add(parsed);
+                    
+                    if(i == all.Length - 1 && parsed.Distance.HasValue && parsed.Distance < 1.0) // last and offset from one - so add an final stop for padding. 
+                        colors.Add(new GradientColor(parsed.Color, 1.0, parsed.Opacity));
+                }
                 else
                     return false;
             }
 
+            EnsureDistances(colors);
             linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
             return true;
+        }
+
+        private static void EnsureDistances(List<GradientColor> colors)
+        {
+            int lastDistanceIndex = -1;
+            double lastDistance = 0;
+
+            if (colors[0].Distance.HasValue == false) //first one does not have a distance so set it to zero.
+                colors[0].Distance = 0;
+            
+            for (int i = 0; i < colors.Count; i++)
+            {
+                GradientColor c = colors[i];
+                if (c.Distance.HasValue)
+                {
+                    if(lastDistanceIndex != i-1)
+                        DivideUpDistances(lastDistanceIndex, i, lastDistance, c.Distance.Value, colors);
+                    
+                    lastDistanceIndex = i;
+                    lastDistance = c.Distance.Value;
+                }
+            }
+
+            if (lastDistanceIndex > -1 && lastDistanceIndex < colors.Count - 1)
+            {
+                //Fill the last ones
+            }
+        }
+
+        private static void DivideUpDistances(int lastDistanceIndex, int currentIndex, double lastDistance, double currentDistance,
+            List<GradientColor> colors)
+        {
+            
+            var factor = (currentDistance - lastDistance) / (currentIndex - lastDistanceIndex);
+            var count = currentIndex - lastDistanceIndex;
+            var newDistance = lastDistance;
+            
+            for (int i = 1; i < count; i++)
+            {
+                var c = colors[i + lastDistanceIndex];
+                newDistance += factor;
+                
+                c.Distance = newDistance;
+            }
         }
 
         #endregion
