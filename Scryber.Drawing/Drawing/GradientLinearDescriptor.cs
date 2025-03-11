@@ -294,63 +294,76 @@ namespace Scryber.Drawing
                     return false;
                 
                 colorStopIndex = 1;
-            }
-            else if (char.IsNumber(all[0], 0))
-            {
-                var deg = all[0].Trim();
-
-                if (deg.EndsWith("deg"))
-                {
-                    deg = deg.Substring(0, deg.Length - 3);
-
-                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
-                            System.Globalization.CultureInfo.InvariantCulture, out angle))
-                        return false;
-                }
-                else if (deg.EndsWith("rad"))
-                {
-                    deg = deg.Substring(0, deg.Length - 3);
-
-                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
-                            System.Globalization.CultureInfo.InvariantCulture, out angle))
-                        return false;
-                    
-                    angle *= 180 / Math.PI;
-                }
-                else if (deg.EndsWith("turn"))
-                {
-                    deg = deg.Substring(0, deg.Length - 4);
-                    
-                    if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
-                            System.Globalization.CultureInfo.InvariantCulture, out angle))
-                        return false;
-
-                    angle = 360 * angle;
-                   
-                }
-                else if (double.TryParse(deg, System.Globalization.NumberStyles.Any,
-                             System.Globalization.CultureInfo.InvariantCulture, out angle))
-                {
-                    angle = 0;
-                }
-                else
-                {
-                    return false;
-                };
                 
-                //0 degrees on the 
-                angle += 270;
-                
-                while(angle >= 360.0)
-                    angle -= 360.0;
-
-                while(angle < 0.0)
-                    angle += 360.0;
-
-                colorStopIndex = 1;
+                if(all[1].StartsWith("in "))
+                    colorStopIndex = 2;
             }
             else
-                angle = (double)GradientAngle.Bottom;
+            {
+                if (all[0].StartsWith("in "))
+                {
+                    colorStopIndex = 1;
+                }
+
+                if (char.IsNumber(all[colorStopIndex], 0) || (all[colorStopIndex][0] == '-' && char.IsNumber(all[colorStopIndex], 1)))
+                {
+                    var deg = all[colorStopIndex].Trim();
+
+                    if (deg.EndsWith("deg"))
+                    {
+                        deg = deg.Substring(0, deg.Length - 3);
+
+                        if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                                System.Globalization.CultureInfo.InvariantCulture, out angle))
+                            return false;
+                    }
+                    else if (deg.EndsWith("rad"))
+                    {
+                        deg = deg.Substring(0, deg.Length - 3);
+
+                        if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                                System.Globalization.CultureInfo.InvariantCulture, out angle))
+                            return false;
+
+                        angle *= 180 / Math.PI;
+                    }
+                    else if (deg.EndsWith("turn"))
+                    {
+                        deg = deg.Substring(0, deg.Length - 4);
+
+                        if (!double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                                System.Globalization.CultureInfo.InvariantCulture, out angle))
+                            return false;
+
+                        angle = 360 * angle;
+
+                    }
+                    else if (double.TryParse(deg, System.Globalization.NumberStyles.Any,
+                                 System.Globalization.CultureInfo.InvariantCulture, out angle))
+                    {
+                        angle = 0;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    ;
+
+                    //0 degrees on the 
+                    angle += 270;
+
+                    while (angle >= 360.0)
+                        angle -= 360.0;
+
+                    while (angle < 0.0)
+                        angle += 360.0;
+
+                    colorStopIndex = 1;
+                }
+                else
+                    angle = (double)GradientAngle.Bottom;
+            }
 
             List<GradientColor> colors = new List<GradientColor>(all.Length - colorStopIndex);
             bool hasAtleastOneDistance = false;
@@ -385,7 +398,9 @@ namespace Scryber.Drawing
                     return false;
             }
 
-            EnsureDistances(colors);
+            if (hasAtleastOneDistance)
+                EnsureDistances(colors);
+            
             linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
             return true;
         }
