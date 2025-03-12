@@ -348,6 +348,37 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual(rounded, distance, "Distances value failed for " + id);
             }
         }
+        
+        private static void ValidateRepeatingLinearGradient(PDFLinearShadingPattern one, int repeatCount, Color[] cols, decimal[] distances, double angle, string id)
+        {
+            Assert.IsTrue(one.PatternType == PatternType.ShadingPattern, "Pattern type failed for " + id);
+            Assert.IsTrue(one.Registered, "Registered flag failed for " + id);
+            Assert.IsNotNull(one.Descriptor, "Null descriptor for " + id);
+            Assert.AreEqual(cols.Length * repeatCount, one.Descriptor.Colors.Count, "Descriptor color count failed for " + id);
+            Assert.AreEqual(angle, Math.Round(one.Descriptor.Angle), "Descriptor angle failed for " + id);
+            //Assert.AreEqual(repeating, one.Descriptor.Repeating, "Repeating flag does not match for " + id);
+            
+            Assert.AreEqual(GradientType.Linear, one.Descriptor.GradientType, "Descriptor pattern type failed for " + id);
+            for (int repeat = 0; repeat < repeatCount; repeat++)
+            {
+                decimal offset = (1.0m / repeatCount) * repeat;
+
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    var index = i + (repeat * cols.Length);
+                    var color = one.Descriptor.Colors[index];
+                    Assert.AreEqual(cols[i], color.Color,
+                        "Color '" + index + "' does not match '" + cols[i] + "' for " + id);
+                    if (null != distances)
+                    {
+                        Assert.IsTrue(color.Distance.HasValue,
+                            "Distances has value at '" + index + "' failed for " + id);
+                        Assert.AreEqual(distances[i] + offset, Math.Round((decimal)color.Distance.Value, 5),
+                            "Distances value at '" + index + "' failed for " + id);
+                    }
+                }
+            }
+        }
 
         private void Gradient_LayoutComplete(object sender, LayoutEventArgs args)
         {
@@ -688,6 +719,79 @@ namespace Scryber.Core.UnitTests.Html
                     ], 30.0 + 270.0, "myPara9");
                     
                     ValidateDistances(grad, "myPara9", 0.0, 0.083, 0.167, 0.25, 0.5, 0.75, 1.0);
+                }
+            }
+
+            
+        }
+        
+        
+         [TestMethod]
+        public void LinearGradientRepeatingTest()
+        {
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientRepeating.html",
+                this.TestContext);
+            using (var sr = new System.IO.StreamReader(path))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("LinearGradientRepeating.pdf"))
+                    {
+                        doc.RenderOptions.Compression = OutputCompressionType.None;
+                        doc.LayoutComplete += Gradient_LayoutComplete;
+                        doc.SaveAsPDF(stream);
+                    }
+
+                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
+                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
+                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
+
+                    Assert.IsNotNull(_layout);
+                    var pg = _layout.AllPages[0];
+
+                    var resources = pg.Resources;
+                    Assert.AreEqual(2, resources.Types.Count);
+
+                    var patterns = resources.Types["Pattern"];
+                    Assert.IsNotNull(patterns);
+                    Assert.AreEqual(5, patterns.Count);
+
+                    var grad = patterns[0] as PDFLinearShadingPattern;
+                    ValidateRepeatingLinearGradient(grad, 4, [
+                        StandardColors.Red,
+                        StandardColors.Blue
+                    ], [0.0m, 0.25m], (double)GradientAngle.Top, "myPara1" );
+                    
+                    grad = patterns[1] as PDFLinearShadingPattern;
+                    ValidateRepeatingLinearGradient(grad, 5, [
+                        StandardColors.Red,
+                        StandardColors.Green
+                    ], [0.0m, 0.20m], (double)GradientAngle.Right, "myPara2" );
+
+                    grad = patterns[2] as PDFLinearShadingPattern;
+                    ValidateRepeatingLinearGradient(grad, 4, [
+                        StandardColors.Red,
+                        StandardColors.Green
+                    ], [0.0m, 0.25m], 36.0d, "myPara3" );
+                    
+                    
+                    grad = patterns[3] as PDFLinearShadingPattern;
+                    ValidateRepeatingLinearGradient(grad, 20, [
+                        StandardColors.Red,
+                        StandardColors.Green,
+                        StandardColors.Yellow,
+                    ], [0.0m, 0.025m, 0.05m], 299.0d, "myPara4" );
+                    
+                    grad = patterns[4] as PDFLinearShadingPattern;
+                    ValidateRepeatingLinearGradient(grad, 1, [
+                        StandardColors.Red,
+                        StandardColors.Green,
+                        StandardColors.Blue,
+                        StandardColors.Yellow,
+                    ], null, 90d, "myPara5" ); //No Distances specifed
+
+                    
                 }
             }
 

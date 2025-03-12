@@ -4,6 +4,9 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using Scryber.OpenType.SubTables;
+using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {
@@ -11,6 +14,10 @@ namespace Scryber.Drawing
     {
 
         public double Angle { get; set; }
+        
+        public double? MaxDomain { get; set; }
+        
+        public double? MinDomain { get; set; }
 
         public GradientLinearDescriptor() : base(GradientType.Linear)
         { }
@@ -49,7 +56,20 @@ namespace Scryber.Drawing
             
             return coords;
         }
-        
+
+        public override PDFGradientFunction GetGradientFunction(Point offset, Size size)
+        {
+            var func = base.GetGradientFunction(offset, size) ;
+            
+            if(this.MinDomain.HasValue)
+                func.DomainStart = this.MinDomain.Value;
+            
+            if(this.MaxDomain.HasValue)
+                func.DomainEnd = this.MaxDomain.Value;
+            
+            return func;
+        }
+
         //
         // Calculate Line length for 2 points
         //
@@ -263,7 +283,130 @@ namespace Scryber.Drawing
         // static parse linear methods
         //
 
-        #region public static bool TryParseLinear(string value, out PDFGradientLinearDescriptor linear)
+        #region public static bool TryParseRepeatingLinear(string value, out GradientLinearDescriptor linear)
+
+        public static bool TryParseRepeatingLinear(string value, out GradientLinearDescriptor linear)
+        {
+            linear = null;
+            string[] all = _splitter.Split(value);
+
+            if (all.Length == 0)
+                return false;
+
+            int colorStopIndex = 0;
+            double angle;
+
+            if (!ParseGradientAngle(all, out angle, ref colorStopIndex)) return false;
+
+            List<GradientColor> colors;
+
+            if (!ParseGradientColors(all, colorStopIndex, out colors, out var hasAtleastOneDistance, padStart: false,
+                    padEnd: false)) return false;
+            
+            FillMiddleDistances(colors);
+
+            const int AccuracyDecimals = 3; //Rounding of double  for distances.
+
+            if (colors.Count < 2)
+            {
+                linear = null;
+                return false;
+            }
+
+            decimal start;
+            
+            if(colors[0].Distance.HasValue)
+                start = (decimal)colors[0].Distance.Value;
+            else
+            {
+                colors[0].Distance = 0.0;
+                start = 0.0m;
+            }
+
+            decimal end;
+            
+            if (colors[colors.Count - 1].Distance.HasValue)
+            {
+                end = (decimal)colors[colors.Count - 1].Distance.Value;
+            }
+            else
+            {
+                colors[colors.Count - 1].Distance = 1.0;
+                end = 1.0m;
+            }
+
+            decimal offset = Math.Round(end - start, AccuracyDecimals);
+            int count = (int)Math.Ceiling(1.0m / offset);
+            
+
+            //To keep the new list of color stops
+            List<GradientColor> holder = new List<GradientColor>();
+
+            //reverse enumerate through the color stops a group at a time until the start is <= 0.0
+            var baseOffset = Math.Round(start, AccuracyDecimals);
+            var loopIndex = 0;
+            var minDistance = double.MaxValue;
+            var maxDistance = double.MinValue;
+            
+            while (baseOffset > 0.0m)
+            {
+                loopIndex++;
+                
+                for (int i = colors.Count - 1; i >= 0; i--)
+                {
+                    var orig = colors[i];
+                    var color = new GradientColor(orig.Color);
+                    color.Distance = (double)Math.Round((decimal)orig.Distance.Value - (offset * loopIndex), AccuracyDecimals);
+                    
+                    minDistance = Math.Min(minDistance, color.Distance.Value);
+                    
+                    color.Opacity = orig.Opacity;
+                    holder.Insert(0, color);
+                }
+
+                baseOffset -= offset;
+
+            }
+
+            //Add the defined colors now.
+            
+            for (var i = 0; i < colors.Count; i++)
+            {
+                var orig = colors[i];
+                holder.Add(orig);
+            }
+
+            //enumerate normally through the color stops a group at a time until the end is >= 1.0
+            baseOffset = end;
+            while (baseOffset < 1.0m)
+            {
+                
+                for (int i = 0; i < colors.Count; i++)
+                {
+                    var orig = colors[i];
+                    var color = new GradientColor(orig.Color);
+                    color.Distance = (double)Math.Round((baseOffset - start + (decimal)(orig.Distance ?? 0.0)), AccuracyDecimals);
+                    maxDistance = Math.Max(maxDistance, color.Distance.Value);
+                    color.Opacity = orig.Opacity;
+                    holder.Add(color);
+                }
+
+
+                baseOffset += offset;
+            }
+
+            //TODO: Set the gradient domain to [start,end]
+            linear = new GradientLinearDescriptor(holder, angle);
+            linear.MinDomain = Math.Min(0.0, minDistance);
+            linear.MaxDomain = Math.Max(1.0, maxDistance);
+
+            return true;
+
+        }
+
+        #endregion
+        
+        #region public static bool TryParseLinear(string value, out GradientLinearDescriptor linear)
 
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
 
@@ -284,6 +427,71 @@ namespace Scryber.Drawing
             int colorStopIndex = 0;
             double angle;
 
+            if (!ParseGradientAngle(all, out angle, ref colorStopIndex)) return false;
+
+            List<GradientColor> colors;
+            
+            if (!ParseGradientColors(all, colorStopIndex, out colors, out var hasAtleastOneDistance, padStart: true, padEnd : true)) return false;
+
+            if (hasAtleastOneDistance)
+                EnsureDistances(colors);
+            
+            linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
+            return true;
+        }
+
+        private static bool ParseGradientColors(string[] all, int startIndex, out List<GradientColor> colors, out bool hasAtleastOneDistance, bool padStart, bool padEnd)
+        {
+            colors = new List<GradientColor>(all.Length - startIndex);
+            hasAtleastOneDistance = false;
+            
+            for (int i = startIndex; i < all.Length; i++)
+            {
+                GradientColor parsed;
+                if (GradientColor.TryParse(all[i], out parsed))
+                {
+                    if (i == startIndex &&
+                        parsed.Distance > 0) // first and offset from zero - so add an initial stop for padding. 
+                    {
+                        if (padStart)
+                            colors.Add(new GradientColor(parsed.Color, 0.0, parsed.Opacity));
+                    }
+
+                    if (parsed.Distance.HasValue)
+                    {
+                        parsed.Distance = parsed.Distance / 100.0;
+                        hasAtleastOneDistance = true;
+                    }
+                    else if
+                        (i == all.Length - 1 &&
+                         hasAtleastOneDistance) //we are the last one and there are other stops with distances
+                        //so even though we don't have an explicit value we sould always be at 100%
+                    {
+                        if (padEnd)
+                            parsed.Distance = 1.0;
+                    }
+                    
+                    colors.Add(parsed);
+
+
+                    if (i == all.Length - 1 && parsed.Distance.HasValue &&
+                        parsed.Distance < 1.0) // last and offset from one - so add an final stop for padding. 
+                    {
+                        if (padEnd)
+                            colors.Add(new GradientColor(parsed.Color, 1.0, parsed.Opacity));
+                    }
+                }
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static bool ParseGradientAngle(string[] all, out double angle, ref int colorStopIndex)
+        {
+            angle = 0;
+            
             if (all[0].StartsWith("to "))
             {
                 var ga = all[0].Substring(3).Trim().Replace(" ", "_");
@@ -365,43 +573,6 @@ namespace Scryber.Drawing
                     angle = (double)GradientAngle.Bottom;
             }
 
-            List<GradientColor> colors = new List<GradientColor>(all.Length - colorStopIndex);
-            bool hasAtleastOneDistance = false;
-            
-            for (int i = colorStopIndex; i < all.Length; i++)
-            {
-                GradientColor parsed;
-                if (GradientColor.TryParse(all[i], out parsed))
-                {
-                    if(i == colorStopIndex && parsed.Distance > 0) // first and offset from zero - so add an initial stop for padding. 
-                        colors.Add(new GradientColor(parsed.Color, 0.0, parsed.Opacity));
-
-                    if (parsed.Distance.HasValue)
-                    {
-                        parsed.Distance = parsed.Distance / 100.0;
-                        hasAtleastOneDistance = true;
-                    }
-                    else if
-                        (i == all.Length - 1 &&
-                         hasAtleastOneDistance) //we are the last one and there are other stops with distances
-                        //so even though we don't have an explicit value we sould always be at 100%
-                    {
-                        parsed.Distance = 1.0;
-                    }
-                    
-                    colors.Add(parsed);
-                    
-                    if(i == all.Length - 1 && parsed.Distance.HasValue && parsed.Distance < 1.0) // last and offset from one - so add an final stop for padding. 
-                        colors.Add(new GradientColor(parsed.Color, 1.0, parsed.Opacity));
-                }
-                else
-                    return false;
-            }
-
-            if (hasAtleastOneDistance)
-                EnsureDistances(colors);
-            
-            linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
             return true;
         }
 
@@ -429,6 +600,30 @@ namespace Scryber.Drawing
             if (lastDistanceIndex > -1 && lastDistanceIndex < colors.Count - 1)
             {
                 //Fill the last ones
+            }
+        }
+
+        private static void FillMiddleDistances(List<GradientColor> colors)
+        {
+            var lastMeasureIndex = -1;
+            var lastMeasureDistance = 0.0;
+            
+            for (var i = 0; i < colors.Count; i++)
+            {
+                GradientColor c = colors[i];
+                if (c.Distance.HasValue)
+                {
+                    if (lastMeasureIndex >= 0)
+                    {
+                        DivideUpDistances(lastMeasureIndex, i, lastMeasureDistance, c.Distance.Value, colors);
+                        lastMeasureIndex = -1;
+                    }
+                    else
+                    {
+                        lastMeasureDistance = c.Distance.Value;
+                        lastMeasureIndex = i;
+                    }
+                }
             }
         }
 

@@ -1,0 +1,45 @@
+﻿<?scryber append-log='false' ?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Linear Gradients - Specific distances</title>
+    <style>
+        p {
+            border: solid 1px black;
+        }
+    </style>
+</head>
+
+<body class='grey' style='font-family: Arial, Helvetica, sans-serif; font-size:20pt; padding:20px; color:white;'>
+
+<!-- Pattern from the start to 25% -->
+<p id='myPara1' style='height: 180px;
+        background-image: repeating-linear-gradient(0deg, red, blue 25%)'>
+    1. Red to Green to top fixed end distance. Repeat after
+</p>
+
+<!-- Pattern from 75% to the end across -->
+<p id='myPara2' style='height: 180px;
+        background-image: repeating-linear-gradient(90deg, red 80%,green)'>
+    2. Red to Green to right fixed start distance, repeat before.
+</p>
+
+<!-- Pattern from 25% to 50% repeating at an angle -->
+<p id='myPara3' style='height: 180px;
+        background-image: repeating-linear-gradient(0.35turn, red 25% ,green 50%)'>
+    3. Red to Green to red to right bottom all fixed distances.
+</p>
+
+
+<p id='myPara4' style='height: 180px;
+        background-image: repeating-linear-gradient(0.5rad, red 25%, green, yellow 30%)'>
+    4. Red to Green to Yellow repeating with fixed end distances, calculated middle and repeat either side.
+</p>
+
+
+<p id='myPara5' style='height: 180px;
+        background-image: repeating-linear-gradient(0.5turn, red, green, blue, yellow)'>
+    5. Red to Green to Blue to Yellow no repeat without distance.
+</p>
+
+</body>
+</html>

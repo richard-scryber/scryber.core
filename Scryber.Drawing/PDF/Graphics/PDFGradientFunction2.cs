@@ -11,9 +11,7 @@ namespace Scryber.PDF.Graphics
     /// </summary>
     public class PDFGradientFunction2 : PDFGradientFunction
     {
-        public double DomainStart { get; set; }
-
-        public double DomainEnd { get; set; }
+       
 
         public Color ColorZero { get; set; }
 

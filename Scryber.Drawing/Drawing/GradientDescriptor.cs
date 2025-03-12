@@ -324,9 +324,8 @@ namespace Scryber.Drawing
                 value = value.Substring("repeating-linear-gradient".Length).Trim();
                 GradientLinearDescriptor linear;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseRepeatingLinear(value.Substring(1, value.Length - 2), out linear))
                 {
-                    linear.Repeating = true;
                     descriptor = linear;
                     return true;
                 }

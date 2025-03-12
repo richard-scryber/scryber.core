@@ -44,10 +44,7 @@ namespace Scryber.PDF.Graphics
         public PDFGradientFunction[] Functions { get; set; }
 
         public PDFGradientFunctionEncode[] Encodes { get; set; }
-
-        public double DomainStart { get; set; }
-
-        public double DomainEnd { get; set; }
+        
 
 
         /// <summary>
