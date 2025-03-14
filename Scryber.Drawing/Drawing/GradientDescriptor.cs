@@ -93,23 +93,8 @@ namespace Scryber.Drawing
                     this.Colors[this.Colors.Count - 1].Distance = 100;
             }
 
-            if (this.Repeating)
-            {
-                List<PDFGradientFunctionBoundary> bounds = GetRepeatingBoundaries(offset, size);
-                List<PDFGradientFunction2> functions = GetRepeatingFunctionsForBounds(bounds);
-
-                
-                bounds.RemoveAt(bounds.Count - 1);
-
-                while (bounds[bounds.Count - 1].Bounds > 1)
-                {
-                    bounds.RemoveAt(bounds.Count - 1);
-                    functions.RemoveAt(functions.Count - 1);
-                }
-
-                return new PDFGradientFunction3(functions.ToArray(), bounds.ToArray());
-            }
-            else if (this.Colors.Count == 2)
+            
+            if (this.Colors.Count == 2)
             {
                 var c0 = this.Colors[0];
                 var c1 = this.Colors[1];
@@ -147,6 +132,9 @@ namespace Scryber.Drawing
 
         protected virtual List<PDFGradientFunction2> GetRepeatingFunctionsForBounds(List<PDFGradientFunctionBoundary> bounds)
         {
+            throw new NotSupportedException(
+                "Do not use the Repeating Functions - pre-caclulate the repeats and use the functions type 2 .");
+            
             List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
 
             var col0Index = 0;
@@ -301,7 +289,7 @@ namespace Scryber.Drawing
             if (null == value)
                 return false;
 
-            value = value.Trim();
+            value = value.Trim().ToLowerInvariant();
 
 
             if (string.IsNullOrEmpty(value))
@@ -359,6 +347,54 @@ namespace Scryber.Drawing
         }
 
         #endregion
+        
+        
+        public static void FillMiddleDistances(List<GradientColor> colors)
+        {
+            var lastMeasureIndex = 0;
+            var lastMeasureDistance = 0.0;
+            bool inUnmeasuredBlock = false; //if we are currently looping over a set of colours without a distance value.
+            
+            for (var i = 0; i < colors.Count; i++)
+            {
+                GradientColor c = colors[i];
+                if (c.Distance.HasValue)
+                {
+                    if (inUnmeasuredBlock)
+                    {
+                        DivideUpDistances(lastMeasureIndex, i, lastMeasureDistance, c.Distance.Value, colors);
+                        lastMeasureIndex = -1;
+                    }
+                    else
+                    {
+                        lastMeasureDistance = c.Distance.Value;
+                        lastMeasureIndex = i;
+                    }
+                    inUnmeasuredBlock = false;
+                }
+                else
+                {
+                    inUnmeasuredBlock = true;
+                }
+            }
+        }
+
+        public static void DivideUpDistances(int lastDistanceIndex, int currentIndex, double lastDistance, double currentDistance,
+            List<GradientColor> colors)
+        {
+            
+            var factor = (currentDistance - lastDistance) / (currentIndex - lastDistanceIndex);
+            var count = currentIndex - lastDistanceIndex;
+            var newDistance = lastDistance;
+            
+            for (int i = 1; i < count; i++)
+            {
+                var c = colors[i + lastDistanceIndex];
+                newDistance += factor;
+                
+                c.Distance = newDistance;
+            }
+        }
 
     }
 

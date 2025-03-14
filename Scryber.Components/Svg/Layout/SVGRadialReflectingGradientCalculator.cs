@@ -16,7 +16,7 @@ public class SVGRadialReflectingGradientCalculator : SVGRadialGradientCalculator
 
     public override GradientRadialDescriptor CreateDescriptor(SVGGradientStopList stops)
     {
-         var descriptor = new GradientRadialDescriptor(new List<GradientColor>());
+         var descriptor = new GradientSVGRadialDescriptor(new List<GradientColor>());
         
         descriptor.StartCenter = this.ToNonRelative(this.FirstCentre);
         descriptor.EndCenter = this.ToNonRelative(this.SecondCentre);

@@ -558,7 +558,7 @@ namespace Scryber.Drawing
     /// </summary>
     public enum RadialShape
     {
-        [Obsolete("Ellipse gradients are not currently supported", true)]
+        [Obsolete("Ellipse gradients are not currently supported", false)]
         Ellipse,
         Circle
     }

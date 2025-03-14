@@ -399,7 +399,8 @@ namespace Scryber.Drawing
             linear = new GradientLinearDescriptor(holder, angle);
             linear.MinDomain = Math.Min(0.0, minDistance);
             linear.MaxDomain = Math.Max(1.0, maxDistance);
-
+            linear.Repeating = true;
+            
             return true;
 
         }
@@ -440,7 +441,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        private static bool ParseGradientColors(string[] all, int startIndex, out List<GradientColor> colors, out bool hasAtleastOneDistance, bool padStart, bool padEnd)
+        internal static bool ParseGradientColors(string[] all, int startIndex, out List<GradientColor> colors, out bool hasAtleastOneDistance, bool padStart, bool padEnd)
         {
             colors = new List<GradientColor>(all.Length - startIndex);
             hasAtleastOneDistance = false;
@@ -576,7 +577,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        private static void EnsureDistances(List<GradientColor> colors)
+        internal static void EnsureDistances(List<GradientColor> colors)
         {
             int lastDistanceIndex = -1;
             double lastDistance = 0;
@@ -603,46 +604,7 @@ namespace Scryber.Drawing
             }
         }
 
-        private static void FillMiddleDistances(List<GradientColor> colors)
-        {
-            var lastMeasureIndex = -1;
-            var lastMeasureDistance = 0.0;
-            
-            for (var i = 0; i < colors.Count; i++)
-            {
-                GradientColor c = colors[i];
-                if (c.Distance.HasValue)
-                {
-                    if (lastMeasureIndex >= 0)
-                    {
-                        DivideUpDistances(lastMeasureIndex, i, lastMeasureDistance, c.Distance.Value, colors);
-                        lastMeasureIndex = -1;
-                    }
-                    else
-                    {
-                        lastMeasureDistance = c.Distance.Value;
-                        lastMeasureIndex = i;
-                    }
-                }
-            }
-        }
-
-        private static void DivideUpDistances(int lastDistanceIndex, int currentIndex, double lastDistance, double currentDistance,
-            List<GradientColor> colors)
-        {
-            
-            var factor = (currentDistance - lastDistance) / (currentIndex - lastDistanceIndex);
-            var count = currentIndex - lastDistanceIndex;
-            var newDistance = lastDistance;
-            
-            for (int i = 1; i < count; i++)
-            {
-                var c = colors[i + lastDistanceIndex];
-                newDistance += factor;
-                
-                c.Distance = newDistance;
-            }
-        }
+        
 
         #endregion
 
