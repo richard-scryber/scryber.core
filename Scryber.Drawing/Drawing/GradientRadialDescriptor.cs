@@ -20,6 +20,10 @@ namespace Scryber.Drawing
         
         public Unit? EndRadius { get; set; }
 
+        //
+        // ctor
+        //
+        
         public GradientRadialDescriptor(): this(new List<GradientColor>(), RadialShape.Circle, RadialSize.FarthestSide)
         {}
 
@@ -32,7 +36,55 @@ namespace Scryber.Drawing
             EndCenter = StartCenter;
         }
         
-        private Unit GetStartingRadius(Point parentLocation, Size parentSize)
+        //
+        // public methods
+        //
+        
+        
+        public virtual double[] GetCoordsForBounds(Point location, Size size, bool flip = true )
+        {
+            EnsureNonRelative(location.X, location.Y); //just a quick check before we calculate the bounds
+            EnsureNonRelative(size.Width, size.Height);
+            
+            var startCentre = GetStartingCentre(location, size);
+            var endCentre = GetEndingCentre(location, size);
+            
+            var startRadius = GetStartingRadius(location, size, startCentre, endCentre);
+            var endRadius = GetEndingRadius(location, size, startCentre, endCentre);
+            
+            
+            double max = Math.Max(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue));
+            double[] coords = new double[6];
+            coords[0] = location.X.PointsValue + startCentre.X.PointsValue;
+            
+            if (flip)
+                coords[1] = location.Y.PointsValue + startCentre.Y.PointsValue;
+            else
+                coords[1] = location.Y.PointsValue + startCentre.Y.PointsValue;
+            
+            coords[2] = startRadius.PointsValue;
+
+
+            coords[3] = location.X.PointsValue + endCentre.X.PointsValue;
+
+            if (flip)
+                coords[4] = location.Y.PointsValue + endCentre.Y.PointsValue;
+            else
+                coords[4] = location.Y.PointsValue + endCentre.Y.PointsValue;
+
+            if (endRadius <= Unit.Zero)
+                coords[5] = MinEndRadius;
+            else
+                coords[5] = endRadius.PointsValue;
+            
+            return coords;
+        }
+        
+        //
+        // private implementation
+        //
+        
+        private Unit GetStartingRadius(Point parentLocation, Size parentSize, Point startCenter, Point endCenter)
         {
             if (!StartRadius.HasValue)
             {
@@ -45,18 +97,20 @@ namespace Scryber.Drawing
             return StartRadius.Value;
         }
         
-        private Unit GetEndingRadius(Point parentLocation, Size parentSize)
+        private Unit GetEndingRadius(Point parentLocation, Size parentSize, Point startCenter, Point endCenter)
         {
+            Unit rad = Unit.Zero;
             if (!EndRadius.HasValue)
             {
                 if (this.Size == RadialSize.None)
                     this.Size = RadialSize.FarthestCorner;
 
-                var pt = this.GetStartingCentre(parentLocation, parentSize);
-                var x1 = pt.X.PointsValue;
-                var y1 = pt.Y.PointsValue;
-                var x2 = parentSize.Width.PointsValue - x1;
-                var y2 = parentSize.Height.PointsValue - y1;
+                var pt = startCenter;
+                var x1 = Math.Abs(pt.X.PointsValue);
+                var y1 = Math.Abs(pt.Y.PointsValue);
+                var x2 =  Math.Abs(parentSize.Width.PointsValue)- x1;
+                var y2 = Math.Abs(parentSize.Height.PointsValue) - y1;
+                
                 double radius = 0.0;
                 double h1, h2, h3, h4;
                 
@@ -85,14 +139,14 @@ namespace Scryber.Drawing
                         break;
                 }
                 
-                EndRadius = new Unit(radius);
+                rad = new Unit(radius);
             }
             else if (this.EndRadius.Value.IsRelative)
             {
-                this.EndRadius = GetAbsoluteRadiusFromPercent(this.EndRadius.Value, parentLocation, parentSize);
+                rad = GetAbsoluteRadiusFromPercent(this.EndRadius.Value, parentLocation, parentSize);
             }
             
-            return EndRadius.Value;
+            return rad;
         }
 
         private static Unit GetAbsoluteRadiusFromPercent(Unit relativeRadius, Point parentLocation, Size parentSize)
@@ -110,9 +164,13 @@ namespace Scryber.Drawing
         
         private Point GetStartingCentre(Point parentLocation, Size parentSize)
         {
+            Point pt = Point.Empty;
+            
+            
             if (!StartCenter.HasValue)
             {
-                StartCenter = new Point((parentSize.Width / 2) + parentLocation.X, (parentSize.Height / 2) + parentLocation.Y);
+                pt = new Point((parentSize.Width / 2), (parentSize.Height / 2));
+                return pt;
             }
             else if (StartCenter.Value.IsRelative)
             {
@@ -137,17 +195,25 @@ namespace Scryber.Drawing
                             "The stating centre values must be a point value or a percentage of the final size");
                 }
                 
-                StartCenter = new Point(x, y);
+                pt = new Point(x, y);
+                return pt;
+            }
+            else
+            {
+                pt = StartCenter.Value;
+                pt.Y = 0 - StartCenter.Value.Y;
+                return pt;
             }
             
-            return StartCenter.Value;
         }
         private Point GetEndingCentre(Point parentLocation, Size parentSize)
         {
+            Point pt = Point.Empty;
+            
             if (!EndCenter.HasValue)
             {
                 //TODO: Convert from Top, Bottom, Left and Right
-                EndCenter = new Point((parentSize.Width / 2) + parentLocation.X, (parentSize.Height / 2) + parentLocation.Y);
+                pt = new Point((parentSize.Width / 2), (parentSize.Height / 2));
             }
             else if (EndCenter.Value.IsRelative)
             {
@@ -172,10 +238,15 @@ namespace Scryber.Drawing
                             "The stating centre values must be a point value or a percentage of the final size");
                 }
                 
-                EndCenter = new Point(x, y);
+                pt = new Point(x, y);
+            }
+            else
+            {
+                pt = EndCenter.Value;
+                pt.Y = 0 - EndCenter.Value.Y;
             }
             
-            return EndCenter.Value;
+            return pt;
         }
 
         private static void EnsureNonRelative(Unit x, Unit y)
@@ -188,55 +259,48 @@ namespace Scryber.Drawing
                 throw new ArgumentOutOfRangeException(nameof(y),
                     "The values for size and location of a radial gradients filled object cannot be relative dimensions");
         }
+
+        private const double MinEndRadius = 0.01; //There has to be a little bit.
         
-        public virtual double[] GetCoordsForBounds(Point location, Size size, bool flip = true )
-        {
-            EnsureNonRelative(location.X, location.Y); //just a quick check before we calculate the bounds
-            EnsureNonRelative(size.Width, size.Height);
-            
-            var startRadius = GetStartingRadius(location, size);
-            var endRadius = GetEndingRadius(location, size);
-            var startCentre = GetStartingCentre(location, size);
-            var endCentre = GetEndingCentre(location, size);
-            
-            double max = Math.Max(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue));
-            double[] coords = new double[6];
-            coords[0] = location.X.PointsValue + startCentre.X.PointsValue;
-            
-            if (flip)
-                coords[1] = location.Y.PointsValue + startCentre.Y.PointsValue;
-            else
-                coords[1] = location.Y.PointsValue + startCentre.Y.PointsValue;
-            
-            coords[2] = startRadius.PointsValue;
+       
 
-
-            coords[3] = location.X.PointsValue + endCentre.X.PointsValue;
-
-            if (flip)
-                coords[4] = location.Y.PointsValue + endCentre.Y.PointsValue;
-            else
-                coords[4] = location.Y.PointsValue + endCentre.Y.PointsValue;
-            
-            coords[5] = max * endRadius.PointsValue;
-            
-            return coords;
-        }
-
+        //
+        // Radial Gradient Parsing
+        //
+        
 
         public static GradientRadialDescriptor ParseRadial(string value)
         {
             GradientRadialDescriptor desc;
-            if(TryParseRadial(value, out desc))
+            if (value.StartsWith("repeating-radial-gradient"))
+            {
+                if(TryParseRepeatingRadial(value, out desc))
+                    return desc;
+                else
+                {
+                    throw new ArgumentException($"Invalid repeating-radial-gradient value: {value}");
+                }
+            }
+            else if(TryParseRadial(value, out desc))
                 return desc;
             else
             {
-                throw new ArgumentException($"Invalid radial value: {value}");
+                throw new ArgumentException($"Invalid radial-gradient value: {value}");
             }
 
         }
         
         private static Regex _splitter = new Regex(",(?![^\\(]*\\))");
+
+        public static bool TryParseRepeatingRadial(string value, out GradientRadialDescriptor descriptor)
+        {
+            var success = TryParseRadial(value, out descriptor);
+            
+            if(success)
+                descriptor.Repeating = true;
+            
+            return success;
+        }
 
         public static bool TryParseRadial(string value, out GradientRadialDescriptor result)
         {
@@ -263,7 +327,7 @@ namespace Scryber.Drawing
 
             RadialSize size;
             RadialShape shape;
-            Point centre;
+            Point? centre;
             List<GradientColor> colors;
             int colorOffset = 0;
 
@@ -341,7 +405,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        private static bool TryParseCentre(string[] all, int offset, out Point centre)
+        private static bool TryParseCentre(string[] all, int offset, out Point? centre)
         {
             var one = all[offset];
             Unit h = Unit.Percent(50);
@@ -411,8 +475,13 @@ namespace Scryber.Drawing
                 }
 
                 one = ""; //should always be the last.
+                centre = new Point(h, v);
             }
-            centre = new Point(h, v);
+            else
+            {
+                centre = null;
+            }
+            
             all[offset] = one;
             
             return true;

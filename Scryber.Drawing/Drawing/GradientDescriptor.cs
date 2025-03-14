@@ -335,9 +335,8 @@ namespace Scryber.Drawing
                 value = value.Substring("repeating-radial-gradient".Length).Trim();
                 GradientRadialDescriptor radial;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRepeatingRadial(value.Substring(1, value.Length - 2), out radial))
                 {
-                    radial.Repeating = true;
                     descriptor = radial;
                     return true;
                 }

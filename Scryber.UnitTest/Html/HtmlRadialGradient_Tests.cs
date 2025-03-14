@@ -497,16 +497,16 @@ namespace Scryber.Core.UnitTests.Html
         
 
         [TestMethod]
-        public void LinearGradientTest()
+        public void RadialGradientTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradients.html",
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RadialGradients.html",
                 this.TestContext);
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradient.pdf"))
+                    using (var stream = DocStreams.GetOutputStream("RadialGradients.pdf"))
                     {
                         doc.LayoutComplete += Gradient_LayoutComplete;
                         doc.SaveAsPDF(stream);
