@@ -1,13 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Scryber.PDF.Graphics;
 
 
 namespace Scryber.Drawing
 {
     public class GradientRadialDescriptor : GradientDescriptor
     {
+        //If the resultant gradient coords has a zero end radius (which is invalid), these will be used insted.
+        
+        private const double MinEndRadius = 0.01; //There has to be a little bit.
+        private const double MinRepeatingEndRadius = 0.05; //Repeating will have a bit more room. 20 repeats
+        
         public RadialShape Shape { get; set; }
 
         public RadialSize Size { get; set; }
@@ -50,7 +57,23 @@ namespace Scryber.Drawing
             var endCentre = GetEndingCentre(location, size);
             
             var startRadius = GetStartingRadius(location, size, startCentre, endCentre);
-            var endRadius = GetEndingRadius(location, size, startCentre, endCentre);
+
+            RadialSize hackedSize = RadialSize.FarthestCorner;
+            
+            if (this.Repeating)
+            {
+                //for repeating set the end size to the farthest corner
+                hackedSize = this.Size;
+                this.Size = RadialSize.FarthestCorner;
+            }
+            
+           var endRadius  = GetEndingRadius(location, size, startCentre, endCentre);
+
+           if (this.Repeating)
+           {
+               //restore the size
+               this.Size = hackedSize;
+           }
             
             
             double max = Math.Max(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue));
@@ -73,16 +96,136 @@ namespace Scryber.Drawing
                 coords[4] = location.Y.PointsValue + endCentre.Y.PointsValue;
 
             if (endRadius <= Unit.Zero)
-                coords[5] = MinEndRadius;
+            {
+                if (this.Repeating)
+                    coords[5] = MinRepeatingEndRadius * size.Width.PointsValue;
+                else
+                    coords[5] = MinEndRadius;
+            }
             else
                 coords[5] = endRadius.PointsValue;
             
             return coords;
         }
-        
+
+        public override PDFGradientFunction GetGradientFunction(Point offset, Size size)
+        {
+            
+            var func = base.GetGradientFunction(offset, size);
+            
+            if (this.Repeating)
+            {
+                //
+                double startDistance = GetStartDistance();
+                double endDistance = GetEndDistance();
+                double definedDistance = endDistance - startDistance;
+                double innerRepeat = 1d / definedDistance;
+                
+                double outerRepeat;
+                
+                if (this.Size == RadialSize.FarthestCorner)
+                {
+                    outerRepeat = 1;
+                }
+                else
+                {
+                    var center = this.GetStartingCentre(offset, size);
+                    var stdRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
+                    
+                    //Quick switch to find the ending radius to the farthest corner - this will give us our outer repeat.
+                    var hackedSize = this.Size;
+                    this.Size = RadialSize.FarthestCorner;
+                    var maxRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
+                    this.Size = hackedSize;
+                    
+                    outerRepeat = Math.Ceiling(maxRad/stdRad);
+                }
+                
+                List<PDFGradientFunction> inner = new List<PDFGradientFunction>();
+                List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+                var total = innerRepeat * outerRepeat;
+                var factor = 1 / total;
+                var distance = 0.0d;
+                
+                if (func is PDFGradientFunction2 func2)
+                {
+
+                    if (total > 1)
+                    {
+                        for (var i = 0; i < total; i++)
+                        {
+                            inner.Add(func2);
+                            
+                            if (i > 0 && i < total)
+                                bounds.Add(new PDFGradientFunctionBoundary(distance));
+                            
+                            distance += factor;
+                        }
+
+                        func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
+                    }
+                }
+                else if (func is PDFGradientFunction3 func3)
+                {
+                    foreach (var bound in func3.Boundaries)
+                    {
+                        bounds.Add(new PDFGradientFunctionBoundary(bound.Bounds * innerRepeat));
+                    }
+                    func3 = new PDFGradientFunction3(func3.Functions, bounds.ToArray());
+                    bounds.Clear();
+                    
+                    if (total > 1)
+                    {
+                        for (var i = 0; i < total; i++)
+                        {
+                            inner.Add(func3);
+                            
+                            if (i > 0 && i < total)
+                                bounds.Add(new PDFGradientFunctionBoundary(distance));
+                            
+                            distance += factor;
+                        }
+
+                        func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
+                    }
+                }
+            }
+            
+            return func;
+        }
+
         //
         // private implementation
         //
+
+        private double GetStartDistance()
+        {
+            var first = this.Colors[0];
+            if (!first.Distance.HasValue)
+            {
+                first.Distance = 0.0;
+                return 0.0;
+            }
+            else
+            {
+                return first.Distance.Value;
+            }
+        }
+
+        private double GetEndDistance()
+        {
+            var last = this.Colors[this.Colors.Count - 1];
+            if (!last.Distance.HasValue)
+            {
+                last.Distance = 1.0;
+                return 1.0;
+            }
+            else
+            {
+                return last.Distance.Value;
+            }
+        }
+        
         
         private Unit GetStartingRadius(Point parentLocation, Size parentSize, Point startCenter, Point endCenter)
         {
@@ -260,7 +403,7 @@ namespace Scryber.Drawing
                     "The values for size and location of a radial gradients filled object cannot be relative dimensions");
         }
 
-        private const double MinEndRadius = 0.01; //There has to be a little bit.
+        
         
        
 
@@ -294,7 +437,9 @@ namespace Scryber.Drawing
 
         public static bool TryParseRepeatingRadial(string value, out GradientRadialDescriptor descriptor)
         {
-            var success = TryParseRadial(value, out descriptor);
+            bool zeroStart = false;
+            bool hundredEnd = false;
+            var success = TryParseRadial(value, out descriptor, zeroStart, hundredEnd);
             
             if(success)
                 descriptor.Repeating = true;
@@ -302,7 +447,7 @@ namespace Scryber.Drawing
             return success;
         }
 
-        public static bool TryParseRadial(string value, out GradientRadialDescriptor result)
+        public static bool TryParseRadial(string value, out GradientRadialDescriptor result, bool ensureZeroStart = true, bool ensure100End = true)
         {
             result = null;
             
@@ -336,7 +481,7 @@ namespace Scryber.Drawing
                 if (all[0].Length == 0)
                     colorOffset++;
                 
-                if (TryParseColors(all, colorOffset, out colors))
+                if (TryParseColors(all, colorOffset, out colors, ensureZeroStart, ensure100End))
                 {
                     result = new GradientRadialDescriptor(colors, shape, size);
                     result.StartCenter = centre;
@@ -487,7 +632,7 @@ namespace Scryber.Drawing
             return true;
         }
 
-        private static bool TryParseColors(string[] all, int offset, out List<GradientColor> colors)
+        private static bool TryParseColors(string[] all, int offset, out List<GradientColor> colors, bool ensureZeroStart = true, bool ensure100End = true)
         {
             colors = new List<GradientColor>();
             bool hasAtleastOneDistance = false;
@@ -495,13 +640,15 @@ namespace Scryber.Drawing
             for (var i = offset; i < all.Length; i++)
             {
                 var one = all[i];
-                
+
                 if (GradientColor.TryParse(one, out var color))
                 {
-                    
-                    if(i == offset && color.Distance.HasValue && color.Distance.Value > 0)
-                        colors.Add(new GradientColor(color.Color, 0.0, color.Opacity));
 
+                    if (ensureZeroStart)
+                    {
+                        if (i == offset && color.Distance.HasValue && color.Distance.Value > 0)
+                            colors.Add(new GradientColor(color.Color, 0.0, color.Opacity));
+                    }
 
                     if (color.Distance.HasValue)
                     {
@@ -510,9 +657,12 @@ namespace Scryber.Drawing
                     }
 
                     colors.Add(color);
-                    
-                    if(i == all.Length - 1 && color.Distance.HasValue && color.Distance.Value < 1.0)
-                        colors.Add(new GradientColor(color.Color, 1.0, color.Opacity));
+
+                    if (ensure100End)
+                    {
+                        if (i == all.Length - 1 && color.Distance.HasValue && color.Distance.Value < 1.0)
+                            colors.Add(new GradientColor(color.Color, 1.0, color.Opacity));
+                    }
                 }
             }
 

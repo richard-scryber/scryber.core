@@ -45,8 +45,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -62,8 +62,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -83,11 +83,10 @@ namespace Scryber.Core.UnitTests.Html
             
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
-            Assert.AreEqual(new Point(Unit.Percent(50), Unit.Percent(50)), parsed.StartCenter);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.ClosestSide, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -109,8 +108,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.ClosestCorner, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -132,8 +131,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -155,8 +154,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -178,8 +177,8 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
             Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
-            Assert.AreEqual(pcntCentre, parsed.StartCenter);
-            Assert.AreEqual(pcntCentre, parsed.EndCenter);
+            Assert.IsNull(parsed.StartCenter);
+            Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
             Assert.IsFalse(parsed.EndRadius.HasValue);
             
@@ -396,6 +395,11 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(6, coords.Length);
             
             Assert.AreEqual(fx, coords[0], "First X coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
+            Assert.AreEqual(fy, coords[1], "First Y coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
+            Assert.AreEqual(fr, coords[2], "First radius coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
+            Assert.AreEqual(cx, coords[3], "End X coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
+            Assert.AreEqual(cy, coords[4], "End Y coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
+            Assert.AreEqual(cr, coords[5], "End Radius coordinate failed for the Radial Gradient " + testIndex + " expected : " + expected);
         }
 
         /// <summary>
@@ -421,6 +425,48 @@ namespace Scryber.Core.UnitTests.Html
             var coords = parsed.GetCoordsForBounds(location, size);
             AssertCoordinates(coords, 125d, 100d, 0d, 125d, 100d, 100d, 1, "Centre to Centre with 100pt radius to the farthest side");
 
+            grad = "radial-gradient(at left top, red, green)";
+            parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
+            
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(RadialShape.Circle, parsed.Shape);
+            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            location = new Point(Unit.Pt(25), Unit.Pt(50));;
+            size = new Size(Unit.Pt(200), Unit.Pt(100));
+            
+            coords = parsed.GetCoordsForBounds(location, size);
+            AssertCoordinates(coords, 25d, 50d, 0d, 25d, 50d, 200d, 2, "Left Top with 200pt radius to the farthest side");
+            
+            grad = "radial-gradient(at bottom right, red, green)";
+            parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
+            
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(RadialShape.Circle, parsed.Shape);
+            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            location = new Point(Unit.Pt(25), Unit.Pt(50));;
+            size = new Size(Unit.Pt(200), Unit.Pt(100));
+            
+            coords = parsed.GetCoordsForBounds(location, size);
+            AssertCoordinates(coords, 225d, 150d, 0d, 225d, 150d, 200d, 3, "Bottom Right with 200pt radius to the farthest side");
+            
+            grad = "radial-gradient(at 25pt 35pt, red, green)";
+            parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
+            
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(RadialShape.Circle, parsed.Shape);
+            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            location = new Point(Unit.Pt(25), Unit.Pt(50));;
+            size = new Size(Unit.Pt(200), Unit.Pt(100));
+            
+            coords = parsed.GetCoordsForBounds(location, size);
+            AssertCoordinates(coords, 50d, 15d, 0d, 50d, 15d, 175d, 4,
+                "50pt, 15pt with 175pt radius to the farthest side"); //Y is reduced as PDF down is -ve;
         }
         
         
@@ -486,6 +532,41 @@ namespace Scryber.Core.UnitTests.Html
                 }
             }
         }
+        
+        private static void ValidateRadialGradient(PDFRadialShadingPattern one, Size size, Color[] cols, double[] coords, string id, int repeatCount = 1)
+        {
+            Assert.IsTrue(one.PatternType == PatternType.ShadingPattern, "Pattern type failed for " + id);
+            Assert.IsTrue(one.Registered, "Registered flag failed for " + id);
+            Assert.IsNotNull(one.Descriptor, "Null descriptor for " + id);
+            Assert.AreEqual(cols.Length, one.Descriptor.Colors.Count, "Descriptor color count failed for " + id);
+            
+            var descCoords = one.Descriptor.GetCoordsForBounds(Point.Empty, size);
+            Assert.AreEqual(coords.Length, descCoords.Length, "Coords length failed for " + id);
+            for (var i = 0; i < 6; i++)
+            {
+                Assert.AreEqual(coords[i], descCoords[i], "Coords value at '" + i + "' failed for " + id);
+            }
+            
+            Assert.AreEqual(GradientType.Radial, one.Descriptor.GradientType, "Descriptor pattern type failed for " + id);
+
+            if (repeatCount <= 1)
+                Assert.IsFalse(one.Descriptor.Repeating, "Repeating flag does not match for " + id);
+
+            for (int i = 0; i < cols.Length; i++)
+            {
+                Assert.AreEqual(cols[i], one.Descriptor.Colors[i].Color, "Color '" + i + "' does not match '" + cols[i].ToString() + "' for " + id);
+            }
+            
+            var func = one.Descriptor.GetGradientFunction(Point.Empty, size);
+            if (cols.Length < 3 && repeatCount <= 1)
+            {
+                //Single Loop
+            }
+            else
+            {
+                //Loop over all
+            }
+        }
 
         private void Gradient_LayoutComplete(object sender, LayoutEventArgs args)
         {
@@ -513,8 +594,9 @@ namespace Scryber.Core.UnitTests.Html
                     }
 
                     var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
+                    // var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
+                    // var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
+                    var rgy = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Yellow };
 
                     Assert.IsNotNull(_layout);
                     var pg = _layout.AllPages[0];
@@ -524,18 +606,21 @@ namespace Scryber.Core.UnitTests.Html
 
                     var patterns = resources.Types["Pattern"];
                     Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
+                    Assert.AreEqual(15, patterns.Count);
 
+                    var stdSz = new Size(500, 200);
                     
-                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom, "myPara1" );
-                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left, "myPara2");
-                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left, "myPara3");
-                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left, "myPara4");
-                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top, "myPara5");
-                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right, "myPara6");
-                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right, "myPara7");
-                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom_Right, "myPara8");
-                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom, "myPara9");
+                    // Red to Green default from centre.
+                    var coords = new double[] { 250, 100, 0, 250, 100, 250 };
+                    ValidateRadialGradient(patterns[0] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara1" );
+                    
+                    //Red to Green Circle from centre.
+                    coords = [250, 100, 0, 250, 100, 250];
+                    ValidateRadialGradient(patterns[1] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara2" );
+                    
+                    //Red to Green closest side from centre.
+                    coords = [250, 100, 0, 250, 100, 100];
+                    ValidateRadialGradient(patterns[2] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara3" );
                 }
             }
 

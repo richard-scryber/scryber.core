@@ -209,16 +209,22 @@ namespace Scryber.PDF.Graphics
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace, (PDFReal)color.Gray);
+                    this.Writer.WriteRealS(color.Gray, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace);
                     break;
                 case ColorSpace.CMYK:
                 case ColorSpace.RGB:
                     color = color.ToRGB();
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
+                    this.Writer.WriteRealS(color.Red, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Green, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Blue, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace);
+                    
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:
                 case ColorSpace.Custom:
+                    throw new NotSupportedException(String.Format(Errors.ColorValueIsNotCurrentlySupported, color.ColorSpace));
                 default:
                     throw new ArgumentOutOfRangeException("color.ColorSpace", String.Format(Errors.ColorValueIsNotCurrentlySupported, color.ColorSpace));
 
@@ -230,12 +236,16 @@ namespace Scryber.PDF.Graphics
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace, (PDFReal)color.Gray);
+                    this.Writer.WriteRealS(color.Gray, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace);
                     break;
                 case ColorSpace.CMYK:
                 case ColorSpace.RGB:
                     color = color.ToRGB();
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
+                    this.Writer.WriteRealS(color.Red, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Green, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Blue, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace);
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:

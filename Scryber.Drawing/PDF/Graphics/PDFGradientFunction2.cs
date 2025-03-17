@@ -44,11 +44,13 @@ namespace Scryber.PDF.Graphics
             writer.EndDictionaryEntry();
             var c0 = this.ColorZero.ToRGB();
             writer.BeginDictionaryEntry("C0");
-            writer.WriteArrayRealEntries(c0.Red, c0.Green, c0.Blue);
+            writer.WriteColorArray(c0);
+            //writer.WriteArrayRealEntries(c0.Red, c0.Green, c0.Blue);
             writer.EndDictionaryEntry();
             var c1 = this.ColorOne.ToRGB();
             writer.BeginDictionaryEntry("C1");
-            writer.WriteArrayRealEntries(c1.Red, c1.Green, c1.Blue);
+            writer.WriteColorArray(c1);
+            //writer.WriteArrayRealEntries(c1.Red, c1.Green, c1.Blue);
             writer.EndDictionaryEntry();
 
             writer.WriteDictionaryRealEntry("N", this.Exponent);

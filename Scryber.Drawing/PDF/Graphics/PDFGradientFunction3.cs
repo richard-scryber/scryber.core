@@ -103,7 +103,7 @@ namespace Scryber.PDF.Graphics
             foreach (var boundary in this.Boundaries)
             {
                 writer.BeginArrayEntry();
-                writer.WriteRealS(boundary.Bounds);
+                writer.WriteRealS(boundary.Bounds, "F5");
                 writer.EndArrayEntry();
             }
             writer.EndArray();
