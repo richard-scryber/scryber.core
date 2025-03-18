@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -115,80 +116,7 @@ namespace Scryber.Drawing
             
             if (this.Repeating)
             {
-                //
-                double startDistance = GetStartDistance();
-                double endDistance = GetEndDistance();
-                double definedDistance = endDistance - startDistance;
-                double innerRepeat = 1d / definedDistance;
-                
-                double outerRepeat;
-                
-                if (this.Size == RadialSize.FarthestCorner)
-                {
-                    outerRepeat = 1;
-                }
-                else
-                {
-                    var center = this.GetStartingCentre(offset, size);
-                    var stdRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
-                    
-                    //Quick switch to find the ending radius to the farthest corner - this will give us our outer repeat.
-                    var hackedSize = this.Size;
-                    this.Size = RadialSize.FarthestCorner;
-                    var maxRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
-                    this.Size = hackedSize;
-                    
-                    outerRepeat = Math.Ceiling(maxRad/stdRad);
-                }
-                
-                List<PDFGradientFunction> inner = new List<PDFGradientFunction>();
-                List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
-                var total = innerRepeat * outerRepeat;
-                var factor = 1 / total;
-                var distance = 0.0d;
-                
-                if (func is PDFGradientFunction2 func2)
-                {
-
-                    if (total > 1)
-                    {
-                        for (var i = 0; i < total; i++)
-                        {
-                            inner.Add(func2);
-                            
-                            if (i > 0 && i < total)
-                                bounds.Add(new PDFGradientFunctionBoundary(distance));
-                            
-                            distance += factor;
-                        }
-
-                        func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
-                    }
-                }
-                else if (func is PDFGradientFunction3 func3)
-                {
-                    foreach (var bound in func3.Boundaries)
-                    {
-                        bounds.Add(new PDFGradientFunctionBoundary(bound.Bounds * innerRepeat));
-                    }
-                    func3 = new PDFGradientFunction3(func3.Functions, bounds.ToArray());
-                    bounds.Clear();
-                    
-                    if (total > 1)
-                    {
-                        for (var i = 0; i < total; i++)
-                        {
-                            inner.Add(func3);
-                            
-                            if (i > 0 && i < total)
-                                bounds.Add(new PDFGradientFunctionBoundary(distance));
-                            
-                            distance += factor;
-                        }
-
-                        func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
-                    }
-                }
+                func = ApplyRepeatingFunctionFor(func, offset, size);
             }
             
             return func;
@@ -197,6 +125,87 @@ namespace Scryber.Drawing
         //
         // private implementation
         //
+
+        private PDFGradientFunction ApplyRepeatingFunctionFor(PDFGradientFunction func, Point offset, Size size)
+        {
+            double startDistance = GetStartDistance();
+            double endDistance = GetEndDistance();
+            double definedDistance = endDistance - startDistance;
+            double innerRepeat = 1d / definedDistance;
+
+            double outerRepeat;
+
+            if (this.Size == RadialSize.FarthestCorner)
+            {
+                outerRepeat = 1;
+            }
+            else
+            {
+                var center = this.GetStartingCentre(offset, size);
+                var stdRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
+
+                //Quick switch to find the ending radius to the farthest corner - this will give us our outer repeat.
+                var hackedSize = this.Size;
+                this.Size = RadialSize.FarthestCorner;
+                var maxRad = this.GetEndingRadius(offset, size, center, center).PointsValue;
+                this.Size = hackedSize;
+
+                outerRepeat = Math.Ceiling(maxRad / stdRad);
+            }
+
+            List<PDFGradientFunction> inner = new List<PDFGradientFunction>();
+            List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
+            var total = innerRepeat * outerRepeat;
+            var factor = 1 / total;
+            var distance = 0.0d;
+
+            if (func is PDFGradientFunction2 func2)
+            {
+
+                if (total > 1)
+                {
+                    for (var i = 0; i < total; i++)
+                    {
+                        inner.Add(func2);
+
+                        if (i > 0 && i < total)
+                            bounds.Add(new PDFGradientFunctionBoundary(distance));
+
+                        distance += factor;
+                    }
+
+                    func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
+                }
+            }
+            else if (func is PDFGradientFunction3 func3)
+            {
+                foreach (var bound in func3.Boundaries)
+                {
+                    bounds.Add(new PDFGradientFunctionBoundary(bound.Bounds * innerRepeat));
+                }
+
+                func3 = new PDFGradientFunction3(func3.Functions, bounds.ToArray());
+                bounds.Clear();
+
+                if (total > 1)
+                {
+                    for (var i = 0; i < total; i++)
+                    {
+                        inner.Add(func3);
+
+                        if (i > 0 && i < total)
+                            bounds.Add(new PDFGradientFunctionBoundary(distance));
+
+                        distance += factor;
+                    }
+
+                    func = new PDFGradientFunction3(inner.ToArray(), bounds.ToArray());
+                }
+            }
+
+            return func;
+        }
+        
 
         private double GetStartDistance()
         {
@@ -440,10 +449,24 @@ namespace Scryber.Drawing
             bool zeroStart = false;
             bool hundredEnd = false;
             var success = TryParseRadial(value, out descriptor, zeroStart, hundredEnd);
-            
-            if(success)
+
+            if (success)
+            {
+                if (descriptor.Colors.Count > 0)
+                {
+                    if (descriptor.Colors[0].Distance.HasValue == false)
+                        descriptor.Colors[0].Distance = 0.0d;
+                }
+
+                if (descriptor.Colors.Count > 1)
+                {
+                    if (descriptor.Colors[descriptor.Colors.Count - 1].Distance.HasValue == false)
+                        descriptor.Colors[descriptor.Colors.Count - 1].Distance = 1.0d;
+                }
+                
                 descriptor.Repeating = true;
-            
+            }
+
             return success;
         }
 
@@ -542,7 +565,7 @@ namespace Scryber.Drawing
             }
             else
             {
-                size = RadialSize.FarthestSide;
+                size = RadialSize.FarthestCorner;
             }
             
             all[offset] = one;
@@ -616,7 +639,9 @@ namespace Scryber.Drawing
                         }
                     }
                     else
-                        v = h;
+                    {
+                        //defaults of 50%, 50% should work
+                    }
                 }
 
                 one = ""; //should always be the last.

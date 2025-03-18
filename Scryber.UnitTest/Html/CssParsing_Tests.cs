@@ -1914,13 +1914,20 @@ body.grey div.reverse{
 
                 using (var stream = DocStreams.GetOutputStream("CSSVariableApplicationTest.pdf"))
                 {
-                    doc.LayoutComplete += ParseCSSWithInnerVariableApplied_LayoutComplete;
+                    doc.LayoutComplete += SaveLayout;
                     doc.SaveAsPDF(stream);
+                    this.ParseCSSWithInnerVariableApplied_LayoutComplete(doc, _layoutArgs);
                 }
 
             }
         }
 
+        private LayoutEventArgs _layoutArgs;
+
+        private void SaveLayout(object sender, LayoutEventArgs args)
+        {
+            this._layoutArgs = args;
+        }
         private void ParseCSSWithInnerVariableApplied_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.

@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using System.Linq;
+using Scryber.PDF.Graphics;
 
 
 namespace Scryber.Core.UnitTests.Html
@@ -44,7 +45,7 @@ namespace Scryber.Core.UnitTests.Html
             var parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsNull(parsed.StartCenter);
             Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
@@ -61,7 +62,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsNull(parsed.StartCenter);
             Assert.IsNull(parsed.EndCenter);
             Assert.IsFalse(parsed.StartRadius.HasValue);
@@ -199,7 +200,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsTrue(parsed.StartCenter.HasValue);
             Assert.AreEqual(centre, parsed.StartCenter);
             Assert.IsTrue(parsed.EndCenter.HasValue);
@@ -224,7 +225,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsTrue(parsed.StartCenter.HasValue);
             Assert.AreEqual(centre, parsed.StartCenter);
             Assert.IsTrue(parsed.EndCenter.HasValue);
@@ -282,7 +283,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsTrue(parsed.StartCenter.HasValue);
             Assert.AreEqual(centre, parsed.StartCenter);
             Assert.IsTrue(parsed.EndCenter.HasValue);
@@ -313,7 +314,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsTrue(parsed.StartCenter.HasValue);
             Assert.AreEqual(centre, parsed.StartCenter);
             Assert.IsTrue(parsed.EndCenter.HasValue);
@@ -344,7 +345,7 @@ namespace Scryber.Core.UnitTests.Html
             parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             Assert.IsTrue(parsed.StartCenter.HasValue);
             Assert.AreEqual(centre, parsed.StartCenter);
             Assert.IsTrue(parsed.EndCenter.HasValue);
@@ -385,6 +386,30 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsFalse(color.Opacity.HasValue);
             
             
+            //
+            // just one postion
+            //
+
+            gradient = "radial-gradient(circle at right, #333, #333 50%, #eee 75%, #333 75%)";
+            centre = new Point(Unit.Percent(100), Unit.Percent(50)); //with just one position, then the other should be 50%;
+            
+            parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(RadialShape.Circle, parsed.Shape);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
+            Assert.IsTrue(parsed.StartCenter.HasValue);
+            Assert.AreEqual(centre, parsed.StartCenter);
+
+            gradient = "repeating-radial-gradient(circle at top, #333, #333 50%, #eee 75%, #333 75%)";
+            centre = new Point(Unit.Percent(50), Unit.Percent(0)); //with just one position, then the other should be 50%;
+            
+            parsed = GradientDescriptor.Parse(gradient) as GradientRadialDescriptor;
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(RadialShape.Circle, parsed.Shape);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
+            Assert.IsTrue(parsed.StartCenter.HasValue);
+            Assert.AreEqual(centre, parsed.StartCenter);
+
         }
 
 
@@ -416,57 +441,61 @@ namespace Scryber.Core.UnitTests.Html
             
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             
-            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts - starting point in the centre
             Point location = new Point(Unit.Pt(25), Unit.Pt(50));;
             Size size = new Size(Unit.Pt(200), Unit.Pt(100));
             
             var coords = parsed.GetCoordsForBounds(location, size);
-            AssertCoordinates(coords, 125d, 100d, 0d, 125d, 100d, 100d, 1, "Centre to Centre with 100pt radius to the farthest side");
+            var dia = Math.Sqrt(100d * 100d + 50d * 50d);
+            AssertCoordinates(coords, 125d, 100d, 0d, 125d, 100d, dia, 1, "Centre to Centre with 100pt radius to the farthest side");
 
             grad = "radial-gradient(at left top, red, green)";
             parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
             
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             
-            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts - starting point left top
             location = new Point(Unit.Pt(25), Unit.Pt(50));;
             size = new Size(Unit.Pt(200), Unit.Pt(100));
             
+            dia = Math.Sqrt(200d * 200d + 100d * 100d);
             coords = parsed.GetCoordsForBounds(location, size);
-            AssertCoordinates(coords, 25d, 50d, 0d, 25d, 50d, 200d, 2, "Left Top with 200pt radius to the farthest side");
+            AssertCoordinates(coords, 25d, 50d, 0d, 25d, 50d, dia, 2, "Left Top with 200pt radius to the farthest corner");
             
             grad = "radial-gradient(at bottom right, red, green)";
             parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
             
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             
-            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts - starting bottom right
             location = new Point(Unit.Pt(25), Unit.Pt(50));;
             size = new Size(Unit.Pt(200), Unit.Pt(100));
             
+            dia = Math.Sqrt(200d * 200d + 100d * 100d);
             coords = parsed.GetCoordsForBounds(location, size);
-            AssertCoordinates(coords, 225d, 150d, 0d, 225d, 150d, 200d, 3, "Bottom Right with 200pt radius to the farthest side");
+            AssertCoordinates(coords, 225d, 150d, 0d, 225d, 150d, dia, 3, "Bottom Right with 200pt radius to the farthest corner");
             
             grad = "radial-gradient(at 25pt 35pt, red, green)";
             parsed = GradientDescriptor.Parse(grad) as GradientRadialDescriptor;
             
             Assert.IsNotNull(parsed);
             Assert.AreEqual(RadialShape.Circle, parsed.Shape);
-            Assert.AreEqual(RadialSize.FarthestSide, parsed.Size);
+            Assert.AreEqual(RadialSize.FarthestCorner, parsed.Size);
             
-            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts
+            //Standard rectangle at 25, 50 with a width of 200pts and height of 100pts - starting at 25, 35
             location = new Point(Unit.Pt(25), Unit.Pt(50));;
             size = new Size(Unit.Pt(200), Unit.Pt(100));
             
+            dia = Math.Sqrt(175d * 175d + 65d * 65d);
             coords = parsed.GetCoordsForBounds(location, size);
-            AssertCoordinates(coords, 50d, 15d, 0d, 50d, 15d, 175d, 4,
-                "50pt, 15pt with 175pt radius to the farthest side"); //Y is reduced as PDF down is -ve;
+            AssertCoordinates(coords, 50d, 15d, 0d, 50d, 15d, dia, 4,
+                "50pt, 15pt with 175pt radius to the farthest corner"); //Y is reduced as PDF down is -ve;
         }
         
         
@@ -533,7 +562,7 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
         
-        private static void ValidateRadialGradient(PDFRadialShadingPattern one, Size size, Color[] cols, double[] coords, string id, int repeatCount = 1)
+        private static void ValidateRadialGradient(PDFRadialShadingPattern one, Size size, Color[] cols, double[] coords, string id, int repeatCount = -1)
         {
             Assert.IsTrue(one.PatternType == PatternType.ShadingPattern, "Pattern type failed for " + id);
             Assert.IsTrue(one.Registered, "Registered flag failed for " + id);
@@ -549,23 +578,48 @@ namespace Scryber.Core.UnitTests.Html
             
             Assert.AreEqual(GradientType.Radial, one.Descriptor.GradientType, "Descriptor pattern type failed for " + id);
 
-            if (repeatCount <= 1)
-                Assert.IsFalse(one.Descriptor.Repeating, "Repeating flag does not match for " + id);
-
             for (int i = 0; i < cols.Length; i++)
             {
-                Assert.AreEqual(cols[i], one.Descriptor.Colors[i].Color, "Color '" + i + "' does not match '" + cols[i].ToString() + "' for " + id);
+                        
+                Assert.AreEqual(cols[i], one.Descriptor.Colors[i].Color,
+                    "Color '" + i + "' does not match '" + cols[i].ToString() + "' for " + id);
             }
             
             var func = one.Descriptor.GetGradientFunction(Point.Empty, size);
-            if (cols.Length < 3 && repeatCount <= 1)
+            
+            if (repeatCount > 1)
             {
-                //Single Loop
+                
+                Assert.IsTrue(one.Descriptor.Repeating, "Repeating flag does not match for " + id);
+                var func3 = func as PDFGradientFunction3;
+                Assert.IsNotNull(func3, "Function type failed for " + id);
+                
+                Assert.AreEqual(repeatCount, func3.Functions.Length);
+                Assert.AreEqual(repeatCount-1, func3.Boundaries.Length);
             }
             else
             {
-                //Loop over all
+                if (repeatCount == 1)
+                    Assert.IsTrue(one.Descriptor.Repeating, "Repeating flag does not match for " + id); //Special case - repeating but does not actually repeat 
+                else
+                    Assert.IsFalse(one.Descriptor.Repeating, "Repeating flag does not match for " + id);
+                
+                if (cols.Length > 2)
+                {
+                    var func3 = func as PDFGradientFunction3;
+                    Assert.IsNotNull(func3, "Function type failed for " + id);
+                    Assert.AreEqual(func3.Functions.Length, cols.Length - 1,"Function type 3 length failed for id " + id);
+                    Assert.AreEqual(cols.Length - 2, func3.Boundaries.Length, "Function type 3 boundaries failed for id " + id);
+                }
+                else
+                {
+                    var func2 = func as PDFGradientFunction2;
+                    Assert.IsNotNull(func2, "Function type failed for " + id);
+                }
             }
+
+
+
         }
 
         private void Gradient_LayoutComplete(object sender, LayoutEventArgs args)
@@ -595,7 +649,7 @@ namespace Scryber.Core.UnitTests.Html
 
                     var rg = new Color[] { StandardColors.Red, StandardColors.Green };
                     // var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    // var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
+                    var ry = new Color[] { StandardColors.Red, StandardColors.Yellow};
                     var rgy = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Yellow };
 
                     Assert.IsNotNull(_layout);
@@ -606,390 +660,109 @@ namespace Scryber.Core.UnitTests.Html
 
                     var patterns = resources.Types["Pattern"];
                     Assert.IsNotNull(patterns);
-                    Assert.AreEqual(15, patterns.Count);
+                    Assert.AreEqual(21, patterns.Count);
 
                     var stdSz = new Size(500, 200);
+                    var diag = Math.Sqrt((500*500) + (200*200));
+                    var halfDiag = diag / 2;
                     
                     // Red to Green default from centre.
-                    var coords = new double[] { 250, 100, 0, 250, 100, 250 };
+                    var coords = new double[] { 250, 100, 0, 250, 100, halfDiag };
                     ValidateRadialGradient(patterns[0] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara1" );
                     
                     //Red to Green Circle from centre.
-                    coords = [250, 100, 0, 250, 100, 250];
+                    coords = [250, 100, 0, 250, 100, halfDiag];
                     ValidateRadialGradient(patterns[1] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara2" );
                     
                     //Red to Green closest side from centre.
                     coords = [250, 100, 0, 250, 100, 100];
                     ValidateRadialGradient(patterns[2] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara3" );
-                }
-            }
-
-            
-        }
-        
-        [TestMethod]
-        public void LinearGradientTurnsTest()
-        {
-            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsTurns.html",
-                this.TestContext);
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradientTurns.pdf"))
-                    {
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
-
                     
-                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom, "myPara1" );
-                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left, "myPara2");
-                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left, "myPara3");
-                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left, "myPara4");
-                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top, "myPara5");
-                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right, "myPara6");
-                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right, "myPara7");
-                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom_Right, "myPara8");
-                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom, "myPara9");
-                }
-            }
-
-            
-        }
-        
-        [TestMethod]
-        public void LinearGradientDegreesTest()
-        {
-            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsDegree.html",
-                this.TestContext);
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradientDegrees.pdf"))
-                    {
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
-
+                    // Farthest side
+                    coords = [250, 100, 0, 250, 100, 250];
+                    ValidateRadialGradient(patterns[3] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara4" );
                     
-                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom, "myPara1" );
-                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left, "myPara2");
-                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left, "myPara3");
-                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left, "myPara4");
-                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top, "myPara5");
-                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right, "myPara6");
-                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right, "myPara7");
-                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom_Right, "myPara8");
-                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom, "myPara9");
-                }
-            }
-
-            
-        }
-        
-        [TestMethod]
-        public void LinearGradientRadiansTest()
-        {
-            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsRadians.html",
-                this.TestContext);
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradientRadians.pdf"))
-                    {
-                        doc.RenderOptions.Compression = OutputCompressionType.None;
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
-
+                    // closest corner
+                    coords = [250, 100, 0, 250, 100, halfDiag];
+                    ValidateRadialGradient(patterns[4] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara5" );
                     
-                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom, "myPara1" );
-                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left, "myPara2");
-                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left, "myPara3");
-                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left, "myPara4");
-                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top, "myPara5");
-                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right, "myPara6");
-                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, 360.0, "myPara7");
-                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom_Right, "myPara8");
-                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom, "myPara9");
-                }
-            }
-
-            
-        }
-        
-         [TestMethod]
-        public void LinearGradientDistanceTest()
-        {
-            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientDistances.html",
-                this.TestContext);
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradientDistances.pdf"))
-                    {
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
-
-                    var grad = patterns[0] as PDFLinearShadingPattern;
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Green
-                    ], (double)GradientAngle.Bottom, "myPara1" );
+                    // farthest corner
+                    coords = [250, 100, 0, 250, 100, halfDiag];
+                    ValidateRadialGradient(patterns[5] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara6" );
                     
-                    ValidateDistances(grad, "myPara1", 0.0, 0.1, 0.3, 1.0);
+                    diag = Math.Sqrt((400*400) + (150*150));
+                    halfDiag = diag / 2;
+                    // farthest corner from 400, 150 = the diagonal
+                    coords = [400, -150, 0, 400, -150, diag];
+                    ValidateRadialGradient(patterns[6] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara7" );
                     
-                    grad = patterns[1] as PDFLinearShadingPattern;
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Red,
-                        StandardColors.Green
-                    ], (double)GradientAngle.Bottom, "myPara2");
-                    ValidateDistances(grad, "myPara2", 0.0, 0.9, 1.0);
+                    // closest side from 400, 150 = 50 to bottom edge
+                    coords = [400, -150, 0, 400, -150, 50];
+                    ValidateRadialGradient(patterns[7] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara8" );
                     
-                    grad = patterns[2] as PDFLinearShadingPattern;
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Red,
-                        StandardColors.Red
-                    ], (double)GradientAngle.Left, "myPara3");
-                    ValidateDistances(grad, "myPara3", 0.0, 0.25, 0.5, 1.0);
+                    diag = Math.Sqrt((400*400) + (200*200));
+                    halfDiag = diag / 2;
+                    // farthest corner from 400 top =  to left bottom corner
+                    coords = [400, 0, 0, 400, 0, diag];
+                    ValidateRadialGradient(patterns[8] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara9" );
                     
-                    grad = patterns[3] as PDFLinearShadingPattern;
+                    // closest side from left top =  0, but invalid so we set to 0.01
+                    coords = [0, 0, 0, 0, 0, 0.01];
+                    ValidateRadialGradient(patterns[9] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara10" );
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Yellow
-                    ], (double)GradientAngle.Top, "myPara4");
-                    ValidateDistances(grad, "myPara4", 0.0, 0.1, 0.55, 1.0);
+                    diag = Math.Sqrt((500*500) + (200*200));
+                    // farthest corner from top left is full diagonal
+                    coords = [0, 0, 0, 0, 0, diag];
+                    ValidateRadialGradient(patterns[10] as PDFRadialShadingPattern, stdSz, rg, coords, "myPara11" );
                     
-                    grad = patterns[4] as PDFLinearShadingPattern;
+                    // closest side from 400, 50 = 50 up (3 color)
+                    coords = [400, -50, 0, 400, -50, 50];
+                    ValidateRadialGradient(patterns[11] as PDFRadialShadingPattern, stdSz, rgy, coords, "myPara12" );
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Yellow
-                    ], (double)GradientAngle.Bottom, "myPara5");
-                    ValidateDistances(grad, "myPara5", 0.0, 0.1, 0.2, 0.3, 1.0);
+                    // farthest corner from 400, top (3 color)
+                    diag = Math.Sqrt((400*400) + (200*200));
                     
-                    grad = patterns[5] as PDFLinearShadingPattern;
+                    coords = [400, 0, 0, 400, 0, diag];
+                    ValidateRadialGradient(patterns[12] as PDFRadialShadingPattern, stdSz, rgy, coords, "myPara13" );
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Yellow
-                    ], (double)GradientAngle.Bottom, "myPara6");
-                    ValidateDistances(grad, "myPara6", 0.0, 0.2, 0.25, 0.3, 0.35, 1.0);
+                    // farthest corner from bottom right
+                    diag = Math.Sqrt((500*500) + (200*200));
                     
+                    coords = [500, 200, 0, 500, 200, diag];
+                    ValidateRadialGradient(patterns[13] as PDFRadialShadingPattern, stdSz, rgy, coords, "myPara14" );
                     
-                    grad = patterns[5] as PDFLinearShadingPattern;
+                    // farthest corner from 400 top
+                    diag = Math.Sqrt((400*400) + (200*200));
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Yellow
-                    ], (double)GradientAngle.Bottom, "myPara6");
-                    ValidateDistances(grad, "myPara6", 0.0, 0.2, 0.25, 0.3, 0.35, 1.0);
+                    //repeating - 0% to 50%, therefore 2 repeats.
+                    coords = [400, 0, 0, 400, 0, diag];
+                    ValidateRadialGradient(patterns[14] as PDFRadialShadingPattern, stdSz, ry, coords, "myPara15", 2 );
                     
-                    grad = patterns[6] as PDFLinearShadingPattern;
+                    //no explicit start so - 0% set on start, 100% on end and 1 repeat
+                    coords = [400, 0, 0, 400, 0, diag];
+                    ValidateRadialGradient(patterns[15] as PDFRadialShadingPattern, stdSz, ry, coords, "myPara16", 1 );
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Yellow,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Blue,
-                    ], (double)GradientAngle.Bottom, "myPara7");
-                    ValidateDistances(grad, "myPara7", 0.0, 0.1, 0.2, 0.3, 0.7, 0.75, 0.8, 0.85, 1.0);
+                    //no explicit end to the gradient so - 100% on the last color and 1 repeat
+                    coords = [400, 0, 0, 400, 0, diag];
+                    ValidateRadialGradient(patterns[16] as PDFRadialShadingPattern, stdSz, ry, coords, "myPara17", 1 );
                     
-                    grad = patterns[7] as PDFLinearShadingPattern;
+                    //25% width to closest side from 400, 50 = 4 repeats to 100% and 9 repeats of 4 to farthest corner = 36
+                    diag = Math.Sqrt((400*400) + (150*150));
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Yellow,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                    ], (double)GradientAngle.Bottom, "myPara8");
-                    ValidateDistances(grad, "myPara8", 0.0, 0.1, 0.2, 0.3, 0.7, 0.8, 0.9, 1.0);
+                    coords = [400, -50, 0, 400, -50, diag];
+                    ValidateRadialGradient(patterns[17] as PDFRadialShadingPattern, stdSz, ry, coords, "myPara18", 36 );
                     
-                    grad = patterns[8] as PDFLinearShadingPattern;
+                    //50% width to closest side from 50,50 (top) = 2 repeats * 10 to farthest corner (bottom right) = 20
+                    diag = Math.Sqrt((450*450) + (150*150));
                     
-                    ValidateLinearGradient(grad, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                    ], 30.0 + 270.0, "myPara9");
-                    
-                    ValidateDistances(grad, "myPara9", 0.0, 0.083, 0.167, 0.25, 0.5, 0.75, 1.0);
-                }
-            }
-
-            
-        }
-        
-        
-         [TestMethod]
-        public void LinearGradientRepeatingTest()
-        {
-            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientRepeating.html",
-                this.TestContext);
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradientRepeating.pdf"))
-                    {
-                        doc.RenderOptions.Compression = OutputCompressionType.None;
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(5, patterns.Count);
-
-                    var grad = patterns[0] as PDFLinearShadingPattern;
-                    ValidateRepeatingLinearGradient(grad, 4, [
-                        StandardColors.Red,
-                        StandardColors.Blue
-                    ], [0.0m, 0.25m], (double)GradientAngle.Top, "myPara1" );
-                    
-                    grad = patterns[1] as PDFLinearShadingPattern;
-                    ValidateRepeatingLinearGradient(grad, 5, [
-                        StandardColors.Red,
-                        StandardColors.Green
-                    ], [0.0m, 0.20m], (double)GradientAngle.Right, "myPara2" );
-
-                    grad = patterns[2] as PDFLinearShadingPattern;
-                    ValidateRepeatingLinearGradient(grad, 4, [
-                        StandardColors.Red,
-                        StandardColors.Green
-                    ], [0.0m, 0.25m], 36.0d, "myPara3" );
-                    
-                    
-                    grad = patterns[3] as PDFLinearShadingPattern;
-                    ValidateRepeatingLinearGradient(grad, 20, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Yellow,
-                    ], [0.0m, 0.025m, 0.05m], 299.0d, "myPara4" );
-                    
-                    grad = patterns[4] as PDFLinearShadingPattern;
-                    ValidateRepeatingLinearGradient(grad, 1, [
-                        StandardColors.Red,
-                        StandardColors.Green,
-                        StandardColors.Blue,
-                        StandardColors.Yellow,
-                    ], null, 90d, "myPara5" ); //No Distances specifed
-
+                    coords = [50, -50, 0, 50, -50, diag];
+                    ValidateRadialGradient(patterns[18] as PDFRadialShadingPattern, stdSz, rgy, coords, "myPara19", 20 );
                     
                 }
             }
 
             
         }
-
         
 
 
