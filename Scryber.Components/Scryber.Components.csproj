@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>8.0.0.1-beta</PackageVersion>
+    <PackageVersion>8.0.0.2-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2023</Copyright>
     <License>LICENSE.md</License>
@@ -14,6 +14,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+8.0.0.2-beta
+Added a fix for the rounding of expression results on decimal and double values when the results are very small.
+        
 8.0.0.1-beta
 Updated to net8.0 sdk and dependancies updated to the latest stable versions. 
 
@@ -131,13 +134,13 @@ Scryber is an advanced PDF generation engine based around HTML templates with CS
 This framework is built entirely in .NET8 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>8.0.0.1-beta</Version>
+    <Version>8.0.0.2-beta</Version>
     <PackageReadmeFile>readme.md</PackageReadmeFile>  
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>8.0.0.1</FileVersion>
+    <FileVersion>8.0.0.2</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
