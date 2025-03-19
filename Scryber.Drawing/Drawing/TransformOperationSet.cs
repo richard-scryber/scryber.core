@@ -107,7 +107,7 @@ namespace Scryber.Drawing
             return new PDFTransformationMatrix(matrix);
         }
 
-#region Parsing
+        #region Parsing
         
 
         public static bool TryParse(string value, out TransformOperationSet operations)

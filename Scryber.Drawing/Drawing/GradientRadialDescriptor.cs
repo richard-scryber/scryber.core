@@ -9,6 +9,9 @@ using Scryber.PDF.Graphics;
 
 namespace Scryber.Drawing
 {
+    /// <summary>
+    /// Contains the 
+    /// </summary>
     public class GradientRadialDescriptor : GradientDescriptor
     {
         //If the resultant gradient coords has a zero end radius (which is invalid), these will be used insted.

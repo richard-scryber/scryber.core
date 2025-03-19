@@ -96,6 +96,8 @@ namespace Scryber.Expressive
         #region Public Methods
 
         const int SignificantDigits = 10;
+        const double MinRoundDouble = 0.09d;
+        const decimal MaxRoundDecimal = 0.09m;
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
@@ -110,13 +112,14 @@ namespace Scryber.Expressive
                 this.CompileExpression();
 
                 var result = this.compiledExpression?.Evaluate(ApplyStringComparerSettings(variables, this.context.ParsingStringComparer));
-                if(result is double)
+                
+                if(result is double d && d > MinRoundDouble)
                 {
-                    result = Math.Round((double)result, SignificantDigits);
+                    result = Math.Round(d, SignificantDigits);
                 }
-                else if(result is decimal)
+                else if(result is decimal m && m > MaxRoundDecimal)
                 {
-                    result = Math.Round((decimal)result, SignificantDigits);
+                    result = Math.Round(m, SignificantDigits);
                 }
 
                 return result;

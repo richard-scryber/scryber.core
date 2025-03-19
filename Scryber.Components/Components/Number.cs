@@ -43,7 +43,11 @@ namespace Scryber.Components
         [PDFAttribute("value")]
         public double Value {
             get { return _val; }
-            set { _val = value; }
+            set
+            {
+                _val = value; 
+                
+            }
         }
 
         #endregion

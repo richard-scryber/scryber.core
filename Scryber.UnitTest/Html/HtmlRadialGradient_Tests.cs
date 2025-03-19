@@ -643,6 +643,7 @@ namespace Scryber.Core.UnitTests.Html
                 {
                     using (var stream = DocStreams.GetOutputStream("RadialGradients.pdf"))
                     {
+                        doc.Params["value1"] = 2.056023E-11d;
                         doc.LayoutComplete += Gradient_LayoutComplete;
                         doc.SaveAsPDF(stream);
                     }

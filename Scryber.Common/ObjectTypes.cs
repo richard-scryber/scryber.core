@@ -200,6 +200,8 @@ namespace Scryber
         public static readonly ObjectType LinearGradient = (ObjectType)"ling";
         public static readonly ObjectType RadialGradient = (ObjectType)"radg";
         public static readonly ObjectType GradientStop = (ObjectType)"ggst";
+        
+        public static readonly ObjectType GraphicPattern = (ObjectType)"gpat";
 
         public static readonly ObjectType Marker = (ObjectType)"mker";
 
