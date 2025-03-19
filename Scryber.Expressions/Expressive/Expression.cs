@@ -95,7 +95,12 @@ namespace Scryber.Expressive
 
         #region Public Methods
 
+        //Number of signigicant digits to use as erros occur with calculations
         const int SignificantDigits = 10;
+        
+        //minimun values for rounding to 10 significant digits - if the value is lowwer than this - then no rounding for precision will occur.
+        private const double MinRoundDouble = 0.09;
+        private const decimal MinRoundDecimal = 0.09m;
 
         /// <summary>
         /// Evaluates the expression using the supplied <paramref name="variables"/> and returns the result.
@@ -110,13 +115,14 @@ namespace Scryber.Expressive
                 this.CompileExpression();
 
                 var result = this.compiledExpression?.Evaluate(ApplyStringComparerSettings(variables, this.context.ParsingStringComparer));
-                if(result is double)
+                
+                if(result is double d && d > MinRoundDouble)
                 {
-                    result = Math.Round((double)result, SignificantDigits);
+                    result = Math.Round(d, SignificantDigits);
                 }
-                else if(result is decimal)
+                else if(result is decimal m && m > MinRoundDecimal)
                 {
-                    result = Math.Round((decimal)result, SignificantDigits);
+                    result = Math.Round(m, SignificantDigits);
                 }
 
                 return result;
