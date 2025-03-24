@@ -43,7 +43,7 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
         if (this.DoLayoutCanvas(context, fullstyle, pos, out PDFLayoutPositionedRegion region))
         {
             var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this.Pattern);
-            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, layoutKey);
+            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, this.Pattern.GetTilingPattern(), layoutKey);
             patternRsrc.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
             this.Pattern.Document.SharedResources.Add(patternRsrc);
             
@@ -61,6 +61,7 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
         
         using (var engine = viewport.GetEngine(this, context, fullstyle))
         {
+            
             engine.Layout(context, fullstyle);
             var block = context.DocumentLayout.CurrentPage.LastOpenBlock();
             
@@ -71,10 +72,10 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
                     if (region.Owner == this.Pattern)
                     {
                         contentRegion = region as PDFLayoutPositionedRegion;
-                        // if (contentRegion != null && contentRegion.AssociatedRun != null)
-                        // {
-                        //     contentRegion.AssociatedRun.Line.RemoveRun(contentRegion.AssociatedRun);
-                        // }
+                        if (contentRegion != null && contentRegion.AssociatedRun != null)
+                        {
+                            contentRegion.AssociatedRun.Line.RemoveRun(contentRegion.AssociatedRun);
+                        }
                         break;
                     }
                 }

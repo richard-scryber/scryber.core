@@ -73,7 +73,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
         }
         set
         {
-            this.Style.SetValue(StyleKeys.SizeHeightKey, value);
+            this.Style.SetValue(StyleKeys.SizeWidthKey, value);
         }
         
     }
@@ -196,38 +196,13 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
         }
     }
     
-    /// <summary>
-    /// Gets the pattern descriptor for this instance - only one.
-    /// </summary>
-    public GraphicSVGPatternDescriptor Descriptor
-    {
-        get
-        {
-            if (null == this._descriptor)
-                this._descriptor = this.CreateDescriptor();
-            return this._descriptor;
-        }
-
-    }
-
-    private GraphicSVGPatternDescriptor _descriptor = null;
     
-    protected virtual GraphicSVGPatternDescriptor CreateDescriptor()
-    {
-        return new GraphicSVGPatternDescriptor(this._svgCanvas, null);
-    }
     
 
     public string XObjectRendererKey
     {
-        get
-        {
-            return this.Descriptor.XObjectResourceKey;
-        }
-        set
-        {
-            this.Descriptor.XObjectResourceKey = value;
-        }
+        get;
+        set;
     }
 
     public SVGPattern() : this(ObjectTypes.GraphicPattern)
@@ -242,6 +217,42 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 
     
 
+    private PDFGraphicTilingPattern _tilingPattern = null;
+    private Style _fullStyle = null;
+
+    public virtual PDFGraphicTilingPattern GetTilingPattern()
+    {
+        if (null == this._tilingPattern)
+        {
+            var tilekey = this.UniqueID;
+            var canvas = this.InnerCanvas;
+            var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this);
+
+            if (null == this._fullStyle)
+            {
+                this._fullStyle = this.Style;
+            }
+            
+           
+        
+            var tile = new PDFGraphicTilingPattern(canvas, tilekey, layoutKey, canvas);
+            this.UpdateTileDimensions(tile, this._fullStyle);
+            this._tilingPattern = tile;
+        }
+        return this._tilingPattern;
+    }
+
+    protected virtual void UpdateTileDimensions(PDFGraphicTilingPattern tile, Style forStyle)
+    {
+        var width = forStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+        var height = forStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+        var x = forStyle.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
+        var y = forStyle.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+        var viewBox = forStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+        
+        tile.Step = new Size(width, height);
+        tile.BoundingBox = new Rect(0, 0, width, height);
+    }
     
     
     /// <summary>
@@ -251,16 +262,11 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
     /// <returns></returns>
     public override PDFBrush CreateBrush(Rect totalBounds)
     {
-        var tilekey = this.UniqueID;
-        var descriptor = this.Descriptor;
-        var canvas = this.InnerCanvas;
-        var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this);
-        
-        var tile = new PDFGraphicTilingPattern(canvas, tilekey, descriptor, layoutKey);
+        var tile = this.GetTilingPattern();
         this.Page.Register(tile);
         this.Document.SharedResources.Add(tile);
         
-        return new PDFGraphicPatternBrush(tilekey);
+        return new PDFGraphicPatternBrush(tile.ResourceKey);
     }
     
     //
@@ -286,6 +292,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
         
         base.DoDataBindChildren(context);
     }
+
     
 
     protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
@@ -296,7 +303,12 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 
     public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
     {
+        this._fullStyle = fullstyle;
         this._svgCanvas.ID = this.ID;
+        
+        if (null != this._tilingPattern)
+            this.UpdateTileDimensions(this._tilingPattern, fullstyle);
+        
         return new LayoutEngineSVGPattern(parent, this, this._svgCanvas, context);
     }
 }

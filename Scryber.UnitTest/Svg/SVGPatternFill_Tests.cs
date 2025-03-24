@@ -58,17 +58,19 @@ namespace Scryber.Core.UnitTests.Svg
             svg.BackgroundColor = Color.Parse("#AAA");
             page.Contents.Add(svg);
             
-            // var text = new SVGText();
-            // text.Fill = new SVGFillReferenceValue(null, "#star");
-            // text.FontFamily = FontSelector.Parse("sans-serif");
-            // text.FontSize = 14;
-            // text.FontWeight = FontWeights.Bold;
-            // text.X = 10;
-            // text.Y = 10;
-            // text.DominantBaseline = DominantBaseline.Hanging;
-            // text.Content.Add(new TextLiteral("Hello World"));
-            //
-            // svg.Contents.Add(text);
+            var text = new SVGText();
+            text.Fill = new SVGFillReferenceValue(null, "#star");
+            text.FontFamily = FontSelector.Parse("sans-serif");
+            text.FontSize = 24;
+            text.FontWeight = FontWeights.Bold;
+            text.X = 10;
+            text.Y = 10;
+            text.DominantBaseline = DominantBaseline.Hanging;
+            text.Content.Add(new TextLiteral("Hello World"));
+            text.StrokeColor = StandardColors.Black;
+            text.StrokeWidth = 1;
+            text.TextLength = 80;
+            svg.Contents.Add(text);
             
             SVGRect rect = new SVGRect();
             rect.X = 100;
@@ -76,39 +78,52 @@ namespace Scryber.Core.UnitTests.Svg
             rect.Width = 70;
             rect.Height = 70;
             rect.FillValue = new SVGFillReferenceValue(null, "#star");
+            rect.StrokeColor = StandardColors.Black;
+            rect.StrokeWidth = 1;
+            
+            
             svg.Contents.Add(rect);
             
-            // SVGPath svgPath = new SVGPath();
-            // svgPath.PathData = GraphicsPath.Parse(@"M 200,30
-            // A 20,20 0 0 1 240,30
-            // A 20,20 0,0,1 280,30
-            // Q 280,60 240,90
-            // Q 200,60 200,30 z");
-            // svgPath.Fill = new SVGFillReferenceValue(null, "#star");
-            // svg.Contents.Add(svgPath);
-            //
-            // SVGPolygon polyline = new SVGPolygon();
-            // polyline.Points.Add(new Point(300, 100));
-            // polyline.Points.Add(new Point(350, 70));
-            // polyline.Points.Add(new Point(400, 10));
-            // polyline.Points.Add(new Point(350, 30));
-            // polyline.Fill = new SVGFillReferenceValue(null, "#star");
-            //
-            // svg.Contents.Add(polyline);
-            //
-            //
-            // SVGCircle circle = new SVGCircle();
-            // circle.Radius = 40;
-            // circle.CentreX = 450;
-            // circle.CenterY = 50;
-            // circle.Fill = new SVGFillReferenceValue(null, "#star");
-            // svg.Contents.Add(circle);
-            //
+            SVGPath svgPath = new SVGPath();
+            svgPath.PathData = GraphicsPath.Parse(@"M 200,30
+            A 20,20 0 0 1 240,30
+            A 20,20 0,0,1 280,30
+            Q 280,60 240,90
+            Q 200,60 200,30 z");
+            svgPath.Fill = new SVGFillReferenceValue(null, "#star");
+            svgPath.StrokeColor = StandardColors.Black;
+            svgPath.StrokeWidth = 1;
+            svg.Contents.Add(svgPath);
+            
+            SVGPolygon polyline = new SVGPolygon();
+            polyline.Points.Add(new Point(300, 100));
+            polyline.Points.Add(new Point(350, 70));
+            polyline.Points.Add(new Point(400, 10));
+            polyline.Points.Add(new Point(350, 30));
+            polyline.Fill = new SVGFillReferenceValue(null, "#star");
+            polyline.StrokeColor = StandardColors.Black;
+            polyline.StrokeWidth = 1;
+            
+            svg.Contents.Add(polyline);
+            
+            
+            SVGCircle circle = new SVGCircle();
+            circle.Radius = 40;
+            circle.CentreX = 450;
+            circle.CenterY = 50;
+            circle.Fill = new SVGFillReferenceValue(null, "#star");
+            circle.StrokeColor = StandardColors.Black;
+            circle.StrokeWidth = 1;
+            svg.Contents.Add(circle);
+            
             var pattern = new SVGPattern();
             pattern.ID = "star";
-
-            pattern.Contents.Add(new SVGCircle()
-                { CentreX = 10, CenterY = 10, Radius = 4, Fill = new SVGFillColorValue(StandardColors.Red, "Red") });
+            pattern.PatternWidth = 15;
+            pattern.PatternHeight = 10;
+            pattern.OffsetX = 5;
+            pattern.OffsetY = 5;
+            pattern.Contents.Add(new SVGRect()
+                { X = 2.5, Y = 2.5, Width = 5, Height = 5, FillValue = new SVGFillColorValue(StandardColors.Red, "Red") });
             
             //gradient.Stops.Add(new SVGGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
             //gradient.Stops.Add(new SVGGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
