@@ -30,7 +30,7 @@ namespace Scryber.PDF.Resources
     /// <summary>
     /// Concrete implementation of a tiling pattern that just 
     /// </summary>
-    public class PDFImageTilingPattern : PDFTilingPattern, IResourceContainer
+    public class PDFImageTilingPattern : PDFTilingPattern
     {
 
         #region public PDFImageXObject Image {get;set;}
@@ -52,18 +52,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public PDFResourceList Resources {get; private set;}
-
-        /// <summary>
-        /// Gets the list of resources used by this tiling pattern
-        /// </summary>
-        public PDFResourceList Resources
-        {
-            get;
-            private set;
-        }
-
-        #endregion
+        
 
         #region public PDFSize ImageSize {get;set;}
 
@@ -78,14 +67,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public IPDFDocument Document
-
-        public IDocument Document
-        {
-            get { return this.OwningComponent.Document; }
-        }
-
-        #endregion
+        
 
 
         //
@@ -104,8 +86,7 @@ namespace Scryber.PDF.Resources
         {
             if (null == image)
                 throw new ArgumentNullException("image");
-
-            this.Resources = new PDFResourceList(this);
+            
             this.Image = image;
         }
 
@@ -194,42 +175,6 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region IPDFResourceContainer Members
-
-
-
-        public string MapPath(string source)
-        {
-            return this.Container.MapPath(source);
-        }
-
-        string IResourceContainer.Register(ISharedResource rsrc)
-        {
-            if (rsrc is PDFResource pdfrsrc)
-                return this.Register(pdfrsrc).Value;
-            else
-                throw new InvalidCastException("PDFImageTilingPatterns can only use PDFResources");
-        }
-
-        PDFName Register(PDFResource rsrc)
-        {
-            if (null == rsrc.Name || string.IsNullOrEmpty(rsrc.Name.Value))
-            {
-                string name = this.Document.GetIncrementID(rsrc.Type);
-                rsrc.Name = (PDFName)name;
-            }
-            if (this.Container is IComponent)
-                rsrc.RegisterUse(this.Resources, (IComponent)this.Container);
-            else
-            {
-                rsrc.RegisterUse(this.Resources, this.Document);
-            }
-            //    throw new InvalidCastException(string.Format(Errors.CouldNotCastObjectToType, "IPDFComponent", this.Container.GetType()));
-
-            return rsrc.Name;
-        }
-
         
-        #endregion
     }
 }

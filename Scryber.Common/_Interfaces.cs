@@ -774,7 +774,7 @@ namespace Scryber
     /// <summary>
     /// Placeholder for the Canvas - has its own styles and resources.
     /// </summary>
-    public interface ICanvas : IResourceContainer
+    public interface ICanvas : IResourceContainer, IComponent
     {
         
     }

@@ -471,24 +471,24 @@ namespace Scryber.Svg.Components
             StyleValue<SVGFillValue> value;
             if (forStyle.TryGetValue(StyleKeys.SVGFillKey, out value))
             {
-                var gradient = value.GetValue(forStyle) as SVGFillReferenceValue;
-                if (null != gradient)
+                var fillRef = value.GetValue(forStyle) as SVGFillReferenceValue;
+                if (null != fillRef)
                 {
                     var svg = this.GetRootSVGCanvas();
                     SVGFillBase fill;
-                    if (gradient.Value.StartsWith("#"))
+                    if (fillRef.Value.StartsWith("#"))
                     {
-                        fill = svg.FindAComponentById(gradient.Value.Substring(1)) as SVGFillBase;
+                        fill = svg.FindAComponentById(fillRef.Value.Substring(1)) as SVGFillBase;
                     }
                     else
                     {
-                        fill = svg.FindAComponentByName(gradient.Value) as SVGFillBase;
+                        fill = svg.FindAComponentByName(fillRef.Value) as SVGFillBase;
                     }
 
                     if (null != fill)
                     {
                         var bounds = new Rect(Unit.Zero, Unit.Zero, svg.Width, svg.Height);
-                        gradient.Adapter = fill.CreateBrush(bounds);
+                        fillRef.Adapter = fill.CreateBrush(bounds);
                     }
                 }
             }

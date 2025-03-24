@@ -123,6 +123,11 @@ namespace Scryber.PDF.Native
 
         }
 
+        public static PDFName Empty
+        {
+            get { return new PDFName(""); }
+        }
+
         public static PDFName Parse(string name)
         {
             int end;

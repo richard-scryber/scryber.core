@@ -1,13 +1,18 @@
 using Scryber.Drawing;
 using Scryber.Styles;
+using Scryber.Components;
+using Scryber.PDF;
 using Scryber.PDF.Graphics;
+using Scryber.PDF.Resources;
+using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components;
 
-public class SVGPattern : SVGFillBase, IStyledComponent
+public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 {
     
     private Style _style;
+    private SVGCanvas _svgCanvas;
 
     [PDFAttribute("style")]
     public Style Style
@@ -100,7 +105,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent
     #endregion
 
     [PDFAttribute("x")]
-    public Unit X
+    public Unit OffsetX
     {
         get
         {
@@ -116,7 +121,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent
     }
     
     [PDFAttribute("y")]
-    public Unit Y {
+    public Unit OffsetY {
         get
         {
             if (this.HasStyle)
@@ -170,8 +175,60 @@ public class SVGPattern : SVGFillBase, IStyledComponent
     }
     
     private GradientUnitType _patternContentUnits = GradientUnitType.ObjectBoundingBox;
+
+
+    [PDFElement("")]
+    [PDFArray(typeof(Component))]
+    public ComponentList Contents
+    {
+        get { return this._svgCanvas.Contents; }
+    }
+
     
+    /// <summary>
+    /// Gets the inner canvas to draw contents of the pattern on.
+    /// </summary>
+    public SVGCanvas InnerCanvas
+    {
+        get
+        {
+            return this._svgCanvas;
+        }
+    }
     
+    /// <summary>
+    /// Gets the pattern descriptor for this instance - only one.
+    /// </summary>
+    public GraphicSVGPatternDescriptor Descriptor
+    {
+        get
+        {
+            if (null == this._descriptor)
+                this._descriptor = this.CreateDescriptor();
+            return this._descriptor;
+        }
+
+    }
+
+    private GraphicSVGPatternDescriptor _descriptor = null;
+    
+    protected virtual GraphicSVGPatternDescriptor CreateDescriptor()
+    {
+        return new GraphicSVGPatternDescriptor(this._svgCanvas, null);
+    }
+    
+
+    public string XObjectRendererKey
+    {
+        get
+        {
+            return this.Descriptor.XObjectResourceKey;
+        }
+        set
+        {
+            this.Descriptor.XObjectResourceKey = value;
+        }
+    }
 
     public SVGPattern() : this(ObjectTypes.GraphicPattern)
     {
@@ -180,19 +237,66 @@ public class SVGPattern : SVGFillBase, IStyledComponent
 
     protected SVGPattern(ObjectType type) : base(type)
     {
-        
+        this._svgCanvas = new SVGCanvas();
     }
 
-
-    protected virtual Scryber.Drawing.GraphicPatternDescriptor CreateDescriptor(Rect totalBounds)
-    {
-        return null;
-        
-    }
     
+
+    
+    
+    /// <summary>
+    /// Overrides the base method to set up the pattern
+    /// </summary>
+    /// <param name="totalBounds"></param>
+    /// <returns></returns>
     public override PDFBrush CreateBrush(Rect totalBounds)
     {
-        var descriptor = this.CreateDescriptor(totalBounds);
-        return new PDFGraphicPatternBrush(descriptor);
+        var tilekey = this.UniqueID;
+        var descriptor = this.Descriptor;
+        var canvas = this.InnerCanvas;
+        var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this);
+        
+        var tile = new PDFGraphicTilingPattern(canvas, tilekey, descriptor, layoutKey);
+        this.Page.Register(tile);
+        this.Document.SharedResources.Add(tile);
+        
+        return new PDFGraphicPatternBrush(tilekey);
+    }
+    
+    //
+    // event and lifecycle overrides to pass through to the canvas
+    // 
+        
+    protected override void DoInitChildren(InitContext context)
+    {
+        this._svgCanvas.Init(context);
+        base.DoInitChildren(context);
+    }
+
+    protected override void DoLoadChildren(LoadContext context)
+    {
+        this._svgCanvas.Load(context);
+        base.DoLoadChildren(context);
+    }
+    
+
+    protected override void DoDataBindChildren(DataContext context)
+    {
+        this._svgCanvas.DataBind(context);
+        
+        base.DoDataBindChildren(context);
+    }
+    
+
+    protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Style fullstyle)
+    {
+        this._svgCanvas.CloseLayoutArtefacts(context, artefacts, fullstyle);
+        base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
+    }
+
+    public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
+    {
+        this._svgCanvas.ID = this.ID;
+        return new LayoutEngineSVGPattern(parent, this, this._svgCanvas, context);
     }
 }

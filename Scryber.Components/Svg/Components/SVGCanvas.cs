@@ -10,7 +10,7 @@ using Scryber.Svg.Layout;
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("svg")]
-    public class SVGCanvas : Scryber.Components.Canvas, IResourceContainer, ICanvas
+    public class SVGCanvas : Scryber.Components.Canvas, IResourceContainer, ICanvas, INamingContainer
     {
 
         //pre-defined width and heights
@@ -231,6 +231,12 @@ namespace Scryber.Svg.Components
         /// If this is a discree SVG then the Style building will block up to the parent. If not then styles will be built including other css references.
         /// </remarks>
         public bool IsDiscreetSVG { get; set; }
+
+        IComponent INamingContainer.Owner
+        {
+            get{ return this.Parent; }
+            set{ this.Parent = value as Component; }
+        }
         
         public SVGCanvas()
         {

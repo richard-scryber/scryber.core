@@ -59,6 +59,7 @@ namespace Scryber
         public static readonly ObjectType ExtGState = (ObjectType)"gxst";
         public static readonly ObjectType GraphicsPath = (ObjectType)"gpth";
         public static readonly ObjectType Pattern = (ObjectType)"patt";
+        public static readonly ObjectType PatternLayout = (ObjectType)"patl";
 
         //Components
 

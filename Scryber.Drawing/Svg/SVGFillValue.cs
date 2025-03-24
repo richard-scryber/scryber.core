@@ -84,6 +84,8 @@ namespace Scryber.Svg
 
         public Color FillColor { get; protected set; }
         
+        public SVGFillColorValue(Color fillColor) : this(fillColor, fillColor.ToString()) { }
+        
         public SVGFillColorValue(Color color, string value)
         : base(SVGFillType.Color, value)
         {

@@ -1446,7 +1446,9 @@ namespace Scryber.PDF.Layout
 
         private PDFXObjectRenderer CreateXObject(PDFRenderContext context, PDFWriter writer)
         {
-            return new PDFXObjectRenderer(this.Owner, this, this.Position, context, writer);
+            var xobj = new PDFXObjectRenderer(this.Owner, this, this.Position, context, writer);
+            
+            return xobj;
         }
 
         protected virtual PDFObjectRef DoOutputAsBlock(PDFRenderContext context, PDFWriter writer)
@@ -1671,6 +1673,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool ShouldOutput(PDFRenderContext context)
         {
+            if (this.Owner != null && this.Owner is ICanvas)
+                return true;
+            
             if (this.Position.Visibility == Visibility.Visible && this.ExcludeFromOutput == false)
             {
                 if (this.Height > 0)

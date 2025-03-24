@@ -138,6 +138,8 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IPDFRenderable
+    
     public interface IPDFRenderable
     {
         /// <summary>
@@ -148,6 +150,8 @@ namespace Scryber
         /// <returns></returns>
         PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer);
     }
+    
+    #endregion
 
     #region public interface IPDFRenderComponent : IComponent
 
@@ -251,8 +255,6 @@ namespace Scryber
 
     #endregion
 
-    
-
     #region public interface IInvisibleContainer : IPDFContainerComponent
 
     /// <summary>
@@ -266,10 +268,17 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IPassThroughStyleContainer : IInvisibleContainer
+    
+    /// <summary>
+    /// A special interface that allows the styles declared on an invisible component to 'pass through' (be applied to another component or set of components).
+    /// </summary>
     public interface IPassThroughStyleContainer : IInvisibleContainer
     {
         void ApplyStylesToChildren(IPDFLayoutEngine engine, PDFLayoutContext context, Style toPass);
     }
+    
+    #endregion
 
     #region public interface IDataSetProviderCommand
 

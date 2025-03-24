@@ -1,5 +1,6 @@
 using Scryber.PDF.Graphics;
 using Scryber.PDF.Native;
+using Scryber.Drawing;
 
 namespace Scryber.Svg.Components;
 

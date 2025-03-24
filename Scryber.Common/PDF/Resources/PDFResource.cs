@@ -219,7 +219,7 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         public virtual bool Equals(string resourcetype, string key)
         {
-            return String.Equals(this.ResourceType, resourcetype) && String.Equals(this.Name.Value, key);
+            return String.Equals(this.ResourceType, resourcetype) && String.Equals((this.Name ?? PDFName.Empty).Value, key);
         }
 
         #endregion
