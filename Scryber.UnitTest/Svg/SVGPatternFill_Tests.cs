@@ -125,8 +125,6 @@ namespace Scryber.Core.UnitTests.Svg
             pattern.Contents.Add(new SVGRect()
                 { X = 2.5, Y = 2.5, Width = 5, Height = 5, FillValue = new SVGFillColorValue(StandardColors.Red, "Red") });
             
-            //gradient.Stops.Add(new SVGGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
-            //gradient.Stops.Add(new SVGGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
             svg.Contents.Add(pattern);
             
             using(var stream = DocStreams.GetOutputStream("SVG_PatternFillBrushes.pdf"))
@@ -134,26 +132,105 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(stream);
             }
-            
-            Assert.AreEqual(2, doc.SharedResources.Count);
-            var xObj = doc.SharedResources[1] as PDFLayoutXObjectResource;
-            Assert.IsNotNull(xObj);
-            
-            Assert.AreEqual(0, xObj.Renderer.Resources.Types.Count);
-            //Assert.AreEqual(PDFResource.PatternResourceType, xObj.Renderer.Resources.Types[0].Type);
-            // Assert.AreEqual(PDFResource.FontDefnResourceType, xObj.Renderer.Resources.Types[1].Type);
 
-            //var patterns = xObj.Renderer.Resources.Types[0];
-            //Assert.AreEqual(5, patterns.Count);
-
+            var layoutKey = pattern.UniqueID + "_layout";
+            Assert.AreEqual(layoutKey, PDFPatternLayoutResource.GetLayoutResourceKey(pattern));
+            
+            Assert.AreEqual(5, doc.SharedResources.Count);
+            
+            var tile = doc.SharedResources[1] as PDFGraphicTilingPattern;
+            Assert.IsNotNull(tile);
+            Assert.AreEqual(PDFResource.PatternResourceType, tile.ResourceType);
+            Assert.AreEqual(pattern.UniqueID, tile.ResourceKey);
+            Assert.AreEqual(15, tile.Step.Width.PointsValue);
+            Assert.AreEqual(10, tile.Step.Height.PointsValue);
+            Assert.AreEqual(layoutKey, tile.PatternLayoutKey);
+            Assert.AreEqual(PatternTilingType.NoDistortion, tile.TilingType);
+            Assert.AreEqual(PatternPaintType.ColoredTile, tile.PaintType);
+            Assert.IsNotNull(tile.GraphicCanvas);
+            
+            var layout = doc.SharedResources[3] as PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            Assert.AreEqual(PDFResource.XObjectResourceType, layout.ResourceType);
+            Assert.AreEqual(layoutKey, layout.ResourceKey);
+            Assert.IsTrue(layout.Rendered);
+            Assert.IsNull(layout.RenderReference);
+            Assert.AreEqual(tile.GraphicCanvas, layout.Container);
+            Assert.AreEqual(pattern, layout.Pattern);
+            
             
             //Just check the patterns to make sure they have been set based on the brushes (from the SVGFillReferenceValue) for each component.
+
+            var arrange = text.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.IsNotNull(arrange.FullStyle);
+            var brush = arrange.FullStyle.CreateFillBrush();
+            Assert.IsNotNull(brush);
+            Assert.IsInstanceOfType<Scryber.PDF.Graphics.PDFGraphicPatternBrush>(brush);
             
+            arrange = rect.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.IsNotNull(arrange.FullStyle);
+            brush = arrange.FullStyle.CreateFillBrush();
+            Assert.IsNotNull(brush);
+            Assert.IsInstanceOfType<Scryber.PDF.Graphics.PDFGraphicPatternBrush>(brush);
+
+            arrange = svgPath.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.IsNotNull(arrange.FullStyle);
+            brush = arrange.FullStyle.CreateFillBrush();
+            Assert.IsNotNull(brush);
+            Assert.IsInstanceOfType<Scryber.PDF.Graphics.PDFGraphicPatternBrush>(brush);
             
-           
+            arrange = polyline.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.IsNotNull(arrange.FullStyle);
+            brush = arrange.FullStyle.CreateFillBrush();
+            Assert.IsNotNull(brush);
+            Assert.IsInstanceOfType<Scryber.PDF.Graphics.PDFGraphicPatternBrush>(brush);
+            
+            arrange = circle.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            Assert.IsNotNull(arrange.FullStyle);
+            brush = arrange.FullStyle.CreateFillBrush();
+            Assert.IsNotNull(brush);
+            Assert.IsInstanceOfType<Scryber.PDF.Graphics.PDFGraphicPatternBrush>(brush);
+
+            //The id of the brush pattern should be the same as the pattern resource
+            var patternBrush = brush as Scryber.PDF.Graphics.PDFGraphicPatternBrush;
+            Assert.AreEqual(pattern.UniqueID, patternBrush.PatternKey);
         }
 
-        
+
+        /// <summary>
+        ///A test to make sure the SVG is rendered correctly with horizontal gradients
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGSimplePatterns_Test()
+        {
+
+
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGSimplePatterns.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_SimplePatterns.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(3, doc.SharedResources.Count); //1 font, 1 inline blocks, 1 canvas xObj
+
+            var canvXObj = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(canvXObj);
+            Assert.IsNotNull(canvXObj.Renderer);
+            Assert.IsInstanceOfType(canvXObj.Renderer.Owner, typeof(SVGCanvas));
+
+        }
+
+
 
         private static void AssertPattern(PDFRadialShadingPattern pattern, string forComponent)
         {

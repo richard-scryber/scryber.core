@@ -8,6 +8,7 @@ using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components;
 
+[PDFParsableComponent("pattern")]
 public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 {
     

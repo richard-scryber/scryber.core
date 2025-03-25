@@ -80,7 +80,7 @@ namespace Scryber.Styles
         /// <returns></returns>
         public Style GetFullStyle(IComponent component, Size pageSize, ParentComponentSizer sizer, Size fontSize, Unit rootFontSize)
         {
-            Style style = BuildFullStyle(component);
+            Style style = BuildComponentStyle(component);
             PositionMode mode = style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
             Size containerSize;
             if(mode == PositionMode.Absolute)
@@ -113,7 +113,7 @@ namespace Scryber.Styles
         /// <returns></returns>
         public Style GetFullStyleForPage(IDocumentPage page, Size defaultPageSize, Size fontSize, Unit rootFont)
         {
-            Style style = BuildFullStyle(page);
+            Style style = BuildComponentStyle(page);
 
             Size newPageSize = defaultPageSize;
             newPageSize.Width = style.GetValue(StyleKeys.PageWidthKey, defaultPageSize.Width);
@@ -130,7 +130,7 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="Component"></param>
         /// <returns></returns>
-        public Style BuildFullStyle(IComponent Component)
+        public Style BuildComponentStyle(IComponent Component)
         {
             Style style = new StyleFull();
             StyleVariableSet variables = null;

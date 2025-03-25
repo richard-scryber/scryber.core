@@ -38,12 +38,17 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
     
     public void Layout(PDFLayoutContext context, Style fullstyle)
     {
+        //Collect any relative values for the widths of the pattern.
+        var rel = context.StyleStack.BuildComponentStyle(this.Pattern);
+        
         var pos = fullstyle.CreatePostionOptions(false);
 
         if (this.DoLayoutCanvas(context, fullstyle, pos, out PDFLayoutPositionedRegion region))
         {
             var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this.Pattern);
-            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, this.Pattern.GetTilingPattern(), layoutKey);
+            var tiling = this.Pattern.GetTilingPattern();
+            //set sizes
+            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, tiling, layoutKey);
             patternRsrc.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
             this.Pattern.Document.SharedResources.Add(patternRsrc);
             

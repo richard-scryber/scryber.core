@@ -116,7 +116,7 @@ public class SVGGradientStop : Component, IStyledComponent, ICloneable
         if(null != style)
             context.StyleStack.Push(style);
         
-        this._cachedFullStyle = context.StyleStack.BuildFullStyle(this);
+        this._cachedFullStyle = context.StyleStack.BuildComponentStyle(this);
         
         if(null != style)
             context.StyleStack.Pop();
