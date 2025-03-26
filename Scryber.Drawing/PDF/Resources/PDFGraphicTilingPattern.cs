@@ -95,38 +95,42 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         protected override PDFObjectRef RenderTileContents(ContextBase context, PDFWriter writer)
         {
-            var prev = this.PatternDescriptor.CurrentPattern;
+            var prevPattern = this.PatternDescriptor.CurrentPattern;
+            var prevBounds = this.PatternDescriptor.CurrentBounds;
+            var prevSize = this.PatternDescriptor.CurrentSize;
             
             this.PatternDescriptor.CurrentPattern = this;
             this.PatternDescriptor.CurrentBounds = CalculatePatternBoundingBox(context);
             this.PatternDescriptor.CurrentSize = this.CalculateStepSize(context);
+
+
+            PDFObjectRef oref = null;
+
+            try
+            {
+                oref = this.PatternLayout.EnsureRendered(context, writer);
+            }
+            catch (PDFRenderException ex)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                context.TraceLog.Add(TraceLevel.Error, "Pattern",
+                    "Could not render the pattern tile contents to the output stream for " + this.ResourceKey + ": " +
+                    e.Message, e);
+                
+                throw new PDFRenderException("Rendering of the tile pattern for " + this.ResourceKey + " failed", e);
+            }
+            finally
+            {
+                //make sure we restore the state for the pattern descriptor
+                //could be in a nested pattern - now that would be a test.
+                this.PatternDescriptor.CurrentPattern = prevPattern;
+                this.PatternDescriptor.CurrentBounds = prevBounds;
+                this.PatternDescriptor.CurrentSize = prevSize;
+            }
             
-            
-            var oref = this.PatternLayout.EnsureRendered(context, writer);
-            
-            // if (null != objResource)
-            // {
-            //     //make sure the resource is registered, and then ensure it is rendered (as we know we are using it).
-            //     var prevStep = this.Step;
-            //     var prevViewPort = this.ViewPort;
-            //     this.Step = _absoluteStep;
-            //     this.ViewPort = this._absoluteBounds;
-            //     
-            //     objResource.RegisterUse(this.GraphicCanvas.Resources, this.GraphicCanvas);
-            //     
-            //     var oref = objResource.EnsureRendered(context, writer);
-            //     
-            //     this.Step = prevStep;
-            //     this.ViewPort = prevViewPort;
-            //     
-            //     return oref;
-            // }
-            // else
-            // {
-            //     throw new NullReferenceException("Resource not found for the layout with key '" + key + "'");
-            // }
-            
-            this.PatternDescriptor.CurrentPattern = prev;
             return oref;
         }
     }

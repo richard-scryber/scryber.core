@@ -101,16 +101,17 @@ namespace Scryber.Drawing
 
         public Rect CalculatePatternBoundsForShape(Rect tilingBounds, ContextBase context)
         {
-            var x = EnsureAbsolute(this.PatternOffset.X, tilingBounds.Width);
-            var y = EnsureAbsolute(this.PatternOffset.Y, tilingBounds.Height);
-            var width = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
-            var height = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
+            var x = EnsureAbsolute(this.PatternViewBox.X, tilingBounds.Width);
+            var y = EnsureAbsolute(this.PatternViewBox.Y, tilingBounds.Height);
+            var width = EnsureAbsolute(this.PatternViewBox.Width, tilingBounds.Width);
+            var height = EnsureAbsolute(this.PatternViewBox.Height, tilingBounds.Height);
             
             return new Rect(x, y, width, height);
         }
 
         public Size CalculatePatternStepForShape(Rect tilingBounds, ContextBase context)
         {
+            
             var width = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
             var height = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
             
