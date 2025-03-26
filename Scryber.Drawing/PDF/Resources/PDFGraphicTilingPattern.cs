@@ -14,8 +14,28 @@ namespace Scryber.PDF.Resources
     /// The descriptor and layout detail the way this pattern is rendered with the EnsureRendered base method.</remarks>
     public class PDFGraphicTilingPattern: PDFTilingPattern
     {
+        /// <summary>
+        /// Gets or sets the drawing canvas containing the graphic components that will be drawn.
+        /// </summary>
         public ICanvas GraphicCanvas { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the layout resource key that refers to the Pattern renderer can render the pattern contents
+        /// </summary>
         public string PatternLayoutKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rect that will be drawn in the canvas onto a single tile.
+        /// </summary>
+        public Rect ViewPort { 
+            get; 
+            set; 
+        }
+
+        /// <summary>
+        /// Gets the rect that will be filled with the pattern
+        /// </summary>
+        public Rect TilingBounds { get; protected set; }
 
         /// <summary>
         /// Creates a new graphic tiling pattern for a PDF document.
@@ -30,6 +50,14 @@ namespace Scryber.PDF.Resources
             this.GraphicCanvas = canvas;
         }
 
+        /// <summary>
+        /// Used to set the bounds of the parent that will have this pattern applied.
+        /// </summary>
+        /// <param name="bounds">The bounds of the parent to tile.</param>
+        public virtual void SetTilingBounds(Rect bounds)
+        {
+            this.TilingBounds = bounds;
+        }
 
         public override bool Equals(string resourcetype, string key)
         {
@@ -37,6 +65,44 @@ namespace Scryber.PDF.Resources
                 return true;
             else
                 return base.Equals(resourcetype, key);
+        }
+
+        private Unit EnsureAbsolute(Unit defined, Unit reference)
+        {
+            if (defined.IsRelative)
+            {
+                if(defined.Units == PageUnits.Percent)
+                    return reference.PointsValue * (defined.Value / 100);
+                else
+                {
+                    defined = reference;
+                }
+            }
+            return defined;
+        }
+        
+        private Size _absoluteStep = Size.Empty;
+        private Rect _absoluteBounds = Rect.Empty;
+
+        public override Rect CalculatePatternBoundingBox(ContextBase context)
+        {
+            var x = EnsureAbsolute(this.ViewPort.X, this.TilingBounds.Width);
+            var y = EnsureAbsolute(this.ViewPort.Y, this.TilingBounds.Height);
+            var width = EnsureAbsolute(this.ViewPort.Width, this.TilingBounds.Width);
+            var height = EnsureAbsolute(this.ViewPort.Height, this.TilingBounds.Height);
+            
+            this._absoluteBounds = new Rect(x, y, width, height);
+            return this._absoluteBounds;
+            
+        }
+
+        public override Size CalculateStepSize(ContextBase context)
+        {
+            var width = EnsureAbsolute(this.Step.Width, this.TilingBounds.Width);
+            var height = EnsureAbsolute(this.Step.Height, this.TilingBounds.Height);
+            this._absoluteStep = new Size(width, height);
+
+            return this._absoluteStep;
         }
 
         /// <summary>
@@ -53,10 +119,17 @@ namespace Scryber.PDF.Resources
             if (null != objResource)
             {
                 //make sure the resource is registered, and then ensure it is rendered (as we know we are using it).
+                var prevStep = this.Step;
+                var prevViewPort = this.ViewPort;
+                this.Step = _absoluteStep;
+                this.ViewPort = this._absoluteBounds;
                 
                 objResource.RegisterUse(this.GraphicCanvas.Resources, this.GraphicCanvas);
                 
                 var oref = objResource.EnsureRendered(context, writer);
+                
+                this.Step = prevStep;
+                this.ViewPort = prevViewPort;
                 
                 return oref;
             }

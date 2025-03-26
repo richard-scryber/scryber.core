@@ -87,14 +87,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        /// <summary>
-        /// Gets or sets the bounding box for the tiling pattern
-        /// </summary>
-        public Rect BoundingBox
-        {
-            get; 
-            set;
-        }
+        
 
         /// <summary>
         /// Protected 
@@ -106,31 +99,56 @@ namespace Scryber.PDF.Resources
         {
             this.TilingType = PatternTilingType.NoDistortion;
             this.PaintType = PatternPaintType.ColoredTile;
-            this.BoundingBox = new Rect(0, 0, 10, -10);
             this.Resources = new PDFResourceList(this);
+        }
+
+
+        public virtual Rect CalculatePatternBoundingBox(ContextBase context)
+        {
+            return new Rect(this.Start.X, this.Start.Y, this.Step.Width, this.Step.Height);
+        }
+
+        public virtual Size CalculateStepSize(ContextBase context)
+        {
+            return new Size(this.Step.Width, this.Step.Height);
+        }
+
+        protected virtual Graphics.PDFTransformationMatrix CalculateTransformMatrix(ContextBase context)
+        {
+            return Graphics.PDFTransformationMatrix.Identity();
         }
         
         protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
         {
+            Rect bbox = this.CalculatePatternBoundingBox(context);
+            Size step = this.CalculateStepSize(context);
+            Scryber.PDF.Graphics.PDFTransformationMatrix matrix = this.CalculateTransformMatrix(context);
+            
             var oref = writer.BeginObject(this.Name.Value);
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Type", "Pattern");
             writer.WriteDictionaryNumberEntry("PatternType", (int)this.PatternType);
             writer.WriteDictionaryNumberEntry("PaintType", (int)this.PaintType);
             writer.WriteDictionaryNumberEntry("TilingType", (int)this.TilingType);
+            
+            
+            
             writer.BeginDictionaryEntry("BBox");
-            var offset = this.BoundingBox.Location;
-            var size = this.BoundingBox.Size;
+            var offset = bbox.Location;
+            var size = bbox.Size;
+            
             writer.WriteArrayRealEntries(true,
                 offset.X.PointsValue,
                 offset.Y.PointsValue,
                 offset.X.PointsValue + size.Width.PointsValue,
                 offset.Y.PointsValue + size.Height.PointsValue);
             
+            
             writer.EndDictionaryEntry();
-            writer.WriteDictionaryRealEntry("XStep", this.Step.Width.PointsValue);
-            writer.WriteDictionaryRealEntry("YStep", this.Step.Height.PointsValue);
-            if (null != this.TransformationMatrix && this.TransformationMatrix.IsIdentity == false)
+            writer.WriteDictionaryRealEntry("XStep", step.Width.PointsValue);
+            writer.WriteDictionaryRealEntry("YStep", step.Height.PointsValue);
+            
+            if (null != matrix && matrix.IsIdentity == false)
             {
                 writer.BeginDictionaryEntry("Matrix");
                 var comp = this.TransformationMatrix.Components;
@@ -140,21 +158,35 @@ namespace Scryber.PDF.Resources
             
             writer.BeginStream(oref);
             
-            this.RenderTileContents(context, writer);
-            
-            var len = writer.EndStream();
-            
-            if(null != this.Resources)
+            try
             {
-                var rsrcOref = this.Resources.WriteResourceList(context, writer);
-                
-                if (null != rsrcOref)
-                    writer.WriteDictionaryObjectRefEntry("Resources", rsrcOref);
+                this.RenderTileContents(context, writer);
             }
-            
-            writer.WriteDictionaryNumberEntry("Length", len);
-            writer.EndDictionary();
-            writer.EndObject();
+            catch (Exception e)
+            {
+                context.TraceLog.Add(TraceLevel.Error, "Pattern", "Could not output the Pattern Tile Contents as " + e.Message, e);
+                
+                //if we are strict then re-throw.
+                if (context.Conformance == ParserConformanceMode.Strict)
+                    throw;
+            }
+            finally
+            {
+                var len = writer.EndStream();
+                
+                if(null != this.Resources)
+                {
+                    var rsrcOref = this.Resources.WriteResourceList(context, writer);
+                
+                    if (null != rsrcOref)
+                        writer.WriteDictionaryObjectRefEntry("Resources", rsrcOref);
+                }
+                
+                
+                writer.WriteDictionaryNumberEntry("Length", len);
+                writer.EndDictionary();
+                writer.EndObject();
+            }
             
             return oref;
             

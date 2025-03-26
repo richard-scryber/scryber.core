@@ -134,7 +134,7 @@ namespace Scryber.Core.UnitTests.Svg
             }
 
             var layoutKey = pattern.UniqueID + "_layout";
-            Assert.AreEqual(layoutKey, PDFPatternLayoutResource.GetLayoutResourceKey(pattern));
+            Assert.AreEqual(layoutKey, PDFPatternLayoutResource.GetLayoutResourceKey(pattern.UniqueID));
             
             Assert.AreEqual(5, doc.SharedResources.Count);
             

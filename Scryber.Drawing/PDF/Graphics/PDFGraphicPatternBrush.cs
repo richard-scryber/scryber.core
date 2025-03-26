@@ -27,14 +27,21 @@ namespace Scryber.PDF.Graphics
                 throw new ArgumentException("No resource found for the GrpahicTilingPattern with the given key :" + this.PatternKey,
                     "PatternKey");
             }
-            
+            pattern.SetTilingBounds(bounds);
             pattern.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
             
             var xObj = graphics.Container.Document.GetResource(PDFResource.XObjectResourceType, pattern.PatternLayoutKey, false) as PDFResource;
             if(null == xObj)
             {
-                throw new ArgumentException("No resource found for the PatternLayout with the given key :" + this.PatternKey,
-                    "pattern.PatternLayoutKey");
+                if (graphics.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new ArgumentException(
+                        "No resource found for the PatternLayout with the given key :" + this.PatternKey,
+                        "pattern.PatternLayoutKey");
+                else
+                {
+                    graphics.Context.TraceLog.Add(TraceLevel.Error, "Pattern", "No resource found for the PatternLayout with the given key :" + pattern.PatternLayoutKey);
+                    return false;
+                }
             }
             xObj.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
             

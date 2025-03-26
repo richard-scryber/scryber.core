@@ -220,27 +220,27 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 
     private PDFGraphicTilingPattern _tilingPattern = null;
     private Style _fullStyle = null;
+    private int tileIndex = 1;
 
     public virtual PDFGraphicTilingPattern GetTilingPattern()
     {
-        if (null == this._tilingPattern)
-        {
-            var tilekey = this.UniqueID;
-            var canvas = this.InnerCanvas;
-            var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this);
+        var tilekey = this.UniqueID + tileIndex;
+        var canvas = this.InnerCanvas;
+        var layoutKey = PDFPatternLayoutResource.GetLayoutResourceKey(this.UniqueID);
 
-            if (null == this._fullStyle)
-            {
-                this._fullStyle = this.Style;
-            }
-            
-           
-        
-            var tile = new PDFGraphicTilingPattern(canvas, tilekey, layoutKey, canvas);
-            this.UpdateTileDimensions(tile, this._fullStyle);
-            this._tilingPattern = tile;
+        if (null == this._fullStyle)
+        {
+            this._fullStyle = this.Style;
         }
-        return this._tilingPattern;
+        
+
+        var tile = new PDFGraphicTilingPattern(canvas, tilekey, layoutKey, canvas);
+
+        this.UpdateTileDimensions(tile, this._fullStyle);
+
+        this._tilingPattern = tile;
+        tileIndex++;
+        return tile;
     }
 
     protected virtual void UpdateTileDimensions(PDFGraphicTilingPattern tile, Style forStyle)
@@ -252,7 +252,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
         var viewBox = forStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
         
         tile.Step = new Size(width, height);
-        tile.BoundingBox = new Rect(0, 0, width, height);
+        tile.ViewPort = new Rect(x, y, width, height);
     }
     
     

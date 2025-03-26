@@ -32,7 +32,7 @@ namespace Scryber.Drawing
     {
         public const char RectangleStartChar = '[';
         public const char RectangleEndChar = ']';
-        public const char RectangleSeparatorChar = ' ';
+        public static readonly char[] RectangleSeparatorChars = new char[] {' ',','};
         public const bool RectangleStartAndEndCharRequired = false;
 
 
@@ -398,7 +398,7 @@ namespace Scryber.Drawing
 
             Unit t, l, w, h;
 
-            string[] rect = value.Split(RectangleSeparatorChar);
+            string[] rect = value.Split(RectangleSeparatorChars);
             if (rect.Length == 1)
             {
                 if (Unit.TryParse(rect[0], out t) == false)

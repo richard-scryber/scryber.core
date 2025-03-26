@@ -71,6 +71,19 @@ namespace Scryber.Svg.Components
             }
         }
 
+        public bool HasDefinitions
+        {
+            get
+            {
+                if(_definitions != null && _definitions.Count > 0)
+                    return true;
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
 
         [PDFAttribute("title")]
         public override string OutlineTitle

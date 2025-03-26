@@ -73,9 +73,15 @@ public class PDFPatternLayoutResource : PDFResource
             var prevSize = renderContext.Space;
             var prevOffset = renderContext.Offset;
             var prevGraphics = renderContext.Graphics;
-
+            
+            
+            var newSize = this.TilingPattern.CalculateStepSize(context);
+            
+            if(newSize.IsRelative)
+                throw new ArgumentException("Tiling pattern must have an absolute size");
+                
             var newGraphics = PDFGraphics.Create(writer, false, this.TilingPattern, DrawingOrigin.TopLeft,
-                this.TilingPattern.Step, context);
+                newSize, context);
 
             renderContext.Offset = Drawing.Point.Empty;
             renderContext.Space = this.TilingPattern.Step;
@@ -97,16 +103,16 @@ public class PDFPatternLayoutResource : PDFResource
                 renderContext.Graphics = prevGraphics;
                 
                 //Set this to true, whatever the result as we fail once.
-                this.Rendered = true;
+                this.Rendered = false;
             }
         }
 
         return this.RenderReference;
     }
 
-    public static string GetLayoutResourceKey(SVGPattern forPattern)
+    public static string GetLayoutResourceKey(string forPatternResource)
     {
-        var key = forPattern.UniqueID;
+        var key = forPatternResource;
         key += "_layout";
         return key;
     }

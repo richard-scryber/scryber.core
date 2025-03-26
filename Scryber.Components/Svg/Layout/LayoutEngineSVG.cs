@@ -14,10 +14,12 @@ namespace Scryber.Svg.Layout
 
 		public bool ContainedInParentSVG { get; set; }
 		
+		public SVGCanvas SVGCanvas { get; set; }
 
 		public LayoutEngineSVG(SVGCanvas canvas, IPDFLayoutEngine parent)
 			: base(canvas, parent)
 		{
+			this.SVGCanvas = canvas;
 			this.ContainedInParentSVG = (parent is LayoutEngineSVG engineSvg);
 			canvas.ContainedInParentSVG = this.ContainedInParentSVG;
 		}
@@ -52,6 +54,11 @@ namespace Scryber.Svg.Layout
 			
 			this.ContinueLayout = true;
 			
+			if (this.TryGetDefinitionChildren(this.SVGCanvas, out ComponentList defs))
+			{
+				this.DoLayoutChildren(defs);
+			}
+			
 			if (this.TryGetComponentChildren(this.Component, out ComponentList children))
 			{
 				this.DoLayoutChildren(children);
@@ -61,6 +68,20 @@ namespace Scryber.Svg.Layout
 			{
 				this.CurrentBlock.Size = this.UsedSize;
 				this.CurrentBlock.CurrentRegion.UsedSize = this.UsedSize;
+			}
+		}
+
+		protected virtual bool TryGetDefinitionChildren(SVGCanvas canvas, out ComponentList children)
+		{
+			if (canvas.HasDefinitions)
+			{
+				children = canvas.Definitions;
+				return true;
+			}
+			else
+			{
+				children = null;
+				return false;
 			}
 		}
 
