@@ -36,23 +36,15 @@ public class PDFPatternLayoutResource : PDFResource
         set;
     }
 
+    public GraphicTilingPatternDescriptor Descriptor { get; set; }
     
-    protected PDFGraphicTilingPattern TilingPattern
-    {
-        get;
-        set;
-    }
-
-
-    public bool Rendered { get; private set; }
-    public PDFObjectRef RenderReference { get; private set; }
     
-    public PDFPatternLayoutResource(IComponent pattern, PDFLayoutPositionedRegion region, PDFGraphicTilingPattern tilingPattern, string resourceKey) : base(ObjectTypes.PatternLayout)
+    public PDFPatternLayoutResource(IComponent pattern, PDFLayoutPositionedRegion region, GraphicTilingPatternDescriptor descriptor, string resourceKey) : base(ObjectTypes.PatternLayout)
     {
         this._layoutKey = resourceKey;
         this._layoutItem = region;
         this.Pattern = pattern;
-        this.TilingPattern = tilingPattern;
+        this.Descriptor = descriptor;
     }
 
     public override bool Equals(string resourcetype, string key)
@@ -62,49 +54,49 @@ public class PDFPatternLayoutResource : PDFResource
 
     protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
     {
-        if (!this.Rendered)
+
+        //If we don't have a current pattern on the descriptor then we are simply being referenced as part of the object dictionary, and return null.
+        if (null == this.Descriptor.CurrentPattern)
+            return null;
+
+        //if there is a reference to the current pattern from the descriptor, then the pattern is expecting us to render the contents into it.
+
+        var renderContext = context as PDF.PDFRenderContext ??
+                            throw new ArgumentException("context must be of type PDFRenderContext",
+                                nameof(context));
+
+        var prevSize = renderContext.Space;
+        var prevOffset = renderContext.Offset;
+        var prevGraphics = renderContext.Graphics;
+
+
+        var newSize = this.Descriptor.CurrentSize;
+
+        if (newSize.IsRelative)
+            throw new ArgumentException("Tiling pattern must have an absolute size");
+
+        var newGraphics = PDFGraphics.Create(writer, false, this.Descriptor.CurrentPattern, DrawingOrigin.TopLeft,
+            newSize, context);
+
+        renderContext.Offset = Drawing.Point.Empty;
+        renderContext.Space = this.Descriptor.CurrentSize;
+        renderContext.Graphics = newGraphics;
+
+        try
         {
-            
-            
-            var renderContext = context as PDF.PDFRenderContext ??
-                                throw new ArgumentException("context must be of type PDFRenderContext",
-                                    nameof(context));
-            
-            var prevSize = renderContext.Space;
-            var prevOffset = renderContext.Offset;
-            var prevGraphics = renderContext.Graphics;
-            
-            
-            var newSize = this.TilingPattern.CalculateStepSize(context);
-            
-            if(newSize.IsRelative)
-                throw new ArgumentException("Tiling pattern must have an absolute size");
-                
-            var newGraphics = PDFGraphics.Create(writer, false, this.TilingPattern, DrawingOrigin.TopLeft,
-                newSize, context);
+            this.RenderReference = this._layoutItem.OutputToPDF(renderContext, writer);
+        }
+        catch (Exception e)
+        {
+            this.RenderReference = null;
+            throw;
+        }
+        finally
+        {
+            renderContext.Offset = prevOffset;
+            renderContext.Space = prevSize;
+            renderContext.Graphics = prevGraphics;
 
-            renderContext.Offset = Drawing.Point.Empty;
-            renderContext.Space = this.TilingPattern.Step;
-            renderContext.Graphics = newGraphics;
-
-            try
-            {
-                this.RenderReference = this._layoutItem.OutputToPDF(renderContext, writer);
-            }
-            catch (Exception e)
-            {
-                this.RenderReference = null;
-                throw;
-            }
-            finally
-            {
-                renderContext.Offset = prevOffset;
-                renderContext.Space = prevSize;
-                renderContext.Graphics = prevGraphics;
-                
-                //Set this to true, whatever the result as we fail once.
-                this.Rendered = false;
-            }
         }
 
         return this.RenderReference;

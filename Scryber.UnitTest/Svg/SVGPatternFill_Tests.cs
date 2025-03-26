@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(pattern.UniqueID, tile.ResourceKey);
             Assert.AreEqual(15, tile.Step.Width.PointsValue);
             Assert.AreEqual(10, tile.Step.Height.PointsValue);
-            Assert.AreEqual(layoutKey, tile.PatternLayoutKey);
+            Assert.AreEqual(layoutKey, tile.PatternLayout.ResourceKey);
             Assert.AreEqual(PatternTilingType.NoDistortion, tile.TilingType);
             Assert.AreEqual(PatternPaintType.ColoredTile, tile.PaintType);
             Assert.IsNotNull(tile.GraphicCanvas);
@@ -153,8 +153,6 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(layout);
             Assert.AreEqual(PDFResource.XObjectResourceType, layout.ResourceType);
             Assert.AreEqual(layoutKey, layout.ResourceKey);
-            Assert.IsTrue(layout.Rendered);
-            Assert.IsNull(layout.RenderReference);
             Assert.AreEqual(tile.GraphicCanvas, layout.Container);
             Assert.AreEqual(pattern, layout.Pattern);
             
@@ -198,7 +196,11 @@ namespace Scryber.Core.UnitTests.Svg
 
             //The id of the brush pattern should be the same as the pattern resource
             var patternBrush = brush as Scryber.PDF.Graphics.PDFGraphicPatternBrush;
-            Assert.AreEqual(pattern.UniqueID, patternBrush.PatternKey);
+            Assert.IsNotNull(patternBrush);
+            var descriptorKey = Scryber.PDF.Resources.PDFPatternLayoutResource.GetLayoutResourceKey(pattern.UniqueID);
+            Assert.AreEqual(descriptorKey, patternBrush.DescriptorKey);
+            Assert.AreEqual(layoutKey, patternBrush.LayoutKey);
+            
         }
 
 

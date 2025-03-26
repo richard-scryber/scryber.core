@@ -46,44 +46,37 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
         if (this.DoLayoutCanvas(context, fullstyle, pos, out PDFLayoutPositionedRegion region))
         {
             
-            var tiling = this.Pattern.GetTilingPattern();
+            //var tiling = this.Pattern.GetTilingPattern();
             
+            var width = relStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+            var height = relStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+            var x = relStyle.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
+            var y = relStyle.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+            var viewBox = relStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
             
-            DoUpdateTilingPatternWithStyle(tiling, relStyle);
+            //DoUpdateTilingPatternWithStyle(tiling, relStyle);
+            var descriptorKey = GraphicTilingPatternDescriptor.GetResourceKey(this.Pattern.UniqueID);
+            var offset = new Point(x, y);
+            var size = new Size(width, height);
+            
+            var descriptor = new GraphicTilingPatternDescriptor(descriptorKey, offset, size, viewBox);
+            descriptor.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
 
-
+            
             //set sizes
-            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, tiling, tiling.PatternLayoutKey);
-            patternRsrc.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
-            this.Pattern.Document.SharedResources.Add(patternRsrc);
+            var key = PDFPatternLayoutResource.GetLayoutResourceKey(this.Pattern.UniqueID);
             
+            var patternRsrc = new PDFPatternLayoutResource(this.Pattern, region, descriptor, key);
+            patternRsrc.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
+            
+            this.Pattern.Document.SharedResources.Add(patternRsrc);
+            this.Pattern.Document.SharedResources.Add(descriptor);
+                
             //This is used the same way as in the engine but needs more formal mechanism.
-            this.Pattern.XObjectRendererKey = tiling.PatternLayoutKey;
+            //this.Pattern.XObjectRendererKey = tiling.PatternLayoutKey;
         }
 
 
-    }
-
-    protected virtual void DoUpdateTilingPatternWithStyle(PDFGraphicTilingPattern tiling, Style relStyle)
-    {
-        var tileSize = tiling.Step;
-        var tileOffset = tiling.Start;
-            
-        if(relStyle.TryGetValue(StyleKeys.SizeWidthKey, out var sizeWidth))
-            tileSize.Width = sizeWidth.Value(relStyle);
-        if(relStyle.TryGetValue(StyleKeys.SizeHeightKey, out var sizeHeight))
-            tileSize.Height = sizeHeight.Value(relStyle);
-            
-        if(relStyle.TryGetValue(StyleKeys.SVGGeometryXKey, out var x))
-            tileOffset.X = x.Value(relStyle);
-        if(relStyle.TryGetValue(StyleKeys.SVGGeometryYKey, out var y))
-            tileOffset.Y = y.Value(relStyle);
-            
-        tiling.Step = tileSize;
-        tiling.Start = tileOffset;
-        
-        if(relStyle.TryGetValue(StyleKeys.PositionViewPort, out var viewport))
-            tiling.ViewPort = viewport.Value(relStyle);
     }
 
     protected virtual bool DoLayoutCanvas(PDFLayoutContext context, Style fullstyle, PDFPositionOptions pos, out PDFLayoutPositionedRegion contentRegion)

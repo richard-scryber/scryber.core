@@ -11,39 +11,60 @@ namespace Scryber.PDF.Graphics
     {
         public override FillType FillStyle { get { return FillType.Pattern; } }
         
-        public string PatternKey { get; set; }
-
+        public string DescriptorKey { get; set; }
         
-        public PDFGraphicPatternBrush(string key)
+        public string LayoutKey { get; set; }
+
+        public IComponent Owner { get; set; }
+        
+        public PDFGraphicPatternBrush(IComponent owner, string descriptorKey, string layoutKey)
         {
-            this.PatternKey = key;
+            this.Owner = owner;
+            this.DescriptorKey = descriptorKey;
+            this.LayoutKey = layoutKey;
         }
         
         public override bool SetUpGraphics(PDFGraphics graphics, Rect bounds)
         {
-            var pattern = graphics.Container.Document.GetResource(PDFResource.PatternResourceType, this.PatternKey, false) as PDFGraphicTilingPattern;
-            if (null == pattern)
-            {
-                throw new ArgumentException("No resource found for the GrpahicTilingPattern with the given key :" + this.PatternKey,
-                    "PatternKey");
-            }
-            pattern.SetTilingBounds(bounds);
-            pattern.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
-            
-            var xObj = graphics.Container.Document.GetResource(PDFResource.XObjectResourceType, pattern.PatternLayoutKey, false) as PDFResource;
-            if(null == xObj)
+            var descriptor = graphics.Container.Document.GetResource(PDFResource.PatternResourceType, this.DescriptorKey, false) as GraphicTilingPatternDescriptor;
+            if (null == descriptor)
             {
                 if (graphics.Context.Conformance == ParserConformanceMode.Strict)
                     throw new ArgumentException(
-                        "No resource found for the PatternLayout with the given key :" + this.PatternKey,
-                        "pattern.PatternLayoutKey");
+                        "No resource found for the GrpahicTilingPatternDescriptor with the given key :" + this.DescriptorKey,
+                        "DescriptorKey");
                 else
                 {
-                    graphics.Context.TraceLog.Add(TraceLevel.Error, "Pattern", "No resource found for the PatternLayout with the given key :" + pattern.PatternLayoutKey);
+                    graphics.Context.TraceLog.Add(TraceLevel.Error, "Pattern",
+                        "No resource found for the GrpahicTilingPatternDescriptor with the given key :" + this.DescriptorKey);
                     return false;
                 }
             }
-            xObj.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
+
+            var layout = graphics.Container.Document.GetResource(PDFResource.XObjectResourceType, this.LayoutKey, false) as PDFResource;
+            
+            if(null == layout)
+            {
+                if (graphics.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new ArgumentException(
+                        "No resource found for the PatternLayout with the given key :" + this.LayoutKey,
+                        "LayoutKey");
+                else
+                {
+                    graphics.Context.TraceLog.Add(TraceLevel.Error, "Pattern", 
+                        "No resource found for the PatternLayout with the given key :" + this.LayoutKey);
+                    return false;
+                }
+            }
+
+            var key = descriptor.GetNextPatternResourceKey();
+            
+            var pattern = new PDFGraphicTilingPattern(this.Owner, key, descriptor, layout, bounds);
+
+            //Make sure we register their use
+            pattern.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
+            descriptor.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
+            layout.RegisterUse(graphics.Container.Resources, graphics.Container.Document);
             
             //Do this last so we don't alter the output until we are OK.
             graphics.SetFillPattern(pattern.Name);

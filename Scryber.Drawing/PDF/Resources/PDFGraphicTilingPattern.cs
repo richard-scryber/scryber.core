@@ -20,18 +20,16 @@ namespace Scryber.PDF.Resources
         public ICanvas GraphicCanvas { get; set; }
         
         /// <summary>
-        /// Gets or sets the layout resource key that refers to the Pattern renderer can render the pattern contents
+        /// Gets or sets the layout resource that can render the pattern contents
         /// </summary>
-        public string PatternLayoutKey { get; set; }
-
+        public PDFResource PatternLayout { get; set; }
+        
         /// <summary>
-        /// Gets or sets the rect that will be drawn in the canvas onto a single tile.
+        /// Gets or sets the descriptor
         /// </summary>
-        public Rect ViewPort { 
-            get; 
-            set; 
-        }
-
+        public GraphicTilingPatternDescriptor PatternDescriptor { get; set; }
+        
+       
         /// <summary>
         /// Gets the rect that will be filled with the pattern
         /// </summary>
@@ -44,10 +42,14 @@ namespace Scryber.PDF.Resources
         /// <param name="tilingkey">The resource name of this tiling pattern</param>
         /// <param name="canvas">The Canvas used for the the rendering and inner pattern resources</param>
         /// <param name="layoutKey">The resource key name of the XObjectResource layout to actually draw the pattern each time.</param>
-        public PDFGraphicTilingPattern(IComponent pattern, string tilingkey, string layoutKey, ICanvas canvas) : base(pattern, tilingkey)
+        public PDFGraphicTilingPattern(IComponent pattern, string resourceKey, GraphicTilingPatternDescriptor descriptor, PDFResource layout, Rect tilingBounds) 
+            : base(pattern, resourceKey)
         {
-            this.PatternLayoutKey = layoutKey;
-            this.GraphicCanvas = canvas;
+            this.PatternLayout = layout;
+            this.PatternDescriptor = descriptor;
+            this.TilingBounds = tilingBounds;
+            this.Name = (PDFName)pattern.Document.GetIncrementID(ObjectTypes.GraphicPattern);
+            
         }
 
         /// <summary>
@@ -67,41 +69,21 @@ namespace Scryber.PDF.Resources
                 return base.Equals(resourcetype, key);
         }
 
-        private Unit EnsureAbsolute(Unit defined, Unit reference)
-        {
-            if (defined.IsRelative)
-            {
-                if(defined.Units == PageUnits.Percent)
-                    return reference.PointsValue * (defined.Value / 100);
-                else
-                {
-                    defined = reference;
-                }
-            }
-            return defined;
-        }
+        
         
         private Size _absoluteStep = Size.Empty;
         private Rect _absoluteBounds = Rect.Empty;
 
         public override Rect CalculatePatternBoundingBox(ContextBase context)
         {
-            var x = EnsureAbsolute(this.ViewPort.X, this.TilingBounds.Width);
-            var y = EnsureAbsolute(this.ViewPort.Y, this.TilingBounds.Height);
-            var width = EnsureAbsolute(this.ViewPort.Width, this.TilingBounds.Width);
-            var height = EnsureAbsolute(this.ViewPort.Height, this.TilingBounds.Height);
-            
-            this._absoluteBounds = new Rect(x, y, width, height);
+            this._absoluteBounds = this.PatternDescriptor.CalculatePatternBoundsForShape(this.TilingBounds, context);
             return this._absoluteBounds;
             
         }
 
         public override Size CalculateStepSize(ContextBase context)
         {
-            var width = EnsureAbsolute(this.Step.Width, this.TilingBounds.Width);
-            var height = EnsureAbsolute(this.Step.Height, this.TilingBounds.Height);
-            this._absoluteStep = new Size(width, height);
-
+            this._absoluteStep = this.PatternDescriptor.CalculatePatternStepForShape(this.TilingBounds, context);
             return this._absoluteStep;
         }
 
@@ -113,32 +95,39 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         protected override PDFObjectRef RenderTileContents(ContextBase context, PDFWriter writer)
         {
-            var key = this.PatternLayoutKey;
+            var prev = this.PatternDescriptor.CurrentPattern;
             
-            var objResource = this.Container.Document.GetResource(PDFResource.XObjectResourceType, key, false) as PDFResource;
-            if (null != objResource)
-            {
-                //make sure the resource is registered, and then ensure it is rendered (as we know we are using it).
-                var prevStep = this.Step;
-                var prevViewPort = this.ViewPort;
-                this.Step = _absoluteStep;
-                this.ViewPort = this._absoluteBounds;
-                
-                objResource.RegisterUse(this.GraphicCanvas.Resources, this.GraphicCanvas);
-                
-                var oref = objResource.EnsureRendered(context, writer);
-                
-                this.Step = prevStep;
-                this.ViewPort = prevViewPort;
-                
-                return oref;
-            }
-            else
-            {
-                throw new NullReferenceException("Resource not found for the layout with key '" + key + "'");
-            }
+            this.PatternDescriptor.CurrentPattern = this;
+            this.PatternDescriptor.CurrentBounds = CalculatePatternBoundingBox(context);
+            this.PatternDescriptor.CurrentSize = this.CalculateStepSize(context);
             
-            return null;
+            
+            var oref = this.PatternLayout.EnsureRendered(context, writer);
+            
+            // if (null != objResource)
+            // {
+            //     //make sure the resource is registered, and then ensure it is rendered (as we know we are using it).
+            //     var prevStep = this.Step;
+            //     var prevViewPort = this.ViewPort;
+            //     this.Step = _absoluteStep;
+            //     this.ViewPort = this._absoluteBounds;
+            //     
+            //     objResource.RegisterUse(this.GraphicCanvas.Resources, this.GraphicCanvas);
+            //     
+            //     var oref = objResource.EnsureRendered(context, writer);
+            //     
+            //     this.Step = prevStep;
+            //     this.ViewPort = prevViewPort;
+            //     
+            //     return oref;
+            // }
+            // else
+            // {
+            //     throw new NullReferenceException("Resource not found for the layout with key '" + key + "'");
+            // }
+            
+            this.PatternDescriptor.CurrentPattern = prev;
+            return oref;
         }
     }
 }
