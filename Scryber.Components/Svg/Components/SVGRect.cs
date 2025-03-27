@@ -533,15 +533,20 @@ namespace Scryber.Svg.Components
 
         private SVGCanvas GetRootSVGCanvas()
         {
+            SVGCanvas root = null;
             var parent = this.Parent;
             while (null != parent)
             {
                 if (parent is SVGCanvas canvas)
-                    return canvas; //TODO: need a reference to the root, not just the parent.
-                else parent = parent.Parent;
+                {
+                    root = canvas;
+                    if (root.IsDiscreetSVG)
+                        return root;
+                }
+                parent = parent.Parent;
             }
             //should always be inside an SVG
-            return null;
+            return root;
         }
 
         public SVGRect Clone()

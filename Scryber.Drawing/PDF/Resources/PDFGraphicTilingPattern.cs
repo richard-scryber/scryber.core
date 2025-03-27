@@ -73,6 +73,7 @@ namespace Scryber.PDF.Resources
         
         private Size _absoluteStep = Size.Empty;
         private Rect _absoluteBounds = Rect.Empty;
+        private PDFTransformationMatrix _absoluteMatrix = null;
 
         public override Rect CalculatePatternBoundingBox(ContextBase context)
         {
@@ -87,6 +88,12 @@ namespace Scryber.PDF.Resources
             return this._absoluteStep;
         }
 
+        protected override PDFTransformationMatrix CalculateTransformMatrix(ContextBase context)
+        {
+            this._absoluteMatrix = this.PatternDescriptor.CalculatePatternTransformMatrixForShape(this.TilingBounds, context);
+            return this._absoluteMatrix;
+        }
+
         /// <summary>
         /// overrides the base implementation to actually render the object stream of the layout
         /// </summary>
@@ -97,11 +104,11 @@ namespace Scryber.PDF.Resources
         {
             var prevPattern = this.PatternDescriptor.CurrentPattern;
             var prevBounds = this.PatternDescriptor.CurrentBounds;
-            var prevSize = this.PatternDescriptor.CurrentSize;
+            var prevSize = this.PatternDescriptor.CurrentPatternSize;
             
             this.PatternDescriptor.CurrentPattern = this;
             this.PatternDescriptor.CurrentBounds = CalculatePatternBoundingBox(context);
-            this.PatternDescriptor.CurrentSize = this.CalculateStepSize(context);
+            this.PatternDescriptor.CurrentPatternSize = this.CalculateStepSize(context);
 
 
             PDFObjectRef oref = null;
@@ -128,7 +135,7 @@ namespace Scryber.PDF.Resources
                 //could be in a nested pattern - now that would be a test.
                 this.PatternDescriptor.CurrentPattern = prevPattern;
                 this.PatternDescriptor.CurrentBounds = prevBounds;
-                this.PatternDescriptor.CurrentSize = prevSize;
+                this.PatternDescriptor.CurrentPatternSize = prevSize;
             }
             
             return oref;

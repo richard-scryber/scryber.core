@@ -58,6 +58,8 @@ public class PDFPatternLayoutResource : PDFResource
         //If we don't have a current pattern on the descriptor then we are simply being referenced as part of the object dictionary, and return null.
         if (null == this.Descriptor.CurrentPattern)
             return null;
+        
+       
 
         //if there is a reference to the current pattern from the descriptor, then the pattern is expecting us to render the contents into it.
 
@@ -69,8 +71,9 @@ public class PDFPatternLayoutResource : PDFResource
         var prevOffset = renderContext.Offset;
         var prevGraphics = renderContext.Graphics;
 
-
-        var newSize = this.Descriptor.CurrentSize;
+        this.Descriptor.CurrentContainerSize = renderContext.Graphics.ContainerSize;
+        
+        var newSize = this.Descriptor.CurrentPatternSize;
 
         if (newSize.IsRelative)
             throw new ArgumentException("Tiling pattern must have an absolute size");
@@ -79,7 +82,7 @@ public class PDFPatternLayoutResource : PDFResource
             newSize, context);
 
         renderContext.Offset = Drawing.Point.Empty;
-        renderContext.Space = this.Descriptor.CurrentSize;
+        renderContext.Space = this.Descriptor.CurrentPatternSize;
         renderContext.Graphics = newGraphics;
 
         try

@@ -1,4 +1,6 @@
+using System;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 
@@ -42,12 +44,17 @@ namespace Scryber.Drawing
         /// <summary>
         /// Gets or sets the current size of the tiling pattern being rendered
         /// </summary>
-        public Size CurrentSize { get; set; }
+        public Size CurrentPatternSize { get; set; }
         
         /// <summary>
         /// Gets or sets the current pattern bounds being rendered.
         /// </summary>
         public Rect CurrentBounds { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the graphic container size where the current pattern is being rendered.
+        /// </summary>
+        public Size CurrentContainerSize { get; set; }
 
         public GraphicTilingPatternDescriptor(string descriptorKey, Point patternOffset, Size patternSize, Rect patternViewBox) : base(ObjectTypes.GraphicPattern)
         {
@@ -111,11 +118,81 @@ namespace Scryber.Drawing
 
         public Size CalculatePatternStepForShape(Rect tilingBounds, ContextBase context)
         {
+            //get the output expected size
+            var resultwidth = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
+            var resultheight = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
+
             
-            var width = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
-            var height = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
+            //get the internal pattern size
+            var viewwidth = EnsureAbsolute(this.PatternViewBox.Width, tilingBounds.Width);
+            var viewheight = EnsureAbsolute(this.PatternViewBox.Height, tilingBounds.Height);
             
-            return new Size(width, height);
+            var scaleX = resultwidth.PointsValue / viewwidth.PointsValue;
+            var scaleY = resultheight.PointsValue / viewheight.PointsValue;
+
+            if (scaleX == scaleY)
+            {
+                //matching scale so we are ok
+            }
+            else if (scaleX < scaleY)
+            {
+                //The horizontal scale will be used so the ystep should be increased
+                viewheight = resultheight / scaleX;
+            }
+            else
+            {
+                //The vertical scale is smallest and will be used. So the xstep should be increased
+                viewwidth = resultwidth / scaleY;
+            }
+            
+            
+            return new Size(viewwidth, viewheight);
+        }
+
+        public PDFTransformationMatrix CalculatePatternTransformMatrixForShape(Rect tilingBounds, ContextBase context)
+        {
+            //get the output expected size
+            var resultwidth = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
+            var resultheight = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
+
+            
+            //get the internal pattern size
+            var viewwidth = EnsureAbsolute(this.PatternViewBox.Width, tilingBounds.Width);
+            var viewheight = EnsureAbsolute(this.PatternViewBox.Height, tilingBounds.Height);
+            
+            var scaleX = resultwidth.PointsValue / viewwidth.PointsValue;
+            var scaleY = resultheight.PointsValue / viewheight.PointsValue;
+            
+            var min = Math.Min(scaleX, scaleY);
+            
+            var patternView = CalculatePatternBoundsForShape(tilingBounds, context);
+            
+            TransformOperationSet set = new TransformOperationSet();
+            set.AppendOperation(new TransformScaleOperation(min, min));
+            TransformOrigin origin = null; //new TransformOrigin(tilingBounds.X, tilingBounds.Y);
+            var matrix = set.GetTransformationMatrix(this.CurrentContainerSize, origin);
+            var movex = 0 - matrix.Components[4];
+            var movey = 0 - matrix.Components[5];
+
+            //TODO: If the xStep > viewbox then offset movex by half the extra
+            movex += tilingBounds.X.PointsValue;
+            
+            var step = CalculatePatternStepForShape(tilingBounds, context);
+            var view = CalculatePatternBoundsForShape(tilingBounds, context);
+            if (step.Width > view.Width)
+            {
+                var half = (step.Width - view.Width) / 2;
+                var scaled = half * matrix.Components[0]; //scalex
+                movex += scaled.PointsValue;
+            }
+            
+            
+            matrix.SetTranslation(movex, movey);
+            
+            //matrix.SetTranslation(tilingBounds.X, tilingBounds.Y - this.CurrentContainerSize.Height);
+            //if(this.PatternSize.Width.IsRelative)
+
+            return matrix;
         }
     }
 }

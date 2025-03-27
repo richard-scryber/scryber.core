@@ -122,7 +122,7 @@ namespace Scryber.PDF.Resources
         {
             Rect bbox = this.CalculatePatternBoundingBox(context);
             Size step = this.CalculateStepSize(context);
-            Scryber.PDF.Graphics.PDFTransformationMatrix matrix = this.CalculateTransformMatrix(context);
+            
             
             var oref = writer.BeginObject(this.Name.Value);
             writer.BeginDictionary();
@@ -148,13 +148,6 @@ namespace Scryber.PDF.Resources
             writer.WriteDictionaryRealEntry("XStep", step.Width.PointsValue);
             writer.WriteDictionaryRealEntry("YStep", step.Height.PointsValue);
             
-            if (null != matrix && matrix.IsIdentity == false)
-            {
-                writer.BeginDictionaryEntry("Matrix");
-                var comp = this.TransformationMatrix.Components;
-                writer.WriteArrayRealEntries(true, comp);
-                writer.EndDictionaryEntry();
-            }
             
             writer.BeginStream(oref);
             
@@ -182,6 +175,15 @@ namespace Scryber.PDF.Resources
                         writer.WriteDictionaryObjectRefEntry("Resources", rsrcOref);
                 }
                 
+                var matrix = this.CalculateTransformMatrix(context);
+                
+                if (null != matrix && matrix.IsIdentity == false)
+                {
+                    writer.BeginDictionaryEntry("Matrix");
+                    var comp = matrix.Components;
+                    writer.WriteArrayRealEntries(true, comp);
+                    writer.EndDictionaryEntry();
+                }
                 
                 writer.WriteDictionaryNumberEntry("Length", len);
                 writer.EndDictionary();

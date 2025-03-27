@@ -214,6 +214,9 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
     protected SVGPattern(ObjectType type) : base(type)
     {
         this._svgCanvas = new SVGCanvas();
+        this._svgCanvas.Parent = this;
+        this._svgCanvas.IsDiscreetSVG = false;
+        this._svgCanvas.ContainedInParentSVG = true;
     }
 
     
