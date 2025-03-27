@@ -192,7 +192,14 @@ namespace Scryber.Drawing
             
             movey += this.CurrentContainerSize.Height.PointsValue;
             movey -= tilingBounds.Y.PointsValue;
-            movey -= (step.Height.PointsValue * matrix.Components[4]); //scale y
+            movey -= (step.Height.PointsValue * matrix.Components[3]); //scale y
+
+            if (step.Height > view.Height)
+            {
+                var half = (step.Height - view.Height) / 2;
+                var scaled = half * matrix.Components[3];
+                movey += scaled.PointsValue;
+            }
             
             
             matrix.SetTranslation(movex, movey);
