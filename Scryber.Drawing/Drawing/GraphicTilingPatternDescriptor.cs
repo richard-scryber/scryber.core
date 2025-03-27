@@ -169,12 +169,16 @@ namespace Scryber.Drawing
             
             TransformOperationSet set = new TransformOperationSet();
             set.AppendOperation(new TransformScaleOperation(min, min));
-            TransformOrigin origin = null; //new TransformOrigin(tilingBounds.X, tilingBounds.Y);
+            
+            TransformOrigin origin = null; //updated manually below.
+            
             var matrix = set.GetTransformationMatrix(this.CurrentContainerSize, origin);
             var movex = 0 - matrix.Components[4];
             var movey = 0 - matrix.Components[5];
 
-            //TODO: If the xStep > viewbox then offset movex by half the extra
+            //update the translations so the pattern is centred horizontally
+            //and offset to the bottom of the top repeat within the shape.
+            
             movex += tilingBounds.X.PointsValue;
             
             var step = CalculatePatternStepForShape(tilingBounds, context);
@@ -185,6 +189,10 @@ namespace Scryber.Drawing
                 var scaled = half * matrix.Components[0]; //scalex
                 movex += scaled.PointsValue;
             }
+            
+            movey += this.CurrentContainerSize.Height.PointsValue;
+            movey -= tilingBounds.Y.PointsValue;
+            movey -= (step.Height.PointsValue * matrix.Components[4]); //scale y
             
             
             matrix.SetTranslation(movex, movey);
