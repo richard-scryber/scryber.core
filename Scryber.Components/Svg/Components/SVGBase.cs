@@ -208,24 +208,24 @@ namespace Scryber.Svg.Components
             StyleValue<SVGFillValue> value;
             if (forStyle.TryGetValue(StyleKeys.SVGFillKey, out value))
             {
-                var gradient = value.GetValue(forStyle) as SVGFillReferenceValue;
-                if (null != gradient)
+                var referenceValue = value.GetValue(forStyle) as SVGFillReferenceValue;
+                if (null != referenceValue)
                 {
                     var svg = this.GetRootSVGCanvas();
                     SVGFillBase fill;
-                    if (gradient.Value.StartsWith("#"))
+                    if (referenceValue.Value.StartsWith("#"))
                     {
-                        fill = svg.FindAComponentById(gradient.Value.Substring(1)) as SVGFillBase;
+                        fill = svg.FindAComponentById(referenceValue.Value.Substring(1)) as SVGFillBase;
                     }
                     else
                     {
-                        fill = svg.FindAComponentByName(gradient.Value) as SVGFillBase;
+                        fill = svg.FindAComponentByName(referenceValue.Value) as SVGFillBase;
                     }
 
                     if (null != fill)
                     {
                         var bounds = new Rect(Unit.Zero, Unit.Zero, svg.Width, svg.Height);
-                        gradient.Adapter = fill.CreateBrush(bounds);
+                        referenceValue.Adapter = fill.CreateBrush(bounds);
                     }
                 }
             }
@@ -233,15 +233,20 @@ namespace Scryber.Svg.Components
         
         private SVGCanvas GetRootSVGCanvas()
         {
+            SVGCanvas root = null;
             var parent = this.Parent;
             while (null != parent)
             {
-                if (parent is SVGCanvas canvas && canvas.ContainedInParentSVG == false)
-                    return canvas;
-                else parent = parent.Parent;
+                if (parent is SVGCanvas canvas)
+                {
+                    root = canvas;
+                    if (root.IsDiscreetSVG)
+                        return root;
+                }
+                parent = parent.Parent;
             }
             //should always be inside an SVG
-            return null;
+            return root;
         }
 
 

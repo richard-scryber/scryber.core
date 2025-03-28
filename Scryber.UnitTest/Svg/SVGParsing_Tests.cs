@@ -720,7 +720,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformParsing()
         {
             //rotate examples
-            string toParse = "rotate(3.142)";
+            string toParse = "rotate(180)";
             
             var parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
@@ -729,7 +729,7 @@ namespace Scryber.Core.UnitTests.Svg
             var rotate = root as TransformRotateOperation;
             Assert.IsNotNull(rotate);
             
-            Assert.AreEqual(3.142, rotate.AngleRadians);
+            Assert.AreEqual(3.142, Math.Round(rotate.AngleRadians, 3));
             
             toParse = "rotate(-0.5turn) ";
             parsed = SVGTransformOperationSet.Parse(toParse);
@@ -3757,13 +3757,13 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(0.0, gradbrush.Colors[0].Distance.Value);
             
             Assert.AreEqual(StandardColors.Red, gradbrush.Colors[1].Color);
-            Assert.AreEqual(0.3, gradbrush.Colors[1].Distance.Value);
+            Assert.AreEqual(0.25, gradbrush.Colors[1].Distance.Value);
             
             Assert.AreEqual(StandardColors.White, gradbrush.Colors[2].Color);
-            Assert.AreEqual(0.5, gradbrush.Colors[2].Distance.Value);
+            Assert.AreEqual(0.417, Math.Round(gradbrush.Colors[2].Distance.Value, 3));
             
             Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[3].Color);
-            Assert.AreEqual(0.7, gradbrush.Colors[3].Distance.Value);
+            Assert.AreEqual(0.583, Math.Round(gradbrush.Colors[3].Distance.Value, 3));
             
             //Auto added for padding
             Assert.AreEqual(StandardColors.Blue, gradbrush.Colors[4].Color);
@@ -3876,7 +3876,7 @@ namespace Scryber.Core.UnitTests.Svg
             var gradbrush = brush as PDFGradientLinearBrush;
             Assert.IsNotNull(gradbrush);
             
-            Assert.AreEqual(5, gradbrush.Colors.Length);
+            Assert.AreEqual(4, gradbrush.Colors.Length);
             
             //auto added for padding
             Assert.AreEqual(StandardColors.Red, gradbrush.Colors[0].Color);

@@ -19,7 +19,7 @@ namespace Scryber.Svg.Layout
 		public LayoutEngineSVG(SVGCanvas canvas, IPDFLayoutEngine parent)
 			: base(canvas, parent)
 		{
-			this.SVGCanvas = canvas;
+			this.SVGCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
 			this.ContainedInParentSVG = (parent is LayoutEngineSVG engineSvg);
 			canvas.ContainedInParentSVG = this.ContainedInParentSVG;
 		}
@@ -73,7 +73,7 @@ namespace Scryber.Svg.Layout
 
 		protected virtual bool TryGetDefinitionChildren(SVGCanvas canvas, out ComponentList children)
 		{
-			if (canvas.HasDefinitions)
+			if (null != canvas && canvas.HasDefinitions)
 			{
 				children = canvas.Definitions;
 				return true;

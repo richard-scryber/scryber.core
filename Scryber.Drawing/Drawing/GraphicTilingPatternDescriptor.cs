@@ -160,12 +160,17 @@ namespace Scryber.Drawing
             var viewwidth = EnsureAbsolute(this.PatternViewBox.Width, tilingBounds.Width);
             var viewheight = EnsureAbsolute(this.PatternViewBox.Height, tilingBounds.Height);
             
+            if(viewwidth == 0.0)
+                viewwidth = resultwidth;
+            if(viewheight == 0.0)
+                viewheight = resultheight;
+            
+            
             var scaleX = resultwidth.PointsValue / viewwidth.PointsValue;
             var scaleY = resultheight.PointsValue / viewheight.PointsValue;
             
             var min = Math.Min(scaleX, scaleY);
             
-            var patternView = CalculatePatternBoundsForShape(tilingBounds, context);
             
             TransformOperationSet set = new TransformOperationSet();
             set.AppendOperation(new TransformScaleOperation(min, min));
