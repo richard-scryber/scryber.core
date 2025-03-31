@@ -208,7 +208,7 @@ namespace Scryber.Core.UnitTests.Svg
 
 
         /// <summary>
-        ///A test to make sure the SVG is rendered correctly with horizontal gradients
+        ///A test to make sure the SVG is rendered correctly with tiling patterns
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
@@ -217,10 +217,10 @@ namespace Scryber.Core.UnitTests.Svg
 
 
             var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGSimplePatterns.html", TestContext);
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsSimple.html", TestContext);
             var doc = Document.ParseDocument(path);
 
-            using (var stream = DocStreams.GetOutputStream("SVG_SimplePatterns.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsSimple.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(stream);
@@ -373,18 +373,210 @@ namespace Scryber.Core.UnitTests.Svg
         }
 
 
-
-        private static void AssertPattern(PDFRadialShadingPattern pattern, string forComponent)
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered correctly with offset tiling patterns
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGOffsetPatterns_Test()
         {
-            var desc = pattern.Descriptor;
-            Assert.IsNotNull(desc);
-           // Assert.AreEqual(0, desc.Angle, forComponent + " angle failed");
-            Assert.AreEqual(2, desc.Colors.Count, forComponent + " colour count failed");
-            Assert.AreEqual(StandardColors.Aqua, desc.Colors[0].Color, forComponent + " color 0 failed");
-            Assert.AreEqual(0, desc.Colors[0].Distance, forComponent + " color 0 failed");
-            Assert.AreEqual(StandardColors.Maroon, desc.Colors[1].Color, forComponent + " color 1 failed");
-            Assert.AreEqual(1, desc.Colors[1].Distance, forComponent + " color 1 failed");
+
+
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsOffset.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsOffset.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+
+            //First is the square layout and descriptor - 5% x and y offset.
+            
+            var layout = doc.SharedResources[2] as Scryber.PDF.Resources.PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            var descrptor = doc.SharedResources[3] as Scryber.Drawing.GraphicTilingPatternDescriptor;
+            Assert.IsNotNull(descrptor);
+
+            Assert.AreEqual(new Size(Unit.Percent(10), Unit.Percent(10)), descrptor.PatternSize);
+            Assert.AreEqual(new Rect(0,0,10,10), descrptor.PatternViewBox);
+            Assert.AreEqual(new Point(Unit.Percent(5), Unit.Percent(5)), descrptor.PatternOffset);
+
+            
+            var tilingBounds = new Rect(0,0, 80, 90);
+            descrptor.CurrentContainerSize = new Size(550, 105);
+
+            var actualSize = descrptor.CalculatePatternStepForShape(tilingBounds, null);
+            Assert.AreEqual(new Size(10, 11.25), actualSize); //viewbox in proportion to 80 and 90
+            var actualBBox = descrptor.CalculatePatternBoundsForShape(tilingBounds, null);
+            Assert.AreEqual(new Rect(0,0,10,10), actualBBox);
+            
+            var offset = new Point(80 * 0.05, 90 * 0.05);
+            
+            var actualMatrix = descrptor.CalculatePatternTransformMatrixForShape(tilingBounds, null);
+            var comps = actualMatrix.Components;
+            Assert.AreEqual(0.8, comps[0]);
+            Assert.AreEqual(0.0, comps[1]);
+            Assert.AreEqual(0.0, comps[2]);
+            Assert.AreEqual(0.8, comps[3]);
+            Assert.AreEqual(offset.X, comps[4]);
+            Assert.AreEqual(105 - 8.5 + offset.Y, comps[5]);
+
+            
+            
+            
+            //Then the star - same size and pattern spacing 5% x offset
+            layout = doc.SharedResources[4] as Scryber.PDF.Resources.PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            descrptor = doc.SharedResources[5] as Scryber.Drawing.GraphicTilingPatternDescriptor;
+            Assert.IsNotNull(descrptor);
+            
+            Assert.AreEqual(descrptor.PatternSize, new Size(Unit.Percent(10), Unit.Percent(10)));
+            Assert.AreEqual(new Rect(0,0,10,10), descrptor.PatternViewBox);
+            Assert.AreEqual(new Point(Unit.Percent(5), 0), descrptor.PatternOffset);
+
+            
+            tilingBounds = new Rect(0,0, 80, 90);
+            descrptor.CurrentContainerSize = new Size(550, 105);
+
+            actualSize = descrptor.CalculatePatternStepForShape(tilingBounds, null);
+            Assert.AreEqual(new Size(10, 11.25), actualSize); //viewbox in proportion to 80 and 90
+            actualBBox = descrptor.CalculatePatternBoundsForShape(tilingBounds, null);
+            Assert.AreEqual(new Rect(0,0,10,10), actualBBox);
+            
+            offset = new Point(80 * 0.05, 0);
+            actualMatrix = descrptor.CalculatePatternTransformMatrixForShape(tilingBounds, null);
+            comps = actualMatrix.Components;
+            Assert.AreEqual(0.8, comps[0]);
+            Assert.AreEqual(0.0, comps[1]);
+            Assert.AreEqual(0.0, comps[2]);
+            Assert.AreEqual(0.8, comps[3]);
+            Assert.AreEqual(offset.X, comps[4]);
+            Assert.AreEqual(105 - 8.5 + offset.Y, comps[5]);
+            
+            
+            
+            
+            //Then the square with gradient - thinner, horizontal spacing -6.7% X offset
+            layout = doc.SharedResources[6] as Scryber.PDF.Resources.PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            descrptor = doc.SharedResources[7] as Scryber.Drawing.GraphicTilingPatternDescriptor;
+            Assert.IsNotNull(descrptor);
+            Assert.AreEqual(new Point(Unit.Percent(-6.7d), 0), descrptor.PatternOffset);
+            
+            tilingBounds = new Rect(0,0, 80, 30);
+            descrptor.CurrentContainerSize = new Size(550, 105);
+
+            actualSize = descrptor.CalculatePatternStepForShape(tilingBounds, null);
+            Assert.AreEqual(new Size((8.0/3.0)*10.0, 10), actualSize); //viewbox in proportion to 80 and 30
+            actualBBox = descrptor.CalculatePatternBoundsForShape(tilingBounds, null);
+            Assert.AreEqual(new Rect(0,0,10,10), actualBBox);
+            
+            offset = new Point(80 * -0.067, 0);
+            actualMatrix = descrptor.CalculatePatternTransformMatrixForShape(tilingBounds, null);
+            comps = actualMatrix.Components;
+            Assert.AreEqual(0.6, comps[0]);
+            Assert.AreEqual(0.0, comps[1]);
+            Assert.AreEqual(0.0, comps[2]);
+            Assert.AreEqual(0.6, comps[3]);
+            Assert.AreEqual(Math.Round(5 + offset.X.PointsValue, 6), Math.Round(comps[4], 6));
+            Assert.AreEqual(99 + offset.Y, comps[5]);
+            
+            //Then the star (again) - with hign and narrow at 5% x
+            layout = doc.SharedResources[4] as Scryber.PDF.Resources.PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            descrptor = doc.SharedResources[5] as Scryber.Drawing.GraphicTilingPatternDescriptor;
+            Assert.IsNotNull(descrptor);
+            
+            Assert.AreEqual(descrptor.PatternSize, new Size(Unit.Percent(10), Unit.Percent(10)));
+            Assert.AreEqual(new Rect(0,0,10,10), descrptor.PatternViewBox);
+            Assert.AreEqual(new Point(Unit.Percent(5), 0), descrptor.PatternOffset);
+
+
+            tilingBounds = new Rect(0, 0, 50, 90);
+            descrptor.CurrentContainerSize = new Size(550, 105);
+
+            actualSize = descrptor.CalculatePatternStepForShape(tilingBounds, null);
+            Assert.AreEqual(new Size(10, (9.0/5)*10.0), actualSize); //viewbox in proportion to 80 and 90
+            actualBBox = descrptor.CalculatePatternBoundsForShape(tilingBounds, null);
+            Assert.AreEqual(new Rect(0,0,10,10), actualBBox);
+            
+            offset = new Point(50 * 0.05, 0); //50 width on the rect
+            actualMatrix = descrptor.CalculatePatternTransformMatrixForShape(tilingBounds, null);
+            comps = actualMatrix.Components;
+            Assert.AreEqual(0.5, comps[0]);
+            Assert.AreEqual(0.0, comps[1]);
+            Assert.AreEqual(0.0, comps[2]);
+            Assert.AreEqual(0.5, comps[3]);
+            Assert.AreEqual(offset.X.PointsValue, comps[4]);
+            Assert.AreEqual(105 - 7 + offset.Y.PointsValue, comps[5]);
+            
+
+            //Then the circleswithstar - 20% width and height in a wide box -10% y
+            layout = doc.SharedResources[8] as Scryber.PDF.Resources.PDFPatternLayoutResource;
+            Assert.IsNotNull(layout);
+            descrptor = doc.SharedResources[9] as Scryber.Drawing.GraphicTilingPatternDescriptor;
+            Assert.IsNotNull(descrptor);
+            
+            Assert.AreEqual(descrptor.PatternSize, new Size(Unit.Percent(20), Unit.Percent(20)));
+            Assert.AreEqual(new Rect(0,0,10,10), descrptor.PatternViewBox);
+            Assert.AreEqual(new Point(0, Unit.Percent(-10)), descrptor.PatternOffset);
+
+
+            tilingBounds = new Rect(0, 0, 150, 90);
+            descrptor.CurrentContainerSize = new Size(550, 105);
+
+            actualSize = descrptor.CalculatePatternStepForShape(tilingBounds, null);
+            Assert.AreEqual(new Size((15.0/9.0) * 10.0, 10), actualSize); //viewbox in proportion to 80 and 90
+            actualBBox = descrptor.CalculatePatternBoundsForShape(tilingBounds, null);
+            Assert.AreEqual(new Rect(0,0,10,10), actualBBox);
+            
+            offset = new Point(0, 90 * -0.10); //-10% of 90 high on the rect
+            actualMatrix = descrptor.CalculatePatternTransformMatrixForShape(tilingBounds, null);
+            comps = actualMatrix.Components;
+            Assert.AreEqual(1.8, comps[0]);
+            Assert.AreEqual(0.0, comps[1]);
+            Assert.AreEqual(0.0, comps[2]);
+            Assert.AreEqual(1.8, comps[3]);
+            Assert.AreEqual(6 + offset.X, comps[4]); //added left space to balance for default preserve aspect ratio
+            Assert.AreEqual(105 - 18 + offset.Y, comps[5]);
         }
+        
+        [TestMethod]
+        public void SVGPreserveAspectRatioPatterns_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioWide.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioWide.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+        }
+
+        [TestMethod]
+        public void SVGTransformedPatterns_Test()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void SVGMixedContentPatterns_Test()
+        {
+            Assert.Inconclusive();
+        }
+        
+        
+
+        
         
         
         

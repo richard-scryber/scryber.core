@@ -199,11 +199,20 @@ namespace Scryber.Drawing
             movey -= tilingBounds.Y.PointsValue;
             movey -= (step.Height.PointsValue * matrix.Components[3]); //scale y
 
+            //Point aspectOffset = GetAspectRatioSwitch(scaleX, scaleY, step, view, tilingBounds, context);
             if (step.Height > view.Height)
             {
                 var half = (step.Height - view.Height) / 2;
                 var scaled = half * matrix.Components[3];
                 movey += scaled.PointsValue;
+            }
+
+            if (this.PatternOffset != Point.Empty)
+            {
+                var offsetX = EnsureAbsolute(this.PatternOffset.X, tilingBounds.Width);
+                var offsetY = EnsureAbsolute(this.PatternOffset.Y, tilingBounds.Height);
+                movex += offsetX.PointsValue;
+                movey += offsetY.PointsValue;
             }
             
             
