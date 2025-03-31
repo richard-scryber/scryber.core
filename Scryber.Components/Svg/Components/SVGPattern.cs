@@ -105,6 +105,25 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 
     #endregion
 
+    [PDFAttribute("preserveAspectRatio")]
+    public ViewPortAspectRatio AspectRatio
+    {
+        get
+        {
+            if(this.HasStyle && this.Style.TryGetValue(StyleKeys.ViewPortAspectRatioStyleKey, out var value))
+                return (ViewPortAspectRatio)value.Value(this.Style);
+            else
+            {
+                return ViewPortAspectRatio.Default;
+            }
+            
+        }
+        set
+        {
+            this.Style.SetValue(StyleKeys.ViewPortAspectRatioStyleKey, value);
+        }
+    }
+
     [PDFAttribute("x")]
     public Unit OffsetX
     {

@@ -34,6 +34,11 @@ namespace Scryber.Drawing
         
         
         public Rect PatternViewBox { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the type of positioning and scaling for the viewbox.
+        /// </summary>
+        public ViewPortAspectRatio PatternAspectRatio { get; set; }
 
 
         /// <summary>
@@ -56,12 +61,15 @@ namespace Scryber.Drawing
         /// </summary>
         public Size CurrentContainerSize { get; set; }
 
-        public GraphicTilingPatternDescriptor(string descriptorKey, Point patternOffset, Size patternSize, Rect patternViewBox) : base(ObjectTypes.GraphicPattern)
+        
+
+        public GraphicTilingPatternDescriptor(string descriptorKey, Point patternOffset, Size patternSize, Rect patternViewBox, ViewPortAspectRatio aspectRatio) : base(ObjectTypes.GraphicPattern)
         {
             this._descriptorKey = descriptorKey;
             this.PatternOffset = patternOffset;
             this.PatternSize = patternSize;
             this.PatternViewBox = patternViewBox;
+            this.PatternAspectRatio = aspectRatio;
             PatternCount = 0;
         }
 
@@ -188,24 +196,29 @@ namespace Scryber.Drawing
             
             var step = CalculatePatternStepForShape(tilingBounds, context);
             var view = CalculatePatternBoundsForShape(tilingBounds, context);
-            if (step.Width > view.Width)
-            {
-                var half = (step.Width - view.Width) / 2;
-                var scaled = half * matrix.Components[0]; //scalex
-                movex += scaled.PointsValue;
-            }
+            
+            // if (step.Width > view.Width)
+            // {
+            //     var half = (step.Width - view.Width) / 2;
+            //     var scaled = half * matrix.Components[0]; //scalex
+            //     movex += scaled.PointsValue;
+            // }
             
             movey += this.CurrentContainerSize.Height.PointsValue;
             movey -= tilingBounds.Y.PointsValue;
             movey -= (step.Height.PointsValue * matrix.Components[3]); //scale y
 
-            //Point aspectOffset = GetAspectRatioSwitch(scaleX, scaleY, step, view, tilingBounds, context);
-            if (step.Height > view.Height)
-            {
-                var half = (step.Height - view.Height) / 2;
-                var scaled = half * matrix.Components[3];
-                movey += scaled.PointsValue;
-            }
+            Point aspectOffset = GetAspectRatioSwitch(min, min, step, view, tilingBounds, context);
+           
+            movex += aspectOffset.X.PointsValue;
+            movey += aspectOffset.Y.PointsValue;
+            
+            // if (step.Height > view.Height)
+            // {
+            //     var half = (step.Height - view.Height) / 2;
+            //     var scaled = half * matrix.Components[3];
+            //     movey += scaled.PointsValue;
+            // }
 
             if (this.PatternOffset != Point.Empty)
             {
@@ -222,6 +235,88 @@ namespace Scryber.Drawing
             //if(this.PatternSize.Width.IsRelative)
 
             return matrix;
+        }
+
+        
+
+        private Point GetAspectRatioSwitch(double scaleX, double scaleY, Size step, Rect view, Rect tilingBounds, ContextBase context)
+        {
+            Point result = Point.Empty;
+
+            if (step.Width > view.Width)
+            {
+                switch (this.PatternAspectRatio.Align)
+                {
+                    case AspectRatioAlign.None:
+                        //Do nothing
+                        break;
+                    case AspectRatioAlign.xMinYMin:
+                    case AspectRatioAlign.xMinYMid:
+                    case AspectRatioAlign.xMinYMax:
+                        result.X = Unit.Empty;
+                        break;
+                    
+                    case AspectRatioAlign.xMidYMin:
+                    case AspectRatioAlign.xMidYMid:
+                    case AspectRatioAlign.xMidYMax:
+                        var half = (step.Width - view.Width) / 2.0;
+                        half *= scaleX;
+                        result.X = half;
+                        break;
+                    case AspectRatioAlign.xMaxYMin:
+                    case AspectRatioAlign.xMaxYMid:
+                    case AspectRatioAlign.xMaxYMax:
+                        result.X = (step.Width - view.Width);
+                        break;
+
+                    default:
+
+                        break;
+
+                }
+            }
+            else if (step.Height > view.Height)
+            {
+                switch (this.PatternAspectRatio.Align)
+                {
+                    case AspectRatioAlign.None:
+                        //Do nothing
+                        break;
+                    case AspectRatioAlign.xMinYMin:
+                    case AspectRatioAlign.xMidYMin:
+                    case AspectRatioAlign.xMaxYMin:
+                        var offset = (step.Height - view.Height);
+                        offset *= scaleY;
+                        result.Y = offset;
+                        break;
+                    
+                    case AspectRatioAlign.xMinYMid:
+                    case AspectRatioAlign.xMidYMid:
+                    case AspectRatioAlign.xMaxYMid:
+                        var half = (step.Height - view.Height) / 2.0;
+                        half *= scaleY;
+                        result.Y = half;
+                        break;
+                    case AspectRatioAlign.xMinYMax:
+                    case AspectRatioAlign.xMidYMax:
+                    case AspectRatioAlign.xMaxYMax:
+                        result.Y = Unit.Empty;
+                        break;
+
+                    default:
+
+                        break;
+
+                }
+            }
+
+
+            return result;
+        }
+        
+        private Size GetAspectRatioSlice(double scaleX, double scaleY, Size step, Rect view, Rect tilingBounds, ContextBase context)
+        {
+            return Size.Empty;
         }
     }
 }

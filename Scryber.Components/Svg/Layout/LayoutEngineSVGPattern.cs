@@ -53,13 +53,14 @@ public class LayoutEngineSVGPattern : IPDFLayoutEngine
             var x = relStyle.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
             var y = relStyle.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
             var viewBox = relStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+            var aspect = relStyle.GetValue(StyleKeys.ViewPortAspectRatioStyleKey, ViewPortAspectRatio.Default);
             
             //DoUpdateTilingPatternWithStyle(tiling, relStyle);
             var descriptorKey = GraphicTilingPatternDescriptor.GetResourceKey(this.Pattern.UniqueID);
             var offset = new Point(x, y);
             var size = new Size(width, height);
             
-            var descriptor = new GraphicTilingPatternDescriptor(descriptorKey, offset, size, viewBox);
+            var descriptor = new GraphicTilingPatternDescriptor(descriptorKey, offset, size, viewBox, aspect);
             descriptor.Name = (Scryber.PDF.Native.PDFName)this.Pattern.Document.GetIncrementID(ObjectTypes.Pattern);
 
             
