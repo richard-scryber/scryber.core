@@ -68,16 +68,21 @@ namespace Scryber.Drawing
                     var two = each[1]; //safe with this, as we have definitely got at least 2
 
                     if (Enum.TryParse(one, true, out align) && Enum.TryParse(two, true, out meet))
-                        return new ViewPortAspectRatio(align, meet);
+                    {
+                        if (align == AspectRatioAlign.None)
+                            return ViewPortAspectRatio.None;
+                        else
+                            return new ViewPortAspectRatio(align, meet);
+                    }
                     else
-                        throw new PDFException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
+                        return ViewPortAspectRatio.Default;
                 }
                 else if(Enum.TryParse(value, true, out align))
                 {
                     return new ViewPortAspectRatio(align, AspectRatioMeet.Meet);
                 }
                 else
-                    throw new PDFException("Could not parse the value '" + value + "' into an SVGAspectRatio value. Please constult the documentation on supported value and format");
+                    return ViewPortAspectRatio.Default;
             }
         }
 

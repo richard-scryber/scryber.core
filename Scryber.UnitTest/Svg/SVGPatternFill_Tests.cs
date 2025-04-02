@@ -578,6 +578,38 @@ namespace Scryber.Core.UnitTests.Svg
 
             Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
         }
+        
+        [TestMethod]
+        public void SVGPreserveAspectRatioHighSlicePatterns_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioHighSlice.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioHighSlice.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+        }
+        
+        [TestMethod]
+        public void SVGPreserveAspectRatioWideSlicePatterns_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioWideSlice.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioWideSlice.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+        }
 
         [TestMethod]
         public void SVGTransformedPatterns_Test()

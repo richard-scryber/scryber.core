@@ -73,7 +73,7 @@ public class PDFPatternLayoutResource : PDFResource
 
         this.Descriptor.CurrentContainerSize = renderContext.Graphics.ContainerSize;
         
-        var newSize = this.Descriptor.CurrentBounds.Size;
+        var newSize = this.Descriptor.PatternViewBox.Size;
 
         if (newSize.IsRelative)
             throw new ArgumentException("Tiling pattern must have an absolute size");

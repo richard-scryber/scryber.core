@@ -137,17 +137,22 @@ namespace Scryber.PDF.Resources
             var offset = bbox.Location;
             var size = bbox.Size;
             
-            writer.WriteArrayRealEntries(true,
+            writer.WriteArrayRealEntries(true, new double[] {
                 offset.X.PointsValue,
                 offset.Y.PointsValue,
                 offset.X.PointsValue + size.Width.PointsValue,
-                offset.Y.PointsValue + size.Height.PointsValue);
+                offset.Y.PointsValue + size.Height.PointsValue}, "F4");
             
             
             writer.EndDictionaryEntry();
-            writer.WriteDictionaryRealEntry("XStep", step.Width.PointsValue);
-            writer.WriteDictionaryRealEntry("YStep", step.Height.PointsValue);
             
+            writer.BeginDictionaryEntry("XStep");
+            writer.WriteRealS(step.Width.PointsValue, "F4");
+            writer.EndDictionaryEntry();
+            
+            writer.BeginDictionaryEntry("YStep");
+            writer.WriteRealS(step.Height.PointsValue, "F4");
+            writer.EndDictionaryEntry();
             
             writer.BeginStream(oref);
             
@@ -181,7 +186,7 @@ namespace Scryber.PDF.Resources
                 {
                     writer.BeginDictionaryEntry("Matrix");
                     var comp = matrix.Components;
-                    writer.WriteArrayRealEntries(true, comp);
+                    writer.WriteArrayRealEntries(true, comp, "F4");
                     writer.EndDictionaryEntry();
                 }
                 
