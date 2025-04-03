@@ -344,10 +344,10 @@ namespace Scryber.Drawing
             var scaleY = resultheight.PointsValue / viewheight.PointsValue;
             
             //Use the maximum scale for slicing so we make sure we cover the entire area.
-            var max = Math.Max(scaleX, scaleY);
+            var maxscale = Math.Max(scaleX, scaleY);
             
             TransformOperationSet set = new TransformOperationSet();
-            set.AppendOperation(new TransformScaleOperation(max, max));
+            set.AppendOperation(new TransformScaleOperation(maxscale, maxscale));
             
             TransformOrigin origin = null; //updated manually below.
             
@@ -355,21 +355,26 @@ namespace Scryber.Drawing
             var movex = 0 - matrix.Components[4]; //we want to clear this so we are back to 0,0
             var movey = 0 - matrix.Components[5];
             
+            
             var step = CalculatePatternStepForShape(tilingBounds, context);
             var view = CalculatePatternBoundsForShape(tilingBounds, context);
-            
+
+
             movex += tilingBounds.X.PointsValue;
+           
             movey += this.CurrentContainerSize.Height.PointsValue;
             movey -= tilingBounds.Y.PointsValue;
             movey -= (step.Height.PointsValue * matrix.Components[3]);
 
-            movex += view.X.PointsValue;
+            //movex += view.X.PointsValue;
             movey += view.Y.PointsValue;
             
-            //Point aspectOffset = GetAspectRatioForSlice(max, max, step, view, tilingBounds, context);
+            
+            
+            Point aspectOffset = GetAspectRatioForSlice(maxscale, maxscale, step, view, tilingBounds, context);
            
-            //movex += aspectOffset.X.PointsValue;
-            //movey += aspectOffset.Y.PointsValue;
+            movex += aspectOffset.X.PointsValue;
+            movey += aspectOffset.Y.PointsValue;
             
             if (this.PatternOffset != Point.Empty)
             {
@@ -378,6 +383,8 @@ namespace Scryber.Drawing
                 movex += offsetX.PointsValue;
                 movey += offsetY.PointsValue;
             }
+            
+            //movex /= maxscale;
             
             matrix.SetTranslation(movex, movey);
             
@@ -536,8 +543,16 @@ namespace Scryber.Drawing
         {
             Point result = Point.Empty;
 
-            if (step.Width > view.Width)
+            
+
+            if (step.Width < this.PatternViewBox.Width) // we are scaling up the pattern (scaleX > scaleY)
             {
+                var count = (tilingBounds.Width.PointsValue / scaleX) / step.Width.PointsValue;
+                count = Math.Floor(count);
+                var full = count * (step.Width.PointsValue * scaleX);
+                var space = tilingBounds.Width.PointsValue - full;
+                
+                //Wide stretched patterns
                 switch (this.PatternAspectRatio.Align)
                 {
                     case AspectRatioAlign.None:
@@ -546,20 +561,26 @@ namespace Scryber.Drawing
                     case AspectRatioAlign.xMinYMin:
                     case AspectRatioAlign.xMinYMid:
                     case AspectRatioAlign.xMinYMax:
+                        //x is min so we are OK
                         result.X = Unit.Empty;
                         break;
                     
                     case AspectRatioAlign.xMidYMin:
                     case AspectRatioAlign.xMidYMid:
                     case AspectRatioAlign.xMidYMax:
-                        var half = (step.Width - view.Width) / 2.0;
-                        half *= scaleX;
-                        result.X = half;
+                        var half = space / 2.0;
+                        //the pattern should be in the middle
+                        //var half = (step.Width - view.Width) / 2.0;
+                        //half *= scaleX;
+                        result.X = half / scaleX;
+                        
                         break;
                     case AspectRatioAlign.xMaxYMin:
                     case AspectRatioAlign.xMaxYMid:
                     case AspectRatioAlign.xMaxYMax:
-                        result.X = (step.Width - view.Width);
+                        //pattern should be at the right
+                        result.X = tilingBounds.Width.PointsValue - step.Width.PointsValue;
+                        
                         break;
 
                     default:
@@ -568,8 +589,12 @@ namespace Scryber.Drawing
 
                 }
             }
-            else if (step.Height > view.Height)
+            
+            //return result;
+            
+            if (true) // (scaleY > scaleX)
             {
+                //High stretched result
                 switch (this.PatternAspectRatio.Align)
                 {
                     case AspectRatioAlign.None:

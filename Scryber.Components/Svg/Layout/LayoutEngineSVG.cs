@@ -110,6 +110,12 @@ namespace Scryber.Svg.Layout
 			full.SetValue(StyleKeys.PositionXKey, 0);
 			full.SetValue(StyleKeys.PositionYKey, 0);
 
+			if (full.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> mode))
+			{
+				if (mode.Value(full) == DisplayMode.Invisible)
+					return;
+			}
+
 			if (comp is IInvisibleContainer container)
 			{
 				//Allow the container to apply any styles needed from the context or our applied style

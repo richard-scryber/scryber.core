@@ -4758,6 +4758,82 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
 
+
+        [TestMethod]
+        public void SVGVisibleAndHidden_Test()
+        {
+            var svgString = @"
+            <svg width=""500"" height=""300"" xmlns=""http://www.w3.org/2000/svg"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 500 300"">
+                <style>
+                    .hidden{
+                        display: none;
+                    }
+                </style>
+                
+                <rect id='rect' class=""hidden"" x=""10"" y=""10"" width=""100"" height=""100"" fill=""#333"" />
+                <circle id='circle' class=""hidden"" cx=""160"" cy=""60"" r=""50"" fill=""red"" />
+                <path id='path' style='display:none' d=""M 250 60 L 250 10 L 270 100 L 270 50 Z"" fill=""#000"" />
+                <text id='text' style='display:none' x=""300"" y=""60"" fill=""blue"" >Not Visible</text>
+
+                <circle style='display: block' id='circle2' class=""hidden"" cx=""160"" cy=""60"" r=""50"" fill=""red"" />
+            </svg>
+            ";
+            
+            
+            var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
+            var svg = component as SVGCanvas;
+            Assert.IsNotNull(svg);
+            
+
+            
+
+            svg.OverflowAction = OverflowAction.Clip;
+            svg.BackgroundColor = StandardColors.Silver;
+
+            using var doc = new Document();
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Messages);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            pg.Contents.Add(svg);
+            pg.Margins = new Thickness(25);
+            pg.BorderWidth = 1;
+            pg.Padding = new Thickness(25);
+
+            PDF.Layout.PDFLayoutDocument layout = null;
+            //Output the document (including databinding the data content)
+            using (var stream = DocStreams.GetOutputStream("SVGVisibleAndHidden.pdf"))
+            {
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            var comp = doc.FindAComponentById("rect");
+            Assert.IsNotNull(comp);
+            Assert.IsNull(comp.GetFirstArrangement()); //There should be no arrangement
+            
+            comp = doc.FindAComponentById("circle");
+            Assert.IsNotNull(comp);
+            Assert.IsNull(comp.GetFirstArrangement());
+            
+            comp = doc.FindAComponentById("path");
+            Assert.IsNotNull(comp);
+            Assert.IsNull(comp.GetFirstArrangement());
+            
+            comp = doc.FindAComponentById("text");
+            Assert.IsNotNull(comp);
+            Assert.IsNull(comp.GetFirstArrangement());
+            
+
+        }
+        
+       
+
     }
 
 }

@@ -18,14 +18,18 @@
     <svg id="Patterns" width="460" height="350" xmlns="http://www.w3.org/2000/svg" >
         <style>
             text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
-           
+            svg > rect.ignore { display: none; }
+            
+            
+            svg > #squarexminymid, svg > #squarexMidYMid, svg > #squarexMaxYMid { display: inline-block; }
+            
         </style>
         <defs>
             <linearGradient id="rg" >
                 <stop offset="0" stop-color="red" />
                 <stop offset="100%" stop-color="blue" />
             </linearGradient>
-            <pattern id="noAp" width="10%" height="20%" viewBox="0,0,10,10" preserveAspectRatio="slice"  >
+            <pattern id="noAp" width="10%" height="10%" viewBox="0,0,10,10" preserveAspectRatio="slice"  >
                 <rect height="8" width="8" x="1" y="1" fill="url(#rg)" />
             </pattern>
             
