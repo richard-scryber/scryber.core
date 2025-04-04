@@ -8,7 +8,9 @@ using Scryber.Svg.Components;
 using Scryber.Html.Components;
 using System.CodeDom;
 using System.Xml.Linq;
+using Scryber.OpenType.Woff2.Numerics;
 using Scryber.PDF.Graphics;
+using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Size = Scryber.Drawing.Size;
@@ -119,8 +121,9 @@ namespace Scryber.Core.UnitTests.Svg
             
             var pattern = new SVGPattern();
             pattern.ID = "star";
-            pattern.PatternWidth = 15;
-            pattern.PatternHeight = 10;
+            pattern.PatternWidth = Unit.Percent(15);
+            pattern.PatternHeight = Unit.Percent(30);
+            //pattern.ViewBox = new Rect(0, 0, 10, 10);
             pattern.OffsetX = 5;
             pattern.OffsetY = 5;
             pattern.Contents.Add(new SVGRect()
@@ -155,8 +158,8 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(descriptor);
             Assert.AreEqual(PDFResource.PatternResourceType, descriptor.ResourceType);
             Assert.AreEqual(descriptorKey, descriptor.ResourceKey);
-            Assert.AreEqual(15, descriptor.PatternSize.Width.PointsValue);
-            Assert.AreEqual(10, descriptor.PatternSize.Height.PointsValue);
+            Assert.AreEqual(15, descriptor.PatternSize.Width.Value);
+            Assert.AreEqual(30, descriptor.PatternSize.Height.Value);
             
             Assert.AreEqual(layout.Descriptor, descriptor);
             
@@ -546,6 +549,55 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(105 - 18 + offset.Y, comps[5]);
         }
         
+        
+        private void AssertLayoutPattern(PDFPatternLayoutResource layout, dynamic data, int index)
+        {
+            Assert.AreEqual(data.key, layout.ResourceKey, "Layout resource key failed at index " + index);
+            Assert.IsNotNull(layout.Descriptor, "Layout for index " + index + " is null");
+            Assert.IsNotNull(layout.Pattern, "Layout for index " + index + " is null");
+            Assert.IsInstanceOfType(layout.Pattern, typeof(SVGPattern));
+            var pattern = (SVGPattern)layout.Pattern;
+            Assert.AreEqual(3, pattern.Contents.Count, "Layout pattern content count for index " + index + " is invalid");
+            var rect = pattern.Contents[1] as SVGRect;
+            Assert.IsNotNull(rect, "Layout rect for index " + index + " is null");
+
+        }
+
+        private void AssertPatternDescriptor(GraphicTilingPatternDescriptor descriptor, dynamic data, int index)
+        {
+            Assert.AreEqual(data.key, descriptor.ResourceKey, "Descriptor resource key failed at index " + index );
+            Assert.AreEqual(data.type, descriptor.ResourceType, "Descriptor resource type failed at index " + index);
+            Assert.AreEqual(data.size, descriptor.PatternSize, "Descriptor size failed at index " + index);
+            Assert.AreEqual(data.viewBox, descriptor.PatternViewBox, "Descriptor viewBox failed at index " + index);
+            Assert.AreEqual(data.offset, descriptor.PatternOffset, "Descriptor offset failed at index " + index);
+            Assert.AreEqual(data.aspect, descriptor.PatternAspectRatio.Align, "Descriptor AspectRatio alignment failed at index " + index);
+            Assert.AreEqual(data.meet, descriptor.PatternAspectRatio.Meet , "Descriptor AspectRatio meet failed at index " + index);
+        }
+
+        private void AssertPatternCalculations(GraphicTilingPatternDescriptor descriptor, dynamic data, int index)
+        {
+            Rect actBounds = (Rect)data.bounds;
+            
+            var step = descriptor.CalculatePatternStepForShape(actBounds, null);
+            var bbox = descriptor.CalculatePatternBoundsForShape(actBounds, null);
+            var matrix = descriptor.CalculatePatternTransformMatrixForShape(actBounds, null).Components;
+            
+            Assert.AreEqual(data.xStep, Math.Round(step.Width.PointsValue, 1), "Descriptor step width failed at index " + index);
+            Assert.AreEqual(data.yStep, Math.Round(step.Height.PointsValue, 1), "Descriptor step height failed at index " + index);
+            
+            Assert.AreEqual(data.bbox, bbox, "Descriptor bbox failed at index " + index);
+            Assert.AreEqual(6, matrix.Length, "Descriptor matrix failed at index " + index);
+            
+            for (var i = 0; i < 6; i++)
+            {
+                Assert.AreEqual(data.matrix[i], Math.Round(matrix[i], 1),
+                    "Descriptor pattern matrix value " + i + " failed at index " + index);
+            }
+            
+            
+        }
+        
+        
         [TestMethod]
         public void SVGPreserveAspectRatioWidePatterns_Test()
         {
@@ -555,12 +607,91 @@ namespace Scryber.Core.UnitTests.Svg
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioWide.pdf"))
             {
-                doc.RenderOptions.Compression = OutputCompressionType.None;
+                //doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            var patterns = 11;
+            var fonts = 2;
+            var canvas = 1;
+            var gradients = 1;
+            
+            Assert.AreEqual((patterns * 2) + fonts + canvas + gradients, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            //Top Label
+            var font = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(font);
+
+            var layouts = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_layout" },
+                new { key = "hBdy1_Patterns_xminymin_layout" },
+                new { key = "hBdy1_Patterns_xminymid_layout" },
+                new { key = "hBdy1_Patterns_xminymax_layout" },
+                new { key = "hBdy1_Patterns_xMidYMin_layout" },
+                new { key = "hBdy1_Patterns_xMidYMid_layout" },
+                new { key = "hBdy1_Patterns_xMidYMax_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMin_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMid_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMax_layout" },
+                new { key = "hBdy1_Patterns_apNone_layout" }
+            };
+
+            var size = new Size(Unit.Percent(20), Unit.Percent(10));
+            var viewBox = new Rect(0, 0, 10, 10);
+            var offset = new Point(0, 0);
+
+            var descriptors = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymax_descriptor" , type = PDFResource.PatternResourceType , size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMax, meet = AspectRatioMeet.Meet},
+                new { key = "hBdy1_Patterns_xMidYMin_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMidYMid_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMidYMax_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMax, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+            };
+            
+            var calcs = new []
+            {
+                new { bounds = new Rect(10, 10, 80, 90), xStep = 17.8d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 13.5d, 331.0d }},
+                
+                new { bounds = new Rect(100, 10, 80, 90), xStep = 17.8d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 100.0d, 331.0d }},
+                new { bounds = new Rect(65, 120, 100, 90), xStep = 22.2d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 65.0d, 221.0d }},
+                new { bounds = new Rect(10, 230, 140, 90), xStep = 31.1d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 10.0d, 111.0d }},
+                
+                new { bounds = new Rect(190, 10, 80, 90), xStep = 17.8d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 193.5d, 331.0d }},
+                new { bounds = new Rect(180, 120, 100, 90), xStep = 22.2d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 185.5d, 221.0d }},
+                new { bounds = new Rect(160, 230, 140, 90), xStep = 31.1d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 169.5d, 111.0d }},
+                
+                new { bounds = new Rect(280, 10, 80, 90), xStep = 17.8d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 287.8d, 331.0d }},
+                new { bounds = new Rect(295, 120, 100, 90), xStep = 22.2d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 307.2d, 221.0d }},
+                new { bounds = new Rect(310, 230, 140, 90), xStep = 31.1d, yStep = 10.0d, bbox = new Rect(0,0,10,10), matrix = new [] {0.9d, 0.0d, 0.0d, 0.9d, 331.1d, 111.0d }}
+            };
+            
+            
+            
+            for (var i = 0; i < patterns; i++)
+            {
+                var index = i * 2;
+                index += 2; //for the font and canvas layout run
+                var layout = doc.SharedResources[index] as PDFPatternLayoutResource;
+                Assert.IsNotNull(layout, "Layout for index " + index + " is null");
+                var desc = doc.SharedResources[index + 1] as GraphicTilingPatternDescriptor;
+                Assert.IsNotNull(desc, "Descriptor for index " + index + " is null");
+
+                AssertLayoutPattern(layout, layouts[i], i);
+                AssertPatternDescriptor(desc, descriptors[i], i);
+                
+                if (calcs.Length > i)
+                    AssertPatternCalculations(desc, calcs[i], i);
+            }
         }
+
+        
         
         
         [TestMethod]
@@ -576,7 +707,82 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            var patterns = 11;
+            var fonts = 2;
+            var canvas = 1;
+            var gradients = 1;
+            
+            Assert.AreEqual((patterns * 2) + fonts + canvas + gradients, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            //Top Label
+            var font = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(font);
+
+            var layouts = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_layout" },
+                new { key = "hBdy1_Patterns_xminymin_layout" },
+                new { key = "hBdy1_Patterns_xminymid_layout" },
+                new { key = "hBdy1_Patterns_xminymax_layout" },
+                new { key = "hBdy1_Patterns_xMidYMin_layout" },
+                new { key = "hBdy1_Patterns_xMidYMid_layout" },
+                new { key = "hBdy1_Patterns_xMidYMax_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMin_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMid_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMax_layout" },
+                new { key = "hBdy1_Patterns_apNone_layout" }
+            };
+
+            var size = new Size(Unit.Percent(10), Unit.Percent(20));
+            var viewBox = new Rect(0, 0, 10, 10);
+            var offset = new Point(0, 0);
+
+            var descriptors = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymax_descriptor" , type = PDFResource.PatternResourceType , size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMax, meet = AspectRatioMeet.Meet},
+                new { key = "hBdy1_Patterns_xMidYMin_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMidYMid_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMidYMax_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMax, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+            };
+            
+            var calcs = new []
+            {
+                new { bounds = new Rect(10, 10, 80, 90), xStep = 10.0d, yStep = 22.5d, bbox = new Rect(0,0,10,10), matrix = new [] {0.8d, 0.0d, 0.0d, 0.8d, 10.0d, 327.0d }},
+                
+                new { bounds = new Rect(100, 10, 80, 90), xStep = 10.0d, yStep = 22.5d, bbox = new Rect(0,0,10,10), matrix = new [] {0.8d, 0.0d, 0.0d, 0.8d, 100.0d, 332.0d }},
+                new { bounds = new Rect(65, 120, 100, 90), xStep = 10.0d, yStep = 18.0d, bbox = new Rect(0,0,10,10), matrix = new [] {1.0d, 0.0d, 0.0d, 1.0d, 65.0d, 216.0d }},
+                new { bounds = new Rect(10, 230, 140, 90), xStep = 10.0d, yStep = 12.9d, bbox = new Rect(0,0,10,10), matrix = new [] {1.4d, 0.0d, 0.0d, 1.4d, 10.0d, 102.0d }},
+                
+                new { bounds = new Rect(190, 10, 80, 90), xStep = 10.0d, yStep = 22.5d, bbox = new Rect(0,0,10,10), matrix = new [] {0.8d, 0.0d, 0.0d, 0.8d, 190.0d, 332.0d }},
+                new { bounds = new Rect(180, 120, 100, 90), xStep = 10.0d, yStep = 18.0d, bbox = new Rect(0,0,10,10), matrix = new [] {1.0d, 0.0d, 0.0d, 1.0d, 180.0d, 216.0d }},
+                new { bounds = new Rect(160, 230, 140, 90), xStep = 10.0d, yStep = 12.9d, bbox = new Rect(0,0,10,10), matrix = new [] {1.4d, 0.0d, 0.0d, 1.4d, 160.0d, 102.0d }},
+                
+                new { bounds = new Rect(280, 10, 80, 90), xStep = 10.0d, yStep = 22.5d, bbox = new Rect(0,0,10,10), matrix = new [] {0.8d, 0.0d, 0.0d, 0.8d, 280.0d, 332.0d }},
+                new { bounds = new Rect(295, 120, 100, 90), xStep = 10.0d, yStep = 18.0d, bbox = new Rect(0,0,10,10), matrix = new [] {1.0d, 0.0d, 0.0d, 1.0d, 295.0d, 216.0d }},
+                new { bounds = new Rect(310, 230, 140, 90), xStep = 10.0d, yStep = 12.9d, bbox = new Rect(0,0,10,10), matrix = new [] {1.4d, 0.0d, 0.0d, 1.4d, 310.0d, 102.0d }}
+            };
+            
+            for (var i = 0; i < patterns; i++)
+            {
+                var index = i * 2;
+                index += 2; //for the font and canvas layout run
+                var layout = doc.SharedResources[index] as PDFPatternLayoutResource;
+                Assert.IsNotNull(layout, "Layout for index " + index + " is null");
+                var desc = doc.SharedResources[index + 1] as GraphicTilingPatternDescriptor;
+                Assert.IsNotNull(desc, "Descriptor for index " + index + " is null");
+
+                AssertLayoutPattern(layout, layouts[i], i);
+                AssertPatternDescriptor(desc, descriptors[i], i);
+                
+                if (calcs.Length > i)
+                    AssertPatternCalculations(desc, calcs[i], i);
+            }
         }
         
         [TestMethod]
@@ -592,7 +798,64 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            var patterns = 11;
+            var fonts = 2;
+            var canvas = 1;
+            var gradients = 1;
+            
+            Assert.AreEqual((patterns * 2) + fonts + canvas + gradients, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            //Top Label
+            var font = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(font);
+
+            var layouts = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_layout" },
+                new { key = "hBdy1_Patterns_xminymin_layout" },
+                new { key = "hBdy1_Patterns_xminymid_layout" },
+                new { key = "hBdy1_Patterns_xminymax_layout" },
+                new { key = "hBdy1_Patterns_xMidYMin_layout" },
+                new { key = "hBdy1_Patterns_xMidYMid_layout" },
+                new { key = "hBdy1_Patterns_xMidYMax_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMin_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMid_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMax_layout" },
+                new { key = "hBdy1_Patterns_apNone_layout" }
+            };
+
+            var size = new Size(Unit.Percent(10), Unit.Percent(20));
+            var viewBox = new Rect(0, 0, 10, 10);
+            var offset = new Point(0, 0);
+
+            var descriptors = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xminymid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xminymax_descriptor" , type = PDFResource.PatternResourceType , size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMax, meet = AspectRatioMeet.Slice},
+                new { key = "hBdy1_Patterns_xMidYMin_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMidYMid_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMidYMax_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMax, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+            };
+            
+            for (var i = 0; i < patterns; i++)
+            {
+                var index = i * 2;
+                index += 2; //for the font and canvas layout run
+                var layout = doc.SharedResources[index] as PDFPatternLayoutResource;
+                Assert.IsNotNull(layout, "Layout for index " + index + " is null");
+                var desc = doc.SharedResources[index + 1] as GraphicTilingPatternDescriptor;
+                Assert.IsNotNull(desc, "Descriptor for index " + index + " is null");
+
+                AssertLayoutPattern(layout, layouts[i], i);
+                AssertPatternDescriptor(desc, descriptors[i], i);
+            }
+            
+            
         }
         
         [TestMethod]
@@ -608,7 +871,62 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.AreEqual(11, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            var patterns = 11;
+            var fonts = 2;
+            var canvas = 1;
+            var gradients = 1;
+            
+            Assert.AreEqual((patterns * 2) + fonts + canvas + gradients, doc.SharedResources.Count); //1 font, 4 layouts and 4 descriptors, 2 xObj (main and pattern)
+            //Top Label
+            var font = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(font);
+
+            var layouts = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_layout" },
+                new { key = "hBdy1_Patterns_xminymin_layout" },
+                new { key = "hBdy1_Patterns_xminymid_layout" },
+                new { key = "hBdy1_Patterns_xminymax_layout" },
+                new { key = "hBdy1_Patterns_xMidYMin_layout" },
+                new { key = "hBdy1_Patterns_xMidYMid_layout" },
+                new { key = "hBdy1_Patterns_xMidYMax_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMin_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMid_layout" },
+                new { key = "hBdy1_Patterns_xMaxYMax_layout" },
+                new { key = "hBdy1_Patterns_apNone_layout" }
+            };
+
+            var size = new Size(Unit.Percent(20), Unit.Percent(10));
+            var viewBox = new Rect(0, 0, 10, 10);
+            var offset = new Point(0, 0);
+
+            var descriptors = new[]
+            {
+                new { key = "hBdy1_Patterns_noAp_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Meet },
+                new { key = "hBdy1_Patterns_xminymin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xminymid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xminymax_descriptor" , type = PDFResource.PatternResourceType , size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMinYMax, meet = AspectRatioMeet.Slice},
+                new { key = "hBdy1_Patterns_xMidYMin_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMidYMid_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMidYMax_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMidYMax, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Slice },
+                new { key = "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+            };
+            
+            for (var i = 0; i < patterns; i++)
+            {
+                var index = i * 2;
+                index += 2; //for the font and canvas layout run
+                var layout = doc.SharedResources[index] as PDFPatternLayoutResource;
+                Assert.IsNotNull(layout, "Layout for index " + index + " is null");
+                var desc = doc.SharedResources[index + 1] as GraphicTilingPatternDescriptor;
+                Assert.IsNotNull(desc, "Descriptor for index " + index + " is null");
+
+                AssertLayoutPattern(layout, layouts[i], i);
+                AssertPatternDescriptor(desc, descriptors[i], i);
+            }
         }
 
         [TestMethod]

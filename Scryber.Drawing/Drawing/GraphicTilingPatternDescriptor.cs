@@ -114,8 +114,21 @@ namespace Scryber.Drawing
             return defined;
         }
 
+        private bool EnsureViewbox(Rect tilingBounds, ContextBase context)
+        {
+            if (this.PatternViewBox.IsEmpty)
+            {
+                var w = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
+                var h = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
+                this.PatternViewBox = new Rect(0, 0, w, h);
+            }
+            return true;
+        }
+
         public Rect CalculatePatternBoundsForShape(Rect tilingBounds, ContextBase context)
         {
+            EnsureViewbox(tilingBounds, context);
+            
             var x = EnsureAbsolute(this.PatternViewBox.X, tilingBounds.Width);
             var y = EnsureAbsolute(this.PatternViewBox.Y, tilingBounds.Height);
             var width = EnsureAbsolute(this.PatternViewBox.Width, tilingBounds.Width);
@@ -204,6 +217,8 @@ namespace Scryber.Drawing
 
         public Size CalculatePatternStepForShape(Rect tilingBounds, ContextBase context)
         {
+            EnsureViewbox(tilingBounds, context);
+            
             //get the output expected size
             var resultwidth = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
             var resultheight = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
@@ -261,6 +276,7 @@ namespace Scryber.Drawing
 
         public PDFTransformationMatrix CalculatePatternTransformMatrixForShape(Rect tilingBounds, ContextBase context)
         {
+            EnsureViewbox(tilingBounds, context);
 
             if (this.PatternAspectRatio.Align == AspectRatioAlign.None || this.PatternAspectRatio.Meet == AspectRatioMeet.None)
             {
@@ -281,7 +297,8 @@ namespace Scryber.Drawing
 
         protected PDFTransformationMatrix CalculatePatternTransformMatrixForNoPreservation(Rect tilingBounds, ContextBase context)
         {
-            //TODO: implement none
+            EnsureViewbox(tilingBounds, context);
+            
             var resultwidth = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
             var resultheight = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
 
@@ -325,6 +342,7 @@ namespace Scryber.Drawing
         
         protected PDFTransformationMatrix CalculatePatternTransformMatrixForSliced(Rect tilingBounds, ContextBase context)
         {
+            EnsureViewbox(tilingBounds, context);
             //get the output expected size
             var resultwidth = EnsureAbsolute(this.PatternSize.Width, tilingBounds.Width);
             var resultheight = EnsureAbsolute(this.PatternSize.Height, tilingBounds.Height);
