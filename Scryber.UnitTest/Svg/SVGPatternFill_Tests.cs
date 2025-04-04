@@ -690,8 +690,6 @@ namespace Scryber.Core.UnitTests.Svg
                     AssertPatternCalculations(desc, calcs[i], i);
             }
         }
-
-        
         
         
         [TestMethod]
@@ -929,16 +927,79 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
 
+        
         [TestMethod]
         public void SVGTransformedPatterns_Test()
         {
+            //TODO: Implement the inclusion of a second matrix 
             Assert.Inconclusive();
         }
 
         [TestMethod]
         public void SVGMixedContentPatterns_Test()
         {
-            Assert.Inconclusive();
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGPatternsMixedContent.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVG_PatternsMixedContent.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+            
+            Assert.AreEqual(9, doc.SharedResources.Count);
+            var layout = doc.SharedResources[3] as PDFPatternLayoutResource;
+            Assert.IsNotNull(layout, "Layout Resource at index 3 was not found");
+
+            var pattern = layout.Pattern as SVGPattern;
+            Assert.IsNotNull(pattern, "Pattern for Layout Resource at index 3 was not found");
+            
+            Assert.AreEqual(11, pattern.Contents.Count);
+            Assert.IsInstanceOfType(pattern.Contents[1], typeof(SVGEllipse));
+            Assert.IsInstanceOfType(pattern.Contents[3], typeof(SVGRect));
+            Assert.IsInstanceOfType(pattern.Contents[5], typeof(SVGRect));
+            Assert.IsInstanceOfType(pattern.Contents[7], typeof(SVGRect));
+            Assert.IsInstanceOfType(pattern.Contents[9], typeof(SVGText));
+
+            //If we have an arrangement then we have been rendered
+            var arrange = pattern.Contents[1].GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for Ellipse was null");
+            Assert.AreEqual(new Rect(0, 0, 80, 10), arrange.RenderBounds);
+            
+            arrange = pattern.Contents[3].GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for Rect 1 was null");
+            Assert.AreEqual(new Rect(0, 0, 30, 6), arrange.RenderBounds);
+            
+            arrange = pattern.Contents[5].GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for Rect 2 was null");
+            Assert.AreEqual(new Rect(25, 2, 35, 6), arrange.RenderBounds);
+            
+            arrange = pattern.Contents[7].GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for Rect 3 was null");
+            Assert.AreEqual(new Rect(55, 4, 20, 6), arrange.RenderBounds);
+            
+            arrange = pattern.Contents[9].GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for Text was null");
+            Assert.AreEqual(new Rect(8, -0.7001953125, 64, 12), arrange.RenderBounds);
+            
+            layout = doc.SharedResources[6] as PDFPatternLayoutResource;
+            Assert.IsNotNull(layout, "Layout Resource at index 6 was not found");
+            
+            pattern = layout.Pattern as SVGPattern;
+            Assert.IsNotNull(pattern, "Pattern for Layout Resource at index 6 was not found");
+            Assert.AreEqual(5, pattern.Contents.Count);
+
+            var img = pattern.Contents[1] as SVGImage;
+            Assert.IsNotNull(img, "Image for Layout Resource at index 6 was not found");
+            arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for image was null");
+            
+            var rect = pattern.Contents[3] as SVGRect;
+            Assert.IsNotNull(rect, "Rect for Layout Resource at index 6 was not found");
+            arrange = rect.GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Arrangement for rect was null");
+            
         }
         
         
