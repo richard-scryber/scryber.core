@@ -113,9 +113,8 @@ namespace Scryber.Components
             : base(type)
         {
             this._incrementids = new Dictionary<ObjectType, int>();
-
-            var config = ServiceProvider.GetService<IScryberConfigurationService>();
-            this.ImageFactories = config.ImagingOptions.GetConfiguredFactories();
+            
+            this.ImageFactories = this.DoCreateImageFactories();
             this._startTime = DateTime.Now;
             this._requests = new RemoteFileRequestSet(this);
         }
@@ -734,7 +733,22 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the collection of image data factories for this document
         /// </summary>
-        public ImageFactoryList ImageFactories { get; private set; }
+        public ImageFactoryList ImageFactories
+        {
+            get; 
+            private set;
+        }
+
+        protected virtual ImageFactoryList DoCreateImageFactories()
+        {
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var list = config.ImagingOptions.GetConfiguredFactories();
+             
+            var svgFactory = new Scryber.Svg.Imaging.SVGImagingFactory();
+            list.Insert(list.Count, svgFactory);
+            
+            return list;
+        }
 
         #endregion
 

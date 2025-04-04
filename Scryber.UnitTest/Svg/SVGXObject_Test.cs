@@ -43,7 +43,7 @@ namespace Scryber.Core.UnitTests.Svg
         ///A test to make sure the SVG is rendered as an XObject in the PDF
         ///</summary>
         [TestMethod()]
-        [TestCategory("Common")]
+        [TestCategory("SVG")]
         public void SVGOutput_Test()
         {
             var doc = new Document();
@@ -65,6 +65,23 @@ namespace Scryber.Core.UnitTests.Svg
 
             Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
 
+        }
+
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedImage_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage.html", TestContext);
+            var doc = Document.ParseDocument(path);
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(stream);
+            }
+            
         }
 
 
