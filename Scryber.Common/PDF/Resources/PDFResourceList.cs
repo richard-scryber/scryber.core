@@ -89,9 +89,9 @@ namespace Scryber.PDF.Resources
             {
                 writer.BeginDictionaryEntry(list.Type);
                 writer.BeginDictionary();
-                foreach (PDFResource rsrc in list)
+                for(var i = 0; i < list.Count; i++)
                 {
-
+                    PDFResource rsrc = list[i];
                     PDFObjectRef rref = rsrc.EnsureRendered(context, writer);
                     if (rref != null)
                     {

@@ -7,9 +7,13 @@
     <style>        
     </style>
 </head>
-<body>
+<body style="padding: 20pt;">
+    <p>This is above the inline svg</p>
+    <svg id="inline" width="200" height="200" style="border: solid 1pt black" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full">
+        <rect x="10" y="10" width="180" height="180" fill="blue" />
+    </svg>
     <p>This is above the svg image</p>
-    <img src="Chart.svg" width="400" height="400" />
+    <img id="referenced" src="Chart.svg" width="100" height="100" style="border: solid 1pt black" />
     <p>This is after the svg image</p>
 </body>
 </html>

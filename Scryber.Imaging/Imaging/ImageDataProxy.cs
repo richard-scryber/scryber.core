@@ -66,6 +66,12 @@ namespace Scryber.Imaging
 		}
 
 
+		public ImageData ImageData
+		{
+			get{ return this._innerImage; }
+		}
+
+
         public ImageDataProxy(IRemoteRequest request, string path)
 			: base(path, 1, 1)
 		{

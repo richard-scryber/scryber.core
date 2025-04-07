@@ -104,8 +104,6 @@ namespace Scryber.PDF.Resources
             }
             return this.ImageData.Render(this.Name, this.Filters, context, writer);
         }
-
-
         
 
         public Size GetImageSize()

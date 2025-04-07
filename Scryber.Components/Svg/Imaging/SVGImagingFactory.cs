@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Imaging;
 using Scryber.Svg.Components;
@@ -34,9 +35,10 @@ public class SVGImagingFactory : ImageFactoryBase
         if(!(component is SVGCanvas))
             return null;
         var svg = component as SVGCanvas;
+        var data = new SVGPDFImageData(path, svg, 1, 1);
 
+        return data;
 
-        return new SVGPDFImageData(path, svg, 1, 1);
 
     }
 

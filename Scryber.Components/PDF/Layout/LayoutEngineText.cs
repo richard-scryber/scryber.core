@@ -282,7 +282,7 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            this._frsrc = ((Document)this.TextComponent.Document).GetFontResource(this.TextRenderOptions.Font, true);
+            this._frsrc = ((Document)context.Document).GetFontResource(this.TextRenderOptions.Font, true);
 
             this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Text_Layout);
 

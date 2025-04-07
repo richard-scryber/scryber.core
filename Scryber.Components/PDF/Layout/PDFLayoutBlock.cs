@@ -1461,6 +1461,8 @@ namespace Scryber.PDF.Layout
             Point prevLoc = context.Offset;
             var component = this.Owner as Component;
             
+            PDFObjectRef oref = null;
+            
             try
             {
                 context.FullStyle = this.FullStyle;
@@ -1535,7 +1537,7 @@ namespace Scryber.PDF.Layout
                 //Perform the atual writing of this blocks inner conntent
                 if (this.ShouldOutputAsXObject(context))
                 {
-                    this.DoOutputToXObject(context, writer);
+                    oref = this.DoOutputToXObject(context, writer);
                 }
                 else
                 {
@@ -1632,7 +1634,7 @@ namespace Scryber.PDF.Layout
                     context.TraceLog.End(TraceLevel.Debug, "Layout Block", "Finished writing un-owned Block");
             }
 
-            return null;
+            return oref;
         }
         
         

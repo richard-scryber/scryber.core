@@ -126,7 +126,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
             this.Resources = new PDFResourceList(this, false);
         
         this.Position = position ?? throw new ArgumentNullException(nameof(position));
-        this.OutputName = (PDFName)owner.Document.GetIncrementID(owner.Type);
+        this.OutputName = (PDFName)context.Document.GetIncrementID(owner.Type);
     }
 
     protected virtual void SaveContextState()
@@ -353,7 +353,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
     {
         get
         {
-            return this.Owner.Document;
+            return this.Context.Document;
         }
     }
     

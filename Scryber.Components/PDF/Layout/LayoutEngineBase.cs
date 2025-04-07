@@ -2340,6 +2340,8 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
+            
+
             PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
@@ -2347,15 +2349,26 @@ namespace Scryber.PDF.Layout
 
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
-
-            //Rects 
-            //PDFRect border, content, total;
-            //bool hasmargins, haspadding;
-            //PDFThickness marginThick, padThick;
+            
 
             Size sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
-            //sz = BuildContentSizes(style, options, sz, out border, out content, out total, out hasmargins, out haspadding, out marginThick, out padThick);
+            
+            if (null != imgx.ImageData)
+            {
+                var data = imgx.ImageData;
+                if(data is Scryber.Imaging.ImageDataProxy proxy)
+                    data = proxy.ImageData;
 
+                if (null != data && data is ILayoutComponent tolayout)
+                {
+                    if(this.Context.ShouldLogVerbose)
+                        this.Context.TraceLog.Add(TraceLevel.Verbose, "Layout", "Laying out the image content for '" + data.SourcePath + " as it is implemenbting the ILayoutComponent interface");
+                    
+                    sz = tolayout.GetRequiredSizeForLayout(sz, this.Context, style);
+                }
+                    
+            }
+            
             AddComponentRunToLayoutWithSize(sz, image, style, ref linetoAddTo, options);
 
             return;

@@ -391,5 +391,36 @@ namespace Scryber.Svg.Components
             else
                 return base.GetAppliedStyle(forComponent, baseStyle);
         }
+
+        public PDFObjectRef RenderToPDF(RenderContext context, PDFWriter writer)
+        {
+            if (this.IsDiscreetSVG)
+            {
+                
+            }
+
+            return null;
+        }
+
+        public static Style GetDefaultBaseStyle()
+        {
+            var style = new Style();
+            Styles.FillStyle fill = new Styles.FillStyle();
+            style.StyleItems.Add(fill);
+            fill.Color = StandardColors.Black;
+
+
+            PageStyle defpaper = new PageStyle();
+            style.StyleItems.Add(defpaper);
+            defpaper.PaperSize = PaperSize.A4;
+            defpaper.PaperOrientation = PaperOrientation.Portrait;
+
+            Styles.FontStyle fs = new Styles.FontStyle();
+            style.StyleItems.Add(fs);
+            fs.FontFamily = (FontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
+            fs.FontSize = new Unit(24.0, PageUnits.Points);
+            
+            return style;
+        }
     }
 }
