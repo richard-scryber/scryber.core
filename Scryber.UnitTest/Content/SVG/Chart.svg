@@ -1,4 +1,4 @@
-﻿<svg width="200" height="200" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full">
+﻿<svg id="chart" width="200" height="200" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full">
     <g overflow="visible">
        <!-- <rect width="450" height="450" x="0" y="0" id="r0" fill-opacity="1" fill="aqua"></rect>-->
         <path id="p1" d="M257.3743 62.6451L257.9642 47.6567L274 47.6567" fill="none" stroke="#5470c6"></path>

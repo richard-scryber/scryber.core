@@ -11,7 +11,7 @@ using Scryber.Svg.Components;
 namespace Scryber.PDF;
 
 /// <summary>
-/// Supports the output of layout content as an XObject (outside of the main page drawing stream.
+/// Supports the output of layout content as an XObject (outside of the main page drawing stream).
 /// </summary>
 /// <remarks>Handles the viewport sizing, any scaling, and outputting of resources and the explicit Do action back on the main page drawing stream</remarks>
 public class PDFXObjectRenderer : IDisposable, IResourceContainer

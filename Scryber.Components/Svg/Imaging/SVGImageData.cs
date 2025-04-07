@@ -1,4 +1,5 @@
 using System;
+using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
@@ -9,11 +10,13 @@ using Scryber.Svg.Components;
 namespace Scryber.Svg.Imaging
 {
 
-    public class SVGPDFImageData : ImageData, ILayoutComponent, IBindableComponent
+    public class SVGPDFImageData : ImageData, ILayoutComponent
     {
         private PDFObjectRef _renderRef = null;
+        private PDFObjectRef _layoutRef = null;
         private SVGCanvas _svgCanvas = null;
-        private PDFLayoutItem _layout = null;
+        private PDFLayoutBlock _layout = null;
+        
         
         public SVGPDFImageData(string source, SVGCanvas canvas, int w, int h) 
             : base(ObjectTypes.ImageData, source, w, h)
@@ -23,23 +26,25 @@ namespace Scryber.Svg.Imaging
         }
 
        
-
+       
         public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
-            if(_renderRef == null)
-                _renderRef = this.DoRenderToPDF(name, filters, context, writer);
-            return _renderRef;
+            var renderContext = (PDFRenderContext)context;
+            if (_layoutRef == null)
+            {
+                //this._layoutRef = this.DoRenderLayoutToPDF(name, filters, renderContext, writer);
+            }
+
+            return _layoutRef;
         }
 
-        protected virtual PDFObjectRef DoRenderToPDF(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
+        protected virtual PDFObjectRef DoRenderLayoutToPDF(PDFName name, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
         {
-            var renderContext = (PDFRenderContext)context;
-            
             PDFObjectRef oref = null;
 
             if (null != _layout)
             {
-                //oref = _layout.OutputToPDF(renderContext, writer);
+                 oref = _layout.OutputToPDF(context, writer); 
             }
 
             return oref;
@@ -128,11 +133,34 @@ namespace Scryber.Svg.Imaging
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
+            var newSize = available;
+            
+            if (appliedstyle.TryGetValue(StyleKeys.SizeWidthKey, out var width))
+            {
+                newSize.Width = width.Value(appliedstyle);
+                if (appliedstyle.TryGetValue(StyleKeys.SizeHeightKey, out var height))
+                {
+                    newSize.Height = height.Value(appliedstyle);
+                }
+                else
+                {
+                    //TODO: Scale height Proportionally
+                }
+            }
+            else if (appliedstyle.TryGetValue(StyleKeys.SizeHeightKey, out var height))
+            {
+                //TODO: Scale width proportionally.
+            }
+            
+            _svgCanvas.Width = newSize.Width;
+            _svgCanvas.Height = newSize.Height;
+
             if (null == this._layout)
             {
-                this._layout = this.DoLayoutCanvas(context, appliedstyle);
+                this._layout = DoLayoutCanvas(context, appliedstyle);
             }
-            return available;
+            
+            return newSize;
         }
 
         public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
@@ -140,7 +168,7 @@ namespace Scryber.Svg.Imaging
             
         }
 
-        protected virtual PDFLayoutItem DoLayoutCanvas(LayoutContext context, Style style)
+        protected virtual PDFLayoutBlock DoLayoutCanvas(LayoutContext context, Style style)
         {
             PDFLayoutContext layoutContext = (PDFLayoutContext)context;
             var prevStack = context.StyleStack;
@@ -156,6 +184,7 @@ namespace Scryber.Svg.Imaging
                 var open = pg.LastOpenBlock();
 
                 var applied = this._svgCanvas.GetAppliedStyle();
+                
                 layoutContext.StyleStack.Push(applied);
                 
                 var full = layoutContext.StyleStack.GetFullStyle(this._svgCanvas, 
@@ -163,6 +192,8 @@ namespace Scryber.Svg.Imaging
                     DoGetParentSize, 
                     new Size(Font.DefaultFontSize, Font.DefaultFontSize * 0.5), 
                     Font.DefaultFontSize);
+                
+                
                 
                 using (var engine = (this._svgCanvas as IPDFViewPortComponent).GetEngine(null, layoutContext, full))
                 {
@@ -187,7 +218,7 @@ namespace Scryber.Svg.Imaging
                 context.StyleStack = prevStack;
                 context.Items = prevItems;
             }
-            return layout;
+            return layout as PDFLayoutBlock;
         }
 
         private Size DoGetParentSize(IComponent forcomponent, Style withstyle, PositionMode withposition)
@@ -195,36 +226,7 @@ namespace Scryber.Svg.Imaging
             return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
         }
         
-
-        public event DataBindEventHandler DataBinding;
         
-        
-        public event DataBindEventHandler DataBound;
-        public void DataBind(DataContext context)
-        {
-            
-            if (null != this._svgCanvas)
-            {
-                try
-                {
-                    //Create a new context with an empty data stack for binding
-                    context = new DataContext(new ItemCollection(this), context.TraceLog, context.PerformanceMonitor,
-                        context.Document, context.Format);
-                    
-                    this._svgCanvas.DataBind(context);
-                }
-                catch (PDFDataException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    throw new PDFDataException(
-                        "Could not bind the canvase for the SVG Image " + (this.SourcePath ?? "[UNKNOWN PATH]"), e);
-                }
-            }
-
-        }
     }
 
 }
