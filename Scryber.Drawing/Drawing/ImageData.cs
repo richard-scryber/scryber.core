@@ -299,6 +299,17 @@ namespace Scryber.Drawing
         }
 
         #endregion
+        
+        
+        public virtual Size GetRequiredSizeForRender(Size available, ContextBase context)
+        {
+            return available;
+        }
+        
+        public virtual Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+        {
+            return offset;
+        }
 
         public abstract PDFObjectRef Render(PDFName name, IStreamFilter[] filters,  ContextBase context, PDFWriter writer);
 

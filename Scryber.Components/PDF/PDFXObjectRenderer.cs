@@ -333,6 +333,7 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
 
     protected virtual void WriteXObjectRenderDo()
     {
+        return;
         var moveMatrix = new PDFTransformationMatrix();
         var x = this.OriginalOffset.X.RealValue;
         var y = (this.OriginalOffset.Y + this.OriginalSize.Height).RealValue;

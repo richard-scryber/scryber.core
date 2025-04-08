@@ -139,7 +139,10 @@ namespace Scryber.Imaging
         {
 			this.EnsureFulfilled(null);
 
-            return base.GetSize();
+			if (null != this._innerImage)
+				return this._innerImage.GetSize();
+			else
+				return base.GetSize();
         }
 
         public override void ResetFilterCache()
@@ -185,6 +188,25 @@ namespace Scryber.Imaging
 			}
 
 			return false;
+		}
+
+		public override Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+
+			if (null != this._innerImage)
+				return this._innerImage.GetRequiredOffsetForRender(offset, context);
+			else
+				return base.GetRequiredOffsetForRender(offset, context);
+		}
+
+		public override Size GetRequiredSizeForRender(Size available, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+			if (null != this._innerImage)
+				return this._innerImage.GetRequiredSizeForRender(available, context);
+			else
+				return base.GetRequiredSizeForRender(available, context);
 		}
 
 		protected ImageData GetMissingImage()

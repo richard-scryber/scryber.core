@@ -1,22 +1,55 @@
 using System;
+using System.Runtime.CompilerServices;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 using Scryber.Styles;
 using Scryber.Svg.Components;
 
 namespace Scryber.Svg.Imaging
 {
 
+    /// <summary>
+    /// Represents a single discreet SVG image (canvas), loaded from another source. 
+    /// </summary>
     public class SVGPDFImageData : ImageData, ILayoutComponent
     {
+        
         private PDFObjectRef _renderRef = null;
         private PDFObjectRef _layoutRef = null;
+        private PDFName _layoutName = null;
         private SVGCanvas _svgCanvas = null;
         private PDFLayoutBlock _layout = null;
+
+        /// <summary>
+        /// Gets the loaded canvas for this SVG Image data
+        /// </summary>
+        public SVGCanvas Canvas
+        {
+            get { return _svgCanvas; }
+        }
+
+        /// <summary>
+        /// Gets the pdf layout associated with this SVG Image data (if any)
+        /// </summary>
+        public PDFLayoutBlock Layout
+        {
+            get{ return _layout; }
+        }
         
+        
+        #region ILayoutComponent properties
+        
+        public string ID { get; set; }
+        public string ElementName { get; set; }
+        public IDocument Document { get; private set; }
+        public IComponent Parent { get; set; }
+        
+        #endregion
         
         public SVGPDFImageData(string source, SVGCanvas canvas, int w, int h) 
             : base(ObjectTypes.ImageData, source, w, h)
@@ -30,39 +63,169 @@ namespace Scryber.Svg.Imaging
         public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
         {
             var renderContext = (PDFRenderContext)context;
+            
+            
             if (_layoutRef == null)
             {
-                //this._layoutRef = this.DoRenderLayoutToPDF(name, filters, renderContext, writer);
+                this._layoutRef = this.DoRenderLayoutToPDF(name, filters, renderContext, writer);
             }
-
-            return _layoutRef;
+            
+            var imgRef = this.DoRenderImageToPDF(name, _layoutName, _layoutRef, filters, renderContext, writer);
+            
+            return imgRef;
         }
 
-        protected virtual PDFObjectRef DoRenderLayoutToPDF(PDFName name, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
+        protected virtual PDFObjectRef DoRenderLayoutToPDF(PDFName imageName, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
         {
+            var  prevOffset = context.Offset;
             PDFObjectRef oref = null;
-
+            PDFName canvasName = null;
+            
             if (null != _layout)
             {
-                 oref = _layout.OutputToPDF(context, writer); 
+                try
+                {
+                    
+                    context.Offset = new Point(0.0, 0.0);
+                    _layout.PagePosition = Point.Empty;
+                    var bounds = _layout.TotalBounds;
+                    bounds.Location = Point.Empty;
+                    _layout.TotalBounds = bounds;
+
+                    Document doc = (Document)context.Document;
+
+                    //Take the positioned region from the block and render that instead?
+                    oref = _layout.OutputToPDF(context, writer);
+
+                    foreach (var rsrc in doc.SharedResources)
+                    {
+                        if (rsrc is PDFLayoutXObjectResource xobj)
+                        {
+                            var renderer = xobj.Renderer;
+                            if (renderer != null && renderer.Owner == this._svgCanvas)
+                            {
+                                canvasName = renderer.OutputName;
+                            }
+                        }
+                    }
+
+                    if (null != canvasName)
+                    {
+                        this._layoutName = canvasName;
+                    }
+                    else
+                    {
+                        throw new PDFRenderException(
+                            "No resource could be found for the LayoutXObject that matches the referenced image SVG canvas for " +
+                            this.SourcePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (context.Conformance == ParserConformanceMode.Lax)
+                        context.TraceLog.Add(TraceLevel.Error, "SVG Image",
+                            "Could not output the SVG Image as a canvas.", ex);
+                    else
+                    {
+                        throw new Scryber.PDFRenderException(
+                            "The SVG Image " + this.SourcePath +
+                            " could not be rendered as a canvas. See the inner exception for more details", ex);
+                    }
+                }
+                finally
+                {
+                    context.Offset = prevOffset;
+                }
             }
 
             return oref;
         }
 
-        protected PDFLayoutItem LayoutCanvas(PDFLayoutContext layoutContext, Style style)
+        protected virtual PDFObjectRef DoRenderImageToPDF(PDFName imageName, PDFName layoutName, PDFObjectRef layoutRef, IStreamFilter[] filters,
+            PDFRenderContext context, PDFWriter writer)
         {
-            using(var engine = (this._svgCanvas as IPDFViewPortComponent).GetEngine(null, layoutContext, style))
+            //Render the image as a graphics stream 
+            var imgRef = writer.BeginObject(imageName.Value);
+            writer.BeginStream(imgRef, filters);
+            
+            //TODO: Calculate the transformation matrix
+            var matrixComponents = DoGetCanvasToImageMatrix(context, _svgCanvas, _layout);
+            if (null != matrixComponents && matrixComponents.Length == 6)
             {
-                engine.Layout(layoutContext, style);
+                for (var i = 0; i < 6; i++)
+                {
+                    writer.WriteRealS(matrixComponents[i]);
+                }
+                writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
+                
+                for (var i = 0; i < 6; i++)
+                {
+                    writer.WriteRealS(matrixComponents[i]);
+                }
+                writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
             }
-
-            return layoutContext.DocumentLayout.CurrentPage.LastOpenBlock();
+            
+            writer.WriteNameS(layoutName.Value);
+            writer.WriteOpCodeS(PDFOpCode.XobjPaint);
+            var len =writer.EndStream();
+            
+            writer.BeginDictionary();
+            writer.WriteDictionaryNameEntry("Type", "XObject");
+            writer.WriteDictionaryNameEntry("Subtype", "Form");
+            writer.BeginDictionaryEntry("Resources");
+            
+            writer.BeginDictionary();
+            writer.BeginDictionaryEntry("XObject");
+            
+            writer.BeginDictionary();
+            writer.WriteDictionaryObjectRefEntry(layoutName.Value, layoutRef);
+           
+            writer.EndDictionary();
+            writer.EndDictionaryEntry();
+            
+            writer.EndDictionary(); //Resource
+            writer.EndDictionaryEntry();
+            
+            writer.BeginDictionaryEntry("BBox");
+            writer.BeginArray();
+            writer.WriteRealS(0.0);
+            writer.WriteRealS(0.0);
+            writer.WriteRealS(context.Space.Width.PointsValue);
+            writer.WriteRealS(context.Space.Height.PointsValue);
+            writer.EndArray();
+            writer.EndDictionaryEntry();
+            
+            writer.WriteDictionaryNumberEntry("Length", len);
+            writer.EndDictionary(); //XObject
+            
+            writer.EndObject();
+            
+            return imgRef;
+            
         }
+
+        protected virtual double[] DoGetCanvasToImageMatrix(PDFRenderContext context, SVGCanvas canvas,
+            PDFLayoutBlock block)
+        {
+            PDFTransformationMatrix matrix = PDFTransformationMatrix.Identity();
+            //matrix.SetTranslation(context.Offset.X, context.Offset.Y);
+            var comp = matrix.Components;
+            
+            return comp;
+        }
+        
+        
 
         public override Size GetSize()
         {
-            return base.GetSize();
+            if (null != this.Canvas)
+            {
+                var sz = new Size(this.Canvas.Width, this.Canvas.Height);
+                return sz;
+            }
+            
+            var baseSize = base.GetSize();
+            return baseSize;
         }
 
         public override void ResetFilterCache()
@@ -71,34 +234,36 @@ namespace Scryber.Svg.Imaging
         }
         
         
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        ~SVGPDFImageData()
-        {
-            this.Dispose(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-                _svgCanvas?.Dispose();
-        }
+        
         
         //
         // ILayoutComponent
         //
 
+        #region Init and Load implementation
         public event InitializedEventHandler Initialized;
         public event LoadedEventHandler Loaded;
+
+        protected virtual void OnInitialized(InitContext context)
+        {
+            if (null != this.Initialized)
+                this.Initialized(this, new InitEventArgs(context));
+        }
+
+        protected virtual void OnLoaded(LoadContext context)
+        {
+            if(null != this.Loaded)
+                this.Loaded(this, new LoadEventArgs(context));
+        }
+
+        
         public void Init(InitContext context)
         {
             this.Document = context.Document;
             if(null != this._svgCanvas)
                 _svgCanvas.Init(context);
+            
+            this.OnInitialized(context);
             
         }
 
@@ -107,18 +272,19 @@ namespace Scryber.Svg.Imaging
             this.Document = context.Document;
             if(null != this._svgCanvas)
                 _svgCanvas.Load(context);
+            
+            this.OnLoaded(context);
         }
         
-
-        public string ID { get; set; }
-        public string ElementName { get; set; }
-        public IDocument Document { get; private set; }
-        public IComponent Parent { get; set; }
         
+        #endregion
         
         public string MapPath(string source)
         {
             var service = ServiceProvider.GetService<IPathMappingService>();
+            if (null == service) return source;
+            
+            
             bool isfile = false;
             
             if (!string.IsNullOrEmpty(this.SourcePath))
@@ -151,9 +317,6 @@ namespace Scryber.Svg.Imaging
             {
                 //TODO: Scale width proportionally.
             }
-            
-            _svgCanvas.Width = newSize.Width;
-            _svgCanvas.Height = newSize.Height;
 
             if (null == this._layout)
             {
@@ -161,6 +324,23 @@ namespace Scryber.Svg.Imaging
             }
             
             return newSize;
+        }
+        
+        public override Size GetRequiredSizeForRender(Size available, ContextBase context)
+        {
+            var orig = this.GetSize();
+            
+            //We are rendering 1: 1 from the Image to the Canvas, so we now scale by the ratio.
+            var scaleX = available.Width.PointsValue / orig.Width.PointsValue;
+            var scaleY = available.Height.PointsValue / orig.Height.PointsValue;
+            available = new Size(scaleX, scaleY);
+            
+            return available;
+        }
+        
+        public override Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+        {
+            return offset;
         }
 
         public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
@@ -202,6 +382,7 @@ namespace Scryber.Svg.Imaging
                 
                 layoutContext.StyleStack.Pop();
                 layout = open.CurrentRegion.Contents[open.CurrentRegion.Contents.Count - 1];
+                open.CurrentRegion.RemoveItem(layout);
 
             }
             catch (PDFLayoutException)
@@ -225,6 +406,27 @@ namespace Scryber.Svg.Imaging
         {
             return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
         }
+        
+        
+        #region IDisposable implementation
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        ~SVGPDFImageData()
+        {
+            this.Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _svgCanvas?.Dispose();
+        }
+        
+        #endregion
         
         
     }

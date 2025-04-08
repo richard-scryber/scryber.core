@@ -121,6 +121,24 @@ namespace Scryber.PDF.Resources
 
             return size;
         }
+        
+        public virtual Size GetRequiredSizeForRender(Size available, ContextBase context)
+        {
+            if (this.ImageData != null)
+            {
+                available = this.ImageData.GetRequiredSizeForRender(available, context);
+            }
+            return available;
+        }
+        
+        public virtual Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+        {
+            if (null != this.ImageData)
+            {
+                offset = this.ImageData.GetRequiredOffsetForRender(offset, context);
+            }
+            return offset;
+        }
 
         public override string ToString()
         {

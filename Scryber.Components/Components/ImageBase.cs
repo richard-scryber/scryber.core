@@ -198,14 +198,11 @@ namespace Scryber.Components
             {
                 img.RegisterUse(context.Graphics.Container.Resources, this);
                 
-                Point pos = context.Offset;
+                Point pos = img.GetRequiredOffsetForRender(context.Offset, context);
+                
+                Size imgsize = img.GetRequiredSizeForRender(context.Space, context);
 
-
-                Size imgsize = context.Space;
-
-                //the pictures are drawn from their bottom left corner, so take off the height.
-                //if (context.DrawingOrigin == DrawingOrigin.TopLeft)
-                //    pos.Y = pos.Y + imgsize.Height;
+                
 
                 graphics.SaveGraphicsState();
 
