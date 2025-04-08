@@ -782,10 +782,16 @@ namespace Scryber.PDF.Graphics
                 y = ContainerSize.Height.RealValue - pos.Y.RealValue - height; 
             else
                 y = pos.Y.RealValue;
+            
+            //Write the matrix values with precision 4
+            this.Writer.WriteRealS(width.Value, "F4"); //x size
+            this.Writer.WriteRealS(0.0, "F4"); //no rotation
+            this.Writer.WriteRealS(0.0, "F4");
+            this.Writer.WriteRealS(height.Value, "F4"); //y size
+            this.Writer.WriteRealS(x.Value, "F4"); //offset h
+            this.Writer.WriteRealS(y.Value, "F4"); //offset v
 
-            this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix,
-                        width, PDFReal.Zero,
-                        PDFReal.Zero, height, x, y);
+            this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
 
             this.Writer.WriteOpCodeS(PDFOpCode.XobjPaint, img.Name);
         }

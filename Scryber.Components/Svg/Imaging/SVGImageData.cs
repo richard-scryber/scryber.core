@@ -340,6 +340,10 @@ namespace Scryber.Svg.Imaging
         
         public override Point GetRequiredOffsetForRender(Point offset, ContextBase context)
         {
+            var renderContext = (PDF.PDFRenderContext)context;
+            var orig = this.GetSize();
+            var scaleY = renderContext.Space.Height.PointsValue / orig.Height.PointsValue;
+            offset.Y += renderContext.Space.Height;
             return offset;
         }
 
