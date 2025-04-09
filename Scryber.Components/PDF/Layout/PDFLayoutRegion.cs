@@ -507,10 +507,28 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="ensureItem"></param>
         /// <returns></returns>
-        public bool RemoveItem(PDFLayoutItem ensureItem)
+        public bool RemoveItem(PDFLayoutItem ensureItem, bool updateSize = false)
         {
             if (null != ensureItem)
-                return this.Contents.Remove(ensureItem);
+            {
+                var removed = this.Contents.Remove(ensureItem);
+
+                if (removed && updateSize)
+                {
+                    if (ensureItem is PDFLayoutLine line)
+                    {
+                        
+                    }
+                    else if (ensureItem is PDFLayoutBlock block)
+                    {
+                        var height = block.Height;
+                        this.UsedSize = new Size(this.UsedSize.Width, this.UsedSize.Height - height);
+                        //this.TotalBounds.Height = this.UsedSize.Height;
+                    }
+                }
+                
+                return removed;
+            }
             else
                 return false;
         }

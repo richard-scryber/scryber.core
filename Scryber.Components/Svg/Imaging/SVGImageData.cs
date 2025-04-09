@@ -64,13 +64,16 @@ namespace Scryber.Svg.Imaging
         {
             var renderContext = (PDFRenderContext)context;
             
+            var imgRef = this.SetUpImage(name, filters, renderContext, writer);
             
             if (_layoutRef == null)
             {
                 this._layoutRef = this.DoRenderLayoutToPDF(name, filters, renderContext, writer);
             }
             
-            var imgRef = this.DoRenderImageToPDF(name, _layoutName, _layoutRef, filters, renderContext, writer);
+            this.DoRenderImageToPDF(name, _layoutName, _layoutRef, filters, renderContext, writer);
+            
+            this.ReleaseImage(imgRef, renderContext, writer);
             
             return imgRef;
         }
@@ -88,6 +91,11 @@ namespace Scryber.Svg.Imaging
                     
                     context.Offset = new Point(0.0, 0.0);
                     _layout.PagePosition = Point.Empty;
+                    
+                    //Removing the clipping
+                    //_layout.Position.OverflowAction = OverflowAction.None;
+                    _layout.Position.ClipInset = Thickness.Empty();
+                    
                     var bounds = _layout.TotalBounds;
                     bounds.Location = Point.Empty;
                     _layout.TotalBounds = bounds;
@@ -141,12 +149,11 @@ namespace Scryber.Svg.Imaging
             return oref;
         }
 
-        protected virtual PDFObjectRef DoRenderImageToPDF(PDFName imageName, PDFName layoutName, PDFObjectRef layoutRef, IStreamFilter[] filters,
+        protected virtual void DoRenderImageToPDF(PDFName imageName, PDFName layoutName, PDFObjectRef layoutRef, IStreamFilter[] filters,
             PDFRenderContext context, PDFWriter writer)
         {
             //Render the image as a graphics stream 
-            var imgRef = writer.BeginObject(imageName.Value);
-            writer.BeginStream(imgRef, filters);
+            
             
             //TODO: Calculate the transformation matrix
             var matrixComponents = DoGetCanvasToImageMatrix(context, _svgCanvas, _layout);
@@ -198,12 +205,8 @@ namespace Scryber.Svg.Imaging
             writer.WriteDictionaryNumberEntry("Length", len);
             writer.EndDictionary(); //XObject
             
-            writer.EndObject();
-            
-            return imgRef;
-            
         }
-
+        
         protected virtual double[] DoGetCanvasToImageMatrix(PDFRenderContext context, SVGCanvas canvas,
             PDFLayoutBlock block)
         {
@@ -213,8 +216,19 @@ namespace Scryber.Svg.Imaging
             
             return comp;
         }
-        
-        
+
+        protected virtual PDFObjectRef SetUpImage(PDFName imageName, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
+        {
+            var imgRef = writer.BeginObject(imageName.Value);
+            writer.BeginStream(imgRef, filters);
+
+            return imgRef;
+        }
+
+        protected virtual void ReleaseImage(PDFObjectRef imgRef, PDFRenderContext context, PDFWriter writer)
+        {
+            writer.EndObject();
+        }
 
         public override Size GetSize()
         {
@@ -366,7 +380,8 @@ namespace Scryber.Svg.Imaging
 
                 var pg = layoutContext.DocumentLayout.CurrentPage;
                 var open = pg.LastOpenBlock();
-
+                var region = open.CurrentRegion;
+                
                 var applied = this._svgCanvas.GetAppliedStyle();
                 
                 layoutContext.StyleStack.Push(applied);
@@ -386,7 +401,9 @@ namespace Scryber.Svg.Imaging
                 
                 layoutContext.StyleStack.Pop();
                 layout = open.CurrentRegion.Contents[open.CurrentRegion.Contents.Count - 1];
-                open.CurrentRegion.RemoveItem(layout);
+                
+                bool updateSize = false;
+                open.CurrentRegion.RemoveItem(layout, updateSize);
 
             }
             catch (PDFLayoutException)
