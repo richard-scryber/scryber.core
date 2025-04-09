@@ -302,6 +302,11 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public void ReOpen()
+        {
+            this.IsClosed = false;
+        }
+
         #region protected override bool DoClose(ref string msg)
 
         /// <summary>

@@ -3032,6 +3032,7 @@ namespace Scryber.PDF.Layout
         /// <returns>True if the component could be added (i.e. there was enough space) or false.</returns>
         protected virtual bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
         {
+            
             Rect content = new Rect(
                 options.Padding.Top + options.Margins.Top,
                 options.Padding.Left + options.Margins.Left,

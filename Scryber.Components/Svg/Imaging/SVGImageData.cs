@@ -374,15 +374,23 @@ namespace Scryber.Svg.Imaging
             PDFLayoutItem layout = null;
             try
             {
+                //Clear the styles and the items so nothing will affect the declared style.
+                
                 var baseStyle = SVGCanvas.GetDefaultBaseStyle();
                 context.StyleStack = new StyleStack(baseStyle);
                 context.Items = new ItemCollection(_svgCanvas);
-
-                var pg = layoutContext.DocumentLayout.CurrentPage;
-                var open = pg.LastOpenBlock();
-                var region = open.CurrentRegion;
+                
                 
                 var applied = this._svgCanvas.GetAppliedStyle();
+                
+                //We set the position mode as fixed with a offset of zero, zero
+                //so it does not affect the flow of the rest of the page 
+                
+                applied.SetValue(StyleKeys.PositionModeKey, PositionMode.Fixed);
+                applied.SetValue(StyleKeys.PositionXKey, Unit.Zero);
+                applied.SetValue(StyleKeys.PositionYKey, Unit.Zero);
+                
+                //Push the style and then manually get the full style for layout.
                 
                 layoutContext.StyleStack.Push(applied);
                 
@@ -392,18 +400,39 @@ namespace Scryber.Svg.Imaging
                     new Size(Font.DefaultFontSize, Font.DefaultFontSize * 0.5), 
                     Font.DefaultFontSize);
                 
+                //Create a positioned region within the current page on the current block
+                //where all the content will be laid out.
                 
+                var pg = layoutContext.DocumentLayout.CurrentPage;
+                var open = pg.LastOpenBlock();
+                var posRegion = open.BeginNewPositionedRegion(full.CreatePostionOptions(false), pg, this._svgCanvas, full, false, false);
+                
+                //Then we can use the default SVG engine and layout the content.
                 
                 using (var engine = (this._svgCanvas as IPDFViewPortComponent).GetEngine(null, layoutContext, full))
                 {
                     engine.Layout(layoutContext, full);
                 }
                 
-                layoutContext.StyleStack.Pop();
-                layout = open.CurrentRegion.Contents[open.CurrentRegion.Contents.Count - 1];
+                //finally we clean up popung the stack
+                //removing the positioned region itself from the layout
+                //and closing if needed.
                 
-                bool updateSize = false;
-                open.CurrentRegion.RemoveItem(layout, updateSize);
+                layoutContext.StyleStack.Pop();
+                var parent = (PDFLayoutBlock)posRegion.Parent as PDFLayoutBlock;
+                parent.PositionedRegions.Remove(posRegion);
+                
+                layout = posRegion.Contents[0];
+                
+                
+                if(null == layout)
+                    throw new PDFLayoutException("Could not find the layout black for the rendered");
+
+                if (!layout.IsClosed)
+                    layout.Close();
+                
+                //bool updateSize = true;
+                //open.CurrentRegion.RemoveItem(layout, updateSize);
 
             }
             catch (PDFLayoutException)

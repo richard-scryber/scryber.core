@@ -212,6 +212,11 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected override bool DoClose(ref string msg)
+        {
+            return base.DoClose(ref msg);
+        }
+
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             Size prevSize = context.Space;
