@@ -190,23 +190,23 @@ namespace Scryber.Imaging
 			return false;
 		}
 
-		public override Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+		public override Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
 		{
 			this.EnsureFulfilled(context.TraceLog);
 
 			if (null != this._innerImage)
-				return this._innerImage.GetRequiredOffsetForRender(offset, context);
+				return this._innerImage.GetRequiredOffsetForRender(offset, available, context);
 			else
-				return base.GetRequiredOffsetForRender(offset, context);
+				return base.GetRequiredOffsetForRender(offset, available, context);
 		}
 
-		public override Size GetRequiredSizeForRender(Size available, ContextBase context)
+		public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
 		{
 			this.EnsureFulfilled(context.TraceLog);
 			if (null != this._innerImage)
-				return this._innerImage.GetRequiredSizeForRender(available, context);
+				return this._innerImage.GetRequiredSizeForRender(offset, available, context);
 			else
-				return base.GetRequiredSizeForRender(available, context);
+				return base.GetRequiredSizeForRender(offset, available, context);
 		}
 
 		protected ImageData GetMissingImage()

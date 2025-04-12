@@ -301,12 +301,12 @@ namespace Scryber.Drawing
         #endregion
         
         
-        public virtual Size GetRequiredSizeForRender(Size available, ContextBase context)
+        public virtual Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {
             return available;
         }
         
-        public virtual Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+        public virtual Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
         {
             return offset;
         }

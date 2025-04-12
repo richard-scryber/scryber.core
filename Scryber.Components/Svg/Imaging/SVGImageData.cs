@@ -22,31 +22,65 @@ namespace Scryber.Svg.Imaging
         private PDFObjectRef _renderRef = null;
         private PDFObjectRef _layoutRef = null;
         private PDFName _layoutName = null;
-        private SVGCanvas _svgCanvas = null;
-        private PDFLayoutBlock _layout = null;
+        
 
+        #region public Rect? ImgXObjectBBox
+        
+        private Rect? _imgXObjectBBox = null;
+        
         /// <summary>
-        /// Gets the loaded canvas for this SVG Image data
+        /// If set to a value then returns the bounding box for the imageXObject that will be output to
+        /// render the SVGCanvas, or returns null
+        /// </summary>
+        public Rect? ImgXObjectBBox
+        {
+            get{ return _imgXObjectBBox; }
+            private set{ _imgXObjectBBox = value; }
+        }
+        
+        #endregion
+        
+        #region public SVGCanvas Canvas {get; private set;}
+        
+        private SVGCanvas _svgCanvas = null;
+        
+        /// <summary>
+        /// Gets the canvas for this SVG Image data that is parsed from the loaded content
         /// </summary>
         public SVGCanvas Canvas
         {
             get { return _svgCanvas; }
+            private set { _svgCanvas = value; }
         }
 
+        #endregion 
+        
+        #region public SVGImage Image {get; private set;}
+        
+        private PDFLayoutBlock _layout = null;
+        
         /// <summary>
         /// Gets the pdf layout associated with this SVG Image data (if any)
         /// </summary>
         public PDFLayoutBlock Layout
         {
             get{ return _layout; }
+            private set { _layout = value; }
         }
+        
+        #endregion
         
         
         #region ILayoutComponent properties
         
-        public string ID { get; set; }
-        public string ElementName { get; set; }
-        public IDocument Document { get; private set; }
+        string IComponent.ID { get; set; } 
+        string  IComponent.ElementName { get; set; }
+
+        private IDocument _document;
+        IDocument IComponent.Document
+        {
+            get { return this._document; }
+        }
         public IComponent Parent { get; set; }
         
         #endregion
@@ -64,18 +98,18 @@ namespace Scryber.Svg.Imaging
         {
             var renderContext = (PDFRenderContext)context;
             
-            var imgRef = this.SetUpImage(name, filters, renderContext, writer);
+            var imgORef = this.SetUpImage(name, filters, renderContext, writer);
             
             if (_layoutRef == null)
             {
                 this._layoutRef = this.DoRenderLayoutToPDF(name, filters, renderContext, writer);
             }
             
-            this.DoRenderImageToPDF(name, _layoutName, _layoutRef, filters, renderContext, writer);
+            this.DoRenderImageMetaData(name, _layoutName, _layoutRef, filters, renderContext, writer);
             
-            this.ReleaseImage(imgRef, renderContext, writer);
+            this.ReleaseImage(imgORef, renderContext, writer);
             
-            return imgRef;
+            return imgORef;
         }
 
         protected virtual PDFObjectRef DoRenderLayoutToPDF(PDFName imageName, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
@@ -92,41 +126,14 @@ namespace Scryber.Svg.Imaging
                     context.Offset = new Point(0.0, 0.0);
                     _layout.PagePosition = Point.Empty;
                     
-                    //Removing the clipping
-                    //_layout.Position.OverflowAction = OverflowAction.None;
-                    _layout.Position.ClipInset = Thickness.Empty();
-                    
                     var bounds = _layout.TotalBounds;
                     bounds.Location = Point.Empty;
                     _layout.TotalBounds = bounds;
 
-                    Document doc = (Document)context.Document;
-
-                    //Take the positioned region from the block and render that instead?
+                    
+                    
                     oref = _layout.OutputToPDF(context, writer);
-
-                    foreach (var rsrc in doc.SharedResources)
-                    {
-                        if (rsrc is PDFLayoutXObjectResource xobj)
-                        {
-                            var renderer = xobj.Renderer;
-                            if (renderer != null && renderer.Owner == this._svgCanvas)
-                            {
-                                canvasName = renderer.OutputName;
-                            }
-                        }
-                    }
-
-                    if (null != canvasName)
-                    {
-                        this._layoutName = canvasName;
-                    }
-                    else
-                    {
-                        throw new PDFRenderException(
-                            "No resource could be found for the LayoutXObject that matches the referenced image SVG canvas for " +
-                            this.SourcePath);
-                    }
+                    this._layoutName = AssertGetCanvasRenderName(context, this.Canvas);
                 }
                 catch (Exception ex)
                 {
@@ -148,14 +155,59 @@ namespace Scryber.Svg.Imaging
 
             return oref;
         }
+        
+        #region protected virtual PDFName AssertGetCanvasRenderName(PDFRenderContext context, SVGCanvas canvas)
 
-        protected virtual void DoRenderImageToPDF(PDFName imageName, PDFName layoutName, PDFObjectRef layoutRef, IStreamFilter[] filters,
+        /// <summary>
+        /// Attempts to extract the name of the PDFName of the shared resource for this images' canvas. If found then it is returned.
+        /// If not then an exceptiopn will be thrown - as the name is required to render the do action on this images graphics stream.
+        /// </summary>
+        /// <param name="context">The current render context, that contains the document with the shared resource</param>
+        /// <param name="canvas">The canvas to match for in the resources</param>
+        /// <returns>The PDFName (e.g. /canv1) of the shared resource</returns>
+        /// <exception cref="PDFRenderException">Thrown if the canvas</exception>
+        protected virtual PDFName AssertGetCanvasRenderName(PDFRenderContext context, SVGCanvas canvas)
+        {
+            Document doc = (Document)context.Document;
+            PDFName canvasName = null;
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFLayoutXObjectResource xobj)
+                {
+                    var renderer = xobj.Renderer;
+                    if (renderer != null && renderer.Owner == canvas)
+                    {
+                        canvasName = renderer.OutputName;
+                    }
+                }
+            }
+
+            if (null == canvasName)
+            {
+                throw new PDFRenderException(
+                    "No resource could be found for the LayoutXObject that matches the referenced image SVG canvas for " +
+                    this.SourcePath);
+            }
+            
+            return canvasName;
+        }
+        
+        #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageName"></param>
+        /// <param name="layoutName"></param>
+        /// <param name="layoutRef"></param>
+        /// <param name="filters"></param>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        protected virtual void DoRenderImageMetaData(PDFName imageName, PDFName layoutName, PDFObjectRef layoutRef, IStreamFilter[] filters,
             PDFRenderContext context, PDFWriter writer)
         {
             //Render the image as a graphics stream 
             
-            
-            //TODO: Calculate the transformation matrix
             var matrixComponents = DoGetCanvasToImageMatrix(context, _svgCanvas, _layout);
             if (null != matrixComponents && matrixComponents.Length == 6)
             {
@@ -193,12 +245,17 @@ namespace Scryber.Svg.Imaging
             writer.EndDictionary(); //Resource
             writer.EndDictionaryEntry();
             
+            if(!this.ImgXObjectBBox.HasValue)
+                throw new InvalidOperationException("The bounding box has not been set.");
+            
+            var bbox = this.ImgXObjectBBox.Value;
+            
             writer.BeginDictionaryEntry("BBox");
             writer.BeginArray();
-            writer.WriteRealS(0.0);
-            writer.WriteRealS(0.0);
-            writer.WriteRealS(context.Space.Width.PointsValue);
-            writer.WriteRealS(context.Space.Height.PointsValue);
+            writer.WriteRealS(bbox.X.PointsValue);
+            writer.WriteRealS(bbox.Y.PointsValue);
+            writer.WriteRealS(bbox.Width.PointsValue);
+            writer.WriteRealS(bbox.Height.PointsValue);
             writer.EndArray();
             writer.EndDictionaryEntry();
             
@@ -217,6 +274,14 @@ namespace Scryber.Svg.Imaging
             return comp;
         }
 
+        /// <summary>
+        /// Begins the image XObject and the image stream that will set the transform matrix and call the Canvas XObject do
+        /// </summary>
+        /// <param name="imageName"></param>
+        /// <param name="filters"></param>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
         protected virtual PDFObjectRef SetUpImage(PDFName imageName, IStreamFilter[] filters, PDFRenderContext context, PDFWriter writer)
         {
             var imgRef = writer.BeginObject(imageName.Value);
@@ -230,11 +295,16 @@ namespace Scryber.Svg.Imaging
             writer.EndObject();
         }
 
+        /// <summary>
+        /// Returns the defined image size on the referenced canvas
+        /// </summary>
+        /// <returns></returns>
         public override Size GetSize()
         {
-            if (null != this.Canvas)
+            if (null != this.Canvas && this.ImgXObjectBBox.HasValue)
             {
-                var sz = new Size(this.Canvas.Width, this.Canvas.Height);
+                
+                var sz = this.ImgXObjectBBox.Value.Size;
                 return sz;
             }
             
@@ -273,7 +343,8 @@ namespace Scryber.Svg.Imaging
         
         public void Init(InitContext context)
         {
-            this.Document = context.Document;
+            this._document = context.Document;
+            
             if(null != this._svgCanvas)
                 _svgCanvas.Init(context);
             
@@ -283,7 +354,8 @@ namespace Scryber.Svg.Imaging
 
         public void Load(LoadContext context)
         {
-            this.Document = context.Document;
+            this._document = context.Document;
+            
             if(null != this._svgCanvas)
                 _svgCanvas.Load(context);
             
@@ -292,6 +364,8 @@ namespace Scryber.Svg.Imaging
         
         
         #endregion
+        
+        #region MapPath
         
         public string MapPath(string source)
         {
@@ -310,6 +384,8 @@ namespace Scryber.Svg.Imaging
                 return service.MapPath(ParserLoadType.Generation, source, string.Empty, out isfile);
             }
         }
+        
+        #endregion
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
@@ -340,30 +416,136 @@ namespace Scryber.Svg.Imaging
             return newSize;
         }
         
-        public override Size GetRequiredSizeForRender(Size available, ContextBase context)
+        public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {
             var orig = this.GetSize();
             
             //We are rendering 1: 1 from the Image to the Canvas, so we now scale by the ratio.
             var scaleX = available.Width.PointsValue / orig.Width.PointsValue;
             var scaleY = available.Height.PointsValue / orig.Height.PointsValue;
-            available = new Size(scaleX, scaleY);
             
+            ViewPortAspectRatio aspectRatio = this.Canvas.PreserveAspectRatio; //We assume this is not set on a style as we are a referenced image and therefore independent
+
+            if (aspectRatio.Align == AspectRatioAlign.None)
+            {
+                available = new Size(scaleX, scaleY);
+            }
+            else if (aspectRatio.Meet != AspectRatioMeet.Slice)
+            {
+                var min = Math.Min(scaleX, scaleY);
+                available = new Size(min, min);
+            }
+            else
+            {
+                available = new Size(scaleX, scaleY);
+            }
+
             return available;
         }
         
-        public override Point GetRequiredOffsetForRender(Point offset, ContextBase context)
+        public override Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
         {
-            var renderContext = (PDF.PDFRenderContext)context;
             var orig = this.GetSize();
-            var scaleY = renderContext.Space.Height.PointsValue / orig.Height.PointsValue;
-            offset.Y += renderContext.Space.Height;
+            
+            var scaleX = available.Width.PointsValue / orig.Width.PointsValue;
+            var scaleY = available.Height.PointsValue / orig.Height.PointsValue;
+            
+            offset.Y += available.Height;
+            
+            ViewPortAspectRatio aspectRatio = this.Canvas.PreserveAspectRatio; //We assume this is not set on a style as we are a referenced image and therefore independent
+
+            if (aspectRatio.Align == AspectRatioAlign.None)
+            {
+                //Do nothing as we are not preserving aspect ratio
+            }
+            else if (aspectRatio.Meet == AspectRatioMeet.Meet)
+            {
+                offset = UpdateOffsetForMeetScale(offset, available, scaleX, scaleY, orig, aspectRatio, context);
+            }
+            else
+            {
+                offset = UpdateOffsetForSliceScale(offset, available, scaleX, scaleY, aspectRatio, context);
+            }
+            
+            
             return offset;
+        }
+
+        private Point UpdateOffsetForMeetScale(Point offset, Size available, double scaleX, double scaleY, Size original, ViewPortAspectRatio aspectRatio, ContextBase context)
+        {
+            if (scaleX > scaleY)
+            {
+                var used = original.Width * scaleY;
+                var space = available.Width - used;
+                
+                switch (aspectRatio.Align)
+                {
+                    case AspectRatioAlign.xMinYMax:
+                    case AspectRatioAlign.xMinYMid:
+                    case AspectRatioAlign.xMinYMin:
+
+                        break;
+                    
+                    case AspectRatioAlign.xMidYMin:
+                    case AspectRatioAlign.xMidYMax:
+                    case AspectRatioAlign.xMidYMid:
+                        offset.X += space / 2.0;
+                        break;
+                    case AspectRatioAlign.xMaxYMax:
+                    case AspectRatioAlign.xMaxYMid:
+                    case AspectRatioAlign.xMaxYMin:
+                        offset.X += space;
+                        break;
+                    
+                    case AspectRatioAlign.None:
+                        throw new ArgumentOutOfRangeException("aspectRatio",  "The value of none in preserve aspect ratio should be handled elsewhere.");
+                    
+                    default:
+                        //Do nothing
+                        break;
+                }
+            }
+            else if (scaleX < scaleY)
+            {
+                var used = original.Height * scaleX;
+                var space = available.Height - used;
+
+                switch (aspectRatio.Align)
+                {
+                    case AspectRatioAlign.xMinYMin:
+                    case AspectRatioAlign.xMidYMin:
+                    case AspectRatioAlign.xMaxYMin:
+                        offset.Y -= space;
+                        break;
+                    case AspectRatioAlign.xMinYMid:
+                    case AspectRatioAlign.xMidYMid:
+                    case AspectRatioAlign.xMaxYMid:
+                        offset.Y -= space / 2.0;
+                        break;
+                    case AspectRatioAlign.xMinYMax:
+                    case AspectRatioAlign.xMidYMax:
+                    case AspectRatioAlign.xMaxYMax:
+                        //Already at the bottom, so do nothing
+                        break;
+                    case AspectRatioAlign.None:
+                        throw new ArgumentOutOfRangeException("aspectRatio", "The value of none in preserve aspect ratio should be handled elsewhere.");
+                    
+                    default:
+                        break;
+                }
+            }
+
+            return offset;
+        }
+
+        private Point UpdateOffsetForSliceScale(Point offset, Size available, double scaleX, double scaleY, ViewPortAspectRatio aspectRatio, ContextBase context)
+        {
+            throw new NotImplementedException();
         }
 
         public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
         {
-            
+            //We do nothing here as it is pre-calculated
         }
 
         protected virtual PDFLayoutBlock DoLayoutCanvas(LayoutContext context, Style style)
@@ -389,13 +571,39 @@ namespace Scryber.Svg.Imaging
                 applied.SetValue(StyleKeys.PositionModeKey, PositionMode.Fixed);
                 applied.SetValue(StyleKeys.PositionXKey, Unit.Zero);
                 applied.SetValue(StyleKeys.PositionYKey, Unit.Zero);
+
+                Rect viewport = Rect.Empty;
+                Unit width = SVGCanvas.DefaultWidth;
+                Unit height = SVGCanvas.DefaultHeight;
+
+                if (applied.TryGetValue(StyleKeys.PositionViewPort, out var found))
+                {
+                    viewport = found.Value(applied);
+                    width = viewport.Width;
+                    height = viewport.Height;
+                }
+
+                if (_svgCanvas.Style.IsValueDefined(StyleKeys.SizeWidthKey))
+                {
+                    width = _svgCanvas.Style.GetValue(StyleKeys.SizeWidthKey, Unit.Auto);
+                }
+                
+                
+                if(_svgCanvas.Style.IsValueDefined(StyleKeys.SizeHeightKey))
+                {
+                    height = _svgCanvas.Style.GetValue(StyleKeys.SizeHeightKey, Unit.Auto);
+                }
+                
+                applied.SetValue(StyleKeys.SizeHeightKey, height);
+                applied.SetValue(StyleKeys.SizeWidthKey, width);
+                
                 
                 //Push the style and then manually get the full style for layout.
                 
                 layoutContext.StyleStack.Push(applied);
                 
                 var full = layoutContext.StyleStack.GetFullStyle(this._svgCanvas, 
-                    new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight), 
+                    new Size(width, height), 
                     DoGetParentSize, 
                     new Size(Font.DefaultFontSize, Font.DefaultFontSize * 0.5), 
                     Font.DefaultFontSize);
@@ -430,9 +638,9 @@ namespace Scryber.Svg.Imaging
 
                 if (!layout.IsClosed)
                     layout.Close();
-                
-                //bool updateSize = true;
-                //open.CurrentRegion.RemoveItem(layout, updateSize);
+
+                this._imgXObjectBBox = new Rect(0, 0, width, height);
+
 
             }
             catch (PDFLayoutException)

@@ -198,9 +198,9 @@ namespace Scryber.Components
             {
                 img.RegisterUse(context.Graphics.Container.Resources, this);
                 
-                Point pos = img.GetRequiredOffsetForRender(context.Offset, context);
+                Point pos = img.GetRequiredOffsetForRender(context.Offset, context.Space, context);
                 
-                Size imgsize = img.GetRequiredSizeForRender(context.Space, context);
+                Size imgsize = img.GetRequiredSizeForRender(context.Offset, context.Space, context);
 
                 
 
