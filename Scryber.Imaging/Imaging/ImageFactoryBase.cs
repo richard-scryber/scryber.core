@@ -15,7 +15,10 @@ namespace Scryber.Imaging
 {
     public abstract class ImageFactoryBase : IPDFImageDataFactory
     {
-        public bool ShouldCache { get; }
+        public bool ShouldCache
+        {
+            get;
+        }
 
         public Regex Match { get; }
         
@@ -110,11 +113,14 @@ namespace Scryber.Imaging
                         error = ex;
                         asyncData = null;
                     }
+                    
                     request.CompleteRequest(asyncData, asyncData != null, error);
                     return request.IsSuccessful;
                 }
             });
-            var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, callback, owner, this);
+            
+            var cacheDuration = this.ShouldCache ? Scryber.Caching.PDFCacheProvider.DefaultCacheDuration : Scryber.Caching.PDFCacheProvider.NoCacheDuration;
+            var req = requester.RequestResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, path, cacheDuration, callback, owner, this);
 
             return new ImageDataProxy(req, path);
         }

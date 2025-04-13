@@ -508,7 +508,7 @@ namespace Scryber
     /// </summary>
     public interface IResourceRequester
     {
-        IRemoteRequest RequestResource(string type, string path, RemoteRequestCallback callback, IComponent owner, object arguments);
+        IRemoteRequest RequestResource(string type, string path, TimeSpan cacheDuration, RemoteRequestCallback callback, IComponent owner, object arguments);
     }
 
 

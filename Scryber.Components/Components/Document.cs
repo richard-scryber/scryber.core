@@ -799,18 +799,18 @@ namespace Scryber.Components
         /// <param name="owner">Optional owner for the request</param>
         /// <param name="arguments">Optional arguments that will be give back to the callback method</param>
         /// <returns>A new disposable RemoteFileRequest object</returns>
-        public virtual RemoteFileRequest RegisterRemoteFileRequest(string type, string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
+        public virtual RemoteFileRequest RegisterRemoteFileRequest(string type, string filePath, TimeSpan cacheDuration, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
         {
-            var request = new RemoteFileRequest(type, filePath, callback, owner, arguments);
+            var request = new RemoteFileRequest(type, filePath, cacheDuration, callback, owner, arguments);
             this.RegisterRemoteFileRequest(request);
 
             return request;
         }
 
-        IRemoteRequest IResourceRequester.RequestResource(string type, string path, RemoteRequestCallback callback,
+        IRemoteRequest IResourceRequester.RequestResource(string type, string path, TimeSpan cacheDuration, RemoteRequestCallback callback,
              IComponent owner, object arguments)
         {
-            return this.RegisterRemoteFileRequest(type, path, callback, owner, arguments);
+            return this.RegisterRemoteFileRequest(type, path, cacheDuration, callback, owner, arguments);
         }
 
         /// <summary>
@@ -2567,7 +2567,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public PDFImageXObject LoadImageData(IComponent owner, string src)
         {
-            ImageData data;
+            ImageData data = null;
             string key = src;
 
             try
@@ -2582,21 +2582,33 @@ namespace Scryber.Components
                 if (this.SharedResources.GetResource(PDFResource.XObjectResourceType, src) is PDFImageXObject exists)
                     return exists;
                 
-                if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out var cached))
+                if (this.ImageFactories.TryGetMatch(src, out var factory))
                 {
-                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Cache matched for the image source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
-                    
-                    data = (ImageData) cached;
-                    key = GetIncrementID(ObjectTypes.ImageXObject);
-                }
-                else if (this.ImageFactories.TryGetMatch(src, out var factory))
-                {
-                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Factory '" + factory.Name +  "' found for image with source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
+                    if (factory.ShouldCache)
+                    {
+                        if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src,
+                                out var cached))
+                        {
+                            if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                this.TraceLog.Add(TraceLevel.Verbose, "Document","Cache matched for the image source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
 
-                    data = LoadImageDataFromFactory(owner, factory, src);
-                    key = GetIncrementID(ObjectTypes.ImageXObject);
+                            data = (ImageData) cached;
+                            key = GetIncrementID(ObjectTypes.ImageXObject);
+                        }
+                    }
+
+                    if (null == data)
+                    {
+                        if (this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                            this.TraceLog.Add(TraceLevel.Verbose, "Document",
+                                "Factory '" + factory.Name + "' found for image with source " +
+                                (src.Length > 100
+                                    ? (src.Substring(50) + "..." + src.Substring(src.Length - 10))
+                                    : src) + " adding to the resources and returning.");
+
+                        data = LoadImageDataFromFactory(owner, factory, src);
+                        key = GetIncrementID(ObjectTypes.ImageXObject);
+                    }
                 }
                 else if (this.RenderOptions.AllowMissingImages)
                 {

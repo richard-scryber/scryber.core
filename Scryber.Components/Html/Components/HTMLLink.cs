@@ -347,8 +347,8 @@ namespace Scryber.Html.Components
                 context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
 
             //Using the new remote reference loader
-
-            this._request = this.Document.RegisterRemoteFileRequest("CSSLink",path, (caller, args, stream) =>
+            var cacheDuration = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+            this._request = this.Document.RegisterRemoteFileRequest("CSSLink",path, cacheDuration, (caller, args, stream) =>
             {
                 if (args.Owner != this)
                     return false;

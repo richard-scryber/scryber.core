@@ -22,6 +22,8 @@ namespace Scryber.Svg.Imaging
         private PDFObjectRef _renderRef = null;
         private PDFObjectRef _layoutRef = null;
         private PDFName _layoutName = null;
+
+
         
 
         #region public Rect? ImgXObjectBBox

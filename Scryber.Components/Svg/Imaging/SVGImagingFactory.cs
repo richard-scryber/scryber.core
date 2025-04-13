@@ -15,7 +15,7 @@ public class SVGImagingFactory : ImageFactoryBase
     
     private static readonly Regex SvgMatch = new Regex("\\.(svg)?\\s*$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
     private static readonly string SvgName = "SVG Image factory";
-    private static readonly bool SvgShouldCache = true;
+    private static readonly bool SvgShouldCache = false; //Don't cache the images so the layout is stored.
 
     public SVGImagingFactory() : this(SvgMatch, SvgName, SvgShouldCache)
     {

@@ -6,34 +6,10 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATestMethodInfo_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fa34bacdaf8fabff07f5568fda3c3fd31f03de278b42fe0b87c95913d39a37e20_003FTestMethodInfo_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AUriExt_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F706dd6efc0c82dd17534851f72e6fbc1c38ddd5bedcbe369a8839aa2d5281e41_003FUriExt_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/ActualSeverity/@EntryValue">SUGGESTION</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7f7196bc_002D2ef0_002D442b_002D9493_002De13924ae652a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Scryber.UnitTests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Or&gt;
-    &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitLayouts" Presentation="&amp;lt;Scryber.UnitLayouts&amp;gt;" /&gt;
-    &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitTest" Presentation="&amp;lt;Scryber.UnitTests&amp;gt;" /&gt;
-    &lt;And&gt;
-      &lt;TestAncestor&gt;
-        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples.TableBoundContent&lt;/TestId&gt;
-      &lt;/TestAncestor&gt;
-      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
-      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
-    &lt;/And&gt;
-    &lt;And&gt;
-      &lt;TestAncestor&gt;
-        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples.SimpleTable&lt;/TestId&gt;
-      &lt;/TestAncestor&gt;
-      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
-      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
-    &lt;/And&gt;
-    &lt;And&gt;
-      &lt;TestAncestor&gt;
-        &lt;TestId&gt;MSTest::53BCE881-8B7E-4FB7-BA04-DC741F6DDCAA::net8.0::Scryber.UnitSamples.TableSamples&lt;/TestId&gt;
-      &lt;/TestAncestor&gt;
-      &lt;Category&gt;&amp;lt;Uncategorized&amp;gt;&lt;/Category&gt;
-      &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
-    &lt;/And&gt;
-    &lt;Project Location="/Users/richard/Projects/Scryber/Scryber.Core/Scryber.UnitSamples" Presentation="&amp;lt;Scryber.UnitSamples&amp;gt;" /&gt;
-  &lt;/Or&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4a6a8dce_002Dec87_002D46a1_002Db240_002Df89ef686fe34/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SVGReferencedImageAllDefinedProportionalSlice_Test" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;ProjectFile&gt;6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF/d:Svg/f:SVGXObject_Test.cs&lt;/ProjectFile&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002ECommon_002FSystem_002ECommon_002EErrors/@EntryIndexedValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EComponents_002FErrors/@EntryIndexedValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002EDrawing_002FErrors/@EntryIndexedValue">False</s:Boolean>

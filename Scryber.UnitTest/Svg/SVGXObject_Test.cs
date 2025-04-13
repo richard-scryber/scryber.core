@@ -123,6 +123,75 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
+        /// <summary>
+        /// Runs a single image twice for the same file and image - to make sure the SVGCanvas is re-loaded and laid out for each document
+        /// </summary>
+         [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedImageAllDefinedTwice_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefined.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageAllDefinedFirst.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            doc = Document.ParseDocument(path);
+            
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageAllDefinedSecond.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            Assert.AreEqual(3, doc.SharedResources.Count);
+            var imgX = doc.SharedResources[0] as PDFImageXObject;
+            Assert.IsNotNull(imgX);
+            Assert.IsNotNull(imgX.ImageData);
+            Assert.IsInstanceOfType(imgX.ImageData, typeof(ImageDataProxy));
+            var proxy = ((ImageDataProxy)imgX.ImageData);
+            
+            var svg = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svg);
+            
+            //BBox of the img xObj is set to the size of the source image
+            Assert.IsTrue(svg.ImgXObjectBBox.HasValue);
+            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
+            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
+            
+            //Image is set to render at 150pt = 0.75% of file size
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(150, 150), context);
+            Assert.AreEqual(0.75, renderSize.Width);
+            Assert.AreEqual(0.75, renderSize.Height);
+
+
+            
+            var img = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(img);
+            
+            var arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+            //Includes offset of other contents and padding
+            var bounds = new Rect(20 + 5, 20 + 120 + 5, 170, 170);
+            Assert.AreEqual(bounds, arrange.RenderBounds);
+        }
+        
         [TestMethod()]
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedProportional_Test()
@@ -311,6 +380,224 @@ namespace Scryber.Core.UnitTests.Svg
 
             
             Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
+        }
+        
+         [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedImageAllDefinedProportionalSlice_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefinedProportionalSlice.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageProportionalSlice.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            //2 fonts, 6 images with 6 associated canvas's
+            
+            Assert.AreEqual(14, doc.SharedResources.Count);
+            
+            //first image is wide left
+            
+            var imgX = doc.SharedResources[0] as PDFImageXObject;
+            var svg = AssertImageReference(imgX);
+            
+            //Includes offset of other contents and padding
+            var expectedOffset = new Point(0, 80);
+            var expectedScale = new Size(0.4, 0.4);
+            var expectedBounds = new Rect(20 + 5, 20 + 20 + 20 + 5, 400, 80);
+            
+            AssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //second is wide middle aligned
+            
+            imgX = doc.SharedResources[1] as PDFImageXObject;
+            svg = AssertImageReference(imgX);
+            
+            expectedOffset = new Point((400.0 - 80.0) / 2.0, 80.0);
+            expectedScale = new Size(0.4, 0.4);
+            
+            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
+            
+            AssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //third is wide right aligned
+            
+            imgX = doc.SharedResources[2] as PDFImageXObject;
+            svg = AssertImageReference(imgX);
+            
+            expectedOffset = new Point((400.0 - 80.0), 80.0);
+            expectedScale = new Size(0.4, 0.4);
+            
+            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
+            
+            AssertWideImage("xMaxYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //fourth is wide non-proportional
+            
+            imgX = doc.SharedResources[3] as PDFImageXObject;
+            svg = AssertImageReference(imgX);
+            
+            expectedOffset = new Point(0, 80.0);
+            expectedScale = new Size(2, 0.4);
+            
+            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
+            
+            AssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //
+            // tall images
+            //
+
+            var columnWidth = 141.31889763775;
+            
+            //first top aligned
+            
+            imgX = doc.SharedResources[4] as PDFImageXObject;
+            svg = AssertImageReference(imgX);
+            
+            expectedOffset = new Point(0, 100.0); //just the height of the image
+            expectedScale = new Size(0.5, 0.5);
+            
+            expectedBounds.Y += 58 + 20 + 80 + 10; //banner, title, prev image, margin
+            expectedBounds.Width = 100;
+            expectedBounds.Height = 250;
+            
+            AssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //second mid aligned
+            
+            imgX = doc.SharedResources[1] as PDFImageXObject; //Uses the same resource as xmid ymid as on the wide row.
+            svg = AssertImageReference(imgX);
+
+            expectedOffset.Y = 175; //half space + image height
+            expectedScale = new Size(0.5, 0.5);
+
+            expectedBounds.X += columnWidth;
+            
+            AssertTallImage("xMidYMidTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            //third bottom aligned
+            
+            imgX = doc.SharedResources[5] as PDFImageXObject;
+            svg = AssertImageReference(imgX);
+
+            expectedOffset.Y = 250; //all space and height
+            expectedScale = new Size(0.5, 0.5);
+
+            expectedBounds.X += columnWidth;
+            
+            AssertTallImage("xMidYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            
+            
+            //fourth vertically stretched
+            
+            imgX = doc.SharedResources[3] as PDFImageXObject; //uses NoneMeet again
+            svg = AssertImageReference(imgX);
+
+            expectedOffset.Y = 250; //all space and height
+            expectedScale = new Size(0.5, 1.25);
+
+            expectedBounds.X += columnWidth;
+            
+            AssertTallImage("xNoneTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+        }
+        
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedSizeOnFileOnlyOutput_Test()
+        {
+            var doc = new Document();
+            var page = new Page();
+            doc.Pages.Add(page);
+
+            var svg = new SVGCanvas() { Width = 100, Height = 100 };
+            page.Contents.Add(svg);
+
+            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
+            svg.Contents.Add(rect);
+
+            using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the ViewBox on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedViewBoxOnFileOnlyOutput_Test()
+        {
+            var doc = new Document();
+            var page = new Page();
+            doc.Pages.Add(page);
+
+            var svg = new SVGCanvas() { Width = 100, Height = 100 };
+            page.Contents.Add(svg);
+
+            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
+            svg.Contents.Add(rect);
+
+            using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if just the ViewBox on the actual svg file is specified, and the size of the image in the referencing file is specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedViewBoxOnFileAndImgSizeOutput_Test()
+        {
+            var doc = new Document();
+            var page = new Page();
+            doc.Pages.Add(page);
+
+            var svg = new SVGCanvas() { Width = 100, Height = 100 };
+            page.Contents.Add(svg);
+
+            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
+            svg.Contents.Add(rect);
+
+            using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
         }
     }
 }

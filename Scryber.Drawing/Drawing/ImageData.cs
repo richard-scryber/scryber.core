@@ -240,7 +240,7 @@ namespace Scryber.Drawing
         }
         
         #endregion
-
+        
         
         //
         // ctor(s)
