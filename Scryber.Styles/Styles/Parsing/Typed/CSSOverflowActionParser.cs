@@ -76,7 +76,7 @@ namespace Scryber.Styles.Parsing.Typed
                     return true;
 
                 case ("visible"):
-                    over = OverflowAction.None;
+                    over = OverflowAction.Visible;
                     return true;
 
                 case ("hidden"):

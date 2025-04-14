@@ -194,7 +194,8 @@ namespace Scryber.Svg.Imaging
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
             var newSize = available;
-
+            var canvasStyle = this.Canvas.GetAppliedStyle();
+            
             if (appliedstyle.TryGetValue(StyleKeys.SizeWidthKey, out var width))
             {
                 newSize.Width = width.Value(appliedstyle);
@@ -204,35 +205,80 @@ namespace Scryber.Svg.Imaging
                 }
                 else
                 {
-                    //TODO: Scale height Proportionally
+                    //Scale height Proportionally if we can
+                    if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) && canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
+                    {
+                        var canvasWidth = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Empty).PointsValue;
+                        var canvasHeight = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Empty).PointsValue;
+                        var scale = newSize.Width.PointsValue / canvasWidth;
+                        
+                        newSize.Height = canvasHeight * scale;
+                    }
+                    else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
+                    {
+                        var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+                        var scale = newSize.Width.PointsValue / canvasViewPort.Width.PointsValue;
+                        
+                        newSize.Height = canvasViewPort.Height.PointsValue * scale;
+                    }
                 }
             }
             else if (appliedstyle.TryGetValue(StyleKeys.SizeHeightKey, out var height))
             {
-                //TODO: Scale width proportionally.
+                newSize.Height = height.Value(appliedstyle);
+                
+                if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) && canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
+                {
+                    var canvasWidth = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Empty).PointsValue;
+                    var canvasHeight = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Empty).PointsValue;
+                    var scale = newSize.Height.PointsValue / canvasHeight;
+                    
+                    newSize.Width = canvasWidth * scale;
+                }
+                else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
+                {
+                    var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+                    var scale = newSize.Height.PointsValue / canvasViewPort.Height.PointsValue;
+                    
+                    newSize.Width = canvasViewPort.Width.PointsValue * scale;
+                }
             }
             else if (null != this.Canvas)
             {
-                var style = this.Canvas.GetAppliedStyle();
+               
                 bool hasCanvasSize = false;
-                if (style.IsValueDefined(StyleKeys.SizeWidthKey))
+                if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey))
                 {
-                    newSize.Width = style.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+                    newSize.Width = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
                     hasCanvasSize = true;
-                    if (style.IsValueDefined(StyleKeys.SizeHeightKey))
+                    if (canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
                     {
-                        newSize.Height = style.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+                        newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
                     }
                     else
                     {
                         //Should this be propotional
                     }
                 }
-                else if (style.IsValueDefined(StyleKeys.SizeHeightKey))
+                else if (canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
                 {
                     hasCanvasSize = true;
-                    newSize.Height = style.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+                    newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
                     //Should width be calculated as proportional
+                }
+                else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
+                {
+                    var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+                    
+                    if(canvasViewPort.IsEmpty)
+                        canvasViewPort = new Rect(0, 0, SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+                    
+                    var scaleW = available.Width.PointsValue / canvasViewPort.Width.PointsValue;
+                    //var scaleH = available.Height.PointsValue / canvasViewPort.Height.PointsValue;
+                    //var minScale = Math.Min(scaleH, scaleW);
+                    
+                    newSize.Width = canvasViewPort.Width.PointsValue * scaleW;
+                    newSize.Height = canvasViewPort.Height.PointsValue * scaleW;
                 }
 
                 if (hasCanvasSize)

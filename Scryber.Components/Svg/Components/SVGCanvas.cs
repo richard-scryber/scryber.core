@@ -263,8 +263,14 @@ namespace Scryber.Svg.Components
             style.Position.DisplayMode = DisplayMode.InlineBlock;
             style.Overflow.Action = OverflowAction.Clip;
             style.Overflow.Split = OverflowSplit.Never;
-            style.Size.Width = SVGCanvas.DefaultWidth;
-            style.Size.Height = SVGCanvas.DefaultHeight;
+            
+            //If we are not a referenced image then we use the default height and width for a canvas.
+            if (!this.IsDiscreetSVG)
+            {
+                style.Size.Width = SVGCanvas.DefaultWidth;
+                style.Size.Height = SVGCanvas.DefaultHeight;
+            }
+
             style.Position.XObject= true;
             
             return style;

@@ -430,6 +430,12 @@ namespace Scryber.Drawing
         /// so the extra is not shown.
         /// </summary>
         Clip,
+        
+        /// <summary>
+        /// The layout will not be adjusted and assume the standard rendering,
+        /// however any content beyond the size of the contain will still be rendered.
+        /// </summary>
+        Visible,
 
         /// <summary>
         /// No new page will be generated, but child content will be rendered beyond any boundaries

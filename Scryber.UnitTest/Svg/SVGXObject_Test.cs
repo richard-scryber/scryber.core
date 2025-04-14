@@ -694,6 +694,146 @@ namespace Scryber.Core.UnitTests.Svg
         
         /// <summary>
         ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedWidthOnly_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageWidthOnly.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageWidthOnly.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedHeightOnly_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageHeightOnly.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageHeightOnly.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedViewBoxNoImageSize_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedVBOnlyImageNoImageSize.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedVBOnlyImageNoImageSize.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedViewBoxWithWidthOnly_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedVBOnlyImageWidthOnly.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageWidthOnly.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedVieweBoxWithHeightOnly_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageHeightOnly.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageHeightOnly.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
         /// ratio if only the ViewBox on the actual svg file are specified.
         ///</summary>
         [TestMethod()]

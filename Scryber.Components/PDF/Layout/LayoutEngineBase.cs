@@ -2506,7 +2506,7 @@ namespace Scryber.PDF.Layout
         /// Returns true if we are laying out text in the last column of block that is clipped. This means we just continue with the layout
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IsInClippedRegion(PDFLayoutBlock block)
+        protected virtual bool IsInClippedOrVisibleRegion(PDFLayoutBlock block)
         {
             if (_cachedIsInClipped.HasValue)
                 return _cachedIsInClipped.Value;
@@ -2515,7 +2515,7 @@ namespace Scryber.PDF.Layout
             
             while (null != block)
             {
-                if (block.Position.OverflowAction == OverflowAction.Clip
+                if ((block.Position.OverflowAction == OverflowAction.Clip || block.Position.OverflowAction == OverflowAction.Visible) 
                     && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
                 {
                     isInClipped = true;
@@ -3055,7 +3055,7 @@ namespace Scryber.PDF.Layout
             bool canfitVertical = linetoAddTo.Region.AvailableHeight >= total.Height;
             
             //If not - check that we can overflow onto new regions and pages
-            if (!canfitVertical && !isInternalCall && this.ContainerCanOverflow(options))
+            if (!canfitVertical && !isInternalCall && this.ContainerCanOverflow(options, linetoAddTo.GetParentBlock()))
             {
                 linetoAddTo.Close();
                 bool newPage;
@@ -3172,9 +3172,12 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="options">The current position options</param>
         /// <returns></returns>
-        protected virtual bool ContainerCanOverflow(PDFPositionOptions options)
+        protected virtual bool ContainerCanOverflow(PDFPositionOptions options, PDFLayoutBlock container)
         {
-            if (options.OverflowAction == OverflowAction.Clip)
+            if (this.IsInClippedOrVisibleRegion(container))
+                return false;
+            
+            if (options.OverflowAction == OverflowAction.Clip || options.OverflowAction == OverflowAction.Visible)
                 return false;
             else
                 return true;
