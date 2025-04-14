@@ -7,7 +7,17 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AUriExt_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F706dd6efc0c82dd17534851f72e6fbc1c38ddd5bedcbe369a8839aa2d5281e41_003FUriExt_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/ActualSeverity/@EntryValue">SUGGESTION</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4a6a8dce_002Dec87_002D46a1_002Db240_002Df89ef686fe34/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SVGReferencedImageAllDefinedProportionalSlice_Test" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;ProjectFile&gt;6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF/d:Svg/f:SVGXObject_Test.cs&lt;/ProjectFile&gt;
+  &lt;Or&gt;
+    &lt;ProjectFile&gt;6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF/d:Svg/f:SVGXObject_Test.cs&lt;/ProjectFile&gt;
+    &lt;TestAncestor&gt;
+      &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.PositionedInlineBlock_Tests.InlineBlock_01_ExplicitWidth&lt;/TestId&gt;
+      &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.SVG_Tests.SVG_01_Rect&lt;/TestId&gt;
+      &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.SVG_Tests.SVG_02_RectMargins&lt;/TestId&gt;
+      &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.SVGComponent_Tests.SVGComponents_02_Circle&lt;/TestId&gt;
+      &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.SVGComponent_Tests&lt;/TestId&gt;
+      &lt;TestId&gt;MSTest::6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF::net8.0::Scryber.Core.UnitTests.Svg.SVGLinearGradient_Test.SVGLinearGradientWith2Color45Degree_Test&lt;/TestId&gt;
+    &lt;/TestAncestor&gt;
+  &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>
 	
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Scryber_002ECommon_002FSystem_002ECommon_002EErrors/@EntryIndexedValue">False</s:Boolean>

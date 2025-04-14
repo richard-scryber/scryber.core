@@ -376,6 +376,11 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+        
+        /// <summary>
+        /// Gets or sets the flag for this block - if it is part of the normal document flow
+        /// </summary>
+        public bool IsInlineContent { get; set; }
 
         //
         // ctor(s)
@@ -393,6 +398,7 @@ namespace Scryber.PDF.Layout
             : base(parent, owner, engine, fullstyle)
         {
             this.OverflowSplit = split;
+            this.IsInlineContent = true;
         }
 
         #endregion
@@ -1185,7 +1191,8 @@ namespace Scryber.PDF.Layout
 
         private PDFXObjectRenderer CreateXObject(PDFRenderContext context, PDFWriter writer)
         {
-            var xobj = new PDFXObjectRenderer(this.Owner, this, this.Position, context, writer);
+            var isInline = this.IsInlineContent;
+            var xobj = new PDFXObjectRenderer(this.Owner, this, this.Position, isInline, context, writer);
             
             return xobj;
         }

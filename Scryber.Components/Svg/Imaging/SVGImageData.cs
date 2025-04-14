@@ -642,6 +642,8 @@ namespace Scryber.Svg.Imaging
                     var bounds = _layout.TotalBounds;
                     bounds.Location = Point.Empty;
                     _layout.TotalBounds = bounds;
+                    
+                    _layout.IsInlineContent = false;
 
 
 
@@ -729,17 +731,17 @@ namespace Scryber.Svg.Imaging
                 {
                     writer.WriteRealS(matrixComponents[i]);
                 }
-
+            
                 writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
-
+            
                 for (var i = 0; i < 6; i++)
                 {
                     writer.WriteRealS(matrixComponents[i]);
                 }
-
+            
                 writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
             }
-
+            
             writer.WriteNameS(layoutName.Value);
             writer.WriteOpCodeS(PDFOpCode.XobjPaint);
             var len = writer.EndStream();
@@ -802,7 +804,7 @@ namespace Scryber.Svg.Imaging
         {
             var imgRef = writer.BeginObject(imageName.Value);
             writer.BeginStream(imgRef, filters);
-
+            
             return imgRef;
         }
 

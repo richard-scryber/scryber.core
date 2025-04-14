@@ -50,19 +50,22 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGOutput_Test()
         {
             var doc = new Document();
-            var page = new Page();
+            var page = new Page() { Margins = 10};
             doc.Pages.Add(page);
+            
 
             var svg = new SVGCanvas() { Width = 100, Height = 100 };
+            svg.BackgroundColor = StandardColors.Silver;
             page.Contents.Add(svg);
 
-            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
+            page.Contents.Add("After the SVG");
+            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillValue = new SVGFillColorValue(StandardColors.Aqua) };
             svg.Contents.Add(rect);
 
             using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-
+                doc.AppendTraceLog = true;
                 doc.SaveAsPDF(stream);
             }
 

@@ -39,6 +39,11 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
     /// </summary>
     public Size OriginalSize { get; protected set; }
 
+    /// <summary>
+    /// If true (default) then the XObject is part of the standard flow and the standard painting operation will be sent to the graphics to actually draw the XObject content.
+    /// </summary>
+    public bool IsInlineXObject { get; set; }
+
 
     /// <summary>
     /// A reference to the PDFGraphics for the xObject itself.
@@ -113,12 +118,13 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
     /// </summary>
     protected IStreamFilter[] Filters { get; set; }
 
-    public PDFXObjectRenderer(IComponent owner, PDFLayoutItem forLayout, PDFPositionOptions position, PDFRenderContext context, PDFWriter writer)
+    public PDFXObjectRenderer(IComponent owner, PDFLayoutItem forLayout, PDFPositionOptions position, bool isInlineXObject, PDFRenderContext context, PDFWriter writer)
     {
         this.Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.Layout = forLayout ?? throw new ArgumentNullException(nameof(forLayout));
         this.Context = context ?? throw new ArgumentNullException(nameof(context));
         this.Writer = writer ?? throw new ArgumentNullException(nameof(writer));
+        this.IsInlineXObject = isInlineXObject;
         
         if (owner is IResourceContainer rsrcContainer)
             this.Resources = rsrcContainer.Resources;
@@ -217,10 +223,11 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
         //set everything back to before the renderd xObject
         this.RestoreContextState();
         
-        //finally write the Do command for the rendering
-        this.WriteXObjectRenderDo();
+        //finally write the Do command for the rendering if this renderer is part of hte standard document flow (default is true)
+        if (this.IsInlineXObject)
+            this.WriteXObjectRenderDo();
 
-        
+
     }
     
     protected virtual PDFTransformationMatrix CalculateViewPortMatrix(PDFTransformationMatrix original,
@@ -333,7 +340,6 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
 
     protected virtual void WriteXObjectRenderDo()
     {
-        return;
         var moveMatrix = new PDFTransformationMatrix();
         var x = this.OriginalOffset.X.RealValue;
         var y = (this.OriginalOffset.Y + this.OriginalSize.Height).RealValue;

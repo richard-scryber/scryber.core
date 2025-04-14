@@ -392,15 +392,7 @@ namespace Scryber.Svg.Components
                 return base.GetAppliedStyle(forComponent, baseStyle);
         }
 
-        public PDFObjectRef RenderToPDF(RenderContext context, PDFWriter writer)
-        {
-            if (this.IsDiscreetSVG)
-            {
-                
-            }
-
-            return null;
-        }
+        
 
         public static Style GetDefaultBaseStyle()
         {
