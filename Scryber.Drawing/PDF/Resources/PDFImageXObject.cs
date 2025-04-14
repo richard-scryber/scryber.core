@@ -85,6 +85,18 @@ namespace Scryber.PDF.Resources
         }
 
 
+        public override PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
+        {
+            if (this.ShouldAlwaysRender())
+                return DoRenderToPDF(context, writer);
+            else
+                return base.EnsureRendered(context, writer);
+        }
+
+        protected virtual bool ShouldAlwaysRender()
+        {
+            return false;// this.ImageData != null && this.ImageData.RequiresRender();
+        }
 
         public override bool Equals(string resourcetype, string name)
         {
@@ -122,6 +134,17 @@ namespace Scryber.PDF.Resources
             return size;
         }
         
+        public virtual Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+        {
+            Rect? clipRect = null;
+            
+            if (this.ImageData != null)
+            {
+                clipRect = this.ImageData.GetClippingRect(offset, available, context);
+            }
+            return clipRect;
+        }
+        
         public virtual Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {
             if (this.ImageData != null)
@@ -153,6 +176,7 @@ namespace Scryber.PDF.Resources
 
             return value;
         }
+        
         //
         // Load Image methods
         //

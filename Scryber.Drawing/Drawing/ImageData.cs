@@ -299,7 +299,11 @@ namespace Scryber.Drawing
         }
 
         #endregion
-        
+
+        public virtual Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+        {
+            return null;
+        }
         
         public virtual Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {

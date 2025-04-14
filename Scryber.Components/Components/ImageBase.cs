@@ -202,7 +202,7 @@ namespace Scryber.Components
                 
                 Size imgsize = img.GetRequiredSizeForRender(context.Offset, context.Space, context);
 
-                
+                Rect? clipRect = img.GetClippingRect(context.Offset, context.Space, context);
 
                 graphics.SaveGraphicsState();
 
@@ -213,6 +213,11 @@ namespace Scryber.Components
                     {
                         graphics.SetFillOpacity(op.Value(full));
                     }
+                }
+
+                if (clipRect.HasValue)
+                {
+                    graphics.SetClipRect(clipRect.Value);
                 }
                 
                 PDFObjectRef imgref = img.EnsureRendered(context, writer);

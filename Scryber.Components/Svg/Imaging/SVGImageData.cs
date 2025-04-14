@@ -220,6 +220,11 @@ namespace Scryber.Svg.Imaging
             return newSize;
         }
 
+        public override Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+        {
+            return new Rect(offset.X, offset.Y, available.Width, available.Height);
+        }
+
         public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {
             var orig = this.GetSize();
@@ -277,8 +282,8 @@ namespace Scryber.Svg.Imaging
             {
                 offset = UpdateOffsetForSliceScale(offset, available, scaleX, scaleY, orig, aspectRatio, context);
             }
-            
-            this._imgXObjectBBox = this.UpdateImageBoundingBoxForAspectRatio(offset, available, scaleX, scaleY, orig, aspectRatio, context);
+            //
+            // this._imgXObjectBBox = this.UpdateImageBoundingBoxForAspectRatio(offset, available, scaleX, scaleY, orig, aspectRatio, context);
 
 
             return offset;
@@ -383,7 +388,33 @@ namespace Scryber.Svg.Imaging
                     default:
                         break;
                 }
+            }
+            else if (scaleX < scaleY)
+            {
+                var used = original.Width * scaleY;
+                var extra = used - available.Width;
 
+                switch (aspectRatio.Align)
+                {
+                    case(AspectRatioAlign.xMinYMin):
+                    case(AspectRatioAlign.xMinYMid):
+                    case(AspectRatioAlign.xMinYMax):
+                        //No change as left aligned
+                        break;
+                    case(AspectRatioAlign.xMidYMin):
+                    case(AspectRatioAlign.xMidYMid):
+                    case(AspectRatioAlign.xMidYMax):
+                        offset.X -= extra / 2.0;
+                        break;
+                    case(AspectRatioAlign.xMaxYMin):
+                    case(AspectRatioAlign.xMaxYMid):
+                    case(AspectRatioAlign.xMaxYMax):
+                        offset.X -= extra;
+                        break;
+                    default:
+                        break;
+                    
+                }
             }
 
             return offset;

@@ -190,6 +190,16 @@ namespace Scryber.Imaging
 			return false;
 		}
 
+		public override Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+
+			if (null != this._innerImage)
+				return this._innerImage.GetClippingRect(offset, available, context);
+			else
+				return base.GetClippingRect(offset, available, context);
+		}
+
 		public override Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
 		{
 			this.EnsureFulfilled(context.TraceLog);

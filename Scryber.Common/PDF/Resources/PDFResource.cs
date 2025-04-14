@@ -192,7 +192,7 @@ namespace Scryber.PDF.Resources
         /// <param name="writer">The writer to output any instructions to</param>
         /// <returns>A PDFObject reference for this resource</returns>
         /// <remarks>In order to ensure that this resource is output, then call the RegisterUse with a resource collection.</remarks>
-        public PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
+        public virtual PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
         {
 
             if (this.Registered)

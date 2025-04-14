@@ -402,9 +402,9 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
             
-            //2 fonts, 6 images with 6 associated canvas's
+            //2 fonts, 4 images with 4 associated canvas's
             
-            Assert.AreEqual(14, doc.SharedResources.Count);
+            Assert.AreEqual(10, doc.SharedResources.Count);
             
             //first image is wide left
             
@@ -412,19 +412,19 @@ namespace Scryber.Core.UnitTests.Svg
             var svg = AssertImageReference(imgX);
             
             //Includes offset of other contents and padding
-            var expectedOffset = new Point(0, 80);
-            var expectedScale = new Size(0.4, 0.4);
+            var expectedOffset = new Point(0, 400);
+            var expectedScale = new Size(2.0, 2.0);
             var expectedBounds = new Rect(20 + 5, 20 + 20 + 20 + 5, 400, 80);
             
-            AssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            AssertWideImage("xMinYMinWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second is wide middle aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject;
             svg = AssertImageReference(imgX);
             
-            expectedOffset = new Point((400.0 - 80.0) / 2.0, 80.0);
-            expectedScale = new Size(0.4, 0.4);
+            expectedOffset = new Point(0.0, 240.0);
+            expectedScale = new Size(2, 2);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
@@ -435,12 +435,12 @@ namespace Scryber.Core.UnitTests.Svg
             imgX = doc.SharedResources[2] as PDFImageXObject;
             svg = AssertImageReference(imgX);
             
-            expectedOffset = new Point((400.0 - 80.0), 80.0);
-            expectedScale = new Size(0.4, 0.4);
+            expectedOffset = new Point(0.0, 80.0);
+            expectedScale = new Size(2, 2);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xMaxYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            AssertWideImage("xMaxYMaxWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //fourth is wide non-proportional
             
@@ -462,25 +462,25 @@ namespace Scryber.Core.UnitTests.Svg
             
             //first top aligned
             
-            imgX = doc.SharedResources[4] as PDFImageXObject;
+            imgX = doc.SharedResources[0] as PDFImageXObject;
             svg = AssertImageReference(imgX);
             
-            expectedOffset = new Point(0, 100.0); //just the height of the image
-            expectedScale = new Size(0.5, 0.5);
+            expectedOffset = new Point(0, 250.0); //just the height of the image
+            expectedScale = new Size(1.25, 1.25);
             
             expectedBounds.Y += 58 + 20 + 80 + 10; //banner, title, prev image, margin
             expectedBounds.Width = 100;
             expectedBounds.Height = 250;
             
-            AssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            AssertTallImage("xMinYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second mid aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject; //Uses the same resource as xmid ymid as on the wide row.
             svg = AssertImageReference(imgX);
 
-            expectedOffset.Y = 175; //half space + image height
-            expectedScale = new Size(0.5, 0.5);
+            expectedOffset = new Point(-75, 250); //middle at scale and height of the image
+            expectedScale = new Size(1.25, 1.25);
 
             expectedBounds.X += columnWidth;
             
@@ -488,15 +488,15 @@ namespace Scryber.Core.UnitTests.Svg
             
             //third bottom aligned
             
-            imgX = doc.SharedResources[5] as PDFImageXObject;
+            imgX = doc.SharedResources[2] as PDFImageXObject;
             svg = AssertImageReference(imgX);
 
-            expectedOffset.Y = 250; //all space and height
-            expectedScale = new Size(0.5, 0.5);
+            expectedOffset = new Point(-150, 250); //full width at scale, and height of the image
+            expectedScale = new Size(1.25, 1.25);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xMidYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            AssertTallImage("xMaxYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             
             //fourth vertically stretched
@@ -504,7 +504,7 @@ namespace Scryber.Core.UnitTests.Svg
             imgX = doc.SharedResources[3] as PDFImageXObject; //uses NoneMeet again
             svg = AssertImageReference(imgX);
 
-            expectedOffset.Y = 250; //all space and height
+            expectedOffset = new Point(0,  250); //all space and height
             expectedScale = new Size(0.5, 1.25);
 
             expectedBounds.X += columnWidth;
