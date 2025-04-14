@@ -7,6 +7,7 @@ using Scryber.Svg;
 using Scryber.Svg.Components;
 using System.CodeDom;
 using Scryber.Imaging;
+using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Svg.Imaging;
@@ -47,7 +48,7 @@ namespace Scryber.Core.UnitTests.Svg
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
-        public void SVGOutput_Test()
+        public void SVGOutputInlineXObject_Test()
         {
             var doc = new Document();
             var page = new Page() { Margins = 10};
@@ -69,7 +70,52 @@ namespace Scryber.Core.UnitTests.Svg
                 doc.SaveAsPDF(stream);
             }
 
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+            Assert.AreEqual(3, doc.SharedResources.Count);
+            
+            var xobj = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(xobj);
+            Assert.IsNotNull(xobj.Renderer);
+            Assert.IsTrue(xobj.Renderer.IsInlineXObject);
+            Assert.IsNotNull(xobj.Renderer.RenderReference);
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered as an XObject in the PDF
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGOutputReferencedImageXObject_Test()
+        {
+            var doc = new Document();
+            var page = new Page() { Margins = 10};
+            doc.Pages.Add(page);
+            
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/Chart.svg", TestContext);
+
+            var image = new Image() { Source = path, Width = 200, Height = 200 };
+            page.Contents.Add(image);
+            
+            page.Contents.Add("After the SVG");
+            
+
+            using(var stream = DocStreams.GetOutputStream("SVG_ReferencedImageOutput.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = true;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.AreEqual(3, doc.SharedResources.Count);
+            
+            var xobj = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(xobj);
+            Assert.IsNotNull(xobj.Renderer);
+            
+            //This should not be an inline xobject as the rendering is handled by the image
+            Assert.IsFalse(xobj.Renderer.IsInlineXObject);
+            Assert.IsNotNull(xobj.Renderer.RenderReference);
 
         }
 

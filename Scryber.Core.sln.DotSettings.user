@@ -17,6 +17,7 @@
       &lt;TestId&gt;MSTest::38F1C0BB-AB28-4125-8D25-18BFD9178598::net8.0::Scryber.UnitLayouts.SVGComponent_Tests&lt;/TestId&gt;
       &lt;TestId&gt;MSTest::6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF::net8.0::Scryber.Core.UnitTests.Svg.SVGLinearGradient_Test.SVGLinearGradientWith2Color45Degree_Test&lt;/TestId&gt;
     &lt;/TestAncestor&gt;
+    &lt;Namespace&gt;Scryber.Core.UnitTests&lt;/Namespace&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>
 	
