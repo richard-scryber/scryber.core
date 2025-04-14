@@ -1,0 +1,18 @@
+﻿<svg id="chart" width="200" height="200" viewBox="0 0 500 500" preserveAspectRatio="xMinYMin slice" xmlns="http://www.w3.org/2000/svg"
+     version="1.1" baseProfile="full" >
+    <g overflow="visible">
+       <!-- <rect width="450" height="450" x="0" y="0" id="r0" fill-opacity="1" fill="aqua"></rect>-->
+        <path id="p1" d="M257.3743 62.6451L257.9642 47.6567L274 47.6567" fill="none" stroke="#5470c6"></path>
+        <path id="p2" d="M260.0919 437.2282L260.8993 452.2065L272 452.2065" fill="none" stroke="#91cc75"></path>
+        <path id="p3" d="M222.723 64.4947L166 73.8823" fill="none" stroke="#fac858"></path>
+        <path id="p4" d="M240.1034 62.7614L239.3117 47.7823L190 47.7823" fill="none" stroke="#ee6666"></path>
+        <path id="a1" d="M250 62.5A187.5 187.5 0 0 1 264.7371 63.08L250 250Z" fill="#5470c6" stroke="white" stroke-linejoin="round"></path>
+        <path id="a2" d="M264.7371 63.08A187.5 187.5 0 1 1 215.2561 65.7472L250 250Z" fill="#91cc75" stroke="white" stroke-linejoin="round"></path>
+        <path id="a3" d="M215.2561 65.7472A187.5 187.5 0 0 1 230.2344 63.5447L250 250Z" fill="#fac858" stroke="white" stroke-linejoin="round"></path>
+        <path id="a4" d="M230.2344 63.5447A187.5 187.5 0 0 1 250 62.5L250 250Z" fill="#ee6666" stroke="white" stroke-linejoin="round"></path>
+        <text id="none" transform="translate(325 47.6567)"  dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:sans-serif;" xml:space="preserve" fill="#333" stroke="rgb(255,255,255)" stroke-width="0" paint-order="stroke" stroke-miterlimit="2">No Value</text>
+        <text id="air" transform="translate(325 452.2065)" dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:sans-serif;" fill="#333" stroke="rgb(255,255,255)" stroke-width="0" paint-order="stroke" stroke-miterlimit="2">Airplane</text>
+        <text id="car" dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:sans-serif;" transform="translate(125 73.8823)" fill="#333" stroke="rgb(255,255,255)" stroke-width="0" paint-order="stroke" stroke-miterlimit="2">Car</text>
+        <text id="train" dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:sans-serif;" transform="translate(125 47.7823)" fill="#333" stroke="rgb(255,255,255)" stroke-width="0" paint-order="stroke" stroke-miterlimit="2">Train</text>
+    </g>
+</svg>
