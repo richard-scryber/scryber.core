@@ -44,7 +44,7 @@ namespace Scryber.Core.UnitTests.Svg
         }
 
         /// <summary>
-        ///A test to make sure the SVG is rendered as an XObject in the PDF
+        ///A test to make sure the SVG is rendered as an XObject in the PDF and is registered as an inline XObject (content was part of the page)
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
@@ -81,7 +81,7 @@ namespace Scryber.Core.UnitTests.Svg
         }
         
         /// <summary>
-        ///A test to make sure the SVG is rendered as an XObject in the PDF
+        ///A test to make sure the SVG is rendered as an XObject in the PDF and is registered as NOT an inline XOjbect (content was loaded from an image)
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
@@ -115,10 +115,14 @@ namespace Scryber.Core.UnitTests.Svg
             
             //This should not be an inline xobject as the rendering is handled by the image
             Assert.IsFalse(xobj.Renderer.IsInlineXObject);
+            
             Assert.IsNotNull(xobj.Renderer.RenderReference);
 
         }
 
+        /// <summary>
+        /// Checks to make sure the SVG Image is sized correctly when all the width, height and viewbox properties are set (on the image tag and the loaded image itself.
+        /// </summary>
         [TestMethod()]
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefined_Test()
@@ -149,6 +153,71 @@ namespace Scryber.Core.UnitTests.Svg
             var svg = proxy.ImageData as SVGPDFImageData;
             Assert.IsNotNull(svg);
             
+            
+            var font = doc.SharedResources[1] as PDFFontResource;
+            Assert.IsNotNull(font);
+            
+            var canvas = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(canvas);
+
+            
+            //BBox of the img xObj is set to the size of the source image
+            Assert.IsTrue(svg.ImgXObjectBBox.HasValue);
+            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
+            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
+            
+            //Image is set to render at 150pt = 0.75% of file size
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(150, 150), context);
+            Assert.AreEqual(0.75, renderSize.Width);
+            Assert.AreEqual(0.75, renderSize.Height);
+            
+            
+            var img = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(img);
+            
+            var arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+            //Includes offset of other contents and padding
+            var bounds = new Rect(20 + 5, 20 + 120 + 5, 170, 170);
+            Assert.AreEqual(bounds, arrange.RenderBounds);
+        }
+        
+        /// <summary>
+        /// Checks to make sure the SVG Image is output once and the image tags themselves reference this single image.
+        /// </summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedImageAllDefinedDouble_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefinedDouble.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageAllDefinedDouble.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            //3 means the image was only rendede
+            Assert.AreEqual(3, doc.SharedResources.Count);
+            
+            var imgX = doc.SharedResources[0] as PDFImageXObject;
+            Assert.IsNotNull(imgX);
+            Assert.IsNotNull(imgX.ImageData);
+            Assert.IsInstanceOfType(imgX.ImageData, typeof(ImageDataProxy));
+            var proxy = ((ImageDataProxy)imgX.ImageData);
+            
+            var svg = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svg);
+            
             //BBox of the img xObj is set to the size of the source image
             Assert.IsTrue(svg.ImgXObjectBBox.HasValue);
             Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
@@ -159,6 +228,11 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(0.75, renderSize.Width);
             Assert.AreEqual(0.75, renderSize.Height);
 
+            var font = doc.SharedResources[1] as PDFFontResource;
+            Assert.IsNotNull(font);
+            
+            var canvas = doc.SharedResources[2] as PDFLayoutXObjectResource;
+            Assert.IsNotNull(canvas);
 
             
             var img = doc.FindAComponentById("referenced");
@@ -169,6 +243,15 @@ namespace Scryber.Core.UnitTests.Svg
 
             //Includes offset of other contents and padding
             var bounds = new Rect(20 + 5, 20 + 120 + 5, 170, 170);
+            Assert.AreEqual(bounds, arrange.RenderBounds);
+            
+            img = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(img);
+            
+            arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            bounds = new Rect(65, 375, 220, 220);
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
@@ -241,6 +324,78 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
+        
+        //
+        // Support methods for following tests
+        //
+        
+        private SVGPDFImageData DoAssertImageReference(PDFImageXObject imgX, Rect bbox)
+        {
+            Assert.IsNotNull(imgX);
+            Assert.IsNotNull(imgX.ImageData);
+            Assert.IsInstanceOfType(imgX.ImageData, typeof(ImageDataProxy));
+            
+            var svg = ((ImageDataProxy)imgX.ImageData).ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svg);
+            
+            //BBox of the img xObj is set to the size of the source image
+            Assert.IsTrue(svg.ImgXObjectBBox.HasValue);
+            //THis is the defined size of the actual referenced SVG
+            Assert.AreEqual(bbox.X, svg.ImgXObjectBBox.Value.X);
+            Assert.AreEqual(bbox.Y, svg.ImgXObjectBBox.Value.Y);
+            Assert.AreEqual(bbox.Width, svg.ImgXObjectBBox.Value.Width);
+            Assert.AreEqual(bbox.Height, svg.ImgXObjectBBox.Value.Width);
+
+            return svg;
+        }
+
+        private void DoAssertWideImage(string imgId, SVGPDFImageData svg, PDFImageXObject imgX, Point expectedOffset, Size expectedSize, Rect expectedBounds, RenderContext context)
+        {
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty, new Size(400, 80), context);
+            Assert.AreEqual(expectedSize.Width, renderSize.Width, "Render width scale did not match for " + imgId);
+            Assert.AreEqual(expectedSize.Height, renderSize.Height, "Render height scale did not match for " + imgId);
+
+            var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(400, 80), context);
+            Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
+            Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
+            
+            
+            var img = ((Document)context.Document).FindAComponentById(imgId);
+            Assert.IsNotNull(img, "Image component was not found for " + imgId);
+            
+            var arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
+
+            
+            Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
+        }
+        
+        private void DoAssertTallImage(string imgId, SVGPDFImageData svg, PDFImageXObject imgX, Point expectedOffset, Size expectedSize, Rect expectedBounds, RenderContext context)
+        {
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty, new Size(100, 250), context);
+            Assert.AreEqual(expectedSize.Width, renderSize.Width, "Render width scale did not match for " + imgId);
+            Assert.AreEqual(expectedSize.Height, renderSize.Height, "Render height scale did not match for " + imgId);
+
+            var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(100, 250), context);
+            Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
+            Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
+            
+            
+            var img = ((Document)context.Document).FindAComponentById(imgId);
+            Assert.IsNotNull(img, "Image component was not found for " + imgId);
+            
+            var arrange = img.GetFirstArrangement();
+            Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
+
+            
+            Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
+        }
+        
+        
+        /// <summary>
+        /// Validates the proportional scaling of SVG images with various preserved aspect ratios when the widths and heights do not match.
+        /// Meet by default - largest size that will fit the entire graphic in the availavble space
+        /// </summary>
         [TestMethod()]
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedProportional_Test()
@@ -265,53 +420,54 @@ namespace Scryber.Core.UnitTests.Svg
             
             Assert.AreEqual(14, doc.SharedResources.Count);
             
+            var bbox = new Rect(0, 0, 200, 200);
             //first image is wide left
             
             var imgX = doc.SharedResources[0] as PDFImageXObject;
-            var svg = AssertImageReference(imgX);
+            var svg = DoAssertImageReference(imgX, bbox);
             
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 80);
             var expectedScale = new Size(0.4, 0.4);
             var expectedBounds = new Rect(20 + 5, 20 + 20 + 20 + 5, 400, 80);
             
-            AssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second is wide middle aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point((400.0 - 80.0) / 2.0, 80.0);
             expectedScale = new Size(0.4, 0.4);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //third is wide right aligned
             
             imgX = doc.SharedResources[2] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point((400.0 - 80.0), 80.0);
             expectedScale = new Size(0.4, 0.4);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xMaxYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMaxYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //fourth is wide non-proportional
             
             imgX = doc.SharedResources[3] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0, 80.0);
             expectedScale = new Size(2, 0.4);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //
             // tall images
@@ -322,7 +478,7 @@ namespace Scryber.Core.UnitTests.Svg
             //first top aligned
             
             imgX = doc.SharedResources[4] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0, 100.0); //just the height of the image
             expectedScale = new Size(0.5, 0.5);
@@ -331,107 +487,51 @@ namespace Scryber.Core.UnitTests.Svg
             expectedBounds.Width = 100;
             expectedBounds.Height = 250;
             
-            AssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second mid aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject; //Uses the same resource as xmid ymid as on the wide row.
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset.Y = 175; //half space + image height
             expectedScale = new Size(0.5, 0.5);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xMidYMidTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMidYMidTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //third bottom aligned
             
             imgX = doc.SharedResources[5] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset.Y = 250; //all space and height
             expectedScale = new Size(0.5, 0.5);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xMidYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMidYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             
             //fourth vertically stretched
             
             imgX = doc.SharedResources[3] as PDFImageXObject; //uses NoneMeet again
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset.Y = 250; //all space and height
             expectedScale = new Size(0.5, 1.25);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xNoneTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xNoneTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
         }
 
-        private SVGPDFImageData AssertImageReference(PDFImageXObject imgX)
-        {
-            Assert.IsNotNull(imgX);
-            Assert.IsNotNull(imgX.ImageData);
-            Assert.IsInstanceOfType(imgX.ImageData, typeof(ImageDataProxy));
-            
-            var svg = ((ImageDataProxy)imgX.ImageData).ImageData as SVGPDFImageData;
-            Assert.IsNotNull(svg);
-            
-            //BBox of the img xObj is set to the size of the source image
-            Assert.IsTrue(svg.ImgXObjectBBox.HasValue);
-            //THis is the defined size of the actual referenced SVG
-            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
-            Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
-
-            return svg;
-        }
-
-        private void AssertWideImage(string imgId, SVGPDFImageData svg, PDFImageXObject imgX, Point expectedOffset, Size expectedSize, Rect expectedBounds, RenderContext context)
-        {
-            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty, new Size(400, 80), context);
-            Assert.AreEqual(expectedSize.Width, renderSize.Width, "Render width scale did not match for " + imgId);
-            Assert.AreEqual(expectedSize.Height, renderSize.Height, "Render height scale did not match for " + imgId);
-
-            var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(400, 80), context);
-            Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
-            Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
-            
-            
-            var img = ((Document)context.Document).FindAComponentById(imgId);
-            Assert.IsNotNull(img, "Image component was not found for " + imgId);
-            
-            var arrange = img.GetFirstArrangement();
-            Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
-
-            
-            Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
-        }
-        
-        private void AssertTallImage(string imgId, SVGPDFImageData svg, PDFImageXObject imgX, Point expectedOffset, Size expectedSize, Rect expectedBounds, RenderContext context)
-        {
-            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty, new Size(100, 250), context);
-            Assert.AreEqual(expectedSize.Width, renderSize.Width, "Render width scale did not match for " + imgId);
-            Assert.AreEqual(expectedSize.Height, renderSize.Height, "Render height scale did not match for " + imgId);
-
-            var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(100, 250), context);
-            Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
-            Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
-            
-            
-            var img = ((Document)context.Document).FindAComponentById(imgId);
-            Assert.IsNotNull(img, "Image component was not found for " + imgId);
-            
-            var arrange = img.GetFirstArrangement();
-            Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
-
-            
-            Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
-        }
-        
-         [TestMethod()]
+        /// <summary>
+        /// Validates the proportional scaling of SVG images with various preserved aspect ratios when the widths and heights do not match.
+        /// Explicitly Sliced (smalest scale that will fill the entire space).
+        /// </summary>
+        [TestMethod()]
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedProportionalSlice_Test()
         {
@@ -455,53 +555,55 @@ namespace Scryber.Core.UnitTests.Svg
             
             Assert.AreEqual(10, doc.SharedResources.Count);
             
+            var bbox = new Rect(0, 0, 200, 200);
+            
             //first image is wide left
             
             var imgX = doc.SharedResources[0] as PDFImageXObject;
-            var svg = AssertImageReference(imgX);
+            var svg = DoAssertImageReference(imgX, bbox);
             
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 400);
             var expectedScale = new Size(2.0, 2.0);
             var expectedBounds = new Rect(20 + 5, 20 + 20 + 20 + 5, 400, 80);
             
-            AssertWideImage("xMinYMinWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMinYMinWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second is wide middle aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0.0, 240.0);
             expectedScale = new Size(2, 2);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //third is wide right aligned
             
             imgX = doc.SharedResources[2] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0.0, 80.0);
             expectedScale = new Size(2, 2);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xMaxYMaxWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xMaxYMaxWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //fourth is wide non-proportional
             
             imgX = doc.SharedResources[3] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0, 80.0);
             expectedScale = new Size(2, 0.4);
             
             expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
             
-            AssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //
             // tall images
@@ -512,7 +614,7 @@ namespace Scryber.Core.UnitTests.Svg
             //first top aligned
             
             imgX = doc.SharedResources[0] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
             
             expectedOffset = new Point(0, 250.0); //just the height of the image
             expectedScale = new Size(1.25, 1.25);
@@ -521,44 +623,44 @@ namespace Scryber.Core.UnitTests.Svg
             expectedBounds.Width = 100;
             expectedBounds.Height = 250;
             
-            AssertTallImage("xMinYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMinYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second mid aligned
             
             imgX = doc.SharedResources[1] as PDFImageXObject; //Uses the same resource as xmid ymid as on the wide row.
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset = new Point(-75, 250); //middle at scale and height of the image
             expectedScale = new Size(1.25, 1.25);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xMidYMidTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMidYMidTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //third bottom aligned
             
             imgX = doc.SharedResources[2] as PDFImageXObject;
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset = new Point(-150, 250); //full width at scale, and height of the image
             expectedScale = new Size(1.25, 1.25);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xMaxYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xMaxYMaxTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             
             //fourth vertically stretched
             
             imgX = doc.SharedResources[3] as PDFImageXObject; //uses NoneMeet again
-            svg = AssertImageReference(imgX);
+            svg = DoAssertImageReference(imgX, bbox);
 
             expectedOffset = new Point(0,  250); //all space and height
             expectedScale = new Size(0.5, 1.25);
 
             expectedBounds.X += columnWidth;
             
-            AssertTallImage("xNoneTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
+            DoAssertTallImage("xNoneTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
         }
         
         
@@ -568,22 +670,21 @@ namespace Scryber.Core.UnitTests.Svg
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
-        public void SVGReferencedSizeOnFileOnlyOutput_Test()
+        public void SVGReferencedNoImageSize_Test()
         {
-            var doc = new Document();
-            var page = new Page();
-            doc.Pages.Add(page);
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageNoImageSize.html", TestContext);
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
 
-            var svg = new SVGCanvas() { Width = 100, Height = 100 };
-            page.Contents.Add(svg);
-
-            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
-            svg.Contents.Add(rect);
-
-            using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageNoImageSize.pdf"))
             {
+                doc.AppendTraceLog = true;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
                 doc.SaveAsPDF(stream);
             }
 

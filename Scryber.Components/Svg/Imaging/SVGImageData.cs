@@ -211,6 +211,41 @@ namespace Scryber.Svg.Imaging
             {
                 //TODO: Scale width proportionally.
             }
+            else if (null != this.Canvas)
+            {
+                var style = this.Canvas.GetAppliedStyle();
+                bool hasCanvasSize = false;
+                if (style.IsValueDefined(StyleKeys.SizeWidthKey))
+                {
+                    newSize.Width = style.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+                    hasCanvasSize = true;
+                    if (style.IsValueDefined(StyleKeys.SizeHeightKey))
+                    {
+                        newSize.Height = style.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+                    }
+                    else
+                    {
+                        //Should this be propotional
+                    }
+                }
+                else if (style.IsValueDefined(StyleKeys.SizeHeightKey))
+                {
+                    hasCanvasSize = true;
+                    newSize.Height = style.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+                    //Should width be calculated as proportional
+                }
+
+                if (hasCanvasSize)
+                {
+                    if (newSize.Height > available.Height)
+                    {
+                        var scale = newSize.Height.PointsValue / available.Height.PointsValue;
+                        newSize.Height = available.Height;
+                        newSize.Width = newSize.Width / scale;
+                    }
+                }
+                
+            }
 
             if (null == this._layout)
             {
