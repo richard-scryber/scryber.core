@@ -198,7 +198,7 @@ namespace Scryber.PDF
                     if (data is ImageRasterData raster)
                         sizeStr = raster.PixelWidth + " by " + raster.PixelHeight + " pixels, ";
                     else //vector
-                        sizeStr = "vector image";
+                        sizeStr = "vector image " + data.GetSize();
                     cell.Contents.Add(new TextLiteral(sizeStr));
                 }
                 else

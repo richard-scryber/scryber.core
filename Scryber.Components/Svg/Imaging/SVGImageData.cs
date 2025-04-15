@@ -249,8 +249,12 @@ namespace Scryber.Svg.Imaging
             }
             else if (null != this.Canvas)
             {
+                
+                var config = ServiceProvider.GetService<IScryberConfigurationService>();
+                var minimumScaleReduction = config.ImagingOptions.MinimumScaleReduction;
                
                 bool hasCanvasSize = false;
+                
                 if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey))
                 {
                     newSize.Width = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
@@ -276,6 +280,8 @@ namespace Scryber.Svg.Imaging
                     
                     if(canvasViewPort.IsEmpty)
                         canvasViewPort = new Rect(0, 0, SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+
+                    hasCanvasSize = true;
                     
                     var scaleW = available.Width.PointsValue / canvasViewPort.Width.PointsValue;
                     //var scaleH = available.Height.PointsValue / canvasViewPort.Height.PointsValue;
@@ -285,13 +291,17 @@ namespace Scryber.Svg.Imaging
                     newSize.Height = canvasViewPort.Height.PointsValue * scaleW;
                 }
 
-                if (hasCanvasSize)
+                if (hasCanvasSize) //we can scale based on size
                 {
                     if (newSize.Height > available.Height)
                     {
-                        var scale = newSize.Height.PointsValue / available.Height.PointsValue;
-                        newSize.Height = available.Height;
-                        newSize.Width = newSize.Width / scale;
+                        var scale = available.Height.PointsValue / newSize.Height.PointsValue;
+
+                        if (scale > minimumScaleReduction)
+                        {
+                            newSize.Height = available.Height;
+                            newSize.Width = newSize.Width * scale;
+                        }
                     }
                 }
                 
