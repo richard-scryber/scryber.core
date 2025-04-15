@@ -608,8 +608,8 @@ namespace Scryber.Svg.Imaging
                     height = _svgCanvas.Style.GetValue(StyleKeys.SizeHeightKey, Unit.Auto);
                 }
 
-                applied.SetValue(StyleKeys.SizeHeightKey, height);
-                applied.SetValue(StyleKeys.SizeWidthKey, width);
+                //applied.SetValue(StyleKeys.SizeHeightKey, height);
+                //applied.SetValue(StyleKeys.SizeWidthKey, width);
 
 
                 //Push the style and then manually get the full style for layout.

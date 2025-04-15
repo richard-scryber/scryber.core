@@ -199,7 +199,11 @@ namespace Scryber.Svg.Components
         
 
         [PDFAttribute("width")]
-        public override Unit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { 
+            get => base.Width;
+            set => base.Width = value;
+            
+        }
 
         [PDFAttribute("height")]
         public override Unit Height { get => base.Height; set => base.Height = value; }
