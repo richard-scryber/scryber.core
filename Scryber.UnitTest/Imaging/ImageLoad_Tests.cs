@@ -58,7 +58,7 @@ namespace Scryber.Core.UnitTests.Imaging
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
 
             Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
@@ -88,7 +88,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
                 this.TestContext);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
             
             Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
@@ -159,7 +159,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsTrue(xobj.Registered);
             Assert.IsTrue(xobj.Source.EndsWith("group.png"), "The source was expected to end with the name of the file");
             Assert.AreEqual(path, xobj.Source, "The source did not match the xObject source");
-            var data = xobj.ImageData;
+            var data = xobj.ImageData as ImageRasterData;
 
             Assert.IsNotNull(data, "The image data was null");
             Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
@@ -188,7 +188,7 @@ namespace Scryber.Core.UnitTests.Imaging
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
 
             Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
@@ -962,7 +962,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            var image = factory.LoadImageData(null, null, path);
+            var image = factory.LoadImageData(null, null, path) as ImageRasterData;
 
             stopwatch.Stop();
 
@@ -999,7 +999,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            var image = factory.LoadImageData(null, null, path);
+            var image = factory.LoadImageData(null, null, path) as ImageRasterData;
 
             stopwatch.Stop();
 

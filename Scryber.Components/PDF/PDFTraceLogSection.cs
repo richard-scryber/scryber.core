@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
+using Scryber.Drawing;
+using Scryber.Imaging;
 using Scryber.PDF.Resources;
 using Scryber.Logging;
 
@@ -187,8 +189,17 @@ namespace Scryber.PDF
                     bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
                     cell.Contents.Add(bold);
                     cell.Contents.Add(new LineBreak());
-                    var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
-                    cell.Contents.Add(new TextLiteral(str));
+                    var data = img.ImageData;
+                    if(data is ImageDataProxy proxy)
+                        data = proxy.ImageData;
+
+                    string sizeStr;
+
+                    if (data is ImageRasterData raster)
+                        sizeStr = raster.PixelWidth + " by " + raster.PixelHeight + " pixels, ";
+                    else //vector
+                        sizeStr = "vector image";
+                    cell.Contents.Add(new TextLiteral(sizeStr));
                 }
                 else
                 {

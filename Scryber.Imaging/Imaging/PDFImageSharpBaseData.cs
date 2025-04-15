@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Scryber.Imaging
 {
-    public abstract class PDFImageDataBase : ImageData
+    public abstract class PDFImageDataBase : ImageRasterData
     {
         
 

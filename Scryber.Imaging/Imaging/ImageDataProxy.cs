@@ -11,7 +11,7 @@ namespace Scryber.Imaging
 	/// so it can be referenced and cached as normal before the image is actually loaded.
 	/// But the request should be fufilled before it is used.
 	/// </summary>
-	public class ImageDataProxy : ImageData
+	public class ImageDataProxy : ImageRasterData
 	{
 		/// <summary>
 		/// The captured async request
@@ -229,15 +229,19 @@ namespace Scryber.Imaging
 			this._initializing = true;
 			
 			this.SourcePath = inner.SourcePath;
-			this.PixelWidth = inner.PixelWidth;
-			this.PixelHeight = inner.PixelHeight;
-			this.BitsPerColor = inner.BitsPerColor;
-			this.ColorSpace = inner.ColorSpace;
-			this.ColorsPerSample = inner.ColorsPerSample;
-			this.HorizontalResolution = inner.HorizontalResolution;
-			this.VerticalResolution = inner.VerticalResolution;
 			this.Filters = inner.Filters;
 			this.HasAlpha = inner.HasAlpha;
+
+			if (inner is ImageRasterData rasterData)
+			{
+				this.PixelWidth = rasterData.PixelWidth;
+				this.PixelHeight = rasterData.PixelHeight;
+				this.BitsPerColor = rasterData.BitsPerColor;
+				this.ColorSpace = rasterData.ColorSpace;
+				this.ColorsPerSample = rasterData.ColorsPerSample;
+				this.HorizontalResolution = rasterData.HorizontalResolution;
+				this.VerticalResolution = rasterData.VerticalResolution;
+			}
 
 			this._initializing = false;
 		}

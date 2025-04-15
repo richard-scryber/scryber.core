@@ -35,7 +35,7 @@ public class SVGImagingFactory : ImageFactoryBase
         if(!(component is SVGCanvas))
             return null;
         var svg = component as SVGCanvas;
-        var data = new SVGPDFImageData(path, svg, 1, 1);
+        var data = new SVGPDFImageData(path, svg);
 
         return data;
 

@@ -17,7 +17,7 @@ namespace Scryber.Svg.Imaging
     /// <summary>
     /// Represents a single discreet SVG image (canvas), loaded from another source. 
     /// </summary>
-    public class SVGPDFImageData : ImageData, ILayoutComponent
+    public class SVGPDFImageData : ImageVectorData, ILayoutComponent
     {
 
         private PDFObjectRef _renderRef = null;
@@ -90,8 +90,8 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        public SVGPDFImageData(string source, SVGCanvas canvas, int w, int h)
-            : base(ObjectTypes.ImageData, source, w, h)
+        public SVGPDFImageData(string source, SVGCanvas canvas)
+            : base(ObjectTypes.ImageData, source)
         {
             _svgCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
             _svgCanvas.IsDiscreetSVG = true;
@@ -106,15 +106,19 @@ namespace Scryber.Svg.Imaging
         /// <returns></returns>
         public override Size GetSize()
         {
-            if (null != this.Canvas && this.ImgXObjectBBox.HasValue)
+            if (null != this.Canvas)
             {
-
-                var sz = this.ImgXObjectBBox.Value.Size;
-                return sz;
+                if (this.ImgXObjectBBox.HasValue)
+                {
+                    var sz = this.ImgXObjectBBox.Value.Size;
+                    return sz;
+                }
+                else if(this.Canvas.Width != Unit.Empty && this.Canvas.Height != Unit.Empty)
+                    return new Size(this.Canvas.Width, this.Canvas.Height);
+                else if (this.Canvas.ViewBox != Rect.Empty)
+                    return this.Canvas.ViewBox.Size;
             }
-
-            var baseSize = base.GetSize();
-            return baseSize;
+            return Size.Empty;
         }
 
         public override void ResetFilterCache()

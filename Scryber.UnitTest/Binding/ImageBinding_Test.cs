@@ -102,19 +102,20 @@ namespace Scryber.Core.UnitTests.Binding
 
 
             var imgReader = Scryber.Imaging.ImageReader.Create();
-            ImageData data1, data2;
+            
+            ImageRasterData data1, data2;
 
             if (!path.EndsWith(System.IO.Path.DirectorySeparatorChar))
                 path += System.IO.Path.DirectorySeparatorChar;
 
             using (var fs = new System.IO.FileStream(path + "Toroid24.jpg", FileMode.Open))
             {
-                data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false);
+                data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false) as ImageRasterData;
             }
             
             using (var fs = new System.IO.FileStream(path + "group.png", FileMode.Open))
             {
-                data2 = imgReader.ReadStream(path + "group.png", fs, false);
+                data2 = imgReader.ReadStream(path + "group.png", fs, false) as ImageRasterData;
             }
             
             var model = new
@@ -179,13 +180,13 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsTrue(rsrc1.Registered, "First image was not registered");
             Assert.AreEqual(data1.SourcePath, rsrc1.ImageData.SourcePath, "First Image, Paths did not match");
             Assert.IsTrue(rsrc1.ImageData.SourcePath.EndsWith("Toroid24.jpg"), "First image source path did not end with Toroid24.jpg");
-            Assert.AreEqual(data1.PixelWidth, rsrc1.ImageData.PixelWidth, "First Image, Sizes did not match");
+            Assert.AreEqual(data1.PixelWidth, ((ImageRasterData)rsrc1.ImageData).PixelWidth, "First Image, Sizes did not match");
             
             Assert.IsNotNull(rsrc2, "Second resource image was null");
             Assert.IsTrue(rsrc2.Registered, "Second image was not registered");
             Assert.AreEqual(data2.SourcePath, rsrc2.ImageData.SourcePath, "Second Image, Paths did not match");
             Assert.IsTrue(rsrc2.ImageData.SourcePath.EndsWith("group.png"), "Second image source path did not end with group.png");
-            Assert.AreEqual(data2.PixelWidth, rsrc2.ImageData.PixelWidth, "Second Image, Sizes did not match");
+            Assert.AreEqual(data2.PixelWidth, ((ImageRasterData)rsrc2.ImageData).PixelWidth, "Second Image, Sizes did not match");
             
             //Check the actual layout
             Assert.IsNotNull(_layout, "The layout was not captured");

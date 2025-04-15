@@ -2736,8 +2736,8 @@ body.grey div.reverse{
                 Assert.IsNotNull(imgXObject);
                 Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
 
-                var w = imgXObject.ImageData.PixelWidth;
-                var h = imgXObject.ImageData.PixelHeight;
+                var w = ((ImageRasterData)imgXObject.ImageData).PixelWidth;
+                var h = ((ImageRasterData) imgXObject.ImageData).PixelHeight;
 
                 Assert.AreEqual(396, w);
                 Assert.AreEqual(342, h);
@@ -2788,8 +2788,8 @@ body.grey div.reverse{
                 Assert.IsNotNull(imgXObject);
                 Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
 
-                var w = imgXObject.ImageData.PixelWidth;
-                var h = imgXObject.ImageData.PixelHeight;
+                var w = ((ImageRasterData)imgXObject.ImageData).PixelWidth;
+                var h = ((ImageRasterData) imgXObject.ImageData).PixelHeight;
 
                 Assert.AreEqual(396, w);
                 Assert.AreEqual(342, h);

@@ -472,8 +472,11 @@ namespace Scryber.Core.UnitTests.Html
                         var img = rsrc as PDFImageXObject;
                         Assert.IsNotNull(img);
                         //Just check the image size for validation it was loaded
-                        Assert.AreEqual(640, img.ImageData.PixelWidth, "Unexpected image width for the png");
-                        Assert.AreEqual(643, img.ImageData.PixelHeight, "Unexpected image height for the png");
+                        var raster = img.ImageData as ImageRasterData;
+                        Assert.IsNotNull(raster);
+                        
+                        Assert.AreEqual(640, raster.PixelWidth, "Unexpected image width for the png");
+                        Assert.AreEqual(643, raster.PixelHeight, "Unexpected image height for the png");
                     }
                 }
 

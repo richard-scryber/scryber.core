@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.PDF.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber.Drawing;
 using Scryber.PDF;
 
 
@@ -19,7 +20,7 @@ namespace Scryber.Core.UnitTests.Html
         public void AssertRedDotImage(PDFImageXObject img)
         {
             Assert.IsNotNull(img.ImageData, "The resource had no data");
-            var data = img.ImageData;
+            var data = img.ImageData as ImageRasterData;
             
             Assert.AreEqual(5, data.PixelWidth, "Expected a 5 pixel wide image");
             Assert.AreEqual(5, data.PixelHeight, "Expected a 5 pixel high image");
@@ -58,11 +59,13 @@ namespace Scryber.Core.UnitTests.Html
         /// <param name="img"></param>
         public void AssertJpgImage(PDFImageXObject img)
         {
-            Assert.AreEqual(8, img.ImageData.BitsPerColor, "Expected a 24 bit RGB image");
-            Assert.IsFalse(img.ImageData.HasAlpha, "Jpeg images should not have an alpha");
-            Assert.IsTrue(img.ImageData.IsPrecompressedData,"Jpeg images should be pre-compressed");
-            Assert.AreEqual(1, img.ImageData.Filters.Length, "Expected a single filter"); 
-            Assert.AreEqual("DCTDecode", img.ImageData.Filters[0].FilterName, "Expected the filter name to be DCTDecode");
+            var raster = img.ImageData as ImageRasterData;
+            Assert.IsNotNull(raster, "The resource had no data, or is not a raster image");
+            Assert.AreEqual(8, raster.BitsPerColor, "Expected a 24 bit RGB image");
+            Assert.IsFalse(raster.HasAlpha, "Jpeg images should not have an alpha");
+            Assert.IsTrue(raster.IsPrecompressedData,"Jpeg images should be pre-compressed");
+            Assert.AreEqual(1, raster.Filters.Length, "Expected a single filter"); 
+            Assert.AreEqual("DCTDecode", raster.Filters[0].FilterName, "Expected the filter name to be DCTDecode");
      
         }
         

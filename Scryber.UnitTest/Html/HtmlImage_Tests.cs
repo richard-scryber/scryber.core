@@ -63,8 +63,9 @@ namespace Scryber.Core.UnitTests.Html
         public void AssertGroupImage(PDFImageXObject img)
         {
             Assert.IsNotNull(img.ImageData, "The resource had no data");
-            var data = img.ImageData;
+            var data = img.ImageData as ImageRasterData;
             
+            Assert.IsNotNull(data, "The resource had no data, or is not a raster image");
             Assert.AreEqual(396, data.PixelWidth, "Expected a 5 pixel wide image");
             Assert.AreEqual(342, data.PixelHeight, "Expected a 5 pixel high image");
             Assert.AreEqual(8, data.BitsPerColor);
@@ -103,7 +104,9 @@ namespace Scryber.Core.UnitTests.Html
         /// <param name="img"></param>
         public void AssertJpgImage(PDFImageXObject img)
         {
-            Assert.AreEqual(8, img.ImageData.BitsPerColor, "Expected a 24 bit RGB image");
+            var data = img.ImageData as ImageRasterData;
+            Assert.IsNotNull(data, "The resource had no data, or is not a raster image");
+            Assert.AreEqual(8, data.BitsPerColor, "Expected a 24 bit RGB image");
             Assert.IsFalse(img.ImageData.HasAlpha, "Jpeg images should not have an alpha");
             Assert.IsTrue(img.ImageData.IsPrecompressedData,"Jpeg images should be pre-compressed");
             Assert.AreEqual(1, img.ImageData.Filters.Length, "Expected a single filter"); 
@@ -514,7 +517,9 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(img.ImageData.DisplayWidth, imgLayout.Width);
+                        
+                        var size = img.ImageData.GetSize();
+                        Assert.AreEqual(size.Width, imgLayout.Width);
                     }
 
                 }

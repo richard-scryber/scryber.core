@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
+using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.PDF.Resources;
 using System.IO;
@@ -112,8 +113,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -202,8 +203,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -281,8 +282,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
               
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -364,8 +365,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -507,8 +508,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -598,8 +599,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -693,8 +694,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -842,8 +843,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -929,8 +930,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -1012,8 +1013,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1100,8 +1101,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1192,8 +1193,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
 
 
@@ -1288,8 +1289,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Should be successfull so check the widths and heights
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1385,8 +1386,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1486,8 +1487,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Successfull so image size
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1583,8 +1584,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -1673,8 +1674,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -1757,8 +1758,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1846,8 +1847,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1943,8 +1944,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -2034,8 +2035,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -2132,8 +2133,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }

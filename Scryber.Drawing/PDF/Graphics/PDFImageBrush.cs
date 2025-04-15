@@ -217,9 +217,9 @@ namespace Scryber.PDF.Graphics
                 //We have both explicit widths
                 return new Size(this.XSize, this.YSize);
             }
-
-            Unit imgw = imgdata.DisplayWidth;
-            Unit imgh = imgdata.DisplayHeight;
+            var size = imgdata.GetSize();
+            Unit imgw = size.Width;
+            Unit imgh = size.Height;
 
             //If we have one dimension, then calculate the other proportionally.
             if (this.XSize > 0)
@@ -227,10 +227,10 @@ namespace Scryber.PDF.Graphics
                 imgh = this.XSize * (imgh.PointsValue / imgw.PointsValue);
                 imgw = this.XSize;
             }
-            else if (this.XSize > 0)
+            else if (this.YSize > 0)
             {
-                imgw = this.XSize * (imgw.PointsValue / imgh.PointsValue);
-                imgh = this.XSize;
+                imgw = this.YSize * (imgw.PointsValue / imgh.PointsValue);
+                imgh = this.YSize;
             }
 
             return new Size(imgw, imgh);
