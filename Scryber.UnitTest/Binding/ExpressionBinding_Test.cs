@@ -1611,7 +1611,7 @@ namespace Scryber.Core.UnitTests.Binding
             culture = "en-GB";
             cultureNumber = "-3456.56";
             cultureCurrency = "-£3,456.56";
-            cutlureDate = "Tuesday 13 December 2022";
+            cutlureDate = "Tuesday, 13 December 2022";
             cutlureTime = "22:45:59";
 
             data = new
