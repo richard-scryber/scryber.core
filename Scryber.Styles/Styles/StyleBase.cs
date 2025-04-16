@@ -1969,7 +1969,7 @@ namespace Scryber.Styles
                 if (this.TryGetValue(StyleKeys.StrokeWidthKey, out width) && width.Value(this) <= 0)
                     return null;
 
-                double phase = 0;
+                double phase = dash.Value(this).Phase;
                 if (this.TryGetValue(StyleKeys.StrokeDashOffsetKey, out dashOffset))
                 {
                     var offset = dashOffset.Value(this);
