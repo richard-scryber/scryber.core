@@ -13,10 +13,8 @@ namespace Scryber.Core.UnitTests.Svg
     
     
     /// <summary>
-    ///This is a test class for PDFColor_Test and is intended
-    ///to contain all PDFColor_Test Unit Tests
+    ///moved all to SVG Tests - keeping for future options
     ///</summary>
-    [TestClass()]
     public class SVGComponent_Test
     {
 
@@ -39,33 +37,7 @@ namespace Scryber.Core.UnitTests.Svg
             }
         }
 
-        /// <summary>
-        ///A test to make sure the SVG is rendered as an XObject in the PDF
-        ///</summary>
-        [TestMethod()]
-        [TestCategory("Common")]
-        public void SVGAnchor_Test()
-        {
-            var doc = new Document();
-            var page = new Page();
-            doc.Pages.Add(page);
-
-            var svg = new SVGCanvas() { Width = 100, Height = 100 };
-            page.Contents.Add(svg);
-
-            var rect = new SVGRect() { X = 10, Y = 10, Width = 80, Height = 80, FillColor = StandardColors.Aqua };
-            svg.Contents.Add(rect);
-
-            using(var stream = DocStreams.GetOutputStream("SVG_XObjectOutput.pdf"))
-            {
-                doc.RenderOptions.Compression = OutputCompressionType.None;
-
-                doc.SaveAsPDF(stream);
-            }
-
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
-
-        }
+        
 
 
     }

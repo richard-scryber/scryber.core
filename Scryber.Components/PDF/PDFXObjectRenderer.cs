@@ -241,8 +241,39 @@ public class PDFXObjectRenderer : IDisposable, IResourceContainer
             
             var srcWidth = positionOptions.ViewPort.Value.Width;
             var srcHeight = positionOptions.ViewPort.Value.Height;
-            var destWidth = positionOptions.Width ?? srcWidth;
-            var destHeight = positionOptions.Height ?? srcHeight;
+            
+            
+            Unit destWidth; 
+            Unit destHeight;
+
+            if (positionOptions.Width.HasValue)
+            {
+                destWidth = positionOptions.Width.Value;
+
+                if (positionOptions.Height.HasValue)
+                {
+                    destHeight = positionOptions.Height.Value;
+                }
+                else
+                {
+                    var vbScale = srcHeight.PointsValue / srcWidth.PointsValue;
+                    destHeight = new Unit(destWidth.PointsValue * vbScale);
+                    
+                }
+            }
+            else if (positionOptions.Height.HasValue)
+            {
+                destHeight = positionOptions.Height.Value;
+                
+                var vbScale = srcHeight.PointsValue / srcWidth.PointsValue;
+                destWidth = new Unit(destHeight.PointsValue * vbScale);
+            }
+            else
+            {
+                destWidth = srcWidth;
+                destHeight = srcHeight;
+            }
+            
             
             var newMatrix = original.Clone();
             var dest = new Size(destWidth, destHeight);

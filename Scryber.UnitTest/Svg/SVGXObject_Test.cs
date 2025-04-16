@@ -945,8 +945,9 @@ namespace Scryber.Core.UnitTests.Svg
             
             
             
-            //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + contentWidth + 50, 50, 50);
+            //fit to the bounds proportionally as we have no explicit size -
+            //should overflow to the next page and fit the content.
+            expected = new Rect(60, 20, contentWidth - 40, contentWidth - 40);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1180,14 +1181,14 @@ namespace Scryber.Core.UnitTests.Svg
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
-        public void SVGReferencedViewBoxWithWidthOnly_Test()
+        public void SVGReferencedSizing_11_SVGSize_ImageWidth_Test()
         {
             var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedVBOnlyImageWidthOnly.html", TestContext);
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_11_SVGSize_ImageWidth.html", TestContext);
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
-            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageWidthOnly.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_11_SVGSize_ImageWidth.pdf"))
             {
                 doc.AppendTraceLog = true;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -1197,8 +1198,35 @@ namespace Scryber.Core.UnitTests.Svg
                 };
                 doc.SaveAsPDF(stream);
             }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
 
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+            var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+            var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, forty, forty);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + forty + 50, 40, 40);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
 
         }
         
@@ -1208,14 +1236,15 @@ namespace Scryber.Core.UnitTests.Svg
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
-        public void SVGReferencedVieweBoxWithHeightOnly_Test()
+        public void SVGReferencedSizing_12_SVGSize_ImageHeight_Test()
         {
             var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageHeightOnly.html", TestContext);
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_12_SVGSize_ImageHeight.html", TestContext);
+            
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
-            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageHeightOnly.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_12_SVGSize_ImageHeight.pdf"))
             {
                 doc.AppendTraceLog = true;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -1225,8 +1254,203 @@ namespace Scryber.Core.UnitTests.Svg
                 };
                 doc.SaveAsPDF(stream);
             }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
 
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+           // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+           // var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, 300, 300);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + 300 + 50, 50 * 1.5, 50 * 1.5);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedSizing_13_SVGSize_ImageBoth_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_13_SVGSize_ImageBoth.html", TestContext);
+            
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_13_SVGSize_ImageBoth.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
+
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+           // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+           // var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, 200, 300);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + 300 + 50, 200, 50 * 1.5);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedSizing_14_SVGNone_ImageBoth_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_14_SVGNone_ImageBoth.html", TestContext);
+            
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_14_SVGNone_ImageBoth.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
+
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+           // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+           // var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, 200, 200);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + 200 + 50, 100, 100);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+
+        }
+        
+        /// <summary>
+        ///A test to make sure the SVG is rendered at the correct size and aspect
+        /// ratio if only the width and height on the actual svg file are specified.
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("SVG")]
+        public void SVGReferencedSizing_15_SVGViewBoxAndWidth_ImageNone_Test()
+        {
+            var path = DocStreams.AssertGetContentPath(
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_15_SVGViewBoxAndWidth_NoImageSize.html", TestContext);
+            
+            var doc = Document.ParseDocument(path);
+            RenderContext context = null;
+
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_15_SVGViewBoxAndWidth_ImageNone.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.PostRender += (o, e) =>
+                {
+                    context = e.Context;
+                };
+                doc.SaveAsPDF(stream);
+            }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
+
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+           // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+           // var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, 200, 200);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + 200 + 50, 50, 50);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
 
         }
         
@@ -1234,18 +1458,19 @@ namespace Scryber.Core.UnitTests.Svg
         
         /// <summary>
         ///A test to make sure the SVG is rendered at the correct size and aspect
-        /// ratio if just the ViewBox on the actual svg file is specified, and the size of the image in the referencing file is specified.
+        /// ratio if only the width and height on the actual svg file are specified.
         ///</summary>
         [TestMethod()]
         [TestCategory("SVG")]
-        public void SVGReferencedViewBoxOnFileAndImgSizeOutput_Test()
+        public void SVGReferencedSizing_16_SVGViewBoxAndHeight_ImageNone_Test()
         {
             var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageNoDimensions.html", TestContext);
+                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_16_SVGViewBoxAndHeight_NoImageSize.html", TestContext);
+            
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
-            using (var stream = DocStreams.GetOutputStream("SVGReferencedImageHeightOnly.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGReferencedImage_16_SVGViewBoxAndHeight_ImageNone.pdf"))
             {
                 doc.AppendTraceLog = true;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -1255,9 +1480,37 @@ namespace Scryber.Core.UnitTests.Svg
                 };
                 doc.SaveAsPDF(stream);
             }
+            
+            var reference = doc.FindAComponentById("referenced");
+            Assert.IsNotNull(reference);
 
-            Assert.Inconclusive("Not tested - need to check the layout, render bounds, and XObject reference in the document");
+            var arrange = reference.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+
+            // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
+            // var forty = (contentWidth * 0.4).ToPoints();
+            var expected = new Rect(20, 140, 200, 200);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
+            
+            var reference2 = doc.FindAComponentById("referenced2");
+            Assert.IsNotNull(reference2);
+
+            arrange = reference2.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            
+            
+            //fit to the bounds proportionally as we have no explicit size.
+            expected = new Rect(60, 140 + 200 + 50, 50, 50);
+            Assert.AreEqual(expected.X, arrange.RenderBounds.X);
+            Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
+            Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
 
         }
+        
     }
 }

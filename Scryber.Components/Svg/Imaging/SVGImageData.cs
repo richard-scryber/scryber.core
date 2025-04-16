@@ -197,6 +197,9 @@ namespace Scryber.Svg.Imaging
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
+            bool clearWidthAfterLayout = false;
+            bool clearHeightAfterLayout = false;
+            
             var newSize = available;
             var canvasStyle = this.Canvas.GetAppliedStyle();
             
@@ -263,9 +266,16 @@ namespace Scryber.Svg.Imaging
                     {
                         newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
                     }
-                    else
+                    else if(canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
                     {
-                        //Should this be propotional
+                        var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+                        if (canvasViewPort != Rect.Empty)
+                        {
+                            var scale = canvasViewPort.Height.PointsValue / canvasViewPort.Width.PointsValue;
+                            newSize.Height = newSize.Width * scale;
+                            _svgCanvas.Style.SetValue(StyleKeys.SizeHeightKey, newSize.Height);
+                            //clearWidthAfterLayout = true;
+                        }
                     }
                 }
                 else if (canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
@@ -273,6 +283,15 @@ namespace Scryber.Svg.Imaging
                     hasCanvasSize = true;
                     newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
                     //Should width be calculated as proportional
+                    
+                    var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
+                    if (canvasViewPort != Rect.Empty)
+                    {
+                        var scale = canvasViewPort.Width.PointsValue / canvasViewPort.Height.PointsValue;
+                        newSize.Width = newSize.Height * scale;
+                        _svgCanvas.Style.SetValue(StyleKeys.SizeWidthKey, newSize.Width);
+                        //clearWidthAfterLayout = true;
+                    }
                 }
                 else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
                 {
@@ -307,9 +326,30 @@ namespace Scryber.Svg.Imaging
                 
             }
 
+            
+            if (!canvasStyle.IsValueDefined(StyleKeys.PositionViewPort) &&
+                !canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) &&
+                !canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
+            {
+                _svgCanvas.Style.SetValue(StyleKeys.SizeWidthKey, newSize.Width);
+                _svgCanvas.Style.SetValue(StyleKeys.SizeHeightKey, newSize.Height);
+                clearWidthAfterLayout = true;
+                clearHeightAfterLayout = true;
+            }
+
             if (null == this._layout)
             {
                 this._layout = DoLayoutCanvas(context, appliedstyle);
+            }
+
+            if (clearWidthAfterLayout)
+            {
+                _svgCanvas.Style.RemoveValue(StyleKeys.SizeWidthKey);
+            }
+
+            if (clearHeightAfterLayout)
+            {
+                _svgCanvas.Style.RemoveValue(StyleKeys.SizeHeightKey);
             }
 
             return newSize;

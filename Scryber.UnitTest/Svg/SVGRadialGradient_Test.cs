@@ -155,65 +155,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(1, desc.Colors[1].Distance, forComponent + " color 1 failed");
         }
         
-        [TestMethod()]
-        public void SVGRadialGradientBrushesWithOpacity_Test()
-        {
-            Assert.Inconclusive("Need to check that opacity is being fed into the brush");
-        }
         
-        
-        [TestMethod()]
-        public void SVGLinearGradientWithTransform_Test()
-        {
-            var doc = new Document();
-            var page = new Page();
-            page.Style.Font.FontFamily = FontSelector.Parse("Serif");
-            page.Padding = 8;
-            doc.Pages.Add(page);
-            
-            
-            var svg = new SVGCanvas() { Width = 510, Height = 110 };
-            svg.BackgroundColor = Color.Parse("#AAA");
-            page.Contents.Add(svg);
-            
-            var text = new SVGText();
-            text.Fill = new SVGFillReferenceValue(null, "#2Color");
-            text.FontFamily = FontSelector.Parse("sans-serif");
-            text.FontSize = 14;
-            text.FontWeight = FontWeights.Bold;
-            text.X = 10;
-            text.Y = 10;
-            text.DominantBaseline = DominantBaseline.Hanging;
-            text.Transform = new SVGTransformOperationSet(new TransformTranslateOperation(50, 0));
-            text.Content.Add(new TextLiteral("Hello World"));
-            
-            svg.Contents.Add(text);
-            
-            SVGRect rect = new SVGRect();
-            rect.X = 110;
-            rect.Y = 10;
-            rect.Width = 70;
-            rect.Height = 70;
-            rect.FillValue = new SVGFillReferenceValue(null, "#2Color");
-            rect.Transform = new SVGTransformOperationSet(new TransformTranslateOperation(50, 0));
-            svg.Contents.Add(rect);
-            
-            var gradient = new SVGLinearGradient();
-            gradient.ID = "2Color";
-            
-            gradient.Stops.Add(new SVGGradientStop() { Offset = Unit.Percent(0), StopColor = StandardColors.Aqua});
-            gradient.Stops.Add(new SVGGradientStop() {Offset = Unit.Percent(100), StopColor = StandardColors.Maroon});
-            svg.Contents.Add(gradient);
-            
-            using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientBrushesWithTransform.pdf"))
-            {
-                doc.RenderOptions.Compression = OutputCompressionType.None;
-                doc.SaveAsPDF(stream);
-            }
-            
-            Assert.Inconclusive("Need to add a test where a transformation is applied to a shape and the gradient is also transformed");
-        }
-
         /// <summary>
         ///A test to make sure the SVG is rendered correctly with horizontal gradients
         ///</summary>

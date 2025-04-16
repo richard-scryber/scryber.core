@@ -144,7 +144,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod()]
         public void SVGLinearGradientBrushesWithOpacity_Test()
         {
-            Assert.Inconclusive("Need to check that opacity is being fed into the brush");
+            Assert.Inconclusive("Opacity is not supported directly by PDF with gradient functions");
         }
 
         private static void AssertPattern(PDFLinearShadingPattern pattern, string forComponent)
