@@ -158,6 +158,8 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(StandardColors.Maroon, desc.Colors[1].Color, forComponent + " color 1 failed");
             Assert.AreEqual(1, desc.Colors[1].Distance, forComponent + " color 1 failed");
         }
+
+        
         
         
         [TestMethod()]
@@ -1707,5 +1709,6 @@ namespace Scryber.Core.UnitTests.Svg
         }
         
 
+        
     }
 }

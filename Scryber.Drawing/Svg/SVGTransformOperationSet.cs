@@ -63,7 +63,7 @@ namespace Scryber.Svg
         private static TransformOperation ParseSkewDegrees(string values, bool xOnly, bool yOnly)
         {
             values = values.Trim();
-            double xDeg, yDeg;
+            double xRad, yRad;
             if (values.IndexOf(',') > 0 || values.IndexOf(' ') > 0)
             {
                 if (xOnly || yOnly)
@@ -75,34 +75,32 @@ namespace Scryber.Svg
                 var xS = all[0].Trim();
                 var yS = all[1].Trim();
 
-                if (!double.TryParse(xS, out xDeg))
+                if (!TryParseAngleToRadians(xS, out xRad))
                     return null;
 
-                if (!double.TryParse(yS, out yDeg))
+                if (!TryParseAngleToRadians(yS, out yRad))
                     return null;
             }
             else
             {
-                if (!double.TryParse(values, out xDeg))
+                if (!TryParseAngleToRadians(values, out xRad))
                     return null;
 
                 if (xOnly)
                 {
-                    yDeg = 0.0;
+                    yRad = 0.0;
                 }
                 else if (yOnly)
                 {
-                    yDeg = xDeg;
-                    xDeg = 0.0;
+                    yRad = xRad;
+                    xRad = 0.0;
                 }
                 else
                 {
-                    yDeg = xDeg;
+                    yRad = xRad;
                 }
             }
 
-            var xRad = xDeg * DegressToRadians;
-            var yRad = yDeg * DegressToRadians;
             
             return new TransformSkewOperation(xRad, yRad);
 
@@ -111,15 +109,46 @@ namespace Scryber.Svg
         private static TransformOperation ParseRotateDegrees(string values, bool xOnly, bool yOnly)
         {
             values = values.Trim();
-            double deg;
-            if (!double.TryParse(values, out deg))
-                    return null;
+            double radians = 0.0;
 
-            var rad = deg * DegressToRadians;
+            if (!TryParseAngleToRadians(values, out radians))
+                return null;
+            else
+                return new TransformRotateOperation(radians);
 
+        }
+
+        private static bool TryParseAngleToRadians(string values, out double radians)
+        {
+            radians = 0.0;
+            if (values.EndsWith("rad"))
+            {
+                values = values.Substring(0, values.Length - 3);
+                
+                if (!double.TryParse(values, out radians))
+                    return false;
+                
+                
+            }
+            else if (values.EndsWith("turn"))
+            {
+                values = values.Substring(0, values.Length - 4);
+                var turns = double.Parse(values);
+                var deg = 360 * turns;
+                radians = deg * DegressToRadians;
+            }
+            else
+            {
+                if (values.EndsWith("deg"))
+                    values = values.Substring(0, values.Length - 3);
+
+                if (!double.TryParse(values, out var deg))
+                    return false;
+                
+                radians = deg * DegressToRadians;
+            }
             
-            return new TransformRotateOperation(rad);
-
+            return true;
         }
     }
 }
