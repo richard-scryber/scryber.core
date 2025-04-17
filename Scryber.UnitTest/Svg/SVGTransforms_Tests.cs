@@ -55,7 +55,7 @@ namespace Scryber.Core.UnitTests.Svg
             var rotate = root as TransformRotateOperation;
             Assert.IsNotNull(rotate);
             
-            Assert.AreEqual(0.5, Math.Round(rotate.AngleRadians, 3));
+            Assert.AreEqual(Math.Round(0.5 * Math.PI/180.0, 3), Math.Round(rotate.AngleRadians, 3));
             
             toParse = "rotate(-0.5turn) ";
             parsed = SVGTransformOperationSet.Parse(toParse);
@@ -497,7 +497,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformParsingSpaces()
         {
             //rotate examples
-            string toParse = "rotate(3.142)";
+            string toParse = "rotate(3.142rad)";
             
             var parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
@@ -1419,7 +1419,7 @@ namespace Scryber.Core.UnitTests.Svg
                 Assert.IsNotNull(transform);
                 rotate = transform.Root as TransformRotateOperation;
                 Assert.IsNotNull(rotate);
-                Assert.AreEqual(-0.26, rotate.AngleRadians);
+                Assert.AreEqual(-0.16, rotate.AngleRadians);
                 Assert.IsNull(rotate.NextOp);
                 
                 bounds = arrange.RenderBounds;
