@@ -34,7 +34,7 @@ namespace Scryber.PDF
             }
             catch(Exception ex)
             {
-                throw new Scryber.PDFRenderException("Could not build the trace log: " + ex.Message);
+                throw new Scryber.PDFRenderException("Could not build the trace log: " + ex.Message, ex);
             }
         }
         private void InitAllContent()
@@ -196,9 +196,14 @@ namespace Scryber.PDF
                     string sizeStr;
 
                     if (data is ImageRasterData raster)
-                        sizeStr = raster.PixelWidth + " by " + raster.PixelHeight + " pixels, ";
-                    else //vector
+                        sizeStr = "Raster image " + raster.PixelWidth + " by " + raster.PixelHeight + " pixels, ";
+                    else if(data is ImageVectorData vector) //vector
                         sizeStr = "vector image " + data.GetSize();
+                    else if(null == data)
+                        sizeStr = "image is null";
+                    else
+                        sizeStr = "Unknown image " + data.GetSize();
+                    
                     cell.Contents.Add(new TextLiteral(sizeStr));
                 }
                 else
