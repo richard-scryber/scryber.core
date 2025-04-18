@@ -24,6 +24,7 @@ using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.Components;
+using Scryber.Data;
 using Scryber.PDF.Graphics;
 using Scryber.Svg.Components;
 
@@ -1223,8 +1224,7 @@ namespace Scryber.PDF.Layout
                 }
                 
                 Rect total = this.TotalBounds;
-                total = total.Offset(context.Offset);
-                
+
                 if (this.Owner is SVGText svgText)
                 {
                     if (svgText.DeltaX != Unit.Zero)
@@ -1236,6 +1236,10 @@ namespace Scryber.PDF.Layout
                     {
                         total.Y += svgText.DeltaY;
                     }
+                }
+                else
+                {
+                    total = total.Offset(context.Offset);
                 }
 
                 Rect borderRect = total.Inset(this.Position.Margins);
