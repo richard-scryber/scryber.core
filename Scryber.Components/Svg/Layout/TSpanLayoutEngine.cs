@@ -156,14 +156,15 @@ namespace Scryber.Svg.Layout
                     
                 }
                 
-                if (block.Position.Transformations != null)
-                {
-                    if (yVal != Unit.Zero)
-                        update.Y += yVal;
-                    
-                    if (xVal != Unit.Zero)
-                        update.X += xVal;
-                }
+                // if (block.Position.Transformations != null)
+                // {
+                //     if (yVal != Unit.Zero)
+                //         update.Y += yVal;
+                //     
+                //     if (xVal != Unit.Zero)
+                //         update.X += xVal;
+                // }
+                
                 block.TotalBounds = update;
                 
             }

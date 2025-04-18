@@ -954,8 +954,8 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTextPositionAndTranslate()
         {
             var svgString = @"
-            <svg width=""498"" height=""305"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 498 305"">
-<text dominant-baseline=""auto"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" x=""50"" y=""50"" transform=""translate(100 100)"" fill=""#6E7079"">At 50 + 100</text>
+            <svg width=""500"" height=""300"" xmlns=""http://www.w3.org/2000/svg"" xmlns:xlink=""http://www.w3.org/1999/xlink"" version=""1.1"" baseProfile=""full"" viewBox=""0 0 500 300"" style=""background-color: silver;"">
+<text id=""positionedText"" dominant-baseline=""auto"" text-anchor=""start"" style=""font-size:12px;font-family:sans-serif;"" x=""50"" y=""50"" transform=""translate(100 100)"" fill=""#6E7079"">At 150 + 150</text>
 </svg>";
             var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);
             var svg = component as SVGCanvas;
@@ -970,6 +970,8 @@ namespace Scryber.Core.UnitTests.Svg
 
             var pg = new Page();
             doc.Pages.Add(pg);
+            pg.Margins = Thickness.Empty();
+            pg.Padding = Thickness.Empty();
             pg.Contents.Add(svg);
             pg.Style.OverlayGrid.ShowGrid = true;
             pg.Style.OverlayGrid.GridSpacing = 50;
