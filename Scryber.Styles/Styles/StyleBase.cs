@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Xsl;
+using ICSharpCode.SharpZipLib.Core;
 using Scryber;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
@@ -2056,12 +2057,15 @@ namespace Scryber.Styles
 
         #region internal protected virtual PDFBrush DoCreateBackgroundBrush()
 
+        
+        private static System.Text.RegularExpressions.Regex backgroundSplitter = new System.Text.RegularExpressions.Regex(",(?![^(]*\\))");
         /// <summary>
         /// Creates a background brush based on this styles values
         /// </summary>
         /// <returns></returns>
         internal protected virtual PDFBrush DoCreateBackgroundBrush()
         {
+            
 
             StyleValue<Drawing.FillType> fillstyle;
             StyleValue<string> imgsrc;

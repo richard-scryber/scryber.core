@@ -17,7 +17,6 @@ namespace Scryber.Core.UnitTests.Attachments
 	[TestClass]
 	public class Attachment_Tests
 	{
-        private PDFLayoutContext _layoutcontext;
         private TestContext testContextInstance;
 
         /// <summary>
@@ -61,6 +60,8 @@ namespace Scryber.Core.UnitTests.Attachments
             pg.Contents.Add("Before attachment");
             pg.Contents.Add(attach);
             pg.Contents.Add("After attachment");
+            
+            
 
             pg.Contents.Add(new Div() {
                 ID = "wrapper",
@@ -76,6 +77,28 @@ namespace Scryber.Core.UnitTests.Attachments
             });
 
             using (var sr = DocStreams.GetOutputStream("IconAttachment.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+                doc.SaveAsPDF(sr);
+            }
+        }
+        
+        [TestMethod]
+        public void AttachmentInTemplateAttachment()
+        {
+            var path = "../../Scryber.UnitTest/Content/HTML/Attachments.html";
+            path = DocStreams.AssertGetContentPath(path, TestContext);
+            
+            var doc = Document.ParseDocument(path);
+            var pg = doc.Pages[0];
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridOpacity = 0.5;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+
+            using (var sr = DocStreams.GetOutputStream("AttachmentInTemplate.pdf"))
             {
                 doc.SaveAsPDF(sr);
             }

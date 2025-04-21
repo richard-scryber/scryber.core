@@ -17,6 +17,8 @@ namespace Scryber.UnitLayouts
         const string TestCategoryName = "Layout";
 
         const string ImagePath = "../../../Content/Images/Toroid32.png";
+        const string SVGImagePath = "../../../Content/Images/Chart.svg";
+        
         const double ImageWidth = 682.0;
         const double ImageHeight = 452.0;
 
@@ -29,6 +31,19 @@ namespace Scryber.UnitLayouts
         private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
         {
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+        
+        
+        protected string AssertGetContentFile(string name)
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
+
+            return path;
         }
 
         private PDFLayoutComponentRun GetBlockImageRunForPage(int pg, int column = 0, int contentIndex = 0, int runIndex = 0)
@@ -441,14 +456,83 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void SimpleBackgroundGradient()
+        public void RepeatingMultipleBackgrounds()
+        {
+            var path = AssertGetContentFile("MultipleBackgrounds");
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_MultipleBackgrounds.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.Inconclusive("Multiple backgrounds are not currently supported");
+        }
+        
+        [TestMethod]
+        public void RepeatingImageSVG_ExplicitSize()
         {
 
-            Assert.Inconclusive("Background gradients are tested on the HTML Parser tests");
+            Assert.Inconclusive("SVG Imaages are not currently supported as backgrounds");
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGImagePath);
+            path = System.IO.Path.GetFullPath(path);
 
-            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.Margins = 10;
+            pg.BackgroundColor = Drawing.StandardColors.Gray;
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            //div.Width = 400;
+            div.Height = 700;
+            div.BorderColor = Drawing.StandardColors.Black;
+            pg.Contents.Add(div);
+
+            div.BackgroundImage = path;
+            div.Style.Background.PatternXSize = ImageNaturalWidth / 5.0;
+            div.Style.Background.PatternYSize = ImageNaturalHeight / 4.0;
+
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_RepatingImageSVGExplicitSize.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", path);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+
+            Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(ImageNaturalHeight / 4.0, pattern.ImageSize.Height.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(path, pattern.Image.ResourceKey);
+
+            Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.Step.Width);
+            Assert.AreEqual(ImageNaturalHeight / 4.0, pattern.Step.Height);
+
+            var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(divBlock);
+
+
 
         }
+        
 
 
     }

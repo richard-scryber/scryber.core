@@ -943,7 +943,7 @@ namespace Scryber.UnitLayouts
             doc.Pages.Add(pg);
 
             var div = new Div();
-            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
+            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 250;
             div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
@@ -1121,8 +1121,8 @@ namespace Scryber.UnitLayouts
             lrun = GetBlockImageRunForPage(0, 0, 1);
 
             //1. Natural size in container
-            var width = naturalWidth.PointsValue * (80.0 / naturalHeight.PointsValue);
-            var height = 80.0; //available space (100 - margins)
+            var width = naturalWidth.PointsValue * (230.0 / naturalHeight.PointsValue);
+            var height = 230.0; //available space (250 - margins)
 
             AssertAreApproxEqual(width, lrun.Width.PointsValue, "Width does not match for squeezing in the space");
             AssertAreApproxEqual(height, lrun.Height.PointsValue, "Height does not match for squeezing in the space");

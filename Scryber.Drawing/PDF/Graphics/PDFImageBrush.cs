@@ -212,12 +212,14 @@ namespace Scryber.PDF.Graphics
 
         private Size CalculateAppropriateImageSize(ImageData imgdata)
         {
+            var size = imgdata.GetSize();
+            
             if (this.XSize > 0 && this.YSize > 0)
             {
                 //We have both explicit widths
                 return new Size(this.XSize, this.YSize);
             }
-            var size = imgdata.GetSize();
+           
             Unit imgw = size.Width;
             Unit imgh = size.Height;
 

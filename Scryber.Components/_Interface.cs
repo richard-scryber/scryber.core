@@ -454,7 +454,6 @@ namespace Scryber
     /// </summary>
     public interface IPDFXObjectComponent : IContainerComponent, IResourceContainer, IPDFRenderComponent
     {
-        IResourceContainer Resources { get; }
     }
 
     #endregion

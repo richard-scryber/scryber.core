@@ -32,6 +32,11 @@ namespace Scryber.PDF.Graphics
         public abstract FillType FillStyle {get;}
 
         public PDFBrush UnderBrush { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the next brush to use to fill any content.
+        /// </summary>
+        public PDFBrush NextBrush { get; set; }
 
         public virtual void ReleaseGraphics(PDFGraphics g, Rect bounds)
         {

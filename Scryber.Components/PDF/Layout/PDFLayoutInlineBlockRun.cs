@@ -27,12 +27,7 @@ namespace Scryber.PDF.Layout
 {
     public class PDFLayoutInlineBlockRun : PDFLayoutPositionedRegionRun
     {
-        PDFPositionOptions _position;
-
-        public PDFPositionOptions PositionOptions
-        {
-            get { return _position; }
-        }
+        
 
         private Unit _offsetY = Unit.Zero;
         private Unit _offsetX = Unit.Zero;
@@ -51,7 +46,6 @@ namespace Scryber.PDF.Layout
         public PDFLayoutInlineBlockRun(PDFLayoutRegion region, PDFLayoutLine line, IComponent owner, PDFPositionOptions position)
             : base(region, line, owner, position)
         {
-            _position = position;
         }
 
         

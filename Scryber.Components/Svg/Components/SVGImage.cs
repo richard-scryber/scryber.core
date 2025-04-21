@@ -84,7 +84,7 @@ public class SVGImage : Scryber.Components.Image
         /// <summary>
         /// Gets the flag to identify if the Width has been set for this Page Component
         /// </summary>
-        public virtual bool HasWidth
+        public override bool HasWidth
         {
             get
             {
@@ -119,7 +119,7 @@ public class SVGImage : Scryber.Components.Image
         /// <summary>
         /// Gets the flag to identifiy is the Height has been set on this page Component
         /// </summary>
-        public virtual bool HasHeight
+        public override bool HasHeight
         {
             get
             {

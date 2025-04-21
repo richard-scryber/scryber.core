@@ -32,6 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.9" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
   </ItemGroup>
 </Project>

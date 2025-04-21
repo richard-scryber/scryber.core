@@ -106,17 +106,7 @@ public abstract class SVGLinearGradientCalculator : SVGGradientCalculator
         return wrapped;
     }
 
-    protected static Unit ToNonRelative(Unit unit)
-    {
-        if (unit.IsRelative)
-        {
-            if (unit.Units == PageUnits.Percent)
-                unit = new Unit(unit.Value / 100.0);
-            else 
-                unit = Unit.Zero;
-        }
-        return unit;
-    }
+    
     
     protected double GetGradientAngle(Unit x, Unit y, Unit width, Unit height, out double hypotenuse, out double longestSide)
     {

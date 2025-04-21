@@ -13,5 +13,10 @@ namespace Scryber.Styles.Parsing.Typed
         {
         }
 
+        protected override bool DoConvertWithGradient(StyleBase onStyle, object value, out string result)
+        {
+            //Checking the 
+            return base.DoConvertWithGradient(onStyle, value, out result);
+        }
     }
 }

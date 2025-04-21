@@ -148,7 +148,7 @@ namespace Scryber.Svg.Components
         }
         
         [PDFAttribute("text-decoration")]
-        public string TextDecoration
+        public new string TextDecoration
         {
             get
             {

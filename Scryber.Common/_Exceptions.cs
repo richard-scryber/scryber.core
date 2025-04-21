@@ -40,10 +40,7 @@ namespace Scryber
         public PDFException() { }
         public PDFException(string message) : base(message) { }
         public PDFException(string message, Exception inner) : base(message, inner) { }
-        protected PDFException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     [Serializable]
@@ -52,10 +49,7 @@ namespace Scryber
         public PDFStreamException() { }
         public PDFStreamException(string message) : base(message) { }
         public PDFStreamException(string message, Exception inner) : base(message, inner) { }
-        protected PDFStreamException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     [Serializable]
@@ -64,10 +58,7 @@ namespace Scryber
         public PDFNativeParserException() { }
         public PDFNativeParserException(string message) : base(message) { }
         public PDFNativeParserException(string message, Exception inner) : base(message, inner) { }
-        protected PDFNativeParserException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
 
@@ -87,10 +78,7 @@ namespace Scryber
         public PDFLayoutException() { }
         public PDFLayoutException(string message) : base(message) { }
         public PDFLayoutException(string message, Exception inner) : base(message, inner) { }
-        protected PDFLayoutException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     /// <summary>
@@ -109,10 +97,7 @@ namespace Scryber
         public PDFBindException() { }
         public PDFBindException(string message) : base(message) { }
         public PDFBindException(string message, Exception inner) : base(message, inner) { }
-        protected PDFBindException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     /// <summary>
@@ -131,10 +116,7 @@ namespace Scryber
         public PDFRenderException() { }
         public PDFRenderException(string message) : base(message) { }
         public PDFRenderException(string message, Exception inner) : base(message, inner) { }
-        protected PDFRenderException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
 
@@ -164,10 +146,7 @@ namespace Scryber
         public PDFDataException() { }
         public PDFDataException(string message) : base(message) { }
         public PDFDataException(string message, Exception inner) : base(message, inner) { }
-        protected PDFDataException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
 
@@ -177,10 +156,7 @@ namespace Scryber
         public PDFLinkException() { }
         public PDFLinkException(string message) : base(message) { }
         public PDFLinkException(string message, Exception inner) : base(message, inner) { }
-        protected PDFLinkException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     [Serializable]
@@ -189,10 +165,7 @@ namespace Scryber
         public PDFMissingImageException() { }
         public PDFMissingImageException(string message) : base(message) { }
         public PDFMissingImageException(string message, Exception inner) : base(message, inner) { }
-        protected PDFMissingImageException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 
     [Serializable]
@@ -201,9 +174,6 @@ namespace Scryber
         public PDFMissingAttachmentException() { }
         public PDFMissingAttachmentException(string message) : base(message) { }
         public PDFMissingAttachmentException(string message, Exception inner) : base(message, inner) { }
-        protected PDFMissingAttachmentException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 }

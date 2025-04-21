@@ -44,7 +44,7 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     }
 
     [PDFAttribute("class")]
-    public string StyleClass 
+    public override string StyleClass 
     { 
         get; 
         set;

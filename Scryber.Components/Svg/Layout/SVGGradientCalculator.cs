@@ -52,7 +52,7 @@ public class SVGGradientCalculator
         return ToNonRelative(value).PointsValue;
     }
 
-    protected Unit ToNonRelative(Unit unit)
+    protected static Unit ToNonRelative(Unit unit)
     {
         if (unit.IsRelative)
         {
@@ -64,7 +64,7 @@ public class SVGGradientCalculator
         return unit;
     }
     
-    protected Point ToNonRelative(Point pt)
+    protected static Point ToNonRelative(Point pt)
     {
         return new Point(ToNonRelative(pt.X), ToNonRelative(pt.Y));
     }

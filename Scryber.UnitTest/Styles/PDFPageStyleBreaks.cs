@@ -90,7 +90,6 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.AreEqual(2, divArrange.PageIndex, "Third arrangement should be on page 2");
                 Assert.IsTrue(divArrange.IsLastArrangement);
                 
-                Assert.Inconclusive("Need to remove the double arrangements from pages - as it is confusing. But not break anything");
             }
         }
 
@@ -166,7 +165,6 @@ namespace Scryber.Core.UnitTests.Styles
                 divArrange = div4.GetFirstArrangement();
                 Assert.AreEqual(2, divArrange.PageIndex, "Fourth arrangement should be on page 2, as overridden");
                 
-                Assert.Inconclusive("Need to remove the double arrangements from pages - as it is confusing. But not break anything");
 
             }
         }

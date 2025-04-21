@@ -53,7 +53,7 @@ namespace Scryber.PDF.Layout
         
         
 
-        protected PDFPositionOptions PositionOptions
+        public PDFPositionOptions PositionOptions
         {
             get; 
             set;

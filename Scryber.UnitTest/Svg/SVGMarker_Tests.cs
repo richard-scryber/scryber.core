@@ -666,9 +666,6 @@ namespace Scryber.Core.UnitTests.Svg
                     Assert.AreEqual(1, vertex.Count);
                     Assert.AreEqual(new Point(50, 90), vertex[0].Location);
                     
-                    //2Pi = 360deg
-                    var full = Math.PI * 2;
-                    var half = Math.PI;
                     
                     var rad = Math.PI / 2.0; //90 deg; 
                     Assert.AreEqual(rad, vertex[0].Angle);
@@ -970,9 +967,6 @@ namespace Scryber.Core.UnitTests.Svg
                     
                     
                     //2Pi = 360deg
-                    var full = Math.PI * 2;
-                    var half = Math.PI;
-                    
                     var rad = Math.PI / 2.0; //90 deg; 
                     //Assert.AreEqual(rad, vertex[0].Angle);
                     

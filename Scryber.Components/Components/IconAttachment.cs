@@ -84,7 +84,7 @@ namespace Scryber.Components
         #region public AttachmentDisplayIcon DisplayIcon {get;set;}
 
         [PDFAttribute("icon")]
-        public AttachmentDisplayIcon DisplayIcon
+        public virtual AttachmentDisplayIcon DisplayIcon
         {
             get { return this.Style.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.PushPin); }
             set { this.Style.SetValue(StyleKeys.AttachmentDisplayIconKey, value); }
@@ -171,6 +171,8 @@ namespace Scryber.Components
         }
 
         #endregion
+        
+        
 
 
         #region protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Styles.PDFStyle fullstyle)
@@ -285,6 +287,9 @@ namespace Scryber.Components
 
         private PDFEmbeddedAttachment LoadAttachment(PDFLayoutContext context, Styles.Style fullstyle)
         {
+            
+            //TODO: This should use the Document.RegisterFileLoad methods;
+            
             PDFEmbeddedAttachment attach = null;
 
             if (null != this.Data)

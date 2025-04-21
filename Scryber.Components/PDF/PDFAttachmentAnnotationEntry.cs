@@ -45,50 +45,99 @@ namespace Scryber.PDF
             else if (!string.IsNullOrEmpty(this.Attachment.Description))
                 writer.WriteDictionaryStringEntry("Contents", this.Attachment.Description);
 
-            Rect rect = this.IconContentBounds;
-            Rect containerBounds = this.Attachment.GetFirstArrangement().RenderBounds; //This is the absolute bounds of the border rectangle to render in.
-            containerBounds.X += (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
-            containerBounds.Y += (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
-            //containerBounds.Width = rect.Width;
-            //containerBounds.Height = rect.Height;
-            rect = containerBounds;
+            AttachmentDisplayIcon icon = this.AnnotationStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
+            var arrange = this.Attachment.GetFirstArrangement();
+            Rect rect = Rect.Empty;
+            
+            if (icon != AttachmentDisplayIcon.None)
+            {
+                rect = this.IconContentBounds;
+                
+                Rect containerBounds =
+                    this.Attachment.GetFirstArrangement()
+                        .RenderBounds; //This is the absolute bounds of the border rectangle to render in.
+                containerBounds.X +=
+                    (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
+                containerBounds.Y +=
+                    (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
+                //containerBounds.Width = rect.Width;
+                //containerBounds.Height = rect.Height;
+                rect = containerBounds;
+                
+                
+                rect = this.GetIconBounds(containerBounds, arrange.RenderBounds, arrange.FullStyle);
 
-            if (context.DrawingOrigin == DrawingOrigin.TopLeft)
-            {
-                //PDFs have origin at bottom so need to convert.
-                PDFReal value = context.Graphics.GetXPosition(rect.X.RealValue);
-                rect.X = new Unit(value.Value, PageUnits.Points);
-                value = context.Graphics.GetYPosition(rect.Y.RealValue);
-                rect.Y = new Unit(value.Value, PageUnits.Points);
-                rect.Width = rect.X + rect.Width;
-                rect.Height = rect.Y - rect.Height;
-            }
-            else
-            {
-                rect.Width = rect.X + rect.Width;
-                rect.Height = rect.Y + rect.Height;
+                //Convert to PDF Values
+                if (context.DrawingOrigin == DrawingOrigin.TopLeft)
+                {
+                    //PDFs have origin at bottom so need to convert.
+                    PDFReal value = context.Graphics.GetXPosition(rect.X.RealValue);
+                    rect.X = new Unit(value.Value, PageUnits.Points);
+                    value = context.Graphics.GetYPosition(rect.Y.RealValue);
+                    rect.Y = new Unit(value.Value, PageUnits.Points);
+                    rect.Width = rect.X + rect.Width;
+                    rect.Height = rect.Y - rect.Height;
+                }
+                else
+                {
+                    rect.Width = rect.X + rect.Width;
+                    rect.Height = rect.Y + rect.Height;
+                }
+
+                
+                
             }
 
             writer.BeginDictionaryEntry("Rect");
             writer.WriteArrayRealEntries(rect.X.Value, rect.Y.Value, rect.Width.Value, rect.Height.Value);
             writer.EndDictionaryEntry();
-
-
+            
             string name = this.Attachment.UniqueID + "FileLink";
             writer.WriteDictionaryStringEntry("NM", name);
 
             PDFObjectRef fsRef = this.AttachmentFileSpec.OutputToPDF(context, writer);
             writer.WriteDictionaryObjectRefEntry("FS", fsRef);
 
-            AttachmentDisplayIcon icon = this.AnnotationStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
+            
             if (icon != AttachmentDisplayIcon.None)
                 writer.WriteDictionaryNameEntry("Name", icon.ToString());
+            else
+            {
+                var ap = writer.BeginObject();
+                writer.BeginStream(ap);
+                writer.WriteComment("Empty appearance stream for the file attachment");
+                writer.EndStream();
+                writer.EndObject();
+                
+                writer.WriteDictionaryObjectRefEntry("AP", ap);
+            }
 
             writer.EndDictionary();
             writer.EndObject();
 
             return new PDFObjectRef[] { annotRef };
 
+        }
+
+        protected virtual Rect GetIconBounds(Rect containerBounds, Rect arrangeBounds, Style style)
+        {
+            var pos = style.CreatePostionOptions(false);
+            if (pos.DisplayMode == DisplayMode.Inline)
+            {
+                if (style.TryGetValue(StyleKeys.MarginsInlineStart, out var start))
+                {
+                    arrangeBounds.Width -= start.Value(style);
+                    arrangeBounds.X += start.Value(style);
+                }
+                
+                if (style.TryGetValue(StyleKeys.MarginsInlineEnd, out var end))
+                {
+                    arrangeBounds.Width -= end.Value(style);
+                }
+            }
+            
+            
+            return arrangeBounds;
         }
     }
 }

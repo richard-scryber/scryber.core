@@ -16,6 +16,7 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
+        
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

@@ -18,11 +18,11 @@ public class SVGRadialReflectingGradientCalculator : SVGRadialGradientCalculator
     {
          var descriptor = new GradientSVGRadialDescriptor(new List<GradientColor>());
         
-        descriptor.StartCenter = this.ToNonRelative(this.FirstCentre);
-        descriptor.EndCenter = this.ToNonRelative(this.SecondCentre);
+        descriptor.StartCenter = ToNonRelative(this.FirstCentre);
+        descriptor.EndCenter = ToNonRelative(this.SecondCentre);
 
-        descriptor.StartRadius = this.ToNonRelative(this.FirstRadius);
-        descriptor.EndRadius = this.ToNonRelative(this.SecondRadius);
+        descriptor.StartRadius = ToNonRelative(this.FirstRadius);
+        descriptor.EndRadius = ToNonRelative(this.SecondRadius);
 
         double factor;
         if (this.SecondRadius.IsRelative)
