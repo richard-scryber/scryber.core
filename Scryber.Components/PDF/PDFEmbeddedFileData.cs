@@ -86,22 +86,7 @@ namespace Scryber.PDF
 
         public static PDFEmbeddedFileData LoadFileDataFromUri(PDFLayoutContext context, string fullpath)
         {
-            byte[] data;
             throw new NotSupportedException("Use the document remote file load capabilities");
-
-            using (System.Net.WebClient wc = new System.Net.WebClient())
-            {
-                data = wc.DownloadData(fullpath);
-            }
-
-            PDFEmbeddedFileData all = new PDFEmbeddedFileData();
-            all.FileData = data;
-            all.FullName = fullpath;
-            all.Filters = null;
-            all.FileLength = data.Length;
-            all.DataLength = data.Length;
-            
-            return all;
         }
 
         public static PDFEmbeddedFileData Parse(string data)

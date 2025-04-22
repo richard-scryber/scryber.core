@@ -174,7 +174,6 @@ namespace Scryber.Styles
 
         private Dictionary<string, StyleElementIndexTree> _byName;
         private Dictionary<string, StyleClassIndexTree> _byClass;
-        private List<StyleDefn> _directs;
 
         public StyleIDIndexTree(string id)
         {

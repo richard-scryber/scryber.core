@@ -47,25 +47,13 @@ namespace Scryber.PDF
 
             AttachmentDisplayIcon icon = this.AnnotationStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
             var arrange = this.Attachment.GetFirstArrangement();
+            
             Rect rect = Rect.Empty;
             
-            if (icon != AttachmentDisplayIcon.None)
+            if (icon != AttachmentDisplayIcon.None && null != arrange)
             {
-                rect = this.IconContentBounds;
                 
-                Rect containerBounds =
-                    this.Attachment.GetFirstArrangement()
-                        .RenderBounds; //This is the absolute bounds of the border rectangle to render in.
-                containerBounds.X +=
-                    (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
-                containerBounds.Y +=
-                    (IconContentBounds.X - IconBorderBounds.X); //Add the x offset of the content in the border
-                //containerBounds.Width = rect.Width;
-                //containerBounds.Height = rect.Height;
-                rect = containerBounds;
-                
-                
-                rect = this.GetIconBounds(containerBounds, arrange.RenderBounds, arrange.FullStyle);
+                rect = this.GetIconBounds(arrange.RenderBounds, arrange.FullStyle);
 
                 //Convert to PDF Values
                 if (context.DrawingOrigin == DrawingOrigin.TopLeft)
@@ -119,21 +107,54 @@ namespace Scryber.PDF
 
         }
 
-        protected virtual Rect GetIconBounds(Rect containerBounds, Rect arrangeBounds, Style style)
+        protected virtual Rect GetIconBounds(Rect arrangeBounds, Style style)
         {
             var pos = style.CreatePostionOptions(false);
             if (pos.DisplayMode == DisplayMode.Inline)
             {
-                if (style.TryGetValue(StyleKeys.MarginsInlineStart, out var start))
-                {
-                    arrangeBounds.Width -= start.Value(style);
-                    arrangeBounds.X += start.Value(style);
-                }
+                // if (style.TryGetValue(StyleKeys.MarginsInlineStart, out var start))
+                // {
+                //     arrangeBounds.Width -= start.Value(style);
+                //     arrangeBounds.X += start.Value(style);
+                // }
+                //
+                // if (style.TryGetValue(StyleKeys.MarginsInlineEnd, out var end))
+                // {
+                //     arrangeBounds.Width -= end.Value(style);
+                // }
                 
-                if (style.TryGetValue(StyleKeys.MarginsInlineEnd, out var end))
+                if (style.TryGetValue(StyleKeys.PaddingInlineStart, out var startP))
                 {
-                    arrangeBounds.Width -= end.Value(style);
+                    arrangeBounds.Width -= startP.Value(style);
+                    arrangeBounds.X += startP.Value(style);
                 }
+
+                if (style.TryGetValue(StyleKeys.PaddingInlineEnd, out var endP))
+                {
+                    arrangeBounds.Width -= endP.Value(style);
+                }
+
+
+
+            }
+            else if (pos.DisplayMode == DisplayMode.InlineBlock)
+            {
+                if (pos.Padding.IsEmpty == false)
+                {
+                    arrangeBounds.X += pos.Padding.Left;
+                    arrangeBounds.Y += pos.Padding.Top;
+                    arrangeBounds.Width -= pos.Padding.Right + pos.Padding.Left;
+                    arrangeBounds.Height -= pos.Padding.Bottom + pos.Padding.Top;
+                }
+
+                if (pos.Margins.IsEmpty == false)
+                {
+                    
+                }
+            }
+            else if (pos.DisplayMode == DisplayMode.Block)
+            {
+                
             }
             
             

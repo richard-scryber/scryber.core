@@ -89,7 +89,7 @@ public class PDFPatternLayoutResource : PDFResource
         {
             this.RenderReference = this._layoutItem.OutputToPDF(renderContext, writer);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             this.RenderReference = null;
             throw;

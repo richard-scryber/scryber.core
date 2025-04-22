@@ -689,8 +689,6 @@ namespace Scryber.PDF.Layout
                         
                         leftInset = parent.CurrentRegion.GetLeftInset(yoffset, height);
                         var right = parent.CurrentRegion.GetRightInset(yoffset, height);
-                        if (leftInset > 0)
-                            ; //We could remove the left margin size from the line, as this is accounted for in the offset.
                         
                         avail -= (leftInset + right);
                         

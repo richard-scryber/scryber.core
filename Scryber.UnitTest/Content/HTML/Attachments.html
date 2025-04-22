@@ -11,13 +11,39 @@
         .container, footer, header { font-size: 12pt; border:solid 1px blue; padding:5pt; margin:0pt; height: 50pt;}
         .hidden { display: none; }
         
+        embed {
+            vertical-align: baseline;
+        }
+        
+        h2{
+            font-size: 12pt;
+            background-color: silver;
+            padding:5pt;
+            margin:0pt;
+        }
     </style>
 </head>
 <body class="grey" title="Outer">
     <header><p >This is the header</p></header>
-   
-    <div style="border: solid 1pt green; line-height: 20pt;" >
-    <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment" icon="PushPin" style="border: solid 1pt red; display:inline; margin-inline-end: 10pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+    <h2>Simple in line, no spacing or adjustments</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment" 
+               icon="PushPin" style="border: solid 1pt red;" /><a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline margins</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
+               icon="PushPin" style="border: solid 1pt red; display:inline; margin-inline: 10pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline padding</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
+               icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 0pt 5pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline both padding and margins</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
+               icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 5pt 0pt; margin-inline: 0pt 10pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
     </div>
     <footer>
         <p>This is the footer </p>

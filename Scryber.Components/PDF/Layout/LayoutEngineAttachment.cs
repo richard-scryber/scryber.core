@@ -36,8 +36,7 @@ namespace Scryber.PDF.Layout
                     FontMetrics metrics = opts.Font.FontMetrics;
                     PDFLayoutRegion curReg = this.CurrentBlock.LastOpenBlock().CurrentRegion;
 
-                    if (curReg.CurrentItem == null)
-                        curReg.BeginNewLine();
+                    
 
                     Unit y = Unit.Zero;
                     Unit h;
@@ -68,19 +67,9 @@ namespace Scryber.PDF.Layout
                     Rect total = new Rect(0, y, w, h);
                     Rect content = new Rect(0, y, w, h);
                     Rect border = new Rect(0, y, w, h);
-
-                    if (pos.DisplayMode == DisplayMode.Block)
+                    
+                    if (pos.DisplayMode == DisplayMode.InlineBlock)
                     {
-                        if (pos.Margins.IsEmpty == false)
-                        {
-                            total = new Rect(total.X, total.Y,
-                                total.Width + pos.Margins.Left + pos.Margins.Right,
-                                total.Height + pos.Margins.Top + pos.Margins.Bottom);
-
-                            border = new Rect(border.X + pos.Margins.Left, border.Y + pos.Margins.Top, border.Width,
-                                border.Height);
-                        }
-
                         if (pos.Padding.IsEmpty == false)
                         {
                             total = new Rect(total.X, total.Y,
@@ -91,7 +80,34 @@ namespace Scryber.PDF.Layout
                                 border.Width + pos.Padding.Left + pos.Padding.Right,
                                 border.Height + pos.Padding.Top + pos.Padding.Bottom);
 
+                            // content.X += pos.Padding.Left;
+                            // content.Y += pos.Padding.Top;
                         }
+                    }
+                    else if (pos.DisplayMode == DisplayMode.Block)
+                    {
+                        if (pos.Padding.IsEmpty == false)
+                        {
+                            total = new Rect(total.X, total.Y,
+                                total.Width + pos.Padding.Left + pos.Padding.Right,
+                                total.Height + pos.Padding.Top + pos.Padding.Bottom);
+
+                            border = new Rect(border.X, border.Y,
+                                border.Width + pos.Padding.Left + pos.Padding.Right,
+                                border.Height + pos.Padding.Top + pos.Padding.Bottom);
+
+                            content.X += pos.Padding.Left;
+                            content.Y += pos.Padding.Top;
+                        }
+                        
+                        if (pos.Margins.IsEmpty == false)
+                        {
+                            total = new Rect(total.X, total.Y,
+                                total.Width + pos.Margins.Left + pos.Margins.Right,
+                                total.Height + pos.Margins.Top + pos.Margins.Bottom);
+                        }
+
+                        
                     }
                     else if(pos.DisplayMode == DisplayMode.Inline)
                     {
@@ -101,19 +117,41 @@ namespace Scryber.PDF.Layout
                         total.Width += marginStart + marginEnd;
                         border.X += marginStart;
                         content.X += marginStart;
-                    }
+                        
+                        var paddingStart = FullStyle.GetValue(StyleKeys.PaddingInlineStart, Unit.Empty);
+                        var paddingEnd = FullStyle.GetValue(StyleKeys.PaddingInlineEnd, Unit.Empty);
 
-                    pos.VAlign = VerticalAlignment.Baseline;
+                        if (paddingStart != Unit.Zero)
+                        {
+                            total.Width += paddingStart;
+                            border.Width += paddingStart;
+                            content.X += paddingStart;
+                        }
+
+                        if (paddingEnd != Unit.Zero)
+                        {
+                            total.Width += paddingEnd;
+                            border.Width += paddingEnd;
+                        }
+                    }
+                    
+                    if (curReg.CurrentItem == null)
+                        curReg.BeginNewLine();
+
+                    //pos.VAlign = VerticalAlignment.Baseline;
                     // total = new Rect(0, 0, 9, 12);
                     // border = total;
                     // content = total;
                     //offset = 0;
-                    pos.VAlign = VerticalAlignment.Baseline;
+                    //pos.VAlign = VerticalAlignment.Baseline;
+                   
                     var comp = this.Component;
                     var style = this.FullStyle;
                     
-                    curLine.AddComponentRun(comp, total, border, content, offset, pos,
+                    var run = curLine.AddComponentRun(comp, total, border, content, offset, pos,
                         style);
+                    
+                    
                 }
             }
 

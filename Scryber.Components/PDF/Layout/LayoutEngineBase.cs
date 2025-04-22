@@ -1462,7 +1462,6 @@ namespace Scryber.PDF.Layout
             
             var parent = positioned.GetParentBlock();
             var parentOffset = Point.Empty;
-            var firstParent = true;
             
             while (parent != null)
             {
@@ -1484,7 +1483,6 @@ namespace Scryber.PDF.Layout
                     parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
                     parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
                     
-                    firstParent = false;
                     parent = parent.Parent as PDFLayoutBlock;
                 }
 
@@ -1565,9 +1563,6 @@ namespace Scryber.PDF.Layout
 
                 if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
-                    PDFLayoutRegion newRegion = relativeTo.CurrentRegion;
-                    PDFLayoutBlock newBlock = relativeTo;
-                    bool newPage;
                     if (!this.MoveFloatToNextRegion(FloatMode.Left, positioned.TotalBounds.X, positioned, relativeTo))
                     {
                         if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)
@@ -1609,9 +1604,6 @@ namespace Scryber.PDF.Layout
                 
                 if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
-                    PDFLayoutRegion newRegion = relativeTo.CurrentRegion;
-                    PDFLayoutBlock newBlock = relativeTo;
-                    bool newPage;
                     if (!this.MoveFloatToNextRegion(FloatMode.Right, rightOffset, positioned, relativeTo))
                     {
                         if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)

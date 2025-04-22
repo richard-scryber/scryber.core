@@ -1,5 +1,6 @@
 ﻿using System;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -66,6 +67,13 @@ namespace Scryber.Html.Components
         protected HTMLEmbed(ObjectType type) : base(type)
         {
             this.DisplayIcon = AttachmentDisplayIcon.None;
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Inline);
+            return style;
         }
     }
 }

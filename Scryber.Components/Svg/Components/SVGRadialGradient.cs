@@ -331,8 +331,7 @@ public class SVGRadialGradient : SVGFillBase, IStyledComponent, ICloneable
                 return new SVGRadialReflectingGradientCalculator(mode, type, new Point(fx, fy), fr, new Point (cx, cy), cr);
             
             default:
-                    throw new NotImplementedException();
-                break;
+                    throw new NotSupportedException("The gradient mode " + mode + " is not supported.");
         }
     }
     

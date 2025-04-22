@@ -174,6 +174,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PaddingBottom, new CSSPaddingBottomParser());
             all.Add(CSSStyleItems.PaddingTop, new CSSPaddingTopParser());
             all.Add(CSSStyleItems.Padding, new CSSPaddingAllParser());
+            
+            all.Add(CSSStyleItems.PaddingInlineAll, new CSSPaddingInlineBothParser());
+            all.Add(CSSStyleItems.PaddingInlineStart, new CSSPaddingInlineStartParser());
+            all.Add(CSSStyleItems.PaddingInlineEnd, new CSSPaddingInlineEndParser());
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 

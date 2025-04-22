@@ -245,7 +245,8 @@ namespace Scryber.PDF.Layout
 
                 var background = this.FullStyle.CreateBackgroundBrush();
 
-                Rect borderRect = new Rect(loc, size);
+                Rect borderRect = this.BorderRect; // new Rect(loc, size);
+                borderRect = borderRect.Offset(loc.X, loc.Y);
                 
                 if (null != background)
                     this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);

@@ -381,7 +381,6 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
     private class PDFMarkerXObjectResource : PDFResource
     {
         private SVGMarker _marker;
-        private SVGCanvas _canvas;
         public PDFMarkerXObjectResource(SVGMarker marker, SVGCanvas canvas) : base(ObjectTypes.Marker)
         {
             this._marker = marker ?? throw new ArgumentNullException(nameof(marker));

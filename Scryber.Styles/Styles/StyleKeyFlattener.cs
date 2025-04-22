@@ -295,7 +295,6 @@ namespace Scryber.Styles
         public TransformOperationSet FlattenValue(TransformOperationSet known, Size pageSize, Size containerSize, Size font, Unit rootFont)
         {
             return known.CloneAndFlatten(pageSize, containerSize, font, rootFont);
-            return known;
             //throw new NotImplementedException();
         }
 
@@ -316,7 +315,6 @@ namespace Scryber.Styles
         public TransformOrigin FlattenValue(TransformOrigin known, Size pageSize, Size containerSize, Size font, Unit rootFont)
         {
             return known.CloneAndFlatten(pageSize, containerSize, font, rootFont);
-            return known;
             //throw new NotImplementedException();
         }
 

@@ -291,7 +291,7 @@ namespace Scryber.Styles
         {
             TransformType type;
             TransformOperation operation = null;
-            TransformOperation first = null;
+
             float value1 = TransformOperation.NotSetValue();
             float value2 = TransformOperation.NotSetValue();
 

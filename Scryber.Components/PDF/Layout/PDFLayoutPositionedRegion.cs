@@ -92,6 +92,8 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override bool DoClose(ref string msg)
         {
+            this.CloseCurrentItem();
+            
             //We override this to reduce the size of the region so that it
             //fits the explicit size or the content within it
 

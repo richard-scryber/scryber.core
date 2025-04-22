@@ -392,8 +392,7 @@ public class SVGLinearGradient : SVGFillBase, IStyledComponent, ICloneable
                 return new SVGLinearReflectingGradientCalculator(mode, type, x1, y1, x2, y2);
             
             default:
-                    throw new NotImplementedException();
-                break;
+                    throw new NotSupportedException("The gradient spread mode " + mode+ " is not supported.");
         }
     }
     

@@ -146,7 +146,6 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                StyleValue<Unit> x;
                 return this.HasStyle && this._style.IsValueDefined(StyleKeys.SVGGeometryYKey);
             }
         }
@@ -571,8 +570,6 @@ namespace Scryber.Svg.Components
 
         private void ApplyStyle(IStyledComponent tocomponent, Style style)
         {
-            StyleValue<Unit> val;
-            
             if (null != style && style.HasValues)
             {
                 foreach (var key in style.Keys)

@@ -1462,20 +1462,7 @@ namespace Scryber.PDF.Layout
             
             if (this.Position.XObjectRender)
             {
-                return true;
-                //we should be as an xObject.
-                
-                //if we are relative or static and displayed as a block then we should do it here.
-                if (this.Position.PositionMode == PositionMode.Relative ||
-                    this.Position.PositionMode == PositionMode.Static)
-                {
-                    if (this.Position.DisplayMode == DisplayMode.Block)
-                        xObj = true;
-                }
-                else
-                {
-                    //the xObject rendering should be handled by a positioned region run that references this block.
-                }
+                xObj = true;
             }
 
             return xObj;
@@ -1563,23 +1550,13 @@ namespace Scryber.PDF.Layout
                 //TODO: Take this out and make the SVGText a Component run rather than a block.
                 //Just a translation of some text so quicker to just offset the translation by the height of the block
                 
-                var offsetX = 0;
-                var offsetY = this.TotalBounds.Height.PointsValue;
-                //full = full.Clone();
 
-                float posOffsetX = 0.0F;
-                float posOffsetY = 0.0F;
 
                 //save the graphics state
                 context.Graphics.SaveGraphicsState();
                 
-                //set any explicit position offsets
-
-                //full.SetTranslation(offsetX + posOffsetX, offsetY - posOffsetY);
-
+                
                 context.Graphics.SetTransformationMatrix(matrix, true, true);
-                //this.Position.TransformMatrix = full;
-                //this.TransformedOffset = new Point(full.Components[4], full.Components[5]);
                 
                 //we want to return true - to tear it down afterwards
                 transformed = true;

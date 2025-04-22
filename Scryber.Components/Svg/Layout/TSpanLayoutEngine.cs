@@ -151,19 +151,8 @@ namespace Scryber.Svg.Layout
                 if (this.TextContainer.TextLength != Unit.Auto)
                 {
                     update = this.UpdateCharsWidthForTextLength(this.TextContainer, first, update);
-                    Unit required;
-                    
                     
                 }
-                
-                // if (block.Position.Transformations != null)
-                // {
-                //     if (yVal != Unit.Zero)
-                //         update.Y += yVal;
-                //     
-                //     if (xVal != Unit.Zero)
-                //         update.X += xVal;
-                // }
                 
                 block.TotalBounds = update;
                 

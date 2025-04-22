@@ -496,7 +496,6 @@ namespace Scryber.Svg.Components
 
         public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            bool hasTransform = false;
             PDFTransformationMatrix origMatrix = context.RenderMatrix;
             
             context.Graphics.SaveGraphicsState();
@@ -510,7 +509,6 @@ namespace Scryber.Svg.Components
                 var transform = transformValue.Value(context.FullStyle);
                 if (null != transform && !transform.IsIdentity)
                 {
-                    hasTransform = true;
                     var origin = context.FullStyle.GetValue(StyleKeys.TransformOriginKey, null);
                     var matrix = transform.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
                     

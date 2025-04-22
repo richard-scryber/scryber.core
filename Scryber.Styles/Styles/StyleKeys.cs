@@ -168,6 +168,13 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> PaddingAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", PaddingItemKey
                                                                 , new StyleKeyFlattenThicknessValue(PaddingLeftKey, PaddingTopKey, PaddingRightKey, PaddingBottomKey));
 
+        public static readonly StyleKey<Unit> PaddingInlineStart = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inSt", PaddingItemKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> PaddingInlineEnd = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inEd", PaddingItemKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        
         // Margins
 
         public static readonly StyleKey MarginsItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleMargins, NOT_INHERITED);

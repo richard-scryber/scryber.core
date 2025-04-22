@@ -764,8 +764,7 @@ namespace Scryber.Svg.Imaging
         {
             var prevOffset = context.Offset;
             PDFObjectRef oref = null;
-            PDFName canvasName = null;
-
+            
             if (null != _layout)
             {
                 try

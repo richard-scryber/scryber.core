@@ -68,6 +68,9 @@ namespace Scryber.Html
         public const string PaddingRight = "padding-right";
         public const string PaddingTop = "padding-top";
         public const string PaddingBottom = "padding-bottom";
+        public const string PaddingInlineStart = "padding-inline-start";
+        public const string PaddingInlineEnd = "padding-inline-end";
+        public const string PaddingInlineAll = "padding-inline";
 
         public const string Opacity = "opacity";
         public const string FillOpacity = "fill-opacity";
