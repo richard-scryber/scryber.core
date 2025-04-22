@@ -83,6 +83,14 @@ namespace Scryber.PDF.Layout
                             // content.X += pos.Padding.Left;
                             // content.Y += pos.Padding.Top;
                         }
+
+                        if (pos.Margins.IsEmpty == false)
+                        {
+                            total.Size = new Size(total.Width + pos.Margins.Left + pos.Margins.Right, total.Height + pos.Margins.Top + pos.Margins.Bottom);
+                            
+                            
+                            
+                        }
                     }
                     else if (pos.DisplayMode == DisplayMode.Block)
                     {

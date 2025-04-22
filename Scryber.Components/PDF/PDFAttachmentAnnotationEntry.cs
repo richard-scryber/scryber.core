@@ -112,17 +112,6 @@ namespace Scryber.PDF
             var pos = style.CreatePostionOptions(false);
             if (pos.DisplayMode == DisplayMode.Inline)
             {
-                // if (style.TryGetValue(StyleKeys.MarginsInlineStart, out var start))
-                // {
-                //     arrangeBounds.Width -= start.Value(style);
-                //     arrangeBounds.X += start.Value(style);
-                // }
-                //
-                // if (style.TryGetValue(StyleKeys.MarginsInlineEnd, out var end))
-                // {
-                //     arrangeBounds.Width -= end.Value(style);
-                // }
-                
                 if (style.TryGetValue(StyleKeys.PaddingInlineStart, out var startP))
                 {
                     arrangeBounds.Width -= startP.Value(style);
@@ -133,9 +122,6 @@ namespace Scryber.PDF
                 {
                     arrangeBounds.Width -= endP.Value(style);
                 }
-
-
-
             }
             else if (pos.DisplayMode == DisplayMode.InlineBlock)
             {

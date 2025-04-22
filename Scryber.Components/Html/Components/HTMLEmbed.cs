@@ -6,7 +6,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("embed")]
-    public class HTMLEmbed : IconAttachment, IInvisibleContainer
+    public class HTMLEmbed : VisualComponent, IInvisibleContainer
     {
 
         [PDFAttribute("class")]
@@ -14,12 +14,8 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
-
-        [PDFAttribute("src")]
-        public override string Source { get; set; }
         
-        [PDFAttribute("type")]
-        public string MimeType { get; set; }
+        
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -49,15 +45,6 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
-        
-        
-
-        [PDFElement("")]
-        [PDFArray(typeof(Component))]
-        public ComponentList Contents
-        {
-            get { return base.InnerContent; }
-        }
 
 
         public HTMLEmbed() : this(HTMLObjectTypes.Embed)
@@ -66,14 +53,8 @@ namespace Scryber.Html.Components
 
         protected HTMLEmbed(ObjectType type) : base(type)
         {
-            this.DisplayIcon = AttachmentDisplayIcon.None;
         }
 
-        protected override Style GetBaseStyle()
-        {
-            var style = base.GetBaseStyle();
-            style.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Inline);
-            return style;
-        }
+        
     }
 }

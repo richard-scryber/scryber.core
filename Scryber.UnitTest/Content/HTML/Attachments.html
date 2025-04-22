@@ -8,13 +8,18 @@
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
     <title>This is a body with headers and footers</title>
     <style type="text/css" media="print" >
-        .container, footer, header { font-size: 12pt; border:solid 1px blue; padding:5pt; margin:0pt; height: 50pt;}
+        
+        .container, footer, header { font-size: 12pt; border:solid 1px blue; padding:5pt; margin:0pt; height: 40pt; background-color: black; color: white;}
         .hidden { display: none; }
         
-        embed {
+        object {
             vertical-align: baseline;
         }
-        
+        h1{
+            font-size: 16pt;
+            margin:0;
+            padding:5pt;
+        }
         h2{
             font-size: 12pt;
             background-color: silver;
@@ -24,29 +29,76 @@
     </style>
 </head>
 <body class="grey" title="Outer">
-    <header><p >This is the header</p></header>
+
+    <header><h1>Icon Attachments</h1></header>
     <h2>Simple in line, no spacing or adjustments</h2>
     <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
-        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment" 
-               icon="PushPin" style="border: solid 1pt red;" /><a href="#landscapeAttachment" >Link to attachment</a>
+        <object id="landscapeAttachment" data="./Images/landscape.jpg" type="application/attachment" 
+                data-icon="PushPin" style="border: solid 1pt red;" ></object><a href="#landscapeAttachment" >Link to attachment</a>
     </div>
     <h2>Simple in line, Inline margins</h2>
-    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
-        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
-               icon="PushPin" style="border: solid 1pt red; display:inline; margin-inline: 10pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+    <div style="border: solid 1pt green; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineMargins" data="./Images/landscape.jpg" type="application/attachment"
+               data-icon="PushPin" 
+               style="border: solid 1pt red; display:inline; margin-inline: 10pt; margin: 20pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
     </div>
     <h2>Simple in line, Inline padding</h2>
     <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
-        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
-               icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 0pt 5pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+        <object id="landscapeAttachmentInlinePadding" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 0 5pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
     </div>
     <h2>Simple in line, Inline both padding and margins</h2>
     <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
-        <embed id="landscapeAttachment" src="./Images/landscape.jpg" type="attachment"
-               icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 5pt 0pt; margin-inline: 0pt 10pt;" /><a href="#landscapeAttachment" >Link to attachment</a>
+        <object id="landscapeAttachmentInlinePaddingMargins" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 5pt 0pt; margin-inline: 0pt 10pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline both padding and margins with explicit height and width, v-align: bottom</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentAll" data="./Images/landscape.jpg" type="application/attachment"
+               data-icon="PushPin"
+                style="border: solid 1pt red; display:inline; margin: 20pt; padding-inline: 5pt 0pt; margin-inline: 0pt 10pt; width: 25pt; height: 30pt; vertical-align: bottom;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    
+    <!-- 
+        Inline Blocks
+    -->
+    
+    <h2 style="page-break-before: always;">Inline-block, no spacing or adjustments</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineBlock" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display: inline-block;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Inline-block, Inline margins</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineBlockMargins" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline-block; margin: 10pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline padding</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineBlockPadding" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 0 5pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline both padding and margins</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineBlockPaddingMargin" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 5pt 0; margin-inline: 0 10pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
+    </div>
+    <h2>Simple in line, Inline both padding and margins with explicit height and width</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentInlineBlockAll" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="PushPin" style="border: solid 1pt red; display:inline; padding-inline: 5pt 0; margin-inline: 0 10pt; width: 25pt; height: 30pt;" ></object>
+        <a href="#landscapeAttachment" >Link to attachment</a>
     </div>
     <footer>
-        <p>This is the footer </p>
+        <p style="text-align: center;"><page data-format="Page {0} of {1}"/></p>
     </footer>
 </body>
 </html>

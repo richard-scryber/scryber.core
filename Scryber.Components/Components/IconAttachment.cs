@@ -54,7 +54,7 @@ namespace Scryber.Components
         /// Gets or sets the embedded file data
         /// </summary>
         [PDFAttribute("data")]
-        public PDFEmbeddedFileData Data
+        public virtual PDFEmbeddedFileData Data
         {
             get { return _data; }
             set

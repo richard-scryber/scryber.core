@@ -42,7 +42,7 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("display-format", Style.PDFStylesNamespace)]
         [PDFDesignable("Format", Category = "General", Priority = 4, Type = "PageFormat")]
-        public string DisplayFormat 
+        public virtual string DisplayFormat 
         { 
             get { return this.Style.PageStyle.PageNumberFormat; }
             set { this.Style.PageStyle.PageNumberFormat = value; }
