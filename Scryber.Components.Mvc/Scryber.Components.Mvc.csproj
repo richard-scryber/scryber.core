@@ -115,6 +115,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />

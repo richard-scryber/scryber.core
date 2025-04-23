@@ -76,7 +76,7 @@ namespace Scryber.Core.UnitTests.Attachments
 
             });
 
-            using (var sr = DocStreams.GetOutputStream("IconAttachment.pdf"))
+            using (var sr = DocStreams.GetOutputStream("TestIconAttachment.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 
@@ -87,7 +87,7 @@ namespace Scryber.Core.UnitTests.Attachments
         [TestMethod]
         public void AttachmentInTemplateAttachment()
         {
-            var path = "../../Scryber.UnitTest/Content/HTML/Attachments.html";
+            var path = "../../Scryber.UnitTest/Content/HTML/AttachmentsWithIcon.html";
             path = DocStreams.AssertGetContentPath(path, TestContext);
             
             var doc = Document.ParseDocument(path);
@@ -98,7 +98,7 @@ namespace Scryber.Core.UnitTests.Attachments
             pg.Style.OverlayGrid.GridSpacing = 10;
             pg.Style.OverlayGrid.GridMajorCount = 5;
 
-            using (var sr = DocStreams.GetOutputStream("AttachmentInTemplate.pdf"))
+            using (var sr = DocStreams.GetOutputStream("AttachmentWithIcon.pdf"))
             {
                 doc.SaveAsPDF(sr);
             }

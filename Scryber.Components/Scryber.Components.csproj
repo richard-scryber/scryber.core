@@ -219,7 +219,7 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">

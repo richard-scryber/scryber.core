@@ -73,7 +73,7 @@ namespace Scryber.Components
         /// Gets or sets the description for the attachment
         /// </summary>
         [PDFAttribute("desc")]
-        public string Description
+        public virtual string Description
         {
             get;
             set;
@@ -193,6 +193,10 @@ namespace Scryber.Components
                 {
 
                     this.Annotation = new PDFAttachmentAnnotationEntry(this, attach, fullstyle);
+                    
+                    if(!string.IsNullOrEmpty(this.OutlineTitle))
+                        this.Annotation.AlternateText = this.OutlineTitle;
+                    
                     Scryber.PDF.Layout.PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
                     
                     object annotEntry = pg.RegisterPageEntry(context, PDFArtefactTypes.Annotations, this.Annotation);

@@ -71,8 +71,15 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("type")]
         public string MimeType { get; set; }
-        
-        
+
+        [PDFAttribute("alt")]
+        public override string Description
+        {
+            get => base.Description; 
+            set=> base.Description = value;
+        }
+
+
         [PDFElement("")]
         [PDFArray(typeof(Component))]
         public ComponentList Contents

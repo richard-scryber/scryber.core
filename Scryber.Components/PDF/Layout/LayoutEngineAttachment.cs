@@ -31,11 +31,14 @@ namespace Scryber.PDF.Layout
                 var icon = this.FullStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
                 if (icon != AttachmentDisplayIcon.None)
                 {
+                    PDFColumnOptions cols = this.FullStyle.CreateColumnOptions();
                     PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
                     PDFTextRenderOptions opts = this.FullStyle.CreateTextOptions();
                     FontMetrics metrics = opts.Font.FontMetrics;
                     PDFLayoutRegion curReg = this.CurrentBlock.LastOpenBlock().CurrentRegion;
 
+                    
+                    
                     
 
                     Unit y = Unit.Zero;
@@ -60,6 +63,12 @@ namespace Scryber.PDF.Layout
                         y = pos.Y.Value;
                     else
                         y = Unit.Zero;
+                    
+                    if (pos.DisplayMode != DisplayMode.Inline)
+                    {
+                        pos.DisplayMode = DisplayMode.InlineBlock;
+                        this.Context.TraceLog.Add(TraceLevel.Warning, "Attachment", "The only supported display modes for attachments are inline or inline-block. Converted to inline-block for " + this.Component.UniqueID);
+                    }
 
                     var offset = Unit.Zero;
 
@@ -87,35 +96,7 @@ namespace Scryber.PDF.Layout
                         if (pos.Margins.IsEmpty == false)
                         {
                             total.Size = new Size(total.Width + pos.Margins.Left + pos.Margins.Right, total.Height + pos.Margins.Top + pos.Margins.Bottom);
-                            
-                            
-                            
                         }
-                    }
-                    else if (pos.DisplayMode == DisplayMode.Block)
-                    {
-                        if (pos.Padding.IsEmpty == false)
-                        {
-                            total = new Rect(total.X, total.Y,
-                                total.Width + pos.Padding.Left + pos.Padding.Right,
-                                total.Height + pos.Padding.Top + pos.Padding.Bottom);
-
-                            border = new Rect(border.X, border.Y,
-                                border.Width + pos.Padding.Left + pos.Padding.Right,
-                                border.Height + pos.Padding.Top + pos.Padding.Bottom);
-
-                            content.X += pos.Padding.Left;
-                            content.Y += pos.Padding.Top;
-                        }
-                        
-                        if (pos.Margins.IsEmpty == false)
-                        {
-                            total = new Rect(total.X, total.Y,
-                                total.Width + pos.Margins.Left + pos.Margins.Right,
-                                total.Height + pos.Margins.Top + pos.Margins.Bottom);
-                        }
-
-                        
                     }
                     else if(pos.DisplayMode == DisplayMode.Inline)
                     {
@@ -159,10 +140,21 @@ namespace Scryber.PDF.Layout
                     var run = curLine.AddComponentRun(comp, total, border, content, offset, pos,
                         style);
                     
-                    
                 }
             }
 
+        }
+
+        protected virtual PDFLayoutBlock CreateWrapperBlock(PDFPositionOptions pos, PDFColumnOptions cols, Unit w, Unit h)
+        {
+            var currentBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            var currentRegion = currentBlock.CurrentRegion;
+            pos.Width = w;
+            pos.Height = h;
+            this.CreateContainerBlock(pos);
+            this.CreateBlockRegions(currentBlock, pos, cols);
+            
+            return this.CurrentBlock;
         }
     }
 }
