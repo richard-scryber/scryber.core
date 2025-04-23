@@ -8,6 +8,8 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.Logging;
+using Scryber.PDF.Resources;
 
 namespace Scryber.Components
 {
@@ -128,6 +130,11 @@ namespace Scryber.Components
 
         #endregion
 
+        /// <summary>
+        /// Gets or set the remote request for the attachment
+        /// </summary>
+        protected RemoteFileRequest Request { get; set; }
+        
         //
         // .ctor(s)
         //
@@ -171,8 +178,90 @@ namespace Scryber.Components
         }
 
         #endregion
-        
-        
+
+
+        protected override void DoDataBind(DataContext context, bool includeChildren)
+        {
+            base.DoDataBind(context, includeChildren);
+        }
+
+        protected override void DoLoad(LoadContext context)
+        {
+            base.DoLoad(context);
+            if (ShouldLoadAttachment())
+            {
+                this.Request = this.RegisterLoadAttachment(this.Source, context);
+            }
+        }
+
+        protected virtual bool ShouldLoadAttachment()
+        {
+            if(null != this.Data)
+                return false;
+            if(null != this.Request)
+                return false;
+            if(string.IsNullOrEmpty(this.Source))
+                return false;
+            
+            return true;
+        }
+
+        protected virtual RemoteFileRequest RegisterLoadAttachment(string path, LoadContext context)
+        {
+            
+            var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+            var cache = TimeSpan.FromMinutes(config.ImagingOptions.ImageCacheDuration);
+            
+            
+            this.Attachment = this.GetAttachment(context);
+            
+            
+            RemoteRequestCallback callback = new RemoteRequestCallback(this.RemoteAttachmentCallback);
+            
+            var request = this.Document.RegisterRemoteFileRequest(PDFResource.AttachmentFileSpecType, this.Attachment.FullFilePath, cache, callback,this, null);
+            
+            return request;
+        }
+
+        private bool RemoteAttachmentCallback(IComponent owner, IRemoteRequest request, System.IO.Stream data)
+        {
+            if (request.IsSuccessful && request.Result != null && request.Result is PDFEmbeddedFileData cached)
+            {
+                this.Attachment.FileData = cached;
+                this.Data = this.Attachment.FileData;
+                return true;
+            }
+            
+            if (null == data || data.CanRead == false)
+            {
+                request.CompleteRequest(null, false, new Exception("No Stream data to read"));
+                return false;
+            }
+            
+            //Create the attachment from the stream.
+            
+            var bin = new byte[data.Length];
+            var len = data.Read(bin, 0, bin.Length);
+            
+            if (len < bin.Length)
+            {
+                throw new Exception("Invalid data length");
+            }
+            var file = new PDFEmbeddedFileData();
+            file.FileData = bin;
+            file.FullName = request.FilePath;
+            file.Filters = null;
+            file.DataLength = bin.Length;
+            this._data = file;
+
+            if(null != this.Attachment)
+                this.Attachment.FileData = file;
+ 
+            request.CompleteRequest(this.Data, true, null);
+            
+            return true;
+            
+        }
 
 
         #region protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Styles.PDFStyle fullstyle)
@@ -187,12 +276,12 @@ namespace Scryber.Components
         {
             if (this.Visible)
             {
-                PDFEmbeddedAttachment attach = this.GetAttachment(context, fullstyle);
+                PDFEmbeddedAttachment attach = this.GetAttachment(context);
 
                 if (null != attach)
                 {
 
-                    this.Annotation = new PDFAttachmentAnnotationEntry(this, attach, fullstyle);
+                    this.Annotation = new PDFAttachmentAnnotationEntry(this, this, attach, fullstyle);
                     
                     if(!string.IsNullOrEmpty(this.OutlineTitle))
                         this.Annotation.AlternateText = this.OutlineTitle;
@@ -202,6 +291,7 @@ namespace Scryber.Components
                     object annotEntry = pg.RegisterPageEntry(context, PDFArtefactTypes.Annotations, this.Annotation);
                     set.SetArtefact(AttachmentAnotationEntryArtefact, annotEntry);
 
+                    context.DocumentLayout.RegisterCatalogEntry(context, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,  attach);
                 }
             }
             base.DoRegisterArtefacts(context, set, fullstyle);
@@ -241,45 +331,30 @@ namespace Scryber.Components
         /// Gets the PDFEmbeddedAttachment associated with this Component. If 
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="fullstyle"></param>
+        /// <param name="fullPath"></param>
         /// <returns></returns>
-        protected virtual PDFEmbeddedAttachment GetAttachment(PDFLayoutContext context, Styles.Style fullstyle)
+        public virtual PDFEmbeddedAttachment GetAttachment(ContextBase context)
         {
             if (null == this.Attachment)
             {
-                if (context.ShouldLogVerbose)
-                    context.TraceLog.Begin(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Loading Attachment for component " + this.UniqueID);
-
-                try
+                var path = this.Source;
+                path = this.MapPath(path);
+                
+                var found = this.Document.GetResource(PDFResource.AttachmentFileSpecType, this, path, false);
+                if (null != found && found is PDFEmbeddedAttachment attachment)
                 {
-                    using (context.PerformanceMonitor.Record(PerformanceMonitorType.Data_Load, "Attachment - " + this.UniqueID))
-                    {
-                        this.Attachment = LoadAttachment(context, fullstyle);
-                    }
+                    this.Attachment = attachment;
                 }
-                catch (Exception ex)
+                else
                 {
-                    if (context.Conformance == ParserConformanceMode.Strict)
-                        throw new PDFMissingAttachmentException(string.Format("Could not load the attachment data for component " + this.UniqueID + ". See the inner exception for more details."), ex);
-                    else
-                        context.TraceLog.Add(TraceLevel.Error, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Could not load the attachment data for component " + this.UniqueID, ex);
+                    var log = context.TraceLog;
 
-                    this.Attachment = null;
-                }
+                    if (log.ShouldLog(TraceLevel.Verbose))
+                        log.Begin(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,
+                            "Getting Attachment for component " + this.UniqueID);
 
-                if (context.ShouldLogVerbose)
-                {
-                    if (null == this.Attachment)
-                        context.TraceLog.End(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "No Attachment was loaded for component " + this.UniqueID);
-                    else
-                        context.TraceLog.End(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Initialized and loaded the attachment " + this.Attachment.ToString());
-                }
-                else if (context.ShouldLogMessage)
-                {
-                    if (null == this.Attachment)
-                        context.TraceLog.Add(TraceLevel.Message, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "No Attachment was loaded for component " + this.UniqueID);
-                    else
-                        context.TraceLog.Add(TraceLevel.Message, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Initialized and loaded the attachment " + this.Attachment.ToString());
+                    this.Attachment = CreateAttachment(log, path);
+                    this.Document.SharedResources.Add(this.Attachment);
                 }
             }
             return this.Attachment;
@@ -289,109 +364,29 @@ namespace Scryber.Components
 
         #region private PDFEmbeddedAttachment LoadAttachment(PDFLayoutContext context, Styles.PDFStyle fullstyle)
 
-        private PDFEmbeddedAttachment LoadAttachment(PDFLayoutContext context, Styles.Style fullstyle)
+        private PDFEmbeddedAttachment CreateAttachment(TraceLog log, string fullpath)
         {
-            
-            //TODO: This should use the Document.RegisterFileLoad methods;
-            
+
             PDFEmbeddedAttachment attach = null;
 
-            if (null != this.Data)
+            if (log.ShouldLog(TraceLevel.Verbose))
+                log.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,
+                    "Creating the attachment instance from the assigned data on the component");
+
+            //For the name use the source if specficied, otherwise use a unique increment id for this document
+            string name = string.IsNullOrEmpty(this.Source)
+                ? this.Document.GetIncrementID(PDFEmbeddedAttachment.EmbeddedFileObjectType)
+                : this.Source;
+            
+            string desc = string.IsNullOrEmpty(this.Description) ? name : this.Description;
+
+            attach = new PDFEmbeddedAttachment(fullpath, name, this.UniqueID, desc)
             {
-                if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Creating the attachment instance from the assigned data on the component");
+                FileData = this.Data,
+                Name = new PDFName(this.Document.GetIncrementID(PDFEmbeddedAttachment.EmbeddedFileObjectType))
+            };
 
-                //For the name use the source if specficied, otherwise use a unique increment id for this document
-                string name = string.IsNullOrEmpty(this.Source) ? this.Document.GetIncrementID(PDFEmbeddedAttachment.EmbeddedFileObjectType) : this.Source;
-                string desc = string.IsNullOrEmpty(this.Description) ? name : this.Description;
 
-                attach = new PDFEmbeddedAttachment(this.Data.FullName,name,this.UniqueID, desc)
-                {
-                    FileData = this.Data,
-                };
-            }
-            else if (string.IsNullOrEmpty(this.Source) == false)
-            {
-                string fullpath = this.MapPath(this.Source);
-                ICacheProvider cache = this.Document.CacheProvider;
-
-                if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Creating the attachment instance from the source value at expanded path '" + fullpath + "'");
-
-                bool isfile;
-                string actualname;
-                if (System.Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
-                {
-                    isfile = false;
-                }
-                else if (System.IO.Path.IsPathRooted(fullpath))
-                {
-                    isfile = true;
-                }
-                else
-                    throw new ArgumentException("Cannot load an attachment with a relative path");
-
-                object found;
-                if (cache.TryRetrieveFromCache(PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, fullpath, out found))
-                {
-                    this.Data = (PDFEmbeddedFileData)found;
-
-                    if (context.ShouldLogVerbose)
-                        context.TraceLog.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Cache hit on previously loaded data from file - no need to retrieve from path again.");
-                }
-                else
-                {
-                    if (isfile)
-                        this.Data = PDFEmbeddedFileData.LoadFileDataFromFile(context, fullpath);
-                    else
-                        this.Data = PDFEmbeddedFileData.LoadFileDataFromUri(context, fullpath);
-
-                    DateTime expires = GetExpirationTime();
-
-                    if (expires > DateTime.Now)
-                    {
-                        if (context.ShouldLogVerbose)
-                            context.TraceLog.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Adding loaded data to the cache with an expiration time of " + expires.ToString("yyyy-MM-dd HH:mm:ss"));
-
-                        cache.AddToCache(PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, fullpath, this.Data, expires);
-                    }
-                    else if (context.ShouldLogVerbose)
-                        context.TraceLog.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Embedded attachment should not be cached for component " + this.UniqueID);
-                }
-
-                //extract the name of the file
-                try
-                {
-                    if (isfile)
-                        actualname = System.IO.Path.GetFileName(fullpath);
-                    else
-                    {
-                        //Extract the file name from the full uri path
-                        Uri uri = new Uri(fullpath);
-                        actualname = uri.GetLeftPart(UriPartial.Path);
-                        if (string.IsNullOrEmpty(actualname))
-                            actualname = fullpath;
-                        else if (actualname.IndexOf('.') > 0 && actualname.IndexOf('/') >= 0)
-                            actualname = actualname.Substring(actualname.LastIndexOf('/') + 1);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    context.TraceLog.Add(TraceLevel.Error, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory, "Could not extract the name of the file - replacing with component unique id", ex);
-                    actualname = this.UniqueID;
-                }
-
-                //get the description
-                string desc = this.Description;
-
-                //build the attachment resource
-
-                attach = new PDFEmbeddedAttachment(fullpath,actualname,this.UniqueID,desc)
-                {
-                    FileData = this.Data,
-                };
-
-            }
             return attach;
         }
 
@@ -454,11 +449,7 @@ namespace Scryber.Components
             return new Size(w, h);
         }
 
-        public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
-        {
-            this.Annotation.IconContentBounds = content;
-            this.Annotation.IconBorderBounds = border;
-        }
+        
 
 
 

@@ -73,7 +73,6 @@
                 data="./Images/landscape.jpg" type="application/attachment"
                 data-icon="PushPin" 
                 title="A test of the title"
-                alt="A test of the description" 
                 style="border: solid 1pt red; display: inline-block;" ></object>
         <a href="#landscapeAttachment" >Link to attachment</a>
     </div>
@@ -93,13 +92,41 @@
     <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
         <object id="landscapeAttachmentInlineBlockPaddingMargin" data="./Images/landscape.jpg" type="application/attachment"
                 data-icon="Tag" style="border: solid 1pt red; display:inline-block; padding-inline: 5pt 0; margin-inline: 0 10pt; width: 30pt; height: 9pt" ></object>
-        <a href="#landscapeAttachment" >Link to attachment</a>
+        <a href="#landscapeAttachmentInlineBlockPaddingMargin" >Link to attachment</a>
     </div>
     <h2>Simple in line, Inline both padding and margins with explicit height and width</h2>
     <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
         <object id="landscapeAttachmentInlineBlockAll" data="./Images/landscape.jpg" type="application/attachment"
                 data-icon="PushPin" style="border: solid 1pt red; display:inline-block; padding-inline: 5pt 0; margin-inline: 0 10pt; width: 25pt; height: 30pt; vertical-align: top" ></object>
-        <a href="#landscapeAttachment" >Link to attachment</a>
+        <a href="#landscapeAttachmentInlineBlockAll" >Link to attachment</a>
+    </div>
+
+    <!-- 
+        No Rendering
+    -->
+
+    <h2 style="page-break-before: always;">No Icon, No Link</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentNone"
+                data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="None"
+                title="A test of the title"
+                style="border: solid 1pt red; display: inline-block;" ></object>
+    </div>
+    <h2>No icon, with link</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentNoneLinked" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="None" style="border: solid 1pt red; display:inline-block; margin: 10pt;" ></object><a href="#landscapeAttachmentNoneLinked" >Link to attachment</a>
+    </div>
+    <h2>No icon, with complex link</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object id="landscapeAttachmentNoneComplexLinked" data="./Images/landscape.jpg" type="application/attachment"
+                data-icon="None" style="border: solid 1pt red; display:inline-block; margin: 10pt;" ></object>
+        <a href="#landscapeAttachmentNoneComplexLinked" >
+            <img src="./Images/landscape.jpg" width="30" />
+            <span>Link to image</span>
+            <span style="font-size: x-small; font-style: italic; vertical-align: top">(attachment)</span>
+        </a>
     </div>
     
     <footer>

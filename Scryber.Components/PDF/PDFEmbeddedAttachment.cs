@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
 
 namespace Scryber.PDF
 {
     /// <summary>
     /// Represents an EmbeddedFile artefact in the documents names dictionary
     /// </summary>
-    public class PDFEmbeddedAttachment : Scryber.TypedObject, ICategorisedArtefactNamesEntry,  IArtefactEntry
+    public class PDFEmbeddedAttachment : Scryber.PDF.Resources.PDFResource, ICategorisedArtefactNamesEntry,  IArtefactEntry
     {
 
         public const string EmbeddedFilesNamesCategory = "EmbeddedFiles";
@@ -233,7 +235,36 @@ namespace Scryber.PDF
             return src;
         }
 
+        //
+        // PDFResource implementation
+        //
+        
+        public override string ResourceType
+        {
+            get { return PDFResource.AttachmentFileSpecType; }
+        }
 
+        public override string ResourceKey
+        {
+            get { return this.FullFilePath; }
+        }
 
+        protected override PDFObjectRef DoRenderToPDF(ContextBase context, PDFWriter writer)
+        {
+            var renderContext = (PDFRenderContext)context;
+            return this.OutputToPDF(renderContext, writer);
+        }
+
+        public override bool Equals(string resourcetype, string key)
+        {
+            var same = String.Equals(this.ResourceType, resourcetype) && String.Equals(this.ResourceKey, key);
+            
+            if(same)
+                return true;
+            else
+            {
+                return base.Equals(resourcetype, key);
+            }
+        }
     }
 }

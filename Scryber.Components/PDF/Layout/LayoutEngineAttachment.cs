@@ -64,7 +64,7 @@ namespace Scryber.PDF.Layout
                     else
                         y = Unit.Zero;
                     
-                    if (pos.DisplayMode != DisplayMode.Inline)
+                    if (pos.DisplayMode != DisplayMode.Inline && pos.DisplayMode != DisplayMode.InlineBlock)
                     {
                         pos.DisplayMode = DisplayMode.InlineBlock;
                         this.Context.TraceLog.Add(TraceLevel.Warning, "Attachment", "The only supported display modes for attachments are inline or inline-block. Converted to inline-block for " + this.Component.UniqueID);

@@ -109,6 +109,7 @@ namespace Scryber
 
         public virtual bool AddRequest(RemoteFileRequest request)
         {
+            
             this.Requests.Add(request ?? throw new ArgumentNullException(nameof(request)));
             
             if(this.LogVerbose)

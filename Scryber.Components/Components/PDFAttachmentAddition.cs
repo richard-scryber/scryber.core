@@ -395,7 +395,6 @@ namespace Scryber.Components
 
         public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            
             return null;
         }
         

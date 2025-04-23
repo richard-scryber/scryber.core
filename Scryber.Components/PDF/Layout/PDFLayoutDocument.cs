@@ -330,6 +330,8 @@ namespace Scryber.PDF.Layout
                     return new PDFOutlineStack(type);
                 case (PDFArtefactTypes.AcrobatForms):
                     return new PDFAcrobatFormFieldCollection(type, this.Owner);
+                case (PDFArtefactTypes.EmbeddedFiles):
+                    return new PDFEmbeddedAttachmentDictionary(this.Owner as Document);
                 default:
                     throw RecordAndRaise.NotSupported("The catalog type {0} is not a known catalog type", type);
 

@@ -53,7 +53,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public static string GSStateResourceType
+        #region public static string GSStateResourceType {get;}
 
         /// <summary>
         /// Gets the type of an external graphics state resource
@@ -87,6 +87,18 @@ namespace Scryber.PDF.Resources
             get { return "Pattern"; }
         }
 
+        #endregion
+
+        #region public static string AttachmentFileSpecType {get;}
+        
+        /// <summary>
+        /// Returns the key for FileSpec types
+        /// </summary>
+        public static string AttachmentFileSpecType
+        {
+            get { return "FileSpec"; }
+        }
+        
         #endregion
 
         //
