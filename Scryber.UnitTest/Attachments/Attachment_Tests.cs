@@ -94,7 +94,7 @@ namespace Scryber.Core.UnitTests.Attachments
         }
 
         [TestMethod]
-        public void AttachmentInTemplateAttachment()
+        public void AttachmentsWithIcons_Test()
         {
             var path = "../../Scryber.UnitTest/Content/HTML/AttachmentsWithIcon.html";
             path = DocStreams.AssertGetContentPath(path, TestContext);
@@ -259,6 +259,43 @@ namespace Scryber.Core.UnitTests.Attachments
                 //Could check types, but we know there are 8, so assumed good.
             }
         }
+        
+        
+        [TestMethod]
+        public void AttachmentBoundToFileData_Test()
+        {
+            var path = "../../Scryber.UnitTest/Content/HTML/AttachmentsBoundToFileData.html";
+            path = DocStreams.AssertGetContentPath(path, TestContext);
+            
+            var doc = Document.ParseDocument(path);
+            var pg = doc.Pages[0];
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridOpacity = 0.5;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            
+            var imgFile = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", TestContext);
+            var binary = System.IO.File.ReadAllBytes(imgFile);
+            var data = new PDFEmbeddedFileData("group.png", binary);
+
+            var model = new
+            {
+                file = data,
+            };
+            doc.Params.Add("model", model);
+            
+            using (var sr = DocStreams.GetOutputStream("AttachmentsBoundToFileData.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += DocOnLayoutComplete;
+                doc.SaveAsPDF(sr);
+            }
+            
+            
+            
+        }
+        
 	}
 }
 

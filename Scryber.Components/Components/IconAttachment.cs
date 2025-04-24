@@ -55,7 +55,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or sets the embedded file data
         /// </summary>
-        [PDFAttribute("data")]
+        [PDFAttribute("file-data")]
         public virtual PDFEmbeddedFileData Data
         {
             get { return _data; }
@@ -183,30 +183,37 @@ namespace Scryber.Components
         protected override void DoDataBind(DataContext context, bool includeChildren)
         {
             base.DoDataBind(context, includeChildren);
-        }
-
-        protected override void DoLoad(LoadContext context)
-        {
-            base.DoLoad(context);
-            if (ShouldLoadAttachment())
+            
+            if (ShouldLoadAttachment(context))
             {
                 this.Request = this.RegisterLoadAttachment(this.Source, context);
             }
         }
 
-        protected virtual bool ShouldLoadAttachment()
+        protected override void DoLoad(LoadContext context)
+        {
+            base.DoLoad(context);
+            if (ShouldLoadAttachment(context))
+            {
+                this.Request = this.RegisterLoadAttachment(this.Source, context);
+            }
+        }
+
+        protected virtual bool ShouldLoadAttachment(ContextBase context)
         {
             if(null != this.Data)
                 return false;
             if(null != this.Request)
                 return false;
-            if(string.IsNullOrEmpty(this.Source))
+            if (string.IsNullOrEmpty(this.Source))
+            {
                 return false;
-            
+            }
+
             return true;
         }
 
-        protected virtual RemoteFileRequest RegisterLoadAttachment(string path, LoadContext context)
+        protected virtual RemoteFileRequest RegisterLoadAttachment(string path, ContextBase context)
         {
             
             var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
@@ -294,6 +301,14 @@ namespace Scryber.Components
 
                     context.DocumentLayout.RegisterCatalogEntry(context, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,  attach);
                 }
+                else if(null == attach)
+                {
+                    context.TraceLog.Add(TraceLevel.Warning, "Attachment", "No attachment was able to loaded for " + this.ID);
+                }
+            }
+            else
+            {
+                context.TraceLog.Add(TraceLevel.Verbose, "Attachment", "The component " + this.ID + " is set to hidden so no attachment is being added to the document." + this.ID);
             }
             base.DoRegisterArtefacts(context, set, fullstyle);
         }
@@ -338,10 +353,16 @@ namespace Scryber.Components
         {
             if (null == this.Attachment)
             {
+                PDFResource found = null;
                 var path = this.Source;
-                path = this.MapPath(path);
-                
-                var found = this.Document.GetResource(PDFResource.AttachmentFileSpecType, this, path, false);
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    path = this.MapPath(path);
+
+                    found = this.Document.GetResource(PDFResource.AttachmentFileSpecType, this, path, false);
+                }
+
                 if (null != found && found is PDFEmbeddedAttachment attachment)
                 {
                     this.Attachment = attachment;
@@ -355,7 +376,8 @@ namespace Scryber.Components
                             "Getting Attachment for component " + this.UniqueID);
 
                     this.Attachment = CreateAttachment(log, path);
-                    this.Document.SharedResources.Add(this.Attachment);
+                    if (this.Attachment != null)
+                        this.Document.SharedResources.Add(this.Attachment);
                 }
             }
             return this.Attachment;
@@ -369,6 +391,9 @@ namespace Scryber.Components
         {
 
             PDFEmbeddedAttachment attach = null;
+
+            if (null == this.Data)
+                return null;
 
             if (log.ShouldLog(TraceLevel.Verbose))
                 log.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,

@@ -43,6 +43,19 @@ namespace Scryber.PDF
         /// </summary>
         public PDFEmbeddedFileData NextFilteredData { get; set; }
 
+        public PDFEmbeddedFileData()
+        {
+            
+        }
+
+        public PDFEmbeddedFileData(string fullName, byte[] fileData) : this()
+        {
+            this.FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            this.FileData = fileData ?? throw new ArgumentNullException(nameof(fileData));
+            this.FileLength = fileData.Length;
+            this.DataLength = fileData.Length;
+        }
+
         /// <summary>
         /// Looks in this linked list of embedded file data for a matching filtered instance.
         /// </summary>
@@ -91,7 +104,7 @@ namespace Scryber.PDF
 
         public static PDFEmbeddedFileData Parse(string data)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         
