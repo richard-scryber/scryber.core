@@ -215,17 +215,31 @@ namespace Scryber.Components
 
         protected virtual RemoteFileRequest RegisterLoadAttachment(string path, ContextBase context)
         {
+            RemoteFileRequest request = null;
+
+            try
+            {
+                var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+                var cache = TimeSpan.FromMinutes(config.ImagingOptions.ImageCacheDuration);
             
-            var config = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
-            var cache = TimeSpan.FromMinutes(config.ImagingOptions.ImageCacheDuration);
+            
+                this.Attachment = this.GetAttachment(context);
             
             
-            this.Attachment = this.GetAttachment(context);
+                RemoteRequestCallback callback = new RemoteRequestCallback(this.RemoteAttachmentCallback);
             
-            
-            RemoteRequestCallback callback = new RemoteRequestCallback(this.RemoteAttachmentCallback);
-            
-            var request = this.Document.RegisterRemoteFileRequest(PDFResource.AttachmentFileSpecType, this.Attachment.FullFilePath, cache, callback,this, null);
+                request = this.Document.RegisterRemoteFileRequest(PDFResource.AttachmentFileSpecType, this.Attachment.FullFilePath, cache, callback,this, null);
+
+
+            }
+            catch (PDFException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PDFDataException("Could not load the file request for " + path, ex);
+            }
             
             return request;
         }
@@ -392,9 +406,6 @@ namespace Scryber.Components
 
             PDFEmbeddedAttachment attach = null;
 
-            if (null == this.Data)
-                return null;
-
             if (log.ShouldLog(TraceLevel.Verbose))
                 log.Add(TraceLevel.Verbose, PDFEmbeddedAttachment.EmbeddedFilesNamesCategory,
                     "Creating the attachment instance from the assigned data on the component");
@@ -412,6 +423,10 @@ namespace Scryber.Components
                 Name = new PDFName(this.Document.GetIncrementID(PDFEmbeddedAttachment.EmbeddedFileObjectType))
             };
 
+            if (this.Data == null)
+            {
+                log.Add(TraceLevel.Error, "Attachment", "The attachment file data was null. Could not create the embedded attachment from " + name + " with source " + (this.Source ?? "NULL") + "in component " + this.UniqueID);
+            }
 
             return attach;
         }

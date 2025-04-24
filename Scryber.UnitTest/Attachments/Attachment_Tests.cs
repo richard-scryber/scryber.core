@@ -305,7 +305,7 @@ namespace Scryber.Core.UnitTests.Attachments
             Assert.IsNotNull(embedded);
             PDFEmbeddedAttachmentDictionary dictionary = embedded as PDFEmbeddedAttachmentDictionary;
             Assert.IsNotNull(dictionary);
-            Assert.AreEqual(1, dictionary.Count);
+            Assert.AreEqual(2, dictionary.Count);
             
             var one = dictionary.First();
             
@@ -316,6 +316,17 @@ namespace Scryber.Core.UnitTests.Attachments
             Assert.IsNotNull(embed.FileData);
             Assert.IsTrue(embed.FullFilePath.EndsWith("group.png"));
             Assert.AreEqual("group.png", embed.Description);
+
+            
+            //Not Fount so should be null
+            
+            var second = dictionary.Last();
+            
+            Assert.IsNotNull(second);
+            Assert.AreEqual("hBdy1_landscapeAttachmentEmpty", second.Key);
+            var embed2 = second.Value;
+            Assert.IsNotNull(embed2);
+            Assert.IsNull(embed2.FileData);
             
             
             var lpg = this._layout.AllPages[0];
@@ -331,30 +342,43 @@ namespace Scryber.Core.UnitTests.Attachments
 
             var annots = col as PDFAnnotationCollection;
             Assert.IsNotNull(annots);
-            Assert.AreEqual(2, annots.Count);
+            Assert.AreEqual(3, annots.Count);
 
-            for (var i = 0; i < annots.Count; i++)
-            {
-                var annot = annots[i];
-                Assert.IsNotNull(annot);
-                var attach = annot as PDFAttachmentAnnotationEntry;
-                Assert.IsNotNull(attach);
+            //First Valid, Visible, HTML Object
+            
+            var annot = annots[0];
+            Assert.IsNotNull(annot);
+            var attach = annot as PDFAttachmentAnnotationEntry;
+            Assert.IsNotNull(attach);
                 
-                Assert.IsNotNull(attach.Attachment);
-                Assert.IsNotNull(attach.AttachmentFileSpec);
-                Assert.AreEqual(embed, attach.AttachmentFileSpec);
+            Assert.IsNotNull(attach.Attachment);
+            Assert.IsNotNull(attach.AttachmentFileSpec);
+            Assert.AreEqual(embed, attach.AttachmentFileSpec);
+            Assert.IsInstanceOfType(attach.LinkedFrom, typeof(HTMLObject));
+            
+            //Second Valid, Visible, Literal
+            
+            annot = annots[1];
+            Assert.IsNotNull(annot);
+            attach = annot as PDFAttachmentAnnotationEntry;
+            Assert.IsNotNull(attach);
                 
-                if (i % 2 == 0)
-                {
-                    //HTMLObject annotation
-                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(HTMLObject));
-                }
-                else
-                {
-                    //HTMLLink annotation with inner text literal
-                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(TextLiteral));
-                }
-            }
+            Assert.IsNotNull(attach.Attachment);
+            Assert.IsNotNull(attach.AttachmentFileSpec);
+            Assert.AreEqual(embed, attach.AttachmentFileSpec);
+            Assert.IsInstanceOfType(attach.LinkedFrom, typeof(TextLiteral));
+
+            //Third INVALID, Visible, Object
+            
+            annot = annots[2];
+            Assert.IsNotNull(annot);
+            attach = annot as PDFAttachmentAnnotationEntry;
+            Assert.IsNotNull(attach);
+                
+            Assert.IsNotNull(attach.Attachment);
+            Assert.IsNotNull(attach.AttachmentFileSpec);
+            Assert.IsNull(attach.AttachmentFileSpec.FileData); //Should not have File Data
+            Assert.IsInstanceOfType(attach.LinkedFrom, typeof(HTMLObject));
         }
         
 	}

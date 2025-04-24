@@ -66,6 +66,16 @@
                  data-icon="PushPin"
                  style="border: solid 1pt red;" ></object>
     </div>
+
+    <h2>Bound to data that does not exist, dynamically hidden</h2>
+    <div style="border: solid 1pt green; line-height: 20pt; margin: 10pt;" >
+        <object  id="landscapeAttachmentEmptyDynamicHidden"
+                 hidden="{{if(model.nofile, '','hidden')}}"
+                 data-file="{{model.nofile}}"
+                 type="application/attachment"
+                 data-icon="PushPin"
+                 style="border: solid 1pt red;" ></object>
+    </div>
     
     <footer>
         <p style="text-align: center;"><page data-format="Page {0} of {1}"/></p>
