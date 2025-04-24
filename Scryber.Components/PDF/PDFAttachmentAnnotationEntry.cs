@@ -45,6 +45,8 @@ namespace Scryber.PDF
                 writer.WriteDictionaryStringEntry("Contents", this.AlternateText);
             else if (!string.IsNullOrEmpty(this.Attachment.Description))
                 writer.WriteDictionaryStringEntry("Contents", this.Attachment.Description);
+            
+            writer.WriteDictionaryNumberEntry("Size", this.AttachmentFileSpec.FileData.DataLength);
 
             AttachmentDisplayIcon icon = this.AnnotationStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
             var arrange = this.LinkedFrom?.GetFirstArrangement();

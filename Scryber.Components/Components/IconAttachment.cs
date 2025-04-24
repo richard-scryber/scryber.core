@@ -277,8 +277,9 @@ namespace Scryber.Components
             if (this.Visible)
             {
                 PDFEmbeddedAttachment attach = this.GetAttachment(context);
-
-                if (null != attach)
+                var icon = fullstyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.PushPin);
+                
+                if (null != attach && icon != AttachmentDisplayIcon.None)
                 {
 
                     this.Annotation = new PDFAttachmentAnnotationEntry(this, this, attach, fullstyle);

@@ -377,8 +377,8 @@ namespace Scryber.Components
                     annot = new PDFAttachmentAnnotationEntry(icon, comp, attach, style);
                     
 
-                    if (!string.IsNullOrEmpty(this.AlternateText))
-                        annot.AlternateText = this.AlternateText;
+                    if (!string.IsNullOrEmpty(this.OutlineTitle))
+                        annot.AlternateText = this.OutlineTitle;
 
                     object entry = pg.RegisterPageEntry(context, PDFArtefactTypes.Annotations, annot);
 

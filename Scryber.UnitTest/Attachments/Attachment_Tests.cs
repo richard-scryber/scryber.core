@@ -35,6 +35,7 @@ namespace Scryber.Core.UnitTests.Attachments
             }
         }
 
+        private PDF.Layout.PDFLayoutDocument _layout;
         public Attachment_Tests()
 		{
 		}
@@ -79,11 +80,19 @@ namespace Scryber.Core.UnitTests.Attachments
             using (var sr = DocStreams.GetOutputStream("TestIconAttachment.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+                doc.LayoutComplete += DocOnLayoutComplete;
                 doc.SaveAsPDF(sr);
             }
+            
+            
+            
         }
-        
+
+        private void DocOnLayoutComplete(object sender, LayoutEventArgs args)
+        {
+            this._layout = (args.Context as PDFLayoutContext).DocumentLayout;
+        }
+
         [TestMethod]
         public void AttachmentInTemplateAttachment()
         {
@@ -100,7 +109,154 @@ namespace Scryber.Core.UnitTests.Attachments
 
             using (var sr = DocStreams.GetOutputStream("AttachmentWithIcon.pdf"))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += DocOnLayoutComplete;
                 doc.SaveAsPDF(sr);
+            }
+            
+            Assert.IsNotNull(this._layout);
+            Assert.AreEqual(3, this._layout.TotalPageCount);
+            var artefacts = _layout.Artefacts;
+            
+            //Embedded File reference
+            
+            Assert.AreEqual(3, artefacts.Count);
+            var found = artefacts.TryGetCollection("EmbeddedFiles", out var embedded);
+            Assert.IsTrue(found);
+            Assert.IsNotNull(embedded);
+            PDFEmbeddedAttachmentDictionary dictionary = embedded as PDFEmbeddedAttachmentDictionary;
+            Assert.IsNotNull(dictionary);
+            Assert.AreEqual(1, dictionary.Count);
+            
+            var one = dictionary.First();
+            
+            Assert.IsNotNull(one);
+            Assert.AreEqual("hBdy1_landscapeAttachment", one.Key);
+            var embed = one.Value;
+            Assert.IsNotNull(embed);
+            Assert.IsNotNull(embed.FileData);
+            Assert.IsTrue(embed.FullFilePath.EndsWith("landscape.jpg"));
+            Assert.AreEqual("./Images/landscape.jpg", embed.Description);
+            
+            //Page 1
+
+            var lpg = this._layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+
+            var pgArtefacts = lpg.Artefacts;
+            Assert.IsNotNull(pgArtefacts);
+            Assert.AreEqual(1, pgArtefacts.Count);
+            found = pgArtefacts.TryGetCollection("Annots", out var col);
+            
+            Assert.IsTrue(found);
+            Assert.IsNotNull(col);
+
+            var annots = col as PDFAnnotationCollection;
+            Assert.IsNotNull(annots);
+            Assert.AreEqual(10, annots.Count);
+
+            for (var i = 0; i < annots.Count; i++)
+            {
+                var annot = annots[i];
+                Assert.IsNotNull(annot);
+                var attach = annot as PDFAttachmentAnnotationEntry;
+                Assert.IsNotNull(attach);
+                
+                Assert.IsNotNull(attach.Attachment);
+                Assert.IsNotNull(attach.AttachmentFileSpec);
+                Assert.AreEqual(embed, attach.AttachmentFileSpec);
+                
+                if (i % 2 == 0)
+                {
+                    //HTMLObject annotation
+                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(HTMLObject));
+                }
+                else
+                {
+                    //HTMLLink annotation with inner text literal
+                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(TextLiteral));
+                }
+            }
+            
+            //Page 2
+            
+            lpg = this._layout.AllPages[1];
+            Assert.IsNotNull(lpg);
+
+            pgArtefacts = lpg.Artefacts;
+            Assert.IsNotNull(pgArtefacts);
+            Assert.AreEqual(1, pgArtefacts.Count);
+            found = pgArtefacts.TryGetCollection("Annots", out var col2);
+            
+            Assert.IsTrue(found);
+            Assert.IsNotNull(col);
+
+            annots = col2 as PDFAnnotationCollection;
+            Assert.IsNotNull(annots);
+            Assert.AreEqual(10, annots.Count);
+
+            for (var i = 0; i < annots.Count; i++)
+            {
+                var annot = annots[i];
+                Assert.IsNotNull(annot);
+                var attach = annot as PDFAttachmentAnnotationEntry;
+                Assert.IsNotNull(attach);
+                
+                Assert.IsNotNull(attach.Attachment);
+                Assert.IsNotNull(attach.AttachmentFileSpec);
+                Assert.AreEqual(embed, attach.AttachmentFileSpec);
+                
+                if (i % 2 == 0)
+                {
+                    //HTMLObject annotation
+                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(HTMLObject));
+                }
+                else
+                {
+                    //HTMLLink annotation with inner text literal
+                    Assert.IsInstanceOfType(attach.LinkedFrom, typeof(TextLiteral));
+                }
+            }
+            
+            //Page 3
+            
+            lpg = this._layout.AllPages[2];
+            Assert.IsNotNull(lpg);
+
+            pgArtefacts = lpg.Artefacts;
+            Assert.IsNotNull(pgArtefacts);
+            Assert.AreEqual(1, pgArtefacts.Count);
+            found = pgArtefacts.TryGetCollection("Annots", out var col3);
+            
+            Assert.IsTrue(found);
+            Assert.IsNotNull(col);
+
+            annots = col3 as PDFAnnotationCollection;
+            Assert.IsNotNull(annots);
+            Assert.AreEqual(5, annots.Count);
+
+            var types = new []
+            {
+                typeof(HTMLObject),
+                typeof(TextLiteral),
+                typeof(HTMLImage),
+                typeof(TextLiteral),
+                typeof(TextLiteral),
+            };
+
+            for (var i = 0; i < annots.Count; i++)
+            {
+                var annot = annots[i];
+                Assert.IsNotNull(annot);
+                var attach = annot as PDFAttachmentAnnotationEntry;
+                Assert.IsNotNull(attach);
+                
+                Assert.IsNotNull(attach.Attachment);
+                Assert.IsNotNull(attach.AttachmentFileSpec);
+                Assert.AreEqual(embed, attach.AttachmentFileSpec);
+                
+                Assert.AreEqual(types[i], attach.LinkedFrom.GetType(), "Type failed at index " + i);
+                //Could check types, but we know there are 8, so assumed good.
             }
         }
 	}

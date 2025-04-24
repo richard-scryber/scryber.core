@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace Scryber.PDF;
 
-public class PDFEmbeddedAttachmentDictionary : IArtefactCollection
+public class PDFEmbeddedAttachmentDictionary : IArtefactCollection, IEnumerable<KeyValuePair<string, PDFEmbeddedAttachment>>
 {
 
     private Dictionary<string, PDFEmbeddedAttachment> _embeddedAttachments;
@@ -15,6 +15,10 @@ public class PDFEmbeddedAttachmentDictionary : IArtefactCollection
     {
         
     }
+    
+    public int Count => this._embeddedAttachments.Count;
+    
+    public PDFEmbeddedAttachment this[string key] => this._embeddedAttachments[key];
     
     public string CollectionName { get => PDFArtefactTypes.EmbeddedFiles; }
     
@@ -138,5 +142,15 @@ public class PDFEmbeddedAttachmentDictionary : IArtefactCollection
         }
         else
             return null;
+    }
+
+    public IEnumerator<KeyValuePair<string, PDFEmbeddedAttachment>> GetEnumerator()
+    {
+        return this._embeddedAttachments.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
