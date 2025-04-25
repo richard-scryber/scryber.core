@@ -936,8 +936,16 @@ namespace Scryber.Core.UnitTests.Html
             
             using var sr = new System.IO.StringReader(html);
             using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
+            using var stream = DocStreams.GetOutputStream("ComponentTemplateEmbed.pdf");
 
+            var model = new
+            {
+                fragmentContent = "Bound content"
+            };
+            doc.Params.Add("model", model);
+            
+            doc.SaveAsPDF(stream);
+            
             Assert.AreEqual(1, doc.Pages.Count);
             var pg = doc.Pages[0];
             Assert.IsInstanceOfType(pg, typeof(Section));

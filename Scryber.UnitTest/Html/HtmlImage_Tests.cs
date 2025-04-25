@@ -624,7 +624,10 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(width, imgLayout.Width);
+                        
+                        //As per chrome, the height will use the available space and the content will overflow the available width
+                        var imgWidth = new Unit(2.75, PageUnits.Inches);
+                        Assert.AreEqual(imgWidth, imgLayout.Width);
 
                     }
 
@@ -686,7 +689,8 @@ namespace Scryber.Core.UnitTests.Html
                         Assert.AreEqual(1, line.Runs.Count);
 
                         var imgLayout = line.Runs[0] as PDFLayoutComponentRun;
-                        Assert.AreEqual(width, imgLayout.Width);
+                        var imgWidth = new Unit(320, PageUnits.Points);
+                        Assert.AreEqual(Math.Round(imgWidth.PointsValue, 3), Math.Round(imgLayout.Width.PointsValue, 3));
 
                     }
 

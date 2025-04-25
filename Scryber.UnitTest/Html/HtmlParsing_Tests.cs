@@ -2912,9 +2912,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BasePath()
         {
-            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/Toroid24.png";
-
-            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+             var src = @"<?scryber append-log=true parser-log=true ?>
+                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
                                 <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/' />
@@ -2938,6 +2937,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
                 {
                     doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.AppendTraceLog = true;
                     doc.SaveAsPDF(stream);
                 }
                 Assert.AreEqual(1, doc.Styles.Count, "Remote styles were not loaded");
@@ -2948,7 +2948,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 var embed = doc.FindAComponentById("myDrawing") as SVGCanvas;
                 Assert.IsNotNull(embed);
-                Assert.AreNotEqual(0, embed.Contents.Count, "SVG drawing was not loaded from the source");
+                Assert.AreNotEqual(0, embed.Contents.Count, "Embedded content was not loaded from the source");
                 
             }
         }

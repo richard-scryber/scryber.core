@@ -76,7 +76,7 @@ namespace Scryber.Html.Components
 
         protected HTMLiFrame(ObjectType type): base(type)
         {
-            this.Passthrough = true;
+            this.Passthrough = false;
         }
 
 

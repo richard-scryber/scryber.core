@@ -5,7 +5,8 @@ using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
-    [PDFParsableComponent("embed")]
+    [PDFParsableComponent("embedded")]
+    [PDFRemoteParsableComponent("embed", SourceAttribute = "src")]
     public class HTMLEmbed : VisualComponent, IInvisibleContainer
     {
 
@@ -44,6 +45,14 @@ namespace Scryber.Html.Components
         {
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
+        }
+
+        [PDFArray()]
+        [PDFElement("")]
+        public ComponentList Contents 
+        { 
+            get { return this.InnerContent; } 
+            set { this.InnerContent = value; }
         }
 
 
