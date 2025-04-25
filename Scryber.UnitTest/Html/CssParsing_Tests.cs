@@ -2838,8 +2838,7 @@ body.grey div.reverse{
                     doc.SaveAsPDF(stream);
                 }
 
-                Assert.Inconclusive("Need to sort the standard and solid font programmes from the css stylesheet");
-
+                
                 var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
 
                 Assert.AreEqual("Font Awesome document", doc.Info.Title, "Title is not correct");
@@ -2848,14 +2847,39 @@ body.grey div.reverse{
 
                 var html = (HTMLDocument)_layoutcontext.Document;
 
-                //The font and the image
-                Assert.AreEqual(1, html.SharedResources.Count);
-
-                //could be first or second
-                var fa = html.SharedResources[0] as PDFFontResource;
+                //There are 3 fonts in the all css - brands, fa and fa-900.
+                var names = new string[]
+                {
+                    "Font Awesome 5 Brands",
+                    "Font Awesome 5 Free",
+                    "Font Awesome 5 Free,Bold",
+                };
+                
+                    
+                Assert.AreEqual(3, html.SharedResources.Count);
+                
+                var font = html.SharedResources[0] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
                 
 
-                Assert.IsNotNull(fa);
+                var exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
+                font = html.SharedResources[1] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
+
+                exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
+                font = html.SharedResources[2] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
+
+                exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
             }
 
         }
