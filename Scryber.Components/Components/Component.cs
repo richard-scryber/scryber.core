@@ -709,7 +709,8 @@ namespace Scryber.Components
             get { return _class; }
             set 
             {
-                _class = value; 
+                _class = value;
+                _appliedStyle = null;
             }
         }
 

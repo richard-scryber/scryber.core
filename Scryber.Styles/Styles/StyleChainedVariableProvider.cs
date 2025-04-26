@@ -13,6 +13,7 @@ namespace Scryber.Styles
 
         private IVariableProvider _next;
         private StyleVariableSet _variables;
+        private Style _owner;
 
         /// <summary>
         /// The next variable provider to fall back to
@@ -30,15 +31,23 @@ namespace Scryber.Styles
             get { return _variables; }
         }
 
+        
+        public Style Owner
+        {
+            get;
+        }
+
         /// <summary>
         /// Creates a new Chained variable provider
         /// </summary>
         /// <param name="vars"></param>
         /// <param name="next"></param>
-        public StyleChainedVariableProvider(StyleVariableSet vars, IVariableProvider next)
+        /// <param name="owner"></param>
+        public StyleChainedVariableProvider(StyleVariableSet vars, IVariableProvider next, Style owner)
         {
             this._variables = vars ?? throw new ArgumentNullException(nameof(vars));
             this._next = next;
+            this._owner = owner;
         }
 
         /// <summary>
@@ -60,10 +69,9 @@ namespace Scryber.Styles
                 value = styleVar.Value;
                 result = true;
             }
-
-            //Next we check any previous values
-            if (null != this._next && this.NextProvider.TryGetValue(variableName, out nextVal))
+            else if (null != this._next && this.NextProvider.TryGetValue(variableName, out nextVal))
             {
+                //Next we check any previous values as we have not found a match
                 value = nextVal;
                 result = true;
             }

@@ -2977,6 +2977,8 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public static IComponent ParseHtml(string fullpath) + 6 overloads
+        
         public static IComponent ParseHtml(string fullpath)
         {
             using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -3047,6 +3049,8 @@ namespace Scryber.Components
             return comp;
         }
 
+        #endregion
+        
 
         #region public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, string referencepath, Stream stream) + 2 overloads
 

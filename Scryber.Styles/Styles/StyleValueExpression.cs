@@ -258,8 +258,9 @@ namespace Scryber.Styles
         {
             IVariableProvider provider = this._variableProvider;
 
+            
             if (forStyle is Style style && style.HasVariables)
-                provider = new StyleChainedVariableProvider(style.Variables, provider);
+                provider = new StyleChainedVariableProvider(style.Variables, provider, style);
 
             object value = _expression.Evaluate(provider);
             T result;
@@ -270,6 +271,7 @@ namespace Scryber.Styles
                 result = (T)value;
             else
                 throw new InvalidCastException("Could not convert the returned value to type " + typeof(T) + ", please provide a convertor");
+            
 
             return result;
         }

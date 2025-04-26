@@ -104,6 +104,9 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.SetValue(StyleKeys.FontSizeKey, Scryber.Drawing.Font.DefaultFontSize); //matches the HTML document
+
+            if (this.HasParams && this.HasRootStyles)
+                this.EnsureParamsInRoots();
             return style;
         }
 
@@ -125,17 +128,20 @@ namespace Scryber.Html.Components
                 return _roots;
             }
         }
+
+        public bool HasRootStyles
+        {
+            get{ return null != this._roots && this._roots.Count > 0; }
+        }
+
+        
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
-            //if (null == baseStyle)
-            //    baseStyle = new Style();
-
-            //this.RootStyles.MergeInto(baseStyle, forComponent);
-
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
-            
             return applied;
         }
+
+        
 
         protected virtual void AddRootStyles()
         {
@@ -147,10 +153,27 @@ namespace Scryber.Html.Components
             defn = new StyleDefn("q:after");
             defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("close-quote", "”"));
             this.RootStyles.Add(defn);
+        }
 
+        
+        
+        protected virtual void EnsureParamsInRoots()
+        {
+            StyleDefn innerRoot = new StyleDefn(":root");
+            foreach (var key in this.Params.Keys)
+            {
+                if (key is string str && str.StartsWith("--"))
+                {
+                    var value = this.Params[str];
+                    
+                    if (null != value)
+                        innerRoot.AddVariable(str, value.ToString());
 
-
-
+                }
+            }
+            
+            if(innerRoot.Variables.Count > 0)
+                this.RootStyles.Add(innerRoot);
         }
     }
 }

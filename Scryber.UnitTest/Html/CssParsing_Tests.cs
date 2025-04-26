@@ -2425,25 +2425,38 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithCalcExpressionAndVariable()
         {
-            var cssWithCalc = @"
+            var cssWithCalc = $@"
 
-            :root{
-               --text-color: #000000;
-            }
-            .other{
+            :root{{
+               --text-color: #FFFF00;
+            }}
+            .declared{{
+                background-color: calc(concat('#', '00', 'FF', '00'));
+                color: var(--text-color, #00FFFF);
+            }}
+            .other{{
                background-color: calc(concat('#', 'FF', '00', '00'));
-               color: var(--text-color, #00FFFF);
-            }";
+               color: var(--other-color, #00FFFF);
+            }}";
 
 
             using (var doc = BuildDocumentWithStyles(cssWithCalc))
             {
-                doc.StyleClass = "other";
-                doc.Params["--text-color"] = StandardColors.Lime;
+                //First check the declared
+                doc.StyleClass = "declared";
                 var applied = doc.GetAppliedStyle();
+                
+                Assert.AreEqual("rgb(0,255,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+                Assert.AreEqual(new Color(255,255,0), applied.Fill.Color, "The parameter value for the variable --text-color was not used");
+                
+                //Now switch to use the parameter
+                doc.Params["--other-color"] = StandardColors.Lime;
+                doc.StyleClass = "other";
 
+                applied = doc.GetAppliedStyle();
+                
                 Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-                Assert.AreEqual(StandardColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
+                Assert.AreEqual(StandardColors.Lime, applied.Fill.Color, "The parameter value for the variable --other-color was not used");
             }
         }
 
@@ -2918,7 +2931,7 @@ body.grey div.reverse{
         /// <returns>The applied style</returns>
         private Document BuildDocumentWithStyles(string css)
         {
-            var doc = new Document();
+            var doc = new HTMLDocument();
             var pg = new Page();
             doc.Pages.Add(pg);
 
