@@ -51,15 +51,15 @@ namespace Scryber.Core.UnitTests.Html
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <!--<div id='rotate10' style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: fixed; border: solid 2px red;' >
+    <div id='rotate10' style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: fixed; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
-    </div>-->
+    </div>
     <div id='rotate20' style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: fixed; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <!--<div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(30deg); position: fixed; border: solid 2px red;' >
+    <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(30deg); position: fixed; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
@@ -78,7 +78,7 @@ namespace Scryber.Core.UnitTests.Html
     <div style='width: 100pt; background-color:#ddd; height:200pt; transform: rotate(70deg); position: fixed; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
-    </div>-->
+    </div>
     <p>After the transformed content of the page</p>
 </body>
 </html>";

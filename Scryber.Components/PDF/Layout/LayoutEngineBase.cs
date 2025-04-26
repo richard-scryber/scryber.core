@@ -992,7 +992,7 @@ namespace Scryber.PDF.Layout
             //If we have style then check if are actually relatively or absolutely positioned
             if (IsStyled(comp))
             {
-                options = full.CreatePostionOptions(this.Context.PositionDepth > 0);
+                options = full.CreatePostionOptions(false); //this.Context.PositionDepth > 0);
                 
                 if (options.PositionMode == PositionMode.Fixed)
                 {
