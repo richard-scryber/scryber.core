@@ -1830,12 +1830,11 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithVariablesOverriden()
         {
-            //3. Third check that will use the items collection rather than the declared value
+            //3. Third check that will use the items collection
             string cssWithVariable = @"
 
                 :root{
                     color: #00FF00;
-                    --main-color: #FF0000;
                 }
 
                 .other{

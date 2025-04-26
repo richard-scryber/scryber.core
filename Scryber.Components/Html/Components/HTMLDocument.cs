@@ -172,7 +172,7 @@ namespace Scryber.Html.Components
                 }
             }
             
-            if(innerRoot.Variables.Count > 0)
+            if(innerRoot.HasVariables)
                 this.RootStyles.Add(innerRoot);
         }
     }
