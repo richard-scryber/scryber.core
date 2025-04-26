@@ -154,36 +154,36 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Warning' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='rotate10' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: absolute; border: solid 2px red;' >
+    <div id='rotate10' style='left: 75pt; top: 100pt; width: 150pt; background-color:#ddd; height:200pt; transform: rotate(10deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='rotate20' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
+    <div id='rotate20' style='left: 100pt; top: 100pt; width: 200pt; background-color:#ddd; height:200pt; transform: rotate(20deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(30deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 125pt; top: 100pt; width: 250pt; background-color:#ddd; height:200pt; transform: rotate(30deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(40deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 150pt; top: 100pt; width: 300pt; background-color:#ddd; height:200pt; transform: rotate(40deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(50deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 175pt; top: 100pt; width: 350pt; background-color:#ddd; height:200pt; transform: rotate(50deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(60deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 200pt; top: 100pt; width: 400pt; background-color:#ddd; height:200pt; transform: rotate(60deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: rotate(70deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 225pt; top: 100pt; width: 450pt; background-color:#ddd; height:200pt; transform: rotate(70deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='top: 100pt; height:30pt; background-color:blue'></div>
     </div>
@@ -265,7 +265,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
@@ -376,36 +376,36 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Warning' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='rotate10' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(10pt, 20pt); position: absolute; border: solid 2px red;' >
+    <div id='rotate10' style='left: 75pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(10pt, 20pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='rotate20' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(20pt, 40pt); position: absolute; border: solid 2px red;' >
+    <div id='rotate20' style='left: 100pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(20pt, 40pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(30pt, 60pt); position: absolute; border: solid 2px red;' >
+    <div style='left: 125pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(30pt, 60pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(40pt, 80pt); position: absolute; border: solid 2px red;' >
+    <div style='left: 150pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(40pt, 80pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(50pt, 100pt); position: absolute; border: solid 2px red;' >
+    <div style='left: 175pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(50pt, 100pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(60pt, 120pt); position: absolute; border: solid 2px red;' >
+    <div style='left: 200pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(60pt, 120pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(70pt, 140pt); position: absolute; border: solid 2px red;' >
+    <div style='left: 225pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: translate(70pt, 140pt); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='top: 100pt; height:30pt; background-color:blue'></div>
     </div>
@@ -488,7 +488,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
@@ -602,31 +602,31 @@ namespace Scryber.Core.UnitTests.Html
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='skew10' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(10deg, 5deg); position: absolute; border: solid 2px red;' >
+    <div id='skew10' style='left: 100pt; top: 125pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(10deg, 5deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='skew20' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(20deg, 10deg); position: absolute; border: solid 2px red;' >
+    <div id='skew20' style='left: 150pt; top: 150pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(20deg, 10deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(30deg, 15deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 200pt; top: 175pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(30deg, 15deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(40deg, 20deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 250pt; top: 200pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(40deg, 20deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(50deg, 25deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 300pt; top: 225pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(50deg, 25deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(60deg, 30deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 350pt; top: 250pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(60deg, 30deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(70deg, 35deg); position: absolute; border: solid 2px red;' >
+    <div style='left: 400pt; top: 275pt; width: 100pt; background-color:#ddd; height:200pt; transform: skew(70deg, 35deg); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
@@ -710,7 +710,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
@@ -820,36 +820,36 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
-    <div id='plain' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
+<body style='padding:20pt;font-size: 12pt;' >
+    <div id='plain' style='left: 50pt; top: 50pt; width: 100pt; background-color:#ddd; height:200pt; position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='skew10' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(2, 4); position: absolute; border: solid 2px red;' >
+    <div id='skew10' style='left: 75pt; top: 75pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(2, 4); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div id='skew20' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.8, 3.6); position: absolute; border: solid 2px red;' >
+    <div id='skew20' style='left: 100pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.8, 3.6); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.6, 3.2); position: absolute; border: solid 2px red;' >
+    <div style='left: 150pt; top: 150pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.6, 3.2); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.4, 2.8); position: absolute; border: solid 2px red;' >
+    <div style='left: 175pt; top: 175pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.4, 2.8); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.2, 2.4); position: absolute; border: solid 2px red;' >
+    <div style='left: 200pt; top: 200pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1.2, 2.4); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1, 2); position: absolute; border: solid 2px red;' >
+    <div style='left: 225pt; top: 225pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(1, 2); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
-    <div style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(0.8, 1.6); position: absolute; border: solid 2px red;' >
+    <div style='left: 250pt; top: 250pt; width: 100pt; background-color:#ddd; height:200pt; transform: scale(0.8, 1.6); position: absolute; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
     </div>
@@ -928,7 +928,7 @@ namespace Scryber.Core.UnitTests.Html
 
             var html = @"<?scryber append-log='true' log-level='Diagnostic' parser-log='true' ?>
 <html xmlns='http://www.w3.org/1999/xhtml' >
-<body style='padding:20pt;' >
+<body style='padding:20pt; font-size: 12pt;' >
     <div id='plain' style='left: 50pt; top: 100pt; width: 100pt; background-color:#ddd; height:200pt; position: fixed; border: solid 2px red;' >
         Content of the div
         <div style='height:30pt; background-color:blue'></div>
