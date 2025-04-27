@@ -382,6 +382,21 @@ namespace Scryber.PDF.Layout
         /// Gets or sets the flag for this block - if it is part of the normal document flow
         /// </summary>
         public bool IsInlineContent { get; set; }
+        
+#if DEBUG
+
+        /// <summary>
+        /// This is the final matrix used for rendering - used to validate the properties in unit testing, but currently not required for production
+        /// </summary>
+        public PDFTransformationMatrix RenderMatrix { get; set; }
+        
+        /// <summary>
+        /// This is the final orgin for the matrix used for rendering - used to validate the properties in unit testing, but currently not required for production
+        /// </summary>
+        public TransformOrigin RenderOrigin { get; set; }
+
+
+#endif
 
         //
         // ctor(s)
@@ -1646,7 +1661,14 @@ namespace Scryber.PDF.Layout
                 
                 //Save the newly caclulated values back on the block.
                 //this.Position.TransformMatrix = full;
-                this.TransformedOffset = transformedBounds.Location;
+                
+#if DEBUG
+                //Used in the unit tests, but not needed in production
+                this.RenderMatrix = matrix;
+                this.RenderOrigin = origin;
+                
+#endif
+                
                 transformed = true;
             }
 

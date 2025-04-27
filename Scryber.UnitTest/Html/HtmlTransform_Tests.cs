@@ -105,38 +105,38 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 0.9848, -0.1736, 0.1736, 0.9848, 50, 741.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 0.984807753012208,-0.17364817766693033,0.17364817766693033,0.984807753012208,-124.29138466766238,23.122500025989666 },
+                offset = new double[] { 70, 120 }
             };
             var transform3 = new
             {
-                matrix = new double[] { 0.9397, -0.3420, 0.3420, 0.9397, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.9396926207859084,-0.3420201433256687,0.3420201433256687,0.9396926207859084,-242.6793239283823,67.47668976784826 },
+                offset = new double[] { 70, 120 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 0.8660, -0.5, 0.5, 0.866, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.8660254037844387,-0.49999999999999994,0.49999999999999994,0.8660254037844387,-351.5666601549106,131.71488961457237 },
+                offset = new double[] { 70, 120 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 0.7660, -0.6428, 0.6428, 0.7660, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.766044443118978,-0.6427876096865393,0.6427876096865393,0.766044443118978,-447.6449067356551,213.8852543699171 },
+                offset = new double[] { 70, 120 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 0.6428, -0.766, 0.7660, 0.6428, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.6427876096865394,-0.766044443118978,0.766044443118978,0.6427876096865394,-527.9947747661984,311.4910790810017 },
+                offset = new double[] { 70, 120 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 0.5000, -0.866, 0.866, 0.5, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.5000000000000001,-0.8660254037844386,0.8660254037844386,0.5000000000000001,-590.1748741654275,421.5666601549106 },
+                offset = new double[] { 70, 120 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 0.3420, -0.9397, 0.9397, 0.3420, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.3420201433256688,-0.9396926207859083,0.9396926207859083,0.3420201433256688,-632.2958940777453,540.7674067616447 },
+                offset = new double[] { 70, 120 }
             };
 
             //OutputLayoutTransform();
@@ -215,38 +215,38 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 0.9848, -0.1736, 0.1736, 0.9848, 100, 641.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 0.984807753012208,-0.17364817766693033,0.17364817766693033,0.984807753012208,-109.18415069528453,35.798974480320794 },
+                offset = new double[] { 150, 200 }
             };
             var transform3 = new
             {
-                matrix = new double[] { 0.9397, -0.3420, 0.3420 , 0.9397, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.9396926207859084,-0.3420201433256687,0.3420201433256687,0.9396926207859084,-207.4777531644969,107.11471806305792 },
+                offset = new double[] { 200, 200 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 0.8660, -0.5, 0.5, 0.866, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.8660254037844387,-0.49999999999999994,0.49999999999999994,0.8660254037844387,-287.4512328361096,210.99692191732754 },
+                offset = new double[] {250, 200 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 0.7660, -0.6428, 0.6428, 0.7660, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.766044443118978,-0.6427876096865393,0.6427876096865393,0.766044443118978,-342.41211987809686,343.0099600473393 },
+                offset = new double[] { 300, 200 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 0.6428, -0.766, 0.7660, 0.6428, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.6427876096865394,-0.766044443118978,0.766044443118978,0.6427876096865394,-366.6917500289112,497.4065319292387 },
+                offset = new double[] { 350, 200 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 0.5000, -0.866, 0.866, 0.5, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.5000000000000001,-0.8660254037844386,0.8660254037844386,0.5000000000000001,-355.8928418626724,667.3550434037754 },
+                offset = new double[] { 400, 200 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 0.3420, -0.9397, 0.9397, 0.3420, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.3420201433256688,-0.9396926207859083,0.9396926207859083,0.3420201433256688,-307.08813887862675,845.2122141263434 },
+                offset = new double[] { 450, 200 }
             };
 
             //OutputLayoutTransform();
@@ -326,38 +326,38 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 60, 721.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 10, -20 },
+                offset = new double[] { 70, 120 } //middle of shape from page top
             };
             var transform3 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 70, 701.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 20, -40 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 80, 681.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 30, -60 },
+                offset = new double[] { 70, 120 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 90, 661.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 40, -80 },
+                offset = new double[] { 70, 120 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 50, -100 },
+                offset = new double[] { 70, 120 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 110, 621.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 60, -120 },
+                offset = new double[] { 70, 120 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 120, 601.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 70, -140 },
+                offset = new double[] { 70, 120 }
             };
 
             //OutputLayoutTransform();
@@ -437,38 +437,38 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 110, 621.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 10, -20 },
+                offset = new double[] { 125, 200 } //middle of shape from page top
             };
             var transform3 = new
             {
-                matrix = new double[] { 1,0, 0, 1, 120, 601.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 20, -40 },
+                offset = new double[] { 150, 200 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 130, 581.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 30, -60 },
+                offset = new double[] { 175, 200 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 140, 561.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 40, -80 },
+                offset = new double[] { 200, 200 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 150, 541.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 50, -100 },
+                offset = new double[] { 225, 200 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 160, 521.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 60, -120 },
+                offset = new double[] { 250, 200 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 1, 0, 0, 1, 170, 501.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, 0, 0, 1, 70, -140 },
+                offset = new double[] { 275, 200 }
             };
 
             //OutputLayoutTransform();
@@ -547,38 +547,44 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 1, -0.0873, -0.1745, 1, 50, 741.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 1, -0.0875, -0.1763, 1, 127.2886, 6.1242 },
+                offset = new double[] { 70, 120 }
             };
+            
             var transform3 = new
             {
-                matrix = new double[] { 1, -0.1745, -0.3491, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.1763, -0.3640, 1, 262.7464, 12.3429 },
+                offset = new double[] { 70.0, 120 }
             };
+            
             var transform4 = new
             {
-                matrix = new double[] { 1, -0.2618, -0.5236, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.2679, -0.5774, 1, 416.7832, 18.7564 },
+                offset = new double[] { 70.0, 120 }
             };
+                
             var transform5 = new
             {
-                matrix = new double[] { 1, -0.3491, -0.6981, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.364, -0.8391, 1, 605.7374, 25.4779 },
+                offset = new double[] { 70.0, 120 }
             };
+            
             var transform6 = new
             {
-                matrix = new double[] { 1, -0.4363, -0.8727, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.4663, -1.1918, 1, 860.3147, 32.6415 },
+                offset = new double[] { 70.0, 120 }
             };
+            
             var transform7 = new
             {
-                matrix = new double[] { 1, -0.5236, -1.0472, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.5774, -1.7321, 1, 1250.3497, 40.4145 },
+                offset = new double[] { 70.0, 120 }
             };
+            
             var transform8 = new
             {
-                matrix = new double[] { 1, -0.6109, -1.2217, 1, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1, -0.7002, -2.7475, 1, 1983.3758, 49.01453 },
+                offset = new double[] { 70.0, 120 }
             };
 
             //OutputLayoutTransform();
@@ -660,38 +666,44 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 1, -0.0873, -0.1745, 1, 100, 641.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 1,-0.087488663525924,-0.17632698070846498,1,108.77430947728557,13.123299528888651 },
+                offset = new double[] { 150, 225 }
             };
+            
             var transform3 = new
             {
-                matrix = new double[] { 1, -0.1745, -0.3491, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.17632698070846498,-0.36397023426620234,1,215.43025598277376,35.26539614169303 },
+                offset = new double[] { 200, 250 }
             };
+            
             var transform4 = new
             {
-                matrix = new double[] { 1, -0.2618, -0.5236, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.2679491924311227,-0.5773502691896256,1,327.2939577192262,66.9872981077807 },
+                offset = new double[] { 250, 275 }
             };
+                
             var transform5 = new
             {
-                matrix = new double[] { 1, -0.3491, -0.6981, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.36397023426620234,-0.8390996311772799,1,454.6995009265413,109.1910702798607 },
+                offset = new double[] { 300, 300 }
             };
+            
             var transform6 = new
             {
-                matrix = new double[] { 1, -0.4363, -0.8727, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.46630765815499864,-1.1917535925942098,1,616.0052329599874,163.20768035424953 },
+                offset = new double[] { 350, 325 }
             };
+            
             var transform7 = new
             {
-                matrix = new double[] { 1, -0.5236, -1.0472, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.5773502691896256,-1.7320508075688767,1,851.9780625900129,230.94010767585024 },
+                offset = new double[] { 400, 350 }
             };
+            
             var transform8 = new
             {
-                matrix = new double[] { 1, -0.6109, -1.2217, 1, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.7002075382097097,-2.747477419454621,1,1282.769083360052,315.09339219436936 },
+                offset = new double[] { 450, 375 }
             };
 
             //OutputLayoutTransform();
@@ -770,38 +782,38 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 2, 0, 0, 4, 50, 741.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 2,0,0,4,-70,-2165.6692913399997 },
+                offset = new double[] { 70,120 }
             };
             var transform3 = new
             {
-                matrix = new double[] { 1.8000, 0, 0, 3.6000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.8,0,0,3.6,-56,-1876.9133858279997 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 1.6000, 0, 0, 3.2000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.6,0,0,3.2,-42,-1588.1574803159997 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 1.4000, 0, 0, 2.8000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.4,0,0,2.8,-28,-1299.4015748039997 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 1.2000, 0, 0, 2.4000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.2,0,0,2.4,-14,-1010.645669292 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 1.0000, 0, 0, 2.0000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,0,0,2,0,-721.88976378 },
+                offset = new double[] { 70.0, 120 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 0.8000, 0, 0, 1.6000, 50, 741.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.8,0,0,1.6,14,-433.1338582679999 },
+                offset = new double[] { 70.0, 120 }
             };
             //OutputLayoutTransform();
             ValidateLayoutBlocks(new[] {
@@ -872,46 +884,49 @@ namespace Scryber.Core.UnitTests.Html
             }
 
             
-            var transform1 = new {
+            var transform1 = new
+            {
                 matrix = new double[] { },
                 offset = new double[] { }
             };
 
             var transform2 = new
             {
-                matrix = new double[] { 2, 0, 0, 4, 100, 641.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 2,0,0,4,-125,-2000.6692913399997 },
+                offset = new double[] { 125,175 }
             };
             var transform3 = new
             {
-                matrix = new double[] { 1.8000, 0, 0, 3.6000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.8,0,0,3.6,-120,-1668.9133858279997 },
+                offset = new double[] { 150, 200 }
             };
             var transform4 = new
             {
-                matrix = new double[] { 1.6000, 0, 0, 3.2000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.6,0,0,3.2,-120,-1302.1574803160001 },
+                offset = new double[] { 200, 250 }
             };
             var transform5 = new
             {
-                matrix = new double[] { 1.4000, 0, 0, 2.8000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.4,0,0,2.8,-90,-1020.4015748039998 },
+                offset = new double[] { 225.0, 275.0 }
             };
             var transform6 = new
             {
-                matrix = new double[] { 1.2000, 0, 0, 2.4000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1.2,0,0,2.4,-50,-758.645669292 },
+                offset = new double[] { 250, 300 }
             };
             var transform7 = new
             {
-                matrix = new double[] { 1.0000, 0, 0, 2.0000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,0,0,2,0,-516.88976378 },
+                offset = new double[] { 275.0, 325 }
             };
             var transform8 = new
             {
-                matrix = new double[] { 0.8000, 0, 0, 1.6000, 100, 641.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 0.8,0,0,1.6,60,-295.13385826800004 },
+                offset = new double[] { 300, 350 }
             };
+            
+            
             //OutputLayoutTransform();
             ValidateLayoutBlocks(new[] {
                 transform1, transform2, transform3, transform4, transform5, transform6, transform7, transform8
@@ -967,13 +982,13 @@ namespace Scryber.Core.UnitTests.Html
 
             var transform2 = new
             {
-                matrix = new double[] { 1.8794, -0.6840, 1.3681, 3.7588, 100, 641.8898 },
-                offset = new double[] { 50, 741.8898 }
+                matrix = new double[] { 1.8793852415718169,-0.6840402866513374,1.3680805733026749,3.7587704831436337,-966.0954401864426,-1702.4225050831692 },
+                offset = new double[] { 100, 200 }
             };
             var transform3 = new
             {
-                matrix = new double[] { 1, -0.6981, -0.3491, 1, 200, 581.8898 },
-                offset = new double[] { 50.0, 741.8898 }
+                matrix = new double[] { 1,-0.8390996311772799,-0.36397023426620234,1,333.62876769608386,23.90996311772801 },
+                offset = new double[] { 100, 200 }
             };
             
             //OutputLayoutTransform();
@@ -1006,15 +1021,11 @@ namespace Scryber.Core.UnitTests.Html
         /// <param name="transforms"></param>
         private void ValidateLayoutBlocks(dynamic[] transforms)
         {
-            return;
-            Assert.Inconclusive("Need to sort the transformations and SVG's out first then test.");
-
-            //Will not get past here.
 
             Assert.IsNotNull(_docLayout, "The document layout is null, and we cannot validate the blocks");
 
             var page = _docLayout.AllPages[0];
-            var regions = page.PageBlock.PositionedRegions;
+            var regions = page.ContentBlock.PositionedRegions;
             
             if(regions.Count != transforms.Length){
                 throw new ArgumentException("The number of positioned regions does not match the number of transforms.");
@@ -1025,34 +1036,55 @@ namespace Scryber.Core.UnitTests.Html
                 var region = regions[i];
                 var transform = transforms[i];
                 var block = region.Contents[0] as PDF.Layout.PDFLayoutBlock;
+                
+                Assert.IsNotNull(block, "The block is null, and we cannot validate the transform");
+                
+#if DEBUG
+
+                var blockOrigin = block.RenderOrigin;
+                var blockMatrix = block.RenderMatrix;
 
                 if (transform.offset.Length == 0)
                 {
-                    Assert.IsTrue(block.TransformedOffset.X == Unit.Zero, "The x offset (" + block.TransformedOffset.X + ") of block " + i + " was not zero");
-                    Assert.IsTrue(block.TransformedOffset.Y == Unit.Zero, "The y offset (" + block.TransformedOffset.Y + ") of block " + i + " was not zero");
+                    if (null != blockOrigin)
+                    {
+                        Assert.IsTrue(blockOrigin.HorizontalOrigin == Unit.Zero,
+                            "The horizontal origin (" + blockOrigin.HorizontalOrigin + ") of block " + i + " was not zero");
+                        Assert.IsTrue(blockOrigin.VerticalOrigin == Unit.Zero,
+                            "The vertical origin (" + blockOrigin.VerticalOrigin + ") of block " + i + " was not zero");
+                    }
                 }
                 else
                 {
-                    Assert.AreEqual(Math.Round(transform.offset[0], 4), Math.Round(block.TransformedOffset.X.PointsValue, 4),
-                                    "The x offset (" + block.TransformedOffset.X + ") of block " + i + " did not match the expected output of " + transform.offset[0].ToString());
-                    Assert.AreEqual(Math.Round(transform.offset[1], 4), Math.Round(block.TransformedOffset.Y.PointsValue, 4),
-                                    "The y offset (" + block.TransformedOffset.Y + ") of block " + i + " did not match the expected output of " + transform.offset[1].ToString());
+                    Assert.AreEqual(Math.Round(transform.offset[0], 4), 
+                                    Math.Round(blockOrigin.HorizontalOrigin.PointsValue, 4),
+                                    "The horizontal origin (" + blockOrigin.HorizontalOrigin + ") of block " + (i+1) + " did not match the expected output of " + transform.offset[0].ToString());
+                   
+                    Assert.AreEqual(Math.Round(transform.offset[1], 4), 
+                                    Math.Round(blockOrigin.VerticalOrigin.PointsValue, 4),
+                                    "The vertical origin (" + blockOrigin.VerticalOrigin + ") of block " + (i+1) + " did not match the expected output of " + transform.offset[1].ToString());
                 }
 
-                // if(transform.matrix.Length == 0)
-                // {
-                //     Assert.IsNull(block.Position.TransformMatrix, "The matrix for block " + i + " was not null ");
-                // }
-                // else
-                // {
-                //     var values = block.Position.TransformMatrix.Components;
-                //     for(var m = 0; m < values.Length; m++)
-                //     {
-                //         Assert.AreEqual(Math.Round(transform.matrix[m], 4),
-                //                         Math.Round(values[m], 4),
-                //                         "The matrix [" + string.Join(",", values) + "] for block " + i + " did not match " + string.Join(",", (double[])transform.matrix));
-                //     }
-                // }
+                if(transform.matrix.Length == 0)
+                {
+                    Assert.IsNull(blockMatrix, "The matrix for block " + i + " was not null ");
+                }
+                else
+                {
+                    var values = blockMatrix.Components;
+                    for(var m = 0; m < values.Length; m++)
+                    {
+                        Assert.AreEqual(Math.Round(transform.matrix[m], 4),
+                                        Math.Round(values[m], 4),
+                                        "The matrix [" + string.Join(",", values) + "] for block " + (i+1) + " did not match " + string.Join(",", (double[])transform.matrix));
+                    }
+                }
+                
+#else
+                
+                Assert.Inconclusive("Not testing is release mode");
+
+#endif
 
             }
         }
