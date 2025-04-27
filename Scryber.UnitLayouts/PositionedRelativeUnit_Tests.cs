@@ -189,25 +189,36 @@ namespace Scryber.UnitLayouts
         {
 
             Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 20;
-            section.TextLeading = 25;
+            Section section = new Section()
+            {
+                Width = 600,
+                Height = 800,
+                FontSize = 20,
+                TextLeading = 25,
+            };
+            
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = 50;
+            section.Style.OverlayGrid.GridColor = Drawing.StandardColors.Aqua;
+            
+            
             doc.Pages.Add(section);
 
             Div relative = new Div()
             {
+                ID = "relative",
                 X = new Unit(25, PageUnits.ViewPortWidth),
                 Y = new Unit(40, PageUnits.ViewPortHeight),
                 MinimumWidth = new Unit(50, PageUnits.ViewPortWidth),
                 MinimumHeight = new Unit(20, PageUnits.ViewPortHeight),
                 BorderWidth = 1,
-                BorderColor = Drawing.StandardColors.Red
+                BorderColor = Drawing.StandardColors.Red,
+                PositionMode = PositionMode.Relative,
             };
 
             //rotate about 28 degrees
-            //relative.TransformOperation = new Styles.TransformOperation(TransformType.Rotate, 0.5F, 0.0F);
+            relative.TransformOperation = new TransformOperationSet();
+            relative.TransformOperation.AppendOperation(new TransformRotateOperation(28 * Math.PI / 180));
 
             relative.Contents.Add(new TextLiteral("min width and height"));
             section.Contents.Add(relative);
@@ -217,8 +228,9 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
+            
+            #if DEBUG
 
-            Assert.Fail("Need to support the transformation");
             
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
@@ -233,10 +245,18 @@ namespace Scryber.UnitLayouts
             var posRegion = pg.ContentBlock.PositionedRegions[0] as PDFLayoutRegion;
             Assert.AreEqual(posRun.Region, posRegion);
 
+            var rel = doc.FindAComponentById("relative") as Div;
+            Assert.IsNotNull(rel);
+
+            var bounds = rel.GetFirstArrangement();
+            Assert.IsNotNull(bounds);
+            
             
             //Check the dimensions for the region as transformed
-            Assert.AreEqual(480, posRegion.TotalBounds.Height);
-            Assert.AreEqual(450, posRegion.TotalBounds.Width);
+            Assert.AreEqual(150, bounds.RenderBounds.X);
+            Assert.AreEqual(320, bounds.RenderBounds.Y);
+            Assert.AreEqual(160, bounds.RenderBounds.Height);
+            Assert.AreEqual(300, bounds.RenderBounds.Width);
 
             var block = posRegion.Contents[0] as PDFLayoutBlock;
             
@@ -255,13 +275,16 @@ namespace Scryber.UnitLayouts
             expected[5] = 400;
 
             Assert.IsTrue(block.HasTransformedOffset);
-            // var components = block.Position.TransformMatrix.Components;
-            //
-            // Assert.AreEqual(6, components.Length);
-            // for (var i = 0; i < 6; i++)
-            // {
-            //     Assert.AreEqual(expected[i], components[i]);
-            // }
+            
+            Assert.Inconclusive("Need to recalculate the render bounds based on the transform matrix");
+            
+            #else
+            
+            Assert.Inconclusive("Transformations are not captured in release configuration");
+            
+            #endif
+            
+            
         }
 
         [TestCategory(TestCategoryName)]
