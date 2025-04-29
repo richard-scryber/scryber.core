@@ -523,7 +523,13 @@ namespace Scryber.PDF.Layout
 
         public bool ShouldRenderBorder(PDFRenderContext context)
         {
-            return this.TextRenderOptions.Border != null;
+            var border = this.TextRenderOptions.Border;
+            if (border != null)
+                return true;
+            else if (_fallbackBorder != null && _fallbackBorder.HasBorders)
+                return true;
+            else
+                return false;
         }
 
         public bool ShouldRenderUnderline(PDFRenderContext context)

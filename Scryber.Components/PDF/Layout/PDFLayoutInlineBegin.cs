@@ -67,7 +67,7 @@ namespace Scryber.PDF.Layout
 
             var bg = this.FullStyle.CreateBackgroundBrush();
             var border = this.FullStyle.CreateBorderPen();
-            if (null != bg || null != border)
+            if (null != bg || (null != border && border.HasBorders))
             {
                 this.PushBgAndBorderToChildren(bg, border);
             }
@@ -84,6 +84,8 @@ namespace Scryber.PDF.Layout
 
             return oref; 
         }
+
+        
 
         private void PushBgAndBorderToChildren(PDFBrush bg, PDFPenBorders border)
         {
@@ -102,8 +104,11 @@ namespace Scryber.PDF.Layout
                 var run = line.Runs[i];
                 if (run is IFallbackStyledRun fallback)
                 {
-                    fallback.FallbackBorder = border;
-                    fallback.FallbackBackground = bg;
+                    if (null != border && border.HasBorders)
+                        fallback.FallbackBorder = border;
+                    
+                    if (null != bg && bg.FillStyle != FillType.None)
+                        fallback.FallbackBackground = bg;
                 }
 
                 if (run is PDFLayoutInlineEnd end && end.Owner == this.Owner)
