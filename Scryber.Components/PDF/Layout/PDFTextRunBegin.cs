@@ -31,7 +31,7 @@ namespace Scryber.PDF.Layout
     /// <summary>
     /// Marks the beginning of a bunch of characters on the page
     /// </summary>
-    public class PDFTextRunBegin : PDFTextRun
+    public class PDFTextRunBegin : PDFTextRun, IFallbackStyledRun
     {
         #region ivars
 
@@ -149,6 +149,21 @@ namespace Scryber.PDF.Layout
         public bool HasCustomSpace
         {
             get { return _hascustomspace; }
+        }
+        
+        private PDFBrush _fallbackBackground;
+        private PDFPenBorders _fallbackBorder;
+        
+        PDFBrush IFallbackStyledRun.FallbackBackground
+        {
+            get { return this._fallbackBackground;} 
+            set {this._fallbackBackground = value;} 
+        }
+
+        PDFPenBorders IFallbackStyledRun.FallbackBorder
+        {
+            get {return this._fallbackBorder; }
+            set {this._fallbackBorder = value; }
         }
 
         //
@@ -560,6 +575,10 @@ namespace Scryber.PDF.Layout
             }
 
             var brush = this.TextRenderOptions.Background;
+           
+            if (null == brush) //we use the fall back as the backgrouns could have been set higher up in the object graph
+                brush = _fallbackBackground;
+            
             var pad = this.TextRenderOptions.Padding.HasValue
                 ? this.TextRenderOptions.Padding.Value
                 : Thickness.Empty();
@@ -782,7 +801,13 @@ namespace Scryber.PDF.Layout
             var pen = this.TextRenderOptions.Border;
             Rect rect;
 
-            if (null == pen) return; //nothing to draw with
+            if (null == pen && this._fallbackBorder != null)
+            {
+                pen = this._fallbackBorder.AllPen;
+                
+                if(pen == null)
+                        return; //nothing to draw with
+            }
 
             if (this.TextRenderOptions.Padding.HasValue && this.TextRenderOptions.Padding.Value.IsEmpty == false)
             {

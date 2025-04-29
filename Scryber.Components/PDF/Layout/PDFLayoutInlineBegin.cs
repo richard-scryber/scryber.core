@@ -5,6 +5,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.PDF.Graphics;
 using Scryber.PDF.Native;
 
 namespace Scryber.PDF.Layout
@@ -63,6 +64,13 @@ namespace Scryber.PDF.Layout
 
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+
+            var bg = this.FullStyle.CreateBackgroundBrush();
+            var border = this.FullStyle.CreateBorderPen();
+            if (null != bg || null != border)
+            {
+                this.PushBgAndBorderToChildren(bg, border);
+            }
             
             PDFObjectRef oref = base.DoOutputToPDF(context, writer);
 
@@ -76,6 +84,67 @@ namespace Scryber.PDF.Layout
 
             return oref; 
         }
+
+        private void PushBgAndBorderToChildren(PDFBrush bg, PDFPenBorders border)
+        {
+            var line = this.Line;
+            var index = this.Line.Runs.IndexOf(this);
+            
+            this.PushBgAndBorderToLineChildren(line, index + 1, bg, border, out bool ended);
+            
+        }
+
+        private void PushBgAndBorderToLineChildren(PDFLayoutLine line, int index, PDFBrush bg, PDFPenBorders border, out bool ended)
+        {
+            ended = false;
+            for (var i = index; i < line.Runs.Count; i++)
+            {
+                var run = line.Runs[i];
+                if (run is IFallbackStyledRun fallback)
+                {
+                    fallback.FallbackBorder = border;
+                    fallback.FallbackBackground = bg;
+                }
+
+                if (run is PDFLayoutInlineEnd end && end.Owner == this.Owner)
+                {
+                    ended = true;
+                    break;
+                }
+            }
+
+            if (!ended)
+            {
+                line = this.GetNextLine(line);
+                index = 0;
+                
+                if(null == line)
+                    ended = true;
+                else
+                this.PushBgAndBorderToLineChildren(line, index, bg, border, out ended);
+            }
+        }
+
+        private PDFLayoutLine GetNextLine(PDFLayoutLine curr)
+        {
+            var region = Line.Region;
+            var index = region.Contents.IndexOf(curr);
+
+            if (index >= 0)
+            {
+                index++;
+                while (index < region.Contents.Count)
+                {
+                    var item = region.Contents[index];
+                    if(item is PDFLayoutLine line)
+                        return line;
+                    index++;
+                }
+            }
+            
+            return null;
+        }
+
 
         protected Rect GetContainingBounds(PDFRenderContext context)
         {

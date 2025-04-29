@@ -68,6 +68,13 @@ namespace Scryber.Html.Components
             base.OnInitialized(context);
         }
 
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Size.FullWidth = true;
+            style.Position.DisplayMode = Drawing.DisplayMode.Block;
+            return style;
+        }
 
 
         protected override void OnPreLayout(LayoutContext context)
@@ -135,6 +142,10 @@ namespace Scryber.Html.Components
             get => base.Style;
             set => base.Style = value;
         }
+
+
+        [PDFAttribute("repeat")]
+        public HeadTailRepeat Repeat { get; set; } = HeadTailRepeat.Repeat;
 
 
         /// <summary>

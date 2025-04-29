@@ -123,6 +123,12 @@ namespace Scryber
         RepeatAtTop
     }
 
+    public enum HeadTailRepeat
+    {
+        None,
+        Repeat
+    }
+
     
     
 
