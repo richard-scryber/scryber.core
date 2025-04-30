@@ -181,10 +181,12 @@ namespace Scryber.PDF.Layout
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
             panel.Contents.Add(label);
-            if (item.Contents.Count > 1)
-                item.Contents.Insert(1, panel);
-            else
-                item.Contents.Add(panel);
+            item.Contents.Insert(0, panel);
+            
+            // if (item.Contents.Count > 0)
+            //     item.Contents.Insert(0, panel);
+            // else
+            //     item.Contents.Add(panel);
 
             return panel;
         }
@@ -212,6 +214,11 @@ namespace Scryber.PDF.Layout
 
             var type = group.Style;
 
+            if (this.FullStyle.IsValueDefined(StyleKeys.ListNumberStyleKey))
+            {
+                type = this.FullStyle.GetValue(StyleKeys.ListNumberStyleKey, type);
+            }
+
             var text = this.FullStyle.GetValue(StyleKeys.ListLabelKey, string.Empty);
             var halign = this.FullStyle.GetValue(StyleKeys.ListAlignmentKey, DefaultListItemAlignment);
 
@@ -236,6 +243,7 @@ namespace Scryber.PDF.Layout
                 {
                     label = new ListItemLabel();
                     label.Text = item.Document.ListNumbering.Increment();
+                    
                 }
 
                 label.Alignment = halign;

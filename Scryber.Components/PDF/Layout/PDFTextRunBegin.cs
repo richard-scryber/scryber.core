@@ -1120,7 +1120,7 @@ namespace Scryber.PDF.Layout
                         return; //nothing to draw with
             }
 
-            if (null == arrange.NextArrangement) //There is only one arrangement - we are a simple rect.
+            if (null != arrange && null == arrange.NextArrangement) //There is only one arrangement - we are a simple rect.
             {
                 this.OutputBorder(null, border, context, arrange.RenderBounds);
                 return;

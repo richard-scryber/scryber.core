@@ -1,6 +1,4 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
-<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+﻿<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
 
     <style>
@@ -16,19 +14,27 @@
             border: solid 1pt green;
         }
         
+        #spacer{
+            height: 700pt;
+            border: solid 1pt green;
+        }
         
+        li{
+            margin-top: 10pt;
+        }
+        
+        li > ol#alpha {
+            list-style-type: lower-alpha;
+        }
         
     </style>
 </head>
 <body>
-    <div style="border: solid 1pt green;" >
-    <ul style="border: solid 1pt blue;">
-        <li style="border: solid 1pt red;">A very long term that will run over multiple lines of text in the page causing the definition to move down a line.</li>
-        <li style="border: solid 1pt lime;">Second long definition that will run over multiple pages and give similar results to the term in the list.</li>
-        <li style="border: solid 1pt red;">Third very long term that will run over multiple lines of text in the page causing the definition to move down a line.</li>
-        <li style="border: solid 1pt lime;">Another long definition that will run over multiple pages and give similar results to the term in the list.</li>
-    </ul>
-    </div>
+    Before the mark
+    <mark style="border: solid 1pt blue;">
+        This is the mark
+    </mark>
+after the mark
 </body>
 </html>
 
