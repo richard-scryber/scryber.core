@@ -502,7 +502,7 @@ namespace Scryber.PDF.Layout
             {
 
 
-                var firstArrangement = this.RenderTextBackgroundAndArrange(context, writer);
+                this.RenderTextBackground(context, writer, arrangement);
             }
             else if (order == PaintOrders.Markers)
             {
@@ -1113,9 +1113,19 @@ namespace Scryber.PDF.Layout
                         return; //nothing to draw with
             }
 
+            if (null == arrange.NextArrangement) //There is only one arrangement - we are a simple rect.
+            {
+                this.OutputBorder(null, border, context, arrange.RenderBounds);
+                return;
+            }
+
+
             var all = border.AllPen;
             var left = border.LeftPen;
             var right = border.RightPen;
+            
+            border.TopPen ??= all;
+            border.BottomPen ??= all;
             
             while (null != arrange)
             {
@@ -1128,11 +1138,13 @@ namespace Scryber.PDF.Layout
                 border.RightPen = null;
                 border.AllPen = null;
 
+                
                 if (arrange == firstArrangement)
                 {
                     //First so left
                     sides |= Sides.Left;
                     border.LeftPen = left ?? all;
+                    
                 }
                 else
                 {

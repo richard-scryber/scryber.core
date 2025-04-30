@@ -17,36 +17,16 @@
             border: solid 1pt green;
         }
         
-        blockquote{
-            border-left: solid 1pt green;
-            
-        }
-
-        legend{
-            border: solid 1pt red;
-            border-left: none;
-            border-radius: 0pt;
-            background-color: white;
-            position: relative;
-            top: -0.8em;
-            padding: 0.1em 0.4em;
-        }
-        
-        fieldset{
-            paint-order: fill stroke markers;
-            border-radius: 5pt;
-        }
         
         
     </style>
 </head>
 <body>
-<!--    <div style="border: solid 1pt blue;" >Before the section</div>-->
-<!--    <fieldset style="border: solid 1pt red;" title="Definition Title">-->
-        <legend>Inside the legend</legend>
-        After the legend
-<!--    </fieldset>-->
-<!--    After the aside-->
+    <div style="border: solid 1pt blue;" >Before the section</div>
+    <figure style="border: solid 1pt red; padding: 10pt;" >
+        Before the font span. <font style="border: solid 1pt green;">The caption in the font span that should flow over two line in the page sdo we can see what the borders will do. And then hopefully we can stretch it to the third line just to be sure we are OK.</font>
+    </figure>
+    After the aside
 </body>
 </html>
 
