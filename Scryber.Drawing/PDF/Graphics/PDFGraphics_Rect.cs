@@ -215,10 +215,13 @@ namespace Scryber.PDF.Graphics
             Rect bounds = new Rect(x, y, width, height);
 
             this.SaveGraphicsState();
-            pen.SetUpGraphics(this, bounds);
-            this.DoOutputRoundRectangleWithSidesPath(x, y, width, height, cornerRadius, sides);
-            this.RenderStrokePathOp();
-            pen.ReleaseGraphics(this, bounds);
+            if (pen.SetUpGraphics(this, bounds))
+            {
+                this.DoOutputRoundRectangleWithSidesPath(x, y, width, height, cornerRadius, sides);
+                this.RenderStrokePathOp();
+                pen.ReleaseGraphics(this, bounds);
+            }
+
             this.RestoreGraphicsState();
         }
 
