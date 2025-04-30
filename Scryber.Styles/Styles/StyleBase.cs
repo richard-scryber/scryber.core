@@ -1353,12 +1353,9 @@ namespace Scryber.Styles
             {
                 options.Padding = this.DoCreatePaddingThickness();
                 options.Background = this.DoCreateBackgroundBrush();
-                StyleValue<Color> c;
-                StyleValue<LineType> t;
-                StyleValue<Dash> d;
-                StyleValue<Unit> w;
+                
 
-                options.Border = this.DoCreateBorderPen(out c, out w, out t, out d);
+                options.Border = this.DoCreatePenBorders();
 
                 options.BorderRadius = 0;
 

@@ -96,12 +96,12 @@ namespace Scryber.PDF
 
         #region public PDFPen Border {get;set;}
 
-        private PDFPen _border;
+        private PDFPenBorders _border;
 
         /// <summary>
         /// Gets or sets the pen that should be used to draw a border around any text.
         /// </summary>
-        public PDFPen Border
+        public PDFPenBorders Border
         {
             get { return _border; }
             set { _border = value; }
@@ -288,6 +288,8 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public bool DrawTextFromTop {get;set;}
+        
         private bool _drawFromTop = true;
 
         /// <summary>
@@ -301,14 +303,40 @@ namespace Scryber.PDF
             set { this._drawFromTop = value; }
         }
 
+        #endregion
+
+        #region public PDFHyphenationStrategy HyphenationStrategy {get;set;}
 
         private PDFHyphenationStrategy _hyphenation = null;
 
+        /// <summary>
+        /// Gets or sets the hyphenation strategy for the text layout, when to break onto new lines, and also when to split words
+        /// </summary>
         public PDFHyphenationStrategy HyphenationStrategy
         {
             get { return this._hyphenation; }
             set { this._hyphenation = value; }
         }
+
+        #endregion
+
+        #region public PaintOrder TextPaintOrder {get; set;}
+
+        /// <summary>
+        /// Gets or sets the paint order for the text - stroke and fill
+        /// </summary>
+        public PaintOrder TextPaintOrder {get; set;}
+
+        #endregion
+        
+        #region public PaintOrder BoxPaintOrder {get; set;}
+
+        /// <summary>
+        /// Gets or sets the paint order for the box containing the text - background = fill, border = stroke  and content = markers
+        /// </summary>
+        public PaintOrder BoxPaintOrder {get; set;}
+
+        #endregion
 
         //
         // .ctor
@@ -320,6 +348,8 @@ namespace Scryber.PDF
         /// </summary>
         public PDFTextRenderOptions()
         {
+            this.BoxPaintOrder = PaintOrder.Default;
+            this.TextPaintOrder = PaintOrder.Default;
         }
 
         #endregion

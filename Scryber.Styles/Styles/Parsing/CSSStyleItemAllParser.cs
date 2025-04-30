@@ -261,6 +261,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
             all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
             
+            all.Add(CSSStyleItems.PaintOrder, new CSSPaintOrderParser());
+            
             //TODO: Add all the SVG attributes
             
             all.Add(CSSStyleItems.GradientStopColor, new CSSSVGGradientStopColor());

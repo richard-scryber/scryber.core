@@ -162,8 +162,8 @@ namespace Scryber.Html
 
         public const string CounterReset = "counter-reset";
         public const string CounterIncrement = "counter-increment";
-        
 
+        public const string PaintOrder = "paint-order";
     }
 }
 

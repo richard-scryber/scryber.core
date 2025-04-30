@@ -1284,32 +1284,48 @@ namespace Scryber.PDF.Layout
                     
                     hasClipping  = this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
                 }
-                
-                if (null != background)
-                {
-                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
-                }
-                
-                //update the offsets and size to our content rect
-                
-                
-                context.Offset = contentRect.Location;
-                
-                
-                
-                context.Space = contentRect.Size;
-                
-                //Perform the atual writing of this blocks inner conntent
-                if (this.ShouldOutputAsXObject(context))
-                {
-                    oref = this.DoOutputToXObject(context, writer);
-                }
-                else
-                {
-                    this.OutputInnerContent(context, writer);
-                }
 
-                //restore the state in reverse order.
+                var paintOrder = this.FullStyle.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default);
+                //output the content based on the order defined for painting.
+                
+                var firstOref = this.OutputContentForPaintOrder(paintOrder.First, background, border, borderRect, contentRect, context, writer);
+                var secondOref = this.OutputContentForPaintOrder(paintOrder.Second, background, border, borderRect, contentRect, context, writer);
+                var thirdOref = this.OutputContentForPaintOrder(paintOrder.Third, background, border, borderRect, contentRect, context, writer);
+                
+                if(paintOrder.First  == PaintOrders.Markers)
+                    oref = firstOref;
+                else if(paintOrder.Second == PaintOrders.Markers)
+                    oref = secondOref;
+                else if(paintOrder.Third == PaintOrders.Markers)
+                    oref = thirdOref;
+                
+                // if (null != background)
+                // {
+                //     this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
+                // }
+                //
+                //
+                // context.Offset = contentRect.Location;
+                // context.Space = contentRect.Size;
+                //
+                // //Perform the atual writing of this blocks inner conntent
+                // if (this.ShouldOutputAsXObject(context))
+                // {
+                //     oref = this.DoOutputToXObject(context, writer);
+                // }
+                // else
+                // {
+                //     this.OutputInnerContent(context, writer);
+                // }
+                //
+                //
+                // if (null != border)
+                // {
+                //     if(logdebug)
+                //         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
+                //     
+                //     this.OutputBorder(background, border, context, borderRect);
+                // }
                 
                 if (hasClipping)
                 {
@@ -1317,15 +1333,6 @@ namespace Scryber.PDF.Layout
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Releasing the clipping rectangle " + borderRect);
                     
                     this.ReleaseClipping(context);
-                }
-                
-
-                if (null != border)
-                {
-                    if(logdebug)
-                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
-                    
-                    this.OutputBorder(background, border, context, borderRect);
                 }
                 
                 if (null != component)
@@ -1401,8 +1408,51 @@ namespace Scryber.PDF.Layout
 
             return oref;
         }
-        
-        
+
+        private PDFObjectRef OutputContentForPaintOrder(PaintOrders paintType, PDFBrush background, PDFPenBorders border, Rect borderRect, Rect contentRect, PDFRenderContext context, PDFWriter writer)
+        {
+            PDFObjectRef oRef = null;
+
+            if (paintType == PaintOrders.Fill)
+            {
+
+                if (null != background)
+                {
+                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0,
+                        context, borderRect);
+                }
+
+            }
+            else if (paintType == PaintOrders.Markers)
+            {
+                context.Offset = contentRect.Location;
+                context.Space = contentRect.Size;
+
+                //Perform the atual writing of this blocks inner conntent
+                if (this.ShouldOutputAsXObject(context))
+                {
+                    oRef = this.DoOutputToXObject(context, writer);
+                }
+                else
+                {
+                    this.OutputInnerContent(context, writer);
+                }
+            }
+            else
+            {
+                if (null != border)
+                {
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Block",
+                            "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
+
+                    this.OutputBorder(background, border, context, borderRect);
+                }
+            }
+
+            return oRef;
+        }
+
 
         #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
 

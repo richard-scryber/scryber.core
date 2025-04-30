@@ -361,6 +361,7 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
         
+        public static readonly StyleKey<PaintOrder> SVGGeometryPaintOrderKey = StyleKey.InternalCreateStyleValueKey<PaintOrder>((ObjectType)"gmpo", SVGGeometryKey);
 
         public static readonly StyleKey<SVGFillValue> SVGFillKey = StyleKey.InternalCreateStyleValueKey<SVGFillValue>((ObjectType)"gfil", SVGGeometryKey);
         

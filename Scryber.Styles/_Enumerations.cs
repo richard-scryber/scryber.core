@@ -128,8 +128,6 @@ namespace Scryber
         None,
         Repeat
     }
-
-    
     
 
     public enum NumberingOutputType

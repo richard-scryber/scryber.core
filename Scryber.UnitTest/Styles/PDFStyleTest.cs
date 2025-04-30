@@ -233,10 +233,6 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(StandardColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
             Assert.AreEqual((Unit)2, actual.Stroke.Width);
 
-            Assert.IsInstanceOfType(actual.Border, typeof(PDFDashPen));
-            Assert.AreEqual(StandardColors.Green, ((PDFDashPen)actual.Border).Color);
-            Assert.AreEqual(Dashes.LongDash.Phase, ((PDFDashPen)actual.Border).Dash.Phase);
-
             Assert.IsInstanceOfType(actual.Font, typeof(Font));
             Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.Selector);
             Assert.AreEqual((Unit)36, actual.Font.Size);
