@@ -1374,6 +1374,8 @@ namespace Scryber.Styles
 
             options.InlineMargins = this.DoCreateInlineMarginSize();
 
+            options.InlinePadding = this.DoCreateInlinePaddingSize();
+
             StyleValue<Unit> flindent;
             if (this.TryGetValue(StyleKeys.TextFirstLineIndentKey,out flindent))
                 options.FirstLineInset = flindent.Value(this);
@@ -2307,22 +2309,63 @@ namespace Scryber.Styles
 
         #endregion
 
-        internal protected virtual Thickness DoCreateInlineMarginSize()
+        internal protected virtual Thickness? DoCreateInlineMarginSize()
         {
             Unit start;
             Unit end;
-
+            var hasValues = false;
             if (this.TryGetValue(StyleKeys.MarginsInlineStart, out StyleValue<Unit> sv))
+            {
                 start = sv.Value(this);
+                hasValues = true;
+            }
             else
                 start = Unit.Zero;
 
             if (this.TryGetValue(StyleKeys.MarginsInlineEnd, out StyleValue<Unit> ev))
+            {
                 end = ev.Value(this);
+                hasValues = true;
+            }
             else
                 end = Unit.Zero;
 
-            return new Thickness(Unit.Zero, end, Unit.Zero, start);
+            if (hasValues)
+                return new Thickness(Unit.Zero, end, Unit.Zero, start);
+            else
+            {
+                return null;
+            }
+        }
+        
+        internal protected virtual Thickness? DoCreateInlinePaddingSize()
+        {
+            Unit start;
+            Unit end;
+            var hasValues = false;
+            
+            if (this.TryGetValue(StyleKeys.PaddingInlineStart, out StyleValue<Unit> sv))
+            {
+                start = sv.Value(this);
+                hasValues = true;
+            }
+            else
+                start = Unit.Zero;
+
+            if (this.TryGetValue(StyleKeys.PaddingInlineEnd, out StyleValue<Unit> ev))
+            {
+                end = ev.Value(this);
+                hasValues = true;
+            }
+            else
+                end = Unit.Zero;
+
+            if (hasValues)
+                return new Thickness(Unit.Zero, end, Unit.Zero, start);
+            else
+            {
+                return null;
+            }
         }
 
         #region internal protected virtual PDFThickness DoCreateClippingThickness()

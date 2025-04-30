@@ -619,6 +619,7 @@ namespace Scryber.PDF.Layout
             var pad = this.TextRenderOptions.Padding.HasValue
                 ? this.TextRenderOptions.Padding.Value
                 : Thickness.Empty();
+            
             var rad = this.TextRenderOptions.BorderRadius;
             var metrics = this.TextRenderOptions.Font.FontMetrics;
             var textLeft = Unit.Zero;
@@ -634,7 +635,8 @@ namespace Scryber.PDF.Layout
                  halfH); //The ascender offset from the top of the line - usually zero unless we have leading.
 
 
-
+            Unit padInlineStart = Unit.Zero;
+            
             if (this.LineInset > pad.Left)
             {
                 //We are not the first run on the line, so we use the inset to know where we are.
@@ -651,15 +653,23 @@ namespace Scryber.PDF.Layout
 
                 if (pad.IsEmpty == false)
                 {
-                    if (this.Lines.Count == 1)
-                        padRect = rect.Inflate(pad);
-                    else
+                    //we add the vertical padding - there should be spacers for the let and right padding
+                    padRect.Y -= pad.Top;
+                    padRect.Height += pad.Top + pad.Bottom;
+                }
+                
+                
+                if (this.TextRenderOptions.InlinePadding.HasValue)
+                {
+                    if (this.TextRenderOptions.InlinePadding.Value.Left > Unit.Zero)
                     {
-                        //We only pad horizontally on the first and last run
-                        padRect.X -= pad.Left;
-                        padRect.Y -= pad.Top;
-                        padRect.Width += pad.Left;
-                        padRect.Height += pad.Top + pad.Bottom;
+                        var index = this.Line.Runs.IndexOf(this);
+                        index--;
+                        if (index >= 0 && this.Line.Runs[index] is PDFLayoutInlineBegin)
+                        {
+                            padInlineStart = this.TextRenderOptions.InlinePadding.Value.Left;
+                            padRect.X -= padInlineStart;
+                        }
                     }
                 }
                 
@@ -698,6 +708,8 @@ namespace Scryber.PDF.Layout
                     var lineRect = rect.Clone();
 
                     lineRect.X += line.RightInset;
+                    if (l == 1 && padInlineStart > Unit.Zero)
+                        lineRect.X += padInlineStart;
 
                     if (l == this.Lines.Count - 1) // we are the last line in this inline block so calculate the width
                     {
@@ -757,13 +769,7 @@ namespace Scryber.PDF.Layout
                         }
 
                         padRect.Y -= pad.Top;
-                        padRect.X += pad.Left;
                         padRect.Height += pad.Top + pad.Bottom;
-
-                        if (lastLine)
-                        {
-                            padRect.Width += pad.Right;
-                        }
 
                         if (null != toArrange)
                         {
@@ -880,6 +886,12 @@ namespace Scryber.PDF.Layout
                         padRect.Width += pad.Left;
                         padRect.Height += pad.Top + pad.Bottom;
                     }
+                }
+
+                if (this.TextRenderOptions.InlinePadding.HasValue)
+                {
+                    if(this.TextRenderOptions.InlinePadding.Value.Left > Unit.Zero)
+                        padRect.X -= this.TextRenderOptions.InlinePadding.Value.Left;
                 }
 
                 if (null != brush)
@@ -1000,13 +1012,8 @@ namespace Scryber.PDF.Layout
                         }
 
                         padRect.Y -= pad.Top;
-                        padRect.X += pad.Left;
                         padRect.Height += pad.Top + pad.Bottom;
-
-                        if (lastLine)
-                        {
-                            padRect.Width += pad.Right;
-                        }
+                        
 
                         if (null != brush)
                         {

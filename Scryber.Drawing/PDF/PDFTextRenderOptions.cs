@@ -149,6 +149,20 @@ namespace Scryber.PDF
         }
 
         #endregion
+        
+        #region public Thickness InlinePadding {get;set;}
+
+        private Thickness? _inlinePadding;
+
+        public Thickness? InlinePadding
+        {
+            get { return _inlinePadding; }
+            set { _inlinePadding = value; }
+        }
+
+        #endregion
+        
+        
 
         #region public WordWrap? WrapText {get;set;}
 
