@@ -41,7 +41,7 @@ namespace Scryber.Components
         /// Gets or sets the bindable double value for this number
         /// </summary>
         [PDFAttribute("value")]
-        public double Value {
+        public virtual double Value {
             get { return _val; }
             set
             {
