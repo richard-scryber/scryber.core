@@ -109,17 +109,19 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+                
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -221,17 +223,17 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -341,17 +343,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -462,17 +464,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -583,18 +585,19 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
-
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+               
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -706,17 +709,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -828,17 +831,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -949,17 +952,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -1071,18 +1074,18 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
 
-
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+                
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -1197,18 +1200,19 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
-
+                
+                
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
 
@@ -1325,17 +1329,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
@@ -1550,7 +1554,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(olBlock);
 
             Assert.AreEqual(1, olBlock.Columns.Length);
-            var firstPageItemCount = olBlock.Columns[0].Contents.Count - 1;
+            var firstPageItemCount = olBlock.Columns[0].Contents.Count;
 
             for (var i = 0; i < firstPageItemCount; i++)
             {
@@ -1574,20 +1578,22 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
 
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+                
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
 
                 Assert.AreEqual(1, numBlock.Columns.Length);
@@ -1610,8 +1616,8 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding); 
             }
 
-            var emptyLastBlock = olBlock.Columns[0].Contents[firstPageItemCount] as PDFLayoutBlock;
-            Assert.AreEqual(0, emptyLastBlock.PositionedRegions.Count);
+            //var emptyLastBlock = olBlock.Columns[0].Contents[firstPageItemCount] as PDFLayoutBlock;
+            //Assert.AreEqual(0, emptyLastBlock.PositionedRegions.Count);
 
             var secondPageItemCount = ItemCount - firstPageItemCount;
             pg = layout.AllPages[1];
@@ -1645,20 +1651,21 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(4, itemLine.Runs.Count, "Runs did not match for item " + i);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + (i + firstPageItemCount), chars.Characters);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+                
 
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
 
@@ -1737,7 +1744,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(olBlock);
 
             Assert.AreEqual(1, olBlock.Columns.Length);
-            var firstColumnItemCount = olBlock.Columns[0].Contents.Count - 1;
+            var firstColumnItemCount = olBlock.Columns[0].Contents.Count;
 
             for (var i = 0; i < firstColumnItemCount; i++)
             {
@@ -1762,20 +1769,22 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width); 
                 Assert.AreEqual("Item " + i, chars.Characters);
 
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+                
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
 
                 Assert.AreEqual(1, numBlock.Columns.Length);
@@ -1798,8 +1807,7 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(DefaultNumberWidth, start.StartTextCursor.Width + chars.Width + LabelPadding); 
             }
 
-            var emptyLastBlock = olBlock.Columns[0].Contents[firstColumnItemCount] as PDFLayoutBlock;
-            Assert.AreEqual(0, emptyLastBlock.PositionedRegions.Count);
+            
 
             var secondColumnItemCount = ItemCount - firstColumnItemCount;
             
@@ -1832,21 +1840,22 @@ namespace Scryber.UnitLayouts
 
                 Assert.AreEqual(4, itemLine.Runs.Count, "Runs did not match for item " + i);
 
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
+
 
                 //Start text cursor Width is based on the page
                 Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth + (PageWidth / 2.0) + (section.AlleyWidth / 2.0), start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + (i + firstColumnItemCount), chars.Characters);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
 
                 Assert.AreEqual(numBlock, posRun.Region.Contents[0]);
 
@@ -1969,17 +1978,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
 
                     AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { "1", "2", "3", "4", "5" }, "Inner Item " + i.ToString() + ".");
@@ -2002,17 +2011,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
                     Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                     Assert.AreEqual("Item " + i, chars.Characters);
@@ -2141,17 +2150,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
 
                     AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { "•", "•", "•", "•", "•" }, "Inner Item " + i.ToString() + ".");
@@ -2174,17 +2183,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
                     Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                     Assert.AreEqual("Item " + i, chars.Characters);
@@ -2412,17 +2421,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
                     var prefix = (i + 1) + ".";
                     AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { prefix + "i", prefix + "ii", prefix + "iii", prefix + "iv", prefix + "v" }, "Inner Item " + i.ToString() + ".");
@@ -2445,17 +2454,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
                     Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                     Assert.AreEqual("Item " + i, chars.Characters);
@@ -2722,17 +2731,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
 
                     AssertOLBlockContent(nestedBlock, DefaultNumberWidth, DefaultGutterWidth, 2, new string[] { "1", "2", "3", "4", "5" }, "Inner Item " + i.ToString() + ".");
@@ -2755,17 +2764,17 @@ namespace Scryber.UnitLayouts
 
 
 
-                    var start = itemLine.Runs[0] as PDFTextRunBegin;
+                    var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                    Assert.IsNotNull(posRun);
+                
+                    var start = itemLine.Runs[1] as PDFTextRunBegin;
                     Assert.IsNotNull(start);
 
-                    var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                    var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                     Assert.IsNotNull(chars);
 
-                    var end = itemLine.Runs[2] as PDFTextRunEnd;
+                    var end = itemLine.Runs[3] as PDFTextRunEnd;
                     Assert.IsNotNull(end);
-
-                    var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                    Assert.IsNotNull(posRun);
 
                     Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
                     Assert.AreEqual("Item " + i, chars.Characters);
@@ -2910,7 +2919,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth - ((DefaultGutterWidth + DefaultNumberWidth) * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and inset)
 
             Assert.AreEqual(4, labelLine.Runs.Count); //3 for text + positioned run
-            var labelChars = labelLine.Runs[1] as PDFTextRunCharacter;
+            var labelChars = labelLine.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(labelChars);
             Assert.AreEqual("Inner Item " + (Page1FirstItemCount-1) + "." + (Page1InnerItemCount-1), labelChars.Characters);
 
@@ -2963,7 +2972,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PageWidth - ((DefaultGutterWidth + DefaultNumberWidth) * 2) - (2 * (10 + 2 + 2)), labelLine.FullWidth); //Page - 2 * (margins and li padding and inset)
 
             Assert.AreEqual(4, labelLine.Runs.Count); //3 for text + positioned run
-            labelChars = labelLine.Runs[1] as PDFTextRunCharacter;
+            labelChars = labelLine.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(labelChars);
 
             Assert.AreEqual("Inner Item " + (Page1FirstItemCount-1) + "." + Page1InnerItemCount, labelChars.Characters);
@@ -3240,21 +3249,21 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(numWidth, numBlock.Width);
                 Assert.AreEqual(4, itemLine.Runs.Count);
 
-
-
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
+                var posRun = itemLine.Runs[0] as PDFLayoutPositionedRegionRun;
+                Assert.IsNotNull(posRun);
+                
+                var start = itemLine.Runs[1] as PDFTextRunBegin;
                 Assert.IsNotNull(start);
 
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
+                var chars = itemLine.Runs[2] as PDFTextRunCharacter;
                 Assert.IsNotNull(chars);
 
-                Assert.AreEqual(itemsPrefix + i.ToString(), chars.Characters);
-
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
+                var end = itemLine.Runs[3] as PDFTextRunEnd;
                 Assert.IsNotNull(end);
 
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
+
+                Assert.AreEqual(itemsPrefix + i.ToString(), chars.Characters);
+                
 
                 Assert.AreEqual((numWidth + gutterWidth) * depth, start.StartTextCursor.Width);
 
