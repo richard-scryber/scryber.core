@@ -511,7 +511,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset(); //body margins + baseline offsets - text baseline offset
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width;
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -720,7 +720,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset(); //body margins + baseline offsets - text baseline offset
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing(); //last on the line gets lsb
+            width = chars.Width; //last on the line gets lsb
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -930,7 +930,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30; //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width;
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1136,7 +1136,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1344,7 +1344,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 75.34912109375; // 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1553,7 +1553,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + 100 - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; //+ begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1762,7 +1762,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 82.34912109375; // 30 + (100/2) - (begin.TextRenderOptions.GetLineHeight() - begin.TextRenderOptions.GetSize()) / 2 - begin.TextRenderOptions.GetAscent(); //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = 36; //font size despite the leading of 50
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1917,7 +1917,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30;  //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -1988,7 +1988,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + (22 * 1.2) ; //body margins + 1 line
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -2107,7 +2107,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + space;  //body margins
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; //+ begin.TextRenderOptions.GetLeftSideBearing();
             height = 22 * 1.2; //actual text height
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -2180,7 +2180,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the second text run 
             left = 30 + runningWidth ; //body margins
             top = 30 + 40 + space ; //body margins + 1 line + extra space
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = 22 * 1.2;
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -2294,7 +2294,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             left = Unit.Pt(30) + runningWidth; //body margins
             top = 30 + baseline - begin.TextRenderOptions.GetBaselineOffset();
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = begin.TextRenderOptions.GetLineHeight();
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -2432,7 +2432,7 @@ namespace Scryber.UnitLayouts
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             left = Unit.Pt(30) + runningWidth; //body margins
             top = 30 + space;
-            width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing();
+            width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing();
             height = 22 * 1.2;
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
             
@@ -3066,7 +3066,7 @@ namespace Scryber.UnitLayouts
             
             //confirm the render bounds rect for the first span - body margins and on the full baseline.
             var left = (Unit)30; //body margins
-            var width = chars.Width + begin.TextRenderOptions.GetLeftSideBearing(); //left with lsb
+            var width = chars.Width; // + begin.TextRenderOptions.GetLeftSideBearing(); //left with lsb
             var height = begin.TextRenderOptions.GetSize() * 1.2;
             var top = 30 + ((50 - height)/2); //margins + leading space
             CheckRenderBounds(begin.Owner, 0, left, top, width, height);
