@@ -1997,7 +1997,7 @@ namespace Scryber.PDF.Layout
                 var origRegion = containerRegion;
                 var origBlock = containerBlock;
 
-                if (this.IsLastInClippedBlock(containerRegion))
+                if (position.OverflowAction == OverflowAction.Clip || this.IsLastInClippedBlock(containerRegion))
                 {
                     //We are ok to continue in a clipped block.
                 }

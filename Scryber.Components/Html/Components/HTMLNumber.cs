@@ -62,7 +62,10 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("data-value")]
-        public override double Value { get => base.Value; set=> base.Value = value; }
+        public override double Value { 
+            get => base.Value; 
+            set=> base.Value = value; 
+        }
 
 
         public HTMLNumber() : this(HTMLObjectTypes.Number)
@@ -70,7 +73,9 @@ namespace Scryber.Html.Components
         }
 
         protected HTMLNumber(ObjectType type) : base(type)
-        { }
+        {
+            
+        }
 
         protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {
@@ -88,6 +93,11 @@ namespace Scryber.Html.Components
             }
             else
                 return base.CreateReader(context, fullstyle);
+        }
+
+        protected override void OnDataBound(DataContext context)
+        {
+            base.OnDataBound(context);
         }
     }
 }

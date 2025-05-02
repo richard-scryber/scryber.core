@@ -1563,9 +1563,9 @@ namespace Scryber.Core.UnitTests.Binding
                                         <h2>{{culture.id}}</h2>
                                         <dl>
                                             <dt id='cultP1' >Number</dt>
-                                            <dd id='numP1' ><num value='{{culture.number}}' /></dd>
+                                            <dd id='numP1' ><num data-value='{{culture.number}}' /></dd>
                                             <dt id='cultP1' >Currency</dt>
-                                            <dd id='numP1' ><num data-format='C' value='{{culture.number}}' /></dd>
+                                            <dd id='numP1' ><num data-format='C' data-value='{{culture.number}}' /></dd>
                                             <dt id='cultP1' >Date</dt>
                                             <dd id='numP1' ><time data-format='D' datetime='{{culture.date}}' /></dd>
                                             <dt id='cultP1' >Time</dt>
@@ -1728,7 +1728,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
-                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
                                         </tr>
                                     </template>";
 
@@ -1856,7 +1856,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
-                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
                                         </tr>
                                     </template>";
 

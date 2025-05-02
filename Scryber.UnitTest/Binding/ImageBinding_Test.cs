@@ -262,7 +262,7 @@ namespace Scryber.Core.UnitTests.Binding
                height: 21mm;
                vertical-align: middle;
                text-align: center;
-               overflow: hidden;
+               overflow: clip;
                padding:0px;
             }
 
@@ -273,10 +273,10 @@ namespace Scryber.Core.UnitTests.Binding
            <tr>
                <td class=""logo-container"">
                    <if data-test=""{@:Model.ClientHasLogo}"">
-                       <img img-data=""{@:Model.ClientLogo}"" />
+                       <img img-data=""{@:Model.ClientLogo}"" style='width: 100%' />
                    </if>
                </td>
-               <td></td>
+               <td>After the image</td>
            </tr>
         </table>
     </body>
@@ -322,15 +322,15 @@ namespace Scryber.Core.UnitTests.Binding
             //first cell has the image if and image - but should maintain the explicit height.
             var cell = row.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(cell);
-            Assert.AreEqual(new Unit(35, PageUnits.Millimeters), cell.Width);
-            Assert.AreEqual(new Unit(21, PageUnits.Millimeters), cell.Height);
+            Assert.AreEqual(Math.Round(new Unit(35, PageUnits.Millimeters).PointsValue + 4, 4), Math.Round(cell.Width.PointsValue, 4)); //include the padding 
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue + 8, cell.Height.PointsValue);
             Assert.AreEqual(1, cell.Columns.Length);
             Assert.AreEqual(1, cell.Columns[0].Contents.Count);
             
             //second empty cell - still the same height
             cell = row.Columns[1].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(cell);
-            Assert.AreEqual(new Unit(21, PageUnits.Millimeters), cell.Height);
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue + 8, cell.Height.PointsValue);
         }
 
 

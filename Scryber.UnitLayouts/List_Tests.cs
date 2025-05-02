@@ -1457,7 +1457,7 @@ namespace Scryber.UnitLayouts
                 //No Number to check
                 //But still inset - as per html
 
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth, start.StartTextCursor.Width);
+                Assert.AreEqual(Unit.Zero, start.StartTextCursor.Width);
                 Assert.AreEqual("Item " + i, chars.Characters);
 
             }

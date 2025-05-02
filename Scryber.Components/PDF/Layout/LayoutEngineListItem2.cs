@@ -141,8 +141,8 @@ namespace Scryber.PDF.Layout
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-
-                if (style.List.NumberingStyle != ListNumberingGroupStyle.None)
+                var explicitStyle = style.GetValue(StyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.Bullet);
+                if (nums.Style != ListNumberingGroupStyle.None && explicitStyle != ListNumberingGroupStyle.None)
                 {
                     margins = position.Margins;
                     var left = margins.Left;

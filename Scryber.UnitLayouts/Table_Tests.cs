@@ -59,6 +59,7 @@ namespace Scryber.UnitLayouts
                 cell.Contents.Add(new TextLiteral("Cell " + i));
                 cell.Width = CellWidth;
                 cell.Height = CellHeight;
+                cell.Margins = (Thickness)0;
                 row.Cells.Add(cell);
 
             }
@@ -145,6 +146,7 @@ namespace Scryber.UnitLayouts
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Width = CellWidth;
                     cell.Height = CellHeight;
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -233,6 +235,7 @@ namespace Scryber.UnitLayouts
                 for (var c = 0; c < CellCount; c++)
                 {
                     var cell = new TableCell();
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     //cell.Width = CellWidth;
                     cell.Height = CellHeight;
@@ -329,6 +332,7 @@ namespace Scryber.UnitLayouts
                     //cell.Width = CellWidth;
                     cell.Height = CellHeight;
                     cell.Padding = CellPadding;
+                    cell.Margins = (Thickness)0;
                     cell.HorizontalAlignment = HorizontalAlignment.Right;
                     cell.VerticalAlignment = VerticalAlignment.Bottom;
                     row.Cells.Add(cell);
@@ -447,6 +451,7 @@ namespace Scryber.UnitLayouts
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -540,6 +545,7 @@ namespace Scryber.UnitLayouts
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
 
+                    cell.Margins = (Thickness)0;
                     //middle cell is half the width of the table
                     if (c == 1 && r == 1)
                     {
@@ -651,7 +657,7 @@ namespace Scryber.UnitLayouts
                 {
                     var cell = new TableCell();
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
-
+                    cell.Margins = (Thickness)0;
                     //middle cell is half the width of the table
                     if (c == 1 && r == 1)
                     {
@@ -773,7 +779,7 @@ namespace Scryber.UnitLayouts
                     }
                     else
                         cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
 
                     
@@ -903,7 +909,7 @@ namespace Scryber.UnitLayouts
                     }
                     else
                         cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     row.Cells.Add(cell);
 
@@ -1016,7 +1022,7 @@ namespace Scryber.UnitLayouts
                 for (var c = 0; c < CellCount; c++)
                 {
                     var cell = new TableCell();
-                    
+                    cell.Margins = (Thickness)0;
 
                     if ((r == 0 && c == 0) || (r == 2 && c == 2))
                     {
@@ -1246,7 +1252,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1262,7 +1268,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-                    
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1340,7 +1346,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1356,7 +1362,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1372,7 +1378,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1465,7 +1471,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1481,7 +1487,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1497,7 +1503,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1594,7 +1600,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Header " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 header.Cells.Add(cell);
 
             }
@@ -1610,7 +1616,7 @@ namespace Scryber.UnitLayouts
 
                     cell.Contents.Add(new TextLiteral("Cell " + r + "." + c));
                     cell.Height = CellHeight;
-
+                    cell.Margins = (Thickness)0;
                     row.Cells.Add(cell);
 
                 }
@@ -1626,7 +1632,7 @@ namespace Scryber.UnitLayouts
 
                 cell.Contents.Add(new TextLiteral("Footer " + c));
                 cell.Height = CellHeight * 2.0;
-
+                cell.Margins = (Thickness)0;
                 footer.Cells.Add(cell);
 
             }
@@ -1727,7 +1733,7 @@ namespace Scryber.UnitLayouts
 
                     TableCell cell = new TableCell();
                     cell.Width = CellWidths[c];
-
+                    cell.Margins = (Thickness)0;
                     var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
 
                     cell.Contents.Add(content);
@@ -1820,7 +1826,7 @@ namespace Scryber.UnitLayouts
 
                     TableCell cell = new TableCell();
                     cell.Width = CellWidths[c];
-
+                    cell.Margins = (Thickness)0;
                     var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
 
                     cell.Contents.Add(content);
@@ -1919,7 +1925,7 @@ namespace Scryber.UnitLayouts
 
                     TableCell cell = new TableCell();
                     cell.Width = CellWidths[c];
-
+                    cell.Margins = (Thickness)0;
                     //all cell heights should add up to the page content block height
                     cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
 
@@ -2040,7 +2046,8 @@ namespace Scryber.UnitLayouts
 
                 //all cell heights should add up to the page content block height
                 cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
+                cell.Margins = (Thickness)0;
+                
                 var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
 
                 cell.Contents.Add(content);
@@ -2062,7 +2069,7 @@ namespace Scryber.UnitLayouts
                     cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
 
                     var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
-
+                    cell.Margins = (Thickness)0;
                     cell.Contents.Add(content);
                     row.Cells.Add(cell);
                 }
@@ -2081,7 +2088,7 @@ namespace Scryber.UnitLayouts
 
                 //all cell heights should add up to the page content block height
                 cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
+                cell.Margins = (Thickness)0;
                 var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
 
                 cell.Contents.Add(content);
@@ -2249,7 +2256,7 @@ namespace Scryber.UnitLayouts
 
                 //all cell heights should add up to the page content block height
                 cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
+                cell.Margins = (Thickness)0;
                 var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
 
                 cell.Contents.Add(content);
@@ -2269,7 +2276,7 @@ namespace Scryber.UnitLayouts
 
                     //all cell heights should add up to the page content block height
                     cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
+                    cell.Margins = (Thickness)0;
                     var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
 
                     cell.Contents.Add(content);
@@ -2290,7 +2297,7 @@ namespace Scryber.UnitLayouts
 
                 //all cell heights should add up to the page content block height
                 cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
+                cell.Margins = (Thickness)0;
                 var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
 
                 cell.Contents.Add(content);
