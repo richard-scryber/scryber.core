@@ -22,6 +22,7 @@ namespace Scryber.Html.Components
         private double _optimal = double.NaN;
         private double _min = double.NaN;
 
+        [PDFAttribute("min")]
         public double MinValue
         {
             get { return _min; }
@@ -76,7 +77,6 @@ namespace Scryber.Html.Components
 		public HTMLMeter(ObjectType type) : base(type)
 		{
 			this.Max = 1.0;
-			this.InitProgressContent(ProgressBarClass, ProgressValueClass);
 		}
 
 		protected override void InitProgressContent(string barClass, string valueClass)

@@ -2095,7 +2095,9 @@ namespace Scryber.Styles
                 GradientDescriptor found;
                 if(this.IsGradientImageSrc(imgsrc.Value(this), out found))
                 {
-                    if (found.GradientType == GradientType.Linear)
+                    if (found == null)
+                        brush = null;
+                    else if (found.GradientType == GradientType.Linear)
                         brush = new PDFGradientLinearBrush((GradientLinearDescriptor)found);
                     else if (found.GradientType == GradientType.Radial)
                         brush = new PDFGradientRadialBrush((GradientRadialDescriptor)found);
@@ -2164,9 +2166,15 @@ namespace Scryber.Styles
 
         protected virtual bool IsGradientImageSrc(string value, out GradientDescriptor descriptor)
         {
-            if (!string.IsNullOrEmpty(value) && value.IndexOf("(") > 0 && GradientDescriptor.TryParse(value, out descriptor))
+            if (!string.IsNullOrEmpty(value) && Parsing.Typed.CSSUrlStyleParser.IsGradient(value, out string grad))
             {
-                return true;
+                if (GradientDescriptor.TryParse(grad, out descriptor))
+                    return true;
+                else
+                {
+                    descriptor = null;
+                    return true;
+                }
             }
             else
             {

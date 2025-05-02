@@ -776,6 +776,12 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Error, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
                 }
@@ -820,6 +826,12 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Message, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        //Break out now rather than doing another read to break.
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
                 }

@@ -141,21 +141,25 @@ namespace Scryber.PDF.Layout
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-                margins = position.Margins;
-                var left = margins.Left;
 
-                inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
-                var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
+                if (style.List.NumberingStyle != ListNumberingGroupStyle.None)
+                {
+                    margins = position.Margins;
+                    var left = margins.Left;
 
-                //Add the extra space for the list item number
-                margins.Left += inset + alley;
-                style.Margins.Left = margins.Left;
-                position.Margins = margins;
-                
-                var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
-                this.LabelComponent = comp;
+                    inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
+                    var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
-                inset += alley;
+                    //Add the extra space for the list item number
+                    margins.Left += inset + alley;
+                    style.Margins.Left = margins.Left;
+                    position.Margins = margins;
+
+                    var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
+                    this.LabelComponent = comp;
+                    
+                    inset += alley;
+                }
             }
 
             base.DoLayoutBlockComponent(position, columnOptions);

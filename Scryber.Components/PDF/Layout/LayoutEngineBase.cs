@@ -2405,6 +2405,15 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutTextComponent(ITextComponent text, Style style)
         {
+            if (text is Whitespace)
+            {
+                //Skip over whitespace unless it is preserved.
+                if (!style.TryGetValue(StyleKeys.TextWhitespaceKey, out var found))
+                    return;
+                if(found.Value(style) == false)
+                    return;
+            }
+            
             try
             {
                 using (IPDFLayoutEngine engine = new Layout.LayoutEngineText(text, this))

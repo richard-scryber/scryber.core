@@ -217,7 +217,6 @@ namespace Scryber.PDF.Layout
         //
         // ctor
         //
-        public static int TextLayoutEngineCount = 0;
 
         #region public PDFTextLayoutEngine(IPDFTextComponent component, IPDFLayoutEngine parent)
 
@@ -227,8 +226,6 @@ namespace Scryber.PDF.Layout
                 throw new ArgumentNullException("component");
             this._txt = component;
             this._par = parent;
-
-            TextLayoutEngineCount++;
         }
 
         #endregion
@@ -655,12 +652,20 @@ namespace Scryber.PDF.Layout
 
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
-            if (this.CurrentLine != null &&
-                (!this.CurrentLine.HasInlineContent || this.CurrentLine.IsClosed || this.CurrentLine.Runs.Count < 2)) //no runs or just a begin text
+            if (this.CurrentLine != null)
             {
-                if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
-                    chars = chars.TrimStart(WhiteSpaceChars);
+                if (this.CurrentLine.Runs.Count < 2) //no runs or just a begin text
+                {
+                    if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart(WhiteSpaceChars);
+                }
+                else if (this.CurrentLine.Runs.Count == 2 && this.CurrentLine.Runs[0] is PDFLayoutInlineBegin && this.CurrentLine.Runs[1] is PDFTextRunBegin)
+                {
+                    if (!string.IsNullOrEmpty(chars) && char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart(WhiteSpaceChars);
+                }
             }
+
             return chars;
         }
 

@@ -125,6 +125,9 @@ namespace Scryber.Html.Components
 				case "image/x-png":
 				case "image/png":
 				case "image/gif":
+				case "image/svg":
+				case "image/svg+xml":
+				case "image/tiff":
                     return true;
 				default:
 					return false;

@@ -91,6 +91,7 @@ namespace Scryber.UnitLayouts
                 using (var stream = DocStreams.GetOutputStream("HTMLBodyAndSectionNoHeadersOrFooters.pdf"))
                 {
                     doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.AppendTraceLog = true;
                     doc.SaveAsPDF(stream);
                 }
                 

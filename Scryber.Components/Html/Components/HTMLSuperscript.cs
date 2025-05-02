@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
+
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -27,7 +29,9 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.Position.DisplayMode = Drawing.DisplayMode.InlineBlock;
-
+            style.Position.DisplayMode = Drawing.DisplayMode.InlineBlock;
+            style.SetValue(StyleKeys.PositionModeKey, PositionMode.Relative);
+            style.SetValue(StyleKeys.PositionYKey, Unit.Em(0));
             return style;
         }
     }

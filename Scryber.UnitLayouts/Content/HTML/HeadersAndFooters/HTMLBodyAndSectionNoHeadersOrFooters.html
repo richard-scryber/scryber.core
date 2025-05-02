@@ -1,4 +1,5 @@
-﻿<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+﻿<?scryber append-log=true log-parser=true log-level=verbose ?>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
 
     <style>
@@ -26,12 +27,27 @@
             list-style-type: lower-alpha;
         }
         
+        q:before{
+            content: open-quote;
+        }
+        
+        q:after{
+            content: close-quote;
+        }
+        
+        span,
+        span > *{
+            border: solid 1pt crimson;
+        }
+        
     </style>
 </head>
 <body>
-    Before the output
-    <p style="border: solid 1pt green;">This is in the h1</p>
-after the output
+<span id="line" style="" >
+    Before the suby
+    <sup>In the subby</sup>
+    After the subbby that will force a new line and we can see where the sub is with respect to the new line content.
+</span>
 </body>
 </html>
 

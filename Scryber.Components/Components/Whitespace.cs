@@ -1,4 +1,5 @@
 ﻿using System;
+using Scryber.PDF;
 using Scryber.Styles;
 using Scryber.Text;
 
@@ -62,6 +63,7 @@ namespace Scryber.Components
             else
                 return null;
         }
+        
 	}
 }
 
