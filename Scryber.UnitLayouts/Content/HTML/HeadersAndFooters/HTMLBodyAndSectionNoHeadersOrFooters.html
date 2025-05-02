@@ -35,19 +35,20 @@
             content: close-quote;
         }
         
-        span,
-        span > *{
-            border: solid 1pt crimson;
-        }
+        
         
     </style>
 </head>
 <body>
-<span id="line" style="" >
-    Before the suby
-    <sup>In the subby</sup>
-    After the subbby that will force a new line and we can see where the sub is with respect to the new line content.
+<var hidden="hidden" data-id="boundValue" data-value="{{collect('value 0', 'value 1')}}"/>
+<var hidden="hidden" data-id="boundValue" data-value="{{collect(boundValue, date())}}"/>
+<div>
+    <span id="line" style="" >
+        Before the var
+        After the var.
+        <a href="http://localhost:8080"><time data-value="{{boundValue[2]" data-format="dd MMMM yyyy"/></a>
 </span>
+</div>
 </body>
 </html>
 

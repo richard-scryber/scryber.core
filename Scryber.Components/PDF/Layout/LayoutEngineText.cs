@@ -324,7 +324,8 @@ namespace Scryber.PDF.Layout
                         string chars = (this.Reader.Value as PDFTextDrawOp).Characters;
                         if (index == 0)
                             chars = OptionallyRemoveWhiteSpaceInLayout(chars);
-                        lastwidth = this.AddCharacters(chars);
+                        if (!string.IsNullOrEmpty(chars))
+                            lastwidth = this.AddCharacters(chars);
                         break;
 
                     case PDFTextOpType.Proxy:

@@ -69,7 +69,7 @@ namespace Scryber.Html.Components
         }
 
         public HTMLVar()
-            : this(HTMLObjectTypes.Slot)
+            : this(HTMLObjectTypes.Var)
         {
         }
 

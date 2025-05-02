@@ -56,6 +56,7 @@ namespace Scryber.PDF
             tcell.Border.Width = 1;
             tcell.Border.Color = StandardColors.Gray;
             tcell.Padding.All = 2;
+            tcell.Margins.All = 0;
             this.Styles.Add(tcell);
 
             StyleDefn tcellhead = new StyleDefn("td.head");

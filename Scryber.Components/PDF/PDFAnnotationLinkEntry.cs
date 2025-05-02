@@ -73,9 +73,9 @@ namespace Scryber.PDF
                 writer.WriteDictionaryStringEntry("NM", name);
                 
 
-                //writer.BeginDictionaryEntry("Border");
-                //writer.WriteArrayRealEntries(0.0, 0.0, 0.0);
-                //writer.EndDictionaryEntry();
+                writer.BeginDictionaryEntry("Border");
+                writer.WriteArrayRealEntries(0.0, 0.0, 0.0);
+                writer.EndDictionaryEntry();
                 
 
                 if (null != this.Action)

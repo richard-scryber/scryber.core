@@ -158,11 +158,13 @@ namespace Scryber.Components
             Style style = base.GetBaseStyle();
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
-            style.Padding.All = (Unit)4;
+            style.Padding.All = (Unit)2;
+            style.Margins.All = (Unit)2;
             style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (Unit)1;
             style.Position.DisplayMode = DisplayMode.TableCell;
+            style.Position.VAlign = VerticalAlignment.Middle;
             //style.Position.FullWidth = true; //Cells are always the full width of their container row
             return style;
         }
