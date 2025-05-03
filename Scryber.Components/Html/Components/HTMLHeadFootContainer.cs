@@ -7,8 +7,25 @@ using Scryber.PDF;
 
 namespace Scryber.Html.Components
 {
-    public abstract class HTMLHeadFootContainer : Scryber.Components.Panel
+    public abstract class HTMLHeadFootContainer : Scryber.Components.Panel, ITopAndTailedComponent, IPDFViewPortComponent
     {
+        
+        [PDFElement("header")]
+        [PDFTemplate(IsBlock= true)]
+        public ITemplate Header { get; set; }
+
+        [PDFElement("footer")]
+        [PDFTemplate(IsBlock = true)]
+        public ITemplate Footer { get; set; }
+
+        [PDFElement("continuation-header")]
+        [PDFTemplate(IsBlock = true)]
+        public ITemplate ContinuationHeader { get; set; }
+
+        [PDFElement("continuation-footer")]
+        [PDFTemplate(IsBlock = true)]
+        public ITemplate ContinuationFooter { get; set; }
+        
         [PDFAttribute("class")]
         public override string StyleClass
         {
@@ -76,57 +93,15 @@ namespace Scryber.Html.Components
             return style;
         }
 
-
-        protected override void OnPreLayout(LayoutContext context)
-        {
-            this.ArrangeHeadersAndFooters();
-            base.OnPreLayout(context);  
-        }
-
-        private void ArrangeHeadersAndFooters()
-        {
-            int topIndex = 0;
-            int bottomIndex = this.Contents.Count - 1;
-
-            List<HTMLComponentHeader> tops = new List<HTMLComponentHeader>(1);
-            List<HTMLComponentFooter> footers = new List<HTMLComponentFooter>(1);
-
-            
-
-            for (int i = 0; i < this.Contents.Count; i++)
-            {
-                var one = this.Contents[i];
-                if (one is HTMLComponentHeader)
-                    tops.Add(one as HTMLComponentHeader);
-
-                else if (one is HTMLComponentFooter)
-                    footers.Add(one as HTMLComponentFooter);
-
-            }
-            if (tops.Count > 0)
-            {
-                foreach (var one in tops)
-                {
-                    this.Contents.MoveTo(one, topIndex++);
-                }
-            }
-            if(footers.Count > 0)
-            {
-                foreach (var one in footers)
-                {
-                    this.Contents.MoveTo(one, -1);
-                }
-            }
-        }
-
+        
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new PDF.Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEngineTopAndTailedPanel(this, parent);
         }
     }
 
 
-    [PDFParsableComponent("header")]
+    [PDFParsableComponent("header_old")]
     public class HTMLComponentHeader : Scryber.Components.Panel
     {
         [PDFAttribute("class")]
@@ -199,7 +174,7 @@ namespace Scryber.Html.Components
     }
 
 
-    [PDFParsableComponent("footer")]
+    [PDFParsableComponent("footer_old")]
     public class HTMLComponentFooter : Scryber.Components.Panel
     {
         [PDFAttribute("class")]

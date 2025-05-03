@@ -240,7 +240,6 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
   
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
     <Folder Include="Options\" />
   </ItemGroup>

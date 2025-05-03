@@ -1,0 +1,63 @@
+﻿<?scryber append-log=true log-parser=true log-level=errors ?>
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+            border: solid 1pt black;
+        }
+        
+        section{
+            border: solid 1pt green;
+        }
+        
+        header{
+            background-color: silver;
+        }
+        
+        footer{
+            background-color: #333333;
+            color: white;
+        }
+
+        .conthead, continuation-footer{
+            background-color: #aaa;
+            margin: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Inside the header
+    </header>
+    <continuation-header class="conthead">
+        The continuation header<br/>
+        That is taller with margins.
+    </continuation-header>
+    <div>
+        Before the section
+    </div>
+    
+
+    <section>
+        In the section
+    </section>
+
+    <div>
+        After the section
+    </div>
+    <footer>
+        Inside the footer
+    </footer>
+    <continuation-footer>
+        The continuation footer<br/>
+        That is much taller<br/>
+        with margins.
+    </continuation-footer>
+</body>
+</html>
+

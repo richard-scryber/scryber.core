@@ -121,6 +121,8 @@ namespace Scryber
         public static readonly ObjectType NumberComp = (ObjectType)"numb";
         public static readonly ObjectType Barcode = (ObjectType)"barc";
         public static readonly ObjectType PlaceHolder = (ObjectType)"plac";
+        public static readonly ObjectType ComponentHeader = (ObjectType)"cphd";
+        public static readonly ObjectType ComponentFooter = (ObjectType)"cpft";
 
         // Data Sources
 
