@@ -93,7 +93,19 @@ namespace Scryber.PDF.Layout
             this.UpdateHeaderAndFooterSpace(h);
             
             this.LastFooter = footBlock;
-            
+
+            if (this.Component.HasContent)
+            {
+                var container = this.Component as IContainerComponent;
+                if (container != null && container.Content.Count == 1 && container.Content[0] is TextLiteral)
+                {
+                    Span span = new Span();
+                    span.Contents.Add(container.Content[0]);
+                    container.Content.RemoveAt(0);
+                    container.Content.Add(span);
+                }
+            }
+
             base.DoLayoutChildren();
 
             if (null != this.LastFooter)
