@@ -134,10 +134,28 @@ namespace Scryber
         /// Gets or sets the list of Components in the footer of this Component
         /// </summary>
         ITemplate Footer { get; set; }
+        
     }
 
     #endregion
 
+    public interface ITopAndTailedContinuationComponent : ITopAndTailedComponent
+    {
+        /// <summary>
+        /// Gets or sets the list of Components in the header on ALL PAGES AFTER of the parent component extends too,
+        /// except the first. If not defined, then the the standard footer will be used (if defined)
+        /// </summary>
+        ITemplate ContinuationHeader { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of Components in the footer on
+        /// ALL PAGES PRE-CEEDING of this Component if defined, other-wise the standard footer will be used (if defined).
+        /// </summary>
+        ITemplate ContinuationFooter { get; set; }
+    }
+    
+    
+    
     #region public interface IPDFRenderable
     
     public interface IPDFRenderable

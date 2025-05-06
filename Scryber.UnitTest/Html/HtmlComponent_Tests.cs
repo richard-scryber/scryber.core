@@ -492,11 +492,11 @@ namespace Scryber.Core.UnitTests.Html
             AssertLiteralContent(article, 2, "This is the article content");
             
             // article header
-            var head = article.Contents[0] as HTMLComponentHeader;
+            var head = article.Contents[0] as ComponentHeader;
             AssertLiteralContent(head, 0, "This is the article header");
             
             // article footer
-            var foot = article.Contents[4] as HTMLComponentFooter;
+            var foot = article.Contents[4] as ComponentFooter;
             AssertLiteralContent(foot, 0, "This is the article footer");
             
             
@@ -508,11 +508,11 @@ namespace Scryber.Core.UnitTests.Html
             AssertLiteralContent(section, 2, "This is the section content");
             
             //section header
-            head = section.Contents[0] as HTMLComponentHeader;
+            head = section.Contents[0] as ComponentHeader;
             AssertLiteralContent(head, 0, "This is the section header"); 
             
             //section footer
-            foot = section.Contents[4] as HTMLComponentFooter;
+            foot = section.Contents[4] as ComponentFooter;
             AssertLiteralContent(foot, 0, "This is the section footer");
             
             

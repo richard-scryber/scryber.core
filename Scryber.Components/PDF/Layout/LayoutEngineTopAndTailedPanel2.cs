@@ -26,7 +26,7 @@ using Scryber.Components;
 
 namespace Scryber.PDF.Layout
 {
-    public class LayoutEngineTopAndTailedPanel : LayoutEnginePanel
+    public class LayoutEngineTopAndTailedPanel2 : LayoutEnginePanel
     {
 
         public string HeaderElementName { get; set; }
@@ -66,13 +66,13 @@ namespace Scryber.PDF.Layout
         /// <param name="container"></param>
         /// <param name="context"></param>
         /// <param name="fullstyle"></param>
-        public LayoutEngineTopAndTailedPanel(ContainerComponent container, IPDFLayoutEngine parent)
+        public LayoutEngineTopAndTailedPanel2(ContainerComponent container, IPDFLayoutEngine parent)
             : this(container, parent, "header", "footer", "continuation-header", "continuation-footer")
         {
             
         }
 
-        public LayoutEngineTopAndTailedPanel(ContainerComponent container, IPDFLayoutEngine parent,
+        public LayoutEngineTopAndTailedPanel2(ContainerComponent container, IPDFLayoutEngine parent,
             string headerElementName, string footerElementName, string continuationHeaderElementName, string continuationFooterElementName)
             :base(container, parent)
         {
@@ -96,168 +96,21 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutChildren()
         {
-            
-            Unit headerH = Unit.Zero;
-            Unit footerH = Unit.Zero;
-            Unit continuationHeaderH = Unit.Zero;
-            Unit continuationFooterH = Unit.Zero;
-            
-            bool isContinuation = false;
-            bool removeAfterLayout = false;
-            
-            //
-            // First add the header layout to the content
-            //
-            
             if (null != this.TopAndTailed.Header)
             {
-                headerH += this.LayoutHeader(isContinuation);
-            }
-            else
-            {
-                headerH = Unit.Zero;
-            }
-
-            var block = this.CurrentBlock;
-            
-            //
-            // next Layout any footers, but remove them after layout.
-            // We want to know how much space we need, but don't yet know which one it will 
-            // be needed.
-            
-            Unit totalAddedForMeasure = Unit.Zero;
-            
-            PDFLayoutBlock footBlock = null;
-            if (null != this.TopAndTailed.Footer)
-            {
-                //Footers always appear last, the continuation if set is first
-                isContinuation = false;
-                removeAfterLayout = true;
-                footerH += this.LayoutFooter(isContinuation, block, out footBlock, removeAfterLayout);
-                continuationFooterH = footerH;
-                this.LastFooterHeight = footerH;
-                this.ContinuationFooterHeight = footerH;
-                totalAddedForMeasure = footerH;
-            }
-
-            if (null != this.ContinuationTopAndTailed)
-            {
-                if (this.ContinuationTopAndTailed.ContinuationFooter != null)
-                {
-                    isContinuation = true;
-                    continuationFooterH = this.LayoutFooter(isContinuation, block, out footBlock, true);
-                    this.ContinuationFooterHeight = continuationFooterH;
-                    totalAddedForMeasure += continuationFooterH;
-                }
-            }
-
-            //
-            // based on the size make sure will have enough at the bottom of the page to roll over nicely.
-            // or simply add the footer
-            //
-            
-            Unit maxFooterHeight = Unit.Max(this.ContinuationFooterHeight, this.LastFooterHeight);
-
-            this.UpdateHeaderAndFooterSpace(headerH, totalAddedForMeasure, maxFooterHeight);
-            
-            
-
-            if (this.Component.HasContent)
-            {
-                var container = this.Component as IContainerComponent;
-                if (container != null && container.Content.Count == 1 && container.Content[0] is TextLiteral)
-                {
-                    Span span = new Span();
-                    span.Contents.Add(container.Content[0]);
-                    container.Content.RemoveAt(0);
-                    container.Content.Add(span);
-                }
+                this.LayoutHeader(false);
+                
             }
             
-            // We have done what we need
-            // standard processing of the content of the container component.
-            // Any calls to the move to next region, will capture the roll over and add the footers and headers.
-            //
-
             base.DoLayoutChildren();
 
-            //
-            //Now add the Last Footer (the main footer) at the end of the layout
-            //
-            isContinuation = false;
             if (null != this.TopAndTailed.Footer)
             {
-                block = this.CurrentBlock;
-                headerH += this.LayoutFooter(isContinuation, block, out footBlock, false);
+                var block = this.CurrentBlock;
+                this.LayoutFooter(false, block, out var footer, removeAfterLayout: false);
             }
-
         }
 
-        public override PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(PDFLayoutBlock blockToClose, PDFLayoutRegion joinToRegion)
-        {
-            if(this.Context.ShouldLogVerbose)
-                this.Context.TraceLog.Add(TraceLevel.Message, "Top And Tailed Engine", "Closing the current region and stating in a new one, so need to check the headers and footers for " + this.Component);
-
-            var newRegion = joinToRegion;
-            var currBlock = blockToClose;
-            this.AddAnyTailToTheEndOfTheBlock(currBlock, isContinuation: true);
-            
-            var newBlock = base.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
-
-            if (newBlock != blockToClose)
-            {
-                //TODO: Add THe header back in
-            }
-            
-            return newBlock;
-        }
-
-        public override bool MoveToNextPage(IComponent initiator, Style inititorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region,
-            ref PDFLayoutBlock block)
-        {
-            if(this.Context.ShouldLogVerbose)
-                this.Context.TraceLog.Add(TraceLevel.Message, "Top And Tailed Engine", "Moving to a new page so need to check the headers and footers for " + this.Component);
-
-            
-            var result = base.MoveToNextPage(initiator, inititorStyle, depth, ref region, ref block);
-
-
-           return result;
-        }
-
-        protected internal override bool MoveToNextRegion(Unit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
-        {
-            if(this.Context.ShouldLogVerbose)
-                this.Context.TraceLog.Add(TraceLevel.Message, "Top And Tailed Engine", "Moving to a new region so need to check the headers and footers for " + this.Component);
-
-            
-            var result = base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
-            return result;
-            
-        }
-
-        private bool AddAnyTailToTheEndOfTheBlock(PDFLayoutBlock currBlock, bool isContinuation)
-        {
-            
-            ITemplate footerTemplate = this.GetCurrentFooterTemplate(0, isContinuation);
-            var total = currBlock.CurrentRegion.TotalBounds;
-            total.Height += this.ContinuationFooterHeight;
-            currBlock.CurrentRegion.TotalBounds = total;
-            var doclose = false;
-            
-            //Re-open
-            if (currBlock.IsClosed)
-            {
-                currBlock.ReOpen();
-                doclose = true;
-            }
-            
-            var size = this.LayoutFooter(isContinuation, currBlock, out var footerBlock, removeAfterLayout: false);
-
-            if (doclose)
-                currBlock.Close();
-            return true; // size != Unit.Zero;
-        }
 
         //
         // private implementation
@@ -367,28 +220,28 @@ namespace Scryber.PDF.Layout
             return footH;
         }
 
-        private void UpdateHeaderAndFooterSpace(Unit headerHeight, Unit totalHeightUsedMeasuring, Unit maxHeightNeededForFooters)
-        {
-            var sectionBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
-            if (null != sectionBlock && totalHeightUsedMeasuring > Unit.Zero)
-            {
-                //The the footer height off the used region
-                var used = sectionBlock.CurrentRegion.UsedSize;
-                used.Height -= totalHeightUsedMeasuring;
-                sectionBlock.CurrentRegion.UsedSize = used;
-                
-            }
-
-            if (null != sectionBlock && maxHeightNeededForFooters > Unit.Zero)
-            {
-                //And reduce the totat available by the footer height so we can add it in at the bottom.
-                var total = sectionBlock.CurrentRegion.TotalBounds;
-                total.Height -= maxHeightNeededForFooters;
-                sectionBlock.CurrentRegion.TotalBounds = total;
-            }
-                
-            
-        }
+        // private void UpdateHeaderAndFooterSpace(Unit headerHeight, Unit totalHeightUsedMeasuring, Unit maxHeightNeededForFooters)
+        // {
+        //     var sectionBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
+        //     if (null != sectionBlock && totalHeightUsedMeasuring > Unit.Zero)
+        //     {
+        //         //The the footer height off the used region
+        //         var used = sectionBlock.CurrentRegion.UsedSize;
+        //         used.Height -= totalHeightUsedMeasuring;
+        //         sectionBlock.CurrentRegion.UsedSize = used;
+        //         
+        //     }
+        //
+        //     if (null != sectionBlock && maxHeightNeededForFooters > Unit.Zero)
+        //     {
+        //         //And reduce the totat available by the footer height so we can add it in at the bottom.
+        //         var total = sectionBlock.CurrentRegion.TotalBounds;
+        //         total.Height -= maxHeightNeededForFooters;
+        //         sectionBlock.CurrentRegion.TotalBounds = total;
+        //     }
+        //         
+        //     
+        // }
 
         
         

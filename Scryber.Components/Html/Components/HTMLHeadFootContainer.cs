@@ -70,19 +70,26 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        private Panel _innerPanel;
+
         [PDFElement("")]
         [PDFArray(typeof(Component))]
-        public override ComponentList Contents => base.Contents;
+        public override ComponentList Contents
+        {
+            get { return this._innerPanel.Contents; }
+
+        }
 
         
 
         protected HTMLHeadFootContainer(ObjectType type) : base(type)
         {
-        }
+            
+            //The contents of the panel are the actual contents of the Container, except the header and footer
+            this._innerPanel = new Panel();
 
-        protected override void OnInitialized(InitContext context)
-        {
-            base.OnInitialized(context);
+            this.InnerContent.Add(this._innerPanel);
+
         }
 
         protected override Style GetBaseStyle()
@@ -96,150 +103,11 @@ namespace Scryber.Html.Components
         
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
         {
-            return new PDF.Layout.LayoutEngineTopAndTailedPanel(this, parent);
+            return new PDF.Layout.LayoutEngineTopAndTailedPanel2(this, parent);
         }
     }
 
 
-    [PDFParsableComponent("header_old")]
-    public class HTMLComponentHeader : Scryber.Components.Panel
-    {
-        [PDFAttribute("class")]
-        public override string StyleClass
-        {
-            get => base.StyleClass;
-            set => base.StyleClass = value;
-        }
-
-        [PDFAttribute("style")]
-        public override Style Style
-        {
-            get => base.Style;
-            set => base.Style = value;
-        }
-
-
-        [PDFAttribute("repeat")]
-        public HeadTailRepeat Repeat { get; set; } = HeadTailRepeat.Repeat;
-
-
-        /// <summary>
-        /// Global Html hidden attribute used with xhtml as hidden='hidden'
-        /// </summary>
-        [PDFAttribute("hidden")]
-        public string Hidden
-        {
-            get
-            {
-                if (this.Visible)
-                    return string.Empty;
-                else
-                    return "hidden";
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value != "hidden")
-                    this.Visible = true;
-                else
-                    this.Visible = false;
-            }
-        }
-
-        [PDFAttribute("title")]
-        public override string OutlineTitle
-        {
-            get => base.OutlineTitle;
-            set => base.OutlineTitle = value;
-        }
-
-        [PDFElement("")]
-        [PDFArray(typeof(Component))]
-        public override ComponentList Contents => base.Contents;
-
-        public HTMLComponentHeader() : this(HTMLObjectTypes.Header)
-        { }
-
-        protected HTMLComponentHeader(ObjectType type) : base(type)
-        {
-
-        }
-
-        protected override Style GetBaseStyle()
-        {
-            var style = base.GetBaseStyle();
-            style.Size.FullWidth = true;
-            style.Position.DisplayMode = Drawing.DisplayMode.Block;
-            return style;
-        }
-    }
-
-
-    [PDFParsableComponent("footer_old")]
-    public class HTMLComponentFooter : Scryber.Components.Panel
-    {
-        [PDFAttribute("class")]
-        public override string StyleClass
-        {
-            get => base.StyleClass;
-            set => base.StyleClass = value;
-        }
-
-        [PDFAttribute("style")]
-        public override Style Style
-        {
-            get => base.Style;
-            set => base.Style = value;
-        }
-
-
-        /// <summary>
-        /// Global Html hidden attribute used with xhtml as hidden='hidden'
-        /// </summary>
-        [PDFAttribute("hidden")]
-        public string Hidden
-        {
-            get
-            {
-                if (this.Visible)
-                    return string.Empty;
-                else
-                    return "hidden";
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value != "hidden")
-                    this.Visible = true;
-                else
-                    this.Visible = false;
-            }
-        }
-
-        [PDFAttribute("title")]
-        public override string OutlineTitle
-        {
-            get => base.OutlineTitle;
-            set => base.OutlineTitle = value;
-        }
-
-        [PDFElement("")]
-        [PDFArray(typeof(Component))]
-        public override ComponentList Contents => base.Contents;
-
-        public HTMLComponentFooter() : this(HTMLObjectTypes.Footer)
-        { }
-
-        protected HTMLComponentFooter(ObjectType type) : base(type)
-        {
-        }
-
-        protected override Style GetBaseStyle()
-        {
-            var style = base.GetBaseStyle();
-            style.Size.FullWidth = true;
-            style.Position.DisplayMode = Drawing.DisplayMode.Block;
-            return style;
-        }
-    }
 
 
 }

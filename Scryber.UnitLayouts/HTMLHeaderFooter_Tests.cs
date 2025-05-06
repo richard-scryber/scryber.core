@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Html.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
@@ -76,8 +77,6 @@ namespace Scryber.UnitLayouts
             }
         }
         
-        
-
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BodyAndSection_02_NoHeaderOrFooters()
@@ -276,68 +275,21 @@ namespace Scryber.UnitLayouts
                 }
 
                 var ldoc = _layout;
-                Assert.IsNotNull(ldoc);
-
-                //By default all sections start on a new page.
-                Assert.AreEqual(2, ldoc.AllPages.Count);
+                AssertLayoutDocument(ldoc, doc, 2);
 
                 var lpg = ldoc.AllPages[0];
-                Assert.IsNotNull(lpg);
-                Assert.IsNull(lpg.HeaderBlock);
-                Assert.IsNull(lpg.FooterBlock);
-                Assert.IsNotNull(lpg.ContentBlock);
-                Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
-                var lcol = lpg.ContentBlock.Columns[0];
-                Assert.IsNotNull(lcol);
-                Assert.AreEqual(1, lcol.Contents.Count);
-
-                //Section forces a new page
-
-                var lblock = lcol.Contents[0];
-                Assert.IsNotNull(lblock);
-                Assert.AreEqual(15, lblock.Height);
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-
+                AssertPage(lpg, 0,false, false, 1);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                //Page 2 section header, section content, and after
                 lpg = ldoc.AllPages[1];
-                Assert.IsNotNull(lpg);
-                Assert.IsNull(lpg.HeaderBlock);
-                Assert.IsNull(lpg.FooterBlock);
-                Assert.IsNotNull(lpg.ContentBlock);
-
-                Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
-                lcol = lpg.ContentBlock.Columns[0];
-                Assert.IsNotNull(lcol);
-                Assert.AreEqual(2, lcol.Contents.Count);
-
-                lblock = lcol.Contents[0];
-                Assert.IsNotNull(lblock);
-                Assert.AreEqual(15 + 10 + 15,
-                    lblock.Height); //One line, and a header with 5pt padding and a single row table
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLSection));
-
-
-                //Inside the section
-                var lsect = lblock as PDFLayoutBlock;
-                Assert.IsNotNull(lsect);
-                Assert.AreEqual(1, lsect.Columns.Length);
-                Assert.AreEqual(2, lsect.Columns[0].Contents.Count);
-
-                //Section Head
-                var lsectHead = lsect.Columns[0].Contents[0] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectHead);
-                Assert.AreEqual(10 + 15, lsectHead.Height);
-
-                var lsectBody = lsect.Columns[0].Contents[1] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectBody);
-                Assert.AreEqual(15, lsectBody.Height);
-
-                //After the section
-
-                lblock = lcol.Contents[1];
-                Assert.IsNotNull(lblock);
-                Assert.AreEqual(15, lblock.Height);
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
+                AssertPage(lpg, 1,false, false, 2);
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, false, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 1);
 
             }
 
@@ -360,62 +312,19 @@ namespace Scryber.UnitLayouts
                 }
 
                 var ldoc = _layout;
-                Assert.IsNotNull(ldoc);
-
-                //By default all sections start on a new page.
-                Assert.AreEqual(1, ldoc.AllPages.Count);
+                AssertLayoutDocument(ldoc, doc, 1);
 
                 var lpg = ldoc.AllPages[0];
-                Assert.IsNotNull(lpg);
+                AssertPage(lpg, 0,false, false, 3);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, false, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 2);
 
-                //Header footer null
-                Assert.IsNull(lpg.HeaderBlock);
-                Assert.IsNull(lpg.FooterBlock);
-
-                Assert.IsNotNull(lpg.ContentBlock);
-                Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
-                var lcol = lpg.ContentBlock.Columns[0];
-                Assert.IsNotNull(lcol);
-                Assert.AreEqual(3, lcol.Contents.Count);
-
-                //Div Before
-
-                var lblock = lcol.Contents[0] as PDFLayoutBlock;
-
-
-                //Section on same page with header
-
-                lblock = lcol.Contents[1] as PDFLayoutBlock; //section block
-                Assert.IsNotNull(lblock);
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLSection));
-                Assert.AreEqual(40, lblock.Height); //header table + content
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-                Assert.AreEqual(1, lblock.Columns.Length);
-                var lcol1 = lblock.Columns[0];
-                Assert.IsNotNull(lcol1);
-                Assert.AreEqual(2, lcol1.Contents.Count); //header and content
-
-
-
-                //Inside the section
-                var lsectHead = lcol1.Contents[0] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectHead);
-                Assert.IsInstanceOfType(lsectHead.Owner, typeof(ComponentHeader));
-                Assert.AreEqual(1, lsectHead.Columns.Length);
-                Assert.AreEqual(1, lsectHead.Columns[0].Contents.Count);
-
-
-                var lsectBody = lcol1.Contents[1] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectBody);
-                Assert.AreEqual(15, lsectBody.Height);
-
-                //After the section
-
-                lblock = lcol.Contents[2] as PDFLayoutBlock;
-                Assert.IsNotNull(lblock);
-                Assert.AreEqual(15, lblock.Height);
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLDiv));
 
             }
 
@@ -438,93 +347,158 @@ namespace Scryber.UnitLayouts
                 }
 
                 var ldoc = _layout;
-                Assert.IsNotNull(ldoc);
-
-                //By default all sections start on a new page.
-                Assert.AreEqual(2, ldoc.AllPages.Count);
+                AssertLayoutDocument(ldoc, doc, 2);
 
                 var lpg = ldoc.AllPages[0];
-                Assert.IsNotNull(lpg);
-
-
-                //Check the page header
-                Assert.IsNotNull(lpg.HeaderBlock);
-                Assert.AreEqual(15, lpg.HeaderBlock.Height);
-                Assert.AreEqual(lpg.Width - 20, lpg.HeaderBlock.Width);
-                Assert.IsInstanceOfType(lpg.HeaderBlock.Owner, typeof(PDFPageHeader));
-
-                //Footer is null
-                Assert.IsNull(lpg.FooterBlock);
-
-
-                Assert.IsNotNull(lpg.ContentBlock);
-                Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
-                var lcol = lpg.ContentBlock.Columns[0];
-                Assert.IsNotNull(lcol);
-                Assert.AreEqual(1, lcol.Contents.Count);
-
-                //Div Before
-
-                var lblock = lcol.Contents[0] as PDFLayoutBlock;
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLDiv));
-                Assert.AreEqual(15, lblock.Height);
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-
-                //Section on next page with header
+                AssertPage(lpg, 0,true, false, 1);
+                AssertPageHeaderContent(lpg, false);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                //Page 2 section header, section content, and after
                 lpg = ldoc.AllPages[1];
-
-                //Check the page header
-                Assert.IsNotNull(lpg.HeaderBlock);
-                Assert.AreEqual(15, lpg.HeaderBlock.Height);
-                Assert.AreEqual(lpg.Width - 20, lpg.HeaderBlock.Width);
-                Assert.IsInstanceOfType(lpg.HeaderBlock.Owner, typeof(PDFPageHeader));
-
-                //Footer is null
-                Assert.IsNull(lpg.FooterBlock);
-
-                Assert.IsNotNull(lpg.ContentBlock);
-                Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
-                lcol = lpg.ContentBlock.Columns[0];
-                Assert.IsNotNull(lcol);
-                Assert.AreEqual(2, lcol.Contents.Count); //section and div
-
-
-                lblock = lcol.Contents[1] as PDFLayoutBlock; //section block
-                Assert.IsNotNull(lblock);
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLSection));
-                Assert.AreEqual(40, lblock.Height); //header table + content
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-                Assert.AreEqual(1, lblock.Columns.Length);
-                var lcol1 = lblock.Columns[0];
-                Assert.IsNotNull(lcol1);
-                Assert.AreEqual(2, lcol1.Contents.Count); //header and content
-
-
-
-                //Inside the section
-                var lsectHead = lcol1.Contents[0] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectHead);
-                Assert.IsInstanceOfType(lsectHead.Owner, typeof(ComponentHeader));
-                Assert.AreEqual(1, lsectHead.Columns.Length);
-                Assert.AreEqual(1, lsectHead.Columns[0].Contents.Count);
-
-
-                var lsectBody = lcol1.Contents[1] as PDFLayoutBlock;
-                Assert.IsNotNull(lsectBody);
-                Assert.AreEqual(15, lsectBody.Height);
-
-                //After the section
-
-                lblock = lcol.Contents[2] as PDFLayoutBlock;
-                Assert.IsNotNull(lblock);
-                Assert.AreEqual(15, lblock.Height);
-                Assert.AreEqual(lpg.ContentBlock.Width, lblock.Width);
-                Assert.IsInstanceOfType(lblock.Owner, typeof(HTMLDiv));
+                AssertPage(lpg, 1,true, false, 2);
+                AssertPageHeaderContent(lpg, false);
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, false, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 1);
 
             }
 
 
         }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BodyAndSection_10_SectionAndBodyHeaderSamePage()
+        {
+            var path = AssertGetContentFile("HTMLBodyAndSection_10_SectionAndBodyHeaderSamePage");
+            
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                using (var stream = DocStreams.GetOutputStream("HTMLBodyAndSection_10_SectionAndBodyHeaderSamePage.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.AppendTraceLog = true;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var ldoc = _layout;
+                AssertLayoutDocument(ldoc, doc, 1);
+
+                var lpg = ldoc.AllPages[0];
+                AssertPage(lpg, 0,true, false, 3);
+                AssertPageHeaderContent(lpg, false);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                //Page 2 section header, section content, and after
+                
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, false, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 2);
+
+            }
+
+
+        }
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BodyAndSection_11_SectionAndBodyHeaderAndFooterSamePage()
+        {
+            var path = AssertGetContentFile("HTMLBodyAndSection_11_SectionAndBodyHeaderAndFooterSamePage");
+            
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                using (var stream = DocStreams.GetOutputStream("HTMLBodyAndSection_11_SectionAndBodyHeaderAndFooterSamePage.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                    doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                    doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                    doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                    doc.AppendTraceLog = true;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var ldoc = _layout;
+                AssertLayoutDocument(ldoc, doc, 1);
+
+                var lpg = ldoc.AllPages[0];
+                AssertPage(lpg, 0,true, false, 3);
+                AssertPageHeaderContent(lpg, false);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                //Page 2 section header, section content, and after
+                
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, true, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                AssertSectionTableFooterContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 2);
+
+            }
+
+
+        }
+        
+        
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BodyAndSection_12_SectionHeaderAndFooterMultiplePage()
+        {
+            var path = AssertGetContentFile("HTMLBodyAndSection_12_SectionAndBodyHeaderAndFooterMultiplePage");
+            
+            using (var doc = Document.ParseDocument(path))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                using (var stream = DocStreams.GetOutputStream("HTMLBodyAndSection_12_SectionAndBodyHeaderAndFooterMultiplePage.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                    doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
+                    doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                    doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+                    doc.AppendTraceLog = true;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var ldoc = _layout;
+                AssertLayoutDocument(ldoc, doc, 1);
+
+                var lpg = ldoc.AllPages[0];
+                AssertPage(lpg, 0,true, false, 3);
+                AssertPageHeaderContent(lpg, false);
+                AssertBeforeSectionDivContent(lpg, 0);
+                
+                //Page 2 section header, section content, and after
+                
+                
+                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                AssertSection(lsection, 0, true, true, 1);
+                AssertSectionTableHeaderContent(lsection, false);
+                AssertSectionTableFooterContent(lsection, false);
+                
+                AssertAfterSectionDivContent(lpg, 2);
+
+            }
+
+
+        }
+        
+        //
+        // Assert Implementations for the standard parts (body, headers and footers)
+        //
 
         private static void AssertLayoutDocument(PDFLayoutDocument docLayout,  Document owner, int pageCount)
         {
@@ -570,12 +544,32 @@ namespace Scryber.UnitLayouts
 
         private static void AssertSectionTableHeaderContent(PDFLayoutBlock sectionBlock, bool isContinuation)
         {
-            throw new NotImplementedException();
+            Assert.IsNotNull(sectionBlock);
+            Assert.AreEqual(1, sectionBlock.Columns.Length);
+            Assert.IsTrue(1 < sectionBlock.Columns[0].Contents.Count);
+            
+            //Header at the top
+            var lhead = sectionBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(lhead);
+            Assert.IsInstanceOfType(lhead.Owner, typeof(ComponentHeader));
+            Assert.AreEqual(25, lhead.Height);
+            Assert.AreEqual(sectionBlock.Width, lhead.Width);
+
         }
 
         private static void AssertSectionTableFooterContent(PDFLayoutBlock sectionBlock, bool isContinuation)
         {
-            throw new NotImplementedException();
+            Assert.IsNotNull(sectionBlock);
+            Assert.AreEqual(1, sectionBlock.Columns.Length);
+            Assert.IsTrue(1 < sectionBlock.Columns[0].Contents.Count);
+            
+            //Header at the top
+            var footIndex = sectionBlock.Columns[0].Contents.Count - 1;
+            var lfoot = sectionBlock.Columns[0].Contents[footIndex] as PDFLayoutBlock;
+            Assert.IsNotNull(lfoot);
+            Assert.IsInstanceOfType(lfoot.Owner, typeof(ComponentFooter));
+            Assert.AreEqual(15, lfoot.Height);
+            Assert.AreEqual(sectionBlock.Width, lfoot.Width);
 
         }
 
@@ -596,6 +590,7 @@ namespace Scryber.UnitLayouts
             }
             
             Assert.AreEqual(totalCount, section.Columns[0].Contents.Count);
+            
 
         }
 

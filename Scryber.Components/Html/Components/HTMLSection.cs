@@ -5,7 +5,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("section")]
-    public class HTMLSection : HTMLHeadFootContainer
+    public class HTMLSection : HTMLHeadFootContainer, ITopAndTailedContinuationComponent
     {
         
 
