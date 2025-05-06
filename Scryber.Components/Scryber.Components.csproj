@@ -1,19 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net9.0</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.5.0-beta</PackageVersion>
+    <PackageVersion>9.0.0.0-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2024</Copyright>
+    <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+9.0.0.0-beta
+Completely updated version for .NET 9.0 with support for html, css, svg and binding in a WASM compatible package with remote asset and content requests.
+NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
+        
+8.0.0.2-beta
+Added a fix for the rounding of expression results on decimal and double values when the results are very small.
+
+8.0.0.1-beta
+Updated to net8.0 sdk and dependancies updated to the latest stable versions.
+        
 6.0.5.0-beta
 Updated to net8.0 sdk and dependencies updated to latest version.
 
@@ -120,14 +130,15 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
+    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 9, 8, 6 and Standard 2.0</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 9;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
+    <Description>The scryber pdf engine for dotnet 9 - One for the creators.
 
-Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. 
+Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
-This framework is built entirely in .NET8 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
     <Version>6.0.5.0-beta</Version>

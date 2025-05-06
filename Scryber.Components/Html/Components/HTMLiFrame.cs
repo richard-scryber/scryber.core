@@ -90,5 +90,7 @@ namespace Scryber.Html.Components
             else
                 return base.GetAppliedStyle(forComponent, baseStyle);
         }
+        
+        
     }
 }
