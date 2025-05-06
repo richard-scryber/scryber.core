@@ -551,7 +551,7 @@ namespace Scryber.UnitLayouts
             //Header at the top
             var lhead = sectionBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(lhead);
-            Assert.IsInstanceOfType(lhead.Owner, typeof(ComponentHeader));
+            Assert.IsInstanceOfType(lhead.Owner, typeof(HTMLComponentHeader));
             Assert.AreEqual(25, lhead.Height);
             Assert.AreEqual(sectionBlock.Width, lhead.Width);
 
@@ -567,7 +567,7 @@ namespace Scryber.UnitLayouts
             var footIndex = sectionBlock.Columns[0].Contents.Count - 1;
             var lfoot = sectionBlock.Columns[0].Contents[footIndex] as PDFLayoutBlock;
             Assert.IsNotNull(lfoot);
-            Assert.IsInstanceOfType(lfoot.Owner, typeof(ComponentFooter));
+            Assert.IsInstanceOfType(lfoot.Owner, typeof(HTMLComponentFooter));
             Assert.AreEqual(15, lfoot.Height);
             Assert.AreEqual(sectionBlock.Width, lfoot.Width);
 
