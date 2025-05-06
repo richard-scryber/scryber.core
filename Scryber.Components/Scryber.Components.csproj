@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.0.0.0-beta</PackageVersion>
+    <PackageVersion>9.0.0.1-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,6 +14,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+9.0.0.1-beta
+Fixed a minor layout issue with multiple footer elementnamed components being applite to a page footer, and also header.
+        
 9.0.0.0-beta
 Completely updated version for .NET 9.0 with support for html, css, svg and binding in a WASM compatible package with remote asset and content requests.
 NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
@@ -141,12 +144,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>6.0.5.0-beta</Version>
+    <Version>9.0.0.0-beta</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>6.0.5.0</FileVersion>
+    <FileVersion>9.0.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>

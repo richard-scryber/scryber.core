@@ -357,7 +357,7 @@ namespace Scryber.PDF.Layout
             if (headtemplate != null)
             {
                 PDFPageHeader header = new PDFPageHeader();
-                header.ElementName = "header";
+                //header.ElementName = "header";
                 this.Page.AddGeneratedHeader(header, this.DocumentLayout.CurrentPageIndex);
                 //Create the content inside the header component
                 InstantiateTemplateForPage(header, headtemplate);
@@ -384,7 +384,7 @@ namespace Scryber.PDF.Layout
             if (foottemplate != null)
             {
                 PDFPageFooter footer = new PDFPageFooter();
-                footer.ElementName = "footer";
+                //footer.ElementName = "footer";
                 this.Page.AddGeneratedFooter(footer, this.DocumentLayout.CurrentPageIndex);
 
                 InstantiateTemplateForPage(footer, foottemplate);

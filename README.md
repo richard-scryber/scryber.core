@@ -1,8 +1,5 @@
-<h1 align='center'>
-    <img height='200' src='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png'/>
-    <br/>
-    scryber.core pdf engine
-</h1>
+
+# Scryber.Core PDF Engine
 
 ## Scryber makes creating beautiful documents easy.
 
