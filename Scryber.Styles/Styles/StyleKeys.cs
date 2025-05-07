@@ -591,6 +591,15 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<string> PageNameGroupKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"pgnm", PageItemKey);
 
+        //Header and Footer
+        
+        public static readonly StyleKey HeaderFooterItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.ComponentHeader, NOT_INHERITED);
+
+        public static readonly StyleKey<bool> RepeatHeader = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"thrp", HeaderFooterItemKey);
+        
+        [Obsolete("The footer currently do not support repeating", true)]
+        public static readonly StyleKey<bool> RepeatFooter = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"ftrp", HeaderFooterItemKey);
+        
         //Shape
 
         public static readonly StyleKey ShapeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.ShapeStyle, NOT_INHERITED);

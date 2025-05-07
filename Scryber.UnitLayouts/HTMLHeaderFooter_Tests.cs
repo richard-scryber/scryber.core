@@ -474,22 +474,26 @@ namespace Scryber.UnitLayouts
                 }
 
                 var ldoc = _layout;
-                AssertLayoutDocument(ldoc, doc, 1);
+                AssertLayoutDocument(ldoc, doc, 2);
 
                 var lpg = ldoc.AllPages[0];
-                AssertPage(lpg, 0,true, false, 3);
+                AssertPage(lpg, 0,true, false, 2);
                 AssertPageHeaderContent(lpg, false);
                 AssertBeforeSectionDivContent(lpg, 0);
+                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+                AssertSection(lsection, 1, true, false, 3); //header here with 2 literals and a spacer div.
+                AssertSectionTableHeaderContent(lsection, false);
                 
                 //Page 2 section header, section content, and after
                 
+                lpg = ldoc.AllPages[1];
+                AssertPage(lpg, 1,true, false, 2); 
                 
-                var lsection = lpg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
-                AssertSection(lsection, 0, true, true, 1);
-                AssertSectionTableHeaderContent(lsection, false);
+                lsection = lpg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                AssertSection(lsection, 0, false, true, 1);
                 AssertSectionTableFooterContent(lsection, false);
                 
-                AssertAfterSectionDivContent(lpg, 2);
+                AssertAfterSectionDivContent(lpg, 1);
 
             }
 

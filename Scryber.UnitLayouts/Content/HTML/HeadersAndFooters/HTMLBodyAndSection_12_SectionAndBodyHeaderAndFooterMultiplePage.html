@@ -40,6 +40,12 @@
             padding: 0pt;
         }
         
+        .spacer{
+            height: 710pt;
+            margin: 10pt;
+            border: solid 1pt red;
+        }
+        
     </style>
 </head>
 <body>
@@ -49,7 +55,7 @@
     <div>
         Before the section
     </div>
-    <section>
+    <section style="page-break-before: avoid">
         <header>
             <table style="width:100%">
                 <tr>
@@ -60,6 +66,11 @@
             </table>
         </header>
         <div>In the section</div>
+        <div class="spacer" >Spacer</div>
+        <div>
+            After the spacer.<br/>
+            And flowing onto a new page
+        </div>
         <footer>
             <table style="width:100%;">
                 <tr>
