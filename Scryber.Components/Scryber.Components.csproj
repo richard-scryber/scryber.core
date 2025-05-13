@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.0.0.1-beta</PackageVersion>
+    <PackageVersion>9.0.0.1-rc.1</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,6 +14,9 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+9.0.0.1-rc.1
+Minor fixes for layout. First release candidate.
+        
 9.0.0.1-beta
 Fixed a minor layout issue with multiple footer elementnamed components being applite to a page footer, and also header.
         

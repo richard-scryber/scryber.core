@@ -11,7 +11,7 @@ With a styles based template layout, it is easy to create good looking, paginate
 
 With dynamic content from you applications or sites it is easy to add dynamic data, and repeaters.
 
-**Now** uncludes support for expressions in both templates and css styles.
+**Now** includes support for expressions in both templates and css styles.
 
 
 
