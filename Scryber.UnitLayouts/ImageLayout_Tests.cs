@@ -103,8 +103,66 @@ namespace Scryber.UnitLayouts
             }
 
             Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var lpg = layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+            Assert.IsNotNull(lpg.ContentBlock);
+            Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lpg.ContentBlock.Columns[0].Contents.Count);
+
+            var ldiv = lpg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(ldiv);
             
-            Assert.Inconclusive("Need to check the div");
+            Assert.AreEqual(1, ldiv.Columns.Length);
+            Assert.AreEqual(3, ldiv.Columns[0].Contents.Count);
+
+            var line = ldiv.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            var chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("Before the block image", chars.Characters);
+
+            var runnningHeight = line.Height; //height of the first line.
+            
+            line = ldiv.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            
+            var border = compRun.BorderRect;
+            Assert.AreEqual(0, border.Y);
+            Assert.AreEqual(100, border.X); //img margin
+            Assert.AreEqual(200, border.Width); //explicit width
+            
+            Assert.AreEqual(img, compRun.Owner);
+
+            //now check the actual render bounds - offset 20, 20 for margins and padding
+            
+            var arrange = img.GetFirstArrangement();
+            border = arrange.RenderBounds;
+            
+            Assert.AreEqual(20 + runnningHeight, border.Y);
+            Assert.AreEqual(20 + 100, border.X);
+            Assert.AreEqual(200, border.Width);
+
+            runnningHeight += border.Height;
+            
+            //last line
+            
+            line = ldiv.Columns[0].Contents[2] as PDFLayoutLine;
+            
+            Assert.IsNotNull(line);
+            Assert.AreEqual(runnningHeight, line.OffsetY);
+
+            Assert.AreEqual(3, line.Runs.Count);
+
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("After the block image", chars.Characters);
         }
 
 
