@@ -60,7 +60,11 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The border rect relative the top left of the TotalBounds
         /// </summary>
-        public Rect BorderRect { get; set; }
+        public Rect BorderRect
+        {
+            get; 
+            set;
+        }
 
         #endregion
 
@@ -226,6 +230,19 @@ namespace Scryber.PDF.Layout
             PDFObjectRef oref;
             if (this.Owner is IPDFRenderComponent)
             {
+                //First render the border
+                
+                var border = this.FullStyle.CreateBorderPen();
+                var background = this.FullStyle.CreateBackgroundBrush();
+
+                Rect borderRect = this.BorderRect;
+                borderRect = borderRect.Offset(context.Offset.X, context.Offset.Y);
+                
+                if (null != background)
+                    this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
+
+                //Calculate the image size and location
+                
                 Point loc = context.Offset;
                 loc = loc.Offset(this.TotalBounds.Location);
                 Size size = this.TotalBounds.Size;
@@ -239,18 +256,6 @@ namespace Scryber.PDF.Layout
                     loc = loc.Offset(opts.Margins.Left, opts.Margins.Top);
                     size = size.Subtract(opts.Margins);
                 }
-                
-                var border = this.FullStyle.CreateBorderPen();
-
-
-                var background = this.FullStyle.CreateBackgroundBrush();
-
-                Rect borderRect = this.BorderRect; // new Rect(loc, size);
-                borderRect = borderRect.Offset(loc.X, loc.Y);
-                
-                if (null != background)
-                    this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
-                
                
                 if (opts.Padding.IsEmpty == false)
                 {
@@ -274,16 +279,17 @@ namespace Scryber.PDF.Layout
                 if (null != owner)
                 {
                     var block = this.GetParentBlock();
+                    var contentRect = new Rect(loc.X, loc.Y, size.Width, size.Height);
                     
                     if (block.IsExplicitLayout)
                     {
                         //we are explicit so we are always zero - need to take into account page locations
 
-                        borderRect.X += block.PagePosition.X + block.Position.Margins.Left;
-                        borderRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                        contentRect.X += block.PagePosition.X + block.Position.Margins.Left;
+                        contentRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
                     }
                     
-                    owner.SetArrangement(context, context.FullStyle, borderRect);
+                    owner.SetArrangement(context, context.FullStyle, contentRect);
                 }
 
                 //finally if we have a border then write this

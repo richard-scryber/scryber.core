@@ -55,6 +55,57 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(one, two, message);
         }
 
+        [TestMethod]
+        public void WidthAsBlock()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            div.Padding = 10;
+            pg.Contents.Add(div);
+            
+            
+
+            var img = new Image();
+            img.Source = path;
+            img.BorderColor = StandardColors.Black;
+            img.BackgroundColor = StandardColors.Silver;
+            img.DisplayMode = DisplayMode.Block;
+            img.Width = new Unit(200);
+            img.Margins = new Thickness(0, 0, 0, 100);
+            
+            div.Contents.Add(new TextLiteral("Before the block image"));
+            div.Contents.Add(img);
+            div.Contents.Add(new TextLiteral("After the block image"));
+            
+            using (var stream = DocStreams.GetOutputStream("Images_WidthAsBlock.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            
+            Assert.Inconclusive("Need to check the div");
+        }
 
 
         [TestMethod]

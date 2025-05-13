@@ -3035,14 +3035,14 @@ namespace Scryber.PDF.Layout
         {
             
             Rect content = new Rect(
-                options.Padding.Top + options.Margins.Top,
                 options.Padding.Left + options.Margins.Left,
+                options.Padding.Top + options.Margins.Top,
                 required.Width,
                 required.Height);
 
             Rect border = new Rect(
-                options.Margins.Top,
                 options.Margins.Left,
+                options.Margins.Top,
                 required.Width + options.Padding.Left + options.Padding.Right,
                 required.Height + options.Padding.Top + options.Padding.Bottom);
 
