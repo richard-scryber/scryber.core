@@ -2685,7 +2685,6 @@ namespace Scryber.Core.UnitTests.Html
                 this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
-                
                 doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("ArticleCounters.pdf"))

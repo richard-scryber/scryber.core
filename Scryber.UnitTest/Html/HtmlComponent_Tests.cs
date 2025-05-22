@@ -102,7 +102,13 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("Body Element", pg.OutlineTitle, "The section outline did not match");
             Assert.AreEqual("bodyClass", pg.StyleClass, "The section style class did not match");
             Assert.AreEqual(20, pg.Style.Padding.All.PointsValue, "The section padding did not match");
-            Assert.AreEqual(3, pg.Contents.Count,"Page content count did not match");
+            Assert.AreEqual(5, pg.Contents.Count,"Page content count did not match");
+            
+            Assert.IsInstanceOfType(pg.Contents[0], typeof(Whitespace));
+            Assert.IsInstanceOfType(pg.Contents[1], typeof(Whitespace));
+            Assert.IsInstanceOfType(pg.Contents[2], typeof(HTMLParagraph));
+            Assert.IsInstanceOfType(pg.Contents[3], typeof(Whitespace));
+            Assert.IsInstanceOfType(pg.Contents[4], typeof(Whitespace));
 
             var one = pg.Header.Instantiate(0, pg).ToArray();
             Assert.IsNotNull(one, "The section header was null");
@@ -830,55 +836,138 @@ namespace Scryber.Core.UnitTests.Html
     </template>
 </body>
 </html>";
-            
-            using var sr = new System.IO.StringReader(html);
-            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
 
-            Assert.AreEqual(1, doc.Pages.Count);
-            var pg = doc.Pages[0];
-            Assert.IsInstanceOfType(pg, typeof(Section));
-            var section = (Section) pg;
-            Assert.AreEqual(2, section.Contents.Count);
-
-            Assert.IsInstanceOfType(section.Contents[0], typeof(Whitespace));
-            var template = section.Contents[1] as HTMLTemplate;
-            Assert.IsNotNull(template);
-            Assert.IsNotNull(template.Template);
-            Assert.IsInstanceOfType(template.Template, typeof(Scryber.Data.ParsableTemplateGenerator));
-            
-            //Check the template content
-            var gen = (Data.ParsableTemplateGenerator)template.Template;
-            Assert.IsNotNull(gen.XmlContent);
-            Assert.AreEqual("<div title=\"{{.title}}\" xmlns=\"http://www.w3.org/1999/xhtml\">{{.title}}</div>", gen.XmlContent.Trim(), "Template content was not the expected value");
-
-            Assert.AreEqual(1, template.StartIndex, "Template start index was not 1");
-            Assert.AreEqual(2, template.Step, "Template step was not 2");
-            Assert.AreEqual(10, template.MaxCount, "Template max count was not 10");
-            Assert.IsNull(template.Value, "The bound value was not null");
-
-            doc.Params["model"] = new[]
+            using (var sr = new StringReader(html))
             {
-                new {title = "First"},
-                new {title = "Second"}
-            };
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf"))
+                    {
+                        Assert.AreEqual(1, doc.Pages.Count);
+                        var pg = doc.Pages[0];
+                        Assert.IsInstanceOfType(pg, typeof(Section));
+                        var section = (Section)pg;
+                        Assert.AreEqual(3, section.Contents.Count);
 
-            doc.SaveAsPDF(stream);
+                        Assert.IsInstanceOfType(section.Contents[0], typeof(Whitespace));
+                        Assert.IsInstanceOfType(section.Contents[2], typeof(Whitespace));
+
+                        var template = section.Contents[1] as HTMLTemplate;
+                        Assert.IsNotNull(template);
+                        Assert.IsNotNull(template.Template);
+                        Assert.IsInstanceOfType(template.Template, typeof(Scryber.Data.ParsableTemplateGenerator));
+
+                        //Check the template content
+                        var gen = (Data.ParsableTemplateGenerator)template.Template;
+                        Assert.IsNotNull(gen.XmlContent);
+                        Assert.AreEqual(
+                            "<div title=\"{{.title}}\" xmlns=\"http://www.w3.org/1999/xhtml\">{{.title}}</div>",
+                            gen.XmlContent.Trim(), "Template content was not the expected value");
+
+                        Assert.AreEqual(1, template.StartIndex, "Template start index was not 1");
+                        Assert.AreEqual(2, template.Step, "Template step was not 2");
+                        Assert.AreEqual(10, template.MaxCount, "Template max count was not 10");
+                        Assert.IsNull(template.Value, "The bound value was not null");
+
+                        doc.Params["model"] = new[]
+                        {
+                            new { title = "First" },
+                            new { title = "Second" }
+                        };
+
+                        doc.SaveAsPDF(stream);
+
+                        //After binding these should be set
+                        Assert.IsNotNull(template.Value);
+                        Assert.AreEqual(doc.Params["model"], template.Value);
+
+                        //section now contains the template instance and the original template (along with whitespace at the start and end)
+                        Assert.AreEqual(4, section.Contents.Count);
+                        var instance = section.Contents[1] as Data.TemplateInstance;
+                        Assert.IsNotNull(instance);
+                        Assert.IsTrue(instance.Content.Count > 0);
+
+                        //div is in the template instance content
+                        var div = instance.Content[1] as HTMLDiv;
+                        Assert.IsNotNull(div);
+                        Assert.AreEqual("Second", div.Outline.Title); //div has the title set
+                    }
+                }
+            }
             
-            //After binding these should be set
-            Assert.IsNotNull(template.Value);
-            Assert.AreEqual(doc.Params["model"], template.Value);
-            
-            //section now contains the template instance and the original template (along with whitespace at the start)
-            Assert.AreEqual(3, section.Contents.Count);
-            var instance = section.Contents[1] as Data.TemplateInstance;
-            Assert.IsNotNull(instance);
-            Assert.IsTrue(instance.Content.Count > 0);
-            
-            //div is in the template instance content
-            var div = instance.Content[1] as HTMLDiv;
-            Assert.IsNotNull(div);
-            Assert.AreEqual("Second",div.Outline.Title); //div has the title set
+            using (var sr = new StringReader(html))
+            {
+                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+                {
+                    using (var stream = DocStreams.GetOutputStream("ComponentTemplatesLong.pdf"))
+                    {
+                        Assert.AreEqual(1, doc.Pages.Count);
+                        var pg = doc.Pages[0];
+                        Assert.IsInstanceOfType(pg, typeof(Section));
+                        var section = (Section)pg;
+                        Assert.AreEqual(3, section.Contents.Count);
+
+                        Assert.IsInstanceOfType(section.Contents[0], typeof(Whitespace));
+                        Assert.IsInstanceOfType(section.Contents[2], typeof(Whitespace));
+
+                        var template = section.Contents[1] as HTMLTemplate;
+                        Assert.IsNotNull(template);
+                        Assert.IsNotNull(template.Template);
+                        Assert.IsInstanceOfType(template.Template, typeof(Scryber.Data.ParsableTemplateGenerator));
+
+                        //Check the template content
+                        var gen = (Data.ParsableTemplateGenerator)template.Template;
+                        Assert.IsNotNull(gen.XmlContent);
+                        Assert.AreEqual(
+                            "<div title=\"{{.title}}\" xmlns=\"http://www.w3.org/1999/xhtml\">{{.title}}</div>",
+                            gen.XmlContent.Trim(), "Template content was not the expected value");
+
+                        Assert.AreEqual(1, template.StartIndex, "Template start index was not 1");
+                        Assert.AreEqual(2, template.Step, "Template step was not 2");
+                        Assert.AreEqual(10, template.MaxCount, "Template max count was not 10");
+                        Assert.IsNull(template.Value, "The bound value was not null");
+
+                        var data = new[]
+                        {
+                            new { title = "First" },
+                            new { title = "Second" },
+                            new { title = "Third" },
+                            new { title = "Fourth" },
+                            new { title = "Fifth" },
+                            new { title = "Sixth" },
+                            new { title = "Seventh" },
+                            new { title = "Eighth" },
+                            new { title = "Nineth" },
+                            new { title = "Tenth" },
+                            new { title = "Eleventh" },
+                            new { title = "Twelfth" }
+                        };
+
+                        doc.Params["model"] = data;
+
+                        doc.SaveAsPDF(stream);
+
+                        //After binding these should be set
+                        Assert.IsNotNull(template.Value);
+                        Assert.AreEqual(doc.Params["model"], template.Value);
+
+                        //section now contains the 5 template instances and the original template (along with whitespace at the start and end) - 8
+                        Assert.AreEqual(8, section.Contents.Count);
+                        for (var index = 0; index < 5; index++)
+                        {
+                            var instance = section.Contents[index + 1] as Data.TemplateInstance;
+                            Assert.IsNotNull(instance);
+                            Assert.IsTrue(instance.Content.Count > 0);
+
+                            //div is in the template instance content
+                            var div = instance.Content[1] as HTMLDiv;
+                            Assert.IsNotNull(div);
+                            var title = data[(index * 2) + 1];
+                            Assert.AreEqual(title.title, div.Outline.Title); //div has the title set
+                        }
+                    }
+                }
+            }
         }
         
         // iframe
@@ -900,7 +989,9 @@ namespace Scryber.Core.UnitTests.Html
             
             using var sr = new System.IO.StringReader(html);
             using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-            using var stream = DocStreams.GetOutputStream("ComponentTemplates.pdf");
+            using var stream = DocStreams.GetOutputStream("ComponentFrames.pdf");
+            
+            doc.SaveAsPDF(stream);
 
             Assert.AreEqual(1, doc.Pages.Count);
             var pg = doc.Pages[0];
@@ -971,8 +1062,8 @@ namespace Scryber.Core.UnitTests.Html
 <html xmlns='http://www.w3.org/1999/xhtml' >
 <body style='padding:20pt;' >
     <div id='wrapper' >
-        <label id='label1' class='label num' for='num1' title='Label' >Label 1</label>
-        <num   id='num1'  style='padding:10pt;' class='num' data-value='10.0' data-format='C' /><br/>
+        <label id='label1' class='label num' for='num1' title='Label' >Label 1</label><br/>
+        <num   id='num1'  style='padding:10pt;' class='num' data-value='10.0' data-format='C' />
         <num   id='num2'  data-format='£#0.00' >11.0</num><br/>
         <page  id='pg1'   style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
         <page  id='pg2'   for='label1' property='total' /><br/>

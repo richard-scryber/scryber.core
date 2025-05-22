@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Data;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 using Scryber.PDF.Resources;
 using Scryber.Svg.Components;
 
@@ -5804,6 +5806,128 @@ namespace Scryber.UnitLayouts
             
             
             Assert.Inconclusive("Y offsets in the renderbounds of viewport scaled SVG's are not correct - need to set the inverse matrix so the correct Y position is calculated - applied to links in SVG's");
+        }
+
+
+        [TestMethod]
+        public void SVG_43_BindingInnerContent()
+        {
+            var path = AssertGetContentFile("SVG_43_BindingInnerContent");
+
+            var doc = Document.ParseDocument(path);
+            
+            doc.Params["svg"] = """   
+                                <g xmlns='http://www.w3.org/2000/svg' >                                                                      
+                                <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="red" />
+                                <text x="50" y="50" text-anchor="middle" fill="white">Hello</text>
+                                </g>
+                                """;
+            doc.Params["svgFull"] = """
+                                    <svg height="180" width="180" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                                      <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="red" />
+                                      <text x="50" y="50" text-anchor="middle" fill="white">Hello</text>
+                                    </svg>
+                                    """;
+
+            doc.Params["svgParts"] = """   
+                                <circle cx="{{50 + (index() * 100)}}" cy="50" r="40" stroke="black" stroke-width="2" fill="red" xmlns='http://www.w3.org/2000/svg' />
+                                <text x="{{50 + (index() * 100)}}" y="50" text-anchor="middle" fill="white" xmlns='http://www.w3.org/2000/svg' >{{.}}</text>
+                                """;
+            doc.Params["toLoop"] = new List<string> { "First", "Second" };
+
+            using (var ms = DocStreams.GetOutputStream("SVG_43_BindingInnerContent.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = true;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var direct = doc.FindAComponentById("direct") as SVGCanvas;
+            Assert.IsNotNull(direct);
+            
+            Assert.AreEqual(5, direct.Contents.Count);
+            
+            Assert.IsInstanceOfType(direct.Contents[0], typeof(Whitespace));
+            Assert.IsInstanceOfType(direct.Contents[1], typeof(SVGCircle));
+            Assert.IsInstanceOfType(direct.Contents[2], typeof(Whitespace));
+            Assert.IsInstanceOfType(direct.Contents[3], typeof(SVGText));
+            Assert.IsInstanceOfType(direct.Contents[4], typeof(Whitespace));
+            
+
+            var variable = doc.FindAComponentById("variable") as SVGCanvas;
+            Assert.IsNotNull(variable);
+            
+            Assert.AreEqual(2, variable.Contents.Count);
+            
+            Assert.IsInstanceOfType(variable.Contents[0], typeof(Whitespace));
+            Assert.IsInstanceOfType(variable.Contents[1], typeof(SVGGroup));
+
+            var grp = variable.Contents[1] as SVGGroup;
+            Assert.AreEqual(5, grp.Contents.Count);
+            
+            Assert.IsInstanceOfType(grp.Contents[0], typeof(Whitespace));
+            Assert.IsInstanceOfType(grp.Contents[1], typeof(SVGCircle));
+            Assert.IsInstanceOfType(grp.Contents[2], typeof(Whitespace));
+            Assert.IsInstanceOfType(grp.Contents[3], typeof(SVGText));
+            Assert.IsInstanceOfType(grp.Contents[4], typeof(Whitespace));
+
+            var innerFull = doc.FindAComponentById("innerFull") as HTMLDiv;
+            Assert.IsNotNull(innerFull);
+            
+            Assert.AreEqual(1, innerFull.Contents.Count);
+            
+            var innerSVG = innerFull.Contents[0] as SVGCanvas;
+            Assert.IsNotNull(innerSVG);
+            
+            Assert.AreEqual(5, innerSVG.Contents.Count);
+            
+            Assert.IsInstanceOfType(innerSVG.Contents[0], typeof(Whitespace));
+            Assert.IsInstanceOfType(innerSVG.Contents[1], typeof(SVGCircle));
+            Assert.IsInstanceOfType(innerSVG.Contents[2], typeof(Whitespace));
+            Assert.IsInstanceOfType(innerSVG.Contents[3], typeof(SVGText));
+            Assert.IsInstanceOfType(innerSVG.Contents[4], typeof(Whitespace));
+            
+
+            var inTemplate = doc.FindAComponentById("inTemplate") as SVGCanvas;
+            Assert.IsNotNull(inTemplate);
+            
+            Assert.AreEqual(6, inTemplate.Contents.Count);
+            
+            //2 template instances
+            
+            //First
+
+            var instance = inTemplate.Contents[2] as TemplateInstance;
+            Assert.IsNotNull(instance);
+            
+            Assert.AreEqual(3, instance.Content.Count);
+            
+            Assert.IsInstanceOfType(instance.Content[0], typeof(SVGCircle));
+            Assert.IsInstanceOfType(instance.Content[1], typeof(Whitespace));
+            Assert.IsInstanceOfType(instance.Content[2], typeof(SVGText));
+            
+            var text = instance.Content[2] as SVGText;
+            Assert.AreEqual(50, text.X);
+            Assert.AreEqual(1, text.Content.Count);
+            Assert.AreEqual("First", text.Content[0].Text);
+            
+            //Second
+            
+            instance = inTemplate.Contents[3] as TemplateInstance;
+            Assert.IsNotNull(instance);
+            
+            Assert.AreEqual(3, instance.Content.Count);
+            
+            Assert.IsInstanceOfType(instance.Content[0], typeof(SVGCircle));
+            Assert.IsInstanceOfType(instance.Content[1], typeof(Whitespace));
+            Assert.IsInstanceOfType(instance.Content[2], typeof(SVGText));
+            
+            text = instance.Content[2] as SVGText;
+            Assert.AreEqual(150, text.X);
+            Assert.AreEqual(1, text.Content.Count);
+            Assert.AreEqual("Second", text.Content[0].Text);
         }
     }
 }

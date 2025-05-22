@@ -14,7 +14,7 @@ namespace Scryber.UnitLayouts
     [TestClass]
     public class SVGComponent_Tests
     {
-        
+
         const string TestCategoryName = "SVG Components";
 
         PDFLayoutDocument layout;
@@ -58,12 +58,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -71,12 +71,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -108,12 +108,12 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(80, lineOp.LineTo.X);
             Assert.AreEqual(50, lineOp.LineTo.Y);
-            
+
             lineOp = ops[2] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(80, lineOp.LineTo.X);
             Assert.AreEqual(80, lineOp.LineTo.Y);
-            
+
             lineOp = ops[3] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(40, lineOp.LineTo.X);
@@ -121,9 +121,9 @@ namespace Scryber.UnitLayouts
 
             var closeOp = ops[4] as PathCloseData;
             Assert.IsNotNull(closeOp);
-            
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_02_Circle()
@@ -139,12 +139,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -152,12 +152,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -191,12 +191,12 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(40, curveOp.EndPoint.X);
             Assert.AreEqual(20, curveOp.EndPoint.Y);
-            
+
             curveOp = ops[2] as PathBezierCurveData;
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(70, curveOp.EndPoint.X);
             Assert.AreEqual(50, curveOp.EndPoint.Y);
-            
+
             curveOp = ops[3] as PathBezierCurveData;
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(40, curveOp.EndPoint.X);
@@ -204,10 +204,10 @@ namespace Scryber.UnitLayouts
 
             var closeOp = ops[4] as PathBezierCurveData;
             Assert.IsNotNull(closeOp);
-            
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_03_Ellipse()
@@ -223,12 +223,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -236,12 +236,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -275,12 +275,12 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(40, curveOp.EndPoint.X);
             Assert.AreEqual(10, curveOp.EndPoint.Y);
-            
+
             curveOp = ops[2] as PathBezierCurveData;
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(60, curveOp.EndPoint.X);
             Assert.AreEqual(50, curveOp.EndPoint.Y);
-            
+
             curveOp = ops[3] as PathBezierCurveData;
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(40, curveOp.EndPoint.X);
@@ -290,13 +290,13 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(curveOp);
             Assert.AreEqual(20, curveOp.EndPoint.X);
             Assert.AreEqual(50, curveOp.EndPoint.Y);
-            
+
             var closeOp = ops[5] as PathCloseData;
             Assert.IsNotNull(closeOp);
-            
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_04_PolyLine()
@@ -312,12 +312,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -325,12 +325,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -364,12 +364,12 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(50, lineOp.LineTo.X);
             Assert.AreEqual(25, lineOp.LineTo.Y);
-            
+
             lineOp = ops[2] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(50, lineOp.LineTo.X);
             Assert.AreEqual(75, lineOp.LineTo.Y);
-            
+
             lineOp = ops[3] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(90, lineOp.LineTo.X);
@@ -378,10 +378,10 @@ namespace Scryber.UnitLayouts
             //not closed
             //var closeOp = ops[4] as PathCloseData;
             //Assert.IsNotNull(closeOp);
-            
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_05_Polygon()
@@ -397,12 +397,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -410,12 +410,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -449,23 +449,23 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(50, lineOp.LineTo.X);
             Assert.AreEqual(25, lineOp.LineTo.Y);
-            
+
             lineOp = ops[2] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(50, lineOp.LineTo.X);
             Assert.AreEqual(75, lineOp.LineTo.Y);
-            
+
             lineOp = ops[3] as PathLineData;
             Assert.IsNotNull(lineOp);
             Assert.AreEqual(90, lineOp.LineTo.X);
             Assert.AreEqual(10, lineOp.LineTo.Y);
-            
+
             var closeOp = ops[4] as PathCloseData;
             Assert.IsNotNull(closeOp);
-            
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_06_RoundRect()
@@ -481,12 +481,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -494,12 +494,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -529,53 +529,53 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(50, moveOp.MoveTo.X);
             Assert.AreEqual(20, moveOp.MoveTo.Y);
 
-            
-            
+
+
             var lineOp = ops[1] as PathLineData;
             Assert.IsNotNull(lineOp);
-             Assert.AreEqual(70, lineOp.LineTo.X);
-             Assert.AreEqual(20, lineOp.LineTo.Y);
-            
+            Assert.AreEqual(70, lineOp.LineTo.X);
+            Assert.AreEqual(20, lineOp.LineTo.Y);
+
             var curveTo = ops[2] as PathBezierCurveData;
             Assert.IsNotNull(curveTo);
-            Assert.AreEqual(90, curveTo.EndPoint.X); 
+            Assert.AreEqual(90, curveTo.EndPoint.X);
             Assert.AreEqual(30, curveTo.EndPoint.Y);
-            
+
             lineOp = ops[3] as PathLineData;
             Assert.IsNotNull(lineOp);
-             Assert.AreEqual(90, lineOp.LineTo.X);
-             Assert.AreEqual(50, lineOp.LineTo.Y);
-            
+            Assert.AreEqual(90, lineOp.LineTo.X);
+            Assert.AreEqual(50, lineOp.LineTo.Y);
+
             curveTo = ops[4] as PathBezierCurveData;
             Assert.IsNotNull(curveTo);
-            Assert.AreEqual(70, curveTo.EndPoint.X); 
+            Assert.AreEqual(70, curveTo.EndPoint.X);
             Assert.AreEqual(60, curveTo.EndPoint.Y);
-            
+
             lineOp = ops[5] as PathLineData;
             Assert.IsNotNull(lineOp);
-             Assert.AreEqual(50, lineOp.LineTo.X);
-             Assert.AreEqual(60, lineOp.LineTo.Y);
+            Assert.AreEqual(50, lineOp.LineTo.X);
+            Assert.AreEqual(60, lineOp.LineTo.Y);
 
             curveTo = ops[6] as PathBezierCurveData;
             Assert.IsNotNull(curveTo);
-            Assert.AreEqual(30, curveTo.EndPoint.X); 
+            Assert.AreEqual(30, curveTo.EndPoint.X);
             Assert.AreEqual(50, curveTo.EndPoint.Y);
-            
+
             lineOp = ops[7] as PathLineData;
             Assert.IsNotNull(lineOp);
-            Assert.AreEqual(30, lineOp.LineTo.X); 
+            Assert.AreEqual(30, lineOp.LineTo.X);
             Assert.AreEqual(30, lineOp.LineTo.Y);
-            
+
             curveTo = ops[8] as PathBezierCurveData;
             Assert.IsNotNull(curveTo);
-            Assert.AreEqual(50, curveTo.EndPoint.X); 
+            Assert.AreEqual(50, curveTo.EndPoint.X);
             Assert.AreEqual(20, curveTo.EndPoint.Y);
-            
-            
-            
+
+
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_07_Line()
@@ -591,12 +591,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -604,12 +604,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -639,16 +639,16 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(10, moveOp.MoveTo.X);
             Assert.AreEqual(20, moveOp.MoveTo.Y);
 
-            
+
             var lineOp = ops[1] as PathLineData;
             Assert.IsNotNull(lineOp);
-             Assert.AreEqual(90, lineOp.LineTo.X);
-             Assert.AreEqual(80, lineOp.LineTo.Y);
-            
-             
+            Assert.AreEqual(90, lineOp.LineTo.X);
+            Assert.AreEqual(80, lineOp.LineTo.Y);
+
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_08_Path()
@@ -664,12 +664,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -677,12 +677,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count);
             var comp = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(comp);
@@ -721,7 +721,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(PathArcSweep.Positive, arcOp.ArcSweep);
             Assert.AreEqual(50, arcOp.EndPoint.X);
             Assert.AreEqual(30, arcOp.EndPoint.Y);
-            
+
             arcOp = ops[2] as PathArcData;
             Assert.IsNotNull(arcOp);
             Assert.AreEqual(20, arcOp.RadiusX);
@@ -738,7 +738,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(60, quadOp.ControlPoint.Y);
             Assert.AreEqual(50, quadOp.EndPoint.X);
             Assert.AreEqual(90, quadOp.EndPoint.Y);
-            
+
             quadOp = ops[4] as PathQuadraticCurve;
             Assert.IsNotNull(quadOp);
             Assert.AreEqual(10, quadOp.ControlPoint.X);
@@ -748,11 +748,11 @@ namespace Scryber.UnitLayouts
 
             var closeOp = ops[5] as PathCloseData;
             Assert.IsNotNull(closeOp);
-            
-            
+
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_09_Text()
@@ -768,12 +768,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -781,12 +781,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -803,23 +803,24 @@ namespace Scryber.UnitLayouts
 
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
-            
+
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
-            
-            
-             
+
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_10_Text_TextLength()
@@ -835,12 +836,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -848,12 +849,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -871,24 +872,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
-            
+
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(70, arrange.RenderBounds.Width); //explicit width
 
             //make sure we have character space
             Assert.IsTrue(begin.CharSpace > Unit.Zero);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_11_Text_TextLengthSmall()
@@ -904,12 +906,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -917,12 +919,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -940,23 +942,24 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(30, arrange.RenderBounds.Width); //explicit width
 
             //make sure we have character space less than zero
             Assert.IsTrue(begin.CharSpace < Unit.Zero);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_12_Text_TextLengthSmallGlyphs()
@@ -972,12 +975,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -985,12 +988,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1008,24 +1011,26 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(30, arrange.RenderBounds.Width); //explicit width
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
-            Assert.IsTrue(begin.TextRenderOptions.CharacterHScale.HasValue && begin.TextRenderOptions.CharacterHScale < 1.0);
-            
-             
+            Assert.IsTrue(begin.TextRenderOptions.CharacterHScale.HasValue &&
+                          begin.TextRenderOptions.CharacterHScale < 1.0);
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_13_Text_DominantBaselineHanging()
@@ -1041,12 +1046,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1054,12 +1059,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1077,24 +1082,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - half leading space (where 50 is measured to top for hanging)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 1 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 1, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_14_Text_DominantBaselineCentral()
@@ -1110,12 +1116,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1123,12 +1129,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1146,24 +1152,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - half font size (where 50 is measured to top for central)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 6 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 6, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_15_Text_DominantBaselineMiddle()
@@ -1179,12 +1186,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1192,12 +1199,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1215,24 +1222,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - half ex size (where 50 is measured to top for middle)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 7 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 7, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_16_Text_DominantBaselineMathematical()
@@ -1248,12 +1256,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1261,12 +1269,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1284,24 +1292,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - ascender height (where 50 is measured to top for mathematical)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 3 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 3, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_17_Text_DominantBaselineAfterEdge()
@@ -1317,12 +1326,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1330,12 +1339,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1353,24 +1362,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - font size and bottom space (where 50 is measured to top for mathematical)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 13 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 13, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_18_Text_DominantBaselineBeforeEdge()
@@ -1386,12 +1396,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1399,12 +1409,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1422,24 +1432,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - line space (measured to top for before edge)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 + 2 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 + 2, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_19_Text_DominantBaselineAlphabetical()
@@ -1455,12 +1466,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1468,12 +1479,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1491,24 +1502,25 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - (ascent height) (measured to top for alphabetical)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_20_Text_DominantBaselineAuto()
@@ -1524,12 +1536,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1537,12 +1549,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1560,25 +1572,26 @@ namespace Scryber.UnitLayouts
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - (ascent height) (measured to top for auto)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_21_Text_AnchorMiddle()
@@ -1594,12 +1607,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1607,12 +1620,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(3, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1631,24 +1644,25 @@ namespace Scryber.UnitLayouts
             var chars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position - half width for middle
             Assert.AreEqual(10 + 10 + 30 + 30 - (chars.Width / 2), arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - (ascent height) (measured to top for auto)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_22_Text_AnchorRight()
@@ -1664,12 +1678,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1677,12 +1691,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(3, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1701,24 +1715,25 @@ namespace Scryber.UnitLayouts
             var chars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position - width for end
             Assert.AreEqual(10 + 10 + 30 + 30 - chars.Width, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - (ascent height) (measured to top for auto)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_23_Text_AnchorExplicitLeft()
@@ -1734,12 +1749,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1747,12 +1762,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(3, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1771,24 +1786,25 @@ namespace Scryber.UnitLayouts
             var chars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(begin);
             var desc = begin.TextRenderOptions.GetDescender();
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position. Nothing else
-            Assert.AreEqual(10 + 10 + 30 + 30 , arrange.RenderBounds.X);
+            Assert.AreEqual(10 + 10 + 30 + 30, arrange.RenderBounds.X);
             //body margins and padding, 1 line, svg margins, y position - (ascent height) (measured to top for auto)
-            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10 , 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
+            Assert.AreEqual(Unit.Round(10 + 10 + 15 + 30 + 40 - 10, 0),
+                Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             //make sure we have character space = zero and a reduced scale
             Assert.IsTrue(begin.CharSpace == Unit.Zero);
             Assert.IsFalse(begin.TextRenderOptions.CharacterHScale.HasValue);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_24_Text_GrumpyCat()
@@ -1804,12 +1820,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1817,19 +1833,19 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(1, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(4, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
-            
-             
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_25_Text_Delta()
@@ -1845,12 +1861,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1858,12 +1874,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1880,8 +1896,8 @@ namespace Scryber.UnitLayouts
 
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
@@ -1891,18 +1907,18 @@ namespace Scryber.UnitLayouts
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
             var yOffset = 10 + 10 + 15 + 30 + 40 - 10;
             yOffset += 20; // delta y
-            
+
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
-            
+
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
-            
-            
-             
+
+
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_26_Text_Spans()
@@ -1918,12 +1934,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -1931,12 +1947,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -1951,28 +1967,28 @@ namespace Scryber.UnitLayouts
             line = posBlock.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line); //this is the actual text line.
             Assert.AreEqual(9, line.Runs.Count);
-            
+
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             var xOffset = 10 + 10 + 30 + 20;
-            
+
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
             var yOffset = 10 + 10 + 15 + 30 + 40 - 11;
-            
-            
+
+
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
-            
+
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
-            
+
         }
-        
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_27_Text_SpansDelta()
@@ -1988,12 +2004,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2001,12 +2017,12 @@ namespace Scryber.UnitLayouts
 
             var block = pg.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-            
+
             Assert.AreEqual(2, block.Columns[0].Contents.Count);
 
             var line = block.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
-            
+
             Assert.AreEqual(1, line.Runs.Count); //text
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
@@ -2021,30 +2037,30 @@ namespace Scryber.UnitLayouts
             line = posBlock.Columns[0].Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line); //this is the actual text line.
             Assert.AreEqual(9, line.Runs.Count);
-            
+
             var begin = line.Runs[0] as PDFTextRunBegin;
             Assert.IsNotNull(begin);
-            
-            
+
+
             var arrange = text.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             //body margins and padding, svg margins, x position
             Unit xOffset = 10 + 10 + 30 + 20;
-            
+
             //body margins and padding, 1 line, svg margins, y position - line to baseline (where 50 is measured to)
             Unit yOffset = 10 + 10 + 15 + 30 + 40 - 11;
-            
-            
+
+
             Assert.AreEqual(xOffset, arrange.RenderBounds.X);
             Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0)); //baseline alignment
-            
+
             Assert.AreEqual(posBlock.Height, arrange.RenderBounds.Height);
             Assert.AreEqual(posBlock.Width, arrange.RenderBounds.Width);
 
             var span0 = text.Content[0] as TextLiteral; // A line
             var span1 = text.Content[1] as SVGTextSpan; // with
             var span2 = text.Content[2] as SVGTextSpan; // spans
-            
+
             Assert.IsNotNull(span0);
             Assert.IsNotNull(span1);
             Assert.IsNotNull(span2);
@@ -2052,26 +2068,26 @@ namespace Scryber.UnitLayouts
 
             xOffset = 107 + 5;
             yOffset = 94 - 10;
-            
-            
+
+
             //with
             arrange = span1.GetFirstArrangement();
             //delta Y = -10
-            Assert.AreEqual(Unit.Round(yOffset , 0), Unit.Round(arrange.RenderBounds.Y, 0));
+            Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0));
             //delta X = 5
-            Assert.AreEqual(Unit.Round( xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
+            Assert.AreEqual(Unit.Round(xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
 
             yOffset = 95;
-            xOffset = 148; 
-            
-            
+            xOffset = 148;
+
+
             //spans
             arrange = span2.GetFirstArrangement();
-            
 
-            Assert.AreEqual(Unit.Round(yOffset  , 0), Unit.Round(arrange.RenderBounds.Y, 0));
 
-            Assert.AreEqual(Unit.Round( xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
+            Assert.AreEqual(Unit.Round(yOffset, 0), Unit.Round(arrange.RenderBounds.Y, 0));
+
+            Assert.AreEqual(Unit.Round(xOffset, 0), Unit.Round(arrange.RenderBounds.X, 0));
 
         }
 
@@ -2090,12 +2106,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2113,11 +2129,11 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGRect));
-            
+
             var rect = (SVGRect)compRun.Owner;
             var arrange = rect.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
@@ -2127,23 +2143,23 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 20;
             expectedBounds.Width = 40;
             expectedBounds.Height = 30;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the rect.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGRect));
-            
+
             rect = (SVGRect)compRun.Owner;
             Assert.AreNotEqual("Rect", rect.ID); //should change the id
             arrange = rect.GetFirstArrangement();
@@ -2154,9 +2170,9 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 20 + 15;
             expectedBounds.Width = 40; //the explicit width should be ignored, as a width is set on the base rect.
             expectedBounds.Height = 30;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2164,11 +2180,14 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(1.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_31_Use_Circle()
@@ -2184,12 +2203,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2207,11 +2226,11 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGCircle));
-            
+
             var circle = (SVGCircle)compRun.Owner;
             var arrange = circle.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
@@ -2222,23 +2241,23 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 30 - 20;
             expectedBounds.Width = 40;
             expectedBounds.Height = 40;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGCircle));
-            
+
             circle = (SVGCircle)compRun.Owner;
             arrange = circle.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
@@ -2248,9 +2267,9 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 10 + 15;
             expectedBounds.Width = 40; //the explicit radius should be ignored, as a is set on the base circle.
             expectedBounds.Height = 40;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2258,11 +2277,14 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(1.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_32_Use_Ellipse()
@@ -2278,12 +2300,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2301,11 +2323,11 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGEllipse));
-            
+
             var ellipse = (SVGEllipse)compRun.Owner;
             var arrange = ellipse.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
@@ -2316,35 +2338,35 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 30 - 20;
             expectedBounds.Width = 80;
             expectedBounds.Height = 40;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGEllipse));
-            
+
             ellipse = (SVGEllipse)compRun.Owner;
             arrange = ellipse.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
             expectedBounds = new Rect();
             expectedBounds.X = svgBounds.X + 15; //the x and y are added to the existing position
-            expectedBounds.Y += svgBounds.Y  + 25;
+            expectedBounds.Y += svgBounds.Y + 25;
             expectedBounds.Width = 80; //the explicit radius should be ignored, as a is set on the base circle.
             expectedBounds.Height = 40;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2352,11 +2374,14 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(1.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_33_Use_Line()
@@ -2364,7 +2389,7 @@ namespace Scryber.UnitLayouts
             var path = AssertGetContentFile("SVGComponents_33_Use_Line");
 
             var doc = Document.ParseDocument(path);
-            
+
             using (var ms = DocStreams.GetOutputStream("SVGComponents_33_Use_Line.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2372,12 +2397,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2395,11 +2420,11 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
-            
+
             var gline = (SVGLine)compRun.Owner;
             var arrange = gline.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
@@ -2410,35 +2435,35 @@ namespace Scryber.UnitLayouts
             expectedBounds.Y += svgBounds.Y + 20;
             expectedBounds.Width = 25;
             expectedBounds.Height = 10;
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGLine));
-            
+
             gline = (SVGLine)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
             expectedBounds = new Rect();
             expectedBounds.X = svgBounds.X + 15 + 10; //the x and y are added to the existing position
-            expectedBounds.Y += svgBounds.Y  + 20 + 15;
+            expectedBounds.Y += svgBounds.Y + 20 + 15;
             expectedBounds.Width = 25; //the whole of the line should move (as the same angle)
             expectedBounds.Height = 10; //so same width and height
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2446,12 +2471,15 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(1.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.StrokeOpacityKey, 0.1)); //the opacity should be applied
         }
-        
-        
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_34_Use_Polyline()
@@ -2459,7 +2487,7 @@ namespace Scryber.UnitLayouts
             var path = AssertGetContentFile("SVGComponents_34_Use_Polyline");
 
             var doc = Document.ParseDocument(path);
-            
+
             using (var ms = DocStreams.GetOutputStream("SVGComponents_34_Use_Polyline.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2467,12 +2495,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2490,58 +2518,58 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPolyLine));
-            
+
             var gline = (SVGPolyLine)compRun.Owner;
             var arrange = gline.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
 
             var expectedBounds = new Rect();
-            
+
             //
             //viewbox = 200,
             //width = 100,
             //
             // so all actual sizes within the SVG should also be halved.
             //
-            
-            
-            expectedBounds.X = svgBounds.X + (100 / 2); 
+
+
+            expectedBounds.X = svgBounds.X + (100 / 2);
             expectedBounds.Y += svgBounds.Y + 0;
             expectedBounds.Width = (100 / 2);
             expectedBounds.Height = (100 / 2);
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPolyLine));
-            
+
             gline = (SVGPolyLine)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
             expectedBounds = new Rect();
-            expectedBounds.X = svgBounds.X + (100 + 10)/2; //the x and y are added to the existing position
-            expectedBounds.Y += svgBounds.Y  + (35.0 / 2);
+            expectedBounds.X = svgBounds.X + (100 + 10) / 2; //the x and y are added to the existing position
+            expectedBounds.Y += svgBounds.Y + (35.0 / 2);
             expectedBounds.Width = (100 / 2); //the whole of the line should move (as the same angle)
             expectedBounds.Height = (100 / 2); //so same width and height
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2549,13 +2577,16 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(1.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Black, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(1.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Black,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.StrokeOpacityKey, 0.1)); //the opacity should be applied
         }
-        
-        
-        
+
+
+
         [TestMethod]
         [TestCategory(TestCategoryName)]
         public void SVGComponents_35_Use_Path()
@@ -2563,7 +2594,7 @@ namespace Scryber.UnitLayouts
             var path = AssertGetContentFile("SVGComponents_35_Use_Path");
 
             var doc = Document.ParseDocument(path);
-            
+
             using (var ms = DocStreams.GetOutputStream("SVGComponents_35_Use_Path.pdf"))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2571,12 +2602,12 @@ namespace Scryber.UnitLayouts
                 doc.Pages[0].Style.OverlayGrid.GridColor = StandardColors.Aqua;
                 doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 doc.RenderOptions.Compression = OutputCompressionType.None;
-                
+
 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
-            
+
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -2594,57 +2625,57 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
             Assert.AreEqual(0, line.Height);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             var compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPath));
-            
+
             var gline = (SVGPath)compRun.Owner;
             var arrange = gline.GetFirstArrangement();
             var renderBounds = arrange.RenderBounds;
 
             var expectedBounds = new Rect();
-            
+
             //
             //viewbox = 200,
             //width = 100,
             //
             // so all actual sizes within the SVG should also be halved.
             //
-            
-            
-            expectedBounds.X = svgBounds.X + (10 / 2); 
+
+
+            expectedBounds.X = svgBounds.X + (10 / 2);
             expectedBounds.Y += svgBounds.Y + (10 / 2);
             expectedBounds.Width = (80 / 2);
             expectedBounds.Height = (80 / 2);
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
 
             var style = arrange.FullStyle;
             var fill = style.GetValue(StyleKeys.SVGFillKey, null);
             Assert.IsNull(fill); //no fill set on the base rect
-            
+
 
             //Now check the use reference - a placeholder component with a componentrun for the layout of the circle.
             line = contents[1] as PDFLayoutLine;
             Assert.IsNotNull(line);
             Assert.AreEqual(1, line.Runs.Count);
-            
+
             compRun = line.Runs[0] as PDFLayoutComponentRun;
             Assert.IsNotNull(compRun);
             Assert.IsInstanceOfType(compRun.Owner, typeof(SVGPath));
-            
+
             gline = (SVGPath)compRun.Owner;
             arrange = gline.GetFirstArrangement();
             renderBounds = arrange.RenderBounds;
 
-            expectedBounds.X = expectedBounds.X  + (20 / 2); 
-            expectedBounds.Y = expectedBounds.Y  + (35.0 / 2);
+            expectedBounds.X = expectedBounds.X + (20 / 2);
+            expectedBounds.Y = expectedBounds.Y + (35.0 / 2);
             expectedBounds.Width = (80 / 2); //the whole of the line should move (as the same angle)
             expectedBounds.Height = (80 / 2); //so same width and height
-            
+
             Assert.AreEqual(expectedBounds, renderBounds);
-            
+
             //check that the fill has been applied.
             style = arrange.FullStyle;
             fill = style.GetValue(StyleKeys.SVGFillKey, null);
@@ -2652,9 +2683,17 @@ namespace Scryber.UnitLayouts
             Assert.IsInstanceOfType(fill, typeof(SVGFillColorValue));
             Assert.AreEqual(StandardColors.Blue, ((SVGFillColorValue)fill).FillColor); //should be applied
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.FillOpacityKey, 0.0)); //should be applied
-            Assert.AreEqual(10.0, style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
-            Assert.AreEqual(StandardColors.Blue, style.GetValue(StyleKeys.StrokeColorKey, StandardColors.Transparent)); // set on the base reference, and should be carried through.
+            Assert.AreEqual(10.0,
+                style.GetValue(StyleKeys.StrokeWidthKey, 0.0)); //should NOT be applied as set on the referenced rect
+            Assert.AreEqual(StandardColors.Blue,
+                style.GetValue(StyleKeys.StrokeColorKey,
+                    StandardColors.Transparent)); // set on the base reference, and should be carried through.
             Assert.AreEqual(0.5, style.GetValue(StyleKeys.StrokeOpacityKey, 0.5)); //the opacity should be applied
+        }
+        
+        public void SVGBinding_01_InerContent()
+        {
+
         }
     }
 }
