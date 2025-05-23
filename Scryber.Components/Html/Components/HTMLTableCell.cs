@@ -120,6 +120,9 @@ namespace Scryber.Html.Components
             get;
             set;
         }
+        
+        [PDFAttribute("colspan")]
+        public override int CellColumnSpan { get => base.CellColumnSpan; set => base.CellColumnSpan = value; }
 
         public HTMLTableHeaderCell()
             : this(HTMLObjectTypes.TableHeaderCell)
