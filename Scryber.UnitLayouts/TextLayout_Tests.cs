@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Drawing;
 using System.IO;
+using Scryber.Html.Components;
 using Scryber.PDF.Resources;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -2760,6 +2761,69 @@ namespace Scryber.UnitLayouts
 
                 }
             }
+        }
+
+        [TestMethod]
+        public void MultiByteText_IncEmojies()
+        {
+
+            var src = @"<!DOCTYPE HTML>
+<html lang=""en"" xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+  <meta charset=""utf-8"" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: serif;
+      font-size: 12pt;
+    }
+    td {
+      padding: 4px 6px;
+      vertical-align: top;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr><td colspan=""8""><h6>HTML Entities &amp; Matching Unicode</h6></td></tr>
+  <tr><td>Bull (entity)</td><td>&bull;</td><td>Bull (unicode)</td><td>•</td><td>Em dash</td><td>—</td><td>Arrow</td><td>→</td></tr>
+  <tr id='emojiRow'><td>Emoji: rocket</td><td>🚀</td><td>Emoji: fire</td><td>🔥</td><td>Emoji: thumbs up</td><td>👍</td><td>Emoji: heart</td><td>❤️</td></tr>
+</table>
+</body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Text_MultibyteText.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var row = doc.FindAComponentById("emojiRow") as HTMLTableRow;
+                
+                Assert.IsNotNull(row);
+                Assert.AreEqual(8, row.Cells.Count);
+
+                var first = row.Cells[1];
+                Assert.IsNotNull(first);
+                Assert.AreEqual(1, first.Contents.Count);
+
+                var lit = first.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                var chars = lit.Text;
+                Assert.AreEqual(2, lit.Text.Length);
+                
+                var stringInfo = new System.Globalization.StringInfo(lit.Text);
+                Assert.AreEqual(1, stringInfo.LengthInTextElements);
+                
+
+            }
+
+
         }
 
 
