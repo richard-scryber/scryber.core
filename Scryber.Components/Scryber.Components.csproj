@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.0.0.1-rc.2</PackageVersion>
+    <PackageVersion>9.0.0.1-rc.3</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,8 +14,11 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>
+9.0.0.1-rc.3
+Added extra html entity values to match available sources.
+
 9.0.0.1-rc.2
-Fixes for template parsing and added data-content to the template element, plus minor fixes and unit test updates. Second release candidate. 
+Fixes for template parsing and added data-content to the template element, plus minor fixes and unit test updates. Second release candidate.
 
 9.0.0.1-rc.1
 Minor fixes for layout. First release candidate.
