@@ -2418,6 +2418,107 @@ namespace Scryber.UnitLayouts
             
             Assert.Inconclusive("Need to test for the right alignment of text");
         }
+        
+         [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TablePercentFixedWidthCenteredToPage()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            //section.TextLeading = 25;
+            section.Margins = 10;
+            section.BackgroundColor = StandardColors.Aqua;
+
+            doc.Pages.Add(section);
+
+            const int RowCount = 10;
+            const int CellCount = 3;
+
+            Unit tableWidth = 300;
+            
+
+            Unit[] CellWidths = new Unit[] {
+                new Unit(25, PageUnits.Percent),
+                new Unit(50, PageUnits.Percent),
+                new Unit(25, PageUnits.Percent),
+            };
+
+            TableGrid grid = new TableGrid();
+            grid.Margins = new Thickness(Unit.Auto);
+            grid.Width = tableWidth;
+            grid.FontSize = new Unit(70, PageUnits.Percent);
+            section.Contents.Add(grid);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                TableRow row = new TableRow();
+                grid.Rows.Add(row);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+
+                    TableCell cell = new TableCell();
+                    cell.Width = CellWidths[c];
+                    cell.Margins = (Thickness)0;
+                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
+
+                    cell.Contents.Add(content);
+                    row.Cells.Add(cell);
+                }
+
+            }
+
+
+            section.Contents.Add(new TextLiteral("After the Table"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTableCentred.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
+
+            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.AreEqual(tableWidth, tableBlock.Width);
+            
+            //The margins of auto should be 150 left and right
+            Assert.IsTrue(tableBlock.Position.AutoMarginLeft);
+            Assert.IsTrue(tableBlock.Position.AutoMarginRight);
+            Assert.AreEqual(150, tableBlock.PagePosition.X);
+            Assert.AreEqual(300, tableBlock.Width);
+            
+            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
+
+            for (var r = 0; r < RowCount; r++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
+                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
+                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
+
+                for (var c = 0; c < CellCount; c++)
+                {
+                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
+                    Assert.IsNotNull(rowColumn);
+                    Assert.AreEqual(1, rowColumn.Contents.Count);
+
+                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
+                    Assert.AreEqual(cellW, rowColumn.Width);
+
+                    var cellBlock = rowColumn.Contents[0];
+                    Assert.AreEqual(cellW, cellBlock.Width);
+                }
+
+            }
+        }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
