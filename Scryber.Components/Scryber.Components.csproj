@@ -264,6 +264,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
   </ItemGroup>
   
   <ItemGroup>
+    <Folder Include="Modifications\" />
     <Folder Include="Properties" />
     <Folder Include="PDF\Secure\" />
     <Folder Include="Options\" />

@@ -208,6 +208,15 @@ namespace Scryber
 
         public static readonly ObjectType Marker = (ObjectType)"mker";
 
+        // Modifications
+        
+        public static readonly ObjectType ModifyFrame = (ObjectType)"mFrm";
+        public static readonly ObjectType ModifyFrameSet = (ObjectType)"mFrs";
+
+        public static readonly ObjectType ModifyInsertPage = (ObjectType)"mPgi";
+        public static readonly ObjectType ModifyAppendPage = (ObjectType)"mPga";
+        public static readonly ObjectType ModifyDeletePage = (ObjectType)"mPgd";
+        public static readonly ObjectType ModifyUpdatePage = (ObjectType)"mPgu";
 
 
     }
