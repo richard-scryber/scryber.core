@@ -31,51 +31,45 @@ public class ParsingFrameSets_Test
     ///</summary>
     public TestContext TestContext
     {
-        get
-        {
-            return testContextInstance;
-        }
-        set
-        {
-            testContextInstance = value;
-        }
+        get { return testContextInstance; }
+        set { testContextInstance = value; }
     }
-    
+
     [TestMethod]
     public void ParseSingleFrame()
     {
         var src = "<html>" +
                   "<head>" +
-                    "<title>With Frame</title>" +
+                  "<title>With Frame</title>" +
                   "</head>" +
                   "<frameset>" +
-                    "<frame src='./content.pdf' data-page-start='1' data-page-count='2' />" +
+                  "<frame src='./content.pdf' data-page-start='1' data-page-count='2' />" +
                   "</frameset>" +
                   "</html>";
         using (var stream = new StringReader(src))
         {
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
-            
+
             Assert.IsNotNull(doc);
             Assert.AreEqual("With Frame", doc.Head.Title);
-            
+
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
-            
+
             Assert.IsNotNull(doc.Frameset.Frames);
             Assert.AreEqual(1, doc.Frameset.Frames.Count);
 
             var frame = doc.Frameset.Frames[0];
             Assert.IsNotNull(frame);
             Assert.AreEqual("./content.pdf", frame.RemoteSource);
-            
+
             Assert.AreEqual(1, frame.PageStartIndex);
             Assert.AreEqual(2, frame.PageInsertCount);
         }
-        
+
 
     }
-    
+
     [TestMethod]
     public void ParseSingleFrameAndBodyInvalid()
     {
@@ -100,10 +94,10 @@ public class ParsingFrameSets_Test
             {
                 caught = true;
             }
-            
+
             Assert.IsTrue(caught, "No exception was raised for both frameset and body.");
         }
-        
+
         src = "<?scryber parser-mode='strict' ?>" +
               "<html>" +
               "<head>" +
@@ -114,7 +108,7 @@ public class ParsingFrameSets_Test
               "<frame src='./content.pdf' />" +
               "</frameset>" +
               "</html>";
-        
+
         using (var stream = new StringReader(src))
         {
             var caught = false;
@@ -126,12 +120,12 @@ public class ParsingFrameSets_Test
             {
                 caught = true;
             }
-            
+
             Assert.IsTrue(caught, "No exception was raised for both frameset and body.");
         }
 
     }
-    
+
     [TestMethod]
     public void ParseSingleFrameWithInnerContent()
     {
@@ -149,13 +143,13 @@ public class ParsingFrameSets_Test
         using (var stream = new StringReader(src))
         {
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
-            
+
             Assert.IsNotNull(doc);
             Assert.AreEqual("With Frame", doc.Head.Title);
-            
+
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
-            
+
             Assert.IsNotNull(doc.Frameset.Frames);
             Assert.AreEqual(1, doc.Frameset.Frames.Count);
 
@@ -164,7 +158,7 @@ public class ParsingFrameSets_Test
 
             var innerDoc = frame.InnerHtml;
             Assert.IsNotNull(innerDoc);
-            
+
 
             Assert.IsNotNull(innerDoc.Body);
             Assert.AreEqual(1, innerDoc.Body.Contents.Count);
@@ -176,10 +170,10 @@ public class ParsingFrameSets_Test
             Assert.IsNotNull(lit);
             Assert.AreEqual("This is the inner heading", lit.Text);
         }
-        
+
 
     }
-    
+
     [TestMethod]
     public void ParseSingleFrameWithMappedPath()
     {
@@ -195,28 +189,76 @@ public class ParsingFrameSets_Test
         using (var stream = new StringReader(src))
         {
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
-            
+
             Assert.IsNotNull(doc);
             Assert.AreEqual("With Frame", doc.Head.Title);
-            
+
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
-            
+
             Assert.IsNotNull(doc.Frameset.Frames);
             Assert.AreEqual(1, doc.Frameset.Frames.Count);
 
             var frame = doc.Frameset.Frames[0];
             Assert.IsNotNull(frame);
             Assert.AreEqual("./content.pdf", frame.RemoteSource);
-            
+
             Assert.AreEqual(1, frame.PageStartIndex);
             Assert.AreEqual(2, frame.PageInsertCount);
 
             var path = frame.MapPath(frame.RemoteSource);
-            Assert.AreEqual("https://github.com/richard-scryber/scryber.core/tree/94c4b84820d6d239c8c56cbec01a62beddc943e9/docs/images/content.pdf", path);
-            
-        }
-        
+            Assert.AreEqual(
+                "https://github.com/richard-scryber/scryber.core/tree/94c4b84820d6d239c8c56cbec01a62beddc943e9/docs/images/content.pdf",
+                path);
 
+        }
     }
+
+    private const string ExpressionsPDFPath =
+        "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+
+
+    [TestMethod]
+    public void ParseSingleFrameWithTwoPages()
+    {
+        var src = "<html>" +
+                  "<head>" +
+                  "<title>With Frame</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='2' />" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+            Assert.AreEqual("With Frame", doc.Head.Title);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(1, frame.PageStartIndex);
+            Assert.AreEqual(2, frame.PageInsertCount);
+
+            var path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual( ExpressionsPDFPath, path);
+            
+            using (var sr = DocStreams.GetOutputStream("Frameset_2_pages.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(sr);
+            }
+
+        }
+    }
+
 }

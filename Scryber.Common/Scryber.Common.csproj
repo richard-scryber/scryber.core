@@ -16,7 +16,6 @@
   <ItemGroup>
     <Folder Include="Options\" />
     <Folder Include="Caching\" />
-    <Folder Include="PDF\" />
     <Folder Include="PDF\Resources\" />
     <Folder Include="PDF\Native\" />
     <Folder Include="Generation\" />

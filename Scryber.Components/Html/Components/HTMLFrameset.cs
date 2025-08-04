@@ -26,6 +26,15 @@ public class HTMLFrameset : ContainerComponent
             this._frames = value;
         }
     }
+
+    /// <summary>
+    /// Gets the root PDF file reference, that will form the first document in the modification chain.
+    /// </summary>
+    public FrameFileReference RootReference
+    {
+        get;
+        protected set;
+    }
     
     public HTMLFrameset() : this(ObjectTypes.ModifyFrameSet)
     {}
@@ -48,7 +57,14 @@ public class HTMLFrameset : ContainerComponent
         FrameFileReference root;
         List<FrameFileReference> dependants = ExtractRootAndDependantFrames(this.Frames, out root);
 
+        if (null == root)
+            throw new InvalidOperationException(
+                "There was no root document found to begin creating the frameset from.");
+        
+        
         this.EnsureRemoteContentLoadedAndBound(root, dependants, context);
+
+        this.RootReference = root;
     }
 
     private void EnsureRemoteContentLoadedAndBound(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)

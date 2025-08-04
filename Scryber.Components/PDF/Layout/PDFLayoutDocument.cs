@@ -573,6 +573,10 @@ namespace Scryber.PDF.Layout
         private PDFObjectRef WritePageLabels(PDFRenderContext context, PDFWriter writer)
         {
             PageNumbers nums = this.Numbers;
+            
+            if (null == nums)
+                return null;
+            
             PDFObjectRef labels = writer.BeginObject("PageLabels");
             writer.BeginDictionary();
             writer.BeginDictionaryEntry("Nums");

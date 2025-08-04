@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
+using Scryber.PDF;
 using Scryber.Styles;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Html.Components
 {
@@ -207,6 +209,19 @@ namespace Scryber.Html.Components
             
             if(innerRoot.HasVariables)
                 this.RootStyles.Add(innerRoot);
+        }
+
+
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context)
+        {
+            if (null != this.Frameset)
+            {
+                return new LayoutEngineFrameset(this, parent, context);
+            }
+            else
+            {
+                return base.GetEngine(parent, context);
+            }
         }
     }
 }

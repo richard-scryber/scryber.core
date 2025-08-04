@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Scryber.Components;
 using Scryber.PDF.Native;
 
@@ -43,10 +44,11 @@ public abstract class FrameFileReference
         return false;
     }
 
-    protected virtual void FileLoaded(PDFFile file, ContextBase context)
+    protected virtual bool FileLoaded(PDFFile file, ContextBase context)
     {
         this.ReferencedFile = file ?? throw new ArgumentNullException("The file cannot be null to register file loaded");
         this.Status = FrameFileStatus.Ready;
+        return true;
     }
 }
 
@@ -55,7 +57,7 @@ public class FramePDFFileReference : FrameFileReference
 
     protected IRemoteRequest RemoteRequest { get; set; }
 
-    private DataContext _context;
+    
     
     public FramePDFFileReference(string fullpath) : base(FrameFileType.DirectPDF, fullpath)
     {
@@ -65,20 +67,44 @@ public class FramePDFFileReference : FrameFileReference
     {
         TimeSpan cacheDuration  = TimeSpan.Zero;
         var callback = new RemoteRequestCallback(this.RemoteContentLoadedCallback);
-        this._context = dataContext;
-        this.RemoteRequest  = topDoc.RegisterRemoteFileRequest(MimeType.Pdf.ToString(), this.FullPath, cacheDuration, callback, owner, null);
+        this.RemoteRequest  = topDoc.RegisterRemoteFileRequest(MimeType.Pdf.ToString(), this.FullPath, cacheDuration, callback, owner, dataContext);
 
         return null != this.RemoteRequest;
     }
     
     private bool RemoteContentLoadedCallback(IComponent raiser, IRemoteRequest request, System.IO.Stream response)
     {
-        if (request.IsCompleted && request.IsSuccessful)
+        if (null != response)
         {
-            PDF.Native.PDFFile file = PDFFile.Load(response, _context.TraceLog);
-            this.FileLoaded(file, _context);
+            bool success = false;
+            PDF.Native.PDFFile file = null;
+            Exception error = null;
+            try
+            {
+                //We need a seekable stream
+                if (!response.CanSeek)
+                {
+                    var ms = new MemoryStream();
+                    response.CopyTo(ms);
+                    ms.Position = 0;
+                    
+                    response.Dispose();
+                    response = ms;
+                }
+                
+                DataContext context = (DataContext)request.Arguments;
+                file = PDFFile.Load(response, context.TraceLog);
+                success = this.FileLoaded(file, context);
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                error = ex;
+            }
 
-            return null != file;
+            request.CompleteRequest(file, success, error);
+            
+            return success;
         }
         else
         {
