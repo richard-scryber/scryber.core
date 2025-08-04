@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Scryber.Components;
 
 namespace Scryber.Html.Components;
@@ -9,13 +11,22 @@ public class HTMLFrame : ContainerComponent
     public const int AppendAllPageCount = int.MaxValue;
         
 
+    /// <summary>
+    /// Gets or sets the path to the pdf or the template document to use as the source for this frame.
+    /// </summary>
     [PDFAttribute("src")]
     public string RemoteSource { get; set; }
         
-    [PDFAttribute("page-start")]
+    /// <summary>
+    /// Gets or sets the Zero-Based index of the page in the document to include within the resultant document.
+    /// </summary>
+    [PDFAttribute("data-page-start")]
     public int PageStartIndex { get; set; }
         
-    [PDFAttribute("page-count")]
+    /// <summary>
+    /// Gets or sets the Total count of pages from the document to include withing the resultant document.
+    /// </summary>
+    [PDFAttribute("data-page-count")]
     public int PageInsertCount { get; set; }
 
     [PDFElement("html")]
@@ -41,7 +52,14 @@ public class HTMLFrame : ContainerComponent
         
     [PDFAttribute("mime-type")]
     public MimeType RemoteSourceMimeType { get; set; }
-        
+    
+    
+    
+    
+    /// <summary>
+    /// Gets or sets the reference to the file referenced by this frame.
+    /// </summary>
+    public Modifications.FrameFileReference FileReference { get; set; }
 
 
     private ModificationType _modType = ModificationType.None;
@@ -66,6 +84,8 @@ public class HTMLFrame : ContainerComponent
     protected override void OnInitialized(InitContext context)
     {
         base.OnInitialized(context);
+
+        // this.EnsureRemoteContent(context);
     }
 
     protected override void OnLoaded(LoadContext context)
@@ -85,7 +105,32 @@ public class HTMLFrame : ContainerComponent
         this.EnsureModificationType(context);
     }
 
+    
 
+    // protected virtual void EnsureRemoteContent(ContextBase context)
+    // {
+    //     if (!string.IsNullOrEmpty(this.RemoteSource))
+    //     {
+    //         if (null == this.RemoteFileLodRegistration)
+    //         {
+    //             string mimeType = InferResourceType(this.RemoteSourceMimeType);
+    //             TimeSpan cacheDuration = TimeSpan.Zero;
+    //             var callback = new RemoteRequestCallback(this.RemoteContentLoadedCallback);
+    //             
+    //             this.RemoteFileLodRegistration = this.Document.RegisterRemoteFileRequest(mimeType, RemoteSource, cacheDuration, callback, this, null);
+    //         }
+    //     }
+    // }
+    //
+    // private bool RemoteContentLoadedCallback(IComponent raiser, IRemoteRequest request, Stream response)
+    // {
+    //     return false;
+    //
+    // }
+
+    
+    
+    
     /// <summary>
     /// Checks and validates the remote sources any content, and also the page indexes 
     /// </summary>
@@ -111,7 +156,17 @@ public class HTMLFrame : ContainerComponent
             }
             else //we have a remote source
             {
-                    
+                if (null != this.InnerHtml)
+                {
+                    this.ModificationType = ModificationType.Append;
+                }
+                else //just a remote source
+                {
+                    if (this.PageStartIndex == HTMLFrame.AppendAllPageCount)
+                        this.ModificationType = ModificationType.Append; //We are at the end of the processing document.
+                    else
+                        this.ModificationType = ModificationType.Insert; //We should be inserted as we have an explicit page index
+                }
             }
         }
         else

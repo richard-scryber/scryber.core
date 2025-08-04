@@ -175,6 +175,21 @@ namespace Scryber
 		}
 
 
+		public static bool IsParsableType(MimeType type)
+		{
+			string known = type.ToString();
+			switch (known)
+			{
+				case "text/html":
+				case "text/xhtml":
+				case "application/xhtml+xml":
+				case "text/xml":
+				case "image/svg+xml":
+					return true;
+				default:
+					return false;
+			}
+		}
 
 		//
 		// Default Known Types
@@ -192,7 +207,10 @@ namespace Scryber
 
 		public static readonly MimeType Svg = "image/svg+xml";
 
-    }
+		public static readonly MimeType Pdf = "application/pdf";
+		
+
+	}
 
     /// <summary>
     /// Internal class that supports this use of charset and variant options within a mimetype.

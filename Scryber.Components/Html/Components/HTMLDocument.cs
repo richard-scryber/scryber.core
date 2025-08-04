@@ -37,13 +37,22 @@ namespace Scryber.Html.Components
         }
 
         private HTMLBody _body;
+        private HTMLFrameset _frameset;
 
+        /// <summary>
+        /// When using the body, new document content can be defined. If the frameset is also set then an <see cref="InvalidOperationException" /> will be raised.
+        /// </summary>
+        /// <remarks>A body and </remarks>
         [PDFElement("body")]
         public HTMLBody Body
         {
             get { return this._body; }
             set
             {
+                if (null != this.Frameset && null != value)
+                    throw new InvalidOperationException(
+                        "A body and a frameset cannot be applied to the same document - use one or the other.");
+                
                 if (null != this._body)
                     this.Pages.Remove(this._body);
 
@@ -51,6 +60,30 @@ namespace Scryber.Html.Components
 
                 if (null != this._body)
                     this.Pages.Add(_body);
+            }
+        }
+
+        /// <summary>
+        /// When using the frameset, existing documents can be modifed and new content added. If the body is also set then an <see cref="InvalidOperationException" /> will be raised.
+        /// </summary>
+        /// <remarks>A body and </remarks>
+        [PDFElement("frameset")]
+        public HTMLFrameset Frameset
+        {
+            get { return this._frameset; }
+            set
+            {
+                if (null != this.Body && null != value)
+                    throw new InvalidOperationException(
+                        "A body and a frameset cannot be applied to the same document - use one or the other.");
+                
+                if (null != this._frameset)
+                    this.InnerContent.Remove(this._frameset);
+
+                this._frameset = value;
+
+                if (null != this._frameset)
+                    this.InnerContent.Add(this._frameset);
             }
         }
 
