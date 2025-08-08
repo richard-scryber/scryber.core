@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Scryber.Html.Components;
 using Scryber.Modifications;
+using Scryber.PDF.Native;
 using Scryber.PDF.Parsing;
 using Scryber.Styles;
 
@@ -44,13 +45,40 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
                 "The root file is not loaded or ready - cannot proceed with the layout until this is completed");
         
         doc.ExistingCatalog = doc.OriginalFile.GetCatalog();
-        this.AddFramePages(context);
+        this.AddFramePages(context, fullstyle);
+        this.AddNames(doc, context, fullstyle);
     }
 
-    protected void AddFramePages(PDFLayoutContext context)
+    protected void AddFramePages(PDFLayoutContext context, Style fullStyle)
     {
-        var root = this.Frameset.RootReference.ReferencedFile;
         
+        foreach (var frame in this.Frameset.Frames)
+        {
+            this.DoAddAFramesPages(frame, context, fullStyle);
+        }
+    }
+
+    protected virtual void DoAddAFramesPages(HTMLFrame frame, PDFLayoutContext context, Style fullStyle)
+    {
+        var engine = frame.GetEngine(this, context, fullStyle) as IPDFLayoutEngine;
+        engine.Layout(context, fullStyle);
+    }
+
+    protected virtual void AddNames(PDFModifyLayoutDocument doc, PDFLayoutContext context, Style fullStyle)
+    {
+        if (this.Frameset.RootReference.FileType == FrameFileType.DirectPDF)
+        {
+            var root = this.Frameset.RootReference.ReferencedFile;
+            var catalog = root.DocumentCatalog;
+            var namesRef = catalog["Names"] as PDFObjectRef;
+
+            
+            if (null != namesRef)
+            {
+                //doc.OriginalNameDictionary = namesRef;
+                //var namesDict = root.AssertGetContent(namesRef);
+            }
+        }
     }
 
     public bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region,

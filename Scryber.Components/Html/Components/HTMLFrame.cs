@@ -1,13 +1,24 @@
 using System;
 using System.IO;
 using Scryber.Components;
+using Scryber.Modifications;
+using Scryber.PDF;
+using Scryber.PDF.Layout;
+using Scryber.Styles;
 
 namespace Scryber.Html.Components;
 
 [PDFParsableComponent("frame")]
-public class HTMLFrame : ContainerComponent
+public class HTMLFrame : ContainerComponent, IPDFViewPortComponent
 {
-    public const int AppendPageIndex = int.MaxValue;
+    /// <summary>
+    /// Default Zero page index from the source to start inserting into the resultant document
+    /// </summary>
+    public const int AppendPageIndex = 0;
+    
+    /// <summary>
+    /// Default all page count to insert into the resultant document.
+    /// </summary>
     public const int AppendAllPageCount = int.MaxValue;
         
 
@@ -173,6 +184,24 @@ public class HTMLFrame : ContainerComponent
         {
             this.ModificationType = ModificationType.None;
         }
+    }
+
+    public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
+    {
+        if (null != this.FileReference)
+        {
+            if (this.FileReference.FileType == FrameFileType.DirectPDF)
+            {
+                var framesetEngine = (LayoutEngineFrameset)parent;
+                return new LayoutEngineRootPDFFrame(framesetEngine, this, this.FileReference.ReferencedFile, context);
+            }
+            else
+            {
+                return new LayoutEngineFrame((LayoutEngineFrameset)parent, this, context);
+            }
+        }
+        else
+            throw new InvalidOperationException("The frame must be contained within a frameset to layout the pages");
     }
 }
 

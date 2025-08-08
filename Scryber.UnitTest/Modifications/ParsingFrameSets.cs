@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.IO;
 using Scryber.Text;
 using Scryber.PDF.Resources;
+using Scryber.PDF.Native;
 
 namespace Scryber.Core.UnitTests.Modifications;
 
@@ -214,19 +215,22 @@ public class ParsingFrameSets_Test
         }
     }
 
-    private const string ExpressionsPDFPath =
-        "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
-
+    
 
     [TestMethod]
-    public void ParseSingleFrameWithTwoPages()
+    public void ParseSingleFrameWithTenInnerPages()
     {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const int startIndex = 11;
+        const int pageCount = 10;
+        PDFObjectRef firstPageRef = new PDFObjectRef(125, 0);
         var src = "<html>" +
                   "<head>" +
                   "<title>With Frame</title>" +
                   "</head>" +
                   "<frameset>" +
-                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='2' />" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + startIndex + "' data-page-count='" + pageCount + "' />" +
                   "</frameset>" +
                   "</html>";
         using (var stream = new StringReader(src))
@@ -246,16 +250,285 @@ public class ParsingFrameSets_Test
             Assert.IsNotNull(frame);
             Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
 
-            Assert.AreEqual(1, frame.PageStartIndex);
-            Assert.AreEqual(2, frame.PageInsertCount);
+            Assert.AreEqual(startIndex, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
 
             var path = frame.MapPath(frame.RemoteSource);
             Assert.AreEqual( ExpressionsPDFPath, path);
             
-            using (var sr = DocStreams.GetOutputStream("Frameset_2_pages.pdf"))
+            using (var sr = DocStreams.GetOutputStream("Frameset_Pages_11_to_21.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                PDFFile file = PDFFile.Load(sr, doc.TraceLog);
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+                
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+                
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+                
+                Assert.AreEqual(pageCount, array.Count);
+                
+                var first = array[0] as PDFObjectRef;
+                Assert.IsNotNull(first);
+                
+                Assert.AreEqual(firstPageRef.Number, first.Number);
+                Assert.AreEqual(firstPageRef.Generation, first.Generation);
+            }
+
+        }
+    }
+    
+    [TestMethod]
+    public void ParseSingleFrameWithFinalPages()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const int startIndex = 110;
+        const int pageCount = 141 - startIndex;
+        
+        PDFObjectRef firstPageRef = new PDFObjectRef(895, 0);
+        var src = "<html>" +
+                  "<head>" +
+                  "<title>With Frame</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + startIndex + "' />" + //default page count should run to the end of the document
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+            Assert.AreEqual("With Frame", doc.Head.Title);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(startIndex, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+            var path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual( ExpressionsPDFPath, path);
+            
+            using (var sr = DocStreams.GetOutputStream("Frameset_last_31_pages.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                PDFFile file = PDFFile.Load(sr, doc.TraceLog);
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+                
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+                
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+                
+                Assert.AreEqual(pageCount, array.Count);
+                
+                var first = array[0] as PDFObjectRef;
+                Assert.IsNotNull(first);
+                
+                Assert.AreEqual(firstPageRef.Number, first.Number);
+                Assert.AreEqual(firstPageRef.Generation, first.Generation);
+            }
+
+        }
+    }
+
+    [TestMethod]
+    public void ParseSingleFrameWithFirstPages()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const int startIndex = 0;
+        const int pageCount = 21;
+
+        PDFObjectRef firstPageRef = new PDFObjectRef(3, 0);
+        PDFObjectRef lastPageRef = new PDFObjectRef(224, 0);
+        
+        var src = "<html>" +
+                  "<head>" +
+                  "<title>With Frame</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount +
+                  "' />" + //default page start should be zero
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+            Assert.AreEqual("With Frame", doc.Head.Title);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+
+            var path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual(ExpressionsPDFPath, path);
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_first_21_pages.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                PDFFile file = PDFFile.Load(sr, doc.TraceLog);
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                Assert.AreEqual(pageCount, array.Count);
+
+                var first = array[0] as PDFObjectRef;
+                Assert.IsNotNull(first);
+
+                Assert.AreEqual(firstPageRef.Number, first.Number);
+                Assert.AreEqual(firstPageRef.Generation, first.Generation);
+
+                var last = array[array.Count - 1] as PDFObjectRef;
+                Assert.IsNotNull(last);
+                
+                Assert.AreEqual(lastPageRef.Number, last.Number);
+                Assert.AreEqual(lastPageRef.Generation, last.Generation);
+            }
+
+        }
+    }
+    
+    [TestMethod]
+    public void ParseTwoFramesWithSectionsOfSameDocument()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+
+        const int firstStartIndex = 0;
+        const int secondStartIndex = 100;
+        const int firstPageCount = 21;
+        const int secondPageCount = 11;
+
+        PDFObjectRef firstfirstPageRef = new PDFObjectRef(3, 0);
+        PDFObjectRef firstLastPageRef = new PDFObjectRef(224, 0);
+        PDFObjectRef lastfirstPageRef = new PDFObjectRef(835, 0);
+        PDFObjectRef lastlastPageRef = new PDFObjectRef(895, 0);
+        
+        var src = "<html>" +
+                  "<head>" +
+                  "<title>With Frame</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + firstStartIndex + "' data-page-count='" + firstPageCount + "' />" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + secondStartIndex + "' data-page-count='" + secondPageCount + "' />" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+            Assert.AreEqual("With Frame", doc.Head.Title);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(2, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(firstStartIndex, frame.PageStartIndex);
+            Assert.AreEqual(firstPageCount, frame.PageInsertCount);
+            
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(secondStartIndex, frame.PageStartIndex);
+            Assert.AreEqual(secondPageCount, frame.PageInsertCount);
+
+            var path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual(ExpressionsPDFPath, path);
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_twoSections_sameDoc.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                PDFFile file = PDFFile.Load(sr, doc.TraceLog);
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                Assert.AreEqual(firstPageCount + secondPageCount, array.Count);
+
+                var first = array[0] as PDFObjectRef;
+                Assert.IsNotNull(first);
+
+                Assert.AreEqual(firstfirstPageRef.Number, first.Number);
+                Assert.AreEqual(firstfirstPageRef.Generation, first.Generation);
+                
+                first = array[firstPageCount - 1] as PDFObjectRef;
+                Assert.IsNotNull(first);
+
+                Assert.AreEqual(firstLastPageRef.Number, first.Number);
+                Assert.AreEqual(firstLastPageRef.Generation, first.Generation);
+
+                var last = array[firstPageCount] as PDFObjectRef;
+                Assert.IsNotNull(last);
+                
+                Assert.AreEqual(lastfirstPageRef.Number, last.Number);
+                Assert.AreEqual(lastfirstPageRef.Generation, last.Generation);
+                
+                last = array[array.Count - 1] as PDFObjectRef;
+                Assert.IsNotNull(last);
+                
+                Assert.AreEqual(lastlastPageRef.Number, last.Number);
+                Assert.AreEqual(lastlastPageRef.Generation, last.Generation);
             }
 
         }
