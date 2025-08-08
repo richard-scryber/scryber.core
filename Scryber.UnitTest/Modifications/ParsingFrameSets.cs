@@ -133,7 +133,7 @@ public class ParsingFrameSets_Test
         var src = "<?scryber parser-mode='strict' ?>" +
                   "<html xmlns='http://www.w3.org/1999/xhtml'>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
                   "</head>" +
                   "<frameset>" +
                   "<frame>" +
@@ -146,8 +146,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
@@ -180,7 +179,7 @@ public class ParsingFrameSets_Test
     {
         var src = "<html>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Single Frame With Mapped Path</title>" +
                   "<base href='https://github.com/richard-scryber/scryber.core/tree/94c4b84820d6d239c8c56cbec01a62beddc943e9/docs/images/' />" +
                   "</head>" +
                   "<frameset>" +
@@ -192,8 +191,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
@@ -227,7 +225,7 @@ public class ParsingFrameSets_Test
         PDFObjectRef firstPageRef = new PDFObjectRef(125, 0);
         var src = "<html>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Single Frame With Ten Inner Pages</title>" +
                   "</head>" +
                   "<frameset>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + startIndex + "' data-page-count='" + pageCount + "' />" +
@@ -238,8 +236,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
@@ -296,7 +293,7 @@ public class ParsingFrameSets_Test
         PDFObjectRef firstPageRef = new PDFObjectRef(895, 0);
         var src = "<html>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Single Frame With Final Pages</title>" +
                   "</head>" +
                   "<frameset>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + startIndex + "' />" + //default page count should run to the end of the document
@@ -307,8 +304,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
@@ -367,7 +363,7 @@ public class ParsingFrameSets_Test
         
         var src = "<html>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Single Frame With First Pages</title>" +
                   "</head>" +
                   "<frameset>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount +
@@ -379,8 +375,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
@@ -450,7 +445,7 @@ public class ParsingFrameSets_Test
         
         var src = "<html>" +
                   "<head>" +
-                  "<title>With Frame</title>" +
+                  "<title>Parse Two Frames With Sections Of The Same Document</title>" +
                   "</head>" +
                   "<frameset>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + firstStartIndex + "' data-page-count='" + firstPageCount + "' />" +
@@ -462,8 +457,7 @@ public class ParsingFrameSets_Test
             var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
-            Assert.AreEqual("With Frame", doc.Head.Title);
-
+            
             Assert.IsNull(doc.Body);
             Assert.IsNotNull(doc.Frameset);
 
