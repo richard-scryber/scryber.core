@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Scryber.Html.Components;
 using Scryber.Styles;
@@ -33,7 +34,14 @@ public class LayoutEngineTemplateFrame : LayoutEngineFrame
             {
                 this.GeneratedFile = this.Frame.FileReference.GetOrCreateFile(context, this.ParentFile, this.Frame, this.LayoutDocument.DocumentComponent);
             }
+
+            if (null == this.GeneratedFile)
+            {
+                throw new NullReferenceException("There is no generated file to get the pages from");
+            }
         }
+
+        this.AddFramePageReferences(context, fullstyle, this.GeneratedFile);
 
         base.Layout(context, fullstyle);
     }

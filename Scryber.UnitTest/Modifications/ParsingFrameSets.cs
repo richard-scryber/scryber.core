@@ -540,7 +540,8 @@ public class ParsingFrameSets_Test
         const int pageCount = 21;
 
         PDFObjectRef firstPageRef = new PDFObjectRef(3, 0);
-        PDFObjectRef lastPageRef = new PDFObjectRef(224, 0);
+        PDFObjectRef penultimatePageRef = new PDFObjectRef(224, 0);
+        PDFObjectRef lastPageRef = new PDFObjectRef(1340, 0);
         
         var src = "<html>" +
                   "<head>" +
@@ -586,6 +587,7 @@ public class ParsingFrameSets_Test
 
             using (var sr = DocStreams.GetOutputStream("Frameset_21_pages_1_template.pdf"))
             {
+                doc.Params["title"] = "Document title from the outer frameset.";
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(sr);
 
@@ -601,7 +603,7 @@ public class ParsingFrameSets_Test
                 var array = tree["Kids"] as PDFArray;
                 Assert.IsNotNull(array);
 
-                Assert.AreEqual(pageCount, array.Count);
+                Assert.AreEqual(pageCount + 1, array.Count); //Add one for the inserted template
 
                 var first = array[0] as PDFObjectRef;
                 Assert.IsNotNull(first);
@@ -609,6 +611,12 @@ public class ParsingFrameSets_Test
                 Assert.AreEqual(firstPageRef.Number, first.Number);
                 Assert.AreEqual(firstPageRef.Generation, first.Generation);
 
+                var penultimate = array[array.Count - 2] as PDFObjectRef;
+                Assert.IsNotNull(penultimate);
+                
+                Assert.AreEqual(penultimatePageRef.Number, penultimate.Number);
+                Assert.AreEqual(penultimatePageRef.Generation, penultimate.Generation);
+                
                 var last = array[array.Count - 1] as PDFObjectRef;
                 Assert.IsNotNull(last);
                 

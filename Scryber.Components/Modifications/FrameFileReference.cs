@@ -10,7 +10,7 @@ namespace Scryber.Modifications;
 
 
 
-public abstract class FrameFileReference
+public abstract class FrameFileReference : IDisposable
 {
     public FrameFileType FileType { get; private set; }
 
@@ -57,6 +57,25 @@ public abstract class FrameFileReference
         this.FrameFile = file ?? throw new ArgumentNullException("The file cannot be null to register file loaded");
         this.Status = FrameFileStatus.Ready;
         return true;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if(null != this.FrameFile)
+                this.FrameFile.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        this.Dispose(true);
+    }
+
+    ~FrameFileReference()
+    {
+        this.Dispose(false);
     }
 }
 
