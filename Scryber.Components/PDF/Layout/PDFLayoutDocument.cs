@@ -123,6 +123,15 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+        
+        #region public PDFFile PrependFile { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the existing PDFFile to that this document will be appended to as a new version
+        /// </summary>
+        public PDFFile PrependFile { get; set; }
+        
+        #endregion
 
         /// <summary>
         /// Gets the output format for this document (which is always PDF)
@@ -406,7 +415,18 @@ namespace Scryber.PDF.Layout
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             context.TraceLog.Begin(TraceLevel.Message, "Layout Document", "Outputting document to the PDFWriter");
-            writer.OpenDocument();
+
+            if (null != this.PrependFile)
+            {
+                context.TraceLog.Add(TraceLevel.Message, "Layout Document", "Copying the PDFFile to the writer, to prepend this file output");
+                writer.OpenDocument(this.PrependFile, true);
+                writer.WriteLine();
+                writer.WriteCommentLine("--- START OF THE NEXT DOCUMENT ---");
+                writer.WriteLine();
+            }
+            else
+                writer.OpenDocument();
+            
             PDFObjectRef catalog = this.WriteCatalog(context, writer);
 
             this.WriteInfo(context, writer);

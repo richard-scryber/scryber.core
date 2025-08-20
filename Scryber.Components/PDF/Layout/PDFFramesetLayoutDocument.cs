@@ -5,17 +5,17 @@ using Scryber.PDF.Parsing;
 
 namespace Scryber.PDF.Layout;
 
-public class PDFModifyLayoutDocument : PDFLayoutDocument
+public class PDFFramesetLayoutDocument : PDFLayoutDocument
 {
 
-    public PDFFile OriginalFile { get; set; }
+    
     
     public PDFParsedCatalog ExistingCatalog { get; set; }
     
     
     public PDFModifyPageReferenceList OutputPages { get; set; }
     
-    public PDFModifyLayoutDocument(Document root, LayoutEngineFrameset engine) : base(root, engine)
+    public PDFFramesetLayoutDocument(Document root, LayoutEngineFrameset engine) : base(root, engine)
     {
         this.OutputPages = new PDFModifyPageReferenceList();
     }
@@ -24,9 +24,9 @@ public class PDFModifyLayoutDocument : PDFLayoutDocument
     {
         
         context.TraceLog.Begin(TraceLevel.Message, "Layout Document", "Outputting document to the PDFWriter");
-        writer.OpenDocument(this.OriginalFile, true);
+        writer.OpenDocument(this.PrependFile, true);
         writer.WriteLine();
-        writer.WriteCommentLine("--- START OF THE NEXT DOCUMENT ---");
+        writer.WriteCommentLine("--- START OF THE FRAMESET DOCUMENT ---");
         writer.WriteLine();
         PDFObjectRef catalog = this.WriteCatalog(context, writer);
 
@@ -48,7 +48,11 @@ public class PDFModifyLayoutDocument : PDFLayoutDocument
     {
         base.WriteCatalogEntries(context, writer);
         
-        writer.WriteDictionaryObjectRefEntry("Names", ExistingCatalog.Entries["Names"].OriginalData as PDFObjectRef);
+        var origNames = ExistingCatalog.Entries.TryGetEntry("Names", out var entry);
+
+        if (origNames)
+            writer.WriteDictionaryObjectRefEntry("Names",
+                entry.OriginalData as PDFObjectRef);
     }
     
 

@@ -24,6 +24,12 @@ namespace Scryber.Html.Components
         [PDFAttribute("data-min-scale")]
         public override double MinimumScaleReduction { get => base.MinimumScaleReduction; set => base.MinimumScaleReduction = value; }
 
+        [PDFAttribute("data-img")]
+        public ImageData HtmlImageData
+        {
+            get { return this.Data; }
+            set { this.Data = value; }
+        }
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>

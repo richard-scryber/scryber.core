@@ -405,3 +405,5 @@ ASALocalRun/
 .localhistory/.DS_Store
 Scryber.Core.sln.DotSettings.user
 *.user
+*.user
+Scryber.Core.sln.DotSettings.user

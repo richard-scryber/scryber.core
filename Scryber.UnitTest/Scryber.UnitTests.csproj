@@ -73,6 +73,9 @@
     <None Remove="Common\" />
     <None Remove="Content\HTML\CribSheet\" />
     <None Remove="Attachments\" />
+    <None Update="Content\HTML\Images\ScyberLogo2_alpha_small.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

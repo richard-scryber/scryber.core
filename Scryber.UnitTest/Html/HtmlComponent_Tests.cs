@@ -1053,7 +1053,7 @@ namespace Scryber.Core.UnitTests.Html
         
         #endregion
 
-        #region label num, page, time, var
+        #region label num, page, time
 
         [TestMethod]
         public void ComponentValues_Test()
@@ -1079,6 +1079,127 @@ namespace Scryber.Core.UnitTests.Html
             using var stream = DocStreams.GetOutputStream("ComponentValues.pdf");
             doc.SaveAsPDF(stream);
 
+            var section = doc.Pages[0] as Section;
+            Assert.IsNotNull(section);
+
+            var wrapper = section.FindAComponentById("wrapper") as Div;
+            Assert.IsNotNull(wrapper, "Wrapper div not found");
+            Assert.AreEqual(20, wrapper.Contents.Count, "Wrapper content count does not match");
+            var lbl = wrapper.FindAComponentById("label1") as HTMLLabel;
+            Assert.IsNotNull(lbl, "Label not found");
+            Assert.AreEqual("label1", lbl.ID, "Label ids did not match");
+            Assert.AreEqual(1, lbl.Contents.Count);
+            Assert.AreEqual("Label 1",(lbl.Contents[0] as TextLiteral).Text,  "Label text did not match");
+            Assert.AreEqual("num1", lbl.ForComponent);
+
+            //<num   id='num1'   style='padding:10pt;' class='num' value='10.0' data-format='C' />
+            var num1 = wrapper.FindAComponentById("num1") as HTMLNumber;
+            Assert.IsNotNull(num1, "First number not found");
+            Assert.AreEqual(10, num1.Value, "The first number text did not match");
+            Assert.AreEqual("num1", num1.ID, "First number ids did not match");
+            Assert.AreEqual("num", num1.StyleClass, "First number classes did not match");
+            Assert.AreEqual(10.0, num1.Style.Padding.All, "First number padding did not match");
+            Assert.AreEqual("C", num1.NumberFormat, "Number formats did not match");
+
+            //<num id='num2' data-format='£#0.00' >11.0</num>
+            var num2 = wrapper.FindAComponentById("num2") as HTMLNumber;
+
+            Assert.IsNotNull(num2, "Second number not found");
+            Assert.AreEqual("11.0", num2.Text, "Second number text was not 11.0");
+            Assert.AreEqual(11.0, num2.Value, "Second number value was not 11"); // value is set from text when reader is created
+            Assert.AreEqual("£#0.00", num2.NumberFormat, "Second number format was not correct");
+
+
+            //<page  id='pg1'    style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
+            var pg1 = wrapper.FindAComponentById("pg1") as HTMLPageNumber;
+            Assert.IsNotNull(pg1,"The first page number was not found");
+            Assert.AreEqual("pg1", pg1.ID, "First page numbers did not match");
+            Assert.AreEqual(10.0, pg1.Style.Padding.All.PointsValue, "The fist page number padding did not match");
+            Assert.AreEqual("pageClass", pg1.StyleClass, "The first page number class did not match");
+            Assert.AreEqual("Page Title", pg1.OutlineTitle, "The first page number outline title did not match");
+            Assert.AreEqual(1, pg1.TotalPageCountHint, "The first page number hint was not correct");
+            
+            
+            //<page  id='pg2'    for='label1' property='total' />
+            var pg2 = wrapper.FindAComponentById("pg2") as HTMLPageNumber;
+            Assert.IsNotNull(pg2);
+            Assert.AreEqual("pg2", pg2.ID, "Second page ID was not correct");
+            Assert.AreEqual("label1", pg2.ForComponent, "The second page for component id was not correct");
+            Assert.AreEqual("total", pg2.Property, "The second page property was not correct");
+
+            //<time  id='time1'  style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
+            var time1 = wrapper.FindAComponentById("time1") as HTMLTime;
+            Assert.IsNotNull(time1,"First time was not found");
+            Assert.AreEqual("time1", time1.ID, "First time id was not correct");
+            Assert.AreEqual(10.0, time1.Style.Padding.All.PointsValue, "First time padding was not correct");
+            Assert.AreEqual("timeClass", time1.StyleClass, "First time style class was not correct");
+            Assert.AreEqual("Current Time", time1.Outline.Title, "First time outline was not correct");
+            Assert.AreEqual("D", time1.DateFormat, "First time date format was not correct");
+            
+            //<time  id='time2'  datetime='2021-11-14 12:04:59' />
+            var time2 = wrapper.FindAComponentById("time2") as HTMLTime;
+            Assert.IsNotNull(time2, "Second time was not found");
+            Assert.AreEqual("time2", time2.ID, "Second time id was not correct");
+            Assert.AreEqual("2021-11-14 12:04:59", time2.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                "Second datetime value was not correct");
+            
+            
+            //<time  id='time3'  >2021-11-24 14:59:59.002</time>
+            var time3 = wrapper.FindAComponentById("time3") as HTMLTime;
+            Assert.IsNotNull(time3, "Third time was not found");
+            Assert.AreEqual("time3", time3.ID, "Third time id was not correct");
+            Assert.AreEqual("2021-11-24 14:59:59", time3.Text,
+                "Third datetime value was not correct");
+            
+        }
+
+
+        #endregion
+        
+        #region label num, page, time
+
+        [TestMethod]
+        public void ComponentVar_Test()
+        {
+            var html = @"<?scryber parser-mode='strict' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <style>
+        .label {font-style: normal;}
+        .num {font-weight: 700;}
+    </style>
+</head>
+<body style='margin:20pt; border: solid 1pt;' >
+    <div id='wrapper' >
+        <var id='var1' >Text Variable 1</var> and
+        <var id='var2' class='num' >Text Variable 2</var><br/>
+        <br/>
+        <var id='var3' class='label' >Label Variable 1</var> and
+        <var id='var4' class='label num' >Label Variable 2</var><br/>
+        <br/>
+        <var id='var5' data-id='first' class='label' data-value='{{""First""}}' >Var 1 Bound</var> and
+        <var id='var6' data-id='second' class='label num' data-value='{{""Second""}}' >Var 2 Bound</var><br/>
+        <br/>
+        <var id='var7' class='label' >{{first}}</var> and
+        <var id='var8' class='label num' >{{second}}</var>
+        <br/>
+        <num   id='num1'  style='padding:10pt;' class='num' data-value='10.0' data-format='C' />
+        <num   id='num2'  data-format='£#0.00' >11.0</num><br/>
+        <page  id='pg1'   style='padding:10pt' class='pageClass' title='Page Title' data-page-hint='1' />
+        <page  id='pg2'   for='label1' property='total' /><br/>
+        <time  id='time1' style='padding:10pt;' class='timeClass' title='Current Time' data-format='D' />
+        <time  id='time2' datetime='2021-11-14 12:04:59' />
+        <time  id='time3' >2021-11-24 14:59:59</time>
+    </div>
+</body>
+</html>";
+            
+            using var sr = new System.IO.StringReader(html);
+            using var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
+            using var stream = DocStreams.GetOutputStream("ComponentVars.pdf");
+            doc.SaveAsPDF(stream);
+
+            Assert.Inconclusive("Build first");
             var section = doc.Pages[0] as Section;
             Assert.IsNotNull(section);
 

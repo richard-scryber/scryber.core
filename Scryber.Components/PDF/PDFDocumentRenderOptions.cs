@@ -24,6 +24,7 @@ using System.Text;
 using Scryber.Components;
 using Scryber.PDF.Secure;
 using Scryber.Logging;
+using Scryber.PDF.Native;
 
 namespace Scryber.PDF
 {

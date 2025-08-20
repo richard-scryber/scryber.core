@@ -36,15 +36,15 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     
     public void Layout(PDFLayoutContext context, Style fullstyle)
     {
-        var doc = new PDFModifyLayoutDocument(this.Document, this);
+        var doc = new PDFFramesetLayoutDocument(this.Document, this);
         context.DocumentLayout = doc;
-        doc.OriginalFile = this.Frameset.RootReference.ReferencedFile;
+        doc.PrependFile = this.Frameset.CurrentFile;
 
-        if (null == doc.OriginalFile || this.Frameset.RootReference.Status != FrameFileStatus.Ready)
+        if (null == doc.PrependFile || this.Frameset.RootReference.Status != FrameFileStatus.Ready)
             throw new InvalidOperationException(
                 "The root file is not loaded or ready - cannot proceed with the layout until this is completed");
         
-        doc.ExistingCatalog = doc.OriginalFile.GetCatalog();
+        doc.ExistingCatalog = doc.PrependFile.GetCatalog();
         this.AddFramePages(context, fullstyle);
         this.AddNames(doc, context, fullstyle);
     }
@@ -64,11 +64,11 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
         engine.Layout(context, fullStyle);
     }
 
-    protected virtual void AddNames(PDFModifyLayoutDocument doc, PDFLayoutContext context, Style fullStyle)
+    protected virtual void AddNames(PDFFramesetLayoutDocument doc, PDFLayoutContext context, Style fullStyle)
     {
         if (this.Frameset.RootReference.FileType == FrameFileType.DirectPDF)
         {
-            var root = this.Frameset.RootReference.ReferencedFile;
+            var root = this.Frameset.RootReference.FrameFile;
             var catalog = root.DocumentCatalog;
             var namesRef = catalog["Names"] as PDFObjectRef;
 

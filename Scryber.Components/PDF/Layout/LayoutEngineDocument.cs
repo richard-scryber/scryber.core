@@ -78,6 +78,11 @@ namespace Scryber.PDF.Layout
         {
 
             this.Context.DocumentLayout = CreateDocumentLayout();
+            
+            //If we are pre-pending a file then pass it down the line.
+            if (null != this.Document.PrependedFile)
+                this.Context.DocumentLayout.PrependFile = this.Document.PrependedFile;
+            
             Style style = this.FullStyle;
 
             this.StartPageNumbering(style);

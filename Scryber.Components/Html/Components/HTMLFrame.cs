@@ -190,10 +190,17 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent
     {
         if (null != this.FileReference)
         {
+            var framesetEngine = (LayoutEngineFrameset)parent;
             if (this.FileReference.FileType == FrameFileType.DirectPDF)
             {
-                var framesetEngine = (LayoutEngineFrameset)parent;
-                return new LayoutEngineRootPDFFrame(framesetEngine, this, this.FileReference.ReferencedFile, context);
+                
+                return new LayoutEngineRootPDFFrame(framesetEngine, this, this.FileReference.FrameFile, context);
+            }
+            else if (this.FileReference.FileType == FrameFileType.ReferencedTemplate)
+            {
+                var mod = (PDFFramesetLayoutDocument)context.DocumentLayout;
+                var file = framesetEngine.Frameset.CurrentFile;
+                return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
             }
             else
             {

@@ -1,6 +1,8 @@
 using System;
 using Scryber.Components;
 using Scryber.Modifications;
+using Scryber.PDF.Native;
+
 using System.Collections.Generic;
 
 namespace Scryber.Html.Components;
@@ -35,6 +37,15 @@ public class HTMLFrameset : ContainerComponent
         get;
         protected set;
     }
+
+    /// <summary>
+    /// Gets or sets the current PDF File being appened to and generated.
+    /// </summary>
+    public PDFFile CurrentFile
+    {
+        get;
+        set;
+    }
     
     public HTMLFrameset() : this(ObjectTypes.ModifyFrameSet)
     {}
@@ -62,19 +73,24 @@ public class HTMLFrameset : ContainerComponent
                 "There was no root document found to begin creating the frameset from.");
         
         
-        this.EnsureRemoteContentLoadedAndBound(root, dependants, context);
+        this.EnsureRemoteContent(root, dependants, context);
 
         this.RootReference = root;
     }
 
-    private void EnsureRemoteContentLoadedAndBound(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
+    private void EnsureRemoteContent(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
     {
-        root.EnsureContentLoadedAndBound(this, this.Document, context);
-
+        root.EnsureContent(this, this.Document, this.CurrentFile, context);
+        this.CurrentFile = root.FrameFile;
+        
         foreach (var fref in dependants)
         {
-            fref.EnsureContentLoadedAndBound(this, this.Document, context);
+            if (fref.EnsureContent(this, this.Document, this.CurrentFile, context))
+                this.CurrentFile = fref.FrameFile;
         }
+
+        //Store the current file in the top level document, so it is used for the layout.
+        this.Document.PrependedFile = this.CurrentFile;
     }
 
     /// <summary>

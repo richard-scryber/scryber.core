@@ -139,6 +139,7 @@ namespace Scryber.Components
         }
 
         #endregion
+        
 
         #region public PDFDocumentListNumbering ListNumbering {get;}
 
@@ -309,6 +310,22 @@ namespace Scryber.Components
             set { this.RenderOptions.OuptputCompliance = value; }
         }
 
+        #endregion
+
+        #region public PDFFile PrependedFile
+        
+        private PDFFile _prependFile;
+        
+        /// <summary>
+        /// Gets or sets the PDFFile that this document should be a new version for.
+        /// This will then appear in the final output and be included as part of the document
+        /// </summary>
+        public PDFFile PrependedFile
+        {
+            get { return this._prependFile; }
+            set { this._prependFile = value; }
+        }
+        
         #endregion
 
         //
@@ -2229,6 +2246,8 @@ namespace Scryber.Components
             }
         }
 
+        
+
         /// <summary>
         /// Preforms the actual rendering of the document to the writer with the context
         /// </summary>
@@ -2530,7 +2549,7 @@ namespace Scryber.Components
         protected virtual PDFWriter DoCreateRenderWriter(System.IO.Stream tostream, PDFRenderContext context)
         {
             PDFWriter writer = this.RenderOptions.CreateWriter(this, tostream, 0, context.TraceLog);
-
+            
             writer.UseHex = (this.RenderOptions.StringOutput == OutputStringType.Hex);
             writer.DefaultStreamFilters = GetStreamFilters();
 
@@ -3650,6 +3669,8 @@ namespace Scryber.Components
             {
                 if (null != this.RenderOptions)
                     this.RenderOptions.Dispose();
+                if(null != this.PrependedFile)
+                    this.PrependedFile.Dispose();
             }
             base.Dispose(disposing);
         }
