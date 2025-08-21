@@ -198,14 +198,24 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent
             }
             else if (this.FileReference.FileType == FrameFileType.ReferencedTemplate)
             {
-                var mod = (PDFFramesetLayoutDocument)context.DocumentLayout;
+                var file = framesetEngine.Frameset.CurrentFile;
+                return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
+            }
+            else if (this.FileReference.FileType == FrameFileType.ContainedTemplate)
+            {
                 var file = framesetEngine.Frameset.CurrentFile;
                 return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
             }
             else
             {
-                return new LayoutEngineFrame((LayoutEngineFrameset)parent, this, context);
+                throw new ArgumentOutOfRangeException("Unknown reference file type for the frame");
             }
+        }
+        else if (null != this.InnerHtml)
+        {
+            var framesetEngine = (LayoutEngineFrameset)parent;
+            var file = framesetEngine.Frameset.CurrentFile;
+            return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
         }
         else
             throw new InvalidOperationException("The frame must be contained within a frameset to layout the pages");

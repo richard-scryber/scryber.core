@@ -6,7 +6,7 @@ using Scryber.PDF.Resources;
 
 namespace Scryber.PDF.Layout;
 
-public class LayoutEngineFrame : IPDFLayoutEngine
+public abstract class LayoutEngineFrame : IPDFLayoutEngine
 {
 
     public IPDFLayoutEngine ParentEngine { get; }
