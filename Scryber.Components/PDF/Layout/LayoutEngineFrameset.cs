@@ -110,7 +110,10 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     private bool TryGetFileNamesArray(PDFFile file, out PDFArray namesArray)
     {
         var catalog = file.DocumentCatalog;
-        var namesRef = catalog["Names"] as PDFObjectRef;
+        PDFObjectRef namesRef;
+
+        catalog.TryGetValue("Names", out var value);
+        namesRef = value as PDFObjectRef;
         
         if (null != namesRef)
         {
