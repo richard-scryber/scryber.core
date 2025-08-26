@@ -51,7 +51,6 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
 
     protected void AddFramePages(PDFLayoutContext context, Style fullStyle)
     {
-        
         foreach (var frame in this.Frameset.Frames)
         {
             this.DoAddAFramesPages(frame, context, fullStyle);
@@ -66,19 +65,74 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
 
     protected virtual void AddNames(PDFFramesetLayoutDocument doc, PDFLayoutContext context, Style fullStyle)
     {
-        if (this.Frameset.RootReference.FileType == FrameFileType.DirectPDF)
+        if (this.Frameset.DependantReferences.Count > 0)
         {
+            //We have more than one file so merge all the names.
             var root = this.Frameset.RootReference.FrameFile;
-            var catalog = root.DocumentCatalog;
-            var namesRef = catalog["Names"] as PDFObjectRef;
 
-            
-            if (null != namesRef)
+            this.CopyNamesToFramesetDocument(root, doc);
+
+            if (this.Frameset.DependantReferences.Count > 0)
             {
-                //doc.OriginalNameDictionary = namesRef;
-                //var namesDict = root.AssertGetContent(namesRef);
+                foreach (var fRef in this.Frameset.DependantReferences)
+                {
+                    var file = fRef.FrameFile;
+
+                    if (null != file)
+                        this.CopyNamesToFramesetDocument(file, doc);
+                }
             }
         }
+    }
+
+    private void CopyNamesToFramesetDocument(PDFFile file, PDFFramesetLayoutDocument doc)
+    {
+        PDFArray namesArray;
+        
+        if (this.TryGetFileNamesArray(file, out namesArray))
+        {
+            //An array of name string and then an object reference
+            var index = 0;
+            if (null == doc.SourceNames)
+                doc.SourceNames = new SortedDictionary<string, IPDFFileObject>();
+
+            while (index < namesArray.Count)
+            {
+                var name = (PDFString)namesArray[index++];
+                var orref = namesArray[index++];
+
+                doc.SourceNames.Add(name.Value, orref);
+            }
+        }
+        
+    }
+
+    private bool TryGetFileNamesArray(PDFFile file, out PDFArray namesArray)
+    {
+        var catalog = file.DocumentCatalog;
+        var namesRef = catalog["Names"] as PDFObjectRef;
+        
+        if (null != namesRef)
+        {
+            var namesDict = file.AssertGetContent(namesRef) as PDFDictionary;
+            if (null != namesDict && namesDict.TryGetValue("Dests", out var found))
+            {
+                var destsEntry = found as PDFObjectRef;
+                if (null != destsEntry)
+                {
+                    var destsDict = file.AssertGetContent(destsEntry) as PDFDictionary;
+
+                    if (null != destsDict && destsDict.TryGetValue("Names", out var found2))
+                    {
+                        namesArray = found2 as PDFArray;
+                        return (null != namesArray);
+                    }
+                }
+            }
+        }
+
+        namesArray = null;
+        return false;
     }
 
     public bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region,

@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace Scryber.Html.Components;
 
+/// <summary>
+/// A frameset of other content (referenced within a frame) that will be rendered into a single file.
+/// </summary>
+/// <remarks>The frameset can only reference zero or 1 existing PDF files (although that PDF file can be referenced multiple times). </remarks>
 [PDFParsableComponent("frameset")]
 public class HTMLFrameset : ContainerComponent
 {
@@ -29,10 +33,21 @@ public class HTMLFrameset : ContainerComponent
         }
     }
 
+    
+
     /// <summary>
-    /// Gets the root PDF file reference, that will form the first document in the modification chain.
+    /// Gets the root file or template reference, that will form the first document in the modification chain.
     /// </summary>
     public FrameFileReference RootReference
+    {
+        get;
+        protected set;
+    }
+
+    /// <summary>
+    /// Gets the list of further templates, that will be used in the modification chain.
+    /// </summary>
+    public List<FrameFileReference> DependantReferences
     {
         get;
         protected set;
@@ -76,6 +91,7 @@ public class HTMLFrameset : ContainerComponent
         this.EnsureRemoteContent(root, dependants, context);
 
         this.RootReference = root;
+        this.DependantReferences = dependants;
     }
 
     private void EnsureRemoteContent(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
@@ -137,7 +153,7 @@ public class HTMLFrameset : ContainerComponent
                 {
                     if (null == root)
                     {
-                        fref = new FramePDFFileReference(path);
+                        fref = new FramePDFFileReference(frame, path);
                         root = fref;
                     }
                     else if (root.FullPath == path)
@@ -160,7 +176,7 @@ public class HTMLFrameset : ContainerComponent
                                                         });
                     if (null == exist)
                     {
-                        fref = new FrameTemplateFileReference(path);
+                        fref = new FrameTemplateFileReference(frame, path);
                         refs.Add(fref);
                     }
                     else
@@ -174,7 +190,7 @@ public class HTMLFrameset : ContainerComponent
             else if(null != frame.InnerHtml)
             {
                 var doc = frame.InnerHtml;
-                fref = new FrameContentTemplateReference(doc);
+                fref = new FrameContentTemplateReference(frame, doc);
                 refs.Add(fref);
 
                 frame.FileReference = fref;

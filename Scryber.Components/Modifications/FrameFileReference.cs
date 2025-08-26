@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.PDF.Native;
@@ -13,6 +14,8 @@ namespace Scryber.Modifications;
 public abstract class FrameFileReference : IDisposable
 {
     public FrameFileType FileType { get; private set; }
+    
+    public IComponent Owner { get; set; }
 
     public string FullPath { get; private set; }
     
@@ -23,21 +26,28 @@ public abstract class FrameFileReference : IDisposable
     /// </summary>
     public Scryber.PDF.Native.PDFFile FrameFile { get; set; }
     
-    protected FrameFileReference(FrameFileType type, string fullpath)
+    protected FrameFileReference(IComponent owner, FrameFileType type, string fullpath)
     {
         this.FileType = type;
         this.FullPath = fullpath;
+        this.Owner = owner;
         this.Status = FrameFileStatus.NotLoaded;
     }
 
-    public abstract PDFFile GetOrCreateFile(ContextBase context, PDFFile baseFile, Component owner, Document topDoc);
+    public PDFFile GetOrCreateFile(ContextBase context, PDFFile baseFile, Component owner, Document topDoc)
+    {
+        return this.DoGetOrCreateFile(context, baseFile, owner, topDoc);
+    }
+
+    protected abstract PDFFile DoGetOrCreateFile(ContextBase context, PDFFile baseFile, Component owner,
+        Document topDoc);
 
     public virtual bool EnsureContent(Component owner, Document topDoc, PDFFile appendTo, ContextBase context)
     {
         bool result = true;
         
         this.Status = FrameFileStatus.Loading;
-
+        
         if (!this.DoEnsureContent(owner, topDoc, appendTo, context))
         {
             this.Status = FrameFileStatus.Invalid;
@@ -77,6 +87,7 @@ public abstract class FrameFileReference : IDisposable
     {
         this.Dispose(false);
     }
+    
 }
 
 

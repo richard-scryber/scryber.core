@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.PDF.Native;
@@ -11,6 +12,9 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
     
     
     public PDFParsedCatalog ExistingCatalog { get; set; }
+    
+    
+    public SortedDictionary<string, IPDFFileObject> SourceNames { get; set; }
     
     
     public PDFModifyPageReferenceList OutputPages { get; set; }
@@ -47,12 +51,88 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
     protected override void WriteCatalogEntries(PDFRenderContext context, PDFWriter writer)
     {
         base.WriteCatalogEntries(context, writer);
-        
-        var origNames = ExistingCatalog.Entries.TryGetEntry("Names", out var entry);
 
-        if (origNames)
-            writer.WriteDictionaryObjectRefEntry("Names",
-                entry.OriginalData as PDFObjectRef);
+        if (null != this.SourceNames)
+        {
+            var namesObj = writer.BeginObject();
+            writer.BeginDictionary();
+            this.WriteSourceNames(context, writer);
+            writer.EndDictionary();
+            writer.EndObject();
+
+            //back to the catalog
+            writer.WriteDictionaryObjectRefEntry("Names", namesObj);
+
+        }
+        else
+        {
+            //We dont have an explict source names list so we can just try and reference the original entry.
+            var origNames = ExistingCatalog.Entries.TryGetEntry("Names", out var entry);
+
+            if (origNames)
+                writer.WriteDictionaryObjectRefEntry("Names",
+                    entry.OriginalData as PDFObjectRef);
+        }
+    }
+
+
+    /// <summary>
+    /// Checks the frameset files, and if there are more than one with a Names entry in the catalog
+    /// </summary>
+    /// <returns></returns>
+    private bool WriteSourceNames(PDFRenderContext context, PDFWriter writer)
+    {
+        writer.BeginDictionaryEntry("Dests");
+        
+        var dests = writer.BeginObject();
+
+        writer.BeginDictionary();
+        
+        writer.BeginDictionaryEntry("Names");
+        
+        string firstName = null;
+
+        string lastName = null;
+        
+        //Name Tree - ordered list of a name with a destination
+        //Followed by the first and last limits.
+        writer.BeginArray();
+
+        foreach (var str in this.SourceNames.Keys)
+        {
+            var name = str;
+            var value = this.SourceNames[str];
+
+            if (null == firstName)
+            {
+                firstName = name;
+            }
+            
+            writer.BeginArrayEntry();
+            writer.WriteStringLiteral(name);
+            writer.EndArrayEntry();
+            writer.BeginArrayEntry();
+            value.WriteData(writer);
+            writer.EndArrayEntry();
+
+            lastName = name;
+
+        }
+        writer.EndArray();
+        
+        writer.EndDictionaryEntry(); //names
+        
+        writer.BeginDictionaryEntry("Limits");
+        writer.WriteArrayStringEntries(true, firstName, lastName);
+        writer.EndDictionaryEntry(); //limits
+        
+        writer.EndDictionary();
+        writer.EndObject(); //dests
+        
+        writer.WriteObjectRef(dests);
+        writer.EndDictionaryEntry();
+        
+        return false;
     }
     
 

@@ -13,11 +13,11 @@ public class FramePDFFileReference : FrameFileReference
 
     protected object ThreadLock = new object();
     
-    public FramePDFFileReference(string fullpath) : base(FrameFileType.DirectPDF, fullpath)
+    public FramePDFFileReference(IComponent firstOwner, string fullpath) : base(firstOwner, FrameFileType.DirectPDF, fullpath)
     {
     }
 
-    public override PDFFile GetOrCreateFile(ContextBase context, PDFFile baseFile, Component owner, Document topDoc)
+    protected override PDFFile DoGetOrCreateFile(ContextBase context, PDFFile baseFile, Component owner, Document topDoc)
     {
         lock (this.ThreadLock)
         {

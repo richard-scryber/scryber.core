@@ -16,18 +16,17 @@ public class FrameContentTemplateReference : FrameFileReference
     
     public PDFFile PrependFile { get; private set; }
 
-    public FrameContentTemplateReference(Scryber.Components.Document content) : base(FrameFileType.ContainedTemplate,
+    public FrameContentTemplateReference(IComponent owner, Document content) : base(owner,FrameFileType.ContainedTemplate,
         string.Empty)
     {
         this.InnerDocument = content ?? throw new ArgumentNullException("The document content cannot be null");
     }
 
-    public override PDFFile GetOrCreateFile(ContextBase context, PDFFile prependFile, Component owner, Document topDoc)
+    protected override PDFFile DoGetOrCreateFile(ContextBase context, PDFFile prependFile, Component owner, Document topDoc)
     {
         if (null == this.FrameFile)
         {
             this.LoadTemplateContent(context, prependFile, owner, topDoc);
-            
         }
 
         return this.FrameFile;
@@ -56,6 +55,8 @@ public class FrameContentTemplateReference : FrameFileReference
             var doc = this.InnerDocument ??
                       throw new ArgumentNullException("The inner document content cannot be null");
 
+            this.InnerDocument.Parent = this.Owner as Component;
+            
             this.InitDoc(doc, context);
             this.LoadDoc(doc, context);
             this.BindDoc(doc, context);

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Scryber.Components;
+using Scryber.Html.Components;
 using Scryber.PDF.Native;
 
 
@@ -15,10 +16,10 @@ public class FrameTemplateFileReference : FrameFileReference
     
     public PDFFile PrependFile { get; private set; }
     
-    public FrameTemplateFileReference(string fullpath) : base(FrameFileType.ReferencedTemplate, fullpath)
+    public FrameTemplateFileReference(IComponent firstOwner, string fullpath) : base(firstOwner, FrameFileType.ReferencedTemplate, fullpath)
     {}
 
-    public override PDFFile GetOrCreateFile(ContextBase context, PDFFile prependFile, Component owner, Document topDoc)
+    protected override PDFFile DoGetOrCreateFile(ContextBase context, PDFFile prependFile, Component owner, Document topDoc)
     {
         if (null == this.FrameFile)
         {
@@ -76,6 +77,8 @@ public class FrameTemplateFileReference : FrameFileReference
                 var doc = Document.ParseHtmlDocument(response, request.FilePath, ParseSourceType.RemoteFile);
                 doc.PrependedFile = this.PrependFile;
                 doc.AppendTraceLog = false;
+                doc.Parent = this.Owner as Component;
+                
                 this.InitDoc(doc, context);
                 this.LoadDoc(doc, context);
                 this.BindDoc(doc, context);

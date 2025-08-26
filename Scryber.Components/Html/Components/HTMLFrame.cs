@@ -9,7 +9,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components;
 
 [PDFParsableComponent("frame")]
-public class HTMLFrame : ContainerComponent, IPDFViewPortComponent
+public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingContainer
 {
     /// <summary>
     /// Default Zero page index from the source to start inserting into the resultant document
@@ -79,6 +79,15 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent
     {
         get { return _modType; }
         protected set { _modType = value; }
+    }
+
+    IComponent INamingContainer.Owner
+    {
+        get { return this.Document; }
+        set
+        {
+            //Do nothing
+        }
     }
         
     public HTMLFrame() : this(ObjectTypes.ModifyFrame)
