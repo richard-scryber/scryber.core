@@ -77,7 +77,7 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
 
 
     /// <summary>
-    /// Checks the frameset files, and if there are more than one with a Names entry in the catalog
+    /// Writes a name tree of the Destinations within the document from the sorted dictionary, that has been populated from the referenced files.
     /// </summary>
     /// <returns></returns>
     private bool WriteSourceNames(PDFRenderContext context, PDFWriter writer)

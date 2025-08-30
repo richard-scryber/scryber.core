@@ -36,8 +36,12 @@ public class ParsingFrameSets_Test
         set { testContextInstance = value; }
     }
 
+    //
+    // sections of a single document
+    //
+    
     [TestMethod]
-    public void ParseSingleFrame()
+    public void Frameset_01_ParseSingleFrame()
     {
         var src = "<html>" +
                   "<head>" +
@@ -72,7 +76,7 @@ public class ParsingFrameSets_Test
     }
 
     [TestMethod]
-    public void ParseSingleFrameAndBodyInvalid()
+    public void Frameset_02_ParseSingleFrameAndBodyInvalid()
     {
         var src = "<?scryber parser-mode='strict' ?>" +
                   "<html>" +
@@ -128,7 +132,7 @@ public class ParsingFrameSets_Test
     }
 
     [TestMethod]
-    public void ParseSingleFrameWithInnerContent()
+    public void Frameset_03_ParseSingleFrameWithInnerContent()
     {
         var src = "<?scryber parser-mode='strict' ?>" +
                   "<html xmlns='http://www.w3.org/1999/xhtml'>" +
@@ -175,7 +179,7 @@ public class ParsingFrameSets_Test
     }
 
     [TestMethod]
-    public void ParseSingleFrameWithMappedPath()
+    public void Frameset_04_ParseSingleFrameWithMappedPath()
     {
         var src = "<html>" +
                   "<head>" +
@@ -214,9 +218,8 @@ public class ParsingFrameSets_Test
     }
 
     
-
     [TestMethod]
-    public void ParseSingleFrameWithTenInnerPages()
+    public void Frameset_05_ParseSingleFrameWithTenInnerPages()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -283,7 +286,7 @@ public class ParsingFrameSets_Test
     }
     
     [TestMethod]
-    public void ParseSingleFrameWithFinalPages()
+    public void Frameset_06_ParseSingleFrameWithFinalPages()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -351,7 +354,7 @@ public class ParsingFrameSets_Test
     }
 
     [TestMethod]
-    public void ParseSingleFrameWithFirstPages()
+    public void Frameset_07_ParseSingleFrameWithFirstPages()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -427,8 +430,13 @@ public class ParsingFrameSets_Test
         }
     }
     
+    
+    //
+    // 2 documents merged
+    //
+    
     [TestMethod]
-    public void ParseTwoFramesWithSectionsOfSameDocument()
+    public void Frameset_10_ParseTwoFramesWithSectionsOfSameDocument()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -534,10 +542,8 @@ public class ParsingFrameSets_Test
     }
     
     
-     
-    
     [TestMethod]
-    public void ParseTwoFramesWithFirstPagesAndRemoteTemplate()
+    public void Frameset_11_ParseTwoFramesWithFirstPagesAndRemoteTemplate()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -635,7 +641,7 @@ public class ParsingFrameSets_Test
     }
 
     [TestMethod]
-    public void ParseTwoFramesWithFirstPagesAndInlineTemplate()
+    public void Frameset_12_ParseTwoFramesWithFirstPagesAndInlineTemplate()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -768,10 +774,8 @@ public class ParsingFrameSets_Test
         }
     }
     
-    
-    
     [TestMethod]
-    public void ParseThreeFramesWithFirstPagesInlineTemplateAndLastPages()
+    public void Frameset_13_ParseThreeFramesWithFirstPagesInlineTemplateAndLastPages()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -942,5 +946,195 @@ public class ParsingFrameSets_Test
 
         }
     }
+
+    [TestMethod]
+    public void Frameset_14_ParseFourFramesWithFirstPagesRemoteOneMiddleAndLastInline()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const string TemplatePath = "";
+        const int startIndex = 0;
+        const int pageCount = 21;
+        const int lastSetStart = 130;
+        const int lastSetCount = 11;
+
+        PDFObjectRef firstPageRef = new PDFObjectRef(3, 0);
+        PDFObjectRef lastFirstPageRef = new PDFObjectRef(224, 0);
+
+        PDFObjectRef firstTemplatePageRef = new PDFObjectRef(1340, 0);
+        PDFObjectRef lastTemplatePageRef = new PDFObjectRef(1346, 0);
+        
+        PDFObjectRef first2ndSectionPageRef = new PDFObjectRef(1022, 0);
+        PDFObjectRef last2ndSectionPageRef = new PDFObjectRef(1174, 0);
+        
+        var src = "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With First Pages</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' />" + //default page start should be zero
+                  "<frame src='" + TemplatePath + "' data-page-count='1' ></frame>" + //First page from the remote source
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + lastSetStart + "' />" + //default page start should be zero
+                  "<frame src='" + TemplatePath + "' data-page-start='1' ></frame>" + //Last page from the remote source
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(3, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+
+            var path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual(ExpressionsPDFPath, path);
+            
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.IsNull(frame.RemoteSource);
+            Assert.IsNotNull(frame.InnerHtml);
+
+            var innerdoc = frame.InnerHtml;
+            
+
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+
+            frame = doc.Frameset.Frames[2];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+
+            Assert.AreEqual(lastSetStart, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+            path = frame.MapPath(frame.RemoteSource);
+            Assert.AreEqual(ExpressionsPDFPath, path);
+            
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_21_pages_2_inline_template_14_pages.pdf"))
+            {
+                doc.Params["title"] = "Document title from the outer frameset.";
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                PDFFile file = PDFFile.Load(sr, doc.TraceLog);
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                Assert.AreEqual(pageCount + 2 + lastSetCount, array.Count); //Add two for the inserted template
+
+                var first = array[0] as PDFObjectRef;
+                Assert.IsNotNull(first);
+
+                Assert.AreEqual(firstPageRef.Number, first.Number);
+                Assert.AreEqual(firstPageRef.Generation, first.Generation);
+
+                var pgIndex = pageCount - 1;
+                
+                //last page of the first section
+                var penultimate = array[pgIndex] as PDFObjectRef; 
+                Assert.IsNotNull(penultimate);
+                
+                Assert.AreEqual(lastFirstPageRef.Number, penultimate.Number);
+                Assert.AreEqual(lastFirstPageRef.Generation, penultimate.Generation);
+
+                pgIndex = pageCount; //first template page
+                var templateRef = array[pgIndex] as PDFObjectRef;
+                Assert.IsNotNull(templateRef);
+                
+                Assert.AreEqual(firstTemplatePageRef.Number, templateRef.Number);
+                Assert.AreEqual(firstTemplatePageRef.Generation, templateRef.Generation);
+
+                pgIndex++; //second template page
+                templateRef = array[pgIndex] as PDFObjectRef;
+                Assert.IsNotNull(templateRef);
+                
+                Assert.AreEqual(lastTemplatePageRef.Number, templateRef.Number);
+                Assert.AreEqual(lastTemplatePageRef.Generation, templateRef.Generation);
+
+                pgIndex = pageCount + 2;
+                //first page of the second pdf section
+                var fstLastRef = array[pgIndex] as PDFObjectRef;
+                Assert.IsNotNull(fstLastRef);
+                
+                Assert.AreEqual(first2ndSectionPageRef.Number, fstLastRef.Number);
+                Assert.AreEqual(first2ndSectionPageRef.Generation, fstLastRef.Generation);
+                
+                
+                //last page of the second pdf section
+                var lastLastRef = array[array.Count-1] as PDFObjectRef;
+                Assert.IsNotNull(lastLastRef);
+                
+                Assert.AreEqual(last2ndSectionPageRef.Number, lastLastRef.Number);
+                Assert.AreEqual(last2ndSectionPageRef.Generation, lastLastRef.Generation);
+                
+                
+                //Check the remote image is loaded.
+                Assert.AreEqual(2, innerdoc.SharedResources.Count);
+                var img = innerdoc.SharedResources[0] as PDFImageXObject;
+                Assert.IsNotNull(img);
+                Assert.AreNotEqual(Size.Empty, img.GetImageSize());
+                Assert.AreEqual(198, img.GetImageSize().Width.PointsValue);
+                Assert.AreEqual(171, img.GetImageSize().Height.PointsValue);
+                
+                //Check the bound text
+                var div = innerdoc.FindAComponentById("div1") as Div;
+                Assert.IsNotNull(div);
+                Assert.AreEqual(1, div.Contents.Count);
+                var lit = div.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                Assert.AreEqual("Document title from the outer frameset.", lit.Text);
+            }
+
+        }
+    }
     
+    //
+    // 3 documents merged
+    // 
+
+
+    [TestMethod]
+    public void Frameset_20_ParseThreeInlineTemplates()
+    {
+        Assert.Inconclusive("To Validate");
+    }
+
+    [TestMethod]
+    public void Frameset_21_ParseThreeRemoteTemplates()
+    {
+        Assert.Inconclusive("To Validate");
+    }
+
+    [TestMethod]
+    public void Frameset_22_ParseOnePDFOneInlineOneRemote()
+    {
+        Assert.Inconclusive("To Validate");
+    }
+
+    [TestMethod]
+    public void Frameset_23_ParseMultipleWithMixedOutput()
+    {
+        Assert.Inconclusive("To Validate");
+    }
 }
