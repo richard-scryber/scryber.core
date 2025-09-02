@@ -7,10 +7,15 @@ using Scryber.PDF.Native;
 
 namespace Scryber.Modifications;
 
-
+/// <summary>
+/// A frame content reference for content that is loaded remotely as a template from another source. This is usually done directly by the HTMLFrame which uses this class.
+/// </summary>
 public class FrameTemplateFileReference : FrameFileReference
 {
-    
+    /// <summary>
+    /// Gets or sets the actual document that was loaded remotely by this reference
+    /// </summary>
+    public HTMLDocument ParsedDocument { get; set; }
     protected IRemoteRequest RemoteRequest { get; set; }
     protected Document TopDocument { get; set; }
     
@@ -78,6 +83,7 @@ public class FrameTemplateFileReference : FrameFileReference
                 doc.PrependedFile = this.PrependFile;
                 doc.AppendTraceLog = false;
                 doc.Parent = this.Owner as Component;
+                this.ParsedDocument = doc as HTMLDocument;
                 
                 this.InitDoc(doc, context);
                 this.LoadDoc(doc, context);
@@ -133,5 +139,15 @@ public class FrameTemplateFileReference : FrameFileReference
         doc.Params.Merge(this.TopDocument.Params);
         doc.DataBind(dataContext);
     }
-    
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if(null != this.ParsedDocument)
+                this.ParsedDocument.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
 }

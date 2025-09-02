@@ -8,8 +8,14 @@ using Scryber.PDF.Native;
 namespace Scryber.Modifications;
 
 
+/// <summary>
+/// A frame content reference for content that is not loaded from another source but passed directly to the reference in the constructor. This is usually done directly by the HTMLFrame which uses this class.
+/// </summary>
 public class FrameContentTemplateReference : FrameFileReference
 {
+    /// <summary>
+    /// Gets or sets the actual document to be processed
+    /// </summary>
     public Document InnerDocument { get; set; }
     
     protected Document TopDocument { get; set; }

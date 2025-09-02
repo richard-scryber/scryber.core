@@ -373,6 +373,15 @@ namespace Scryber.PDF.Native
 
         #endregion
 
+        public override string ToString()
+        {
+            if (!string.IsNullOrEmpty(this.OriginalPath))
+                return "PDFFile : " + this.OriginalPath;
+            else
+            {
+                return "PDFFile : Dynamic";
+            }
+        }
         //
         // disposal
         //

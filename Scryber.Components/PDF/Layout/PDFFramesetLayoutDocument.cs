@@ -16,12 +16,18 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
     
     public SortedDictionary<string, IPDFFileObject> SourceNames { get; set; }
     
+    /// <summary>
+    /// Gets the mapping between original page object references and new page object references.
+    /// </summary>
+    public Dictionary<PDFObjectRef,PDFObjectRef> PageReferenceMappings { get; private set; }
+    
     
     public PDFModifyPageReferenceList OutputPages { get; set; }
     
     public PDFFramesetLayoutDocument(Document root, LayoutEngineFrameset engine) : base(root, engine)
     {
         this.OutputPages = new PDFModifyPageReferenceList();
+        this.PageReferenceMappings = new Dictionary<PDFObjectRef, PDFObjectRef>();
     }
 
     protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
@@ -107,11 +113,29 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
             {
                 firstName = name;
             }
+            // we swap the value for a named destination with the new page reference
+            // the array is populated when we output the pages (below)
+            // if the updated page is not found, then it is a missing page, and we skip the link - (If we don't it causes error in Acrobat)
+            if (value is PDFArray arry && arry.Count > 0)
+            {
+                var oref = arry[0] as PDFObjectRef;
+                if (null != oref && this.PageReferenceMappings.TryGetValue(oref, out var newOref))
+                    arry[0] = newOref;
+                else
+                {
+                    context.TraceLog.Add(TraceLevel.Verbose, "Modifications", "Skipping the named destination for " + name + " as it refers to page " + oref +" that is no longer in the tree.");
+                    continue;
+                }
+            }
             
             writer.BeginArrayEntry();
             writer.WriteStringLiteral(name);
             writer.EndArrayEntry();
             writer.BeginArrayEntry();
+            
+            
+            
+            
             value.WriteData(writer);
             writer.EndArrayEntry();
 
@@ -147,11 +171,26 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
         
         foreach (var outputPage in this.OutputPages)
         {
-            all.Add(outputPage.OriginalPageRef);
+            var oref = this.OutputModificationPageDictionary(parent, outputPage, context, writer);
+            outputPage.NewPageRef = oref;
+            this.PageReferenceMappings.Add(outputPage.OriginalPageRef, outputPage.NewPageRef);
+            all.Add(oref);
         }
 
         return all;
     }
+
+    protected virtual PDFObjectRef OutputModificationPageDictionary(PDFObjectRef parent, PDFModifyPageReference modify,
+        PDFRenderContext context, PDFWriter writer)
+    {
+        var pgRef = writer.BeginObject();
+        modify.PageDictionary["Parent"] = parent;
+        modify.PageDictionary.WriteData(writer);
+        writer.EndObject();
+
+        return pgRef;
+    }
+    
     
 
     protected override void WriteInfo(PDFRenderContext context, PDFWriter writer)

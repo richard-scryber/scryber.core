@@ -3,6 +3,7 @@ using Scryber.Html.Components;
 using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
+using System;
 
 namespace Scryber.PDF.Layout;
 
@@ -43,21 +44,27 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         return blockToClose;
     }
 
+    protected void AddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile)
+    {
+        try
+        {
+            this.DoAddFramePageReferences(context, fullStyle, fromFile);
+        }
+        catch (Exception ex)
+        {
+            throw new PDFLayoutException(
+                "Could not extract the page references from the frame file. See the inner exception for more details",
+                ex);
+        }
+    }
 
-    protected virtual void AddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile)
+    protected virtual void DoAddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile)
     {
         var treeRef = fromFile.PageTree;
         var tree = fromFile.GetContent(treeRef) as PDFDictionary;
         if (null == tree)
         {
-            if (context.Conformance == ParserConformanceMode.Strict)
-                throw new PDFLayoutException(
-                    "The page tree for the source pdf document could not be loaded. Cannot insert the requested pages from the original file.");
-            else
-            {
-                context.TraceLog.Add(TraceLevel.Error, "Modifications", "The page tree for the source pdf document could not be loaded. Cannot insert the requested pages from the original file. Skipping the frame '" + this.Frame.UniqueID + "'.");
-                return;
-            }
+            this.LogOrThrowWarning(context, "Page tree could not be found in the pdf file " + fromFile.ToString());
         }
             
         var kids = tree["Kids"] as PDFArray;
@@ -72,12 +79,50 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
                 
             if (null != reference)
             {
-                var pageRef = new PDFModifyPageReference(reference);
-                this.LayoutDocument.OutputPages.Add(pageRef);
+                var pageDict = GetPageDictionary(context, index, reference, fromFile);
+
+                if (null != pageDict)
+                {
+                    var pageRef = new PDFModifyPageReference(reference, pageDict);
+                    this.LayoutDocument.OutputPages.Add(pageRef);
+                }
+            }
+            else
+            {
+                LogOrThrowWarning(context, "The extract the page dictionary for " + reference + " or it could not be loaded");
             }
 
             index++;
         }
+    }
+    
+
+    protected PDFDictionary GetPageDictionary(PDFLayoutContext context, int index, PDFObjectRef pageRef, PDFFile file)
+    {
+        var obj = file.GetContent(pageRef);
+        if (null == obj)
+            return null;
+        
+        var dict = obj as PDFDictionary;
+        if (null == dict)
+        {
+            LogOrThrowWarning(context, "The referenced page for " + pageRef.ToString() + " was not a page dictionary");
+            return null;
+        }
+
+        IPDFFileObject found;
+        if (dict.TryGetValue("Type", out found) && found is PDFName pname)
+        {
+            if (pname.Value == "Page")
+            {
+                if(context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                    context.TraceLog.Add(TraceLevel.Verbose, "Modifications", "Found and returning the page dictionary for page index '" + index + "' with reference " + pageRef);
+                return dict;
+            }
+        }
+        LogOrThrowWarning(context, "The returned type was not a page dictionary type for object " + pageRef.ToString());
+
+        return null;
     }
     
     protected int GetFirstPageIndex(PDFLayoutContext context, PDFArray pageTree)
@@ -125,20 +170,20 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
                 return objectRef;
             else
             {
-                if (context.Conformance == ParserConformanceMode.Strict)
-                    throw new PDFLayoutException(
-                        "Page " + pgIndex +
-                        " was not an object reference within the page tree for the source pdf document. Cannot insert the requested page from the original file.");
-                else
-                {
-                    context.TraceLog.Add(TraceLevel.Error, "Modifications",
-                        "Page " + pgIndex +
-                        " was not an object reference within the page tree for the source pdf document. Cannot insert the requested page from the original file. Skipping the page in frame '" +
-                        this.Frame.UniqueID + "'.");
-                    return null;
-                }
+                LogOrThrowWarning(context, "Page " + pgIndex +
+                                           " was not an object reference within the page tree for the source pdf document. Cannot insert the requested page from the original file.");
+                return null;
             }
+        }
+    }
 
+    protected void LogOrThrowWarning(ContextBase context, string message)
+    {
+        if (context.Conformance == ParserConformanceMode.Strict)
+            throw new PDFLayoutException(message);
+        else
+        {
+            context.TraceLog.Add(TraceLevel.Warning, "Frame Layout", message);
         }
     }
 
