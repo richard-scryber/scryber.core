@@ -64,12 +64,25 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         var tree = fromFile.GetContent(treeRef) as PDFDictionary;
         if (null == tree)
         {
-            this.LogOrThrowWarning(context, "Page tree could not be found in the pdf file " + fromFile.ToString());
+            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
+            return;
         }
             
         var kids = tree["Kids"] as PDFArray;
-            
+        if (null == kids)
+        {
+            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
+            return;
+        }
+        
         var index = GetFirstPageIndex(context, kids);
+
+        if (index >= kids.Count)
+        {
+            this.LogOrThrowWarning(context, "The start index is greater than the number of pages found in the document " + fromFile.ToString() + ", so no pages will be output for frame " + this.Frame.ToString());
+            return;
+        }
+        
         var count = this.GetFramePageCount(context, index, kids);
         var last = index + count;
             
@@ -130,11 +143,6 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         var index = this.Frame.PageStartIndex;
         if (index < 0)
             index = 0;
-        else if (index >= pageTree.Count)
-        {
-            context.TraceLog.Add(TraceLevel.Warning, "Modifications", "The start page index for frame " + this.Frame.UniqueID + " is greater than the total number of pages within the source document. No pages will be included for this frame.");
-            index = int.MaxValue;
-        }
 
         return index;
     }
@@ -148,8 +156,11 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         else if (count == HTMLFrame.AppendAllPageCount)
             count = pageTree.Count - startIndex;
         else if (startIndex + count > pageTree.Count)
+        {
+            this.LogOrThrowWarning(context, "The requested number of pages for frame " + this.Frame.ToString() + " is greater than the available number of pages in the document (based on starting index).");
             count = pageTree.Count - startIndex;
-        
+        }
+
         return count;
     }
 

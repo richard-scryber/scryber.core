@@ -1407,51 +1407,220 @@ public class ParsingFrameSets_Test
                 doc.SaveAsPDF(sr);
 
                 sr.Position = 0;
+                
+                Assert.Inconclusive("Need to validate the templates");
             }
         }
     }
 
+   
     [TestMethod]
-    public void Frameset_21_ParseThreeRemoteTemplates()
+    public void Frameset_21_ParseMultipleWithMixedOutputOverflowWarning()
     {
-        Assert.Inconclusive("To Validate");
-    }
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const string TemplatePath = 
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/modifications/Scryber.UnitTest/Content/HTML/HelloWorld2Page.xhtml";
+        
+        const int startIndex = 0;
+        const int pageCount = 21;
+        const int lastSetStart = 140;
+        const int lastSetCount = 11;
 
-    [TestMethod]
-    public void Frameset_22_ParseOnePDFOneInlineOneRemote()
-    {
-        Assert.Inconclusive("To Validate");
-    }
+        PDFObjectRef firstPageRef = new PDFObjectRef(1353, 0);
+        PDFObjectRef lastFirstPageRef = new PDFObjectRef(1373, 0);
 
-    [TestMethod]
-    public void Frameset_23_ParseMultipleWithMixedOutput()
-    {
-        Assert.Inconclusive("To Validate");
+        PDFObjectRef firstTemplatePageRef = new PDFObjectRef(1374, 0);
+        
+        PDFObjectRef first2ndSectionPageRef = new PDFObjectRef(1375, 0);
+        PDFObjectRef last2ndSectionPageRef = new PDFObjectRef(1385, 0);
+        
+        PDFObjectRef lastTemplatePageRef = new PDFObjectRef(1386, 0);
+        
+        var src = "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With First Pages</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' />" + //default page start should be zero
+                  "<frame src='" + TemplatePath + "' data-page-count='1' />" + //First page from the remote source
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + lastSetStart + "' data-page-count='" + lastSetCount + "' />" + //MORE pages than available
+                  "<frame src='" + TemplatePath + "' data-page-start='10' />" + //starts AFTER the end of the document
+                  "</frameset>" +
+                  "</html>";
+        
+        
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+
+            Assert.IsNotNull(doc);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(4, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+            
+
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(TemplatePath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(1, frame.PageInsertCount);
+
+            frame = doc.Frameset.Frames[2];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(140, frame.PageStartIndex);
+            Assert.AreEqual(11, frame.PageInsertCount);
+            
+            frame = doc.Frameset.Frames[3];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(TemplatePath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(10, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+            
+
+
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_21_ParseMultipleWithMixedOutputOverflowWarning.pdf"))
+            {
+                doc.Params["title"] = "Document title from the outer frameset.";
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = false;
+                doc.SaveAsPDF(sr);
+
+                sr.Position = 0;
+
+                var file = PDFFile.Load(sr, doc.TraceLog);
+                
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                Assert.AreEqual(pageCount + 1 + 1, array.Count); //Add two for the first template and 1 for the last available page in the expressions document.
+            }
+        }
     }
     
-    [TestMethod]
-    public void Frameset_24_ParseMultipleWithMixedOutputOverflowWarning()
-    {
-        Assert.Inconclusive("To Validate");
-    }
-    
     
     [TestMethod]
-    public void Frameset_25_ParseMultipleWithMixedOutputOverflowError()
+    public void Frameset_22_ParseMultipleWithMixedOutputOverflowError()
     {
-        Assert.Inconclusive("To Validate");
-    }
-    
-    [TestMethod]
-    public void Frameset_26_ParseMultipleWithMixedOutputMiddleOverflowWarning()
-    {
-        Assert.Inconclusive("To Validate");
-    }
-    
-    
-    [TestMethod]
-    public void Frameset_27_ParseMultipleWithMixedOutputMiddleOverflowError()
-    {
-        Assert.Inconclusive("To Validate");
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const string TemplatePath = 
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/modifications/Scryber.UnitTest/Content/HTML/HelloWorld2Page.xhtml";
+        
+        const int startIndex = 0;
+        const int pageCount = 21;
+        const int lastSetStart = 140;
+        const int lastSetCount = 11;
+
+        PDFObjectRef firstPageRef = new PDFObjectRef(1353, 0);
+        PDFObjectRef lastFirstPageRef = new PDFObjectRef(1373, 0);
+
+        PDFObjectRef firstTemplatePageRef = new PDFObjectRef(1374, 0);
+        
+        PDFObjectRef first2ndSectionPageRef = new PDFObjectRef(1375, 0);
+        PDFObjectRef last2ndSectionPageRef = new PDFObjectRef(1385, 0);
+        
+        PDFObjectRef lastTemplatePageRef = new PDFObjectRef(1386, 0);
+        
+        var src = "<?scryber parser-mode=strict ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With First Pages</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' />" + //default page start should be zero
+                  "<frame src='" + TemplatePath + "' data-page-count='1' />" + //First page from the remote source
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='" + lastSetStart + "' data-page-count='" + lastSetCount + "' />" + //MORE pages than available
+                  "<frame src='" + TemplatePath + "' data-page-start='10' />" + //starts AFTER the end of the document
+                  "</frameset>" +
+                  "</html>";
+        
+        
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            Assert.IsNotNull(doc);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(4, doc.Frameset.Frames.Count);
+
+            
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+            
+
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(TemplatePath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(1, frame.PageInsertCount);
+
+            frame = doc.Frameset.Frames[2];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(ExpressionsPDFPath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(140, frame.PageStartIndex);
+            Assert.AreEqual(11, frame.PageInsertCount);
+            
+            frame = doc.Frameset.Frames[3];
+            Assert.IsNotNull(frame);
+            Assert.AreEqual(TemplatePath, frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(10, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+
+
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_22_ParseMultipleWithMixedOutputOverflowError.pdf"))
+            {
+                doc.Params["title"] = "Document title from the outer frameset.";
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = false;
+
+                bool caught = false;
+
+                try
+                {
+                    //strict mode SHOULD throw a layout exception.
+                    doc.SaveAsPDF(sr);
+                }
+                catch (PDFLayoutException)
+                {
+                    caught = true;
+                }
+
+            }
+        }
     }
 }

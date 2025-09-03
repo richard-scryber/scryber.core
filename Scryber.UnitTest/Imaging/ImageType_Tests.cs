@@ -10,6 +10,25 @@ namespace Scryber.Core.UnitTests.Imaging
     [TestClass()]
     public class ImageTypeTests
     {
+        
+        private TestContext testContextInstance;
+
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+        
         [TestMethod()]
         public void ImagesInDataUrls()
         {
@@ -142,7 +161,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             string url = "https://github.com/richard-scryber/Scryber.Core.Samples/blob/master/Scryber.SampleFiles/HTML/assets/ScyberLogo2_alpha_small.png?raw=true";
 
-            var imagePath = Directory.GetCurrentDirectory() + "/Content/HTML/Images/ScyberLogo2_alpha_small.png";
+            var imagePath = System.IO.Path.GetFullPath(this.TestContext.TestRunDirectory + "/../../Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png");
             var imagePathExist = System.IO.File.Exists(imagePath);
 
             if (!imagePathExist)
