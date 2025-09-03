@@ -1191,7 +1191,6 @@ public class ParsingFrameSets_Test
             Assert.AreEqual(TemplatePath, frame.RemoteSource);
             Assert.AreEqual(1, frame.PageStartIndex);
             Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
-
             
 
             using (var sr = DocStreams.GetOutputStream("Frameset_15_SmallSet.pdf"))
@@ -1279,6 +1278,19 @@ public class ParsingFrameSets_Test
                 var lit = div.Contents[0] as TextLiteral;
                 Assert.IsNotNull(lit);
                 Assert.AreEqual("Document title from the outer frameset.", lit.Text);
+                
+                //Check the references - 2 only
+                
+                var refs = doc.Frameset.RootReference;
+                Assert.IsNotNull(refs);
+                Assert.AreEqual(refs.FileType, FrameFileType.DirectPDF);
+                Assert.AreEqual(ExpressionsPDFPath, refs.FullPath);
+            
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                refs = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(refs);
+                Assert.AreEqual(refs.FileType, FrameFileType.ReferencedTemplate);
+                Assert.AreEqual(TemplatePath, refs.FullPath);
             }
 
         }
