@@ -130,6 +130,10 @@ namespace Scryber.Html
         public const string PageSize = "size";
         public const string PageGroupName = "page";
 
+        public const string PageNumberStyle = "-pdf-page-number-style";
+        public const string PageNumberStart = "-pdf-page-number-start";
+        public const string PageNumberPrefix = "-pdf-page-number-prefix";
+
         public const string BreakInside = "break-inside";
         public const string BreakAfter = "break-after";
         public const string BreakBefore = "break-before";

@@ -23,7 +23,12 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
     
     
     public PDFModifyPageReferenceList OutputPages { get; set; }
-    
+
+    public override int TotalPageCount
+    {
+        get { return this.OutputPages.Count; }
+    }
+
     public PDFFramesetLayoutDocument(Document root, LayoutEngineFrameset engine) : base(root, engine)
     {
         this.OutputPages = new PDFModifyPageReferenceList();

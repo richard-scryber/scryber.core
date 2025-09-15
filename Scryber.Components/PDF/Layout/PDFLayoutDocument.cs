@@ -84,7 +84,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the total number of document pages in this document after layout
         /// </summary>
-        public int TotalPageCount
+        public virtual int TotalPageCount
         {
             get
             {

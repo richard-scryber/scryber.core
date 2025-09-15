@@ -157,7 +157,18 @@ namespace Scryber
                     if (raiseErrors)
                         throw new InvalidOperationException("The request for the '" + (request.StubFilePathForLog ?? "Unknown File") + "' could not be completed", request.Error);
                     else
-                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory, "Remote request for " + (request.StubFilePathForLog ?? "Unknown File") + " failed with message '" + (request.Error.Message ?? "") + "'");
+                    {
+                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory,
+                            "Remote request for " + (request.StubFilePathForLog ?? "Unknown File") +
+                            " failed with message '" + (request.Error.Message ?? "") + "'");
+                        
+                        if (null != request.Error && null != request.Error.InnerException)
+                        {
+                            this.Log.Add(TraceLevel.Error, RemoteRequestCategory,
+                                "Inner error for " + (request.StubFilePathForLog ?? "Unknown File") +
+                                " message '" + (request.Error.InnerException.Message ?? "") + "'");
+                        }
+                    }
                 }
             }
             return request.IsCompleted;
@@ -173,13 +184,11 @@ namespace Scryber
             if(this.LogDebug)
                 this.AddDebugLog( "ASYNCRONOUSLY fulfilling the request for the URL '" + urlRequest.StubFilePathForLog + "'");
 
+            urlRequest.StartRequest();
+            
             var client = this.GetHttpClient();
             var message = new HttpRequestMessage(HttpMethod.Get, urlRequest.FilePath);
-            //message.Headers.Add("user-agent", "-/-");
-            //message.Headers.Add("Access-Control-Allow-Origin", "*");
-            //message.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-            //message.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-            //message.Headers.Add("Access-Control-Allow-Credentials", "true");
+            
 
             using (var response = await client.SendAsync(message))
             {

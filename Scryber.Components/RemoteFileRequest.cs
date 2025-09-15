@@ -39,11 +39,11 @@ namespace Scryber
 
         public  object Result { get; set; }
 
-        public bool IsCompleted { get; private set; }
+        public virtual bool IsCompleted { get; private set; }
 
         public bool IsExecuting { get; private set; }
 
-        public bool IsSuccessful { get; private set; }
+        public virtual bool IsSuccessful { get; private set; }
         
         public TimeSpan CacheDuration { get; set; }
 

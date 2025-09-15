@@ -96,6 +96,11 @@ namespace Scryber.Components
             return await Task<int>.Run(() => {
                 if (format == OutputFormat.PDF)
                     doc.RenderToPDF(stream);
+                else
+                {
+                    throw new ArgumentOutOfRangeException("The format " + format +
+                                                          " is not supported in asyncronous mode");
+                }
                 return 1;
             });
 

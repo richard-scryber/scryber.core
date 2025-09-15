@@ -6,14 +6,16 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.0.0.1-rc.3</PackageVersion>
+    <PackageVersion>9.1.0.1-alpha</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>9.1.0.1-alpha
+First release of framesets for trimming and merging documents.
+
 9.0.0.1-rc.3
 Added extra html entity values to match available sources.
 
@@ -181,6 +183,9 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />

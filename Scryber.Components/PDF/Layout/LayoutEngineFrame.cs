@@ -60,6 +60,11 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
 
     protected virtual void DoAddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile)
     {
+        //var options = new PageNumberOptions();
+        
+        //var options = fullStyle.CreatePageNumberOptions();
+        //var pages = context.DocumentLayout.RegisterPageNumbering(context.DocumentLayout.TotalPageCount, options);
+        
         var treeRef = fromFile.PageTree;
         var tree = fromFile.GetContent(treeRef) as PDFDictionary;
         if (null == tree)

@@ -32,16 +32,25 @@ public class LayoutEngineTemplateFrame : LayoutEngineFrame
         {
             if (null == this.GeneratedFile)
             {
-                this.GeneratedFile = this.Frame.FileReference.GetOrCreateFile(context, this.ParentFile, this.Frame, this.LayoutDocument.DocumentComponent);
+                this.GeneratedFile = this.Frame.FileReference.GetOrCreateFile(context, this.ParentFile, this.Frame,
+                    this.LayoutDocument.DocumentComponent);
             }
 
             if (null == this.GeneratedFile)
             {
-                throw new NullReferenceException("There is no generated file to get the pages from");
+                if (context.Conformance == ParserConformanceMode.Lax)
+                    context.TraceLog.Add(TraceLevel.Warning, "Modifications",
+                        "There is no generated file to get the pages from for frame file " +
+                        this.Frame.FileReference.ToString());
+                else
+                    throw new NullReferenceException("There is no generated file to get the pages from");
+            }
+            else
+            {
+                this.AddFramePageReferences(context, fullstyle, this.GeneratedFile);
             }
         }
-
-        this.AddFramePageReferences(context, fullstyle, this.GeneratedFile);
+        
 
         base.Layout(context, fullstyle);
     }

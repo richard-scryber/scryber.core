@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Scryber.Html.Components;
 using Scryber.Modifications;
 using Scryber.PDF.Native;
@@ -36,17 +37,56 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     
     public void Layout(PDFLayoutContext context, Style fullstyle)
     {
+        if (this.Document.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
+        {
+            this.WaitAndEnsureFramesReady();
+        }
+        
         var doc = new PDFFramesetLayoutDocument(this.Document, this);
         context.DocumentLayout = doc;
         doc.PrependFile = this.Frameset.CurrentFile;
 
         if (null == doc.PrependFile || this.Frameset.RootReference.Status != FrameFileStatus.Ready)
             throw new InvalidOperationException(
-                "The root file is not loaded or ready - cannot proceed with the layout until this is completed");
+                "The generated file is not loaded or ready - cannot proceed with the layout until this is completed");
         
         doc.ExistingCatalog = doc.PrependFile.GetCatalog();
         this.AddFramePages(context, fullstyle);
         this.AddNames(doc, context, fullstyle);
+    }
+
+    protected virtual void WaitAndEnsureFramesReady()
+    {
+        int count = 0;
+        int maxDuration = 40; //20 seconds
+        int delayMs = 500;
+        
+        while (count < maxDuration && !AllFramesAreReady())
+        {
+            Task.Delay(delayMs).GetAwaiter().GetResult();
+            count++;
+        }
+        
+    }
+
+    private bool AllFramesAreReady()
+    {
+        
+        var root = this.Frameset.RootReference;
+        
+        if (root.Status != FrameFileStatus.Ready && root.Status != FrameFileStatus.Invalid)
+            return false;
+        
+        if (this.Frameset.DependantReferences.Count > 0)
+        {
+            foreach (var fref in this.Frameset.DependantReferences)
+            {
+                if (fref.Status != FrameFileStatus.Ready && fref.Status != FrameFileStatus.Invalid)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     protected void AddFramePages(PDFLayoutContext context, Style fullStyle)

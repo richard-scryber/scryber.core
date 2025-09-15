@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Scryber.PDF.Native;
 using Scryber.Components;
 
@@ -10,6 +11,7 @@ public class FramePDFFileReference : FrameFileReference
 {
 
     protected IRemoteRequest RemoteRequest { get; set; }
+    private Func<Task> FunctionCallback { get; set; }
 
     protected object ThreadLock = new object();
     
@@ -46,7 +48,41 @@ public class FramePDFFileReference : FrameFileReference
 
         return null != this.RemoteRequest;
     }
-    
+
+    protected override async Task<bool> DoEnsureContentAsync(Component owner, Document topDoc, PDFFile appendTo, ContextBase context, Func<Task> callback  )
+    {
+        TimeSpan cacheDuration  = TimeSpan.Zero;
+        this.FunctionCallback = callback;
+        
+        var asyncRemotes = (RemoteFileAsyncRequestSet)topDoc.RemoteRequests;
+
+        var remotecallback = new RemoteRequestCallback(this.RemoteContentLoadedCallbackAsync);
+        this.RemoteRequest  = topDoc.RegisterRemoteFileRequest(MimeType.Pdf.ToString(), this.FullPath, cacheDuration, remotecallback, owner, context);
+
+        await asyncRemotes.EnsureRequestsFullfilledAsync();
+        
+        return null != this.RemoteRequest;
+    }
+
+    private bool RemoteContentLoadedCallbackAsync(IComponent raiser, IRemoteRequest request, System.IO.Stream response)
+    {
+        var ms = new MemoryStream();
+        response.CopyTo(ms);
+        ms.Position = 0;
+        response.Dispose();
+
+        var result = RemoteContentLoadedCallback(raiser, request, ms);
+
+        if (null != this.FunctionCallback)
+        {
+            this.FunctionCallback();
+            this.FunctionCallback = null;
+        }
+
+        return result;
+
+    }
+
     private bool RemoteContentLoadedCallback(IComponent raiser, IRemoteRequest request, System.IO.Stream response)
     {
         if (null != response)

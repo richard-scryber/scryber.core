@@ -4,6 +4,7 @@ using Scryber.Modifications;
 using Scryber.PDF.Native;
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Scryber.Html.Components;
 
@@ -61,6 +62,8 @@ public class HTMLFrameset : ContainerComponent
         get;
         set;
     }
+
+    internal FrameFileReferenceMonitor Monitor { get; private set; }
     
     public HTMLFrameset() : this(ObjectTypes.ModifyFrameSet)
     {}
@@ -94,19 +97,93 @@ public class HTMLFrameset : ContainerComponent
         this.DependantReferences = dependants;
     }
 
-    private void EnsureRemoteContent(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
+    protected override void OnPostRender(RenderContext context)
     {
-        root.EnsureContent(this, this.Document, this.CurrentFile, context);
-        this.CurrentFile = root.FrameFile;
-        
-        foreach (var fref in dependants)
+        base.OnPostRender(context);
+
+        this.CleanUpFrames();
+    }
+
+    protected virtual void CleanUpFrames()
+    {
+        if(null != RootReference)
+            RootReference.Dispose();
+
+        if (null != DependantReferences)
         {
-            if (fref.EnsureContent(this, this.Document, this.CurrentFile, context))
-                this.CurrentFile = fref.FrameFile;
+            foreach (var frameFileReference in this.DependantReferences)
+            {
+                frameFileReference.Dispose();
+            }
+        }
+    }
+
+    private async Task EnsureRemoteContent(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
+    {
+        if (this.Document.RemoteRequests.ExecMode == DocumentExecMode.Immediate)
+        {
+            root.EnsureContent(this, this.Document, this.CurrentFile, context);
+            this.CurrentFile = root.FrameFile;
+
+            foreach (var fref in dependants)
+            {
+                if (fref.EnsureContent(this, this.Document, this.CurrentFile, context))
+                    this.CurrentFile = fref.FrameFile;
+            }
+
+            //Store the current file in the top level document, so it is used for the layout.
+            this.Document.PrependedFile = this.CurrentFile;
+        }
+        else
+        {
+            this.Monitor = new FrameFileReferenceMonitor(this, root, dependants, context);
+            await this.Monitor.ProcessFilesAsync();
+        }
+    }
+    
+    /// <summary>
+    /// Goes though each of the frame files in order, to get a complete file
+    /// </summary>
+    internal class FrameFileReferenceMonitor
+    {
+        private Queue<FrameFileReference> ToProcess;
+        private HTMLFrameset Frameset;
+        private ContextBase Context;
+
+        public FrameFileReferenceMonitor(HTMLFrameset frameset, FrameFileReference root, List<FrameFileReference> dependants, ContextBase context)
+        {
+            this.ToProcess = new Queue<FrameFileReference>();
+            this.ToProcess.Enqueue(root ?? throw new ArgumentNullException("Need at lease one frame reference to process"));
+            
+            if (dependants != null && dependants.Count > 0)
+            {
+                foreach (var fref in dependants)
+                {
+                    this.ToProcess.Enqueue(fref);
+                }
+            }
+            this.Frameset = frameset;
+            this.Context = context;
         }
 
-        //Store the current file in the top level document, so it is used for the layout.
-        this.Document.PrependedFile = this.CurrentFile;
+        public async Task ProcessFilesAsync()
+        {
+            if (this.ToProcess.Count > 0)
+            {
+                var one = this.ToProcess.Dequeue();
+
+                await one.EnsureContentAsync(this.Frameset, this.Frameset.Document, this.Frameset.CurrentFile,
+                    this.Context, async () =>
+                    {
+                        this.Frameset.CurrentFile = one.FrameFile;
+                        if (null != one.FrameFile)
+                        {
+                            //Now execute the next one
+                            await this.ProcessFilesAsync();
+                        }
+                    });
+            }
+        }
     }
 
     /// <summary>
@@ -155,6 +232,7 @@ public class HTMLFrameset : ContainerComponent
                     {
                         fref = new FramePDFFileReference(frame, path);
                         root = fref;
+                        fref.DocumentFileIndex = 0;
                     }
                     else if (root.FullPath == path)
                     {
@@ -178,6 +256,7 @@ public class HTMLFrameset : ContainerComponent
                     {
                         fref = new FrameTemplateFileReference(frame, path);
                         refs.Add(fref);
+                        fref.DocumentFileIndex = refs.Count;
                     }
                     else
                     {
@@ -192,7 +271,7 @@ public class HTMLFrameset : ContainerComponent
                 var doc = frame.InnerHtml;
                 fref = new FrameContentTemplateReference(frame, doc);
                 refs.Add(fref);
-
+                fref.DocumentFileIndex = refs.Count;
                 frame.FileReference = fref;
             }
         }

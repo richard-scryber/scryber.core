@@ -26,6 +26,8 @@ public abstract class FrameFileReference : IDisposable
     /// </summary>
     public Scryber.PDF.Native.PDFFile FrameFile { get; set; }
     
+    public int DocumentFileIndex { get; set; }
+    
     protected FrameFileReference(IComponent owner, FrameFileType type, string fullpath)
     {
         this.FileType = type;
@@ -57,7 +59,29 @@ public abstract class FrameFileReference : IDisposable
         return result;
     }
 
+    public virtual async Task<bool> EnsureContentAsync(Component owner, Document topDoc, PDFFile appendTo,
+        ContextBase context, Func<Task> callback)
+    {
+        bool result = false;
+        
+        this.Status = FrameFileStatus.Loading;
+
+        result = await this.DoEnsureContentAsync(owner, topDoc, appendTo, context, callback);
+        
+        if (!result)
+        {
+            this.Status = FrameFileStatus.Invalid;
+        }
+
+        return result;
+    }
+
     protected virtual bool DoEnsureContent(Component owner, Document topDoc, PDFFile appendTo, ContextBase context)
+    {
+        return false;
+    }
+    
+    protected virtual async Task<bool> DoEnsureContentAsync(Component owner, Document topDoc, PDFFile appendTo, ContextBase context, Func<Task> callback)
     {
         return false;
     }

@@ -133,6 +133,9 @@ namespace Scryber
         }
 
 
+        private object _threadLock = new object();
+
+
         /// <summary>
         /// Updates or adds new entries in this collection for each of 
         /// the entries in the passed collection
@@ -140,9 +143,17 @@ namespace Scryber
         /// <param name="all"></param>
         public void Merge(ItemCollection all)
         {
-            foreach (string key in all.Keys)
+            lock (_threadLock)
             {
-                this.BaseSet(key, all[key]);
+                foreach (string key in all.Keys)
+                {
+                    var value = this.BaseGet(key);
+
+                    if (null != value)
+                        this.BaseRemove(key);
+
+                    this.BaseAdd(key, all[key]);
+                }
             }
         }
 
