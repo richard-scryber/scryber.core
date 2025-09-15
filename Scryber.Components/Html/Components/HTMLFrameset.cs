@@ -120,8 +120,17 @@ public class HTMLFrameset : ContainerComponent
 
     private async Task EnsureRemoteContent(FrameFileReference root, List<FrameFileReference> dependants, DataContext context)
     {
-        if (this.Document.RemoteRequests.ExecMode == DocumentExecMode.Immediate)
+        var remotes = this.Document.RemoteRequests;
+
+        try
         {
+            if (this.Document.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
+            {
+                this.Document.RemoteRequests = new RemoteFileRequestSet(this.Document);
+            }
+
+            //if (this.Document.RemoteRequests.ExecMode == DocumentExecMode.Immediate)
+            //{
             root.EnsureContent(this, this.Document, this.CurrentFile, context);
             this.CurrentFile = root.FrameFile;
 
@@ -133,11 +142,16 @@ public class HTMLFrameset : ContainerComponent
 
             //Store the current file in the top level document, so it is used for the layout.
             this.Document.PrependedFile = this.CurrentFile;
+            //}
+            //else
+            //{
+            //    this.Monitor = new FrameFileReferenceMonitor(this, root, dependants, context);
+            //    await this.Monitor.ProcessFilesAsync();
+            //}
         }
-        else
+        finally
         {
-            this.Monitor = new FrameFileReferenceMonitor(this, root, dependants, context);
-            await this.Monitor.ProcessFilesAsync();
+            this.Document.RemoteRequests = remotes;
         }
     }
     

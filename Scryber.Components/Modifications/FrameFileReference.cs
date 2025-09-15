@@ -62,7 +62,8 @@ public abstract class FrameFileReference : IDisposable
     public virtual async Task<bool> EnsureContentAsync(Component owner, Document topDoc, PDFFile appendTo,
         ContextBase context, Func<Task> callback)
     {
-        bool result = false;
+        bool result = this.EnsureContent(owner, topDoc, appendTo, context); // false;
+        return result;
         
         this.Status = FrameFileStatus.Loading;
 
