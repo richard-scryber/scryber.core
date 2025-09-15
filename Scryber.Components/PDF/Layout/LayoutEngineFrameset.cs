@@ -37,10 +37,10 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     
     public void Layout(PDFLayoutContext context, Style fullstyle)
     {
-        //if (this.Document.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
-        //{
-        //    this.WaitAndEnsureFramesReady();
-        //}
+        if (this.Document.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
+        {
+            this.WaitAndEnsureFramesReady();
+        }
         
         var doc = new PDFFramesetLayoutDocument(this.Document, this);
         context.DocumentLayout = doc;
