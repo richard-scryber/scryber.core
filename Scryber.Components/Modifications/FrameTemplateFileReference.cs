@@ -24,8 +24,7 @@ public class FrameTemplateFileReference : FrameFileReference
     
     public PDFFile PrependFile { get; private set; }
     
-    protected object SyncMonitor { get; set; }
-    
+
 
     public FrameTemplateFileReference(IComponent firstOwner, string fullpath) : base(firstOwner,
         FrameFileType.ReferencedTemplate, fullpath)
@@ -34,12 +33,7 @@ public class FrameTemplateFileReference : FrameFileReference
         if (null != frame && null != frame.Parent)
         {
             var frameset = frame.Parent as HTMLFrameset;
-            if (null != frameset)
-                this.SyncMonitor = frameset.Monitor;
         }
-
-        if (null == this.SyncMonitor)
-            this.SyncMonitor = new object();
 
     }
 
@@ -85,8 +79,6 @@ public class FrameTemplateFileReference : FrameFileReference
         {
             bool success = false;
             
-            //lock (this.SyncMonitor)
-            //{
                 PDF.Native.PDFFile file = null;
                 Exception error = null;
 
@@ -141,12 +133,11 @@ public class FrameTemplateFileReference : FrameFileReference
                         success = false;
                         error = ex;
                     }
-                //}
 
-                request.CompleteRequest(file, success, error);
-            }
+                    request.CompleteRequest(file, success, error);
+                }
 
-            return success;
+                return success;
         }
         else
         {
@@ -217,66 +208,66 @@ public class FrameTemplateFileReference : FrameFileReference
         
         return null != this.RemoteRequest;
     }
-    
+
     private bool RemoteContentLoadedCallbackAsync(IComponent raiser, IRemoteRequest request, System.IO.Stream response)
     {
         if (null != response)
         {
             bool success = false;
-            
-                PDF.Native.PDFFile file = null;
-                Exception error = null;
-                try
-                {
-                    //We need a seekable stream
-                    if (!response.CanSeek)
-                    {
-                        var ms = new MemoryStream();
-                        response.CopyTo(ms);
-                        ms.Position = 0;
 
-                        response.Dispose();
-                        response = ms;
+            PDF.Native.PDFFile file = null;
+            Exception error = null;
+            try
+            {
+                //We need a seekable stream
+                if (!response.CanSeek)
+                {
+                    var ms = new MemoryStream();
+                    response.CopyTo(ms);
+                    ms.Position = 0;
+
+                    response.Dispose();
+                    response = ms;
+                }
+
+                ContextBase context = (ContextBase)request.Arguments;
+
+                var doc = Document.ParseHtmlDocument(response, request.FilePath, ParseSourceType.RemoteFile);
+                string name = new UriBuilder(request.FilePath).Path;
+                name = System.IO.Path.GetFileName(name);
+                var log = new FrameTraceLogCollector("Frame" + this.DocumentFileIndex, context.TraceLog);
+                ((IParsedDocument)doc).SetTraceLog(log);
+                doc.TraceLog.SetRecordLevel(context.TraceLog.RecordLevel);
+                doc.RemoteRequests = new RemoteFileAsyncRequestSet(doc);
+                doc.CacheProvider = ((Document)context.Document).CacheProvider;
+                doc.PrependedFile = this.PrependFile;
+                doc.AppendTraceLog = false;
+
+                doc.Parent = this.Owner as Component;
+                this.ParsedDocument = doc as HTMLDocument;
+
+                Task.Run(async () =>
+                {
+                    success = await SaveTemplateDocumentAsync(context, this.ParsedDocument, request);
+
+                    if (null != this.FunctionCallback)
+                    {
+                        await this.FunctionCallback();
                     }
 
-                    ContextBase context = (ContextBase)request.Arguments;
+                });
 
-                    var doc = Document.ParseHtmlDocument(response, request.FilePath, ParseSourceType.RemoteFile);
-                    string name = new UriBuilder(request.FilePath).Path;
-                    name = System.IO.Path.GetFileName(name);
-                    var log = new FrameTraceLogCollector(this.DocumentFileIndex + ":" + name, context.TraceLog);
-                    ((IParsedDocument)doc).SetTraceLog(log);
-                    doc.TraceLog.SetRecordLevel(context.TraceLog.RecordLevel);
-                    doc.RemoteRequests = new RemoteFileAsyncRequestSet(doc);
-                    doc.CacheProvider = ((Document)context.Document).CacheProvider;
-                    doc.PrependedFile = this.PrependFile;
-                    doc.AppendTraceLog = false;
-
-                    doc.Parent = this.Owner as Component;
-                    this.ParsedDocument = doc as HTMLDocument;
-
-                    Task.Run(async () =>
-                    {
-                        success = await SaveTemplateDocumentAsync(context, this.ParsedDocument, request);
-
-                        if (null != this.FunctionCallback)
-                        {
-                            await this.FunctionCallback();
-                        }
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                throw new PDFLayoutException(
+                    "Could not load the referenced template file from " + request.FilePath +
+                    " - see the inner exception for more details", ex);
+            }
 
 
-                    }).GetAwaiter().GetResult();
-
-                }
-                catch (Exception ex)
-                {
-                    success = false;
-                    throw new PDFLayoutException(
-                        "Could not load the referenced template file from " + request.FilePath +
-                        " - see the inner exception for more details", ex);
-                }
-
-            
 
             return success;
         }
@@ -285,7 +276,7 @@ public class FrameTemplateFileReference : FrameFileReference
             return false;
         }
     }
-    
+
     private async Task<bool> SaveTemplateDocumentAsync(ContextBase baseContext, Document processingDocument, IRemoteRequest request)
     {
         var remotes = (RemoteFileAsyncRequestSet)processingDocument.RemoteRequests;

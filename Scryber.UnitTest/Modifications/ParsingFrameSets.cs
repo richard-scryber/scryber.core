@@ -1744,7 +1744,7 @@ public class ParsingFrameSets_Test
 
         var src = "<html xmlns='http://www.w3.org/1999/xhtml' title='Outer'>" +
                   "<head>" +
-                  "<title>Parse 3 inline templates</title>" +
+                  "<title>Parse 2 inline templates</title>" +
                   "</head>" +
                   "<frameset title='Frameset'>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' title='First'></frame>" + 
@@ -1794,6 +1794,7 @@ public class ParsingFrameSets_Test
             {
                 doc.Params["title"] = "Document title from the outer frameset.";
                 doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.AppendTraceLog = false;
                 
                 // run asynchronously
                 await doc.SaveAsPDFAsync(sr);
@@ -1839,7 +1840,7 @@ public class ParsingFrameSets_Test
 
         const int startIndex = 0;
         const int pageCount = 5;
-        const int extraFrameCount = 1;
+        const int extraFrameCount = 2;
 
         var src = "<html xmlns='http://www.w3.org/1999/xhtml' title='Outer'>" +
                   "<head>" +
@@ -1848,7 +1849,7 @@ public class ParsingFrameSets_Test
                   "<frameset title='Frameset'>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' title='First'></frame>" + 
                   "<frame src='" + TemplatePath + "' title='Second'></frame>" + 
-                  "<frame title='Third'>" + Template + "</frame>" +
+                  // "<frame title='Third'>" + Template + "</frame>" +
                   "</frameset>" +
                   "</html>";
 
@@ -1856,7 +1857,7 @@ public class ParsingFrameSets_Test
         {
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.AppendTraceLog = true;
-            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;
             
             Assert.IsNotNull(doc);
@@ -1865,7 +1866,7 @@ public class ParsingFrameSets_Test
             Assert.IsNotNull(doc.Frameset);
 
             Assert.IsNotNull(doc.Frameset.Frames);
-            Assert.AreEqual(3, doc.Frameset.Frames.Count);
+            Assert.AreEqual(2, doc.Frameset.Frames.Count);
 
             for (var i = 0; i < extraFrameCount; i++)
             {

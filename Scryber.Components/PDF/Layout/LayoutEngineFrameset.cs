@@ -24,8 +24,9 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     protected HTMLDocument Document { get; private set; }
     
     public HTMLFrameset Frameset { get; private set; }
-
-
+    
+    
+    
     public LayoutEngineFrameset(HTMLDocument document, IPDFLayoutEngine parent,
         PDFLayoutContext context)
     {
@@ -37,13 +38,13 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     
     public void Layout(PDFLayoutContext context, Style fullstyle)
     {
-        if (this.Document.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
-        {
-            this.WaitAndEnsureFramesReady();
-        }
-        
         var doc = new PDFFramesetLayoutDocument(this.Document, this);
         context.DocumentLayout = doc;
+        this.DoLayoutFrameContents(doc, fullstyle, context);
+    }
+
+    protected virtual void DoLayoutFrameContents(PDFFramesetLayoutDocument doc, Style fullstyle, PDFLayoutContext context)
+    {
         doc.PrependFile = this.Frameset.CurrentFile;
 
         if (null == doc.PrependFile || this.Frameset.RootReference.Status != FrameFileStatus.Ready)
@@ -53,40 +54,6 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
         doc.ExistingCatalog = doc.PrependFile.GetCatalog();
         this.AddFramePages(context, fullstyle);
         this.AddNames(doc, context, fullstyle);
-    }
-
-    protected virtual void WaitAndEnsureFramesReady()
-    {
-        int count = 0;
-        int maxDuration = 40; //20 seconds
-        int delayMs = 500;
-        
-        while (count < maxDuration && !AllFramesAreReady())
-        {
-            Task.Delay(delayMs).GetAwaiter().GetResult();
-            count++;
-        }
-        
-    }
-
-    private bool AllFramesAreReady()
-    {
-        
-        var root = this.Frameset.RootReference;
-        
-        if (root.Status != FrameFileStatus.Ready && root.Status != FrameFileStatus.Invalid)
-            return false;
-        
-        if (this.Frameset.DependantReferences.Count > 0)
-        {
-            foreach (var fref in this.Frameset.DependantReferences)
-            {
-                if (fref.Status != FrameFileStatus.Ready && fref.Status != FrameFileStatus.Invalid)
-                    return false;
-            }
-        }
-
-        return true;
     }
 
     protected void AddFramePages(PDFLayoutContext context, Style fullStyle)
@@ -177,6 +144,11 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
         namesArray = null;
         return false;
     }
+    
+    
+    //
+    // Non-implemented IPDFLayouyEngine interface methods
+    // 
 
     public bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region,
         ref PDFLayoutBlock block)
@@ -188,6 +160,10 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
     {
         return blockToClose;
     }
+    
+    //
+    // Disposal
+    //
 
 
     protected virtual bool Dispose(bool disposing)

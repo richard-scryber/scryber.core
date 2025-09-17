@@ -69,7 +69,7 @@ namespace Scryber
                         this.AddVerboseLog("The request for " + item.StubFilePathForLog + " was already marked as completed");
                 }
 
-                base.EnsureRequestsFullfilled();
+                //base.EnsureRequestsFullfilled();
 
                 if(this.LogVerbose)
                     this.EndVerboseLog(" Completed " + completed + " remote requests out of " + all.Length + " asyncronously.");
@@ -144,7 +144,7 @@ namespace Scryber
                     request.CompleteRequest(null,false, ex);
                 }
 
-                if (request.IsCompleted == false)
+                if (request.IsCompleted == false && request.IsExecuting == false)
                 {
                     if (raiseErrors)
                         throw new InvalidOperationException("Could not complete the request for a remote file", request.Error);
@@ -166,7 +166,7 @@ namespace Scryber
                         {
                             this.Log.Add(TraceLevel.Error, RemoteRequestCategory,
                                 "Inner error for " + (request.StubFilePathForLog ?? "Unknown File") +
-                                " message '" + (request.Error.InnerException.Message ?? "") + "'");
+                                " message '" + (request.Error.InnerException.Message ?? "") + "'" + "\r\n" + request.Error.InnerException.StackTrace);
                         }
                     }
                 }

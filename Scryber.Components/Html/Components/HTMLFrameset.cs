@@ -150,6 +150,15 @@ public class HTMLFrameset : ContainerComponent
         private HTMLFrameset Frameset;
         private ContextBase Context;
 
+        /// <summary>
+        /// Flag to indicate if all the processing has completed on each of the file referernces.
+        /// </summary>
+        public bool IsComplete
+        {
+            get;
+            set;
+        }
+
         public FrameFileReferenceMonitor(HTMLFrameset frameset, FrameFileReference root, List<FrameFileReference> dependants, ContextBase context)
         {
             this.ToProcess = new Queue<FrameFileReference>();
@@ -164,6 +173,7 @@ public class HTMLFrameset : ContainerComponent
             }
             this.Frameset = frameset;
             this.Context = context;
+            this.IsComplete = this.ToProcess.Count == 0;
         }
 
         public async Task ProcessFilesAsync()
@@ -182,6 +192,10 @@ public class HTMLFrameset : ContainerComponent
                             await this.ProcessFilesAsync();
                         }
                     });
+            }
+            else
+            {
+                this.IsComplete = true;
             }
         }
     }
