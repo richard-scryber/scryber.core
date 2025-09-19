@@ -170,6 +170,11 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
         return base.OutputPageTree(context, writer);
     }
 
+    /// <summary>
+    /// Flag to only raise the warning once per document, if duplicate pages are used through the frames.
+    /// </summary>
+    private bool warnedOfDuplicates = false;
+
     protected override List<PDFObjectRef> OutputAllPages(PDFObjectRef parent, PDFRenderContext context, PDFWriter writer)
     {
         List<PDFObjectRef> all = new List<PDFObjectRef>();
@@ -178,7 +183,22 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
         {
             var oref = this.OutputModificationPageDictionary(parent, outputPage, context, writer);
             outputPage.NewPageRef = oref;
-            this.PageReferenceMappings.Add(outputPage.OriginalPageRef, outputPage.NewPageRef);
+
+            if (this.PageReferenceMappings.TryGetValue(outputPage.OriginalPageRef, out var existingPg))
+            {
+                if (!warnedOfDuplicates && !existingPg.Equals(oref))
+                {
+                    context.TraceLog.Add(TraceLevel.Warning, "Modifications",
+                        "There is already an existing entry for page " + existingPg +
+                        " any links will refer to the original entry, rather than the new set of duplicate pages.");
+                    warnedOfDuplicates = true;
+                }
+            }
+            else
+            {
+                this.PageReferenceMappings.Add(outputPage.OriginalPageRef, oref);
+            }
+
             all.Add(oref);
         }
 

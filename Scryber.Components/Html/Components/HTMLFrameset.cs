@@ -283,7 +283,7 @@ public class HTMLFrameset : ContainerComponent
             else if(null != frame.InnerHtml)
             {
                 var doc = frame.InnerHtml;
-                fref = new FrameContentTemplateReference(frame, doc);
+                fref = new FrameTemplateContentReference(frame, doc);
                 refs.Add(fref);
                 fref.DocumentFileIndex = refs.Count;
                 frame.FileReference = fref;

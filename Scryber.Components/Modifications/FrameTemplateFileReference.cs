@@ -233,15 +233,15 @@ public class FrameTemplateFileReference : FrameFileReference
                 ContextBase context = (ContextBase)request.Arguments;
 
                 var doc = Document.ParseHtmlDocument(response, request.FilePath, ParseSourceType.RemoteFile);
-                string name = new UriBuilder(request.FilePath).Path;
-                name = System.IO.Path.GetFileName(name);
+                //string name = new UriBuilder(request.FilePath).Path;
+                //name = System.IO.Path.GetFileName(name);
                 var log = new FrameTraceLogCollector("Frame" + this.DocumentFileIndex, context.TraceLog);
                 ((IParsedDocument)doc).SetTraceLog(log);
                 doc.TraceLog.SetRecordLevel(context.TraceLog.RecordLevel);
                 doc.RemoteRequests = new RemoteFileAsyncRequestSet(doc);
                 doc.CacheProvider = ((Document)context.Document).CacheProvider;
                 doc.PrependedFile = this.PrependFile;
-                doc.AppendTraceLog = false;
+                doc.AppendTraceLog = false; //all log entries will be captured by the outer tracelog.
 
                 doc.Parent = this.Owner as Component;
                 this.ParsedDocument = doc as HTMLDocument;

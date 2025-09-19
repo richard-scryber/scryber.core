@@ -1856,7 +1856,7 @@ public class ParsingFrameSets_Test
         using (var stream = new StringReader(src))
         {
             var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
-            doc.AppendTraceLog = true;
+            doc.AppendTraceLog = false;
             //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;
             
@@ -1902,6 +1902,237 @@ public class ParsingFrameSets_Test
 
 
             using (var sr = DocStreams.GetOutputStream("Frameset_32_AsyncRemotePDFAndMultipleTemplates.pdf"))
+            {
+                doc.Params["title"] = "Document title from the frameset.";
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+                // run asynchronously
+                await doc.SaveAsPDFAsync(sr);
+
+                sr.Position = 0;
+
+                var file = PDFFile.Load(sr, doc.TraceLog);
+
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                
+                var totalPages = pageCount + 2 + (extraFrameCount * 2);//Add the extra 2 pages and the original template and the extra frames counts.
+                Assert.AreEqual(totalPages, array.Count); 
+            }
+
+        }
+    }
+    
+    
+    
+    /// <summary>
+    /// Checks that the same document added twice is repeated and does not cause an issue.
+    /// </summary>
+     [TestMethod]
+    public async Task Frameset_33_AsyncParseRemotePDFAndDuplicateTemplates()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const string TemplatePath = 
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/modifications/Scryber.UnitTest/Content/HTML/HelloWorld2Page.xhtml";
+
+        const string Template = "<html id='inner1'>\n" +
+                                     "<head>\n    " +
+                                     "<title>{{concat(title, \"- Document 2\")}}</title>\n" +
+                                     "</head>\n" +
+                                     "<body id='inner1Body'>\n" +
+                                     "    <div id='div1' title='{{concat(title, \"- Document 2\")}}' style='padding:10px;'>{@:title}</div>\n" +
+                                     "    <a href='#div1' id='div2' style=\"padding:10pt\" >&lt;&lsquo;Inside the first template&rsquo;&gt;</a>\n" +
+                                     "    <img id='img1' src=\"https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/Scryber.UnitTest/Content/HTML/Images/group.png\" style=\"width:100pt; padding:10px\" />\n" +
+                                     "</body>\n" +
+                                     "</html>";
+
+        const int startIndex = 0;
+        const int pageCount = 5;
+        const int extraFrameCount = 2;
+
+        var src = "<html xmlns='http://www.w3.org/1999/xhtml' title='Outer'>" +
+                  "<head>" +
+                  "<title>Parse 3 inline templates</title>" +
+                  "</head>" +
+                  "<frameset title='Frameset'>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' title='First'></frame>" + 
+                  "<frame src='" + TemplatePath + "' title='Second'></frame>" + 
+                  // "<frame title='Third'>" + Template + "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.AppendTraceLog = false;
+            //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.ConformanceMode = ParserConformanceMode.Lax;
+            
+            Assert.IsNotNull(doc);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(2, doc.Frameset.Frames.Count);
+
+            for (var i = 0; i < extraFrameCount; i++)
+            {
+                var newFrame = new HTMLFrame();
+                newFrame.RemoteSource = TemplatePath;
+                doc.Frameset.Frames.Add(newFrame);
+            }
+            
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.IsNotNull(frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+
+
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.IsNotNull(frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+            // frame = doc.Frameset.Frames[1];
+            // Assert.IsNotNull(frame);
+            // Assert.IsNull(frame.RemoteSource);
+            // Assert.IsNotNull(frame.InnerHtml);
+            // Assert.AreEqual(0, frame.PageStartIndex);
+            // Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+
+
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_33_AsyncRemotePDFAndDuplicateTemplates.pdf"))
+            {
+                doc.Params["title"] = "Document title from the frameset.";
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                
+                // run asynchronously
+                await doc.SaveAsPDFAsync(sr);
+
+                sr.Position = 0;
+
+                var file = PDFFile.Load(sr, doc.TraceLog);
+
+                Assert.IsNotNull(file);
+                Assert.IsNotNull(file.PageTree);
+
+                var tree = file.AssertGetContent(file.PageTree) as PDFDictionary;
+                Assert.IsNotNull(tree);
+
+                var array = tree["Kids"] as PDFArray;
+                Assert.IsNotNull(array);
+
+                
+                var totalPages = pageCount + 2 + (extraFrameCount * 2);//Add the extra 2 pages and the original template and the extra frames counts.
+                Assert.AreEqual(totalPages, array.Count); 
+            }
+
+        }
+    }
+    
+    
+    /// <summary>
+    /// Checks inline templates within a frameset document running asynchronously
+    /// </summary>
+     [TestMethod]
+    public async Task Frameset_34_AsyncParseRemotePDFAndInlineTemplates()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        const string TemplatePath = 
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/modifications/Scryber.UnitTest/Content/HTML/HelloWorld2Page.xhtml";
+
+        const string Template = "<html id='inner1'>\n" +
+                                     "<head>\n    " +
+                                     "<title>{{concat(title, \"- Document 2\")}}</title>\n" +
+                                     "</head>\n" +
+                                     "<body id='inner1Body'>\n" +
+                                     "    <div id='div1' title='{{concat(title, \"- Document 2\")}}' style='padding:10px;'>{@:title}</div>\n" +
+                                     "    <a href='#div1' id='div2' style=\"padding:10pt\" >&lt;&lsquo;Inside the first template&rsquo;&gt;</a>\n" +
+                                     "    <img id='img1' src=\"https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/Scryber.UnitTest/Content/HTML/Images/group.png\" style=\"width:100pt; padding:10px\" />\n" +
+                                     "</body>\n" +
+                                     "</html>";
+
+        const int startIndex = 0;
+        const int pageCount = 5;
+        const int extraFrameCount = 0;
+
+        var src = "<html xmlns='http://www.w3.org/1999/xhtml' title='Outer'>" +
+                  "<head>" +
+                  "<title>Parse 3 inline templates</title>" +
+                  "</head>" +
+                  "<frameset title='Frameset'>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-count='" + pageCount + "' title='First'></frame>" + 
+                  //"<frame src='" + TemplatePath + "' title='Second'></frame>" + 
+                  "<frame title='Third'>" + Template + "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+
+        using (var stream = new StringReader(src))
+        {
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.AppendTraceLog = false;
+            //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+            doc.ConformanceMode = ParserConformanceMode.Lax;
+            
+            Assert.IsNotNull(doc);
+
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(2, doc.Frameset.Frames.Count);
+
+            for (var i = 0; i < extraFrameCount; i++)
+            {
+                var newFrame = new HTMLFrame();
+                newFrame.RemoteSource = TemplatePath;
+                doc.Frameset.Frames.Add(newFrame);
+            }
+            
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+            Assert.IsNotNull(frame.RemoteSource);
+            Assert.IsNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(pageCount, frame.PageInsertCount);
+
+
+            // frame = doc.Frameset.Frames[1];
+            // Assert.IsNotNull(frame);
+            // Assert.IsNotNull(frame.RemoteSource);
+            // Assert.IsNull(frame.InnerHtml);
+            // Assert.AreEqual(0, frame.PageStartIndex);
+            // Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+            frame = doc.Frameset.Frames[1];
+            Assert.IsNotNull(frame);
+            Assert.IsNull(frame.RemoteSource);
+            Assert.IsNotNull(frame.InnerHtml);
+            Assert.AreEqual(0, frame.PageStartIndex);
+            Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
+
+
+
+
+            using (var sr = DocStreams.GetOutputStream("Frameset_34_AsyncRemotePDFAndInlineTemplates.pdf"))
             {
                 doc.Params["title"] = "Document title from the frameset.";
                 doc.RenderOptions.Compression = OutputCompressionType.None;
