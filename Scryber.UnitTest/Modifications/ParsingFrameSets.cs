@@ -1721,7 +1721,7 @@ public class ParsingFrameSets_Test
     }
     
      [TestMethod]
-    public async Task Frameset_31_AsyncParseRemotePDFAndTemplate()
+    public async Task Frameset_31_AsyncParseRemotePDFAndRemoteTemplate()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -1820,7 +1820,7 @@ public class ParsingFrameSets_Test
     
     
      [TestMethod]
-    public async Task Frameset_32_AsyncParseRemotePDFAndMultipleTemplates()
+    public async Task Frameset_32_AsyncParseRemotePDFAndMultipleRemoteTemplates()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -1936,7 +1936,7 @@ public class ParsingFrameSets_Test
     /// Checks that the same document added twice is repeated and does not cause an issue.
     /// </summary>
      [TestMethod]
-    public async Task Frameset_33_AsyncParseRemotePDFAndDuplicateTemplates()
+    public async Task Frameset_33_AsyncParseRemotePDFAndDuplicateRemoteTemplates()
     {
         const string ExpressionsPDFPath =
             "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
@@ -2154,7 +2154,7 @@ public class ParsingFrameSets_Test
                 Assert.IsNotNull(array);
 
                 
-                var totalPages = pageCount + 2 + (extraFrameCount * 2);//Add the extra 2 pages and the original template and the extra frames counts.
+                var totalPages = pageCount + 1 + (extraFrameCount * 2);//Add the extra page and the original template and the extra frames counts.
                 Assert.AreEqual(totalPages, array.Count); 
             }
 

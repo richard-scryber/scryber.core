@@ -22,8 +22,7 @@ public class FrameTemplateContentReference : FrameFileReference
     protected Document TopDocument { get; set; }
     
     public PDFFile PrependFile { get; private set; }
-
-    private Func<Task> FunctionCallback { get; set; }
+    
     
     public FrameTemplateContentReference(IComponent owner, Document content) : base(owner,FrameFileType.ContainedTemplate,
         string.Empty)
@@ -130,13 +129,12 @@ public class FrameTemplateContentReference : FrameFileReference
         {
             this.PrependFile = appendTo;
             this.TopDocument = topDoc;
-            this.FunctionCallback = callback;
 
             var success = await this.RenderTemplateDocumentAsync(context, this.InnerDocument);
 
-            if (success && null != this.FunctionCallback)
+            if (success && null != callback)
             {
-                await this.FunctionCallback();
+                await callback();
             }
 
             return success;
@@ -158,11 +156,6 @@ public class FrameTemplateContentReference : FrameFileReference
         doc.AppendTraceLog = false;
 
         bool success = await SaveTemplateDocumentAsync(context, doc);
-
-        if (null != this.FunctionCallback)
-        {
-            await this.FunctionCallback();
-        }
         
         return success;
     }
