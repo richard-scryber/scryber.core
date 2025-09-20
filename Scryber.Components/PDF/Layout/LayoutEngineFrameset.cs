@@ -107,8 +107,9 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
             {
                 var name = (PDFString)namesArray[index++];
                 var orref = namesArray[index++];
-
-                doc.SourceNames.Add(name.Value, orref);
+                
+                if (!doc.SourceNames.ContainsKey(name.Value))
+                    doc.SourceNames.Add(name.Value, orref);
             }
         }
         
