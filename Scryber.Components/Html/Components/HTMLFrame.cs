@@ -43,6 +43,7 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
     [PDFElement("html")]
     public HTMLDocument InnerHtml { get; set; }
 
+    [PDFAttribute("hidden")]
     public string Hidden
     {
         get
@@ -226,8 +227,13 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
             var file = framesetEngine.Frameset.CurrentFile;
             return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
         }
-        else
+        else if(this.Visible)
             throw new InvalidOperationException("The frame must be contained within a frameset to layout the pages");
+        else
+        {
+            context.TraceLog.Add(TraceLevel.Message, "Modifications" ,"Not laying out " + this.ID + " as the frame is hidden");
+            return null;
+        }
     }
 }
 

@@ -75,7 +75,7 @@ public class PDFFramesetLayoutDocument : PDFLayoutDocument
             writer.WriteDictionaryObjectRefEntry("Names", namesObj);
 
         }
-        else
+        else if (null != ExistingCatalog)
         {
             //We dont have an explict source names list so we can just try and reference the original entry.
             var origNames = ExistingCatalog.Entries.TryGetEntry("Names", out var entry);

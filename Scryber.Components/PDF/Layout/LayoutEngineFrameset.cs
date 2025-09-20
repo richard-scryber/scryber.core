@@ -48,12 +48,34 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
         doc.PrependFile = this.Frameset.CurrentFile;
 
         if (null == doc.PrependFile || this.Frameset.RootReference.Status != FrameFileStatus.Ready)
-            throw new InvalidOperationException(
-                "The generated file is not loaded or ready - cannot proceed with the layout until this is completed");
-        
-        doc.ExistingCatalog = doc.PrependFile.GetCatalog();
-        this.AddFramePages(context, fullstyle);
-        this.AddNames(doc, context, fullstyle);
+        {
+            if (AllFramesAreHidden())
+            {
+                context.TraceLog.Add(TraceLevel.Error, "Modifications",
+                    "None of the frames are set to output. Document will be empty");
+            }
+            else
+                throw new InvalidOperationException(
+                    "The generated file is not loaded or ready - cannot proceed with the layout until this is completed");
+        }
+        else
+        {
+
+            doc.ExistingCatalog = doc.PrependFile.GetCatalog();
+            this.AddFramePages(context, fullstyle);
+            this.AddNames(doc, context, fullstyle);
+        }
+    }
+
+    private bool AllFramesAreHidden()
+    {
+        foreach (var frame in this.Frameset.Frames)
+        {
+            if (frame.Visible)
+                return false;
+        }
+
+        return true;
     }
 
     protected void AddFramePages(PDFLayoutContext context, Style fullStyle)
@@ -66,8 +88,10 @@ public class LayoutEngineFrameset : IPDFLayoutEngine
 
     protected virtual void DoAddAFramesPages(HTMLFrame frame, PDFLayoutContext context, Style fullStyle)
     {
-        var engine = frame.GetEngine(this, context, fullStyle) as IPDFLayoutEngine;
-        engine.Layout(context, fullStyle);
+        var engine = frame.GetEngine(this, context, fullStyle);
+        
+        if (null != engine)
+            engine.Layout(context, fullStyle);
     }
 
     protected virtual void AddNames(PDFFramesetLayoutDocument doc, PDFLayoutContext context, Style fullStyle)
