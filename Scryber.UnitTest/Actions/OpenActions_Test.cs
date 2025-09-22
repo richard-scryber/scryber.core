@@ -25,7 +25,7 @@ public class OpenActions_Test
         [TestCategory("Actions")]
         public void SetAction()
         {
-            Assert.Inconclusive("Be nice to implement");
+            Assert.Inconclusive("Be nice to implement javascript actions within a document");
             
             // var src = "";
             //

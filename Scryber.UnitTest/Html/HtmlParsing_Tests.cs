@@ -1259,23 +1259,6 @@ namespace Scryber.Core.UnitTests.Html
             }
 
         }
-
-        [TestMethod()]
-        public void BordersAndSides()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/BorderSides.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("BorderSides.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-        }
         
         [TestMethod]
         public void CSSTransformParsing()
@@ -1833,31 +1816,6 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
-        [TestMethod()]
-        public void HtmlLinksLocalAndRemote()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinksLocalAndRemote.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                var model = new
-                {
-                    fragmentContent = "Content for the fragment"
-                };
-                doc.Params["model"] = model;
-
-                using (var stream = DocStreams.GetOutputStream("LinksLocalAndRemote.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-
-                }
-                
-            }
-
-            Assert.Inconclusive();
-
-        }
 
 
         [TestMethod()]
@@ -2479,203 +2437,7 @@ namespace Scryber.Core.UnitTests.Html
         }
 
 
-        [TestMethod()]
-        public void READMESample()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/READMESample.html",
-                this.TestContext);
-            //pass paramters as needed, supporting arrays or complex classes.
-            var items = new[]
-            {
-                new { name = "First item" },
-                new { name = "Second item" },
-                new { name = "Third item" },
-            };
-
-            var model = new{
-                titlestyle = "color:#ff6347",
-                title = "Hello from scryber",
-                items = items
-            };
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.Params["author"] = "Scryber Engine";
-                doc.Params["model"] = model;
-                using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
-                {
-                    
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.Params["author"] = "Scryber Engine";
-                doc.Params["model"] = model;
-                using (var stream = DocStreams.GetOutputStream("READMESample2.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void DocumentationOutput()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/documentation.html",
-                this.TestContext);
-            Document doc;
-
-            using (doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-            
-        }
-
         
-
-        [TestMethod()]
-        public void BodyWithLongContent()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithLongContent.html",
-                this.TestContext);
-
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("bodyWithLongContent.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void BodyWithMultipleColumns()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithMultipleColumns.html",
-                this.TestContext);
-
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("bodyWithMultipleColumns.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void AbsolutelyPositioned()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HtmlAbsolutePositioned.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("HtmlAbsolutePositioned.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void FloatLeft()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FloatLeft.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-        }
-
-
-        [TestMethod()]
-        public void FloatRight()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FloatRight.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatRight.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void FloatMixed()
-        {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FloatMixed.html",
-                this.TestContext);
-            using (var doc = Document.ParseDocument(path))
-            {
-                doc.ConformanceMode = ParserConformanceMode.Strict;
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatMixed.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
 
 
         [TestMethod()]
@@ -2850,7 +2612,7 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
         [TestMethod()]
@@ -2872,7 +2634,7 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
         [TestMethod()]
@@ -2904,7 +2666,7 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
 

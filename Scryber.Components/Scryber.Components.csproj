@@ -6,15 +6,15 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.1.0.5-beta</PackageVersion>
+    <PackageVersion>9.1.0.6-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.1.0.5-beta
-First release of framesets for trimming and merging documents.
+    <PackageReleaseNotes>9.1.0.6-beta
+First release of framesets for trimming and merging documents. Also hiding variables that do not have any content.
 
 9.0.0.1-rc.3
 Added extra html entity values to match available sources.
@@ -248,7 +248,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
   </ItemGroup>
   <ItemGroup>
