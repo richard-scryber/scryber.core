@@ -6,14 +6,14 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.1.0.6-beta</PackageVersion>
+    <PackageVersion>9.1.0.7-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.1.0.6-beta
+    <PackageReleaseNotes>9.1.0.7-beta
 First release of framesets for trimming and merging documents. Also hiding variables that do not have any content.
 
 9.0.0.1-rc.3

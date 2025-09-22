@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Scryber.Components;
 using Scryber.Modifications;
 using Scryber.PDF;
@@ -66,6 +67,41 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
     public MimeType RemoteSourceMimeType { get; set; }
     
     
+    /// <summary>
+    /// Wraps the 3 properties into a single instance,
+    /// as they are used together, but mimimal memory requirements.
+    /// </summary>
+    private Data.DataBindingContent _dataContent;
+    
+    /// <summary>
+    /// Gets or sets the data content of this container as a string.
+    /// Used for binding content to the Visual Container
+    /// </summary>
+    [PDFAttribute("data-content")]
+    public virtual string DataContent
+    {
+        get
+        {
+            if (null == _dataContent)
+                return string.Empty;
+            else
+                return _dataContent.Content;
+        }
+        set {
+            if (null == _dataContent)
+                _dataContent = DoCreateDataBindingContent();
+            _dataContent.Content = value;
+        }
+    }
+    
+    /// <summary>
+    /// Returns an initialized instance of the DataBindingContent for this component, inheritors can override to set their own defaults.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual Data.DataBindingContent DoCreateDataBindingContent()
+    {
+        return new Data.DataBindingContent(string.Empty, MimeType.xHtml, DataContentAction.Replace);
+    }
     
     
     /// <summary>
@@ -100,23 +136,17 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
         this.PageStartIndex = AppendPageIndex;
         this.PageInsertCount = AppendAllPageCount;
     }
-    
-    
-    protected override void OnInitialized(InitContext context)
-    {
-        base.OnInitialized(context);
 
-        // this.EnsureRemoteContent(context);
-    }
 
-    protected override void OnLoaded(LoadContext context)
+    protected override void DoDataBind(DataContext context, bool includeChildren)
     {
-        base.OnLoaded(context);
-    }
-
-    protected override void OnDataBinding(DataContext context)
-    {
-        base.OnDataBinding(context);
+        base.DoDataBind(context, includeChildren);
+        
+        if (null != this._dataContent && !string.IsNullOrEmpty(this._dataContent.Content))
+        {
+            this.DoBindContentIntoComponent(this._dataContent, context);
+        }
+        
     }
 
     protected override void OnDataBound(DataContext context)
@@ -128,26 +158,81 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
 
     
 
-    // protected virtual void EnsureRemoteContent(ContextBase context)
-    // {
-    //     if (!string.IsNullOrEmpty(this.RemoteSource))
-    //     {
-    //         if (null == this.RemoteFileLodRegistration)
-    //         {
-    //             string mimeType = InferResourceType(this.RemoteSourceMimeType);
-    //             TimeSpan cacheDuration = TimeSpan.Zero;
-    //             var callback = new RemoteRequestCallback(this.RemoteContentLoadedCallback);
-    //             
-    //             this.RemoteFileLodRegistration = this.Document.RegisterRemoteFileRequest(mimeType, RemoteSource, cacheDuration, callback, this, null);
-    //         }
-    //     }
-    // }
-    //
-    // private bool RemoteContentLoadedCallback(IComponent raiser, IRemoteRequest request, Stream response)
-    // {
-    //     return false;
-    //
-    // }
+    #region protected virtual void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
+
+        /// <summary>
+        /// Based on the DataBindingContent, this will parse the inner content, and add as specified the inner content
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="context"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        protected virtual void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
+        {
+            if (null == data)
+                throw new ArgumentNullException(nameof(data));
+
+            if (string.IsNullOrEmpty(data.Content))
+            {
+                if (context.ShouldLogVerbose)
+                    context.TraceLog.Add(TraceLevel.Warning, "Binding", "Binding data-content value was null or empty on the '" + this.ID + " component, even though other options had been set");
+
+                return;
+            }
+
+
+            if (null == data.Type)
+                data.Type = this.Document.GetDefaultContentMimeType();
+
+            //Load the parser from the document - will throw an error if not known
+            var parser = this.Document.EnsureParser(data.Type);
+
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Binding", "Binding data-content value onto the '" + this.ID + " component, with mime-type " + data.Type.ToString());
+
+            using (var sr = new System.IO.StringReader(data.Content))
+            {
+                var component = parser.Parse(null, sr, ParseSourceType.Template);
+
+                if (null == component)
+                {
+                    if (context.Conformance == ParserConformanceMode.Lax)
+                    {
+                        context.TraceLog.Add(TraceLevel.Warning, "Binding", "No component was returned for the binding of the frame " + this.ID);
+                    }
+                    else
+                    {
+                        throw new NullReferenceException(
+                            "No content was returned for the binding of the data-content for frame " + this.ID);
+                    }
+                }
+                var document = component as HTMLDocument;
+                
+                
+                //We clear out even if the returned content is null
+                if (null != document)
+                {
+                    this.InnerHtml = document;
+                    
+                    document.InitializeAndLoad(context.Format);
+                    document.DataBind(context);
+                }
+                else if (context.ShouldLogVerbose)
+                {
+                    if (context.Conformance == ParserConformanceMode.Lax)
+                        context.TraceLog.Add(TraceLevel.Error, "Binding",
+                            "The parsed component that was returned from data-content value for frame " + this.ID +
+                            " was not an HTMLDocument. Only fully qualified XHTML source documents are able to be used as dynamic content within a frame");
+                    else
+                    {
+                        throw new NullReferenceException(
+                            "The parsed component that was returned from data-content value for frame " + this.ID +
+                            " was not an HTMLDocument. Only fully qualified XHTML source documents are able to be used as dynamic content within a frame");
+                    }
+                }
+            }
+        }
+
+        #endregion
 
     
     
@@ -198,6 +283,7 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
 
     public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
     {
+        
         if (null != this.FileReference)
         {
             var framesetEngine = (LayoutEngineFrameset)parent;
@@ -227,8 +313,17 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
             var file = framesetEngine.Frameset.CurrentFile;
             return new LayoutEngineTemplateFrame(framesetEngine, this, file, context);
         }
-        else if(this.Visible)
-            throw new InvalidOperationException("The frame must be contained within a frameset to layout the pages");
+        else if (this.Visible)
+        {
+            if (context.Conformance == ParserConformanceMode.Lax)
+                context.TraceLog.Add(TraceLevel.Warning, "Modifications",
+                    "Not laying out " + this.ID + " as the frame has no content");
+            else
+                throw new PDFLayoutException(
+                    "In strict mode, a frame must contain at lease one of a resolved source value or an inner content, or it should be marked as hidden.");
+
+            return null;
+        }
         else
         {
             context.TraceLog.Add(TraceLevel.Message, "Modifications" ,"Not laying out " + this.ID + " as the frame is hidden");

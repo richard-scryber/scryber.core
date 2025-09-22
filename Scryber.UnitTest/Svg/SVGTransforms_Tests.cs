@@ -460,7 +460,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(0.0, matrix.MatrixValues[4]);
             Assert.AreEqual(0.0, matrix.MatrixValues[5]);
             
-            toParse = "matrix(0.4, 0, 0.5, 1.2, 60, 10)";
+            toParse = "matrix(0.4 0 0.5 1.2 60 10)";
             parsed = SVGTransformOperationSet.Parse(toParse);
             Assert.IsNotNull(parsed);
             Assert.IsNotNull(parsed.Root);
