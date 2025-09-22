@@ -54,7 +54,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             Assert.AreEqual("With Frame", doc.Head.Title);
@@ -94,7 +94,7 @@ public class ParsingFrameSets_Test
             var caught = false;
             try
             {
-                var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+                using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             }
             catch (PDFParserException)
             {
@@ -120,7 +120,7 @@ public class ParsingFrameSets_Test
             var caught = false;
             try
             {
-                var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+                using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             }
             catch (PDFParserException)
             {
@@ -148,7 +148,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -193,7 +193,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -237,7 +237,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -305,7 +305,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -376,7 +376,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -463,7 +463,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             
             Assert.IsNotNull(doc);
             
@@ -569,7 +569,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseHtmlDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -679,7 +679,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -818,7 +818,7 @@ public class ParsingFrameSets_Test
                   "</html>";
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -984,7 +984,7 @@ public class ParsingFrameSets_Test
         
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -1153,7 +1153,7 @@ public class ParsingFrameSets_Test
         
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
             
@@ -1353,7 +1353,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
 
@@ -1451,7 +1451,7 @@ public class ParsingFrameSets_Test
         
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
 
@@ -1558,7 +1558,7 @@ public class ParsingFrameSets_Test
         
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.ConformanceMode = ParserConformanceMode.Strict;
             Assert.IsNotNull(doc);
 
@@ -1658,7 +1658,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
 
@@ -1755,7 +1755,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
 
             Assert.IsNotNull(doc);
 
@@ -1855,7 +1855,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.AppendTraceLog = false;
             //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;
@@ -1971,7 +1971,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.AppendTraceLog = false;
             //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;
@@ -2086,7 +2086,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.AppendTraceLog = false;
             //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;
@@ -2214,7 +2214,7 @@ public class ParsingFrameSets_Test
 
         using (var stream = new StringReader(src))
         {
-            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
             doc.AppendTraceLog = false;
             //doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
             doc.ConformanceMode = ParserConformanceMode.Lax;

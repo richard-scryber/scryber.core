@@ -90,6 +90,10 @@ namespace Scryber.Html.Components
             if(this.DataValue != null && !string.IsNullOrEmpty(this.DataID))
             {
                 this.Document.Params[this.DataID] = this.DataValue;
+
+                //Set the visibility based on having contents
+                if (this.HasContent == false)
+                    this.Visible = false;
             }
 
             base.OnDataBound(context);
