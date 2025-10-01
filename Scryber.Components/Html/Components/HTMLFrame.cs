@@ -63,7 +63,7 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
         }
     }
         
-    [PDFAttribute("mime-type")]
+    [PDFAttribute("type")]
     public MimeType RemoteSourceMimeType { get; set; }
     
     

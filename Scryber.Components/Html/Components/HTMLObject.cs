@@ -68,9 +68,20 @@ namespace Scryber.Html.Components
             get => base.Data;
             set => base.Data = value;
         }
+        
+        [PDFAttribute("data-file-data")]
+        public byte[] FileData
+        {
+            get;
+            set;
+        }
+        
+        
+        
+        
 
         [PDFAttribute("type")]
-        public string MimeType { get; set; }
+        public MimeType MimeType { get; set; }
 
         [PDFAttribute("alt")]
         public override string Description
@@ -103,6 +114,39 @@ namespace Scryber.Html.Components
             var style = base.GetBaseStyle();
             style.SetValue(StyleKeys.PositionDisplayKey, Scryber.Drawing.DisplayMode.InlineBlock);
             return style;
+        }
+
+        protected override bool ShouldLoadAttachment(ContextBase context)
+        {
+            if (null == this.Data)
+            {
+                if (null != this.FileData && this.FileData.Length > 0)
+                {
+                    if (string.IsNullOrEmpty(this.Source))
+                        this.Source = this.Name;
+                    
+                    if (string.IsNullOrEmpty(this.Source))
+                        this.Source = this.ID;
+
+                    try
+                    {
+                        var embed  = PDFEmbeddedFileData.LoadFileFromData(context, this.FileData, this.Source);
+                        this.Data = embed;
+                    }
+                    catch (Exception e)
+                    {
+                        if (context.Conformance == ParserConformanceMode.Strict)
+                            throw new PDFDataException(
+                                "Could not load the attachment data for " + this.ID + " as the data is not valid - " +
+                                e.Message, e);
+                        else
+                            context.TraceLog.Add(TraceLevel.Error, "Attachment",
+                                "Could not load the file data from the binary source - " + e.Message, e);
+                    }
+                }
+            }
+
+            return base.ShouldLoadAttachment(context);
         }
     }
 

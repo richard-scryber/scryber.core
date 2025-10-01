@@ -416,6 +416,11 @@ namespace Scryber.Core.UnitTests.Configuration
         {
             public bool ShouldCache { get { return false; } }
 
+            public ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type)
+            {
+                throw new NotImplementedException("Only testing the base 64 loading.");
+            }
+
             /// <summary>
             /// Loads an image from a base 64 data image
             /// </summary>

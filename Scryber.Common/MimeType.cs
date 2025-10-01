@@ -63,7 +63,11 @@ namespace Scryber
 				this._type = type;
 			}
 			else
-				throw new ArgumentNullException(nameof(type));
+			{
+				this.Root = null;
+				this.Base = null;
+				this.Content = null;
+			}
 		}
 
 		
@@ -208,7 +212,19 @@ namespace Scryber
 		public static readonly MimeType Svg = "image/svg+xml";
 
 		public static readonly MimeType Pdf = "application/pdf";
-		
+
+		public static readonly MimeType Empty = new MimeType("");
+
+		public static readonly MimeType JpegImage = "image/jpeg";
+
+		public static readonly MimeType PngImage = "image/png";
+
+		public static readonly MimeType GifImage = "image/gif";
+
+		public static readonly MimeType TiffImage = "image/tiff";
+
+		public static readonly MimeType SvgImage = "image/svg+xml";
+
 
 	}
 

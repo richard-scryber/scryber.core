@@ -85,7 +85,7 @@ namespace Scryber.PDF
             }
         }
 
-        public static PDFEmbeddedFileData LoadFileDataFromFile(PDFLayoutContext context, string fullpath)
+        public static PDFEmbeddedFileData LoadFileDataFromFile(ContextBase context, string fullpath)
         {
             byte[] data = System.IO.File.ReadAllBytes(fullpath);
             PDFEmbeddedFileData all = new PDFEmbeddedFileData();
@@ -100,6 +100,12 @@ namespace Scryber.PDF
         public static PDFEmbeddedFileData LoadFileDataFromUri(PDFLayoutContext context, string fullpath)
         {
             throw new NotSupportedException("Use the document remote file load capabilities");
+        }
+
+        public static PDFEmbeddedFileData LoadFileFromData(ContextBase context, byte[] data, string name)
+        {
+            var all = new PDFEmbeddedFileData(name, data);
+            return all;
         }
 
         public static PDFEmbeddedFileData Parse(string data)

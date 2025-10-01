@@ -118,7 +118,7 @@ namespace Scryber.Html.Components
         /// <summary>
         /// Looks for the component with the specified name or ID and sets instance variables appropriately
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="rendering"></param>
         /// <param name="name"></param>
         private Component LookupExternalComponent(bool rendering, string name)
         {
@@ -131,7 +131,7 @@ namespace Scryber.Html.Components
             }
             else
             {
-                comp = Document.FindAComponentById(name);
+                comp = Document.FindAComponentByName(name);
             }
 
             return comp;

@@ -116,6 +116,88 @@ namespace Scryber.Core.UnitTests.Imaging
             
 
         }
+        
+        [TestMethod()]
+        public void LoadPngFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryPng();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.PngImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+
+            Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".png"), "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasFilter);
+            Assert.IsNull(data.Filters);
+            Assert.IsFalse(data.IsPrecompressedData);
+            
+        }
+        
+        [TestMethod()]
+        public void LoadJpegFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryJpeg();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
+                this.TestContext);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+            
+
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.JpegImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+            
+            Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.jpg image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.jpg image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.jpg image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".jpg"), "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.jpg image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.jpg image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasAlpha);
+
+            //We should have the JCTDecode filter for jpeg images
+            Assert.IsTrue(data.IsPrecompressedData);
+            Assert.IsTrue(data.HasFilter);
+            Assert.IsNotNull(data.Filters);
+            Assert.AreEqual(1, data.Filters.Length);
+            Assert.AreEqual("DCTDecode" , data.Filters[0].FilterName);
+            
+
+            
+
+        }
 
 
         [TestMethod()]
@@ -210,6 +292,45 @@ namespace Scryber.Core.UnitTests.Imaging
             
         }
         
+        [TestMethod()]
+        public void LoadTiffFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryTiff();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
+                this.TestContext);
+            
+     
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+            
+            
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.TiffImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+
+            Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.tiff image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.tiff image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.tiff image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".tiff"), "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasAlpha, "The image should not have an alpha channel");
+
+            Assert.IsFalse(data.IsPrecompressedData);
+            Assert.IsFalse(data.HasFilter);
+            
+        }
        
 
         /// <summary>

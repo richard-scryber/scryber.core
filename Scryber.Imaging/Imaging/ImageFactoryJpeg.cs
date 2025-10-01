@@ -21,40 +21,82 @@ namespace Scryber.Imaging
         }
 
         protected ImageFactoryJpeg(Regex match, string name, bool shouldCache)
-            : base(match, name, shouldCache)
+            : base(match, MimeType.JpegImage,  name, shouldCache)
         {
         }
+
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            Configuration config = Configuration.Default;
+            using (var binary = new MemoryStream(rawData))
+            {
+                ImageData data = null;
+
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".jpg";
+
+                var headerInfo = ReadJpegHeader(binary);
+                if (null == headerInfo)
+                {
+                    var img = Image.Load(config, binary, out var format);
+
+                    if (null != format && format.Name == "JPEG")
+                    {
+
+                        data = GetImageDataForImage(img, name, rawData);
+                    }
+
+                }
+                else
+                {
+                    data = new Formatted.PDFImageJpegData(name, headerInfo, rawData);
+                }
+
+                return data;
+            }
+        }
+
 
         protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
         {
             Configuration config = Configuration.Default;
             
             //For JPEG we want the original compressed image data
-            var binary = ExtractImageDataFromStream(stream);
+            bool disposable;
+            
+            var binary = ExtractImageDataFromStream(stream, out disposable);
             binary.Position = 0;
-            ImageData data;
+            ImageData data = null;
 
-            var headerInfo = ReadJpegHeader(binary);
-            if (null == headerInfo)
+            try
             {
-                //var bmp = System.Drawing.Bitmap.FromStream(binary) as System.Drawing.Bitmap;
-                //return GetImageDataForBitmap(bmp, path, binary.ToArray());
-
-                var img = Image.Load(config, binary, out var format);
-
-                if (null != format && format.Name == "JPEG")
+                var headerInfo = ReadJpegHeader(binary);
+                if (null == headerInfo)
                 {
-                    data = GetImageDataForImage(img, path, binary.ToArray());
+                    //var bmp = System.Drawing.Bitmap.FromStream(binary) as System.Drawing.Bitmap;
+                    //return GetImageDataForBitmap(bmp, path, binary.ToArray());
+
+                    var img = Image.Load(config, binary, out var format);
+
+                    if (null != format && format.Name == "JPEG")
+                    {
+                        data = GetImageDataForImage(img, path, binary.ToArray());
+                    }
+                    else
+                    {
+                        throw new NotSupportedException(
+                            "The source image was not interpreted as a Jpeg image at path " + path);
+                    }
+
                 }
                 else
                 {
-                    throw new NotSupportedException("The source image was not interpreted as a Jpeg image at path " + path);
+                    data = new Formatted.PDFImageJpegData(path, headerInfo, binary.ToArray());
                 }
-
             }
-            else
+            finally
             {
-                data = new Formatted.PDFImageJpegData(path, headerInfo, binary.ToArray()); 
+                if(disposable)
+                    binary.Dispose();
             }
 
             return data;
@@ -68,13 +110,16 @@ namespace Scryber.Imaging
 
         }
 
-        private MemoryStream ExtractImageDataFromStream(Stream stream)
+        private MemoryStream ExtractImageDataFromStream(Stream stream, out bool disposable)
         {
+            disposable = false;
             if (stream is MemoryStream)
                 return (MemoryStream) stream;
             
             var ms = new MemoryStream();
             stream.CopyTo(ms);
+            disposable = true;
+            
             return ms;
         }
 

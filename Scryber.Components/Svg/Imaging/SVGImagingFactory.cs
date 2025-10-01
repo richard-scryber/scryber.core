@@ -15,14 +15,24 @@ public class SVGImagingFactory : ImageFactoryBase
     
     private static readonly Regex SvgMatch = new Regex("\\.(svg)?\\s*$", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
     private static readonly string SvgName = "SVG Image factory";
+    private static readonly MimeType SvgType = MimeType.SvgImage;
     private static readonly bool SvgShouldCache = false; //Don't cache the images so the layout is stored.
 
-    public SVGImagingFactory() : this(SvgMatch, SvgName, SvgShouldCache)
+    public SVGImagingFactory() : this(SvgMatch, SvgType, SvgName, SvgShouldCache)
     {
         
     }
-    
-    protected SVGImagingFactory(Regex match, string name, bool shouldCache) : base(match, name, shouldCache)
+
+    protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+    {
+        using (var stream = new MemoryStream(rawData))
+        {
+            var name = document.GetIncrementID(ObjectTypes.ImageData) + ".svg";
+            return this.DoDecodeImageData(stream, document, owner, name);
+        }
+    }
+
+    protected SVGImagingFactory(Regex match, MimeType type, string name, bool shouldCache) : base(match, type, name, shouldCache)
     {
     }
     

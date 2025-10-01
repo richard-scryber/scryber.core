@@ -47,6 +47,8 @@ namespace Scryber
         /// <param name="path">The specified path to the source</param>
         /// <returns>The loaded image data</returns>
         ImageData LoadImageData(IDocument document, IComponent owner, string path);
+
+        ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type);
     }
 
     /// <summary>
