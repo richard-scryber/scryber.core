@@ -44,6 +44,12 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         
+        [PDFAttribute("data-content")]
+        public new string DataContent
+        {
+            get; set;
+        }
+        
 
         [PDFAttribute("for")]
         public string ForComponent
@@ -62,11 +68,11 @@ namespace Scryber.Html.Components
 
         protected override void OnPreLayout(LayoutContext context)
         {
-            // if (!string.IsNullOrEmpty(this.DataContent))
-            // {
-            //     this.Contents.Clear();
-            //     this.Contents.Add(new Scryber.Components.TextLiteral(this.DataContent));
-            // }
+            if (!string.IsNullOrEmpty(this.DataContent))
+            {
+                this.Contents.Clear();
+                this.Contents.Add(new Scryber.Components.TextLiteral(this.DataContent));
+            }
             base.OnPreLayout(context);
         }
     }

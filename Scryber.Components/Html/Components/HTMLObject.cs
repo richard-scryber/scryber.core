@@ -69,7 +69,7 @@ namespace Scryber.Html.Components
             set => base.Data = value;
         }
         
-        [PDFAttribute("data-file-data")]
+        [PDFAttribute("data-file-data", BindingOnly = true)]
         public byte[] FileData
         {
             get;
