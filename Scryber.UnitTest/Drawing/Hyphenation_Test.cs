@@ -1191,7 +1191,7 @@ namespace Scryber.Core.UnitTests.Drawing
         [TestCategory("Hyphenation")]
         public void HypenateWord_NotLongEnoughWordTest()
         {
-            Assert.Inconclusive("Need to test");
+            //Assert.Inconclusive("Need to test");
             var chars = "The quick brown fox";
             var len = chars.IndexOf("w") + 1;
             Assert.AreEqual("The quick brow", chars.Substring(0, len));
@@ -1205,7 +1205,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
-            Assert.IsTrue(opportunity.IsHyphenation);
+            Assert.IsFalse(opportunity.IsHyphenation);
 
             var expected = "The quick";
             var actual = chars.Substring(0, opportunity.NewLength);
@@ -1215,7 +1215,137 @@ namespace Scryber.Core.UnitTests.Drawing
             
             Assert.IsTrue(opportunity.RemoveSplitWhiteSpace); //we should trim
 
-            actual += opportunity.AppendHyphenCharacter.Value;
+
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        #endregion
+        
+        #region public void HypenateWord_NotLongEnoughWordTest()
+
+        /// <summary>
+        ///A successfull test for splitting of brown with 3 chars before and 2 after,
+        ///even though desired position doesn't quite work and is shifted left one.
+        ///Same as above, but the right has to be 3 chars
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Hyphenation")]
+        public void HypenateWord_IsLongEnoughWordTest()
+        {
+            //Assert.Inconclusive("Need to test");
+            var chars = "The quickbrown fox";
+            var len = chars.IndexOf("o") + 1;
+            Assert.AreEqual("The quickbro", chars.Substring(0, len));
+
+            //3 before and 2 after are allowed, so can hyphenate
+            //required length is ok to hyphenate
+            int length = 9;
+            int minBefore = 3;
+            int minAfter = 2;
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
+
+            var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
+
+            Assert.IsTrue(opportunity.IsHyphenation);
+
+            var expected = "The quickbro-";
+            var actual = chars.Substring(0, opportunity.NewLength);
+
+            Assert.IsTrue(opportunity.AppendHyphenCharacter.HasValue); //null
+            Assert.AreEqual(opportunity.AppendHyphenCharacter.Value, '-');
+            Assert.IsFalse(opportunity.PrependHyphenCharacter.HasValue);//null
+            
+            Assert.IsFalse(opportunity.RemoveSplitWhiteSpace); //no need to trim
+
+
+            Assert.AreEqual(expected, actual + opportunity.AppendHyphenCharacter.Value);
+
+        }
+
+        #endregion
+        
+        #region public void HypenateWord_NotLongEnoughWordTest()
+
+        /// <summary>
+        ///A successfull test for splitting of brown with 3 chars before and 2 after,
+        ///even though desired position doesn't quite work and is shifted left one.
+        ///Same as above, but the right has to be 3 chars
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Hyphenation")]
+        public void HypenateWord_IsLongEnoughMoveLeftWordTest()
+        {
+            //Assert.Inconclusive("Need to test");
+            var chars = "The quickbrown fox";
+            var len = chars.IndexOf("o") + 1;
+            Assert.AreEqual("The quickbro", chars.Substring(0, len));
+
+            //3 before is allowed, so can hyphenate
+            //required length is ok to hyphenate
+            // 4 after is not allowed so move.
+            int length = 9;
+            int minBefore = 3;
+            int minAfter = 4;
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
+
+            var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
+
+            Assert.IsTrue(opportunity.IsHyphenation);
+
+            var expected = "The quick-";
+            var actual = chars.Substring(0, opportunity.NewLength);
+
+            Assert.IsTrue(opportunity.AppendHyphenCharacter.HasValue); //null
+            Assert.AreEqual(opportunity.AppendHyphenCharacter.Value, '-');
+            Assert.IsFalse(opportunity.PrependHyphenCharacter.HasValue);//null
+            
+            Assert.IsFalse(opportunity.RemoveSplitWhiteSpace); //no need to trim
+
+
+            Assert.AreEqual(expected, actual + opportunity.AppendHyphenCharacter.Value);
+
+        }
+
+        #endregion
+        
+        #region public void HypenateWord_NotLongEnoughWordTest()
+
+        /// <summary>
+        ///A successfull test for splitting of brown with 3 chars before and 2 after,
+        ///even though desired position doesn't quite work and is shifted left one.
+        ///Same as above, but the right has to be 3 chars
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Hyphenation")]
+        public void HypenateWord_IsNotLongEnoughOnLeftWordTest()
+        {
+            //Assert.Inconclusive("Need to test");
+            var chars = "The quickbrown fox";
+            var len = chars.IndexOf("i") + 1;
+            Assert.AreEqual("The qui", chars.Substring(0, len));
+
+            //3 before is allowed, so can hyphenate
+            //required length is ok to hyphenate
+            // 4 after is not allowed so move.
+            int length = 9;
+            int minBefore = 4;
+            int minAfter = 4;
+            
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
+
+            var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
+
+            Assert.IsFalse(opportunity.IsHyphenation);
+
+            var expected = "The";
+            var actual = chars.Substring(0, opportunity.NewLength);
+
+            Assert.IsFalse(opportunity.AppendHyphenCharacter.HasValue); //null
+            Assert.IsFalse(opportunity.PrependHyphenCharacter.HasValue);//null
+            
+            Assert.IsTrue(opportunity.RemoveSplitWhiteSpace); //no need to trim
+
 
             Assert.AreEqual(expected, actual);
 

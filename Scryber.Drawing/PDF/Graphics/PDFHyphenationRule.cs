@@ -381,7 +381,9 @@ namespace Scryber.PDF.Graphics
 		        if (IsWordBreakChar(c))
 			        break;
 		        else
+		        {
 			        count++;
+		        }
 
 		        offset++;
 	        }
