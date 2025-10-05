@@ -1,50 +1,56 @@
 ﻿using System;
+using System.Text;
+
 namespace Scryber.PDF.Graphics
 {
-	public class PDFHyphenationStrategy
-	{
+    public class PDFHyphenationStrategy
+    {
         /// <summary>
-        /// Gets the optional character that should appear at the end of a hypenated line.
+        /// Gets the optional character that should appear at the end of a hyphenated line.
         /// </summary>
-        public char? HyphenAppend { get; set; }
+        public char? HyphenAppend { get; private set; }
 
         /// <summary>
-        /// Gets the optional character that should appear at the beginning of a new hypenated line.
+        /// Gets the optional character that should appear at the beginning of a new hyphenated line.
         /// </summary>
-        public char? HyphenPrepend { get; set; }
+        public char? HyphenPrepend { get; private set; }
 
         /// <summary>
         /// Gets the minimum length of the a word that can be hypenated
         /// </summary>
-        ///public int MinWordLength { get; private set; }
+        public int MinWordLength { get; private set; }
 
         /// <summary>
         /// Gets the minimun length of characters that form the start of a word before it can be hypenated
         /// </summary>
-        public int MinCharsBeforeHyphen { get; set; }
+        public int MinCharsBeforeHyphen { get; private set; }
 
         /// <summary>
         /// Gets the minumum length of characters that form the End of a word before it can be hypenated
         /// </summary>
-        public int MinCharsAfterHyphen { get; set; }
+        public int MinCharsAfterHyphen { get; private set; }
 
         /// <summary>
         /// Returns true if the char.IsWhitespace method should be used, otherwise the check against the
         /// WhiteSpaceChars values should be performs to evaluate if a character is actually white space
         /// </summary>
-        public bool UseIsWhitespace{ get { return true; } }
-
-        
-        public PDFHyphenationStrategy()
-            : this('-', null, 3, 3)
+        public bool UseIsWhitespace
         {
+            get { return true; }
         }
 
-        public PDFHyphenationStrategy(char? append, char? prepend, int minCharsbefore, int minCharsAfter)
+        public PDFHyphenationStrategy(char? append, char? prepend)
+            : this(append, prepend, DefaultMinSplitWordLength, DefaultMinCharsBefore, DefaultMinCharsAfter)
+        {
+
+        }
+    
+
+    public PDFHyphenationStrategy(char? append, char? prepend, int minWordLength, int minCharsbefore, int minCharsAfter)
         {
             HyphenAppend = append;
             HyphenPrepend = prepend;
-            //MinWordLength = minlength;
+            MinWordLength = minWordLength;
             MinCharsBeforeHyphen = minCharsbefore;
             MinCharsAfterHyphen = minCharsAfter;
             //Match = null;
@@ -53,10 +59,20 @@ namespace Scryber.PDF.Graphics
 
 
         //
-        // Default
+        // Defaults
         //
 
-        public static readonly PDFHyphenationStrategy Default = new PDFHyphenationStrategy();
+        public const int DefaultMinSplitWordLength = 5;
+        public const int DefaultMinCharsBefore = 2;
+        public const int DefaultMinCharsAfter = 2;
+        public const char DefaultAppendChar = '-';
+
+        public static readonly PDFHyphenationStrategy Default = new PDFHyphenationStrategy(DefaultAppendChar, null, DefaultMinSplitWordLength, DefaultMinCharsBefore, DefaultMinCharsAfter);
+
+        /// <summary>
+        /// The strategey that 
+        /// </summary>
+        public static readonly PDFHyphenationStrategy None = new PDFHyphenationStrategy(null, null, int.MaxValue, 2, 2);
 
     }
 }

@@ -28,6 +28,16 @@ namespace Scryber.PDF.Graphics
 		}
 
 
+		/// <summary>
+		/// Checks a set of characters to make sure it is appropriate to hyphenate at the desired location with the given strategy.
+		/// </summary>
+		/// <param name="strategy">The strategy to use (length, min-before, min-after etc.)</param>
+		/// <param name="chars">The set of characters to check</param>
+		/// <param name="start">The start of the characters being checked</param>
+		/// <param name="length"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		/// <exception cref="NotImplementedException"></exception>
 		public static HyphenationOpportunity HyphenateLine(PDFHyphenationStrategy strategy, string chars, int start, int length)
 		{
 			HyphenationOpportunity opportunity;
@@ -37,15 +47,30 @@ namespace Scryber.PDF.Graphics
 			{
 				//return the first space, ignoring any hyphens
 				var len = GetFirstWordBoundaryBefore(chars, start, length, null, null);
-				return new HyphenationOpportunity(
-					hyphenate: false,
-					length: len,
-					append: null,
-					prepend: null,
-					trim: true
-					);
+				return new HyphenationOpportunity(false, len, null, null, true);
 			}
-			
+
+			var minLength = strategy.MinWordLength;
+			int wordStart;
+			bool useWordSplit;
+
+			if (LetterBeforeIsWhiteSpace(chars, start, length))
+			{
+				return new HyphenationOpportunity(false, length - 1, null, null, true);
+			}
+
+			if (WordIsTooShort(chars, start, length, minLength, out useWordSplit, out wordStart))
+			{
+				if (useWordSplit)
+				{
+					return new HyphenationOpportunity(false, wordStart, null, null, true);
+				}
+				else //cannot split on the word, so start a new line with everything.
+				{
+					return new HyphenationOpportunity(false, 0, null, null, false);
+				}
+			}
+
 			var minAfter = strategy.MinCharsAfterHyphen;
 			if (strategy.HyphenPrepend.HasValue)
 				minAfter++; //We have a hypen on the new line as well so add one to the min chars after
@@ -273,7 +298,26 @@ namespace Scryber.PDF.Graphics
 
 		}
 
-        private static bool CheckForSymbolOrDigits(string chars, int start, int len)
+		/// <summary>
+		/// Quick check to see if the letter before where we are attempting to break is a word boundary. If so then we can break, but do not need to hyphenate.
+		/// </summary>
+		/// <param name="chars">The string to check</param>
+		/// <param name="start">The start of the string being checked</param>
+		/// <param name="length">The length the string is being proposed to be split at.</param>
+		/// <returns></returns>
+		private static bool LetterBeforeIsWhiteSpace(string chars, int start, int length)
+		{
+			if (length + start > 0)
+			{
+				var c = chars[start + length - 1];
+				if (IsWordBreakChar(c))
+					return true;
+			}
+
+			return false;
+		}
+
+		private static bool CheckForSymbolOrDigits(string chars, int start, int len)
         {
 			int pos = start + len;
 			while (pos >= start)
@@ -298,6 +342,60 @@ namespace Scryber.PDF.Graphics
             }
 
 			return false;
+        }
+
+        public static bool WordIsTooShort(string chars, int startChars, int lenChars, int minWordLength,out bool splitOnWord, out int wordOffset)
+        {
+	        var offset = startChars + lenChars - 1;
+	        
+	        int count = 0;
+	        wordOffset = 0;
+	        splitOnWord = false;
+	        
+	        //count the letters back to the start of the word
+	        while (offset > startChars)
+	        {
+		        var c = chars[offset];
+		        if (IsWordBreakChar(c))
+		        {
+			        splitOnWord = true;
+			        wordOffset = offset;
+			        break;
+		        }
+		        else
+			        count++;
+		        offset--;
+	        }
+
+	        if (count > minWordLength)
+	        {
+		        //We have more characters on the left than is required so our word is NOT too short.
+		        return false;
+	        }
+
+	        offset = startChars + lenChars;
+
+	        while (offset < chars.Length)
+	        {
+		        var c = chars[offset];
+		        if (IsWordBreakChar(c))
+			        break;
+		        else
+			        count++;
+
+		        offset++;
+	        }
+
+	        if (count >= minWordLength)
+	        {
+		        //We have more characters in the word so it is NOT too short
+		        return false;
+	        }
+
+	        else
+	        {
+		        return true;
+	        }
         }
 
         /// <summary>

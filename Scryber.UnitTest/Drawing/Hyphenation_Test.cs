@@ -614,9 +614,10 @@ namespace Scryber.Core.UnitTests.Drawing
             var len = chars.IndexOf("o") + 1;
             Assert.AreEqual("The quick bro", chars.Substring(0, len));
 
+            int length = 5;
             int minBefore = 2;
             int minAfter = 2;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
             Assert.IsTrue(opportunity.IsHyphenation);
@@ -655,9 +656,10 @@ namespace Scryber.Core.UnitTests.Drawing
             //but our original position is too far right.
             //so should be pushed a little to the left.
 
+            int length = 5;
             int minBefore = 2;
             int minAfter = 2;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -696,9 +698,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //3 before and 2 after are allowed, so can hyphenate
             // just fits
+            int length = 5;
             int minBefore = 3;
             int minAfter = 2;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -733,9 +736,10 @@ namespace Scryber.Core.UnitTests.Drawing
             var len = chars.IndexOf("o") + 1;
             Assert.AreEqual("The quick bro", chars.Substring(0, len));
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
             Assert.IsFalse(opportunity.IsHyphenation);
@@ -772,9 +776,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -815,9 +820,10 @@ namespace Scryber.Core.UnitTests.Drawing
             //but our original position is too far right.
             //so should be pushed a little to the left.
 
+            int length = 5;
             int minBefore = 2;
             int minAfter = 2;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null,length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -855,9 +861,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we are on a space
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -895,9 +902,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we are on a space
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -934,9 +942,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we have not spaces
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -960,7 +969,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        #region public void HypenateWord_NoSpacesTest()
+        #region public void HypenateWord_NoSpacesRightTest()
 
         /// <summary>
         /// A test for splitting but there are no spaces at all.
@@ -977,9 +986,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we have not spaces
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -1020,9 +1030,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we have not spaces
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -1062,10 +1073,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.AreEqual("The qui-ckbr", chars.Substring(0, len));
 
             
-
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -1105,9 +1116,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we are on a space
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -1144,9 +1156,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             //we are on a space
 
+            int length = 5;
             int minBefore = 3;
             int minAfter = 3;
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, minBefore, minAfter);
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
 
             var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
 
@@ -1167,7 +1180,48 @@ namespace Scryber.Core.UnitTests.Drawing
 
         #endregion
 
-        //TODO: Add tests for mid strings and 
+        #region public void HypenateWord_NotLongEnoughWordTest()
+
+        /// <summary>
+        ///A successfull test for splitting of brown with 3 chars before and 2 after,
+        ///even though desired position doesn't quite work and is shifted left one.
+        ///Same as above, but the right has to be 3 chars
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Hyphenation")]
+        public void HypenateWord_NotLongEnoughWordTest()
+        {
+            Assert.Inconclusive("Need to test");
+            var chars = "The quick brown fox";
+            var len = chars.IndexOf("w") + 1;
+            Assert.AreEqual("The quick brow", chars.Substring(0, len));
+
+            //3 before and 2 after are allowed, so can hyphenate
+            // but required length is too long
+            int length = 6;
+            int minBefore = 3;
+            int minAfter = 2;
+            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy('-', null, length, minBefore, minAfter);
+
+            var opportunity = Scryber.PDF.Graphics.PDFHyphenationRule.HyphenateLine(strategy, chars, 0, len);
+
+            Assert.IsTrue(opportunity.IsHyphenation);
+
+            var expected = "The quick";
+            var actual = chars.Substring(0, opportunity.NewLength);
+
+            Assert.IsFalse(opportunity.AppendHyphenCharacter.HasValue); //null
+            Assert.IsFalse(opportunity.PrependHyphenCharacter.HasValue);//null
+            
+            Assert.IsTrue(opportunity.RemoveSplitWhiteSpace); //we should trim
+
+            actual += opportunity.AppendHyphenCharacter.Value;
+
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        #endregion
 
     }
 }

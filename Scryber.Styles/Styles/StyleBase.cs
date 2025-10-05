@@ -29,6 +29,7 @@ using Scryber.PDF.Graphics;
 using Scryber.PDF;
 using Scryber.PDF.Resources;
 using Scryber.Svg;
+using Scryber.Text;
 
 namespace Scryber.Styles
 {
@@ -1448,24 +1449,49 @@ namespace Scryber.Styles
 
         private PDFHyphenationStrategy DoCreateHyphenationStrategy()
         {
-            PDFHyphenationStrategy strategy = new PDFHyphenationStrategy();
+            var type = Scryber.Text.WordHyphenation.Auto;
+            if (this.TryGetValue(StyleKeys.TextWordHyphenation, out var found))
+                type = found.Value(this);
+            
+            if(type == WordHyphenation.None) // No Hyphenation
+                return PDFHyphenationStrategy.None;
 
-            StyleValue<int> min;
-            if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out min))
-                strategy.MinCharsBeforeHyphen = min.Value(this);
+            else if(this.TryGetValue(StyleKeys.TextHyphenationMinLength, out var foundInt))
+            {
+                //We have a explicit length, so it is a custom Hyphenation Strategy
+                int minWordLength = foundInt.Value(this);
+                int minCharsBefore = PDFHyphenationStrategy.DefaultMinCharsBefore;
+                int minCharsAfter = PDFHyphenationStrategy.DefaultMinCharsAfter;
+                char append = PDFHyphenationStrategy.DefaultAppendChar;
 
-            if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out min))
-                strategy.MinCharsAfterHyphen = min.Value(this);
+                if (this.TryGetValue(StyleKeys.TextHyphenationMinBeforeBreak, out foundInt))
+                    minCharsBefore = foundInt.Value(this);
 
-            StyleValue<char> c;
+                if (this.TryGetValue(StyleKeys.TextHyphenationMinAfterBreak, out foundInt))
+                    minCharsAfter = foundInt.Value(this);
 
-            if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out c))
-                strategy.HyphenAppend = c.Value(this);
+                if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out var foundChar))
+                    append = foundChar.Value(this);
+                
+                //No style key for the pre-pend value by design.
 
-            if (this.TryGetValue(StyleKeys.TextHyphenationCharPrepend, out c))
-                strategy.HyphenPrepend = c.Value(this);
+                PDFHyphenationStrategy strategy = new PDFHyphenationStrategy(append, null, minWordLength, minCharsBefore, minCharsAfter);
+                
+                return strategy;
+            }
+            else if (this.TryGetValue(StyleKeys.TextHyphenationCharAppend, out var foundChar))
+            {
+                char append = foundChar.Value(this);
+                PDFHyphenationStrategy strategy = new PDFHyphenationStrategy(append, null);
 
-            return strategy;
+                return strategy;
+            }
+            else
+            {
+                //Default as no explicit values.
+                return PDFHyphenationStrategy.Default;
+
+            }
 
         }
 
