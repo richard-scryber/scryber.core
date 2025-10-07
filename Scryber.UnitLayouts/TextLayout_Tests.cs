@@ -1755,8 +1755,8 @@ namespace Scryber.UnitLayouts
 
 
             var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
-                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                          "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                          "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
                 " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
                 "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
@@ -1808,7 +1808,7 @@ namespace Scryber.UnitLayouts
             var contentW = layout.AllPages[0].ContentBlock.Width;
 
             Assert.AreEqual(36, region.Contents.Count);
-            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 31 };
+            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 24, 31 };
 
             for (var i = 0; i < 36; i++)
             {

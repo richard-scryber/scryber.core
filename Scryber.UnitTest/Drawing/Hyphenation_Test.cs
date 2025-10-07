@@ -1293,7 +1293,7 @@ namespace Scryber.Core.UnitTests.Drawing
 
             Assert.IsTrue(opportunity.IsHyphenation);
 
-            var expected = "The quick-";
+            var expected = "The quickb-";
             var actual = chars.Substring(0, opportunity.NewLength);
 
             Assert.IsTrue(opportunity.AppendHyphenCharacter.HasValue); //null

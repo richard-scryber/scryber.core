@@ -62,9 +62,9 @@ namespace Scryber.PDF.Graphics
         // Defaults
         //
 
-        public const int DefaultMinSplitWordLength = 5;
-        public const int DefaultMinCharsBefore = 2;
-        public const int DefaultMinCharsAfter = 2;
+        public const int DefaultMinSplitWordLength = 6;
+        public const int DefaultMinCharsBefore = 3;
+        public const int DefaultMinCharsAfter = 3;
         public const char DefaultAppendChar = '-';
 
         public static readonly PDFHyphenationStrategy Default = new PDFHyphenationStrategy(DefaultAppendChar, null, DefaultMinSplitWordLength, DefaultMinCharsBefore, DefaultMinCharsAfter);

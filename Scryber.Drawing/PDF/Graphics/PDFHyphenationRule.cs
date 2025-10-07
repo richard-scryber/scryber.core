@@ -51,8 +51,16 @@ namespace Scryber.PDF.Graphics
 			}
 
 			var minLength = strategy.MinWordLength;
+			if (strategy.MinCharsBeforeHyphen + strategy.MinCharsAfterHyphen > minLength)
+				minLength = strategy.MinCharsBeforeHyphen + strategy.MinCharsAfterHyphen;
+			
 			int wordStart;
 			bool useWordSplit;
+
+			if (LetterIsWhiteSpace(chars, start, length))
+			{
+				return new HyphenationOpportunity(false, length, null, null, true);
+			}
 
 			if (LetterBeforeIsWhiteSpace(chars, start, length))
 			{
@@ -63,7 +71,8 @@ namespace Scryber.PDF.Graphics
 			{
 				if (useWordSplit)
 				{
-					return new HyphenationOpportunity(false, wordStart, null, null, true);
+					var newLength = wordStart - start;
+					return new HyphenationOpportunity(false, newLength, null, null, true);
 				}
 				else //cannot split on the word, so start a new line with everything.
 				{
@@ -255,11 +264,13 @@ namespace Scryber.PDF.Graphics
 				{
 					//we pick the best position to split on which will be minAfter
 					//as it most approximates the original desired position
-					left = (length - minAfter) + 1;
+					length = right - minAfter;
+					//length = left + minBefore;
+					
 
 					return new HyphenationOpportunity(
 						hyphenate: true,
-						length: left,
+						length: length,
 						append: strategy.HyphenAppend,
 						prepend: strategy.HyphenPrepend,
 						trim: false //Not a newline on a space
@@ -296,6 +307,16 @@ namespace Scryber.PDF.Graphics
 			else
 				throw new ArgumentOutOfRangeException("The strategy failed to find a split. And returned an unknown value of " + right + " for a length of " + length);
 
+		}
+
+		private static bool LetterIsWhiteSpace(string chars, int start, int length)
+		{
+			var c = chars[start + length];
+
+			if (IsWordBreakChar(c))
+				return true;
+			
+			return false;
 		}
 
 		/// <summary>
