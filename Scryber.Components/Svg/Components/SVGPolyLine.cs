@@ -28,6 +28,22 @@ namespace Scryber.Svg.Components
                 _points = value;
             } 
         }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         public SVGPolyLine()
             : this(ObjectTypes.ShapePolyline)

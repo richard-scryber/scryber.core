@@ -10,6 +10,22 @@ namespace Scryber.Svg.Components
     [PDFParsableComponent("g")]
     public class SVGGroup : SVGBase, IPDFViewPortComponent
     {
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
+        
         [PDFElement()]
         [PDFArray(typeof(Component))]
         public ComponentList Contents

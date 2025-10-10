@@ -155,6 +155,22 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
             this.Style.SetValue(StyleKeys.SVGMarkerOrientationKey, value);
         } 
     }
+    
+    [PDFElement("title")]
+    [PDFAttribute("title")]
+    public string OutlineTitle
+    {
+        get;
+        set;
+    }
+        
+        
+    [PDFElement("desc")]
+    public string Description
+    {
+        get;
+        set;
+    }
 
 
     [PDFArray(typeof(Component))]

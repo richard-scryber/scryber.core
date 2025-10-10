@@ -217,6 +217,22 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.TextCharSpacingKey, value);
             }
         }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         public void RemoveLetterSpacing()
         {

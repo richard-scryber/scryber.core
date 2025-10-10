@@ -228,7 +228,7 @@ namespace Scryber.Svg.Components
 
         #endregion
 
-        #region 
+        #region public Unit CornerRadiusX
         [PDFAttribute("rx")]
         public Unit CornerRadiusX
         {
@@ -319,10 +319,43 @@ namespace Scryber.Svg.Components
 
         
         [PDFAttribute("stroke-linecap")]
-        public LineCaps StrokeLineCap
+        public string StrokeLineCap
         {
-            get { return this.Style.Stroke.LineCap; }
-            set { this.Style.Stroke.LineCap = value; }
+            get
+            {
+                if (this.Style.IsValueDefined(StyleKeys.StrokeEndingKey))
+                    return this.Style.Stroke.LineCap.ToString().ToLower();
+                else
+                    return LineCaps.Square.ToString().ToLower();
+            }
+            set
+            {
+                LineCaps cap;
+                if (Enum.TryParse<LineCaps>(value, true, out cap))
+                    this.Style.Stroke.LineCap = cap;
+                else
+                    this.Style.RemoveValue(StyleKeys.StrokeEndingKey);
+            }
+        }
+
+        [PDFAttribute("stroke-linejoin")]
+        public string StrokeLineJoin
+        {
+            get
+            {
+                if (this.Style.IsValueDefined(StyleKeys.StrokeJoinKey))
+                    return this.Style.Stroke.LineJoin.ToString().ToLower();
+                else
+                    return LineJoin.Bevel.ToString().ToLower();
+            }
+            set
+            {
+                LineJoin join;
+                if (Enum.TryParse<LineJoin>(value, true, out join))
+                    this.Style.Stroke.LineJoin = join;
+                else
+                    this.Style.RemoveValue(StyleKeys.StrokeJoinKey);
+            }
         }
 
         [PDFAttribute("stroke-dasharray")]
@@ -478,6 +511,22 @@ namespace Scryber.Svg.Components
 
             }
 
+        }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public string OutlineTitle
+        {
+            get;
+            set;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
         }
         
 

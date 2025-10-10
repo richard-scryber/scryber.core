@@ -20,7 +20,21 @@ namespace Scryber.Svg.Components
             set { this.Path = value; }
         }
 
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
         
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         public SVGPath() : base(ObjectTypes.ShapePath)
         {

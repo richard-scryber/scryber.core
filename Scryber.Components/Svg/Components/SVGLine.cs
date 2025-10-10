@@ -80,6 +80,22 @@ namespace Scryber.Svg.Components
                 this.Style.SetValue(StyleKeys.SVGGeometryY2Key, value);
             } 
         }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
        
 
