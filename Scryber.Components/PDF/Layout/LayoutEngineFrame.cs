@@ -4,6 +4,7 @@ using Scryber.Styles;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Scryber.PDF.Layout;
 
@@ -48,7 +49,11 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
     {
         try
         {
-            this.DoAddFramePageReferences(context, fullStyle, fromFile);
+            var overlay = this.Frame.OverReference?.FrameFile;
+            var overlayRepeat = null == overlay ? FrameOverlayRepeat.None : this.Frame.OverlayRepeat;
+                
+            
+            this.DoAddFramePageReferences(context, fullStyle, fromFile, overlay, overlayRepeat);
         }
         catch (Exception ex)
         {
@@ -58,39 +63,37 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         }
     }
 
-    protected virtual void DoAddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile)
+    protected virtual void DoAddFramePageReferences(PDFLayoutContext context, Style fullStyle, PDFFile fromFile, PDFFile overlayFile, FrameOverlayRepeat overlayRepeat)
     {
-        //var options = new PageNumberOptions();
-        
-        //var options = fullStyle.CreatePageNumberOptions();
-        //var pages = context.DocumentLayout.RegisterPageNumbering(context.DocumentLayout.TotalPageCount, options);
-        
-        var treeRef = fromFile.PageTree;
-        var tree = fromFile.GetContent(treeRef) as PDFDictionary;
-        if (null == tree)
+        PDFObjectRef[] overlayReferences = null;
+        bool hasOverlays = false;
+        PDFObjectRef[] kids = null;
+        if (null != overlayFile)
         {
-            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
-            return;
-        }
-            
-        var kids = tree["Kids"] as PDFArray;
-        if (null == kids)
-        {
-            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
-            return;
+            if (TryGetAllPageReferences(context, overlayFile, out var found))
+            {
+                overlayReferences = found;
+                hasOverlays = true;
+            }
         }
         
-        var index = GetFirstPageIndex(context, kids);
+        
+        if(!TryGetAllPageReferences(context, fromFile, out kids))
+            return;
+        
+        
+        var start = GetFirstPageIndex(context, kids);
 
-        if (index >= kids.Count)
+        if (start >= kids.Length)
         {
             this.LogOrThrowWarning(context, "The start index is greater than the number of pages found in the document " + fromFile.ToString() + ", so no pages will be output for frame " + this.Frame.ToString());
             return;
         }
         
-        var count = this.GetFramePageCount(context, index, kids);
-        var last = index + count;
-            
+        var count = this.GetFramePageCount(context, start, kids);
+        var last = start + count;
+        var index = start;
+        
         while (index < last)
         {
             var reference = GetPageReference(index, kids, context);
@@ -101,8 +104,73 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
 
                 if (null != pageDict)
                 {
-                    var pageRef = new PDFModifyPageReference(reference, pageDict);
+                    var pageRef = new PDFModifyPageReference(reference, pageDict, fromFile);
                     this.LayoutDocument.OutputPages.Add(pageRef);
+
+                    if (overlayRepeat != FrameOverlayRepeat.None && hasOverlays)
+                    {
+                        PDFObjectRef overlayRef = null;
+                        PDFDictionary overlayDictionary = null;
+                        var overlayPgIndex = 0;
+                        
+                        switch (overlayRepeat)
+                        {
+                            case FrameOverlayRepeat.All:
+                                //A page from the overlay will be on every output page of the underlying pages.
+                                //Repeating each of the pages from the overlay in order 
+                                if (overlayReferences.Length > 1)
+                                {
+                                    overlayPgIndex = (index - start) % overlayReferences.Length;
+                                }
+
+                                overlayRef = overlayReferences[overlayPgIndex];
+                                overlayDictionary = overlayFile.GetContent(overlayRef) as PDFDictionary;
+                                
+                                pageRef.SetOverlay(overlayRef, overlayDictionary, overlayFile);
+                                break;
+                            
+                            case FrameOverlayRepeat.Once:
+                                //All pages from the overlay will be displayed once and once only
+                                //on each consecutive page of the underlying pages.
+                                
+                                var refIndex = (index - start);
+                                if (refIndex < overlayReferences.Length)
+                                {
+                                    overlayRef = overlayReferences[refIndex];
+                                    overlayDictionary = overlayFile.GetContent(overlayRef) as PDFDictionary;
+                                    
+                                    pageRef.SetOverlay(overlayRef, overlayDictionary, overlayFile);
+                                }
+                                break;
+                            
+                            case FrameOverlayRepeat.First:
+                                //Only the first page of the overlay document will show on the first page of the underlying pages
+                                if (index == start)
+                                {
+                                    overlayRef = overlayReferences[0];
+                                    overlayDictionary = overlayFile.GetContent(overlayRef) as PDFDictionary;
+
+                                    pageRef.SetOverlay(overlayRef, overlayDictionary, overlayFile);
+                                }
+                                break;
+                            
+                            case FrameOverlayRepeat.Last:
+                                //Only the last page of the overlay document will show on the last page of the underlying pages.
+                                if (index == last - 1)
+                                {
+                                    overlayRef = overlayReferences[overlayReferences.Length - 1];
+                                    overlayDictionary = overlayFile.GetContent(overlayRef) as PDFDictionary;
+
+                                    pageRef.SetOverlay(overlayRef, overlayDictionary, overlayFile);
+                                }
+                                break;
+                            
+                            default:
+                                ; //Do Nothing
+                                break;
+                        }
+                        
+                    }
                 }
             }
             else
@@ -112,6 +180,37 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
 
             index++;
         }
+    }
+    
+
+    protected bool TryGetAllPageReferences(PDFLayoutContext context, PDFFile fromFile, out PDFObjectRef[] references)
+    {
+        references = null;
+        var treeRef = fromFile.PageTree;
+        var tree = fromFile.GetContent(treeRef) as PDFDictionary;
+        if (null == tree)
+        {
+            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
+            return false;
+        }
+            
+        var kids = tree["Kids"] as PDFArray;
+        if (null == kids)
+        {
+            this.LogOrThrowWarning(context, "Page tree could not be found in the document " + fromFile.ToString());
+            return false;
+        }
+
+        List<PDFObjectRef> all = new List<PDFObjectRef>(kids.Count);
+        foreach (var kid in kids)
+        {
+            var oref = kid as PDFObjectRef;
+            if(null != oref)
+                all.Add(oref);
+        }
+
+        references = all.ToArray();
+        return references.Length > 0;
     }
     
 
@@ -143,7 +242,7 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         return null;
     }
     
-    protected int GetFirstPageIndex(PDFLayoutContext context, PDFArray pageTree)
+    protected int GetFirstPageIndex(PDFLayoutContext context, PDFObjectRef[] pageTree)
     {
         var index = this.Frame.PageStartIndex;
         if (index < 0)
@@ -152,44 +251,36 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
         return index;
     }
 
-    protected int GetFramePageCount(PDFLayoutContext context, int startIndex, PDFArray pageTree)
+    protected int GetFramePageCount(PDFLayoutContext context, int startIndex, PDFObjectRef[] pageTree)
     {
         var count = this.Frame.PageInsertCount;
         
         if (count <= 0)
             return 0;
         else if (count == HTMLFrame.AppendAllPageCount)
-            count = pageTree.Count - startIndex;
-        else if (startIndex + count > pageTree.Count)
+            count = pageTree.Length - startIndex;
+        else if (startIndex + count > pageTree.Length)
         {
             this.LogOrThrowWarning(context, "The requested number of pages for frame " + this.Frame.ToString() + " is greater than the available number of pages in the document (based on starting index).");
-            count = pageTree.Count - startIndex;
+            count = pageTree.Length - startIndex;
         }
 
         return count;
     }
 
-    protected PDFObjectRef GetPageReference(int pgIndex, PDFArray pageRefArray, PDFLayoutContext context)
+    protected PDFObjectRef GetPageReference(int pgIndex, PDFObjectRef[] pageRefArray, PDFLayoutContext context)
     {
         if (pgIndex < 0)
         {
             return null;
         }
-        else if (pgIndex >= pageRefArray.Count)
+        else if (pgIndex >= pageRefArray.Length)
         {
             return null;
         }
         else
         {
-            var found = pageRefArray[pgIndex];
-            if (found is PDFObjectRef objectRef)
-                return objectRef;
-            else
-            {
-                LogOrThrowWarning(context, "Page " + pgIndex +
-                                           " was not an object reference within the page tree for the source pdf document. Cannot insert the requested page from the original file.");
-                return null;
-            }
+            return pageRefArray[pgIndex];
         }
     }
 

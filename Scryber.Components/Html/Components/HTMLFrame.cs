@@ -40,6 +40,12 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
     /// </summary>
     [PDFAttribute("data-page-count")]
     public int PageInsertCount { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the repeating option for any inline content that is overlaying the original source document content.
+    /// </summary>
+    [PDFAttribute("data-over-repeat")]
+    public FrameOverlayRepeat OverlayRepeat { get; set; }
 
     [PDFElement("html")]
     public HTMLDocument InnerHtml { get; set; }
@@ -108,6 +114,11 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
     /// Gets or sets the reference to the file referenced by this frame.
     /// </summary>
     public Modifications.FrameFileReference FileReference { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the reference to the file that will be an overlay content stream over the top of the referenced source.
+    /// </summary>
+    public Modifications.FrameFileReference OverReference { get; set; }
 
 
     private ModificationType _modType = ModificationType.None;
@@ -133,8 +144,10 @@ public class HTMLFrame : ContainerComponent, IPDFViewPortComponent, INamingConta
     protected HTMLFrame(ObjectType type) 
         : base(type)
     {
+        //Set defaults
         this.PageStartIndex = AppendPageIndex;
         this.PageInsertCount = AppendAllPageCount;
+        this.OverlayRepeat = FrameOverlayRepeat.Once;
     }
 
 

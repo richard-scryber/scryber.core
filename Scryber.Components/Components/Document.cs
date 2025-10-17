@@ -294,6 +294,21 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public string DocumentIdentifierPrefix
+        
+        
+        private string _idPrefix = "";
+
+        /// <summary>
+        /// Gets the prefix for unique resources, fonts, and ID's that the document uses to identify individual components.
+        /// </summary>
+        public string DocumentIdentifierPrefix
+        {
+            get { return _idPrefix; }
+        }
+        
+        #endregion
+
         #region public string DocumentFormatting {get;set;}
 
 
@@ -1233,6 +1248,7 @@ namespace Scryber.Components
         #region GetIncrementID
 
         private Dictionary<ObjectType, int> _incrementids = null;
+        
 
         /// <summary>
         /// Gets the next unique id for an Component of a specific type
@@ -1242,7 +1258,12 @@ namespace Scryber.Components
         public override string GetIncrementID(ObjectType type)
         {
             if (this._incrementids == null)
+            {
                 this._incrementids = new Dictionary<ObjectType, int>();
+            }
+            if(string.IsNullOrEmpty(this._idPrefix))
+                this._idPrefix = GetRandomPrefix() + "_";
+
             int lastindex;
 
             if (this._incrementids.TryGetValue(type, out lastindex) == false)
@@ -1250,7 +1271,8 @@ namespace Scryber.Components
 
             lastindex += 1;
             this._incrementids[type] = lastindex;
-            string id = type.ToString() + lastindex.ToString();
+            
+            string id = this._idPrefix + type.ToString() + lastindex.ToString();
 
             if (null != _originalPageResources)
             {
@@ -1259,11 +1281,23 @@ namespace Scryber.Components
                 {
                     lastindex += 1;
                     this._incrementids[type] = lastindex;
-                    id = type.ToString() + lastindex.ToString();
+                    id = this._idPrefix + type.ToString()  + lastindex.ToString();
                 }
             }
             return id;
 
+        }
+
+        private static string GetRandomPrefix(int length = 3)
+        {
+            var rnd = new Random();
+            char[] all = new char[length];
+            for (var i = 0; i < length; i++)
+            {
+                all[i] = (char)((int)'a' + rnd.Next(25));
+            }
+
+            return new string(all);
         }
 
         #endregion

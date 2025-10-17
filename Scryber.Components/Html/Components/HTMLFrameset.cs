@@ -260,6 +260,10 @@ public class HTMLFrameset : ContainerComponent
 
                     frame.FileReference = fref;
                 }
+                else if (type.Equals(MimeType.xHtml) || type.Equals(MimeType.xHtmlSimple))
+                {
+                    type = MimeType.xHtml;
+                }
                 else
                 {
                     var exist = refs.Find(one => {
@@ -278,6 +282,15 @@ public class HTMLFrameset : ContainerComponent
                     }
 
                     frame.FileReference = fref;
+                }
+
+                if (null != frame.InnerHtml)
+                {
+                    var doc = frame.InnerHtml;
+                    fref = new FrameTemplateContentReference(frame, doc);
+                    refs.Add(fref);
+                    fref.DocumentFileIndex = refs.Count;
+                    frame.OverReference = fref;
                 }
             }
             else if(null != frame.InnerHtml)

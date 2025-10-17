@@ -153,10 +153,10 @@ namespace Scryber.Html
         public const string GradientStopColor = "stop-color";
         public const string GradientStopOffset = "stop-offset";
         public const string GradientStopOpacity = "stop-opacity";
-        public const string GradientX1Position = "x1";
-        public const string GradientY1Position = "y1";
-        public const string GradientX2Position = "x2";
-        public const string GradientY2Position = "y2";
+        public const string X1Position = "x1";
+        public const string Y1Position = "y1";
+        public const string X2Position = "x2";
+        public const string Y2Position = "y2";
         public const string GradientSpreadMode = "spreadMethod";
         
 

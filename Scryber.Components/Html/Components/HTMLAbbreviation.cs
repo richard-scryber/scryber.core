@@ -28,8 +28,10 @@ namespace Scryber.Html.Components
         public HTMLAbbreviation() : this(HTMLObjectTypes.Abbreviation)
         { }
 
-        protected HTMLAbbreviation(ObjectType type): base(type)
-        { }
+        protected HTMLAbbreviation(ObjectType type) : base(type)
+        {
+            
+        }
 
         /// <summary>
         /// default output style is italic

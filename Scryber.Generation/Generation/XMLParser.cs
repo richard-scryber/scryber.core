@@ -249,6 +249,7 @@ namespace Scryber.Generation
         }
 
         #endregion
+        
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 

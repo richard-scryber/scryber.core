@@ -77,7 +77,7 @@ namespace Scryber.Components
         /// If left undefined then the value will be (attempted to be) determined.
         /// </summary>
         [PDFAttribute("action")]
-        public LinkAction Action
+        public virtual LinkAction Action
         {
             get { return _action; }
             set { _action = value; }

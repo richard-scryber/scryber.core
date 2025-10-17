@@ -690,10 +690,11 @@ namespace Scryber.Core.UnitTests.Html
             var section = (Section) pg;
             
             //Simple Table
+            var prefix = doc.DocumentIdentifierPrefix;
             
-            //table id='simpleTable' class='tblClass' style='padding:5pt' hidden='' title='Simple Table' 
+                         //table id='simpleTable' class='tblClass' style='padding:5pt' hidden='' title='Simple Table' 
             var table = (TableGrid) section.FindAComponentById("simpleTable");
-            AssertTable(table, typeof(HTMLTableGrid), "simpleTable", "tblClass", 2, 5.0, true,"Simple Table");
+            AssertTable(table, typeof(HTMLTableGrid),"simpleTable", "tblClass", 2, 5.0, true,"Simple Table");
             
             //tr id='simpleRow' class='trClass' style='padding:5pt' hidden='hidden' title='row'
             var row = table.Rows[0];
@@ -749,7 +750,7 @@ namespace Scryber.Core.UnitTests.Html
             //outside of tbody, with auto assigned id
             //tr
             row = table.Rows[3];
-            AssertRowContent(row, typeof(HTMLTableRow), "trow1", null, 3, null, true, string.Empty);
+            AssertRowContent(row, typeof(HTMLTableRow), doc.DocumentIdentifierPrefix + "trow1", null, 3, null, true, string.Empty);
             Assert.IsInstanceOfType(row.Parent, typeof(HTMLTableGrid), "The second body row's parent was not table");
 
             //th id='complexTh1' class='tdComplex' title='Single Cell 1' scope='row' >Row Header</th

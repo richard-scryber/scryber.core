@@ -270,10 +270,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.GradientStopColor, new CSSSVGGradientStopColor());
             all.Add(CSSStyleItems.GradientStopOpacity, new CSSSVGGradientStopOpacity());
             
-            all.Add(CSSStyleItems.GradientX1Position, new CSSSVGLinearGradientX1Position());
-            all.Add(CSSStyleItems.GradientX2Position, new CSSSVGLinearGradientX2Position());
-            all.Add(CSSStyleItems.GradientY1Position, new CSSSVGLinearGradientY1Position());
-            all.Add(CSSStyleItems.GradientY2Position, new CSSSVGLinearGradientY2Position());
+            all.Add(CSSStyleItems.X1Position, new CSSSVGx1Position());
+            all.Add(CSSStyleItems.X2Position, new CSSSVGx2Position());
+            all.Add(CSSStyleItems.Y1Position, new CSSSVGy1Position());
+            all.Add(CSSStyleItems.Y2Position, new CSSSVGy2Position());
             all.Add(CSSStyleItems.GradientSpreadMode, new CSSSVGLinearGradientSpreadMode());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);

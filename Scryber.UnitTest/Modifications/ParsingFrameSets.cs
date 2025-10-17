@@ -2420,4 +2420,73 @@ public class ParsingFrameSets_Test
 
         }
     }
+    
+    [TestMethod]
+    public void Frameset_40_ParseFrameWithSrcAndOverlayContent()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='1'>" +
+                  "<html><body><h1 style='position: absolute; left: 20pt; top: 20pt; color: red'>This is the inner heading within the body of another page</h1></body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(1, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            using (var output = DocStreams.GetOutputStream("Frameset_40_ParseFrameWithSrcAndOverlayContent.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                
+                Assert.Inconclusive("Need to validate the inclusion of content as an overlay");
+            }
+        }
+
+
+    }
 }

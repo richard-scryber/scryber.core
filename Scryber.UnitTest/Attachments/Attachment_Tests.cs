@@ -131,7 +131,7 @@ namespace Scryber.Core.UnitTests.Attachments
             var one = dictionary.First();
             
             Assert.IsNotNull(one);
-            Assert.AreEqual("hBdy1_landscapeAttachment", one.Key);
+            Assert.AreEqual(doc.DocumentIdentifierPrefix + "hBdy1_landscapeAttachment", one.Key);
             var embed = one.Value;
             Assert.IsNotNull(embed);
             Assert.IsNotNull(embed.FileData);
@@ -310,7 +310,7 @@ namespace Scryber.Core.UnitTests.Attachments
             var one = dictionary.First();
             
             Assert.IsNotNull(one);
-            Assert.AreEqual("hBdy1_landscapeAttachment", one.Key);
+            Assert.AreEqual(doc.DocumentIdentifierPrefix + "hBdy1_landscapeAttachment", one.Key);
             var embed = one.Value;
             Assert.IsNotNull(embed);
             Assert.IsNotNull(embed.FileData);
@@ -323,7 +323,7 @@ namespace Scryber.Core.UnitTests.Attachments
             var second = dictionary.Last();
             
             Assert.IsNotNull(second);
-            Assert.AreEqual("hBdy1_landscapeAttachmentEmpty", second.Key);
+            Assert.AreEqual(doc.DocumentIdentifierPrefix + "hBdy1_landscapeAttachmentEmpty", second.Key);
             var embed2 = second.Value;
             Assert.IsNotNull(embed2);
             Assert.IsNull(embed2.FileData);

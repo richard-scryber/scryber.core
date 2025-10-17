@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='false' parser-mode='strict' log-level='verbose'  ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .canvas{ background-color: #AAA; margin: 20pt;}
+        
+    </style>
+</head>
+<body>
+    <p>This is above the svg canvas</p>
+    <svg id="simplesvg" xmlns="http://www.w3.org/2000/svg" width="300" height="200" class="canvas" >
+        <style>
+            line {
+                x: 10;
+                y: 10;
+                x2: 290;
+                y2: 190;
+            }
+            
+        </style>
+        <line y1="10" y2="190" x1="10" x2="290" stroke="Green" stroke-width="2" ></line>
+    </svg>
+    <p>This is after the svg canvas</p>
+    
+</body>
+</html>

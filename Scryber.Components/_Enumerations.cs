@@ -176,6 +176,14 @@ namespace Scryber
         Replace
     }
 
+    public enum FrameOverlayRepeat
+    {
+        None,
+        First,
+        Once,
+        Last,
+        All
+    }
 
     public enum TextLengthAdjustType
     {
