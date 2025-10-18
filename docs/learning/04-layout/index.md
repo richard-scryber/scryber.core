@@ -5,7 +5,7 @@ nav_order: 4
 parent: Learning Guides
 parent_url: /learning/
 has_children: true
-has_toc: true
+has_toc: false
 ---
 
 # Layout & Positioning
@@ -17,13 +17,13 @@ Master page-based layout, positioning, and document structure to create professi
 ## Table of Contents
 
 1. [Page Sizes & Orientation](01_page_sizes_orientation.md) - Standard/custom sizes, portrait/landscape
-2. [Page Margins](02_page_margins.md) - Margins, printable area, margin boxes
-3. [Sections](03_sections.md) - Multiple sections, section-specific settings
-4. [Page Breaks](04_page_breaks.md) - Page break control, pagination, orphans/widows
-5. [Column Layout](05_column_layout.md) - Multi-column text, column breaks, spans
-6. [Positioning](06_positioning.md) - Static/relative/absolute, overlays, position mode
+2. [Margins & Padding](02_margins_padding.md) - Page margins, element spacing, box model
+3. [Sections & Page Breaks](03_sections_page_breaks.md) - Page break control, pagination, keeping content together
+4. [Multi-Column Layouts](04_multi_column.md) - Table-cell layouts, column widths, gutters
+5. [Positioning](05_positioning.md) - Static/relative/absolute, overlays, watermarks
+6. [Table Layouts](06_tables.md) - Data tables, table sizing, borders, page breaks
 7. [Headers & Footers](07_headers_footers.md) - Running headers/footers, page numbers
-8. [Layout Best Practices](08_layout_best_practices.md) - Strategies, patterns, troubleshooting
+8. [Layout Best Practices](08_layout_best_practices.md) - Professional patterns, optimization, troubleshooting
 
 ---
 
@@ -115,57 +115,64 @@ This series covers everything you need for professional document layout:
 ### 1. [Page Sizes & Orientation](01_page_sizes_orientation.md)
 - Standard page sizes (Letter, A4, Legal)
 - Custom page sizes
-- Portrait vs landscape
-- Setting size in CSS and sections
+- Portrait vs landscape orientation
+- Setting size with @page rule
 - Mixing orientations in one document
 
-### 2. [Page Margins](02_page_margins.md)
-- Page margins and printable area
-- Setting margins in CSS
-- Margin boxes for headers/footers
-- Section-specific margins
+### 2. [Margins & Padding](02_margins_padding.md)
+- Understanding the box model
+- Page margins with @page rule
+- Element margins and padding
+- Margin collapse behavior
+- Box-sizing property
+- Consistent spacing scales
 
-### 3. [Sections](03_sections.md)
-- Section element for document parts
-- Multiple sections in one document
-- Section-specific settings (size, orientation, margins)
-- Section breaks and navigation
-
-### 4. [Page Breaks](04_page_breaks.md)
-- page-break-before and page-break-after
+### 3. [Sections & Page Breaks](03_sections_page_breaks.md)
+- page-break-before and page-break-after properties
 - page-break-inside to avoid splitting
 - Controlling pagination
 - Orphans and widows
 - Keeping content together
+- Multi-section documents
 
-### 5. [Column Layout](05_column_layout.md)
-- Multi-column text flow
-- Column count and width
-- Column gap and rules (dividers)
-- Column breaks
-- Column spans
+### 4. [Multi-Column Layouts](04_multi_column.md)
+- Table-cell method for columns
+- Equal and unequal column widths
+- Adding gutters (spacing)
+- Vertical alignment
+- Borders between columns
+- Why flexbox/grid don't work in PDF
 
-### 6. [Positioning](06_positioning.md)
+### 5. [Positioning](05_positioning.md)
 - Position property (static, relative, absolute)
-- Top, left, right, bottom properties
-- Positioning context
+- Positioning context and offset values
+- Centering with absolute positioning
+- Z-index for stacking order
 - Overlays and watermarks
-- **Position mode for precise placement**
+- Badge positioning
+
+### 6. [Table Layouts](06_tables.md)
+- Data tables vs layout tables
+- Table sizing (auto vs fixed)
+- Column width control
+- Border styles and alternating rows
+- Table page breaks
+- Repeating headers
 
 ### 7. [Headers & Footers](07_headers_footers.md)
-- Page headers and footers
-- Running headers/footers
-- First/last page variations
-- Continuation headers/footers
-- Dynamic content in headers
-- Page numbers and counts
+- Creating page headers and footers
+- Page numbering
+- Dynamic content in headers/footers
+- Scryber-specific implementation
+- Header/footer styling
 
 ### 8. [Layout Best Practices](08_layout_best_practices.md)
-- Layout strategies
-- Performance considerations
-- Cross-page content handling
-- Common layout patterns
-- Troubleshooting layout issues
+- Core layout principles
+- Professional layout patterns
+- Performance optimization
+- Common pitfalls and solutions
+- Responsive layout strategies
+- Production checklist
 
 ## Prerequisites
 
@@ -521,9 +528,10 @@ Content flows from page to page automatically:
 Ready to master PDF layout? Start with [Page Sizes & Orientation](01_page_sizes_orientation.md) to understand the foundation.
 
 Jump to specific topics:
-- [Page Breaks](04_page_breaks.md) for pagination control
-- [Positioning](06_positioning.md) for overlays and watermarks
+- [Sections & Page Breaks](03_sections_page_breaks.md) for pagination control
+- [Positioning](05_positioning.md) for overlays and watermarks
 - [Headers & Footers](07_headers_footers.md) for running content
+- [Table Layouts](06_tables.md) for data presentation
 
 ---
 

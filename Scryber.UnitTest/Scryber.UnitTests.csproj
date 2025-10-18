@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\" />
-    <Folder Include="Binding\" />
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
     <Folder Include="Mocks\Fonts\Avenir\" />

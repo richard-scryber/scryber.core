@@ -2434,7 +2434,7 @@ public class ParsingFrameSets_Test
                   "</head>" +
                   "<frameset>" +
                   "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='1'>" +
-                  "<html><body><h1 style='position: absolute; left: 20pt; top: 20pt; color: red'>This is the inner heading within the body of another page</h1></body></html>" +
+                  "<html><body><h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is the inner heading within the body of another page</h1></body></html>" +
                   "</frame>" +
                   "</frameset>" +
                   "</html>";
@@ -2467,10 +2467,11 @@ public class ParsingFrameSets_Test
             Assert.IsNotNull(lit);
             Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
 
+            
             using (var output = DocStreams.GetOutputStream("Frameset_40_ParseFrameWithSrcAndOverlayContent.pdf"))
             {
                 doc.SaveAsPDF(output);
-                
+                output.Flush();
 
                 var fref = doc.Frameset.RootReference;
                 Assert.IsNotNull(fref);
@@ -2481,12 +2482,911 @@ public class ParsingFrameSets_Test
                 fref = doc.Frameset.DependantReferences[0];
                 Assert.IsNotNull(fref);
                 Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(1, kids.Count);
+                
+                Assert.AreEqual(1, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(contents);
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+
                 
                 
-                Assert.Inconclusive("Need to validate the inclusion of content as an overlay");
             }
+            
+            
+            
+            
         }
 
+
+    }
+    
+    
+    [TestMethod]
+    public void Frameset_41_ParseFrameWithSrc2PagesAndOverlayContent1Page()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='2'>" +
+                  "<html><body><h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is the inner heading within the body of another page</h1></body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(1, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_41_ParseFrameWithSrc2PagesAndOverlayContent1Page.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(2, kids.Count);
+                
+                Assert.AreEqual(2, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(contents);
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+
+                
+                //Second Page No Overlay
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contentRef = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(contentRef); //Should have the original base content and nothing more.
+                //Assert.AreEqual(2, contents.Count); 
+                
+            }
+            
+            
+            
+            
+        }
+
+
+    }
+    
+    
+    [TestMethod]
+    public void Frameset_42_ParseFrameWithSrc3PagesAndOverlayContent1PageNotUsed()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='3' data-over-repeat='{{if(includeOverlay, \"All\",\"None\")}}'>" +
+                  "<html><body><h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is the inner heading within the body of another page</h1></body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            //Set the include overlay to false so the overlay is not shown
+            doc.Params["includeOverlay"] = false;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(1, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_42_ParseFrameWithSrc3PagesAndOverlayContent1PageNotUsed.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(3, kids.Count);
+                
+                Assert.AreEqual(3, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(contents);  //No Overlay
+
+                
+                //Second Page With No Overlay
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content2 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content2);  //No Overlay
+                
+                
+                //Second Page With No Overlay
+                
+                pgRef = kids[2] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content3 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content3);  //No Overlay
+                
+            }
+            
+            
+            
+            
+        }
+
+
+    }
+    
+    
+    [TestMethod]
+    public void Frameset_43_ParseFrameWithSrc4PagesAndOverlayContent2PageOnce()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='4' data-over-repeat='{{if(includeOverlay, \"Once\",\"None\")}}'>" +
+                  "<html><body>" + 
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg); page-break-after: always'>This is the inner heading within the body of another page</h1>" +
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is on the second page</h1>" +
+                  "</body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            //Set the include overlay to false so the overlay is not shown
+            doc.Params["includeOverlay"] = true;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(2, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_43_ParseFrameWithSrc3PagesAndOverlayContent2PageOnce.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(4, kids.Count);
+                
+                Assert.AreEqual(4, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(contents); 
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+                
+                //Second Page With Overlay
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content2 = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(content2);  //No Overlay
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+                Assert.AreNotEqual(contents[1], content2[1]); //Not the same page
+                
+                //Third Page With NO Overlay
+                
+                pgRef = kids[2] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content3 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content3);  //No Overlay
+                
+                //Fourth Page With NO Overlay
+                
+                pgRef = kids[3] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content4 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content4);  //No Overlay
+                
+                
+            }
+            
+            
+            
+            
+        }
+
+
+    }
+    
+    /// <summary>
+    /// Testing that a 2 page overlay repeats on all pages sequentially
+    /// </summary>
+    /// <exception cref="IOException"></exception>
+    [TestMethod]
+    public void Frameset_44_ParseFrameWithSrc4PagesAndOverlayContent2PageRepeat()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='4' data-over-repeat='{{if(includeOverlay, \"Repeat\",\"None\")}}'>" +
+                  "<html><body>" + 
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg); page-break-after: always'>This is the inner heading within the body of another page</h1>" +
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is on the second and fourth page</h1>" +
+                  "</body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            //Set the include overlay to false so the overlay is not shown
+            doc.Params["includeOverlay"] = true;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(2, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_44_ParseFrameWithSrc3PagesAndOverlayContent2PageRepeat.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(4, kids.Count);
+                
+                Assert.AreEqual(4, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(contents); 
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+                
+                //Second Page With Overlay
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content2 = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(content2);
+                Assert.AreEqual(2, content2.Count); //Should have the original base content and the layer above.
+                Assert.AreNotEqual(contents[1], content2[1]); //Not the same page
+                
+                //Third Page With first page repeat
+                
+                pgRef = kids[2] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content3 = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(content3);  
+                Assert.AreEqual(2, content3.Count); //Should have the original base content and the layer above.
+                Assert.AreEqual(contents[1], content3[1]); //Same as the first page
+                
+                //Fourth Page With second page repeat
+                
+                pgRef = kids[3] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content4 = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(content4);  
+                Assert.AreEqual(2, content4.Count); //Should have the original base content and the layer above.
+                Assert.AreEqual(content2[1], content4[1]); //Same as the second page
+                
+                
+            }
+            
+        }
+        
+
+    }
+    
+    
+    /// <summary>
+    /// Testing the first page is the only page with content with a 2 page overlay.
+    /// </summary>
+    /// <exception cref="IOException"></exception>
+    [TestMethod]
+    public void Frameset_45_ParseFrameWithSrc4PagesAndOverlayContent2PageFirst()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='4' data-over-repeat='{{if(includeOverlay, \"First\",\"None\")}}'>" +
+                  "<html><body>" + 
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg); page-break-after: always'>This is the inner heading within the body of another page</h1>" +
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is on the second page</h1>" +
+                  "</body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            //Set the include overlay to false so the overlay is not shown
+            doc.Params["includeOverlay"] = true;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(2, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_45_ParseFrameWithSrc4PagesAndOverlayContent2PageFirst.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(4, kids.Count);
+                
+                Assert.AreEqual(4, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(contents); 
+                Assert.AreEqual(2, contents.Count); //Should have the original base content and the layer above.
+                
+                //Second Page With no Overlay - just the first page
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content2 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content2); //Should have JUST the original base content.
+                
+                
+                //Third Page With no Overlay
+                
+                pgRef = kids[2] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content3 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content3);  //Should have JUST the original base content.
+                
+                //Fourth Page With no overlay
+                
+                pgRef = kids[3] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content4 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content4);  //Should have JUST the original base content.
+                
+                
+            }
+            
+        }
+        
+        //TEST LAST
+
+    }
+    
+    /// <summary>
+    /// Testing the last page is the only page with content with a 2 page overlay.
+    /// </summary>
+    /// <exception cref="IOException"></exception>
+    [TestMethod]
+    public void Frameset_46_ParseFrameWithSrc4PagesAndOverlayContent2PageLast()
+    {
+        const string ExpressionsPDFPath =
+            "https://raw.githubusercontent.com/richard-scryber/scryber.core/refs/heads/master/docs/images/Crib%20Sheet%20-%20Expressions.pdf";
+        
+        var src = "<?scryber parser-mode='strict' ?>" +
+                  "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                  "<head>" +
+                  "<title>Parse Single Frame With Inner Content</title>" +
+                  "</head>" +
+                  "<frameset>" +
+                  "<frame src='" + ExpressionsPDFPath + "' data-page-start='1' data-page-count='4' data-over-repeat='{{if(includeOverlay, \"Last\",\"None\")}}'>" +
+                  "<html><body>" + 
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg); page-break-after: always'>This is the inner heading within the body of another page</h1>" +
+                              "<h1 style='position: absolute; left: 50pt; top: 200pt; color: red; transform: rotate(-45deg);'>This is on the second page</h1>" +
+                  "</body></html>" +
+                  "</frame>" +
+                  "</frameset>" +
+                  "</html>";
+        using (var stream = new StringReader(src))
+        {
+            using var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent) as HTMLDocument;
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            //Set the include overlay to false so the overlay is not shown
+            doc.Params["includeOverlay"] = true;
+            Assert.IsNotNull(doc);
+            
+            Assert.IsNull(doc.Body);
+            Assert.IsNotNull(doc.Frameset);
+
+            Assert.IsNotNull(doc.Frameset.Frames);
+            Assert.AreEqual(1, doc.Frameset.Frames.Count);
+
+            var frame = doc.Frameset.Frames[0];
+            Assert.IsNotNull(frame);
+
+            var innerDoc = frame.InnerHtml;
+            Assert.IsNotNull(innerDoc);
+
+
+            Assert.IsNotNull(innerDoc.Body);
+            Assert.AreEqual(2, innerDoc.Body.Contents.Count);
+
+            var h1 = innerDoc.Body.Contents[0] as Head1;
+            Assert.IsNotNull(h1);
+            Assert.AreEqual(1, h1.Contents.Count);
+            var lit = h1.Contents[0] as TextLiteral;
+            Assert.IsNotNull(lit);
+            Assert.AreEqual("This is the inner heading within the body of another page", lit.Text);
+
+            
+            using (var output = DocStreams.GetOutputStream("Frameset_46_ParseFrameWithSrc4PagesAndOverlayContent2PageLast.pdf"))
+            {
+                doc.SaveAsPDF(output);
+                output.Flush();
+
+                var fref = doc.Frameset.RootReference;
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+                
+                Assert.IsNotNull(doc.Frameset.DependantReferences);
+                Assert.AreEqual(1, doc.Frameset.DependantReferences.Count);
+                fref = doc.Frameset.DependantReferences[0];
+                Assert.IsNotNull(fref);
+                Assert.IsNotNull(fref.FrameFile);
+
+
+                //Check the pages and contents for 1 page with 2 content streams
+                
+                output.Position = 0;
+                var file = PDFFile.Load(output, doc.TraceLog);
+
+                if (null == file)
+                    throw new System.IO.IOException("Could not check the output");
+
+                var catalog = file.DocumentCatalog;
+                Assert.IsNotNull(catalog);
+
+                var pgRef = catalog["Pages"] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                var pages = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pages);
+
+                var kids = pages["Kids"] as PDFArray;
+                Assert.IsNotNull(kids);
+                Assert.AreEqual(4, kids.Count);
+                
+                Assert.AreEqual(4, ((PDFNumber)pages["Count"]).Value);
+
+                pgRef = kids[0] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+
+                //First page with overlay
+                
+                var pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var contents = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(contents);  //Should just have the original base content
+                
+                
+                //Second Page With no Overlay - just the first page
+                
+                pgRef = kids[1] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content2 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content2); //Should have JUST the original base content.
+                
+                
+                //Third Page With no Overlay
+                
+                pgRef = kids[2] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content3 = pg["Contents"] as PDFObjectRef;
+                Assert.IsNotNull(content3);  //Should have JUST the original base content.
+                
+                //Fourth Page With no overlay
+                
+                pgRef = kids[3] as PDFObjectRef;
+                Assert.IsNotNull(pgRef);
+                
+                pg = file.GetContent(pgRef) as PDFDictionary;
+                Assert.IsNotNull(pg);
+
+                var content4 = pg["Contents"] as PDFArray;
+                Assert.IsNotNull(content4); 
+                Assert.AreEqual(2, content4.Count); //Should have the original base content and the layer above from the last page.
+                
+            }
+            
+        }
+        
+        //TEST LAST
 
     }
 }

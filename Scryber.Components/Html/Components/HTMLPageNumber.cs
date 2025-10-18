@@ -70,6 +70,7 @@ namespace Scryber.Html.Components
         protected HTMLPageNumber(ObjectType type) : base(type)
         { }
 
+        private const string CurrentPage = "{0}";
         private const string TotalPageCountFormat = "{1}";
         private const string SectionPage = "{2}";
         private const string SectionTotal = "{3}";
@@ -96,6 +97,9 @@ namespace Scryber.Html.Components
             {
                 switch (this.Property.ToLower())
                 {
+                    case "current":
+                    case "c":
+                        return CurrentPage;
                     case ("total"):
                     case ("t"):
                         return TotalPageCountFormat;
@@ -139,5 +143,25 @@ namespace Scryber.Html.Components
 
         #endregion
 
+    }
+    
+    
+    
+    [PDFParsableComponent("page-number")]
+    public class HTMLCurrentPageNumber : HTMLPageNumber
+    {
+        public HTMLCurrentPageNumber()
+        {
+            this.Property = "current";
+        }
+    }
+
+    [PDFParsableComponent("page-count")]
+    public class HTMLPageCount : HTMLPageNumber
+    {
+        public HTMLPageCount()
+        {
+            this.Property = "total";
+        }
     }
 }

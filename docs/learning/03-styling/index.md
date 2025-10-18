@@ -5,7 +5,7 @@ nav_order: 3
 parent: Learning Guides
 parent_url: /learning/
 has_children: true
-has_toc: true
+has_toc: false
 ---
 
 # Styling & Appearance

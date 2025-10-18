@@ -70,6 +70,7 @@ The `<frameset>` element acts as a container and has no specific attributes beyo
 | `data-page-start` | integer | Zero-based index of the first page to include from the source. Default is 0 (first page). |
 | `data-page-count` | integer | Number of pages to include from the source. Default is all pages (int.MaxValue). |
 | `data-content` | string | Inline HTML content to use instead of a file source. |
+| `data-over-repeat` | string | Controls how inner content overlays repeat on source pages. Options: `"None"`, `"First"`, `"Once"` (default), `"Last"`, `"Repeat"`. Can use data-binding for dynamic control. |
 | `hidden` | string | Set to "hidden" to skip this frame. Useful for conditional inclusion. |
 
 ---
@@ -115,6 +116,37 @@ Frames can contain inline HTML documents:
                 <div style="padding: 20pt;">
                     <h1>Dynamic Content</h1>
                     <p>This content is generated inline.</p>
+                </div>
+            </body>
+        </html>
+    </frame>
+</frameset>
+```
+
+### Overlay Repeat Behavior
+
+When a frame has both a source file and inner content, the `data-over-repeat` attribute controls how the overlay repeats:
+
+| Value | Behavior |
+|-------|----------|
+| `"None"` | No overlay applied |
+| `"First"` | Overlay on first page only |
+| `"Once"` | **Default**. Overlay on first page of this frame |
+| `"Last"` | Overlay on last page only |
+| `"Repeat"` | Overlay on every page |
+
+**Example with data-binding:**
+
+```html
+<frameset>
+    <!-- Dynamic control via data binding -->
+    <frame src="document.pdf" data-over-repeat="{{if(model.showWatermark, 'Repeat', 'None')}}">
+        <html>
+            <body>
+                <div style="position: fixed; top: 50%; left: 50%;
+                            transform: translate(-50%, -50%) rotate(-45deg);
+                            font-size: 96pt; color: rgba(255, 0, 0, 0.1);">
+                    {{model.watermarkText}}
                 </div>
             </body>
         </html>

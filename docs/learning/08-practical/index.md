@@ -5,7 +5,7 @@ nav_order: 8
 parent: Learning Guides
 parent_url: /learning/
 has_children: true
-has_toc: true
+has_toc: false
 ---
 
 # Practical Applications

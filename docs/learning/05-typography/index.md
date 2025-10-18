@@ -5,31 +5,31 @@ nav_order: 5
 parent: Learning Guides
 parent_url: /learning/
 has_children: true
-has_toc: true
+has_toc: false
 ---
 
 # Typography & Fonts
 
-Master typography and font usage, including custom fonts, Google Fonts, Font Awesome, and CSS counters for professional PDF documents.
+Master typography and font usage, including font properties, custom fonts, text spacing, alignment, and advanced typographic techniques for professional PDF documents.
 
 ---
 
 ## Table of Contents
 
-1. [Font Basics](01_font_basics.md) - Font families, properties, standard PDF fonts
-2. [Custom Fonts](02_custom_fonts.md) - Loading TTF/OTF/WOFF fonts, @font-face, embedding
-3. [Google Fonts](03_google_fonts.md) - Using Google Fonts in PDFs
-4. [Font Awesome](04_font_awesome.md) - Icon fonts integration
-5. [Web Fonts](05_web_fonts.md) - Loading remote fonts, CDNs, caching
-6. [Text Metrics](06_text_metrics.md) - Line height, letter spacing, word spacing
-7. [CSS Counters](07_counters.md) - Automatic numbering, counter functions
-8. [Typography Best Practices](08_typography_best_practices.md) - Selection, readability, licensing
+1. [Font Basics](01_font_basics.md) - Font families, sizes, weights, styles, system fonts
+2. [Custom Fonts](02_custom_fonts.md) - Loading TTF/OTF fonts, @font-face, embedding
+3. [Web Fonts](03_web_fonts.md) - Using Google Fonts locally in PDFs
+4. [Font Styling](04_font_styling.md) - Text transforms, decorations, shadows
+5. [Text Spacing](05_text_spacing.md) - Line height, letter spacing, vertical rhythm
+6. [Text Alignment](06_text_alignment.md) - Horizontal/vertical alignment, justification
+7. [Advanced Typography](07_advanced_typography.md) - Drop caps, special characters, entities
+8. [Typography Best Practices](08_typography_best_practices.md) - Professional patterns, optimization
 
 ---
 
 ## Overview
 
-Typography is crucial for creating professional, readable documents. This series covers everything from basic font properties to loading custom fonts from Google Fonts and Font Awesome, plus advanced features like CSS counters for automatic numbering.
+Typography is crucial for creating professional, readable documents. This series covers everything from basic font properties to loading custom fonts, controlling text spacing and alignment, and applying advanced typographic techniques for polished PDF output.
 
 ## What Makes PDF Typography Special?
 
@@ -38,9 +38,9 @@ PDF typography has unique characteristics:
 - **Font Embedding** - Fonts are embedded in the PDF for consistent rendering
 - **Subsetting** - Only used characters are included to reduce file size
 - **Standard Fonts** - 14 built-in fonts available without embedding
-- **Custom Fonts** - Load TTF, OTF, and WOFF fonts
-- **Remote Fonts** - Use Google Fonts and other web fonts
-- **Icon Fonts** - Font Awesome and other icon libraries
+- **Custom Fonts** - Load TTF and OTF fonts via @font-face
+- **Local Hosting** - Web fonts must be downloaded and hosted locally for PDF
+- **Points Over Pixels** - Use pt units for precision in print
 
 ## Quick Example
 
@@ -48,43 +48,54 @@ PDF typography has unique characteristics:
 <!DOCTYPE html>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <!-- Load Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
-
-    <!-- Load Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
+    <title>Professional Typography</title>
     <style>
+        /* Load custom font */
+        @font-face {
+            font-family: 'Roboto';
+            src: url('./fonts/Roboto-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('./fonts/Roboto-Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+
+        @page {
+            size: Letter;
+            margin: 1in;
+        }
+
         body {
             font-family: 'Roboto', Arial, sans-serif;
             font-size: 11pt;
             line-height: 1.6;
+            color: #333;
         }
 
         h1 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 700;
             font-size: 24pt;
-            counter-increment: chapter;
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2pt;
         }
 
-        h1::before {
-            content: "Chapter " counter(chapter) ": ";
-            color: #666;
-        }
-
-        .icon {
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
+        p {
+            text-align: justify;
+            margin-bottom: 12pt;
         }
     </style>
 </head>
 <body>
-    <h1>Getting Started</h1>
-    <p><span class="icon"></span> Welcome to beautiful typography!</p>
-
-    <h1>Advanced Features</h1>
-    <p><span class="icon"></span> Learn more advanced concepts.</p>
+    <h1>Professional Typography</h1>
+    <p>
+        This example demonstrates professional typography with custom fonts,
+        optimal spacing, and proper alignment for PDF documents.
+    </p>
 </body>
 </html>
 ```
@@ -94,61 +105,60 @@ PDF typography has unique characteristics:
 This series covers comprehensive typography for professional PDFs:
 
 ### 1. [Font Basics](01_font_basics.md)
-- Font families and font stack
+- Font families and font stacks
 - font-family, font-size, font-weight, font-style
-- Generic font families
+- Generic font families (serif, sans-serif, monospace)
 - Standard 14 PDF fonts
-- When to use standard fonts
+- System fonts and fallbacks
 
 ### 2. [Custom Fonts](02_custom_fonts.md)
-- Loading custom fonts
-- Font file formats (TTF, OTF, WOFF)
-- @font-face declaration
-- Font registration and paths
-- Font embedding and subsetting
+- Loading custom fonts with @font-face
+- Font file formats (TTF, OTF)
+- Loading multiple font weights and styles
+- Font paths and organization
+- Font embedding in PDFs
 
-### 3. [Google Fonts](03_google_fonts.md)
+### 3. [Web Fonts](03_web_fonts.md)
 - Using Google Fonts in PDFs
-- Loading fonts from Google Fonts
-- Font selection and pairing
+- Why CDN links don't work for PDF generation
+- Downloading and hosting fonts locally
+- Font format selection
 - Performance considerations
-- Best practices
 
-### 4. [Font Awesome](04_font_awesome.md)
-- Font Awesome integration
-- Icon fonts in PDFs
-- Using icon classes and Unicode
-- Icon sizing and styling
-- Other icon font libraries
+### 4. [Font Styling](04_font_styling.md)
+- Text transforms (uppercase, lowercase, capitalize)
+- Text decorations (underline, line-through, overline)
+- Text shadows (limited support in PDF)
+- Combining text properties
+- Practical styling patterns
 
-### 5. [Web Fonts](05_web_fonts.md)
-- Loading remote fonts
-- Web font URLs and CDNs
-- Font caching
-- Fallback strategies
-- Cross-origin considerations
-
-### 6. [Text Metrics](06_text_metrics.md)
-- Line height (leading)
+### 5. [Text Spacing](05_text_spacing.md)
+- Line height (leading) for readability
 - Letter spacing (tracking)
 - Word spacing
-- Text indentation
-- Optimal readability settings
+- Vertical rhythm and baseline grids
+- Optimal spacing values
 
-### 7. [CSS Counters](07_counters.md)
-- **CSS counters for automatic numbering**
-- counter-reset and counter-increment
-- counter() and counters() functions
-- Nested counters
-- Custom counter styles
-- Practical examples (chapters, sections, figures)
+### 6. [Text Alignment](06_text_alignment.md)
+- Horizontal alignment (left, right, center, justify)
+- Vertical alignment (top, middle, bottom, baseline)
+- Justification considerations
+- Table cell alignment
+- Alignment best practices
+
+### 7. [Advanced Typography](07_advanced_typography.md)
+- Drop caps for articles
+- Special characters and HTML entities
+- Smart quotes and proper dashes
+- Subscript and superscript
+- Ligatures and small caps (when supported)
 
 ### 8. [Typography Best Practices](08_typography_best_practices.md)
-- Font selection and pairing
+- Professional typography patterns
+- Clear visual hierarchy
+- Font loading optimization
 - Readability guidelines
-- Performance and file size
-- Font licensing compliance
-- Accessibility considerations
+- Common mistakes and solutions
 
 ## Prerequisites
 
@@ -220,139 +230,61 @@ These 14 fonts work without embedding:
 
 ```css
 @font-face {
-    font-family: 'CustomFont';
-    src: url('./fonts/CustomFont-Regular.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'CustomFont';
-    src: url('./fonts/CustomFont-Bold.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('./fonts/Roboto-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
 
 body {
-    font-family: 'CustomFont', Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
 }
 ```
 
-### Google Fonts
-
-```html
-<head>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet" />
-
-    <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-        }
-    </style>
-</head>
-```
-
-### Font Awesome Icons
-
-```html
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
-    <style>
-        .fa {
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-        }
-    </style>
-</head>
-<body>
-    <p><span class="fa"></span> Check mark icon</p>
-    <p><span class="fa"></span> Star icon</p>
-</body>
-```
-
-## CSS Counters
-
-### Automatic Chapter Numbering
+### Google Fonts (Local Hosting)
 
 ```css
-body {
-    counter-reset: chapter;
+/* Download fonts from Google Fonts and host locally */
+@font-face {
+    font-family: 'Open Sans';
+    src: url('./fonts/OpenSans-Regular.ttf') format('truetype');
+    font-weight: 400;
 }
 
+@font-face {
+    font-family: 'Open Sans';
+    src: url('./fonts/OpenSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+body {
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+```
+
+### Text Styling
+
+```css
 h1 {
-    counter-increment: chapter;
-    counter-reset: section;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    text-align: center;
 }
 
-h1::before {
-    content: "Chapter " counter(chapter) ": ";
-}
-
-h2 {
-    counter-increment: section;
-}
-
-h2::before {
-    content: counter(chapter) "." counter(section) " ";
+.highlight {
+    text-decoration: underline;
+    color: #2563eb;
 }
 ```
 
-Result:
-```
-Chapter 1: Introduction
-1.1 Getting Started
-1.2 Basic Concepts
-
-Chapter 2: Advanced Topics
-2.1 Advanced Features
-2.2 Best Practices
-```
-
-### Figure Numbering
-
-```css
-body {
-    counter-reset: figure;
-}
-
-.figure {
-    counter-increment: figure;
-}
-
-.figure-caption::before {
-    content: "Figure " counter(figure) ": ";
-    font-weight: bold;
-}
-```
-
-### Nested Lists with Counters
-
-```css
-ol {
-    counter-reset: item;
-    list-style-type: none;
-}
-
-ol li {
-    counter-increment: item;
-}
-
-ol li::before {
-    content: counters(item, ".") " ";
-}
-```
-
-Result:
-```
-1 First item
-  1.1 Nested item
-  1.2 Another nested
-2 Second item
-  2.1 Nested here
-```
-
-## Text Metrics for Readability
+## Text Spacing for Readability
 
 ### Line Height
 
@@ -398,17 +330,34 @@ p {
 ### Professional Document
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap');
+/* Download and host fonts locally for PDF */
+@font-face {
+    font-family: 'Merriweather';
+    src: url('./fonts/Merriweather-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Merriweather';
+    src: url('./fonts/Merriweather-Bold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('./fonts/OpenSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', Arial, sans-serif;
     font-size: 11pt;
     line-height: 1.6;
     color: #333;
 }
 
 h1, h2, h3 {
-    font-family: 'Merriweather', serif;
+    font-family: 'Merriweather', Georgia, serif;
     line-height: 1.3;
 }
 
@@ -434,65 +383,49 @@ code {
 }
 ```
 
-### Invoice with Icons
+### Business Report with Special Characters
 
 ```html
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
-    <style>
-        .icon {
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: #2563eb;
-            margin-right: 5pt;
-        }
-    </style>
-</head>
 <body>
-    <h1><span class="icon"></span> Invoice</h1>
-    <p><span class="icon"></span> Date: {{invoice.date}}</p>
-    <p><span class="icon"></span> Total: {{invoice.total}}</p>
+    <h1>Annual Report 2024</h1>
+    <p>&copy; 2025 Acme Corporation&reg;. All rights reserved.</p>
+
+    <h2>Executive Summary</h2>
+    <p>
+        Revenue increased by 15&ndash;20% year-over-year&mdash;our best
+        performance to date. The temperature range for optimal production
+        is 20&deg;C&ndash;25&deg;C.
+    </p>
+
+    <p>
+        Chemical formula: H<sub>2</sub>O<br/>
+        Einstein&rsquo;s equation: E = mc<sup>2</sup>
+    </p>
 </body>
 ```
 
-### Technical Document with Counter
+### Magazine Article with Drop Cap
 
 ```css
-body {
-    counter-reset: chapter section figure table;
-}
-
-h1 {
-    counter-increment: chapter;
-    counter-reset: section figure table;
-}
-
-h1::before {
-    content: counter(chapter) ". ";
-}
-
-h2 {
-    counter-increment: section;
-}
-
-h2::before {
-    content: counter(chapter) "." counter(section) " ";
-}
-
-.figure {
-    counter-increment: figure;
-}
-
-.figure figcaption::before {
-    content: "Figure " counter(chapter) "-" counter(figure) ": ";
+.article p:first-of-type::first-letter {
+    float: left;
+    font-size: 4em;
+    line-height: 0.8;
+    margin-right: 0.1em;
     font-weight: bold;
+    color: #2563eb;
 }
 
-.table caption::before {
-    counter-increment: table;
-    content: "Table " counter(chapter) "-" counter(table) ": ";
-    font-weight: bold;
+.article p {
+    text-align: justify;
+    line-height: 1.7;
+}
+
+blockquote {
+    border-left: 4pt solid #2563eb;
+    padding-left: 20pt;
+    font-style: italic;
+    margin: 20pt 0;
 }
 ```
 
@@ -500,25 +433,25 @@ h2::before {
 
 **Recommended progression:**
 
-1. **Master Font Basics** - Understand font properties
-2. **Load Custom Fonts** - @font-face and local fonts
-3. **Use Google Fonts** - Access thousands of fonts
-4. **Add Icons** - Font Awesome integration
-5. **Optimize Web Fonts** - Performance and caching
-6. **Fine-Tune Metrics** - Line height and spacing
-7. **Implement Counters** - Automatic numbering
-8. **Apply Best Practices** - Professional typography
+1. **Master Font Basics** - Understand font properties and families
+2. **Load Custom Fonts** - @font-face and TTF/OTF files
+3. **Use Web Fonts** - Google Fonts local hosting for PDF
+4. **Apply Font Styling** - Transforms, decorations, effects
+5. **Control Text Spacing** - Line height, letter spacing, rhythm
+6. **Master Alignment** - Horizontal and vertical text alignment
+7. **Advanced Typography** - Drop caps, special characters, entities
+8. **Apply Best Practices** - Professional patterns and optimization
 
 ## Tips for Success
 
 1. **Limit Font Families** - 2-3 fonts maximum per document
 2. **Pair Fonts Wisely** - Serif for headers, sans-serif for body (or vice versa)
-3. **Embed Only What You Need** - Subsetting reduces file size
-4. **Test Font Loading** - Ensure fonts are available
-5. **Use Fallbacks** - Always specify generic font family
-6. **Check Licensing** - Verify font licenses for PDF embedding
-7. **Optimize Line Height** - 1.4-1.6 for body text
-8. **Use Counters** - Automatic numbering is more maintainable
+3. **Host Fonts Locally** - Download web fonts for reliable PDF generation
+4. **Test Font Loading** - Ensure fonts are available and embedded correctly
+5. **Use Fallbacks** - Always specify complete font stack with generic family
+6. **Optimize Line Height** - 1.5-1.7 for body text, 1.1-1.3 for headings
+7. **Add Letter Spacing** - 1-2pt for uppercase text improves readability
+8. **Use Smart Quotes** - HTML entities for professional typography
 
 ## Common Pitfalls
 
@@ -552,9 +485,9 @@ body { font-family: 'CustomFont', Arial, sans-serif; }
 Ready to master typography? Start with [Font Basics](01_font_basics.md) to understand font properties and the standard PDF fonts.
 
 Jump to specific topics:
-- [Google Fonts](03_google_fonts.md) for easy custom fonts
-- [Font Awesome](04_font_awesome.md) for icons
-- [CSS Counters](07_counters.md) for automatic numbering
+- [Web Fonts](03_web_fonts.md) for using Google Fonts locally
+- [Text Spacing](05_text_spacing.md) for optimal readability
+- [Advanced Typography](07_advanced_typography.md) for professional details
 
 ---
 

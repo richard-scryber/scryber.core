@@ -182,7 +182,7 @@ namespace Scryber
         First,
         Once,
         Last,
-        All
+        Repeat
     }
 
     public enum TextLengthAdjustType

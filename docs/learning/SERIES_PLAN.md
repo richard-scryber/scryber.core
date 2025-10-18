@@ -434,6 +434,9 @@ This document outlines the complete learning series for Scryber.Core, organized 
    - Data-bound attachments
    - Embed and iframe elements
    - Content inclusion and modular documents
+   - Frameset and frame elements for PDF merging
+   - Overlay repeat behavior (data-over-repeat attribute)
+   - Dynamic overlay control with data binding
 
 9. **08_content_best_practices.md**
    - Performance optimization
@@ -539,6 +542,7 @@ This document outlines the complete learning series for Scryber.Core, organized 
    - Letter body formatting
    - Signature blocks
    - Multi-page letter handling
+   - Optional: Using framesets with PDF letterhead templates
 
 4. **03_report_template.md**
    - Report cover page
@@ -547,6 +551,7 @@ This document outlines the complete learning series for Scryber.Core, organized 
    - Charts and graphs (SVG)
    - Executive summary
    - Page numbering and headers
+   - Optional: Using framesets for overlay headers/footers with data-over-repeat
 
 5. **04_certificate_template.md**
    - Certificate design with borders

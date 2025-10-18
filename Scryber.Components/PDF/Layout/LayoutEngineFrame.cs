@@ -115,7 +115,7 @@ public abstract class LayoutEngineFrame : IPDFLayoutEngine
                         
                         switch (overlayRepeat)
                         {
-                            case FrameOverlayRepeat.All:
+                            case FrameOverlayRepeat.Repeat:
                                 //A page from the overlay will be on every output page of the underlying pages.
                                 //Repeating each of the pages from the overlay in order 
                                 if (overlayReferences.Length > 1)
