@@ -108,7 +108,7 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void CheckHelperMatching4()
         {
-            var str = @"	 
+            var str = @"
 {{#each products}}
 <tr>
             <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
@@ -118,8 +118,7 @@ namespace Scryber.Core.UnitTests.Binding
 {{/each}}
 ";
 
-            var expected =
-                @"
+            var expected = @"
 <hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{products}}' >
 <tr>
             <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->

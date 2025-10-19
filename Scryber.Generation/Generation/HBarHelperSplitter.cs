@@ -16,7 +16,7 @@ namespace Scryber.Generation
         private static readonly Regex _helper_old = new Regex("{{#([a-z]+)\\s*(.*)*}}|{{\\/([a-z]*)}}|{{else}}|{{else\\s+if\\s(.*)}}");
 
         private static readonly Regex _helper =
-            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)}}|{{else}}|{{else\\s+if\\s(.*)}}");
+            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)}}|{{(else)}}|{{(else\\s+if)\\s(.*)}}");
 
         private static readonly Dictionary<string, HBarHelperMapping> _knownMappings =
             new Dictionary<string, HBarHelperMapping>()
@@ -98,6 +98,10 @@ namespace Scryber.Generation
                     return endhelper.Replace(this, looping, match);
 
                 name = match.Groups[GlobalMatchIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var globalHelper))
+                    return globalHelper.Replace(this, looping, match);
+
+                name = match.Groups[HelperElseIndex].Value;
                 if (this._keyedHelpers.TryGetValue(name, out var elseHelper))
                     return elseHelper.Replace(this, looping, match);
                 
@@ -150,14 +154,14 @@ namespace Scryber.Generation
         static string ReplaceUsing(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
             var result = "";
-            var value = newMatch.Value;
+            var value = newMatch.Value.Trim();
             if (value.StartsWith("{{#using"))
             {
                 if (value.StartsWith("{{#using "))
                 {
                     var path = "";
                     value = value.Substring(9); //remove '{{#using '
-                    if (value.Length > 2)
+                    if (value.Length > 2 && value.EndsWith("}}"))
                     {
                         value = value.Substring(0, value.Length - 2); //remove the '}}' at the end.
                         value = value.Trim();
@@ -202,23 +206,25 @@ namespace Scryber.Generation
         static string ReplaceWith(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
             var result = "";
-            var value = newMatch.Value;
+            var value = newMatch.Value.Trim();
             if (value.StartsWith("{{#each"))
             {
                 if (value.StartsWith("{{#each "))
                 {
                     var path = "";
                     value = value.Substring(7); //remove '{{#each '
-                    if (value.Length > 2)
+                    if (value.Length > 2 && value.EndsWith("}}"))
                     {
                         value = value.Substring(0, value.Length - 2); //remove the '}}' at the end.
                         value = value.Trim();
                         path = "data-bind='{{" + value + "}}' ";
-                    }
 
-                    result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" + splitter.MappingNamespace + "' " + path +
-                             ">";
-                    tracker.Push(newMatch);
+
+                        result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" +
+                                 splitter.MappingNamespace + "' " + path +
+                                 ">";
+                        tracker.Push(newMatch);
+                    }
                 }
                 else
                 {
@@ -249,29 +255,93 @@ namespace Scryber.Generation
 
         static string ReplaceWith(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
+            
+            
             return "";
         }
     }
     
     public class HBarIf : HBarHelperMapping
     {
-        public HBarIf() : base("if", new MatchReplacer(ReplaceWith))
+        public HBarIf() : base("if", new MatchReplacer(ReplaceIf))
         {}
 
-        static string ReplaceWith(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
+        static string ReplaceIf(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
-            return "";
+            string result = "";
+            var value = newMatch.Value.Trim();
+            if (value.StartsWith("{{#if "))
+            {
+                var path = "";
+                value = value.Substring(6); //remove '{{#if '
+                if (value.Length > 2 && value.EndsWith("}}"))
+                {
+                    value = value.Substring(0, value.Length - 2); //
+                    value = value.Trim();
+                    path = "data-test='{{" + value + "}}' ";
+                    
+                    result = "<" + splitter.MappingPrefix + ":if " + splitter.MappingPrefix + ":xmlns='" +
+                             splitter.MappingNamespace + "' " + path +
+                             ">";
+                    tracker.Push(newMatch);
+                }
+            }
+            else if(value.StartsWith("{{/if"))
+            {
+                var ended = false;
+                while (!ended)
+                {
+                    var prev = tracker.Pop();
+
+                    if (prev.Value.StartsWith("{{else if"))
+                    {
+                        result += "</" + splitter.MappingPrefix + ":elseif>";
+                    }
+                    else if (prev.Value.StartsWith("{{else"))
+                    {
+                        result += "</" + splitter.MappingPrefix + ":else>";
+                    }
+                    else if (prev.Value.StartsWith("{{#if"))
+                    {
+                        result += "</" + splitter.MappingPrefix + ":if>";
+                        ended = true;
+                    }
+                    else
+                    {
+                        throw new Scryber.PDFParserException(
+                            "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
+                            "' when expecting to end an 'if' clause at index:" + prev.Index);
+                    }
+                }
+            }
+            return result;
         }
     }
     
     public class HBarElse : HBarHelperMapping
     {
-        public HBarElse() : base("else", new MatchReplacer(ReplaceWith))
+        public HBarElse() : base("else", new MatchReplacer(ReplaceElse))
         {}
 
-        static string ReplaceWith(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
+        static string ReplaceElse(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
-            return "";
+            string result = "";
+            var value = newMatch.Value.Trim();
+            if (value.StartsWith("{{else"))
+            {
+                var path = "";
+                value = value.Substring(6); //remove '{{#if '
+                if (value.Length >= 2 && value.EndsWith("}}"))
+                {
+                    result = "<" + splitter.MappingPrefix + ":else " + splitter.MappingPrefix + ":xmlns='" +
+                             splitter.MappingNamespace + "' >";
+                    tracker.Push(newMatch);
+                }
+            }
+            else
+                ;//else does not have an end token
+            
+            return result;
         }
     }
 
@@ -282,7 +352,27 @@ namespace Scryber.Generation
 
         static string ReplaceElseIf(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
-            return "";
+            string result = "";
+            var value = newMatch.Value.Trim();
+            if (value.StartsWith("{{else if "))
+            {
+                var path = "";
+                value = value.Substring(10); //remove '{{else if '
+                if (value.Length > 2 && value.EndsWith("}}"))
+                {
+                    value = value.Substring(0, value.Length - 2); //
+                    value = value.Trim();
+                    path = "data-test='{{" + value + "}}' ";
+                    
+                    result = "<" + splitter.MappingPrefix + ":elseif " + splitter.MappingPrefix + ":xmlns='" +
+                             splitter.MappingNamespace + "' " + path +
+                             ">";
+                    tracker.Push(newMatch);
+                }
+            }
+            else
+                ;//else if does not have an end token
+            return result;
         }
     }
 }
