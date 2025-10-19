@@ -151,16 +151,17 @@ namespace Scryber.Core.UnitTests.Binding
 {{/if}}
 ";
             var expected =
-                @"
+                @"		  
 <hbar:if hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-test='{{model.priority == 0}}' >
     <span class=""badge low"">Low Priority</span>
-<hbar:elseif data-test='{{model.priority == 1}}'>
+<hbar:elseif data-test='{{model.priority == 1}}' >
     <span class=""badge medium"">Medium Priority</span>
-<hbar:elseif data-test='{{model.priority == 2}}'>
+<hbar:elseif data-test='{{model.priority == 2}}' >
     <span class=""badge high"">High Priority</span>
 <hbar:else>
     <span class=""badge critical"">Critical</span>
-</hbar:else></hbar:elseif></hbar:elseif></hbar:if>";
+</hbar:else></hbar:elseif></hbar:elseif></hbar:if>
+";
 
             var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
 

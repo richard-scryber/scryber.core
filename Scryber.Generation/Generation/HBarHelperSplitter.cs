@@ -333,8 +333,7 @@ namespace Scryber.Generation
                 value = value.Substring(6); //remove '{{#if '
                 if (value.Length >= 2 && value.EndsWith("}}"))
                 {
-                    result = "<" + splitter.MappingPrefix + ":else " + splitter.MappingPrefix + ":xmlns='" +
-                             splitter.MappingNamespace + "' >";
+                    result = "<" + splitter.MappingPrefix + ":else>";
                     tracker.Push(newMatch);
                 }
             }
@@ -364,8 +363,7 @@ namespace Scryber.Generation
                     value = value.Trim();
                     path = "data-test='{{" + value + "}}' ";
                     
-                    result = "<" + splitter.MappingPrefix + ":elseif " + splitter.MappingPrefix + ":xmlns='" +
-                             splitter.MappingNamespace + "' " + path +
+                    result = "<" + splitter.MappingPrefix + ":elseif " + path +
                              ">";
                     tracker.Push(newMatch);
                 }

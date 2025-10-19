@@ -129,8 +129,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -260,7 +260,8 @@ namespace Scryber.UnitLayouts
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
             
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -393,8 +394,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -538,8 +539,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -685,8 +686,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -830,8 +831,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -976,8 +977,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1122,8 +1123,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1268,8 +1269,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1414,8 +1415,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1564,8 +1565,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1711,8 +1712,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -1858,8 +1859,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2017,8 +2018,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2176,7 +2177,8 @@ namespace Scryber.UnitLayouts
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
             
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2334,7 +2336,8 @@ namespace Scryber.UnitLayouts
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
             
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2492,7 +2495,8 @@ namespace Scryber.UnitLayouts
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
             
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2650,8 +2654,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType,  prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2808,8 +2812,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -2967,8 +2971,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3125,8 +3129,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3285,8 +3289,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3445,8 +3449,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3604,8 +3608,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3763,8 +3767,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -3899,8 +3903,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4034,8 +4038,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4171,8 +4175,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4307,8 +4311,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4443,8 +4447,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4579,8 +4583,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType,  prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4715,8 +4719,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4851,8 +4855,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(2, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             var bbox = rsrc.BoundingBox;
@@ -4983,8 +4987,8 @@ namespace Scryber.UnitLayouts
             
             //check the xObject
             Assert.AreEqual(3, doc.SharedResources.Count);
-            
-            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv1") as PDFLayoutXObjectResource;
+            var prefix = doc.DocumentIdentifierPrefix;
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv1") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
 
             
@@ -5075,7 +5079,8 @@ namespace Scryber.UnitLayouts
             Assert.IsNull(arrange.NextArrangement);
             
             //second xObject rsrc
-            rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, "canv2") as PDFLayoutXObjectResource;
+            prefix = doc.DocumentIdentifierPrefix;
+            rsrc = layout.DocumentComponent.SharedResources.GetResource(PDFResource.XObjectResourceType, prefix + "canv2") as PDFLayoutXObjectResource;
             Assert.IsNotNull(rsrc);
             
             bbox = rsrc.BoundingBox;
@@ -5446,7 +5451,7 @@ namespace Scryber.UnitLayouts
 
 
  Assert.Inconclusive(
-     "Y offsets in the renderbounds of viewport scaled SVG's are not correct - need to set the inverse matrix so the correct Y position is calculated - applied to links in SVG's");
+     "Y offsets in the render bounds of viewport scaled SVG's are not correct - need to set the inverse matrix so the correct Y position is calculated - applied to links in SVG's");
 
         }
         

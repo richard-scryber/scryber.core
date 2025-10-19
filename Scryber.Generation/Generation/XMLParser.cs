@@ -16,6 +16,8 @@
  * 
  */
 
+#define PROCESS_HANDLEBAR_HELPERS
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -203,7 +205,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = new XmlHtmlEntityReader(stream))
+            using (XmlReader reader = CreateXmlReader(stream))
             {
                 return Parse(source, reader, type);
             }
@@ -218,7 +220,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = new XmlHtmlEntityReader(reader))
+            using (XmlReader xreader = CreateXmlReader(reader))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -249,7 +251,24 @@ namespace Scryber.Generation
         }
 
         #endregion
+
+        private XmlReader CreateXmlReader(Stream stream)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(stream);
+#else
+            return new XmlHtmlEntityReader(stream);
+#endif           
+        }
         
+        protected virtual XmlReader CreateXmlReader(TextReader reader)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(reader);
+#else
+            return new XmlHtmlEntityReader(reader);
+#endif
+        }
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 

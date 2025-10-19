@@ -9,15 +9,20 @@ namespace Scryber.Generation
     /// <summary>
     /// Adds specific functionality to replace the {#each ...}, {#if ...} handlebar helpers with the known xml handle bar components.
     /// </summary>
-    public class XHtmlHandleHelperReader : XmlTextReader
+    public class XHtmlHandleHelperReader : XmlHtmlEntityReader
     {
         
         public const string HandlebarNamespace = "Scryber.Handlebar.Components, Scryber.Components";
         public const string HandlebarPrefix = "hbar:";
-        private static HBarHelperMapping[] KnownHelpers = new HBarHelperMapping[]
-        {
-            new HBarEquals()
-        };
+        
+        /// <summary>
+        /// Gets the inner text reader that this xml reader has created based on the sanitized content.
+        /// As this is owned by this XMLReader, then we should dispose of it too. So keep a referernce.
+        /// </summary>
+        protected TextReader InnerReader { get; private set; }
+        
+        
+        
         
 
 
@@ -27,6 +32,7 @@ namespace Scryber.Generation
 
         public XHtmlHandleHelperReader(System.IO.TextReader reader) : base(GetSanitizedReader(reader))
         {
+            this.InnerReader = reader;
         }
 
         private static TextReader GetSanitizedStream(Stream stream)
@@ -57,11 +63,21 @@ namespace Scryber.Generation
 
         private static string SanitizeString(string input)
         {
-            var helper = new HBarHelperSplitter(HandlebarNamespace, HandlebarPrefix, KnownHelpers);
+            var helper = new HBarHelperSplitter(HandlebarNamespace, HandlebarPrefix);
             var output = helper.ReplaceAll(input);
             return output;
         }
 
-        
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            
+            if (disposing)
+            {
+                if (null != this.InnerReader)
+                    this.InnerReader.Dispose();
+            }
+        }
     }
 }
