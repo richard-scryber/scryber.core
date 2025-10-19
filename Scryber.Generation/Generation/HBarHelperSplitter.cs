@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -25,7 +26,8 @@ namespace Scryber.Generation
                 { "equals", new HBarEquals()},
                 { "if", new HBarIf()},
                 {"each", new HBarEach()},
-                {"else", new HBarElse()}
+                {"else", new HBarElse()},
+                {"else if", new HBarElseIf()}
             };
         
         private string _mappingNamespace;
@@ -79,14 +81,32 @@ namespace Scryber.Generation
         public string ReplaceAll(string input)
         {
             Stack<Match> looping = new Stack<Match>();
+            const int GlobalMatchIndex = 0;
+            const int HelperStartIndex = 1;
+            const int HelperEndIndex = 3;
+            const int HelperElseIndex = 4;
+            const int HelperElseIfIndex = 5;
             
             var updated = _helper.Replace(input, (match) =>
             {
-                var name = match.Groups[1].Value;
-                if (this._keyedHelpers.TryGetValue(name, out var helper))
-                    return helper.Replace(this, looping, match);
-                else
-                    return "";
+                var name = match.Groups[HelperStartIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var starthelper))
+                    return starthelper.Replace(this, looping, match);
+                
+                name = match.Groups[HelperEndIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var endhelper))
+                    return endhelper.Replace(this, looping, match);
+
+                name = match.Groups[GlobalMatchIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var elseHelper))
+                    return elseHelper.Replace(this, looping, match);
+                
+                name = match.Groups[HelperElseIfIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var elseifHelper))
+                    return elseifHelper.Replace(this, looping, match);
+                
+                return "";
+
             });
 
 
@@ -196,25 +216,25 @@ namespace Scryber.Generation
                         path = "data-bind='{{" + value + "}}' ";
                     }
 
-                    result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingNamespace + ":xmlns='" + splitter.MappingNamespace + "' " + path +
-                             " >";
+                    result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" + splitter.MappingNamespace + "' " + path +
+                             ">";
                     tracker.Push(newMatch);
-                }
-                else if (value.StartsWith("{{/each"))
-                {
-                    var prev = tracker.Pop();
-                    if (prev.Value.StartsWith("{{#each"))
-                        result = "</" + splitter.MappingPrefix + ":each>";
-                    else
-                    {
-                        throw new InvalidOperationException("The '" + prev.Value +
-                                                            "' does not match the end /each statement in the content.");
-                    }
                 }
                 else
                 {
                     result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" + splitter.MappingNamespace + "' data-bind='{{.}}' >";
                     tracker.Push(newMatch);
+                }
+            }
+            else if (value.StartsWith("{{/each"))
+            {
+                var prev = tracker.Pop();
+                if (prev.Value.StartsWith("{{#each"))
+                    result = "</" + splitter.MappingPrefix + ":each>";
+                else
+                {
+                    throw new InvalidOperationException("The '" + prev.Value +
+                                                        "' does not match the end /each statement in the content.");
                 }
             }
 
@@ -250,6 +270,17 @@ namespace Scryber.Generation
         {}
 
         static string ReplaceWith(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
+        {
+            return "";
+        }
+    }
+
+    public class HBarElseIf : HBarHelperMapping
+    {
+        public HBarElseIf(): base("else if", new MatchReplacer(ReplaceElseIf))
+        {}
+
+        static string ReplaceElseIf(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
             return "";
         }

@@ -61,32 +61,86 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
         
+        [TestMethod()]
         public void CheckHelperMatching2()
         {
 
-        var str = @"{{person.name}}}";
-
-            str = @"
-{{#each collection}}
-    <!-- Content repeated for each item -->
-    {{this.property}}
+        
+        var str = @"{{#each collection}}
+<!-- Content repeated for each item -->
+{{this.property}}
 {{/each}}";
+            
+            
+            var expected =
+                @"<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{collection}}' >
+<!-- Content repeated for each item -->
+{{this.property}}
+</hbar:each>";
 
-            str = @"{{#each items}}
+            var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
+
+            var result = splitter.ReplaceAll(str);
+
+            Assert.AreEqual(expected, result);
+
+        }
+        
+        [TestMethod]
+        public void CheckHelperMatching3()
+        {
+            var str = @"{{#each items}}
                         <li>{{this}}</li>
                     {{/each}}";
+            var expected =
+                @"<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{items}}' >
+                        <li>{{this}}</li>
+                    </hbar:each>";
 
-            str = @"	 
-	 {{#each products}}
-        <tr>
+            var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
+
+            var result = splitter.ReplaceAll(str);
+
+            Assert.AreEqual(expected, result);
+
+        }
+        
+        [TestMethod]
+        public void CheckHelperMatching4()
+        {
+            var str = @"	 
+{{#each products}}
+<tr>
             <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
             <td>{{this.name}}</td>
             <td>${{this.price}}</td>
-        </tr>
-        {{/each}}
+</tr>
+{{/each}}
 ";
 
-            str = @"		  
+            var expected =
+                @"
+<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{products}}' >
+<tr>
+            <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
+            <td>{{this.name}}</td>
+            <td>${{this.price}}</td>
+</tr>
+</hbar:each>
+";
+
+            var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
+
+            var result = splitter.ReplaceAll(str);
+
+            Assert.AreEqual(expected, result);
+
+        }
+        
+        [TestMethod]
+        public void CheckHelperMatching5()
+        {
+            var str = @"		  
 {{#if model.priority == 0}}
     <span class=""badge low"">Low Priority</span>
 {{else if model.priority == 1}}
@@ -97,7 +151,30 @@ namespace Scryber.Core.UnitTests.Binding
     <span class=""badge critical"">Critical</span>
 {{/if}}
 ";
-                str = @"
+            var expected =
+                @"
+<hbar:if hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-test='{{model.priority == 0}}' >
+    <span class=""badge low"">Low Priority</span>
+<hbar:elseif data-test='{{model.priority == 1}}'>
+    <span class=""badge medium"">Medium Priority</span>
+<hbar:elseif data-test='{{model.priority == 2}}'>
+    <span class=""badge high"">High Priority</span>
+<hbar:else>
+    <span class=""badge critical"">Critical</span>
+</hbar:else></hbar:elseif></hbar:elseif></hbar:if>";
+
+            var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
+
+            var result = splitter.ReplaceAll(str);
+
+            Assert.AreEqual(expected, result);
+
+        }
+        
+        
+        public void CheckHelperMatching6()
+        {
+            var str = @"
 
 {{#if model.status != 'cancelled'}}
     <p>This order is valid.</p>
