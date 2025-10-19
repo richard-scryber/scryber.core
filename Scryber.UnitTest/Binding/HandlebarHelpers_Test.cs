@@ -7,6 +7,7 @@ using Scryber.Components;
 using Scryber.Data;
 using Scryber.Drawing;
 using Scryber.Handlebar.Components;
+using Scryber.Html.Components;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Resources;
@@ -309,32 +310,58 @@ namespace Scryber.Core.UnitTests.Binding
             var str = @"
 <div xmlns='http://www.w3.org/1999/xhtml' >
 {{#if model.status != 'cancelled'}}
-    <p>This order is valid.</p>
+    <p id='is_valid'>This order is valid.</p>
 {{/if}}
 <!-- Greater than -->
 {{#if model.age > 18}}
-    <p>Adult</p>
+    <p id='is_adult'>Adult</p>
 {{/if}}
 
 <!-- Greater than or equal -->
 {{#if model.score >= 70}}
-    <p class=""pass"">Passed</p>
+    <p id='did_pass' class=""pass"">Passed</p>
 {{/if}}
 
 <!-- Less than -->
 {{#if model.temperature < 32}}
-    <p>Freezing conditions</p>
+    <p id='is_freezing'>Freezing conditions</p>
 {{/if}}
 
 <!-- Less than or equal -->
 {{#if model.stock <= 10}}
-    <p class=""warning"">Low stock!</p>
+    <p id='stock_is_low' class=""warning"">Low stock!</p>
 {{/if}}
 
 {{#if model.age >= 18 && model.hasLicense}}
-    <p>Eligible to drive</p>
+    <p id='can_drive'>Eligible to drive</p>
 {{else}}
-    <p>Not eligible to drive</p>
+    <p id='cant_drive'>Not eligible to drive</p>
+{{/if}}
+
+{{#if model.isAdmin || model.isModerator}}
+    <div id='has_admin' class=""admin-panel"">
+        <h2>Administration</h2>
+        <!-- Admin controls -->
+    </div>
+{{/if}}
+
+{{#if model.layoutType == 'summary'}}
+    <div id='summary' class=""summary-layout"">
+        <h1>{{model.title}}</h1>
+        <p>{{model.summary}}</p>
+    </div>
+{{else if model.layoutType == 'detailed'}}
+    <div id='detailed' class=""detailed-layout"">
+        <h1>{{model.title}}</h1>
+        <p>{{model.summary}}</p>
+        <div class=""details"">
+            <p>{{model.fullContent}}</p>
+        </div>
+    </div>
+{{else}}
+    <div id='compact' class=""compact-layout"">
+        <h2 >{{model.title}}</h2>
+    </div>
 {{/if}}
 </div>
 ";
@@ -344,68 +371,143 @@ namespace Scryber.Core.UnitTests.Binding
             using (var sr = new StringReader(str))
             {
                 var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                var div = comp as HTMLDiv;
+                Assert.IsNotNull(div);
+
+                HTMLDocument doc = new HTMLDocument();
+                doc.Body = new HTMLBody();
+                doc.Body.Contents.Add(div);
+
+                doc.Params["model"] = new
+                {
+                    status = "delivered",
+                    score = 90,
+                    temperature = 40,
+                    stock = 4,
+                    age = 16,
+                    hasLicense = true,
+                    isModerator = true,
+                    layoutType = "compact"
+                };
+
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
+
+                using (var stream = DocStreams.GetOutputStream("Handlebars_CheckHelperMatching6.pdf"))
+                {
+                    doc.RenderToPDF(stream);
+                    
+                    var created = doc.FindAComponentById("is_valid");
+                    Assert.IsNotNull(created); //exists
+
+                    created = doc.FindAComponentById("is_adult");
+                    Assert.IsNull(created); //does not exist
+
+                    created = doc.FindAComponentById("did_pass");
+                    Assert.IsNotNull(created); //exists
+
+                    created = doc.FindAComponentById("is_freezing");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc.FindAComponentById("stock_is_low");
+                    Assert.IsNotNull(created); //exists
+                    
+                    created = doc.FindAComponentById("can_drive");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc.FindAComponentById("cant_drive");
+                    Assert.IsNotNull(created); //exists
+                    
+                    created = doc.FindAComponentById("has_admin");
+                    Assert.IsNotNull(created); //exists
+                    
+                    created = doc.FindAComponentById("detailed");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc.FindAComponentById("summary");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc.FindAComponentById("compact");
+                    Assert.IsNotNull(created); //exists
+
+                }
+                
+                
+            }
+
+            
+            using (var sr = new StringReader(str))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                var div2 = comp as HTMLDiv;
+                
+                var doc2 = new HTMLDocument();
+                doc2.Body = new HTMLBody();
+
+                doc2.Body.Contents.Add(div2);
+
+                doc2.Params["model"] = new
+                {
+                    status = "cancelled",
+                    score = 20,
+                    temperature = 30,
+                    stock = 40,
+                    age = 19,
+                    hasLicense = true,
+                    isAdmin= false,
+                    layoutType = "detailed"
+                };
+                
+                doc2.InitializeAndLoad(OutputFormat.PDF);
+                doc2.DataBind(OutputFormat.PDF);
+
+                using (var stream = DocStreams.GetOutputStream("Handlebars_CheckHelperMatching6_v2.pdf"))
+                {
+                    doc2.RenderToPDF(stream);
+                    
+                    var created = doc2.FindAComponentById("is_valid");
+                    Assert.IsNull(created); //exists
+
+                    created = doc2.FindAComponentById("is_adult");
+                    Assert.IsNotNull(created); //does not exist
+
+                    created = doc2.FindAComponentById("did_pass");
+                    Assert.IsNull(created); //exists
+
+                    created = doc2.FindAComponentById("is_freezing");
+                    Assert.IsNotNull(created); //does not exist
+                    
+                    created = doc2.FindAComponentById("stock_is_low");
+                    Assert.IsNull(created); //exists
+                    
+                    created = doc2.FindAComponentById("can_drive");
+                    Assert.IsNotNull(created); //exists
+                    
+                    created = doc2.FindAComponentById("cant_drive");
+                    Assert.IsNull(created); //exists
+                    
+                    created = doc2.FindAComponentById("has_admin");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc2.FindAComponentById("detailed");
+                    Assert.IsNotNull(created); //exists
+                    
+                    created = doc2.FindAComponentById("summary");
+                    Assert.IsNull(created); //does not exist
+                    
+                    created = doc2.FindAComponentById("compact");
+                    Assert.IsNull(created); //does not exist
+                }
+                
             }
 
         }
         
+        [TestMethod]
         public void CheckHelperMatching7()
         {
 
-            var str = "";
-
-
-/*
-
-{{#if model.isAdmin || model.isModerator}}
-    <div class=""admin-panel"">
-        <h2>Administration</h2>
-        <!-- Admin controls -->
-    </div>
-{{/if}}
-
-{{#if model.layoutType == 'summary'}}
-    <div class=""summary-layout"">
-        <h1>{{model.title}}</h1>
-        <p>{{model.summary}}</p>
-    </div>
-{{else if model.layoutType == 'detailed'}}
-    <div class=""detailed-layout"">
-        <h1>{{model.title}}</h1>
-        <p>{{model.summary}}</p>
-        <div class=""details"">
-            <p>{{model.fullContent}}</p>
-        </div>
-    </div>
-{{else}}
-    <div class=""compact-layout"">
-        <h2>{{model.title}}</h2>
-    </div>
-{{/if}}
-
-{{#if model.orders.length > 0}}
-    <h2>Recent Orders</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Order #</th>
-                <th>Date</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each model.orders}}
-            <tr>
-                <td>{{this.orderNumber}}</td>
-                <td>{{format(this.date, 'yyyy-MM-dd')}}</td>
-                <td>${{format(this.total, 'F2')}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-{{else}}
-    <p>No orders found.</p>
-{{/if}}
-
+            var str = @"
 <!DOCTYPE html>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
@@ -495,14 +597,14 @@ namespace Scryber.Core.UnitTests.Binding
     </h1>
 
     <p style=""color: #666; font-size: 10pt;"">
-        Generated: {{format(model.reportDate, 'MMMM dd, yyyy HH:mm')}}
+        Generated: {{string(model.reportDate, 'MMMM dd, yyyy HH:mm')}}
     </p>
 
     <!-- Key Metrics (visible to all) -->
     <h2>Key Metrics</h2>
     <div>
         <div class=""metric-box"">
-            <div class=""metric-value"">{{format(model.metrics.totalSales, 'C0')}}</div>
+            <div class=""metric-value"">{{string(model.metrics.totalSales, 'C0')}}</div>
             <div>Total Sales</div>
         </div>
         <div class=""metric-box"">
@@ -510,7 +612,7 @@ namespace Scryber.Core.UnitTests.Binding
             <div>New Customers</div>
         </div>
         <div class=""metric-box"">
-            <div class=""metric-value"">{{format(model.metrics.conversionRate, 'P1')}}</div>
+            <div class=""metric-value"">{{string(model.metrics.conversionRate, 'P1')}}</div>
             <div>Conversion Rate</div>
         </div>
     </div>
@@ -530,9 +632,9 @@ namespace Scryber.Core.UnitTests.Binding
                 {{#each model.detailedAnalytics}}
                 <tr>
                     <td>{{this.category}}</td>
-                    <td style=""text-align: right;"">{{format(this.revenue, 'C0')}}</td>
+                    <td style=""text-align: right;"">{{string(this.revenue, 'C0')}}</td>
                     <td style=""text-align: right;"">
-                        {{format(calc(this.revenue, '/', ../metrics.totalSales), 'P0')}}
+                        {{format(this.revenue / model.metrics.totalSales), 'P0')}}
                     </td>
                 </tr>
                 {{/each}}
@@ -568,36 +670,46 @@ namespace Scryber.Core.UnitTests.Binding
         </div>
     {{/if}}
 </body>
-</html>"; */
+</html>";
+            
+            //TODO: Add 'this' support, and ../ support
+            //TODO: Add format function same as string(value, format)
+            //TODO: Add functions for add(), subtract(), divide(), multiply()
 
         using (var reader = new System.IO.StringReader(str))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-
-                var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg", this.TestContext);
-
-                var imgReader = Scryber.Imaging.ImageReader.Create();
-                ImageData data;
-                
-                using (var fs = new System.IO.FileStream(path, FileMode.Open))
+                doc.Params["model"] = new
                 {
-                    data = imgReader.ReadStream(path, fs, false);
-                }
-                
-                
-                doc.Params["MyImage"] = data;
+                    reportDate = DateTime.Now,
+                    userName = "John Smith",
+                    isAdmin = true,
+                    userLevel = "premium",
+                    alerts = new[]
+                    {
+                        new { type = "warning", message = "This is a warning message" },
+                        new { type = "note", message = "This is just a note" },
+                        new { type = "warning", message = "This is another warning" },
+                        new { type = "verbose", message = "Just a debug message" }
+                    },
+                    detailedAnalytics = new []
+                    {
+                        new { category = "Online", revenue = 123.40, },
+                        new { category = "In Store", revenue = 423.40 },
+                        new { category = "Advertising", revenue = 0.40 }
+                    },
+                    metrics = new { totalSales = 547.2, newCustomers = 10, conversionRate = 0.21 }
+                };
 
-                var img = doc.FindAComponentById("LoadedImage") as Image;
-                Assert.IsNotNull(img);
-                Assert.IsNull(img.Data);
+                using (var output = DocStreams.GetOutputStream("Handlebars_CheckHelperMatching7"))
+                {
+                    doc.SaveAsPDF(output);
+                }
 
                 doc.InitializeAndLoad(OutputFormat.PDF);
                 doc.DataBind(OutputFormat.PDF);
                 
-                //Makes sure the image data is bound to the element
-                Assert.IsNotNull(img.Data);
-                Assert.AreEqual(data, img.Data);
-
+                
             }
         }
 
