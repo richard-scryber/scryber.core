@@ -4,7 +4,9 @@ using System.Net.WebSockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Data;
 using Scryber.Drawing;
+using Scryber.Handlebar.Components;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Resources;
@@ -48,9 +50,9 @@ namespace Scryber.Core.UnitTests.Binding
 {{#each}}";
 
             var expected =
-                @"<hbar:using hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{people}}' >
+                @"<hbar:using xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{people}}' >
 {{name}}
-<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{.}}' >";
+<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{.}}' >";
 
 
             var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
@@ -73,7 +75,7 @@ namespace Scryber.Core.UnitTests.Binding
             
             
             var expected =
-                @"<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{collection}}' >
+                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{collection}}' >
 <!-- Content repeated for each item -->
 {{this.property}}
 </hbar:each>";
@@ -84,7 +86,27 @@ namespace Scryber.Core.UnitTests.Binding
 
             Assert.AreEqual(expected, result);
 
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(str))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                
+                Assert.IsInstanceOfType(comp, typeof(EachHelper));
+                var each = (EachHelper)comp;
+                
+                Assert.IsInstanceOfType(each.Template, typeof(ParsableTemplateGenerator));
+                var template = (ParsableTemplateGenerator)each.Template;
+
+                expected = @"
+<!-- Content repeated for each item -->
+{{this.property}}
+";
+                Assert.AreEqual(expected, template.XmlContent);
+                
+            }
+
         }
+        
         
         [TestMethod]
         public void CheckHelperMatching3()
@@ -93,7 +115,7 @@ namespace Scryber.Core.UnitTests.Binding
                         <li>{{this}}</li>
                     {{/each}}";
             var expected =
-                @"<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{items}}' >
+                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{items}}' >
                         <li>{{this}}</li>
                     </hbar:each>";
 
@@ -102,6 +124,25 @@ namespace Scryber.Core.UnitTests.Binding
             var result = splitter.ReplaceAll(str);
 
             Assert.AreEqual(expected, result);
+            
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(result))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                
+                Assert.IsInstanceOfType(comp, typeof(EachHelper));
+                var each = (EachHelper)comp;
+                
+                //check the template content
+                Assert.IsInstanceOfType(each.Template, typeof(ParsableTemplateGenerator));
+                var template = (ParsableTemplateGenerator)each.Template;
+
+                expected = @"
+                        <li>{{this}}</li>
+                    ";
+                Assert.AreEqual(expected, template.XmlContent);
+                
+            }
 
         }
         
@@ -119,7 +160,7 @@ namespace Scryber.Core.UnitTests.Binding
 ";
 
             var expected = @"
-<hbar:each hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{products}}' >
+<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{products}}' >
 <tr>
             <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
             <td>{{this.name}}</td>
@@ -133,6 +174,30 @@ namespace Scryber.Core.UnitTests.Binding
             var result = splitter.ReplaceAll(str);
 
             Assert.AreEqual(expected, result);
+            
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(result))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                
+                Assert.IsInstanceOfType(comp, typeof(EachHelper));
+                var each = (EachHelper)comp;
+                
+                //check the template content
+                Assert.IsInstanceOfType(each.Template, typeof(ParsableTemplateGenerator));
+                var template = (ParsableTemplateGenerator)each.Template;
+
+                expected = @"
+<tr>
+            <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
+            <td>{{this.name}}</td>
+            <td>${{this.price}}</td>
+</tr>
+";
+                Assert.AreEqual(expected, template.XmlContent);
+                
+            }
+
 
         }
         
@@ -152,15 +217,20 @@ namespace Scryber.Core.UnitTests.Binding
 ";
             var expected =
                 @"		  
-<hbar:if hbar:xmlns='Scryber.Handlebar.Components, Scryber.Components' data-test='{{model.priority == 0}}' >
+<hbar:choose xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' >
+	<hbar:when data-test='{{model.priority == 0}}' >
     <span class=""badge low"">Low Priority</span>
-<hbar:elseif data-test='{{model.priority == 1}}' >
+</hbar:when>
+	<hbar:when data-test='{{model.priority == 1}}' >
     <span class=""badge medium"">Medium Priority</span>
-<hbar:elseif data-test='{{model.priority == 2}}' >
+</hbar:when>
+	<hbar:when data-test='{{model.priority == 2}}' >
     <span class=""badge high"">High Priority</span>
-<hbar:else>
+</hbar:when>
+	<hbar:otherwise>
     <span class=""badge critical"">Critical</span>
-</hbar:else></hbar:elseif></hbar:elseif></hbar:if>
+</hbar:otherwise>
+</hbar:choose>
 ";
 
             var splitter = new Scryber.Generation.HBarHelperSplitter(ns, prefix);
@@ -168,21 +238,79 @@ namespace Scryber.Core.UnitTests.Binding
             var result = splitter.ReplaceAll(str);
 
             Assert.AreEqual(expected, result);
+            
+            
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(result))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                
+                Assert.IsInstanceOfType(comp, typeof(ChooseHelper));
+                var choose = (ChooseHelper)comp;
+                
+                Assert.AreEqual(3, choose.Whens.Count);
+                Assert.IsNotNull(choose.Otherwise);
+
+                var when = choose.Whens[0];
+                Assert.IsNotNull(when);
+                Assert.IsNotNull(when.Template);
+                //check the template content
+                Assert.IsInstanceOfType(when.Template, typeof(ParsableTemplateGenerator));
+                var template = (ParsableTemplateGenerator)when.Template;
+
+                expected = @"
+    <span class=""badge low"">Low Priority</span>
+";
+                Assert.AreEqual(expected, template.XmlContent);
+                
+                when = choose.Whens[1];
+                Assert.IsNotNull(when);
+                Assert.IsNotNull(when.Template);
+                //check the template content
+                Assert.IsInstanceOfType(when.Template, typeof(ParsableTemplateGenerator));
+                template = (ParsableTemplateGenerator)when.Template;
+
+                expected = @"
+    <span class=""badge medium"">Medium Priority</span>
+";
+                Assert.AreEqual(expected, template.XmlContent);
+                
+                when = choose.Whens[2];
+                Assert.IsNotNull(when);
+                Assert.IsNotNull(when.Template);
+                //check the template content
+                Assert.IsInstanceOfType(when.Template, typeof(ParsableTemplateGenerator));
+                template = (ParsableTemplateGenerator)when.Template;
+
+                expected = @"
+    <span class=""badge high"">High Priority</span>
+";
+                Assert.AreEqual(expected, template.XmlContent);
+
+                var other = choose.Otherwise;
+                Assert.IsNotNull(other);
+                Assert.IsNotNull(other.Template);
+                //check the template content
+                Assert.IsInstanceOfType(other.Template, typeof(ParsableTemplateGenerator));
+                template = (ParsableTemplateGenerator)other.Template;
+
+                expected = @"
+    <span class=""badge critical"">Critical</span>
+";
+                Assert.AreEqual(expected, template.XmlContent);
+
+            }
 
         }
-        
-        
+
+        [TestMethod]
         public void CheckHelperMatching6()
         {
             var str = @"
-
+<div xmlns='http://www.w3.org/1999/xhtml' >
 {{#if model.status != 'cancelled'}}
     <p>This order is valid.</p>
 {{/if}}
-
-";
-                    /*
-
 <!-- Greater than -->
 {{#if model.age > 18}}
     <p>Adult</p>
@@ -208,7 +336,25 @@ namespace Scryber.Core.UnitTests.Binding
 {{else}}
     <p>Not eligible to drive</p>
 {{/if}}
+</div>
+";
 
+
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(str))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+            }
+
+        }
+        
+        public void CheckHelperMatching7()
+        {
+
+            var str = "";
+
+
+/*
 
 {{#if model.isAdmin || model.isModerator}}
     <div class=""admin-panel"">
@@ -424,7 +570,7 @@ namespace Scryber.Core.UnitTests.Binding
 </body>
 </html>"; */
 
-            using (var reader = new System.IO.StringReader(str))
+        using (var reader = new System.IO.StringReader(str))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 

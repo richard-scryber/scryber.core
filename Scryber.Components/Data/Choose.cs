@@ -74,7 +74,7 @@ namespace Scryber.Data
         private ChooseOtherwise _otherwise;
 
         [PDFElement("Otherwise")]
-        public ChooseOtherwise Otherwise
+        public virtual ChooseOtherwise Otherwise
         {
             get { return _otherwise; }
             set 

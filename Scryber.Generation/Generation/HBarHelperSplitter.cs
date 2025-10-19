@@ -131,6 +131,20 @@ namespace Scryber.Generation
             this.Match = match;
             this.Replace = replace;
         }
+
+        protected static string SanitizeBindExpression(string expr)
+        {
+            if (expr.IndexOf('"') >= 0)
+                expr =  expr.Replace('\"', '\'');
+
+            if (expr.IndexOf('<') >= 0)
+                expr = expr.Replace("<", "&lt;");
+
+            if (expr.IndexOf('&') >= 0)
+                expr = expr.Replace("&", "&amp;");
+
+            return expr;
+        }
     }
 
     public class HBarEquals : HBarHelperMapping
@@ -165,14 +179,14 @@ namespace Scryber.Generation
                     {
                         value = value.Substring(0, value.Length - 2); //remove the '}}' at the end.
                         value = value.Trim();
-                        path = "data-bind='{{" + value + "}}'";
+                        path = "data-bind='{{" + SanitizeBindExpression(value) + "}}'";
                     }
                     else
                     {
                         path = "data-bind='{{.}}'";
                     }
 
-                    result = "<" + splitter.MappingPrefix + ":using " + splitter.MappingPrefix +":xmlns='" + splitter.MappingNamespace + "' " + path +
+                    result = "<" + splitter.MappingPrefix + ":using xmlns:" + splitter.MappingPrefix +"='" + splitter.MappingNamespace + "' " + path +
                              " >";
                     tracker.Push(newMatch);
                 }
@@ -217,10 +231,10 @@ namespace Scryber.Generation
                     {
                         value = value.Substring(0, value.Length - 2); //remove the '}}' at the end.
                         value = value.Trim();
-                        path = "data-bind='{{" + value + "}}' ";
+                        path = "data-bind=\"{{" + SanitizeBindExpression(value) + "}}\" ";
 
 
-                        result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" +
+                        result = "<" + splitter.MappingPrefix + ":each xmlns:" + splitter.MappingPrefix + "='" +
                                  splitter.MappingNamespace + "' " + path +
                                  ">";
                         tracker.Push(newMatch);
@@ -228,7 +242,7 @@ namespace Scryber.Generation
                 }
                 else
                 {
-                    result = "<" + splitter.MappingPrefix + ":each " + splitter.MappingPrefix + ":xmlns='" + splitter.MappingNamespace + "' data-bind='{{.}}' >";
+                    result = "<" + splitter.MappingPrefix + ":each xmlns:" + splitter.MappingPrefix + "='" + splitter.MappingNamespace + "' data-bind='{{.}}' >";
                     tracker.Push(newMatch);
                 }
             }
@@ -278,42 +292,40 @@ namespace Scryber.Generation
                 {
                     value = value.Substring(0, value.Length - 2); //
                     value = value.Trim();
-                    path = "data-test='{{" + value + "}}' ";
+                    path = "data-test=\"{{" + SanitizeBindExpression(value) + "}}\" ";
                     
-                    result = "<" + splitter.MappingPrefix + ":if " + splitter.MappingPrefix + ":xmlns='" +
-                             splitter.MappingNamespace + "' " + path +
+                    result = "<" + splitter.MappingPrefix + ":choose xmlns:" + splitter.MappingPrefix + "='" +
+                             splitter.MappingNamespace + "' >\n\t<" + splitter.MappingPrefix + ":when " + path +
                              ">";
                     tracker.Push(newMatch);
                 }
             }
-            else if(value.StartsWith("{{/if"))
+            else if (value.StartsWith("{{/if"))
             {
-                var ended = false;
-                while (!ended)
-                {
-                    var prev = tracker.Pop();
+                var prev = tracker.Pop();
 
-                    if (prev.Value.StartsWith("{{else if"))
-                    {
-                        result += "</" + splitter.MappingPrefix + ":elseif>";
-                    }
-                    else if (prev.Value.StartsWith("{{else"))
-                    {
-                        result += "</" + splitter.MappingPrefix + ":else>";
-                    }
-                    else if (prev.Value.StartsWith("{{#if"))
-                    {
-                        result += "</" + splitter.MappingPrefix + ":if>";
-                        ended = true;
-                    }
-                    else
-                    {
-                        throw new Scryber.PDFParserException(
-                            "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
-                            "' when expecting to end an 'if' clause at index:" + prev.Index);
-                    }
+                if (prev.Value.StartsWith("{{else if"))
+                {
+                    result += "</" + splitter.MappingPrefix + ":when>";
                 }
+                else if (prev.Value.StartsWith("{{else"))
+                {
+                    result += "</" + splitter.MappingPrefix + ":otherwise>";
+                }
+                else if (prev.Value.StartsWith("{{#if"))
+                {
+                    result += "</" + splitter.MappingPrefix + ":when>";
+                }
+                else
+                {
+                    throw new Scryber.PDFParserException(
+                        "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
+                        "' when expecting to end an 'if' clause at index:" + prev.Index);
+                }
+
+                result += "\n</" + splitter.MappingPrefix + ":choose>";
             }
+
             return result;
         }
     }
@@ -333,7 +345,16 @@ namespace Scryber.Generation
                 value = value.Substring(6); //remove '{{#if '
                 if (value.Length >= 2 && value.EndsWith("}}"))
                 {
-                    result = "<" + splitter.MappingPrefix + ":else>";
+                    var prev = tracker.Pop();
+                    if (prev.Value.StartsWith("{{#if") || prev.Value.StartsWith("{{else if"))
+                        result = "</" + splitter.MappingPrefix + ":when>\n\t";
+                    else
+                    {
+                        throw new Scryber.PDFParserException(
+                            "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
+                            "' when expecting to end an 'if' or 'else if' clause at index:" + prev.Index);
+                    }
+                    result += "<" + splitter.MappingPrefix + ":otherwise>";
                     tracker.Push(newMatch);
                 }
             }
@@ -359,11 +380,21 @@ namespace Scryber.Generation
                 value = value.Substring(10); //remove '{{else if '
                 if (value.Length > 2 && value.EndsWith("}}"))
                 {
+                    var prev = tracker.Pop();
+                    if (prev.Value.StartsWith("{{#if") || prev.Value.StartsWith("{{else if"))
+                        result = "</" + splitter.MappingPrefix + ":when>\n\t";
+                    else
+                    {
+                        throw new Scryber.PDFParserException(
+                            "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
+                            "' when expecting to end an 'if' or 'else if' clause at index:" + prev.Index);
+                    }
+                    
                     value = value.Substring(0, value.Length - 2); //
                     value = value.Trim();
-                    path = "data-test='{{" + value + "}}' ";
+                    path = "data-test=\"{{" + SanitizeBindExpression(value) + "}}\" ";
                     
-                    result = "<" + splitter.MappingPrefix + ":elseif " + path +
+                    result += "<" + splitter.MappingPrefix + ":when " + path +
                              ">";
                     tracker.Push(newMatch);
                 }

@@ -13,7 +13,7 @@ namespace Scryber.Generation
     {
         
         public const string HandlebarNamespace = "Scryber.Handlebar.Components, Scryber.Components";
-        public const string HandlebarPrefix = "hbar:";
+        public const string HandlebarPrefix = "hbar";
         
         /// <summary>
         /// Gets the inner text reader that this xml reader has created based on the sanitized content.
