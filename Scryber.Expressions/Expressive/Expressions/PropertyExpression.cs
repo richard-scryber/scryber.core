@@ -75,9 +75,13 @@ namespace Scryber.Expressive.Expressions
 
         private object DoGetMyValue(object parent, string name, Context context)
         {
-            
+            return GetPropertyValue(parent, name, context.IsCaseInsensitiveParsingEnabled);
+        }
+        
+        public static object GetPropertyValue(object parent, string name, bool caseInSensitive)
+        {
 
-            if(null == parent)
+        if(null == parent)
             {
                 throw new ArgumentNullException(nameof(parent));
             }
@@ -129,12 +133,12 @@ namespace Scryber.Expressive.Expressions
                 PropertyInfo pi = null;
                 FieldInfo fi = null;
 
-                if (TryGetProperty(type, name, context.IsCaseInsensitiveParsingEnabled, out pi))
+                if (TryGetProperty(type, name, caseInSensitive, out pi))
                 {
                     return pi.GetValue(parent, null);
                 }
 
-                else if (TryGetField(type, name, context.IsCaseInsensitiveParsingEnabled, out fi))
+                else if (TryGetField(type, name, caseInSensitive, out fi))
                 {
                     return fi.GetValue(parent);
                 }
@@ -142,7 +146,7 @@ namespace Scryber.Expressive.Expressions
                 else if (parent is ICustomTypeDescriptor)
                 {
                     var properties = (parent as ICustomTypeDescriptor).GetProperties();
-                    var prop = properties.Find(name, Context.IsCaseInsensitiveParsingEnabled);
+                    var prop = properties.Find(name, caseInSensitive);
 
                     if (null != prop)
                     {

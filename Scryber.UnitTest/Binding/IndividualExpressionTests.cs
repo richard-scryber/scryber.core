@@ -51,6 +51,24 @@ namespace Scryber.Core.UnitTests.Binding
 
             return content;
         }
+        
+        private string GetEachContent(string expression)
+        {
+            var content = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Paperwork Expressions</title>
+</head>
+<body>
+    <div>
+        {{#each model.items}}
+        <h2 id=""{{concat('boundContent_',@index)}}"" class='title'>{{" + expression + @"}}</h2>
+        {{/each}}
+    </div>
+</body>
+</html>";
+
+            return content;
+        }
 
         private void AssertBoundContent(Panel container, string literalContent)
         {
@@ -84,6 +102,36 @@ namespace Scryber.Core.UnitTests.Binding
 
 
         }
+        
+        [TestMethod()]
+        public void InnerPropertyWithNoCurrentOperator()
+        {
+            //Checks the look-up of a value of a model property when the '.' operator is not specified - bound within a loop.
+            
+            var content = GetEachContent("if(string(name).length > 0, concat(name, ' was found'), 'NOT FOUND')");
+
+            using var stream = new System.IO.StringReader(content);
+            var doc = Document.ParseDocument(stream, ParseSourceType.DynamicContent);
+            doc.Params["model"] = GetData();
+
+            using (var output = DocStreams.GetOutputStream("NoCurrentOperatorBinding.pdf"))
+            {
+                //doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(output);
+            }
+
+            var h2 = doc.FindAComponentById("boundContent_0") as Head2;
+            AssertBoundContent(h2, "First Item was found");
+            
+            h2 = doc.FindAComponentById("boundContent_1") as Head2;
+            AssertBoundContent(h2, "Second Item was found");
+            
+            h2 = doc.FindAComponentById("boundContent_2") as Head2;
+            AssertBoundContent(h2, "Third Item was found");
+
+
+        }
+
 
         [TestMethod]
         public void DictionaryPropertyTest()

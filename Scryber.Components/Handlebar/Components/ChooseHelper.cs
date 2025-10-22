@@ -19,6 +19,9 @@ public class ChooseHelper : Scryber.Data.Choose
     }
 }
 
+/// <summary>
+/// The where decision choice (either from an {{#if }} test or an {{else if   }} test in a handlebars template
+/// </summary>
 [PDFParsableComponent("when")]
 public class ChooseWhenHelper : Scryber.Data.ChooseWhen
 {
@@ -38,6 +41,10 @@ public class ChooseWhenHelper : Scryber.Data.ChooseWhen
     }
 }
 
+/// <summary>
+/// The final otherwise decision choice (either from an {{else }} inside an {{#if }} [{{else if   }}] test chain in a
+/// handlebars template. The template will be used if all other tests are false in a chain.
+/// </summary>
 [PDFParsableComponent("otherwise")]
 public class ChooseOtherwiseHelper : Scryber.Data.ChooseOtherwise
 {

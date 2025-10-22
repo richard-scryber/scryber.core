@@ -506,7 +506,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod]
-        public void CheckHelperMatching7()
+        public void CheckHelperMatching8()
         {
             var style = @"body {
             font-family: Helvetica, sans-serif;
@@ -834,7 +834,7 @@ namespace Scryber.Core.UnitTests.Binding
     </div>
 
     <!-- Detailed Data Table -->
-    <h2>Detailed Breakdown</h2>
+    <h2 style='page-break-before: always'>Detailed Breakdown</h2>
     <table>
         <thead>
             <tr>
@@ -900,7 +900,7 @@ namespace Scryber.Core.UnitTests.Binding
 
 ";
             
-            //TODO: Add 'this' support, and ../ support
+            //Added 'this' support, and ../ support
             //TODO: Add format function same as string(value, format)
             //TODO: Add functions for add(), subtract(), divide(), multiply()
 

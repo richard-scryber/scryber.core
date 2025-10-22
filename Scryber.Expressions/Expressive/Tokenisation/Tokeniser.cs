@@ -263,6 +263,15 @@ namespace Scryber.Expressive.Tokenisation
                     return true;
                 }
             }
+
+            if (expression[start] == '.')
+            {
+                if (expression.Length > 3 && expression[start + 1] == '.' && expression[start + 2] == '/')
+                {
+                    length = 3;
+                    return true;
+                }
+            }
             
             while (index < expression.Length)
             {

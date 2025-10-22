@@ -446,7 +446,7 @@ namespace Scryber.Expressive
             if (token == SelfExpression)
                 return new SelfVariableExpression();
             else
-                return new VariableExpression(token);
+                return new VariableExpression(token, context.IsCaseInsensitiveParsingEnabled);
         }
 
         
