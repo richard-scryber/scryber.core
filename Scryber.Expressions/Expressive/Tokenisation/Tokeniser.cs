@@ -253,6 +253,17 @@ namespace Scryber.Expressive.Tokenisation
         protected virtual bool IsKeyword(string expression, int index, out int length)
         {
             int start = index;
+            bool hasAtIndexStart = false;
+            if (expression[start] == '@')
+            {
+                //Explicit check for @index special notation.
+                if (expression.Length >= 6 && expression.Substring(start, 6) == "@index")
+                {
+                    length = 6;
+                    return true;
+                }
+            }
+            
             while (index < expression.Length)
             {
                 if (char.IsLetter(expression, index))
@@ -290,7 +301,7 @@ namespace Scryber.Expressive.Tokenisation
 
             ExecFunction func;
             int constLen;
-            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && expression[start + length] == '(')
+            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && (expression[start + length] == '('))
             {
                 this.AddNewToken(start, length, name, ExpressionTokenType.Function);
             }
@@ -397,6 +408,11 @@ namespace Scryber.Expressive.Tokenisation
                     length = 1;
                     result = true;
                 }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
             }
             else
             {
@@ -437,7 +453,12 @@ namespace Scryber.Expressive.Tokenisation
                 }
                 else if (name.Equals("E", this.Context.ParsingStringComparison))
                 {
-                    length = 4;
+                    length = 1;
+                    result = true;
+                }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
                     result = true;
                 }
             }

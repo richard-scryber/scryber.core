@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using Scryber.Expressive.Tokenisation;
 using Scryber.Drawing;
+using Scryber.Expressive.Functions.Relational;
 
 namespace Scryber.Expressive
 {
@@ -375,6 +376,10 @@ namespace Scryber.Expressive
             {
                 constant = new ConstantValueExpression(Math.E);
             }
+            else if (currentToken.Equals("@index", this.context.ParsingStringComparison) && this.context.TryGetFunction("@index", out var func))
+            {
+                constant = new FunctionExpression("@index", func, this.context, Array.Empty<IExpression>());
+            }
             else
             {
                 constant = null;
@@ -434,9 +439,14 @@ namespace Scryber.Expressive
             return new string(buffer, 0, outIdx);
         }
 
+        private const string SelfExpression = "this";
+
         protected virtual IExpression CreateVariableExpression(string token, Context context)
         {
-            return new VariableExpression(token);
+            if (token == SelfExpression)
+                return new SelfVariableExpression();
+            else
+                return new VariableExpression(token);
         }
 
         

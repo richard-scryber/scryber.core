@@ -7,5 +7,8 @@ namespace Scryber.Handlebar.Components;
 [PDFParsableComponent("each")]
 public class EachHelper : Scryber.Html.Components.HTMLTemplate
 {
-    
+    protected override void OnDataBinding(DataContext context)
+    {
+        base.OnDataBinding(context);
+    }
 }

@@ -2387,10 +2387,14 @@ namespace Scryber.PDF.Layout
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
 
             GraphicsPath path = comp.CreatePath(avail, style);
-            comp.Path = path;
-            Size required = path.Bounds.Size;
 
-            AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
+            if (null != path)
+            {
+                comp.Path = path;
+                Size required = path.Bounds.Size;
+
+                AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
+            }
 
         }
 

@@ -195,6 +195,17 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        [TestMethod]
+        public void BindThisExpression()
+        {
+
+            var factory = new BindingCalcExpressionFactory();
+            var str = "this.currentItem";
+
+            var expression = factory.CreateBindingExpression(str, null);
+            
+        }
+
         [TestMethod()]
         [TestCategory("Binding")]
         public void BindFunctionNoParametersExpression()

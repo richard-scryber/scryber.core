@@ -232,7 +232,8 @@ namespace Scryber.Expressive.Expressions
 
         private static bool TryGetProperty(Type fortype, string name, bool ignoreCase, out PropertyInfo found)
         {
-            found = fortype.GetProperty(name);
+            BindingFlags flags = ignoreCase ? (BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) : BindingFlags.Default;
+            found = fortype.GetProperty(name, flags);
 
             if (null == found)
             {
@@ -246,7 +247,8 @@ namespace Scryber.Expressive.Expressions
 
         private static bool TryGetField(Type fortype, string name, bool ignoreCase, out FieldInfo found)
         {
-            found = fortype.GetField(name);
+            BindingFlags flags = ignoreCase ? (BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) : BindingFlags.Default;
+            found = fortype.GetField(name, flags);
             if (null == found)
             {
                 return false;

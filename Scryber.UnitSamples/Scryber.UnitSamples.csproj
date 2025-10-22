@@ -29,6 +29,12 @@
     <None Remove="Templates\PageNumbers\" />
     <None Remove="Templates\Overview\" />
     <None Remove="Templates\Overview\Fragments\" />
+    <None Update="Templates\Tigers\wwf_tigers_report_data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Tigers\wwf_tigers_report_template.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

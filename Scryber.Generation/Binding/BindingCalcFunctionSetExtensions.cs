@@ -92,6 +92,7 @@ namespace Scryber.Binding
             _all.Add(new IfFunction());
             _all.Add(new InFunction());
             _all.Add(new IndexFunction());
+            _all.Add(new AtIndexFunction());
             _all.Add(new IfErrorFunction());
 
             // Relational
@@ -118,6 +119,7 @@ namespace Scryber.Binding
             _all.Add(new MedianFunction());
             _all.Add(new ModeFunction());
             // String
+            _all.Add(new FormatFunction());
             _all.Add(new ContainsFunction());
             _all.Add(new EndsWithFunction());
             _all.Add(new LengthFunction());

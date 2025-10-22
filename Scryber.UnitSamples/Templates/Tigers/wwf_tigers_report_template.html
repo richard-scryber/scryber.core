@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:pdf="http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd">
+<head>
+    <meta charset="utf-8" />
+    <title>{{model.reportYear}} WWF Tigers Alive Annual Report</title>
+
+    <!-- External CSS for styles -->
+    <link rel="stylesheet" href="wwf_tigers_report_styles.css" type="text/css" />
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <h1 class="hero-title">Tigers Alive</h1>
+        <div class="hero-subtitle">Annual Report {{model.reportYear}}</div>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="stat-number">{{format(model.globalStats.currentPopulation, 'N0')}}</span>
+                <span class="stat-label">Wild Tigers Today</span>
+            </div>
+            <div class="hero-stat">
+                <span class="stat-number">{{format(model.globalStats.percentIncrease, 'N0')}}%</span>
+                <span class="stat-label">Increase Since 2010</span>
+            </div>
+            <div class="hero-stat">
+                <span class="stat-number">{{model.globalStats.countriesIncreasing}}</span>
+                <span class="stat-label">Countries Growing</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTRODUCTION -->
+    <div class="section">
+        <h2>Introduction</h2>
+        <p class="section-intro">{{model.introduction.openingText}}</p>
+
+        <div class="stat-box">
+            <div class="stat-box-title">Global Tiger Population Status</div>
+            <div class="stat-row">
+                <span class="stat-row-label">Current Wild Tiger Population</span>
+                <span class="stat-row-value">{{format(model.globalStats.currentPopulation, 'N0')}}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-row-label">2010 Baseline</span>
+                <span class="stat-row-value">{{format(model.globalStats.baseline2010, 'N0')}}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-row-label">Population Increase</span>
+                <span class="stat-row-value trend-up">+{{format(model.globalStats.percentIncrease, 'N0')}}%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-row-label">Historic Range Remaining</span>
+                <span class="stat-row-value trend-down">&lt;{{model.globalStats.percentHistoricRange}}%</span>
+            </div>
+        </div>
+
+        <h3>Major Milestones in {{model.reportYear}}</h3>
+        {{#each model.introduction.milestones}}
+        <div class="highlight">
+            <div class="highlight-title">{{this.title}}</div>
+            <p>{{this.description}}</p>
+        </div>
+        {{/each}}
+
+        <h3>Population Trends by Country</h3>
+        <table>
+            <tr>
+                <th>Country</th>
+                <th>Trend</th>
+                <th>Notes</th>
+            </tr>
+            {{#each model.introduction.countryTrends}}
+            <tr>
+                <td>{{this.country}}</td>
+                <td><span class="{{if(this.increasing, 'trend-up', 'trend-down')}}">{{if(this.increasing, '↑ Increasing', '↓ Declining')}}</span></td>
+                <td>{{this.notes}}</td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+
+    <!-- SECTION 1: EXPAND TIGER RANGE -->
+    <div class="section" style="page-break-before: always;">
+        <div class="section-header">
+            <div class="section-number">Section 01</div>
+            <h1 class="section-title">Expand Tiger Range</h1>
+        </div>
+
+        <p class="section-intro">{{model.sections.expandRange.intro}}</p>
+
+        {{#each model.sections.expandRange.stories}}
+        <div class="success-story">
+            <h2 class="success-story-title">{{this.title}}</h2>
+            <div class="success-story-location">{{this.location}}</div>
+            <p>{{this.description}}</p>
+
+            {{#if this.keyFacts}}
+            <h3>Key Facts:</h3>
+            <ul>
+                {{#each this.keyFacts}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+
+            {{#if this.statistics}}
+            <div class="stat-box">
+                <div class="stat-box-title">{{this.statisticsTitle}}</div>
+                {{#each this.statistics}}
+                <div class="stat-row">
+                    <span class="stat-row-label">{{this.label}}</span>
+                    <span class="stat-row-value">{{this.value}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+
+            {{#if this.quote}}
+            <div class="quote-box">
+                <p class="quote-text">"{{this.quote.text}}"</p>
+                <p class="quote-author">— {{this.quote.author}}, {{this.quote.title}}</p>
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- SECTION 2: SECURE CONNECTED HABITAT -->
+    <div class="section" style="page-break-before: always;">
+        <div class="section-header">
+            <div class="section-number">Section 02</div>
+            <h1 class="section-title">Secure Connected Habitat</h1>
+        </div>
+
+        <p class="section-intro">{{model.sections.secureHabitat.intro}}</p>
+
+        {{#each model.sections.secureHabitat.stories}}
+        <div class="success-story">
+            <h2 class="success-story-title">{{this.title}}</h2>
+            <div class="success-story-location">{{this.location}}</div>
+            <p>{{this.description}}</p>
+
+            {{#if this.keyFacts}}
+            <h3>Key Achievements:</h3>
+            <ul>
+                {{#each this.keyFacts}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+
+            {{#if this.statistics}}
+            <div class="stat-box">
+                <div class="stat-box-title">{{this.statisticsTitle}}</div>
+                {{#each this.statistics}}
+                <div class="stat-row">
+                    <span class="stat-row-label">{{this.label}}</span>
+                    <span class="stat-row-value">{{this.value}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+
+        <div class="highlight">
+            <div class="highlight-title">Critical Need: Ranger Workforce</div>
+            <p>A June 2024 research study revealed that <strong>{{format(model.sections.secureHabitat.rangerGap.additionalNeeded, 'N0')}} additional rangers</strong> are required within tiger protected areas across surveyed countries, representing a salary shortfall of <strong>{{format(model.sections.secureHabitat.rangerGap.salaryShortfall, 'C0')}}</strong>.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: END EXPLOITATION -->
+    <div class="section" style="page-break-before: always;">
+        <div class="section-header">
+            <div class="section-number">Section 03</div>
+            <h1 class="section-title">End Exploitation</h1>
+        </div>
+
+        <p class="section-intro">{{model.sections.endExploitation.intro}}</p>
+
+        {{#each model.sections.endExploitation.stories}}
+        <div class="success-story">
+            <h2 class="success-story-title">{{this.title}}</h2>
+            <div class="success-story-location">{{this.location}}</div>
+            <p>{{this.description}}</p>
+
+            {{#if this.keyFacts}}
+            <ul>
+                {{#each this.keyFacts}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+
+            {{#if this.statistics}}
+            <div class="stat-box">
+                <div class="stat-box-title">{{this.statisticsTitle}}</div>
+                {{#each this.statistics}}
+                <div class="stat-row">
+                    <span class="stat-row-label">{{this.label}}</span>
+                    <span class="stat-row-value">{{this.value}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- SECTION 4: TOWARDS COEXISTENCE -->
+    <div class="section" style="page-break-before: always;">
+        <div class="section-header">
+            <div class="section-number">Section 04</div>
+            <h1 class="section-title">Towards Coexistence</h1>
+        </div>
+
+        <p class="section-intro">{{model.sections.coexistence.intro}}</p>
+
+        <div class="highlight">
+            <div class="highlight-title">Conflict to Coexistence (C2C) Framework</div>
+            <p>{{model.sections.coexistence.c2cFramework.description}}</p>
+        </div>
+
+        {{#each model.sections.coexistence.stories}}
+        <div class="success-story">
+            <h2 class="success-story-title">{{this.title}}</h2>
+            <div class="success-story-location">{{this.location}}</div>
+            <p>{{this.description}}</p>
+
+            {{#if this.keyFacts}}
+            <h3>Implementation Highlights:</h3>
+            <ul>
+                {{#each this.keyFacts}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+
+            {{#if this.statistics}}
+            <div class="stat-box">
+                <div class="stat-box-title">{{this.statisticsTitle}}</div>
+                {{#each this.statistics}}
+                <div class="stat-row">
+                    <span class="stat-row-label">{{this.label}}</span>
+                    <span class="stat-row-value">{{this.value}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- LOOKING FORWARD -->
+    <div class="section" style="page-break-before: always;">
+        <h2>Looking Forward</h2>
+        <p class="section-intro">{{model.conclusion.lookingForward}}</p>
+
+        <div class="quote-box">
+            <p class="quote-text">"{{model.conclusion.closingQuote.text}}"</p>
+            <p class="quote-author">— {{model.conclusion.closingQuote.author}}</p>
+        </div>
+
+        <h3>Key Commitments for the Next Decade</h3>
+        <ul>
+            {{#each model.conclusion.commitments}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-logo">WWF Tigers Alive</div>
+        <p class="footer-text">{{model.footer.organizationInfo}}</p>
+        <p class="footer-text">Report published: {{format(model.footer.publishDate, 'MMMM yyyy')}}</p>
+        <p class="footer-text">{{model.footer.website}}</p>
+    </div>
+
+</body>
+</html>

@@ -36,4 +36,13 @@ namespace Scryber.Expressive.Expressions
 
         #endregion
     }
+    
+    internal class SelfVariableExpression : IExpression
+    {
+        public object Evaluate(IDictionary<string, object> variables)
+        {
+            var result = variables[CurrentDataExpression.CurrentDataVariableName];
+            return result;
+        }
+    }
 }

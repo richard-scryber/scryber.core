@@ -21,11 +21,78 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.ComponentModel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Scryber.Data.Enumerators;
 
 namespace Scryber.Components
 {
     public abstract class BindingTemplateComponent : VisualComponent
     {
+        
+        
+        #region Inner Classes
+
+        
+        
+        /// <summary>
+        /// An immutable class that prescribes how a BindingTemplateComponent should behave when it data-binds the inner template content.
+        /// </summary>
+        protected class DataBindingBehaviour
+        {
+            /// <summary>
+            /// If true then the component with this behaviour flag should loop through the
+            /// current data. If false then the current data will not be checked.
+            /// </summary>
+            public bool EnumerateThoughData { get; private set; }
+
+            /// <summary>
+            /// If true, then the current context data will be updated for children to use. If both 'EnumerateThroughData' and 'SetContextData' are true,
+            /// then the individual items will be used to set the context.
+            /// If both 'ExpandObjectProperies' and 'SetContextData' are true, then the values of the individual properties of the context data
+            /// will be used to set the context, and the ContextKey will be updated.
+            /// </summary>
+            public bool SetContextData { get; private set; }
+            
+            /// <summary>
+            /// If true, then the current context data will be reflected for it's public instance properties and
+            /// these can then be used (rather than enumerating through an array)
+            /// </summary>
+            public bool ExpandObjectProperties { get; private set; }
+
+            /// <summary>
+            /// If true, then the current DataContext index will be reset, and incremented on (each loop of) the binding.
+            /// At the end of the counter value will always be restored back to the original value
+            /// </summary>
+            public bool IncrementContextIndex { get; private set; }
+            
+            /// <summary>
+            /// Creates the default behaviour for the Binding Template Enumerating through the data (where possible),
+            /// updating the current data, and setting the current index. Object properties will not be expanded.
+            /// </summary>
+            public DataBindingBehaviour() : this(enumerate: true, expandObject: false, setContextData: true, incrementIndex: true)
+            {}
+
+            /// <summary>
+            /// Defines the behaviour of a binding template based on the flags
+            /// </summary>
+            /// <param name="enumerate">If true, then the component will try and enumerate through any data source available</param>
+            /// <param name="setContextData">If true, then the component will update the BindingContext Current Data so child components can act on it.</param>
+            /// <param name="incrementIndex">If true, then the component will reset the index to 0 at the start, and increment the index each time it binds a new template. Restoring the previous value </param>
+            public DataBindingBehaviour(bool enumerate, bool expandObject, bool setContextData, bool incrementIndex)
+            {
+                this.EnumerateThoughData = enumerate;
+                this.ExpandObjectProperties = expandObject;
+                this.SetContextData = setContextData;
+                this.IncrementContextIndex = incrementIndex;
+            }
+            
+            
+            
+        }
+        
+        #endregion
+        
         #region public event TemplateItemDataBoundHandler ItemDataBound
 
         private static readonly object ItemBoundEventKey = new object();
@@ -39,6 +106,8 @@ namespace Scryber.Components
             add { this.Events.AddHandler(ItemBoundEventKey, value); }
             remove { this.Events.RemoveHandler(ItemBoundEventKey, value); }
         }
+
+        
 
         /// <summary>
         /// Raises the ItemDataBound event
@@ -60,6 +129,7 @@ namespace Scryber.Components
 
         #endregion
 
+        protected DataBindingBehaviour BindingBehaviour { get; set; }
 
         /// <summary>
         /// The list of Components that were added to the
@@ -71,15 +141,17 @@ namespace Scryber.Components
         /// The parent Component the items were added to.
         /// </summary>
         private IContainerComponent _toparent;
-        
+
+
 
         //
         // ctor(s)
         //
 
-        protected BindingTemplateComponent(ObjectType type)
+        protected BindingTemplateComponent(ObjectType type, DataBindingBehaviour behaviour)
             : base(type)
         {
+            this.BindingBehaviour = behaviour ?? new DataBindingBehaviour();
         }
 
 
@@ -104,6 +176,7 @@ namespace Scryber.Components
 
             if (includeChildren)
             {
+                
                 IContainerComponent container = GetContainerParent();
                 DoDataBindToContainer(context, container);
             }
@@ -120,14 +193,21 @@ namespace Scryber.Components
             //If we have a template and should be binding on it
             
             int oldindex = context.CurrentIndex;
-            int index = container.Content.IndexOf(this);
-
-            DoBindDataIntoContainer(container, index, context);
-            _toparent = container;
-
+            string oldkey = context.CurrentKey;
             
-            context.CurrentIndex = oldindex;
+            try
+            {
+                int index = container.Content.IndexOf(this);
 
+                DoBindDataIntoContainer(container, index, context);
+                _toparent = container;
+
+            }
+            finally
+            {
+                context.CurrentIndex = oldindex;
+                context.CurrentKey = oldkey;
+            }
         }
 
         protected IContainerComponent GetContainerParent()
@@ -161,103 +241,209 @@ namespace Scryber.Components
             int prevcount = context.CurrentIndex;
             DataStack stack = context.DataStack;
 
+            
             object data = stack.HasData ? context.DataStack.Current : null;
             IDataSource source = stack.HasData ? context.DataStack.Source : null;
 
             int count = 0;
             int added = 0;
-            IEnumerator enumerator = null;
             
-            if (CanEnumerate(data))
-            {
-                if (context.ShouldLogDebug)
-                    context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind enumerable data into container " + this.ID);
-                
 
-                IEnumerable ienum = data as IEnumerable;
-                enumerator = this.CreateEnumerator(ienum);
+            using (var enumerator = GetBehaviourEnumerator(this.BindingBehaviour, data, source, context))
+            {
                 while (enumerator.MoveNext())
                 {
-                    context.CurrentIndex = count;
-                    context.DataStack.Push(enumerator.Current, source);
                     int number = 0;
 
                     ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
                     if (null != template)
-                        number = InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
-
-                    context.DataStack.Pop();
-
-                    
-                    if (context.ShouldLogDebug)
-                        context.TraceLog.Add(TraceLevel.Debug, "Binding Template", "Bound data into template index : " + count + " and added " + number + " components");
+                        number = InstantiateAndAddWithTemplate(template, count, added + containerposition, container,
+                            context);
 
                     count++;
                     added += number;
                 }
-                if (count == 0)
-                    context.TraceLog.Add(TraceLevel.Message, "Binding Template", "ZERO items were data bound with the Binding Template Component as MoveNext returned false from the start");
-                
-                if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding enumerable data into Binding Template Component, " + added + " components added, with " + count + " enumerable data items");
-                else if(context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding enumerable data into Binding Template Component, " + added + " components added, with " + count + " enumerable data items");
-                
-            }
-            else if (data != null)
-            {
-                if (context.ShouldLogDebug)
-                    context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind single data into Binding Template Component");
-                
-                context.CurrentIndex = 1;
-                context.DataStack.Push(data, source);
-                ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
-                if(null != template)
-                    added += InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
-                context.DataStack.Pop();
 
-                if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding single data into the Binding Template Component, " + added + " components added.");
-                else if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding single data into the Binding Template Component, " + added + " components added.");
-                
-            }
-            else
-            {
-                if (context.ShouldLogDebug)
-                    context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind into Binding Template Component with NO context data");
-
-                context.CurrentIndex = 1;
-                ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
-                if (null != template)
-                    added += InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
-
-                if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding the Binding Template Component with NO data, " + added + " components added.");
-                else if (context.ShouldLogVerbose)
-                    context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding the Binding Template Component with NO data, " + added + " components added.");
+                enumerator.Reset();
             }
 
-            context.CurrentIndex = prevcount;
+            // if (CanEnumerate(data))
+            // {
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind enumerable data into container " + this.ID);
+            //     
+            //
+            //     IEnumerable ienum = data as IEnumerable;
+            //     enumerator = this.CreateEnumerator(ienum);
+            //     while (enumerator.MoveNext())
+            //     {
+            //         context.CurrentIndex = count;
+            //         context.DataStack.Push(enumerator.Current, source);
+            //         int number = 0;
+            //
+            //         ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
+            //         if (null != template)
+            //             number = InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
+            //
+            //         context.DataStack.Pop();
+            //
+            //         
+            //         if (context.ShouldLogDebug)
+            //             context.TraceLog.Add(TraceLevel.Debug, "Binding Template", "Bound data into template index : " + count + " and added " + number + " components");
+            //
+            //         count++;
+            //         added += number;
+            //     }
+            //     if (count == 0)
+            //         context.TraceLog.Add(TraceLevel.Message, "Binding Template", "ZERO items were data bound with the Binding Template Component as MoveNext returned false from the start");
+            //     
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding enumerable data into Binding Template Component, " + added + " components added, with " + count + " enumerable data items");
+            //     else if(context.ShouldLogVerbose)
+            //         context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding enumerable data into Binding Template Component, " + added + " components added, with " + count + " enumerable data items");
+            //     
+            // }
+            // else if (data != null)
+            // {
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template",
+            //             "Starting to bind single data into Binding Template Component");
+            //
+            //     if (this.BindingBehaviour != DataBindingBehaviour.SetCurrentAndItterate)
+            //     {
+            //         //We set the 
+            //         context.CurrentIndex = 1;
+            //     }
+            //     context.DataStack.Push(data, source);
+            //
+            //     ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
+            //     if(null != template)
+            //         added += InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
+            //     context.DataStack.Pop();
+            //
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding single data into the Binding Template Component, " + added + " components added.");
+            //     else if (context.ShouldLogVerbose)
+            //         context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding single data into the Binding Template Component, " + added + " components added.");
+            //     
+            // }
+            // else
+            // {
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.Begin(TraceLevel.Verbose, "Binding Template", "Starting to bind into Binding Template Component with NO context data");
+            //
+            //     context.CurrentIndex = 1;
+            //     ITemplate template = this.GetTemplateForBinding(context, count, added + containerposition);
+            //     if (null != template)
+            //         added += InstantiateAndAddWithTemplate(template, count, added + containerposition, container, context);
+            //
+            //     if (context.ShouldLogDebug)
+            //         context.TraceLog.End(TraceLevel.Verbose, "Binding Template", "Completed binding the Binding Template Component with NO data, " + added + " components added.");
+            //     else if (context.ShouldLogVerbose)
+            //         context.TraceLog.Add(TraceLevel.Verbose, "Binding Template", "Completed binding the Binding Template Component with NO data, " + added + " components added.");
+            // }
+            //
+            // context.CurrentIndex = prevcount;
             
         }
 
-        protected bool CanEnumerate(object value)
+        protected virtual Scryber.Data.Enumerators.IBindingEnumerator GetBehaviourEnumerator(DataBindingBehaviour behaviour, object value, IDataSource source, DataContext context)
         {
-            if (value is IEnumerable)
+            if (value is string)
             {
-
-                if (value is ICustomTypeDescriptor)
-                    return false; // Should not enumerate over these
-                else if (value is string)
-                    return false; // Should not enumerate over strings
+                if (behaviour.ExpandObjectProperties)
+                {
+                    //Special implementation to go through each character
+                    // new StringContentEnumerator();
+                    throw new NotImplementedException("Not enumerating over strings just yet");
+                }
                 else
-                    return true;
+                {
+                    return new Scryber.Data.Enumerators.SingleObjectEnumerator(value, source,
+                        behaviour.IncrementContextIndex,
+                        behaviour.SetContextData,
+                        context);
+                }
+            }
+            if (value is IDictionary dict)
+            {
+                if (behaviour.ExpandObjectProperties)
+                {
+                    return new Scryber.Data.Enumerators.DictionaryBindingEnumerator(dict, source,
+                        behaviour.IncrementContextIndex,
+                        behaviour.SetContextData,
+                        context);
+                }
+                else
+                {
+                    return new Scryber.Data.Enumerators.SingleObjectEnumerator(value, source,
+                        behaviour.IncrementContextIndex,
+                        behaviour.SetContextData,
+                        context);
+                }
+            }
+            else if (value is JObject jobj)
+            {
+                if (behaviour.ExpandObjectProperties)
+                {
+                    return new JObjectEnumerator(jobj, source, behaviour.IncrementContextIndex,
+                        behaviour.SetContextData, context);
+                }
+                else
+                {
+                    return new SingleObjectEnumerator(jobj, source, behaviour.IncrementContextIndex,
+                        behaviour.SetContextData, context);
+                }
+            }
+            else if (value is IEnumerable ienum)
+            {
+                if (behaviour.EnumerateThoughData)
+                {
+                    var enumerator = this.CreateEnumerator(ienum);
 
+                    return new CollectionBindingEnumerator(enumerator, source, behaviour.IncrementContextIndex,
+                        behaviour.SetContextData, context);
+                }
+                else
+                {
+                    return new SingleObjectEnumerator(value, source, behaviour.IncrementContextIndex,
+                        behaviour.SetContextData, context);
+                }
+            }
+            else if (behaviour.ExpandObjectProperties)
+            {
+                throw new NotImplementedException("Expand an object properties and enumerate over them");
             }
             else
-                return false;
+            {
+                return new Scryber.Data.Enumerators.SingleObjectEnumerator(value, source,
+                    behaviour.IncrementContextIndex,
+                    behaviour.SetContextData,
+                    context);
+            }
         }
+
+        // protected bool CanEnumerate(object value)
+        // {
+        //     //First check the behaviour for itteration - if not, then don't do it.
+        //     if (this.BindingBehaviour != DataBindingBehaviour.SetCurrentAndItterate)
+        //     {
+        //         return false;
+        //     }
+        //     if (value is IEnumerable)
+        //     {
+        //
+        //         if (value is ICustomTypeDescriptor)
+        //             return false; // Should not enumerate over these
+        //         else if (value is string)
+        //             return false; // Should not enumerate over strings
+        //         else
+        //             return true;
+        //
+        //     }
+        //     else
+        //         return false;
+        // }
 
         /// <summary>
         /// Abstract method that all inheritors must override to return the template required for instaniating and binding.

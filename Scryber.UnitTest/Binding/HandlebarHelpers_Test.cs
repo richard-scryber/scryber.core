@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Data;
+using System.Linq;
+using System.Linq.Expressions;
 using Scryber.Drawing;
 using Scryber.Handlebar.Components;
 using Scryber.Html.Components;
@@ -76,7 +78,7 @@ namespace Scryber.Core.UnitTests.Binding
             
             
             var expected =
-                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{collection}}' >
+                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind=""{{collection}}"" >
 <!-- Content repeated for each item -->
 {{this.property}}
 </hbar:each>";
@@ -116,7 +118,7 @@ namespace Scryber.Core.UnitTests.Binding
                         <li>{{this}}</li>
                     {{/each}}";
             var expected =
-                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{items}}' >
+                @"<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind=""{{items}}"" >
                         <li>{{this}}</li>
                     </hbar:each>";
 
@@ -161,7 +163,7 @@ namespace Scryber.Core.UnitTests.Binding
 ";
 
             var expected = @"
-<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind='{{products}}' >
+<hbar:each xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' data-bind=""{{products}}"" >
 <tr>
             <td>{{add(@index, 1)}}</td>  <!-- Convert to 1-based -->
             <td>{{this.name}}</td>
@@ -219,13 +221,13 @@ namespace Scryber.Core.UnitTests.Binding
             var expected =
                 @"		  
 <hbar:choose xmlns:hbar='Scryber.Handlebar.Components, Scryber.Components' >
-	<hbar:when data-test='{{model.priority == 0}}' >
+	<hbar:when data-test=""{{model.priority == 0}}"" >
     <span class=""badge low"">Low Priority</span>
 </hbar:when>
-	<hbar:when data-test='{{model.priority == 1}}' >
+	<hbar:when data-test=""{{model.priority == 1}}"" >
     <span class=""badge medium"">Medium Priority</span>
 </hbar:when>
-	<hbar:when data-test='{{model.priority == 2}}' >
+	<hbar:when data-test=""{{model.priority == 2}}"" >
     <span class=""badge high"">High Priority</span>
 </hbar:when>
 	<hbar:otherwise>
@@ -506,20 +508,18 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void CheckHelperMatching7()
         {
-
-            var str = @"
-<!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <title>Sales Report</title>
-    <style>
-        body {
+            var style = @"body {
             font-family: Helvetica, sans-serif;
-            margin: 40pt;
+            margin: 20pt;
+            font-size: 12pt;
         }
         h1 {
             color: #1e40af;
         }
+        h2 {
+            font-size: 16pt;
+            margin-bottom: 5pt;
+}
         .user-badge {
             display: inline-block;
             padding: 5pt 15pt;
@@ -543,7 +543,7 @@ namespace Scryber.Core.UnitTests.Binding
         .metric-box {
             display: inline-block;
             width: 30%;
-            padding: 15pt;
+            padding: 10pt;
             margin: 10pt 1%;
             border: 2pt solid #2563eb;
             border-radius: 5pt;
@@ -555,8 +555,8 @@ namespace Scryber.Core.UnitTests.Binding
             color: #2563eb;
         }
         .alert {
-            padding: 10pt;
-            margin: 10pt 0;
+            padding: 5pt;
+            margin: 5pt 0;
             border-radius: 5pt;
         }
         .alert-warning {
@@ -567,110 +567,338 @@ namespace Scryber.Core.UnitTests.Binding
             background-color: #dbeafe;
             border-left: 4pt solid #2563eb;
         }
+        .alert > i {
+            display: inline-block;
+            vertical-align : bottom;
+            border: solid 1pt #f59e0b;
+            color: #f59e0b;
+            font-size: 10pt;
+            font-style: normal;
+            padding: 2pt 5pt;
+            border-radius : 8pt;
+            font-weight: 600;
+        }
+        .alert.alert-info > i {
+            padding: 2pt 7pt;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
         table {
             width: 100%;
-            border-collapse: collapse;
             margin: 20pt 0;
         }
         th {
             background-color: #2563eb;
             color: white;
-            padding: 10pt;
+            padding: 5pt;
             text-align: left;
+            margin: 0pt
         }
         td {
+            padding: 4pt;
+            border: none;
+            border-bottom: 1pt solid #e5e7eb;
+            margin:0pt
+        }";
+
+            var str = $@"
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Sales Bar Chart</title>
+    <style>
+        body {{
+            font-family: Helvetica, sans-serif;
+            margin: 40pt;
+        }}
+        h1 {{
+            color: #1e40af;
+            margin-bottom: 5pt;
+        }}
+        .subtitle {{
+            color: #666;
+            font-size: 10pt;
+            margin-bottom: 30pt;
+        }}
+        .chart-container {{
+            margin: 30pt 0;
+            text-align: center;
+        }}
+        .summary-box {{
+            display: inline-block;
+            width: 30%;
+            padding: 15pt;
+            margin: 10pt 1%;
+            background-color: #eff6ff;
+            border: 2pt solid #2563eb;
+            border-radius: 5pt;
+            text-align: center;
+        }}
+        .summary-value {{
+            font-size: 20pt;
+            font-weight: bold;
+            color: #2563eb;
+        }}
+        .legend {{
+            margin: 20pt 0;
+            font-size: 9pt;
+        }}
+        .legend-item {{
+            display: inline-block;
+            margin-right: 20pt;
+        }}
+        .legend-color {{
+            display: inline-block;
+            width: 15pt;
+            height: 15pt;
+            margin-right: 5pt;
+            vertical-align: middle;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30pt;
+        }}
+        th {{
+            background-color: #2563eb;
+            color: white;
+            padding: 10pt;
+            text-align: left;
+        }}
+        td {{
             padding: 8pt;
             border-bottom: 1pt solid #e5e7eb;
-        }
+        }}
+        .status-met {{
+            color: #059669;
+            font-weight: bold;
+        }}
+        .status-missed {{
+            color: #dc2626;
+            font-weight: bold;
+        }}
     </style>
 </head>
 <body>
-    <h1>
-        Sales Report for {{model.userName}}
-        {{#if model.userLevel == 'premium'}}
-            <span class=""user-badge badge-premium"">★ Premium</span>
-        {{else if model.userLevel == 'admin'}}
-            <span class=""user-badge badge-admin"">⚙ Admin</span>
-        {{else}}
-            <span class=""user-badge badge-standard"">Standard</span>
-        {{/if}}
-    </h1>
+    <h1>{{{{model.reportTitle}}}}</h1>
+    <p class=""subtitle"">Generated: {{{{format(model.reportDate, 'MMMM dd, yyyy')}}}}</p>
 
-    <p style=""color: #666; font-size: 10pt;"">
-        Generated: {{string(model.reportDate, 'MMMM dd, yyyy HH:mm')}}
-    </p>
-
-    <!-- Key Metrics (visible to all) -->
-    <h2>Key Metrics</h2>
-    <div>
-        <div class=""metric-box"">
-            <div class=""metric-value"">{{string(model.metrics.totalSales, 'C0')}}</div>
-            <div>Total Sales</div>
+    <!-- Summary Metrics -->
+    <div style=""margin-bottom: 30pt;"">
+        <div class=""summary-box"">
+            <div class=""summary-value"">{{{{format(model.totalRevenue, 'C0')}}}}</div>
+            <div>Total Revenue</div>
         </div>
-        <div class=""metric-box"">
-            <div class=""metric-value"">{{model.metrics.newCustomers}}</div>
-            <div>New Customers</div>
+        <div class=""summary-box"">
+            <div class=""summary-value"">{{{{model.categories.length}}}}</div>
+            <div>Categories</div>
         </div>
-        <div class=""metric-box"">
-            <div class=""metric-value"">{{string(model.metrics.conversionRate, 'P1')}}</div>
-            <div>Conversion Rate</div>
+        <div class=""summary-box"">
+            <div class=""summary-value"">
+            </div>
+            <div>Targets Met</div>
         </div>
     </div>
 
-    <!-- Detailed Analytics (Premium and Admin only) -->
-    {{#if model.userLevel == 'premium' || model.userLevel == 'admin'}}
-        <h2>Detailed Category Analysis</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th style=""text-align: right;"">Revenue</th>
-                    <th style=""text-align: right;"">% of Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each model.detailedAnalytics}}
-                <tr>
-                    <td>{{this.category}}</td>
-                    <td style=""text-align: right;"">{{string(this.revenue, 'C0')}}</td>
-                    <td style=""text-align: right;"">
-                        {{format(this.revenue / model.metrics.totalSales), 'P0')}}
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    {{else}}
-        <div style=""padding: 20pt; background-color: #fef3c7; border: 2pt solid #f59e0b; border-radius: 5pt; margin: 20pt 0;"">
-            <strong>Upgrade to Premium</strong> to see detailed category analysis and more!
-        </div>
-    {{/if}}
+    <!-- SVG Bar Chart -->
+    <div class=""chart-container"">
+        <svg width=""{{{{model.chartWidth}}}}pt"" height=""{{{{model.chartHeight}}}}pt""
+             xmlns=""http://www.w3.org/2000/svg"">
 
-    <!-- Alerts -->
-    {{#if model.alerts.length > 0}}
-        <h2>Alerts & Notifications</h2>
-        {{#each model.alerts}}
-            <div class=""alert alert-{{this.type}}"">
-                {{#if this.type == 'warning'}}⚠{{else}}ℹ{{/if}}
-                {{this.message}}
-            </div>
-        {{/each}}
-    {{/if}}
+            <!-- Chart Title -->
+            <text x=""{{{{model.chartWidth / 2}}}}"" y=""20""
+                  text-anchor=""middle""
+                  font-size=""12""
+                  font-weight=""600""
+                  fill=""#1e40af"">
+                Sales Revenue by Category
+            </text>
 
-    <!-- Admin Section -->
-    {{#if model.isAdmin}}
-        <div style=""margin-top: 40pt; padding: 20pt; background-color: #eff6ff; border: 2pt solid #2563eb;"">
-            <h2>Admin Tools</h2>
-            <p>Additional administrative controls and reports are available.</p>
-            <ul>
-                <li>User management</li>
-                <li>System configuration</li>
-                <li>Audit logs</li>
-            </ul>
-        </div>
-    {{/if}}
+            <!-- Y-axis labels -->
+            <text x=""35"" y=""50"" text-anchor=""end"" font-size=""9"" fill=""#666"">
+                ${{{{format(model.maxValue, '#,##0')}}}}
+            </text>
+            <text x=""35"" y=""150"" text-anchor=""end"" font-size=""9"" fill=""#666"">
+                ${{{{format(model.maxValue / 2, '#,##0')}}}}
+            </text>
+            <text x=""35"" y=""245"" text-anchor=""end"" font-size=""9"" fill=""#666"">
+                $0
+            </text>
+
+            <!-- Y-axis line -->
+            <line x1=""40"" y1=""40"" x2=""40"" y2=""240""
+                  stroke=""#d1d5db"" stroke-width=""2"" />
+
+            <!-- X-axis line -->
+            <line x1=""40"" y1=""240"" x2=""540"" y2=""240""
+                  stroke=""#d1d5db"" stroke-width=""2"" />
+
+            <!-- Grid lines -->
+            <line x1=""40"" y1=""140"" x2=""540"" y2=""140""
+                  stroke=""#e5e7eb"" stroke-width=""1"" stroke-dasharray=""5,5"" />
+            <line x1=""40"" y1=""40"" x2=""540"" y2=""40""
+                  stroke=""#e5e7eb"" stroke-width=""1"" stroke-dasharray=""5,5"" />
+
+            
+            <!-- Bars and Labels -->
+            {{{{#each model.categories}}}}
+                <!-- Calculate bar heights using template variables (0-200pt scale) -->
+                <var data-id=""barHeight"" data-value=""{{{{this.revenue / model.maxValue * 200}}}}"" />
+                <var data-id=""targetLineHeight"" data-value=""{{{{this.target / model.maxValue * 200}}}}"" />
+                <var data-id=""barIndex"" data-value=""{{{{@index}}}}"" />
+
+                <!-- Calculate bar position (5 categories, 100pt width each) -->
+                <g>
+                    <!-- Bar background -->
+                    <rect x=""{{{{50 + @index * 100}}}}""
+                          y=""40""
+                          width=""70""
+                          height=""200""
+                          fill=""#f9fafb""
+                          stroke=""#e5e7eb"" />
+
+
+                    <!-- Revenue bar -->
+                    <rect x=""{{{{50 + (barIndex * 100)}}}}""
+                          y=""{{{{240 - barHeight}}}}""
+                          width=""70""
+                          height=""{{{{barHeight}}}}""
+                          fill=""{{{{if(this.metTarget, '#10b981', '#ef4444')}}}}""
+                           />
+
+                    <!-- Target line -->
+                    <line x1=""{{{{50 + (@index * 100)}}}}""
+                          y1=""{{{{240 - targetLineHeight}}}}""
+                          x2=""{{{{120 + index() * 100}}}}""
+                          y2=""{{{{240 - targetLineHeight}}}}""
+                          stroke=""#2563eb""
+                          stroke-width=""2"" />
+
+                    <!-- Revenue value on top of bar (only show if bar is tall enough) -->
+                    {{{{#if barHeight > 30}}}}
+                    <text x=""{{{{85 + (barIndex * 100)}}}}""
+                          y=""{{{{250 - barHeight}}}}""
+                          text-anchor=""middle""
+                          font-size=""8""
+                          font-weight=""600""
+                          fill=""white"">
+                        {{{{format(this.revenue, 'C0')}}}}
+                    </text>
+                    {{{{/if}}}}
+
+                    <!-- Category name -->
+                    <text x=""{{{{85 + @index * 100}}}}""
+                          y=""248""
+                          text-anchor=""middle""
+                          font-size=""9""
+                          fill=""#374151"">
+                        {{{{this.name}}}}
+                    </text>
+
+                    <!-- Performance indicator -->
+                    {{{{#if this.metTarget}}}}
+                        <text x=""{{{{85 + @index * 100}}}}""
+                              y=""268""
+                              text-anchor=""middle""
+                              font-size=""8""
+                              fill=""#059669""
+                              font-weight=""600"">
+                            ✓ {{{{format(this.percentOfTarget, '0')}}}}%
+                        </text>
+                    {{{{else}}}}
+                        <text x=""{{{{85 + @index * 100}}}}""
+                              y=""268""
+                              text-anchor=""middle""
+                              font-size=""8""
+                              fill=""#dc2626""
+                              font-weight=""600"">
+                            {{{{format(this.percentOfTarget, '0')}}}}%
+                        </text>
+                    {{{{/if}}}}
+                </g>
+            {{{{/each}}}}
+
+            <!-- Legend -->
+            <g transform=""translate(40, 300)"">
+                <rect x=""0"" y=""0"" width=""15"" height=""15"" fill=""#10b981"" opacity=""0.8"" />
+                <text x=""20"" y=""12"" font-size=""9"" fill=""#374151"">Revenue (Met Target)</text>
+
+                <rect x=""150"" y=""0"" width=""15"" height=""15"" fill=""#ef4444"" opacity=""0.8"" />
+                <text x=""170"" y=""12"" font-size=""9"" fill=""#374151"">Revenue (Missed Target)</text>
+
+                <line x1=""300"" y1=""7.5"" x2=""315"" y2=""7.5""
+                      stroke=""#2563eb"" stroke-width=""2"" />
+                <text x=""320"" y=""12"" font-size=""9"" fill=""#374151"">Target</text>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Detailed Data Table -->
+    <h2>Detailed Breakdown</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th style=""text-align: right;"">Revenue</th>
+                <th style=""text-align: right;"">Target</th>
+                <th style=""text-align: right;"">% of Target</th>
+                <th style=""text-align: center;"">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{{{#each model.categories}}}}
+            <tr>
+                <td><strong>{{{{this.name}}}}</strong></td>
+                <td style=""text-align: right;"">{{{{format(this.revenue, 'C0')}}}}</td>
+                <td style=""text-align: right;"">{{{{format(this.target, 'C0')}}}}</td>
+                <td style=""text-align: right;"">{{{{format(this.percentOfTarget, '0.0')}}}}%</td>
+                <td style=""text-align: center;"">
+                    {{{{#if this.metTarget}}}}
+                        <span class=""status-met"">✓ Met</span>
+                    {{{{else}}}}
+                        <span class=""status-missed"">✗ Missed</span>
+                    {{{{/if}}}}
+                </td>
+            </tr>
+            {{{{/each}}}}
+        </tbody>
+        <tfoot>
+            <tr style=""background-color: #eff6ff; font-weight: bold;"">
+                <td>TOTAL</td>
+                <td style=""text-align: right;"">{{{{format(model.totalRevenue, 'C0')}}}}</td>
+                <td colspan=""3""></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Conditional Insights -->
+    <h2>Key Insights</h2>
+    {{{{#each model.categories}}}}
+        {{{{#if this.metTarget}}}}
+            {{{{#if this.percentOfTarget >= 120}}}}
+                <div style=""padding: 10pt; margin: 10pt 0; background-color: #d1fae5; border-left: 4pt solid #059669;"">
+                    <strong>{{{{this.name}}}}</strong> exceeded expectations by {{{{format(this.percentOfTarget - 100, '0')}}}}%!
+                    Outstanding performance.
+                </div>
+            {{{{/if}}}}
+        {{{{else}}}}
+            {{{{#if this.percentOfTarget < 80}}}}
+                <div style=""padding: 10pt; margin: 10pt 0; background-color: #fee2e2; border-left: 4pt solid #dc2626;"">
+                    <strong>{{{{this.name}}}}</strong> significantly underperformed at {{{{format(this.percentOfTarget, '0')}}}}% of target.
+                    Immediate attention required.
+                </div>
+            {{{{else}}}}
+                <div style=""padding: 10pt; margin: 10pt 0; background-color: #fef3c7; border-left: 4pt solid #f59e0b;"">
+                    <strong>{{{{this.name}}}}</strong> missed target by {{{{format(100 - this.percentOfTarget, '0')}}}}%.
+                    Monitor closely next quarter.
+                </div>
+            {{{{/if}}}}
+        {{{{/if}}}}
+    {{{{/each}}}}
 </body>
-</html>";
+</html>
+
+";
             
             //TODO: Add 'this' support, and ../ support
             //TODO: Add format function same as string(value, format)
@@ -679,35 +907,45 @@ namespace Scryber.Core.UnitTests.Binding
         using (var reader = new System.IO.StringReader(str))
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
-                doc.Params["model"] = new
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                var categories = new[]
                 {
-                    reportDate = DateTime.Now,
-                    userName = "John Smith",
-                    isAdmin = true,
-                    userLevel = "premium",
-                    alerts = new[]
-                    {
-                        new { type = "warning", message = "This is a warning message" },
-                        new { type = "note", message = "This is just a note" },
-                        new { type = "warning", message = "This is another warning" },
-                        new { type = "verbose", message = "Just a debug message" }
-                    },
-                    detailedAnalytics = new []
-                    {
-                        new { category = "Online", revenue = 123.40, },
-                        new { category = "In Store", revenue = 423.40 },
-                        new { category = "Advertising", revenue = 0.40 }
-                    },
-                    metrics = new { totalSales = 547.2, newCustomers = 10, conversionRate = 0.21 }
+                    new { name = "Electronics", revenue = 125000m, target = 100000m },
+                    new { name = "Clothing", revenue = 98000m, target = 110000m },
+                    new { name = "Home & Garden", revenue = 87000m, target = 80000m },
+                    new { name = "Sports", revenue = 76000m, target = 85000m },
+                    new { name = "Books", revenue = 54000m, target = 60000m }
                 };
 
-                using (var output = DocStreams.GetOutputStream("Handlebars_CheckHelperMatching7"))
+// Find max for scaling (needed for template calculations)
+                var maxRevenue = categories.Max(c => c.revenue);
+                var maxValue = Math.Max(maxRevenue, categories.Max(c => c.target));
+                
+                doc.Params["model"] = new
                 {
+                    reportTitle = "Q4 Sales Performance by Category",
+                    reportDate = DateTime.Now,
+                    totalRevenue = categories.Sum(c => c.revenue),
+                    categories = categories.Select(c => new
+                    {
+                        name = c.name,
+                        revenue = c.revenue,
+                        target = c.target,
+                        metTarget = c.revenue >= c.target,
+                        percentOfTarget = (c.revenue / c.target) * 100
+                        // Heights will be calculated in the template
+                    }).ToArray(),
+                    chartHeight = 320,
+                    chartWidth = 550,
+                    maxValue = maxValue  // Used for scaling calculations in template
+                };
+
+
+                using (var output = DocStreams.GetOutputStream("Handlebars_CheckHelperMatching7.pdf"))
+                {
+                    doc.AppendTraceLog = false;
                     doc.SaveAsPDF(output);
                 }
-
-                doc.InitializeAndLoad(OutputFormat.PDF);
-                doc.DataBind(OutputFormat.PDF);
                 
                 
             }

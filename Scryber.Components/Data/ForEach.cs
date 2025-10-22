@@ -130,6 +130,12 @@ namespace Scryber.Data
         }
 
         #endregion
+        
+        private static readonly DataBindingBehaviour foreachBehaviour = new DataBindingBehaviour(
+            enumerate: true,
+            expandObject: false,
+            setContextData: true,
+            incrementIndex: true);
 
         public ForEach()
             : this(ObjectTypes.NoOp)
@@ -137,7 +143,7 @@ namespace Scryber.Data
         }
 
         protected ForEach(ObjectType type)
-            : base(type)
+            : base(type, foreachBehaviour)
         {
             _start = 0;
             _count = int.MaxValue;
