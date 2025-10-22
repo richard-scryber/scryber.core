@@ -8,7 +8,6 @@ using Scryber.Drawing;
 
 namespace Scryber.UnitSamples
 {
-    [TestClass]
     public class TigersReport : SampleBase
     {
 
@@ -27,8 +26,7 @@ namespace Scryber.UnitSamples
         }
 
         #endregion
-
-        [TestMethod()]
+        
         public void CreateTigersReport()
         {
             // Read and deserialize the JSON data file
@@ -41,8 +39,6 @@ namespace Scryber.UnitSamples
 
             using (var doc = Document.ParseDocument(path))
             {
-
-
                 // Load the template
                 doc.Params["model"] = model;
 

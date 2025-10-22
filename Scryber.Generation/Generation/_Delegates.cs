@@ -18,7 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Scryber.Generation
@@ -30,5 +30,9 @@ namespace Scryber.Generation
     /// <returns></returns>
     public delegate object PDFXmlConverter(XmlReader reader, Type requiredType, ParserSettings settings);
 
-    
+    /// <summary>
+    /// Delegate method to replace the content of a handlebars helper expression (e.g. {{#each ..}}....{{/each}})
+    /// with a formatted xml element that matches that functionality.
+    /// </summary>
+    public delegate string HandlebarMatchReplacer(HBarHelperSplitter splitter, Stack<Match> currentStack, Match newMatch);
 }

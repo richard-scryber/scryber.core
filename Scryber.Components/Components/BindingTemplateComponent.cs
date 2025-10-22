@@ -176,7 +176,6 @@ namespace Scryber.Components
 
             if (includeChildren)
             {
-                
                 IContainerComponent container = GetContainerParent();
                 DoDataBindToContainer(context, container);
             }
