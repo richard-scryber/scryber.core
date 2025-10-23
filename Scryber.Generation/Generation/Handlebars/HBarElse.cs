@@ -16,19 +16,28 @@ namespace Scryber.Generation.Handlebars
             if (value.StartsWith("{{else"))
             {
                 var path = "";
-                value = value.Substring(6); //remove '{{#if '
+                value = value.Substring(6); //remove '{{else '
                 if (value.Length >= 2 && value.EndsWith("}}"))
                 {
                     var prev = tracker.Pop();
                     if (prev.Value.StartsWith("{{#if") || prev.Value.StartsWith("{{else if"))
+                    {
+                        //we are in an if ... else if ... else block.
                         result = "</" + splitter.MappingPrefix + ":when>\n\t";
+                        result += "<" + splitter.MappingPrefix + ":otherwise>";
+                    }
+                    else if (prev.Value.StartsWith("{{#with "))
+                    {
+                        result = "</Template></" + splitter.MappingPrefix + ":withContent>\n\t";
+                        result += "<" + splitter.MappingPrefix + ":elseContent><Template>";
+                    }
                     else
                     {
                         throw new Scryber.PDFParserException(
                             "The handle bar helper sequence is not balanced found a match on '" + prev.Value +
                             "' when expecting to end an 'if' or 'else if' clause at index:" + prev.Index);
                     }
-                    result += "<" + splitter.MappingPrefix + ":otherwise>";
+                    
                     tracker.Push(newMatch);
                 }
             }

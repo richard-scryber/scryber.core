@@ -85,6 +85,12 @@ namespace Scryber.Html.Components
             return style;
         }
 
+
+        protected override void OnDataBinding(DataContext context)
+        {
+            base.OnDataBinding(context);
+        }
+
         protected override void OnDataBound(DataContext context)
         {
             if(this.DataValue != null && !string.IsNullOrEmpty(this.DataID))

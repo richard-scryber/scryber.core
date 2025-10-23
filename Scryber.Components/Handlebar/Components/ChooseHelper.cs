@@ -20,7 +20,7 @@ public class ChooseHelper : Scryber.Data.Choose
 }
 
 /// <summary>
-/// The where decision choice (either from an {{#if }} test or an {{else if   }} test in a handlebars template
+/// The where decision choice (either from an {{#if }} test or an {{else if   }} test) in a handlebars template
 /// </summary>
 [PDFParsableComponent("when")]
 public class ChooseWhenHelper : Scryber.Data.ChooseWhen
@@ -53,6 +53,30 @@ public class ChooseOtherwiseHelper : Scryber.Data.ChooseOtherwise
     public override ITemplate Template
     {
         get { return base.Template; }
+        set { base.Template = value; }
+    }
+    
+}
+
+
+/// <summary>
+/// The when not decision choice (from an {{#unless }} choice test) in a handlebars template
+/// </summary>
+[PDFParsableComponent("whenNot")]
+public class ChooseNotWhenHelper : Scryber.Data.ChooseWhen
+{
+    [PDFAttribute("data-test")]
+    public override bool Test
+    {
+        get { return !base.Test;} //Reverse the result on the base class
+        set { base.Test = !value; } //Reverse the value onto the base class
+    }
+    
+    [PDFTemplate]
+    [PDFElement("")]
+    public override ITemplate Template
+    {
+        get { return base.Template;}
         set { base.Template = value; }
     }
     

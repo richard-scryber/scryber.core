@@ -6,7 +6,7 @@ using Scryber.Data;
 namespace Scryber.Handlebar.Components;
 
 
-[PDFParsableComponent("With")]
+[PDFParsableComponent("with")]
 public class WithHelper : BindingTemplateComponent
 {
 
@@ -18,14 +18,14 @@ public class WithHelper : BindingTemplateComponent
         set { _data = value; }
     }
 
-    [PDFElement("Content")]
+    [PDFElement("withContent")]
     public WithContentHelper WithContent
     {
         get;
         set;
     }
     
-    [PDFElement("ElseContent")]
+    [PDFElement("elseContent")]
     public WithElseHelper ElseTemplate
     {
         get;
@@ -55,7 +55,7 @@ public class WithHelper : BindingTemplateComponent
         if (null != this.Data)
         {
             var source = context.DataStack.HasData ? context.DataStack.Source : null;
-            context.DataStack.Push(this.Data, context.DataStack.Source);
+            context.DataStack.Push(this.Data, source);
             pop = true;
         }
 
@@ -98,19 +98,26 @@ public class WithHelper : BindingTemplateComponent
 }
 
 
-[PDFParsableComponent("WithContent")]
-public class WithContentHelper
+[PDFParsableComponent("withContent")]
+public class WithContentHelper : Component
 {
     [PDFTemplate]
-    [PDFElement("")]
+    [PDFAttribute("data-template")]
+    [PDFElement("Template")]
     public ITemplate Template { get; set; }  
+    
+    public WithContentHelper() : base(ObjectTypes.NoOp){}
 }
 
 
-[PDFParsableComponent("ElseContent")]
-public class WithElseHelper
+[PDFParsableComponent("elseContent")]
+public class WithElseHelper : Component
 {
     [PDFTemplate]
-    [PDFElement("")]
+    [PDFAttribute("data-template")]
+    [PDFElement("Template")]
     public ITemplate Template { get; set; }  
+    
+    public WithElseHelper() : base(ObjectTypes.NoOp)
+    {}
 }

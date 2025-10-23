@@ -45,7 +45,7 @@ namespace Scryber.Core.UnitTests.Binding
         const string prefix = "hbar";
 
         [TestMethod]
-        public void CheckHelperMatching()
+        public void CheckHelperMatching1_regex()
         {
 
             var str = @"{{#using people}}
@@ -67,7 +67,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod()]
-        public void CheckHelperMatching2()
+        public void CheckHelperMatching2_each_this()
         {
 
         
@@ -112,7 +112,7 @@ namespace Scryber.Core.UnitTests.Binding
         
         
         [TestMethod]
-        public void CheckHelperMatching3()
+        public void CheckHelperMatching3_each()
         {
             var str = @"{{#each items}}
                         <li>{{this}}</li>
@@ -150,7 +150,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod]
-        public void CheckHelperMatching4()
+        public void CheckHelperMatching4_each()
         {
             var str = @"
 {{#each products}}
@@ -205,7 +205,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod]
-        public void CheckHelperMatching5()
+        public void CheckHelperMatching5_If()
         {
             var str = @"		  
 {{#if model.priority == 0}}
@@ -307,7 +307,7 @@ namespace Scryber.Core.UnitTests.Binding
         }
 
         [TestMethod]
-        public void CheckHelperMatching6()
+        public void CheckHelperMatching6_If_Render()
         {
             var str = @"
 <div xmlns='http://www.w3.org/1999/xhtml' >
@@ -365,6 +365,7 @@ namespace Scryber.Core.UnitTests.Binding
         <h2 >{{model.title}}</h2>
     </div>
 {{/if}}
+<p>After the fact</p>
 </div>
 ";
 
@@ -506,7 +507,222 @@ namespace Scryber.Core.UnitTests.Binding
         }
         
         [TestMethod]
-        public void CheckHelperMatching8()
+        public void CheckHelperMatching7_With()
+        {
+            var str = @"
+<div xmlns='http://www.w3.org/1999/xhtml' >
+    {{#with model.user }}
+        <h4>Inside With Block</h4>
+        <p id='inside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_license'>this.hasLicense: {{this.hasLicense ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_moderator'>.isModerator: {{.isModerator ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_status'>status: {{status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_dot_status'>.status: {{.status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_this_status'>this.status: {{this.status ?? 'NOT FOUND'}}</p>
+
+        {{#if .age >= 17 && .hasLicense}}
+            <p id='can_drive'>Eligible to drive</p>
+        {{else}}
+            <p id='cant_drive'>NOT eligible to drive</p>
+        {{/if}}
+        
+        {{#if .age >= 18}}
+            <p id='can_drink' >Age : {{age}}, so eligible to drink</p>
+        {{/if}}
+
+    {{/with}}  
+
+    <h4>Outside With Block</h4>
+    <p id='outside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_license'>this.hasLicense :{{this.hasLicense ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_moderator'>.isModerator :{{.isModerator ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_status'>status :{{status ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_dot_status'>.status :{{.status ?? 'NOT FOUND'}}</p>
+    <p id='outside_user_this_status'>this.status :{{this.status ?? 'NOT FOUND'}}</p>
+   
+    <h4>Inside Empty With Block</h4>
+    {{#with model.notfound}}
+        <p id='does_not_exist'>This should not be used</p>
+        {{else}}
+        <p id='use_instead'>This should be used instead</p>
+    {{/with}}
+
+    <h4>With As Option</h4>
+    {{#with model.user as | u | }}
+        <p id='as_u_age'>age: {{u.age ?? 'NOT FOUND'}}</p>
+    {{/with}}
+</div>
+";
+
+
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(str))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                var div = comp as HTMLDiv;
+                Assert.IsNotNull(div);
+
+                HTMLDocument doc = new HTMLDocument();
+                doc.Body = new HTMLBody();
+                doc.Body.Contents.Add(div);
+
+                doc.Params["model"] = new
+                {
+                    status = "delivered",
+                    score = 90,
+                    temperature = 40,
+                    stock = 4,
+                    user = new {    
+                        age = 20,
+                        hasLicense = false,
+                        isModerator = true,
+                },
+                    layoutType = "compact"
+                };
+
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                doc.DataBind(OutputFormat.PDF);
+
+                using (var stream = DocStreams.GetOutputStream("CheckHelperMatching7_With.pdf"))
+                {
+                    doc.AppendTraceLog = false;
+                    doc.Body.Margins = 20;
+                    doc.RenderToPDF(stream);
+                    
+                    /*
+                       <p id='inside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_license'>this.hasLicense: {{this.hasLicense ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_moderator'>.isModerator: {{.isModerator ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_status'>status: {{status ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_dot_status'>.status: {{.status ?? 'NOT FOUND'}}</p>
+                       <p id='inside_user_this_status'>this.status: {{this.status ?? 'NOT FOUND'}}</p>
+                     */
+                    
+                    var created = doc.FindAComponentById("inside_user_age") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("20", ((TextLiteral)created.Contents[1]).Text);
+
+                    created = doc.FindAComponentById("inside_user_license") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("False", ((TextLiteral)created.Contents[1]).Text);
+
+                    created = doc.FindAComponentById("inside_user_moderator") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("True", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("inside_user_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("inside_user_model_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("delivered", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("inside_user_dot_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("inside_user_this_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    
+                    /*
+                        {{#if .age >= 17 && .hasLicense}}
+                           <p id='can_drive'>Eligible to drive</p>
+                       {{else}}
+                           <p id='cant_drive'>NOT eligible to drive</p>
+                       {{/if}}
+                       
+                       {{#if .age >= 18}}
+                           <p id='can_drink' >Age : {{age}}, so eligible to drink</p>
+                       {{/if}}
+                    */
+                    
+                    created = doc.FindAComponentById("can_drive") as HTMLParagraph;
+                    Assert.IsNull(created);
+                    
+                    created = doc.FindAComponentById("cant_drive") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    
+                    created = doc.FindAComponentById("can_drink") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    
+                    /*
+                       <p id='outside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_license'>this.hasLicense :{{this.hasLicense ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_moderator'>.isModerator :{{.isModerator ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_status'>status :{{status ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_dot_status'>.status :{{.status ?? 'NOT FOUND'}}</p>
+                       <p id='outside_user_this_status'>this.status :{{this.status ?? 'NOT FOUND'}}</p>
+                     */
+
+                    created = doc.FindAComponentById("outside_user_age") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+
+                    created = doc.FindAComponentById("outside_user_license") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+
+                    created = doc.FindAComponentById("outside_user_moderator") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("outside_user_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("outside_user_model_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("delivered", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("outside_user_dot_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    created = doc.FindAComponentById("outside_user_this_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    
+                    
+                    /*
+                       {{#with model.notfound}}
+                           <p id='does_not_exist'>This should not be used</p>
+                           {{else}}
+                           <p id='use_instead'>This should be used instead</p>
+                       {{/with}}
+                     */
+                    
+                    created = doc.FindAComponentById("does_not_exist") as HTMLParagraph;
+                    Assert.IsNull(created);
+                    
+                    created = doc.FindAComponentById("use_instead") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("This should be used instead", ((TextLiteral)created.Contents[0]).Text);
+                    
+                    /*
+                     {{#with model.user as | u | }}
+                         <p id='as_u_age'>age: {{u.age ?? 'NOT FOUND'}}</p>
+                     {{/with}}
+                     */
+                    
+                    created = doc.FindAComponentById("as_u_age") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("20", ((TextLiteral)created.Contents[1]).Text);
+                }
+                
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void CheckHelperMatching20()
         {
             var style = @"body {
             font-family: Helvetica, sans-serif;

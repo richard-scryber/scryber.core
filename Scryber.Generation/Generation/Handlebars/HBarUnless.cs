@@ -5,19 +5,19 @@ using System.Text.RegularExpressions;
 
 namespace Scryber.Generation.Handlebars
 {
-    public class HBarIf : HBarHelperMapping
+    public class HBarUnless : HBarHelperMapping
     {
-        public HBarIf() : base("if", new HandlebarMatchReplacer(ReplaceIf))
+        public HBarUnless() : base("unless", new HandlebarMatchReplacer(ReplaceIf))
         {}
 
         static string ReplaceIf(HBarHelperSplitter splitter, Stack<Match> tracker, Match newMatch)
         {
             string result = "";
             var value = newMatch.Value.Trim();
-            if (value.StartsWith("{{#if "))
+            if (value.StartsWith("{{#unless "))
             {
                 var path = "";
-                value = value.Substring(6); //remove '{{#if '
+                value = value.Substring(10); //remove '{{#unless '
                 if (value.Length > 2 && value.EndsWith("}}"))
                 {
                     value = value.Substring(0, value.Length - 2); //
@@ -25,12 +25,12 @@ namespace Scryber.Generation.Handlebars
                     path = "data-test=\"{{" + SanitizeBindExpression(value) + "}}\" ";
                     
                     result = "<" + splitter.MappingPrefix + ":choose xmlns:" + splitter.MappingPrefix + "='" +
-                             splitter.MappingNamespace + "' >\n\t<" + splitter.MappingPrefix + ":when " + path +
-                             ">";
+                             splitter.MappingNamespace + "' >\n\t<" + splitter.MappingPrefix + ":whenNot " + path +
+                             ">"; //This is When Not for Unless
                     tracker.Push(newMatch);
                 }
             }
-            else if (value.StartsWith("{{/if"))
+            else if (value.StartsWith("{{/unless"))
             {
                 if (tracker.Count <= 0)
                     throw new PDFParserException(
@@ -38,17 +38,13 @@ namespace Scryber.Generation.Handlebars
                 
                 var prev = tracker.Pop();
 
-                if (prev.Value.StartsWith("{{else if"))
-                {
-                    result += "</" + splitter.MappingPrefix + ":when>";
-                }
-                else if (prev.Value.StartsWith("{{else"))
+                if (prev.Value.StartsWith("{{else"))
                 {
                     result += "</" + splitter.MappingPrefix + ":otherwise>";
                 }
-                else if (prev.Value.StartsWith("{{#if"))
+                else if (prev.Value.StartsWith("{{#unless"))
                 {
-                    result += "</" + splitter.MappingPrefix + ":when>";
+                    result += "</" + splitter.MappingPrefix + ":whenNot>";
                 }
                 else
                 {

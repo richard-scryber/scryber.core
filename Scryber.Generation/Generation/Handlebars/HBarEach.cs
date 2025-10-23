@@ -40,13 +40,17 @@ namespace Scryber.Generation.Handlebars
             }
             else if (value.StartsWith("{{/each"))
             {
+                if (tracker.Count <= 0)
+                    throw new PDFParserException(
+                        "The handlebars helper stack is un-balanced. Expecting an existing {{#each to have been previously processed.");
+                
                 var prev = tracker.Pop();
                 if (prev.Value.StartsWith("{{#each"))
                     result = "</" + splitter.MappingPrefix + ":each>";
                 else
                 {
-                    throw new InvalidOperationException("The '" + prev.Value +
-                                                        "' does not match the end /each statement in the content.");
+                    throw new PDFParserException("The '" + prev.Value +
+                                                 "' does not match the end /each statement in the content.");
                 }
             }
 
