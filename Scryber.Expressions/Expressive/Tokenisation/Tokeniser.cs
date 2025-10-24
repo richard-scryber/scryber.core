@@ -138,6 +138,10 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     this.IgnoreToken(expression, length);
                 }
+                else if (IsParentReference(expression, this.CurrentIndex, out length))
+                {
+                    TokeniseIsParent(expression, length);
+                }
                 else if (IsKeyword(expression, this.CurrentIndex, out length))
                 {
                     TokeniseKeyword(expression, length);
@@ -241,6 +245,34 @@ namespace Scryber.Expressive.Tokenisation
             this.AddNewToken(start, length, value, ExpressionTokenType.Color);
         }
 
+        protected virtual bool IsParentReference(string expression, int index, out int length)
+        {
+            int start = index;
+            if (expression[start] == '.')
+            {
+                if (expression.Length > 3 && expression[start + 1] == '.' && expression[start + 2] == '/')
+                {
+                    length = 3;
+                    return true;
+                }
+            }
+
+            length = 0;
+            return false;
+        }
+
+        protected virtual bool TokeniseIsParent(string expression, int length)
+        {
+            var str = Expressions.ParentDataExpression.ParentDataVariableName;
+            int start = this.CurrentIndex;
+            this.CurrentIndex += length;
+            
+            this.AddNewToken(start, length, str, ExpressionTokenType.Variable);
+            this.AddNewToken(start+ length, 0, ".", ExpressionTokenType.Operator);
+
+            return true;
+        }
+
         #region IsKeyword + TokeniseKeyword
 
         /// <summary>
@@ -260,15 +292,6 @@ namespace Scryber.Expressive.Tokenisation
                 if (expression.Length >= 6 && expression.Substring(start, 6) == "@index")
                 {
                     length = 6;
-                    return true;
-                }
-            }
-
-            if (expression[start] == '.')
-            {
-                if (expression.Length > 3 && expression[start + 1] == '.' && expression[start + 2] == '/')
-                {
-                    length = 3;
                     return true;
                 }
             }

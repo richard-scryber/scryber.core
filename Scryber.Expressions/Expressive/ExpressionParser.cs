@@ -440,18 +440,21 @@ namespace Scryber.Expressive
         }
 
         private const string SelfExpression = "this";
+        private const string ParentExpression = "_ParentData_";
 
         protected virtual IExpression CreateVariableExpression(string token, Context context)
         {
-            if (token == SelfExpression)
+            if (token.Equals(SelfExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                 return new SelfVariableExpression();
+            else if (token.Equals(ParentExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase: StringComparison.Ordinal))
+                return new ParentVariableExpression();
             else
                 return new VariableExpression(token, context.IsCaseInsensitiveParsingEnabled);
         }
 
         
 
-        private static void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
+        private void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
         {
             if (participant != null)
             {

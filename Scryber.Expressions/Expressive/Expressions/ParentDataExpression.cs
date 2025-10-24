@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Scryber.Expressive.Expressions
 {
-    public class CurrentDataExpression : IExpression
+    public class ParentDataExpression : IExpression
     {
 
-        public const string CurrentDataVariableName = "[_CurrentData_]";
+        public const string ParentDataVariableName = "[_ParentData_]";
 
         private Context context;
 
-        public CurrentDataExpression(Context context)
+        public ParentDataExpression(Context context)
         {
             this.context = context;
         }
@@ -22,7 +22,7 @@ namespace Scryber.Expressive.Expressions
         public object Evaluate(IDictionary<string, object> variables)
         {
             object value;
-            if (variables.TryGetValue(CurrentDataVariableName, out value))
+            if (variables.TryGetValue(ParentDataVariableName, out value))
                 return value;
             else
                 return null;
@@ -32,13 +32,13 @@ namespace Scryber.Expressive.Expressions
 
         public static void SetCurrentData(object value, IDictionary<string, object> variables)
         {
-            variables[CurrentDataVariableName] = value;
+            variables[ParentDataVariableName] = value;
         }
 
         public static object GetCurrentData(IDictionary<string, object> variables)
         {
             object value = null;
-            if (variables != null && variables.TryGetValue(CurrentDataVariableName, out value))
+            if (variables != null && variables.TryGetValue(ParentDataVariableName, out value))
                 return value;
             else
                 return null;

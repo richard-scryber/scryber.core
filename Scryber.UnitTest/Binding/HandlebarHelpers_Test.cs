@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Data;
+using Scryber.Styles;
 using System.Linq;
 using System.Linq.Expressions;
 using Scryber.Drawing;
@@ -520,7 +521,7 @@ namespace Scryber.Core.UnitTests.Binding
         <p id='inside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
         <p id='inside_user_dot_status'>.status: {{.status ?? 'NOT FOUND'}}</p>
         <p id='inside_user_this_status'>this.status: {{this.status ?? 'NOT FOUND'}}</p>
-
+        <p id='inside_parent_status'>../status: {{../status ?? 'NOT FOUND'}}</p>
         {{#if .age >= 17 && .hasLicense}}
             <p id='can_drive'>Eligible to drive</p>
         {{else}}
@@ -549,6 +550,13 @@ namespace Scryber.Core.UnitTests.Binding
         <p id='use_instead'>This should be used instead</p>
     {{/with}}
 
+    <h4>With Nested</h4>
+    {{#with model}}
+        {{#with user }}
+        <p id='parent_status'>../status: {{../status ?? 'NOT FOUND'}}</p>
+        {{/with}}
+    {{/with}}
+
     <h4>With As Option</h4>
     {{#with model.user as | u | }}
         <p id='as_u_age'>age: {{u.age ?? 'NOT FOUND'}}</p>
@@ -567,7 +575,19 @@ namespace Scryber.Core.UnitTests.Binding
                 HTMLDocument doc = new HTMLDocument();
                 doc.Body = new HTMLBody();
                 doc.Body.Contents.Add(div);
+                
+                var style = new StyleDefn("p");
+                style.Margins.Bottom = 4;
+                style.Margins.Top = 4;
+                style.Padding.Left = 10;
+                doc.Styles.Add(style);
 
+                style = new StyleDefn("div");
+                style.Margins.Left = 10;
+                doc.Styles.Add(style);
+                
+                
+                
                 doc.Params["model"] = new
                 {
                     status = "delivered",
@@ -587,8 +607,7 @@ namespace Scryber.Core.UnitTests.Binding
 
                 using (var stream = DocStreams.GetOutputStream("CheckHelperMatching7_With.pdf"))
                 {
-                    doc.AppendTraceLog = false;
-                    doc.Body.Margins = 20;
+                    doc.AppendTraceLog = true;
                     doc.RenderToPDF(stream);
                     
                     /*
@@ -704,6 +723,19 @@ namespace Scryber.Core.UnitTests.Binding
                     created = doc.FindAComponentById("use_instead") as HTMLParagraph;
                     Assert.IsNotNull(created);
                     Assert.AreEqual("This should be used instead", ((TextLiteral)created.Contents[0]).Text);
+                    
+                    
+                    /*
+                       {{#with model}}
+                           {{#with user }}
+                           <p id='parent_status'>../status: {{../status ?? 'NOT FOUND'}}</p>
+                           {{/with}}
+                       {{/with}}
+                     */
+                    
+                    created = doc.FindAComponentById("parent_status") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("delivered", ((TextLiteral)created.Contents[1]).Text);
                     
                     /*
                      {{#with model.user as | u | }}

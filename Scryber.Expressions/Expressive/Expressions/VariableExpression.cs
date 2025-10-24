@@ -62,4 +62,19 @@ namespace Scryber.Expressive.Expressions
             return result;
         }
     }
+
+    internal class ParentVariableExpression : IExpression
+    {
+        
+
+        public ParentVariableExpression()
+        {
+        }
+        
+        public object Evaluate(IDictionary<string, object> variables)
+        {
+            var result = variables[ParentDataExpression.ParentDataVariableName];
+            return result;
+        }
+    }
 }

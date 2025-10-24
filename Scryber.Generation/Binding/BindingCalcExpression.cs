@@ -152,10 +152,34 @@ namespace Scryber.Binding
 
                 return null != value;
             }
-            else if (variableName == "../") //parent referernce
+            else if (variableName == ParentDataExpression.ParentDataVariableName) //parent referernce
             {
-                throw new NotSupportedException(
-                    "The expression '../' is not supported in the library, please try and access the content from the root, or store the required value in a variable");
+                if (this.DataStack.HasData)
+                {
+                    var currSource = this.DataStack.Source;
+                    var curr = this.DataStack.Current;
+
+                    this.DataStack.Pop();
+                    object parent = null;
+                    if (this.DataStack.HasData)
+                    {
+
+                        parent = this.DataStack.Current;
+                    }
+                    else
+                        parent = null;
+
+                    this.DataStack.Push(curr, currSource);
+
+                    value = parent;
+                    
+                    return true;
+                }
+                else
+                {
+                    value = null;
+                    return false;
+                }
             }
             else if (variableName == UnitRelativeVars.RelativeCallbackVar)
             {
