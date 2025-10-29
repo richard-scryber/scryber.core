@@ -189,7 +189,7 @@ namespace Scryber.Generation.Handlebars
             return newIndex;
             
         }
-        private static readonly Regex MatchParameters = new Regex("([a-zA-Z_0-9]+)=(\"[a-zA-Z_0-9]*\"|'[a-zA-Z_0-9]*')");
+        private static readonly Regex MatchParameters = new Regex("([a-zA-Z_0-9]+)=(\"[a-zA-Z_ 0-9]*\"|'[a-zA-Z_ 0-9]*')");
         private static void SplitLogParts(string value, out string message, out string level, out string category, out string stage)
         {
             value = value.Trim();

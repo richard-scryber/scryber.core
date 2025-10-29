@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using System.Linq.Expressions;
 using Scryber.Drawing;
 using Scryber.Handlebar.Components;
 using Scryber.Html.Components;
+using Scryber.Logging;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.PDF.Resources;
@@ -762,11 +764,11 @@ namespace Scryber.Core.UnitTests.Binding
     Before the log entry
     {{log ""From the log"" }}
     {{#with model.user }}
-        {{log ""Debug Level"" level=""debug""}}
+        {{log ""Debug Level"" level='debug' category='to check' }}
         {{log ""Ignored parameter"" unknown=""something""}}
-        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator }}
-        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator level=""warn"" category=""output"" }}
-        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" if(isModerator,""moderator"", concat(""not "", ""moderator"")) level=""warn"" }}
+        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator category=""to check"" }}
+        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator level=""warn"" category='to check' }}
+        {{log if(isModerator,""Is moderator"", concat(""Is not "", ""a moderator"")) level='info' category='to check' }}
         <h4>Inside With Block</h4>
         <p id='inside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
         <p id='inside_user_license'>this.hasLicense: {{this.hasLicense ?? 'NOT FOUND'}}</p>
@@ -777,10 +779,10 @@ namespace Scryber.Core.UnitTests.Binding
         <p id='inside_user_this_status'>this.status: {{this.status ?? 'NOT FOUND'}}</p>
         <p id='inside_parent_status'>../status: {{../status ?? 'NOT FOUND'}}</p>
         {{#if .age >= 17 && .hasLicense}}
-            {{log ""Is Eligible to drive"" }}
+            {{log ""Is Eligible to drive"" category='to check'}}
             <p id='can_drive'>Eligible to drive</p>
         {{else}}
-            {{log ""Not Eligible to drive"" }}
+            {{log ""Not Eligible to drive"" category='to check' }}
             <p id='cant_drive'>NOT eligible to drive</p>
         {{/if}}
         
@@ -834,9 +836,6 @@ namespace Scryber.Core.UnitTests.Binding
                     var created = doc.FindAComponentById("inside_user_age") as HTMLParagraph;
                     Assert.IsNotNull(created);
                     Assert.AreEqual("20", ((TextLiteral)created.Contents[1]).Text);
-
-                    
-                    
                     
                     
                     created = doc.FindAComponentById("can_drive") as HTMLParagraph;
@@ -847,6 +846,53 @@ namespace Scryber.Core.UnitTests.Binding
                     
                     created = doc.FindAComponentById("can_drink") as HTMLParagraph;
                     Assert.IsNotNull(created);
+
+
+                    var messages = new List<string>()
+                    {
+                        "Has Licence : False Is Moderator : True",
+                        "Has Licence : False Is Moderator : True",
+                        "Is moderator",
+                        "Not Eligible to drive"
+                    };
+
+                    int found = 0;
+                    int total = 5;
+                    var collector = doc.TraceLog as CollectorTraceLog;
+                    List<string> notToCheck = new List<string>();
+                    
+                    Assert.IsNotNull(collector);
+                    CollectorTraceLogEntry first = null;
+                    CollectorTraceLogEntry second = null;
+                    int index = 0;
+                    foreach (var entry in collector)
+                    {
+                        if (entry.Category == "to check")
+                        {
+                            if (messages.Contains(entry.Message))
+                                messages.Remove(entry.Message);
+                            else
+                                throw new Exception("The log entry '" + entry.Message +
+                                                    "' in category to check wos not expected");
+                        }
+                        else
+                        {
+                            if (index == 1)
+                                first = entry;
+                            else if (index == 2)
+                                second = entry;
+                        }
+
+                        index++;
+                    }
+                    
+                    Assert.IsNotNull(first);
+                    Assert.AreEqual("From the log", first.Message);
+                    
+                    Assert.IsNotNull(second);
+                    Assert.AreEqual("Ignored parameter", second.Message);
+                    
+                    Assert.IsTrue(messages.Count == 0, string.Join(',',messages.ToArray())); //All found
                 }
                 
                 
