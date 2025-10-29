@@ -561,6 +561,7 @@ namespace Scryber.Core.UnitTests.Binding
     {{#with model.user as | u | }}
         <p id='as_u_age'>age: {{u.age ?? 'NOT FOUND'}}</p>
     {{/with}}
+        {{log ""All Done""}}
 </div>
 ";
 
@@ -746,6 +747,106 @@ namespace Scryber.Core.UnitTests.Binding
                     created = doc.FindAComponentById("as_u_age") as HTMLParagraph;
                     Assert.IsNotNull(created);
                     Assert.AreEqual("20", ((TextLiteral)created.Contents[1]).Text);
+                }
+                
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void CheckHelperMatching8_Log()
+        {
+            var str = @"
+<div xmlns='http://www.w3.org/1999/xhtml' >
+    Before the log entry
+    {{log ""From the log"" }}
+    {{#with model.user }}
+        {{log ""Debug Level"" level=""debug""}}
+        {{log ""Ignored parameter"" unknown=""something""}}
+        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator }}
+        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" isModerator level=""warn"" category=""output"" }}
+        {{log ""Has Licence : "" hasLicense "" Is Moderator : "" if(isModerator,""moderator"", concat(""not "", ""moderator"")) level=""warn"" }}
+        <h4>Inside With Block</h4>
+        <p id='inside_user_age'>age: {{age ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_license'>this.hasLicense: {{this.hasLicense ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_moderator'>.isModerator: {{.isModerator ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_status'>status: {{status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_model_status'>model.status: {{model.status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_dot_status'>.status: {{.status ?? 'NOT FOUND'}}</p>
+        <p id='inside_user_this_status'>this.status: {{this.status ?? 'NOT FOUND'}}</p>
+        <p id='inside_parent_status'>../status: {{../status ?? 'NOT FOUND'}}</p>
+        {{#if .age >= 17 && .hasLicense}}
+            {{log ""Is Eligible to drive"" }}
+            <p id='can_drive'>Eligible to drive</p>
+        {{else}}
+            {{log ""Not Eligible to drive"" }}
+            <p id='cant_drive'>NOT eligible to drive</p>
+        {{/if}}
+        
+        {{#if .age >= 18}}
+            <p id='can_drink' >Age : {{age}}, so eligible to drink</p>
+        {{/if}}
+
+    {{/with}}  
+</div>
+";
+
+
+            // Check that it parses as a fragment
+            using (var sr = new StringReader(str))
+            {
+                var comp = Document.Parse(sr, ParseSourceType.DynamicContent);
+                var div = comp as HTMLDiv;
+                Assert.IsNotNull(div);
+
+                HTMLDocument doc = new HTMLDocument();
+                doc.Body = new HTMLBody();
+                doc.Body.Contents.Add(div);
+                
+                doc.Params["model"] = new
+                {
+                    status = "delivered",
+                    score = 90,
+                    temperature = 40,
+                    stock = 4,
+                    user = new {    
+                        age = 20,
+                        hasLicense = false,
+                        isModerator = true,
+                },
+                    layoutType = "compact"
+                };
+
+                doc.InitializeAndLoad(OutputFormat.PDF);
+                
+
+                using (var stream = DocStreams.GetOutputStream("CheckHelperMatching8_Log.pdf"))
+                {
+                    doc.AppendTraceLog = true;
+                    doc.ConformanceMode = ParserConformanceMode.Strict;
+                    
+                    doc.DataBind(OutputFormat.PDF);
+                    doc.RenderToPDF(stream);
+                    
+                    
+                    
+                    var created = doc.FindAComponentById("inside_user_age") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    Assert.AreEqual("20", ((TextLiteral)created.Contents[1]).Text);
+
+                    
+                    
+                    
+                    
+                    created = doc.FindAComponentById("can_drive") as HTMLParagraph;
+                    Assert.IsNull(created);
+                    
+                    created = doc.FindAComponentById("cant_drive") as HTMLParagraph;
+                    Assert.IsNotNull(created);
+                    
+                    created = doc.FindAComponentById("can_drink") as HTMLParagraph;
+                    Assert.IsNotNull(created);
                 }
                 
                 

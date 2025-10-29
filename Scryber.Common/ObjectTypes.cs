@@ -124,6 +124,8 @@ namespace Scryber
         public static readonly ObjectType ComponentHeader = (ObjectType)"cphd";
         public static readonly ObjectType ComponentFooter = (ObjectType)"cpft";
 
+        public static readonly ObjectType ComponentLogEntry = (ObjectType)"clog";
+
         // Data Sources
 
         public static readonly ObjectType XmlData = (ObjectType)"xdat";

@@ -159,7 +159,7 @@ namespace Scryber.Components
             style.Columns.ColumnCount = 1;
             style.Overflow.Action = OverflowAction.Clip; //we don't split on a row or go over the page
             style.Padding.All = (Unit)2;
-            style.Margins.All = (Unit)2;
+            style.Margins.All = (Unit)0;
             style.Border.Color = new Color(153);
             style.Border.LineStyle = LineType.Solid;
             style.Border.Width = (Unit)1;

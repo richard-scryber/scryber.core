@@ -60,6 +60,37 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        [PDFAttribute("align")]
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionHAlignKey, HorizontalAlignment.Left);
+                else
+                    return HorizontalAlignment.Left;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionHAlignKey, value);
+            }
+        }
+
+        [PDFAttribute("valign")]
+        public VerticalAlignment VerticalAlignment
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionVAlignKey, VerticalAlignment.Top);
+                else
+                    return VerticalAlignment.Top;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionVAlignKey, value);
+            }
+        }
         
 
         public HTMLTableRow()

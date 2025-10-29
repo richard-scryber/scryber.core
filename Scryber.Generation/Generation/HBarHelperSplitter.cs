@@ -14,10 +14,10 @@ namespace Scryber.Generation
         
 
         
-        private static readonly Regex _helper_old = new Regex("{{#([a-z]+)\\s*(.*)*}}|{{\\/([a-z]*)}}|{{else}}|{{else\\s+if\\s(.*)}}");
+        private static readonly Regex _helper_old = new Regex("{{#([a-z]+)\\s*(.*)*}}|{{\\/([a-z]*)}}|{{else}}|{{else\\s+if\\s(.*)}}|{{(log)\\s+(.*)}}");
 
         private static readonly Regex _helper =
-            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)}}|{{(else)}}|{{(else\\s+if)\\s(.*)}}");
+            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)}}|{{(else)}}|{{(else\\s+if)\\s(.*)}}|{{(log)\\s+(.*)}}");
 
         private static readonly Dictionary<string, HBarHelperMapping> _knownMappings =
             new Dictionary<string, HBarHelperMapping>()
@@ -28,7 +28,8 @@ namespace Scryber.Generation
                 { "if", new HBarIf()},
                 {"each", new HBarEach()},
                 {"else", new HBarElse()},
-                {"else if", new HBarElseIf()}
+                {"else if", new HBarElseIf()},
+                {"log", new HBarLog()}
             };
         
         private string _mappingNamespace;
@@ -87,6 +88,7 @@ namespace Scryber.Generation
             const int HelperEndIndex = 3;
             const int HelperElseIndex = 4;
             const int HelperElseIfIndex = 5;
+            const int HelperLogIndex = 7;
             
             var updated = _helper.Replace(input, (match) =>
             {
@@ -109,6 +111,10 @@ namespace Scryber.Generation
                 name = match.Groups[HelperElseIfIndex].Value;
                 if (this._keyedHelpers.TryGetValue(name, out var elseifHelper))
                     return elseifHelper.Replace(this, looping, match);
+
+                name = match.Groups[HelperLogIndex].Value;
+                if (this._keyedHelpers.TryGetValue(name, out var logHelper))
+                    return logHelper.Replace(this, looping, match);
                 
                 return "";
 

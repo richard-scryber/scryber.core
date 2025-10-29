@@ -20,7 +20,7 @@ namespace Scryber.Html.Components
         /// Overrides the default behaviour of having the title as an outline element
         /// </summary>
         [PDFAttribute("title")]
-        public string AbbrTitle { get; set; }
+        public string DefnTitle { get; set; }
 
 
         
