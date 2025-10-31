@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
+using Scryber.Html.Components;
 using Scryber.PDF;
 using Scryber.Drawing;
 
@@ -17,6 +19,8 @@ namespace Scryber.UnitLayouts
         const string TestCategoryName = "Layout";
 
         const string ImagePath = "../../../Content/Images/Toroid32.png";
+        private const string VLargeImagePath = "../../../Content/Images/Toroid32x9.png";
+        const string SVGPath = "../../../Content/Images/Background.svg";
         const double ImageWidth = 682.0;
         const double ImageHeight = 452.0;
 
@@ -2145,6 +2149,284 @@ namespace Scryber.UnitLayouts
             txtEnd = line.Runs[2] as PDFTextRunEnd;
             Assert.AreEqual(0, txtEnd.Width);
            
+        }
+
+        [TestMethod]
+        public void LargeDataImage()
+        {
+            
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Checking opactity and positioning of the standard image");
+            pg.Contents.Add(h2);
+
+            var h4 = new Head4();
+            h4.Contents.Add("1. As Image Path ");
+            pg.Contents.Add(h4);
+            var img = new HTMLImage();
+            img.Source = path;
+            img.Style.Position.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+
+
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("2. As Base64 Data Url"));
+            pg.Contents.Add(h4);
+
+            var ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            var data = ms.ToArray();
+            var base64 = Convert.ToBase64String(data);
+            var dataurl = "data:image/png;base64," + base64;
+
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+            pg.Contents.Add("Data size: " + (ms.Length / 8182) + "kb");
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("3. As Base64 Data Url 50% opacity "));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.Style.Fill.Opacity = 0.5;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("4. As Base64 Data Url 50% opacity as a background"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.Style.Fill.Opacity = 0.2;
+            img.PositionMode = PositionMode.Fixed;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            pg.Contents.Insert(0, img); //Make it the first thing render - so it's in the background of the page.
+            
+            //
+            //New page for the very large images
+            //
+            
+            pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            h2 = new Head2();
+            h2.Contents.Add("Using a much larger image");
+            pg.Contents.Add(h2);
+            
+            path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, VLargeImagePath); //This one is 2.1Mb on disk.
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            data = ms.ToArray();
+            base64 = Convert.ToBase64String(data);
+            dataurl = "data:image/png;base64," + base64;
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("5. As Base64 Data Url 50% opacity"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img);
+            pg.Contents.Add("URL size: " + (dataurl.Length / 8182) + "kb");
+            
+            
+            //
+            // 6 uses the actual byte[] as data for the image
+            //
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.6;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img); 
+            pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.2;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            img.PositionMode = PositionMode.Fixed;
+            pg.Contents.Insert(0, img); 
+            pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            
+            
+            //
+            //Final Page for the SVG Images
+            //
+            
+            pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            h2 = new Head2();
+            h2.Contents.Add("Using the SVG Image");
+            pg.Contents.Add(h2);
+            
+            path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath); //This one is 2.1Mb on disk.
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            data = ms.ToArray();
+            base64 = Convert.ToBase64String(data);
+            dataurl = "data:" + MimeType.SvgImage + ";base64," + base64;
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("8. As File path Url"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = path;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img);
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("8. As an SVG data Url"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = 300;
+            pg.Contents.Add(img);
+            
+            
+            
+            //
+            //
+            // h4 = new Head4();
+            // h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
+            // pg.Contents.Add(h4);
+            //
+            // img = new HTMLImage();
+            // img.RawImageData = data;
+            // img.RawImageDataType = MimeType.PngImage; //"image/png";
+            // img.Style.Fill.Opacity = 0.6;
+            //
+            // img.DisplayMode = DisplayMode.Block;
+            // img.BorderColor = StandardColors.Black;
+            // img.Height = 120;
+            // pg.Contents.Add(img); 
+            // pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            //
+            // h4 = new Head4();
+            // h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
+            // pg.Contents.Add(h4);
+            //
+            // img = new HTMLImage();
+            // img.RawImageData = data;
+            // img.RawImageDataType = MimeType.PngImage; //"image/png";
+            // img.Style.Fill.Opacity = 0.2;
+            //
+            // img.DisplayMode = DisplayMode.Block;
+            // img.BorderColor = StandardColors.Black;
+            // img.Width = Unit.Percent(100);
+            // img.X = 0;
+            // img.Y = 0;
+            // img.PositionMode = PositionMode.Fixed;
+            // pg.Contents.Insert(0, img); 
+            // pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            
+            
+
+            using (var stream = DocStreams.GetOutputStream("Images_8_LargeDataImagesDifferentMethods.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(4, doc.SharedResources.Count);
+                
+            }
         }
     }
 }

@@ -155,7 +155,9 @@ namespace Scryber.PDF
             if (!string.IsNullOrEmpty(fnt.Definition.FilePath))
             {
                 cell.Contents.Add(new LineBreak());
-                cell.Contents.Add(new TextLiteral(fnt.Definition.FilePath));
+                var path = EnsureStringLength(fnt.Definition.FilePath);
+                
+                cell.Contents.Add(new TextLiteral(path));
             }
             tbl.Rows.Add(row);
         }
@@ -186,7 +188,8 @@ namespace Scryber.PDF
             {
                 if (img.ImageData != null)
                 {
-                    bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
+                    var path = EnsureStringLength(img.ImageData.SourcePath);
+                    bold.Contents.Add(new TextLiteral(path));
                     cell.Contents.Add(bold);
                     cell.Contents.Add(new LineBreak());
                     var data = img.ImageData;
@@ -308,7 +311,9 @@ namespace Scryber.PDF
 
 
             TableCell cell = new TableCell() {  ElementName = "td",DataStyleIdentifier = "PerfCategoryMeasure"};
-            cell.Contents.Add(new TextLiteral(measure.Key));
+            var key = EnsureStringLength(measure.Key);
+            
+            cell.Contents.Add(new TextLiteral(key));
             row.Cells.Add(cell);
 
             cell = new TableCell(){  ElementName = "td",DataStyleIdentifier = "PerfCategoryEntryRight"};
@@ -380,7 +385,10 @@ namespace Scryber.PDF
             cell = new TableCell() {ElementName = "td"};
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Message))
-                cell.Contents.Add(new TextLiteral(entry.Message));
+            {
+                var msg = EnsureStringLength(entry.Message);
+                cell.Contents.Add(new TextLiteral(msg));
+            }
 
             if (entry.HasException)
             {
@@ -440,6 +448,20 @@ namespace Scryber.PDF
 
             return sb.ToString();
 
+        }
+
+        private static string EnsureStringLength(string full)
+        {
+            if (null == full)
+                return string.Empty;
+            else if (full.Length > 200)
+            {
+                return full.Substring(0, 75) + " ... " + full.Substring(full.Length - 75);
+            }
+            else
+            {
+                return full;
+            }
         }
 
     }

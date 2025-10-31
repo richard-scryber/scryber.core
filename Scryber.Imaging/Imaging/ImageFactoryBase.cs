@@ -34,7 +34,7 @@ namespace Scryber.Imaging
             this.ShouldCache = shouldCache;
         }
 
-        public bool IsMatch(string forPath)
+        public virtual bool IsMatch(string forPath)
         {
             return this.Match.IsMatch(forPath);
         }

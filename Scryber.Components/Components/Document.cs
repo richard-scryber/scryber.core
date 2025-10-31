@@ -778,6 +778,8 @@ namespace Scryber.Components
              
             var svgFactory = new Scryber.Svg.Imaging.SVGImagingFactory();
             list.Insert(list.Count, svgFactory);
+            var svgDataFactory = new Scryber.Svg.Imaging.SVGDataUrlImagingFactory();
+            list.Insert(list.Count, svgDataFactory);
             
             return list;
         }

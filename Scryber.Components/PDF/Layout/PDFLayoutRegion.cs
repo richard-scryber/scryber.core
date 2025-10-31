@@ -1182,47 +1182,64 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            bool logdebug = context.ShouldLogDebug;
-            string name = string.Empty;
-
-            if (logdebug)
+            try
             {
-                name = this.ToString();
-                context.TraceLog.Begin(TraceLevel.Debug, "Layout Region", "Outputting region " + name);
-            }
-
-            if(this.ExcludeFromOutput)
-            {
-                if (logdebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Region " + name + " is marked as excluded from output, so not rendering anything");
-            }
-            else if (this._contents != null && this._contents.Count > 0)
-            {
-                Size prevsize = context.Space;
-                Point prevloc = context.Offset;
-                Point offset = new Point(prevloc.X + this.TotalBounds.X, prevloc.Y + this.TotalBounds.Y);
-
-                context.Space = this.TotalBounds.Size;
-                context.Offset = offset;
+                bool logdebug = context.ShouldLogDebug;
+                string name = string.Empty;
 
                 if (logdebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Adjusted bounds of context for region " + name + " with offset " + context.Offset + " and space " + context.Space + ", now rendering contents");
-
-                foreach (PDFLayoutItem item in this._contents)
                 {
-                    item.OutputToPDF(context, writer);
+                    name = this.ToString();
+                    context.TraceLog.Begin(TraceLevel.Debug, "Layout Region", "Outputting region " + name);
                 }
 
-                context.Space = prevsize;
-                context.Offset = prevloc;
+                if (this.ExcludeFromOutput)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                            "Region " + name + " is marked as excluded from output, so not rendering anything");
+                }
+                else if (this._contents != null && this._contents.Count > 0)
+                {
+                    Size prevsize = context.Space;
+                    Point prevloc = context.Offset;
+                    Point offset = new Point(prevloc.X + this.TotalBounds.X, prevloc.Y + this.TotalBounds.Y);
+
+                    context.Space = this.TotalBounds.Size;
+                    context.Offset = offset;
+
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                            "Adjusted bounds of context for region " + name + " with offset " + context.Offset +
+                            " and space " + context.Space + ", now rendering contents");
+
+                    foreach (PDFLayoutItem item in this._contents)
+                    {
+                        item.OutputToPDF(context, writer);
+                    }
+
+                    context.Space = prevsize;
+                    context.Offset = prevloc;
+                }
+                else if (logdebug)
+                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                        "Region " + name + " does not have any contents so no inner rendering required");
+
+
+
+                if (logdebug)
+                    context.TraceLog.End(TraceLevel.Debug, "Layout Region", "Completed output of region " + name);
             }
-            else if (logdebug)
-                context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Region " + name + " does not have any contents so no inner rendering required");
-
-            
-
-            if (logdebug)
-                context.TraceLog.End(TraceLevel.Debug, "Layout Region", "Completed output of region " + name);
+            catch (PDFLayoutException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PDFLayoutException(
+                    "Could not render the region contents to the output file. : " + ex.Message +
+                    ". See the inner exception for more details.", ex);
+            }
 
             return null;
         }

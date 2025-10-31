@@ -22,6 +22,10 @@ public class SVGImagingFactory : ImageFactoryBase
     {
         
     }
+    
+    protected SVGImagingFactory(Regex match, MimeType type, string name, bool shouldCache) : base(match, type, name, shouldCache)
+    {
+    }
 
     protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
     {
@@ -32,9 +36,7 @@ public class SVGImagingFactory : ImageFactoryBase
         }
     }
 
-    protected SVGImagingFactory(Regex match, MimeType type, string name, bool shouldCache) : base(match, type, name, shouldCache)
-    {
-    }
+    
     
 
     protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)

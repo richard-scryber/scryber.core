@@ -84,10 +84,19 @@ namespace Scryber
         {
             get
             {
-                if (null == this.NextArrangement)
-                    return this;
-                else
-                    return NextArrangement.LastArrangement;
+                var arrange = this;
+                var last = arrange;
+                while (null != arrange)
+                {
+                    last = arrange;
+                    arrange = arrange.NextArrangement;
+
+                    if (last == arrange)
+                        throw new InvalidOperationException(
+                            "Circular referernce to arrangements discovered. This is invalid");
+                }
+
+                return last;
             }
         }
 

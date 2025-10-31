@@ -908,8 +908,31 @@ namespace Scryber.Svg.Imaging
             writer.WriteRealS(bbox.Height.PointsValue);
             writer.EndArray();
             writer.EndDictionaryEntry();
+            
+            if (null != filters && filters.Length > 0)
+            {
+                writer.BeginDictionaryEntry("Length");
+                writer.WriteNumberS(len);
+                writer.EndDictionaryEntry();
+                writer.BeginDictionaryEntry("Filter");
+                writer.BeginArray();
 
-            writer.WriteDictionaryNumberEntry("Length", len);
+                foreach (IStreamFilter filter in filters)
+                {
+                    writer.BeginArrayEntry();
+                    writer.WriteName(filter.FilterName);
+                    writer.EndArrayEntry();
+                }
+                writer.EndArray();
+                writer.EndDictionaryEntry();
+            }
+            else
+            {
+                writer.BeginDictionaryEntry("Length");
+                writer.WriteNumberS(len);
+                writer.EndDictionaryEntry();
+            }
+            
             writer.EndDictionary(); //XObject
 
         }

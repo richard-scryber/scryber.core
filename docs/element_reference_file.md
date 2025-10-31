@@ -10,6 +10,22 @@ has_toc: false
 ---
 
 # &lt;div&gt; : The Generic Div Element
+{: .no_toc }
+
+---
+
+<details open class='top-toc' markdown="block">
+  <summary>
+    On this page
+  </summary>
+  {: .text-delta }
+- TOC
+{: toc}
+</details>
+
+---
+
+## Summary
 
 Summary
 
