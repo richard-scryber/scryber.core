@@ -132,7 +132,7 @@ namespace Scryber.Drawing
 
         protected ImageRasterData(string source, int pixelWidth, int pixelHeight) : this(ObjectTypes.ImageData, source, pixelWidth, pixelHeight) { }
         
-        protected ImageRasterData(ObjectType type, string source, int pixelWidth, int pixelHeight) : base(type, source)
+        protected ImageRasterData(ObjectType type, string source, int pixelWidth, int pixelHeight) : base(type, source, ImageType.Raster)
         {
             this._w = pixelWidth;
             this._h = pixelHeight;

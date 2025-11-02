@@ -5,7 +5,7 @@ namespace Scryber.Drawing
         
         public ImageVectorData(string source) : this(ObjectTypes.ImageData, source) { }
 
-        public ImageVectorData(ObjectType type, string source) : base(type, source)
+        public ImageVectorData(ObjectType type, string source) : base(type, source, ImageType.Vector)
         {
             
         }

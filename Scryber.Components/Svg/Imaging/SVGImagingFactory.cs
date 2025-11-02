@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Imaging;
+using Scryber.Styles;
 using Scryber.Svg.Components;
 
 namespace Scryber.Svg.Imaging;
@@ -48,6 +49,16 @@ public class SVGImagingFactory : ImageFactoryBase
             return null;
         var svg = component as SVGCanvas;
         var data = new SVGPDFImageData(path, svg);
+
+        if (document is Document doc)
+        {
+            doc.LayoutComplete += (sender, args) =>
+            {
+                if (null == data.Layout) //the image has not been laid out as part of the general execution - so it's a background image.
+                    data.GetRequiredSizeForLayout(Size.Empty, args.Context, new Style());
+                
+            };
+        }
 
         return data;
 

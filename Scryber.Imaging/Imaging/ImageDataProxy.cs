@@ -65,6 +65,18 @@ namespace Scryber.Imaging
 			}
 		}
 
+		public override ImageType ImageType
+		{
+			get
+			{
+				if (null == this.ImageData)
+					return ImageType.Unknown;
+				else
+					return this.ImageData.ImageType;
+			}
+			protected set => base.ImageType = value;
+		}
+
 
 		public ImageData ImageData
 		{
@@ -152,6 +164,7 @@ namespace Scryber.Imaging
         }
 
 		private bool _logFulfilled = false;
+		private ImageType _imageType;
 
 		private bool EnsureFulfilled(Logging.TraceLog log)
 		{

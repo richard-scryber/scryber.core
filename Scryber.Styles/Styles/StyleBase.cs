@@ -421,6 +421,7 @@ namespace Scryber.Styles
 
             //We just make sure the image is loaded
             var existing = context.Document.GetResource(PDFResource.XObjectResourceType, mapped, true);
+            
 
             if (context.ShouldLogMessage)
                 context.TraceLog.Add(TraceLevel.Message, "Styles", type + " image resource requested for path '" + mapped + "' and " + (existing != null ? existing.ToString() : "nothing") + " returned");

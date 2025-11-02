@@ -2152,12 +2152,145 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
+        public void SVGImageFromPathAsABlock()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Adding an SVG Image from a file path");
+            pg.Contents.Add(h2);
+
+            var img = new HTMLImage();
+            img.Source = path;
+            img.Width = 200;
+            img.Height = 200;
+            img.DisplayMode = DisplayMode.Block;
+            pg.Contents.Add(img);
+            
+            using (var stream = DocStreams.GetOutputStream("Images_9_SVGImageFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(4, doc.SharedResources.Count);
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void PngImageFromPathAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.RepeatBoth;
+            pg.Style.Background.PatternXSize = 100;
+            pg.Style.Background.PatternYSize = 150;
+            pg.Style.Background.PatternXStep = 200;
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_10_ImageAsBackgroundFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(2, doc.SharedResources.Count);
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void SvgImageFromPathAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.RepeatBoth;
+            pg.Style.Background.PatternXSize = 100;
+            pg.Style.Background.PatternYSize = 100;
+            pg.Style.Background.PatternXSize = 50;
+            pg.Style.Background.PatternYSize = 100;
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_11_SvgAsBackgroundFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(2, doc.SharedResources.Count);
+                
+            }
+
+        }
+
+        [TestMethod]
         public void LargeDataImage()
         {
             
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, ImagePath);
             path = System.IO.Path.GetFullPath(path);
+            var bgPath = path;
 
             Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
 
@@ -2326,7 +2459,7 @@ namespace Scryber.UnitLayouts
             
             pg = new Page();
             pg.Margins = new Thickness(10);
-            pg.BackgroundColor = new Color(240, 240, 240);
+            //pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
             pg.FontSize = 12;
             doc.Pages.Add(pg);
@@ -2356,13 +2489,13 @@ namespace Scryber.UnitLayouts
             h4.Contents.Add(new TextLiteral("8. As File path Url"));
             pg.Contents.Add(h4);
             
-            img = new HTMLImage();
-            img.Source = path;
+            //img = new HTMLImage();
+            //img.Source = path;
             
             img.DisplayMode = DisplayMode.Block;
             img.BorderColor = StandardColors.Black;
             img.Height = 120;
-            pg.Contents.Add(img);
+            //pg.Contents.Add(img);
             
             h4 = new Head4();
             h4.Contents.Add(new TextLiteral("8. As an SVG data Url"));
@@ -2374,8 +2507,13 @@ namespace Scryber.UnitLayouts
             img.DisplayMode = DisplayMode.Block;
             img.BorderColor = StandardColors.Black;
             img.Width = 300;
-            pg.Contents.Add(img);
-            
+            //pg.Contents.Add(img);
+
+
+            pg.Style.Background.ImageSource = path; //dataurl;
+            pg.Style.Background.PatternRepeat = PatternRepeat.None;
+            pg.Style.Background.PatternXSize = 300;
+            pg.Style.Background.PatternYSize = 300;
             
             
             //

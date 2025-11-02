@@ -38,6 +38,16 @@ namespace Scryber.Drawing
         Custom
     }
 
+    /// <summary>
+    /// Defines the type of an graphical image - Raster for pixel based (png, jpg), Vector for drawings (svg, eps), or unknown.
+    /// </summary>
+    public enum ImageType
+    {
+        Raster,
+        Vector,
+        Unknown
+    }
+
     public enum ImageFormat
     {
         Png,

@@ -622,6 +622,12 @@ namespace Scryber.Svg.Imaging
             var prevStack = context.StyleStack;
             var prevItems = context.Items;
             PDFLayoutItem layout = null;
+            PDFLayoutBlock container = null;
+            bool closeContainerAfter = false;
+
+            PDFGraphics graphics = null;
+            var releaseGraphicsAfterUse = false;
+            
             try
             {
                 //Clear the styles and the items so nothing will affect the declared style.
@@ -681,6 +687,26 @@ namespace Scryber.Svg.Imaging
 
                 var pg = layoutContext.DocumentLayout.CurrentPage;
                 var open = pg.LastOpenBlock();
+
+
+                if (open == null)
+                {
+
+                    pg.ContentBlock.ReOpen();
+                    open = pg.ContentBlock;
+                    closeContainerAfter = true;
+                }
+
+                if (context is PDFLayoutContext pdfContext && null == pdfContext.Graphics)
+                {
+                    graphics = PDFGraphics.Create(null, false, pg, DrawingOrigin.TopLeft, open.Size, pdfContext);
+                    pdfContext.Graphics = graphics;
+                        
+                    releaseGraphicsAfterUse = true;
+                }
+
+                container = open;
+
                 var posRegion = open.BeginNewPositionedRegion(full.CreatePostionOptions(false), pg, this._svgCanvas,
                     full, false, false);
 
@@ -725,6 +751,12 @@ namespace Scryber.Svg.Imaging
             {
                 context.StyleStack = prevStack;
                 context.Items = prevItems;
+
+                if (closeContainerAfter)
+                    container.Close();
+                
+                if(releaseGraphicsAfterUse)
+                    graphics.Dispose();
             }
 
             return layout as PDFLayoutBlock;
@@ -875,6 +907,9 @@ namespace Scryber.Svg.Imaging
             
                 writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
             }
+            
+            if(null == layoutName)
+                throw new NullReferenceException("The layoutName cannot be null for svg image metadata");
             
             writer.WriteNameS(layoutName.Value);
             writer.WriteOpCodeS(PDFOpCode.XobjPaint);

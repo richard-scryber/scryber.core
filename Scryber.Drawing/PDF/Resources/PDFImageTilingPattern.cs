@@ -24,6 +24,7 @@ using System.Drawing;
 using Scryber.PDF.Native;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
+using Size = Scryber.Drawing.Size;
 
 namespace Scryber.PDF.Resources
 {
@@ -32,6 +33,8 @@ namespace Scryber.PDF.Resources
     /// </summary>
     public class PDFImageTilingPattern : PDFTilingPattern
     {
+
+        
 
         #region public PDFImageXObject Image {get;set;}
 
@@ -51,7 +54,6 @@ namespace Scryber.PDF.Resources
         }
 
         #endregion
-
         
 
         #region public PDFSize ImageSize {get;set;}
@@ -138,8 +140,11 @@ namespace Scryber.PDF.Resources
             using (PDFGraphics g = PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, 
                 graphicsSize, context))
             {
-                offset = new Drawing.Point(offset.X, 0.0);
-                g.PaintImageRef(this.Image, size, offset);
+                g.SaveGraphicsState();
+                var matrix = this.GetTilingImageMatrix(this.Image.ImageData, g, offset, size);
+                g.SetTransformationMatrix(matrix, true, true);
+                g.PaintXObject(this.Image);
+                g.RestoreGraphicsState();
             }
             long len = writer.EndStream();
 
@@ -175,6 +180,53 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
+        private PDFTransformationMatrix GetTilingImageMatrix(ImageData img, PDFGraphics graphicsContainer, Scryber.Drawing.Point offset, Size tilesize)
+        {
+            
+            Matrix2D matrix = Matrix2D.Identity;
+            double x, y, w, h, sh, sv;
+            if (img.ImageType == ImageType.Vector)
+            {
+                //vectors have a bounding box co-ordinate space
+                //so we need to scale appropriately for the required image tile size.
+                w = 1;
+                h = 1;
+                x = offset.X.PointsValue;
+                y = offset.Y.PointsValue;
+                var actSize = img.GetSize();
+                sh = (tilesize.Width.PointsValue / actSize.Width.PointsValue); //100pt wide vector into 50pt tile = 0.5
+                sv = (tilesize.Height.PointsValue / actSize.Height.PointsValue); //100pt high vector into 50pt tile = 0.5
+            }
+            else
+            {
+                //raster images have a scale for the actual pixel size to go from 1 to the required size.
+                w = tilesize.Width.PointsValue;
+                h = tilesize.Height.PointsValue;
+
+                x = offset.X.PointsValue;
+
+                // if (graphicsContainer.Origin == DrawingOrigin.TopLeft)
+                //     //convert the top down to bottom of the page up to the image
+                //     y = graphicsContainer.ContainerSize.Height.PointsValue - offset.Y.PointsValue -
+                //         tilesize.Height.PointsValue;
+                // else
+                    y = offset.Y.PointsValue;
+
+                //Scale is done by the bounding box of the image being drawn
+                sh = 1;
+                sv = 1;
+            }
+
+            matrix.Elements[0] = w;
+            matrix.Elements[3] = h;
+            matrix.Elements[4] = x;
+            matrix.Elements[5] = y;
+            matrix = new Matrix2D(w, 0, 0, h, x, y);
+            matrix.Scale(sh, sv);
+
+            return new PDFTransformationMatrix(matrix);
+
+        }
         
     }
 }

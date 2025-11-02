@@ -95,6 +95,9 @@ namespace Scryber.Drawing
         #endregion
         
         
+        public virtual ImageType ImageType { get; protected set; }
+        
+        
         #region public virtual bool IsPrecompressedData {get;}
 
         /// <summary>
@@ -130,18 +133,19 @@ namespace Scryber.Drawing
         /// <summary>
         /// Protected constructor - accepts the source path, width and height (in pixels)
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="w"></param>
+        /// <param name="source">The path or other identifier for the image</param>
+        /// <param name="imgType">The type of image - raster, vectore</param>
         /// <param name="h"></param>
-        protected ImageData(string source)
-            : this(ObjectTypes.ImageData, source)
+        protected ImageData(string source, ImageType imgType)
+            : this(ObjectTypes.ImageData, source, imgType)
         {
         }
 
-        protected ImageData(ObjectType type, string source)
+        protected ImageData(ObjectType type, string source, ImageType imgType)
         {
             this._type = type;
             this._path = source;
+            this.ImageType = imgType;
         }
 
         #endregion

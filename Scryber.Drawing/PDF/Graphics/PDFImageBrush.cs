@@ -126,6 +126,7 @@ namespace Scryber.PDF.Graphics
         public PDFImageBrush(string source)
         {
             this._source = source;
+            this._op = 1.0;
         }
 
 
@@ -164,6 +165,7 @@ namespace Scryber.PDF.Graphics
                 tile.Image = imagex;
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
+                
 
                 //Calculate the bounds of the pattern
 
@@ -203,6 +205,7 @@ namespace Scryber.PDF.Graphics
 
                 string name = g.Container.Register(tile);
 
+                g.SetFillOpacity(this.Opacity);
                 g.SetFillPattern((PDFName)name);
                 return true;
             }
