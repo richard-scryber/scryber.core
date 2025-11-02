@@ -25,6 +25,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.ComponentModel;
 using Scryber.Drawing;
+using Scryber.OpenType.Utility;
 
 namespace Scryber.PDF.Graphics
 {
@@ -246,6 +247,10 @@ namespace Scryber.PDF.Graphics
         private string GetImagePatternKey(string fullpath)
         {
             int code = this.GetHashCode(); //reference to this brush and image file
+            
+            if (fullpath.Length > 30000) //doesn't work past 32k as a dictionary key.
+                fullpath = fullpath.GetHashCode().ToString() + fullpath.Substring(0, 20000);
+            
             return string.Format(IMAGEPATTERNRESOURCEKEY, fullpath.ToLower(), code);
         }
 

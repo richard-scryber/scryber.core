@@ -2150,6 +2150,55 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, txtEnd.Width);
            
         }
+        
+        [TestMethod]
+        public void PngLargeImageFromDataUrlAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, VLargeImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.None;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            var ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            var data = ms.ToArray();
+            var base64 = Convert.ToBase64String(data);
+            var dataurl = "data:image/png;base64," + base64;
+            pg.Style.Background.ImageSource = dataurl;
+
+            var h2 = new Head2();
+            h2.Contents.Add("Adding a png Image from the data url");
+            pg.Contents.Add(h2);
+            pg.Contents.Add(new TextLiteral("Image Size : " + (data.Length / 1024) + "kb"));
+            
+            using (var stream = DocStreams.GetOutputStream("Images_LargeImageFromDataUrl.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(3, doc.SharedResources.Count); // 2 fonts 1 image
+                
+            }
+
+        }
 
         [TestMethod]
         public void SVGImageFromPathAsABlock()
@@ -2284,7 +2333,7 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void LargeDataImage()
+        public void MultipleImagesVariousSizesAndOptions()
         {
             
             var path = System.Environment.CurrentDirectory;
@@ -2339,7 +2388,7 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.Height = 60;
             pg.Contents.Add(img);
-            pg.Contents.Add("Data size: " + (ms.Length / 8182) + "kb");
+            pg.Contents.Add("Data size: " + (ms.Length / 1024) + "kb");
             
             h4 = new Head4();
             h4.Contents.Add(new TextLiteral("3. As Base64 Data Url 50% opacity "));
@@ -2354,7 +2403,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(img);
             
             h4 = new Head4();
-            h4.Contents.Add(new TextLiteral("4. As Base64 Data Url 50% opacity as a background"));
+            h4.Contents.Add(new TextLiteral("4. As Base64 Data Url 50% opacity as Fixed, and first"));
             pg.Contents.Add(h4);
             
             img = new HTMLImage();
@@ -2411,7 +2460,7 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.Height = 120;
             pg.Contents.Add(img);
-            pg.Contents.Add("URL size: " + (dataurl.Length / 8182) + "kb");
+            pg.Contents.Add("URL size: " + (dataurl.Length / 1024) + "kb");
             
             
             //
@@ -2431,7 +2480,7 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.Height = 120;
             pg.Contents.Add(img); 
-            pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
             
             
             h4 = new Head4();
@@ -2450,7 +2499,7 @@ namespace Scryber.UnitLayouts
             img.Y = 0;
             img.PositionMode = PositionMode.Fixed;
             pg.Contents.Insert(0, img); 
-            pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
             
             
             //
@@ -2489,16 +2538,15 @@ namespace Scryber.UnitLayouts
             h4.Contents.Add(new TextLiteral("8. As File path Url"));
             pg.Contents.Add(h4);
             
-            //img = new HTMLImage();
-            //img.Source = path;
-            
+            img = new HTMLImage();
+            img.Source = path;
             img.DisplayMode = DisplayMode.Block;
             img.BorderColor = StandardColors.Black;
             img.Height = 120;
-            //pg.Contents.Add(img);
+            pg.Contents.Add(img);
             
             h4 = new Head4();
-            h4.Contents.Add(new TextLiteral("8. As an SVG data Url"));
+            h4.Contents.Add(new TextLiteral("9. As an SVG data Url"));
             pg.Contents.Add(h4);
             
             img = new HTMLImage();
@@ -2506,8 +2554,8 @@ namespace Scryber.UnitLayouts
             
             img.DisplayMode = DisplayMode.Block;
             img.BorderColor = StandardColors.Black;
-            img.Width = 300;
-            //pg.Contents.Add(img);
+            img.Width = 100;
+            pg.Contents.Add(img);
 
 
             pg.Style.Background.ImageSource = path; //dataurl;
@@ -2515,41 +2563,38 @@ namespace Scryber.UnitLayouts
             pg.Style.Background.PatternXSize = 300;
             pg.Style.Background.PatternYSize = 300;
             
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
+            pg.Contents.Add(h4);
             
-            //
-            //
-            // h4 = new Head4();
-            // h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
-            // pg.Contents.Add(h4);
-            //
-            // img = new HTMLImage();
-            // img.RawImageData = data;
-            // img.RawImageDataType = MimeType.PngImage; //"image/png";
-            // img.Style.Fill.Opacity = 0.6;
-            //
-            // img.DisplayMode = DisplayMode.Block;
-            // img.BorderColor = StandardColors.Black;
-            // img.Height = 120;
-            // pg.Contents.Add(img); 
-            // pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
-            //
-            // h4 = new Head4();
-            // h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
-            // pg.Contents.Add(h4);
-            //
-            // img = new HTMLImage();
-            // img.RawImageData = data;
-            // img.RawImageDataType = MimeType.PngImage; //"image/png";
-            // img.Style.Fill.Opacity = 0.2;
-            //
-            // img.DisplayMode = DisplayMode.Block;
-            // img.BorderColor = StandardColors.Black;
-            // img.Width = Unit.Percent(100);
-            // img.X = 0;
-            // img.Y = 0;
-            // img.PositionMode = PositionMode.Fixed;
-            // pg.Contents.Insert(0, img); 
-            // pg.Contents.Add("Data size: " + (data.Length / 8182) + "kb");
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.SvgImage; //"image/svg+xml";
+            img.Style.Fill.Opacity = 0.6;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.2;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            img.PositionMode = PositionMode.Fixed;
+            pg.Contents.Insert(0, img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
             
             
 
