@@ -124,9 +124,29 @@ Scryber implements most CSS 2.1 properties plus common CSS3 features:
 
 **Units Supported**: `pt`, `px`, `mm`, `cm`, `in`, `em`, `rem`, `%`
 
-### Expression System
+### Expression System & Data Binding
+
+Scryber provides a comprehensive template expression system using Handlebars syntax with 6 helpers, 15 operators, and 90+ functions.
+
+#### Core Expression Syntax
 
 Template expressions use handlebars syntax: `{{expression}}`
+
+**⚠️ IMPORTANT Syntax Rules**:
+
+1. **Use `{{expression}}` NOT `${expression}`**
+   - ✅ **Correct**: `{{model.price}}` - Handlebars syntax, will be evaluated
+   - ❌ **Wrong**: `${model.price}` - JavaScript template literal syntax, will NOT work
+   - ✅ **Dollar signs**: `${{model.price}}` - The `$` is just a character, `{{...}}` is the expression
+   - **Why**: HTML templates are parsed, not evaluated as JavaScript
+
+2. **Cannot call C# static methods in templates**
+   - ❌ **Wrong**: `{{DateTime.Now}}`, `{{String.Format(...)}}`, `{{Math.PI}}`
+   - ✅ **Correct**: Pass data from C# code, then reference in template
+   - Templates can only access:
+     - Data passed via `doc.Params["key"]`
+     - Expression functions (like `format()`, `concat()`, `pi()`)
+     - Current context (`this`, `model`, variables)
 
 **Access Data**:
 ```html
@@ -143,7 +163,7 @@ Template expressions use handlebars syntax: `{{expression}}`
 <var data-id="result" data-value="{{value / maxValue * 100}}" />
 ```
 
-**Important**: Use standard operators (`+`, `-`, `*`, `/`), not `calc()` function.
+**Important**: Use standard operators (`+`, `-`, `*`, `/`), not `calc()` function in expressions.
 
 **Template Variables**:
 ```html
@@ -155,53 +175,197 @@ Template expressions use handlebars syntax: `{{expression}}`
 {{myVar * 2}}
 ```
 
-**Built-in Functions**:
-- `concat(str1, str2, ...)` - String concatenation
-- `if(condition, trueValue, falseValue)` - Conditional
-- `format(value, formatString)` - Number/date formatting
-  - `{{format(price, 'C2')}}` → $10.50
-  - `{{format(count, 'N0')}}` → 1,234
-  - `{{format(date, 'yyyy-MM-dd')}}` → 2024-03-15
-- `length(array)` - Array/collection length
-- `index()` - Current iteration index
-- `upper(str)`, `lower(str)` - Case conversion
+#### Handlebars Helpers (Block-Level Control Structures)
 
-**Conditionals**:
+Scryber implements 6 Handlebars helpers that compile to underlying Scryber XML components:
+
+**1. `{{#each}}` - Iteration Helper**
 ```html
-{{#if condition}}
-    <p>Condition is true</p>
-{{/if}}
+{{#each model.items}}
+    <p>{{this.name}}</p>
+{{/each}}
+```
+- **Compiles to**: `<template data-bind="{{collection}}">`  using ForEach component
+- **Special variables**: `@index` (zero-based), `@first` (boolean), `@last` (boolean)
+- **Context**: `this` refers to current item, `../` accesses parent scope
+```html
+{{#each model.products}}
+    <p>{{@index}}. {{this.name}} - ${{this.price}}</p>
+    {{#if @first}}<hr />{{/if}}
+{{/each}}
+```
 
-<!-- Inline -->
+**2. `{{#with}}` - Context Switching**
+```html
+{{#with model.user}}
+    <p>Name: {{this.firstName}} {{this.lastName}}</p>
+    <p>Email: {{this.email}}</p>
+{{/with}}
+```
+- **Compiles to**: `<template data-bind="{{object}}">` with context switching
+- **Aliasing**: `{{#with object as | alias |}}`
+- **Parent access**: Use `../` to access parent scope
+
+**3. `{{#if}}` / `{{else if}}` / `{{else}}` - Conditionals**
+```html
+{{#if model.score >= 90}}
+    <p class="grade-a">Excellent!</p>
+{{else if model.score >= 70}}
+    <p class="grade-b">Good</p>
+{{else}}
+    <p class="grade-c">Needs improvement</p>
+{{/if}}
+```
+- **Compiles to**: `<choose><when><otherwise>` element structure
+- **Supported operators**: `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`
+- **Works with**: `#each` and `#with` for fallback cases
+
+**4. `{{log}}` - Debugging Helper**
+```html
+{{log "Debug message: " model.value}}
+{{log "Error occurred" level="error" category="validation"}}
+```
+- **Levels**: `debug` (Verbose), `info` (Message), `warn` (Warning), `error` (Error)
+- **Category**: Optional category for filtering logs
+- **Output**: Writes to Scryber trace log during data binding
+
+#### Binding Operators (15 Total)
+
+Operators work in expressions with proper precedence levels:
+
+**Arithmetic Operators** (Precedence 3-5):
+- `+` Addition (precedence 5)
+- `-` Subtraction (precedence 5)
+- `*` Multiplication (precedence 4)
+- `/` Division (precedence 4)
+- `%` Modulus (precedence 4)
+- `^` Power/Exponentiation (precedence 3)
+
+**Comparison Operators** (Precedence 6-7):
+- `==` Equality (precedence 7)
+- `!=` Inequality (precedence 7)
+- `<` Less than (precedence 6)
+- `<=` Less than or equal (precedence 6)
+- `>` Greater than (precedence 6)
+- `>=` Greater than or equal (precedence 6)
+
+**Logical Operators** (Precedence 9-10):
+- `&&` Logical AND (precedence 9)
+- `||` Logical OR (precedence 10)
+- `??` Null coalescing (precedence 8)
+
+**Example with precedence**:
+```html
+{{model.quantity * model.price + model.tax}}  <!-- * before + -->
+{{model.score > 70 && model.attendance >= 0.8}}  <!-- > before && -->
+{{model.value ?? model.defaultValue}}  <!-- Use default if null -->
+```
+
+#### Expression Functions (90+ Functions)
+
+Functions are organized into 8 categories:
+
+**Conversion Functions** (7 functions):
+- `int()`, `long()`, `double()`, `decimal()` - Numeric conversions
+- `bool()` - Boolean conversion
+- `date()` - Date parsing/conversion
+- `typeof()` - Type information
+
+**String Functions** (18 functions):
+- `format(value, formatString)` - Format numbers/dates (also aliased as `string()`)
+- `concat(str1, str2, ...)` - Concatenate strings
+- `join(array, delimiter)` - Join array with delimiter
+- `substring(str, start, length)` - Extract substring
+- `replace(str, find, replaceWith)` - Replace text
+- `toLower(str)`, `toUpper(str)` - Case conversion
+- `trim(str)`, `trimEnd(str)` - Remove whitespace
+- `length(str)` - String length
+- `contains(str, search)`, `startsWith(str, prefix)`, `endsWith(str, suffix)` - String testing
+- `indexOf(str, search)` - Find position
+- `padLeft(str, length, char)`, `padRight(str, length, char)` - Padding
+- `split(str, delimiter)` - Split into array
+- `regexIsMatch(str, pattern)`, `regexMatches(str, pattern)`, `regexReplace(str, pattern, replacement)` - Regex operations
+
+**Mathematical Functions** (21 functions):
+- `abs()`, `ceiling()`, `floor()`, `round()`, `truncate()` - Rounding
+- `sqrt()`, `pow()`, `exp()`, `log()`, `log10()` - Power and logarithms
+- `sign()` - Sign determination
+- `sin()`, `cos()`, `tan()`, `asin()`, `acos()`, `atan()` - Trigonometry
+- `degrees()`, `radians()` - Angle conversion
+- `pi()`, `e()` - Constants
+- `random()` - Random number generation
+
+**Date/Time Functions** (19 functions):
+- **Add functions** (6): `addDays()`, `addMonths()`, `addYears()`, `addHours()`, `addMinutes()`, `addSeconds()`, `addMilliseconds()`
+- **Between functions** (4): `daysBetween()`, `hoursBetween()`, `minutesBetween()`, `secondsBetween()`
+- **Extract functions** (9): `yearOf()`, `monthOfYear()`, `dayOfMonth()`, `dayOfWeek()`, `dayOfYear()`, `hourOf()`, `minuteOf()`, `secondOf()`, `millisecondOf()`
+
+**Logical Functions** (3 functions):
+- `if(condition, trueValue, falseValue)` - Inline conditional (ternary)
+- `ifError(expression, fallbackValue)` - Error handling with fallback
+- `in(value, collection)` - Membership test
+
+**Collection Functions** (13 functions):
+- `count(collection)` - Count items
+- `countOf(collection, property, value)` - Conditional count
+- `sum(collection)` - Sum values
+- `sumOf(collection, property)` - Sum property values
+- `min(collection)`, `max(collection)` - Find extremes
+- `minOf(collection, property)`, `maxOf(collection, property)` - Property extremes
+- `collect(collection, property)` - Extract property array
+- `selectWhere(collection, property, value)` - Filter collection
+- `firstWhere(collection, property, value)` - Find first match
+- `sortBy(collection, property)` - Sort ascending
+- `reverse(collection)` - Reverse order
+
+**Statistical Functions** (5 functions):
+- `average(collection)`, `averageOf(collection, property)` - Arithmetic mean
+- `mean(collection)` - Mathematical mean (synonym for average)
+- `median(collection)` - Middle value (robust against outliers)
+- `mode(collection)` - Most frequent value
+
+**CSS Functions** (2 functions):
+- `calc(expression)` - Generate CSS calc() expression for dynamic styles
+- `var(variableName, fallbackValue)` - Reference CSS custom properties
+
+#### Common Expression Patterns
+
+**Inline Conditionals**:
+```html
 {{if(age >= 18, 'Adult', 'Minor')}}
-
-<!-- With operators -->
-{{#if price > 100}}
-    <span class="expensive">{{price}}</span>
-{{/if}}
+{{if(stock > 0, concat('$', string(price)), 'Out of Stock')}}
 ```
 
-**Loops**:
+**Collection Operations**:
 ```html
-{{#each model.items}}
-    <div>{{this.name}}: {{this.value}}</div>
-{{/each}}
-
-<!-- Access index -->
-{{#each model.items}}
-    <li>Item {{index()}}: {{this.name}}</li>
-{{/each}}
-
-<!-- Nested loops -->
-{{#each model.categories}}
-    <h2>{{this.name}}</h2>
-    {{#each this.items}}
-        <p>{{this.name}}</p>
-    {{/each}}
-{{/each}}
+<p>Total: ${{sum(collect(model.items, 'price'))}}</p>
+<p>Average: ${{round(average(collect(model.items, 'price')), 2)}}</p>
+<p>Items: {{count(model.items)}}</p>
 ```
 
-**Context Navigation**:
+**Date Formatting**:
+```html
+<p>Date: {{format(model.orderDate, 'MMMM dd, yyyy')}}</p>
+<p>Time: {{format(model.timestamp, 'h:mm tt')}}</p>
+<p>Days until delivery: {{daysBetween(model.today, model.deliveryDate)}}</p>
+```
+
+**String Manipulation**:
+```html
+<p>{{toUpper(model.code)}}</p>
+<p>{{concat(model.firstName, ' ', model.lastName)}}</p>
+<p>{{join(model.tags, ', ')}}</p>
+```
+
+**Statistical Analysis**:
+```html
+<p>Mean: {{round(mean(model.scores), 1)}}</p>
+<p>Median: {{median(model.scores)}}</p>
+<p>Range: {{min(model.scores)}} - {{max(model.scores)}}</p>
+```
+
+#### Context Navigation
+
 ```html
 {{#each model.items}}
     <!-- Current item -->
@@ -212,8 +376,53 @@ Template expressions use handlebars syntax: `{{expression}}`
 
     <!-- Parent scope with ../ -->
     {{../model.title}}
+
+    <!-- Special iteration variables -->
+    {{@index}}  <!-- Zero-based index -->
+    {{@first}}  <!-- true if first item -->
+    {{@last}}   <!-- true if last item -->
 {{/each}}
 ```
+
+#### Critical Best Practice: Static Data for PDFs
+
+**IMPORTANT**: Templates cannot call static C# methods like `DateTime.Now`:
+
+❌ **Wrong** - Static methods don't work in templates:
+```html
+<!-- This will NOT work - templates can't call C# static methods -->
+<p>Generated: {{DateTime.Now}}</p>
+<p>Date: {{DateTime.Today}}</p>
+```
+
+✅ **Correct** - Pass data from C# code:
+```csharp
+// C# code - DateTime.Now is fine here
+doc.Params["model"] = new {
+    generatedDate = DateTime.Now,  // OK in C# code
+    reportDate = DateTime.Today     // OK in C# code
+};
+```
+
+```html
+<!-- Template - use the passed data -->
+<p>Generated: {{format(model.generatedDate, 'yyyy-MM-dd HH:mm:ss')}}</p>
+<p>Date: {{format(model.reportDate, 'MMMM dd, yyyy')}}</p>
+```
+
+**For Documentation & Examples**: Use fixed dates for reproducible output:
+```csharp
+// Use fixed dates in documentation examples
+doc.Params["model"] = new {
+    reportDate = new DateTime(2024, 3, 15),  // Fixed date
+    dueDate = new DateTime(2024, 4, 14)      // Predictable output
+};
+```
+
+This ensures:
+- Templates work (can't call C# static methods)
+- PDF output is reproducible (no live timestamps changing on each generation)
+- Examples are testable (predictable output)
 
 ### Common Patterns
 
@@ -393,14 +602,82 @@ public class ReportController : Controller
 1. **"ProcessDocument() not found"** - Don't call it! Use `SaveAsPDF()` directly
 2. **Variables not working** - Access by name: `{{varName}}`, not `{{Document.Params.varName}}`
 3. **Math not working** - Use standard operators: `{{a + b}}`, not `{{calc(a, '+', b)}}`
-4. **Images not loading** - Check file paths are absolute or use data URLs
-5. **CSS not applied** - Ensure `<link>` has correct `href` path
+4. **Expressions not evaluating** - Use `{{expression}}` NOT `${expression}`. Scryber uses Handlebars syntax, not JavaScript template literals
+5. **DateTime.Now not working** - Templates can't call static C# methods. Using `{{DateTime.Now}}` won't work. Pass dates from C# code: `doc.Params["date"] = DateTime.Now;` then use `{{date}}` in template
+6. **Images not loading** - Check file paths are absolute or use data URLs
+7. **CSS not applied** - Ensure `<link>` has correct `href` path
+
+### Documentation Structure
+
+Scryber documentation is organized into two main sections:
+
+#### `/docs/learning/` - General Information & Tutorials
+Contains articles, guides, and learning materials for understanding Scryber concepts and features.
+
+#### `/docs/reference/` - Technical Reference Documentation
+Comprehensive reference documentation organized by feature area:
+
+**1. `/reference/htmlelements/` - HTML Elements Reference**
+Documentation for supported HTML elements (div, p, table, etc.)
+
+**2. `/reference/htmlattributes/` - HTML Attributes Reference**
+Documentation for HTML attributes (class, style, id, data-*, etc.)
+
+**3. `/reference/cssselectors/` - CSS Selectors Reference**
+Documentation for supported CSS selectors and specificity rules
+
+**4. `/reference/cssproperties/` - CSS Properties Reference**
+Documentation for supported CSS properties (margin, padding, color, font-family, etc.)
+
+**5. `/reference/svgelements/` - SVG Elements Reference**
+Documentation for SVG elements (svg, path, rect, circle, etc.)
+
+**6. `/reference/svgattributes/` - SVG Attributes Reference**
+Documentation for SVG-specific attributes (viewBox, fill, stroke, etc.)
+
+**7. `/reference/binding/` - Data Binding Reference** (129 files - newly created)
+Complete reference for the template expression system:
+
+- **`helpers/`** (6 files) - Handlebars helper documentation
+  - each.md, with.md, if.md, else.md, elseif.md, log.md
+  - Shows underlying XML compilation for each helper
+
+- **`operators/`** (15 files) - Operator documentation with precedence
+  - Arithmetic: addition.md, subtraction.md, multiplication.md, division.md, modulus.md, power.md
+  - Comparison: equality.md, inequality.md, lessthan.md, lessorequal.md, greaterthan.md, greaterorequal.md
+  - Logical: and.md, or.md, nullcoalesce.md
+
+- **`functions/`** (108 files) - Expression function documentation by category:
+  - Conversion (7), String (18), Mathematical (21)
+  - Date/Time: Add (6), Between (4), Extract (9)
+  - Logical (3), Collection (13), Statistical (5), CSS (2)
+
+**Documentation Features**:
+- Each reference file includes signature, parameters, return type, multiple examples with data/output
+- Helper files show underlying XML compilation (e.g., `{{#each}}` compiles to `<template>`)
+- All examples use fixed dates (never DateTime.Now) for PDF static document compatibility
+- Cross-references between related items
+- Jekyll front matter for website navigation
+
+**Template Files** (in `/reference/binding/` for consistency):
+- `helper_template.md` - Template for new Handlebars helpers
+- `operator_template.md` - Template for new operators
+- `function_template.md` - Template for new expression functions
 
 ### Further Reading
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Deep dive into internal architecture, pipeline stages, and component system
 - **[Scryber Documentation](https://scrybercore.readthedocs.io/)** - Official documentation with examples
 - **[GitHub Samples](https://github.com/richard-scryber/scryber.core.samples)** - Working examples and templates
+- **[Learning Documentation](./docs/learning/)** - Tutorials and conceptual articles
+- **[Reference Documentation](./docs/reference/)** - Complete technical reference:
+  - [HTML Elements](./docs/reference/htmlelements/) - Supported HTML elements
+  - [HTML Attributes](./docs/reference/htmlattributes/) - HTML attribute reference
+  - [CSS Selectors](./docs/reference/cssselectors/) - CSS selector support and specificity
+  - [CSS Properties](./docs/reference/cssproperties/) - Supported CSS properties
+  - [SVG Elements](./docs/reference/svgelements/) - SVG element reference
+  - [SVG Attributes](./docs/reference/svgattributes/) - SVG attribute reference
+  - [Data Binding](./docs/reference/binding/) - Helpers, operators, and functions (129 files)
 
 The ARCHITECTURE.md file provides comprehensive details about:
 - Complete PDF generation pipeline (Parse → Init → Load → DataBind → Style → Layout → Render)
@@ -569,7 +846,7 @@ Parse → Init → Load → DataBind → Style Resolution → Layout → Render
 - Resources cached at document level, referenced multiple times
 - Reduces PDF file size through sharing
 
-## Expression System
+## Expression System Architecture
 
 Handlebars syntax `{{expression}}` works in:
 - HTML attributes: `<div style="{{model.style}}">`
@@ -583,6 +860,41 @@ Expression types:
 - Functions: `{{concat(model.first, ' ', model.last)}}`
 - Math: `{{model.price * 1.1}}`
 - Conditionals: `{{model.age > 18 ? 'Adult' : 'Minor'}}`
+
+### Handlebars Helper Implementation
+
+Handlebars helpers are parsed and transformed into Scryber XML components:
+
+**Helper Mapping System** (`Scryber.Generation/Generation/Handlebars/`):
+- `HBarHelperMapping.cs` - Maps helper names to handler classes
+- Each helper has dedicated handler: `HBarEach`, `HBarWith`, `HBarIf`, `HBarElse`, `HBarElseIf`, `HBarLog`
+- Helpers compile to XML during parsing phase before component tree creation
+- Transformation happens via `DocumentHBarExpression.ProcessHandleBars()`
+
+**Compilation Examples**:
+```handlebars
+{{#each items}}...{{/each}}
+```
+Becomes:
+```xml
+<template data-bind="{{items}}">...</template>
+```
+
+```handlebars
+{{#if condition}}...{{else if other}}...{{else}}...{{/if}}
+```
+Becomes:
+```xml
+<choose>
+  <when test="{{condition}}">...</when>
+  <when test="{{other}}">...</when>
+  <otherwise>...</otherwise>
+</choose>
+```
+
+**Special Variables**:
+- `@index`, `@first`, `@last` in `{{#each}}` are handled by ForEach component's internal iteration context
+- Context navigation (`this`, `../`) managed by binding context stack during data binding phase
 
 ## Template Best Practices
 
@@ -767,9 +1079,23 @@ When adding new functionality:
 1. **Custom Components**: Implement `IComponent` or extend existing base classes
 2. **Custom HTML Elements**: Add to `HTMLParserComponentFactory.DefaultTags` dictionary
 3. **Custom CSS Properties**: Create new `CSSStyleAttributeParser<T>` subclass in `Scryber.Styles/Styles/Parsing/Typed/`
-4. **Custom Expression Functions**: Register with `Expressive.Context`
-5. **Custom Layout Engines**: Implement `IPDFLayoutEngine` interface
-6. **Custom Image Formats**: Extend `ImageFactoryBase` and register in `ImageFactoryList`
+4. **Custom Expression Functions**:
+   - Create function in `Scryber.Generation/Binding/Functions/` directory
+   - Organize by category (e.g., `String/`, `Math/`, `DateTime/`, etc.)
+   - Register in `BindingCalcExpressionFactory.cs`
+   - Add documentation file in `docs/reference/binding/functions/`
+5. **Custom Handlebars Helpers**:
+   - Create handler class implementing helper interface in `Scryber.Generation/Generation/Handlebars/`
+   - Pattern: `HBarYourHelper.cs` extending appropriate base class
+   - Register in `HBarHelperMapping.cs` dictionary
+   - Define XML output format (what component structure it compiles to)
+   - Add documentation file in `docs/reference/binding/helpers/`
+6. **Custom Binding Operators**:
+   - Add to `Scryber.Expressive` expression parser
+   - Define precedence level (lower = higher priority)
+   - Add documentation file in `docs/reference/binding/operators/`
+7. **Custom Layout Engines**: Implement `IPDFLayoutEngine` interface
+8. **Custom Image Formats**: Extend `ImageFactoryBase` and register in `ImageFactoryList`
 
 ## Important Files
 
@@ -787,9 +1113,29 @@ When adding new functionality:
 - `Scryber.Common/PDF/Native/PDFWriter*.cs` - Low-level PDF structure writing
 - `Scryber.Components/PDF/Native/PDFWriter*.cs` - High-level PDF writing
 
-### Expression Engine
-- `Scryber.Expressions/ExpressionParser.cs` - Expression tokenization and parsing
+### Expression Engine & Data Binding
+- `Scryber.Expressive/ExpressionParser.cs` - Expression tokenization and parsing
 - `Scryber.Generation/Binding/BindingCalcParser.cs` - Template binding integration
+- `Scryber.Generation/Binding/BindingCalcExpressionFactory.cs` - Function registration (90+ functions)
+- `Scryber.Generation/Binding/Functions/` - All expression function implementations organized by category:
+  - `String/` - String manipulation functions
+  - `Math/` - Mathematical functions
+  - `DateTime/` - Date and time functions
+  - `Collection/` - Array/collection operations
+  - `Logical/` - Conditional and logical functions
+  - `Statistical/` - Statistical analysis functions
+  - `Conversion/` - Type conversion functions
+  - `CSS/` - CSS helper functions
+
+### Handlebars Helpers
+- `Scryber.Generation/Generation/Handlebars/HBarHelperMapping.cs` - Helper name to handler mapping
+- `Scryber.Generation/Generation/Handlebars/HBarEach.cs` - `{{#each}}` iteration helper
+- `Scryber.Generation/Generation/Handlebars/HBarWith.cs` - `{{#with}}` context switching
+- `Scryber.Generation/Generation/Handlebars/HBarIf.cs` - `{{#if}}` conditional
+- `Scryber.Generation/Generation/Handlebars/HBarElse.cs` - `{{else}}` fallback
+- `Scryber.Generation/Generation/Handlebars/HBarElseIf.cs` - `{{else if}}` alternative condition
+- `Scryber.Generation/Generation/Handlebars/HBarLog.cs` - `{{log}}` debugging helper
+- `Scryber.Generation/Generation/Handlebars/DocumentHBarExpression.cs` - Handlebars processing orchestration
 
 ## Multi-Framework Targeting
 

@@ -2281,7 +2281,7 @@ namespace Scryber.UnitLayouts
                 doc.ConformanceMode = ParserConformanceMode.Strict;
                 doc.SaveAsPDF(stream);
                 
-                Assert.AreEqual(2, doc.SharedResources.Count);
+                Assert.AreEqual(2, doc.SharedResources.Count); //Font and image
                 
             }
 
@@ -2326,7 +2326,7 @@ namespace Scryber.UnitLayouts
                 doc.ConformanceMode = ParserConformanceMode.Strict;
                 doc.SaveAsPDF(stream);
                 
-                Assert.AreEqual(2, doc.SharedResources.Count);
+                Assert.AreEqual(4, doc.SharedResources.Count); //font, pattern, Transform XObject and Drawing
                 
             }
 
@@ -2607,7 +2607,7 @@ namespace Scryber.UnitLayouts
                 doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
                 doc.SaveAsPDF(stream);
                 
-                Assert.AreEqual(4, doc.SharedResources.Count);
+                Assert.AreEqual(17, doc.SharedResources.Count);
                 
             }
         }

@@ -322,15 +322,15 @@ namespace Scryber.Core.UnitTests.Binding
             //first cell has the image if and image - but should maintain the explicit height.
             var cell = row.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(cell);
-            Assert.AreEqual(Math.Round(new Unit(35, PageUnits.Millimeters).PointsValue + 4, 4), Math.Round(cell.Width.PointsValue, 4)); //include the padding 
-            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue + 8, cell.Height.PointsValue);
+            Assert.AreEqual(Math.Round(new Unit(35, PageUnits.Millimeters).PointsValue, 4), Math.Round(cell.Width.PointsValue, 4)); //zero padding 
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue, cell.Height.PointsValue);
             Assert.AreEqual(1, cell.Columns.Length);
             Assert.AreEqual(1, cell.Columns[0].Contents.Count);
             
             //second empty cell - still the same height
             cell = row.Columns[1].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(cell);
-            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue + 8, cell.Height.PointsValue);
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue, cell.Height.PointsValue);
         }
 
 
