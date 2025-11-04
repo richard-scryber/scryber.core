@@ -129,11 +129,76 @@ namespace Scryber.Svg.Components
             set => base.FontSize = value;
         }
 
+        /// <summary>
+        /// Supports the use of normal, bold, bolder, light and lighter along with numeric values for font-weights
+        /// </summary>
         [PDFAttribute("font-weight")]
-        public override int FontWeight
+        public string FontWeightValue
         {
-            get => base.FontWeight;
-            set => base.FontWeight = value;
+            get
+            {
+                int value = 400; //normal
+                if (!this.HasStyle)
+                {
+                    if (this.Style.TryGetValue(StyleKeys.FontWeightKey, out var found))
+                        value = found.Value(this.Style);
+                }
+
+                string name;
+                switch (value)
+                {
+                    case 300:
+                        name = "light";
+                        break;
+                    case 400:
+                        name = "normal";
+                        break;
+                    case 700:
+                        name = "bold";
+                        break;
+                    default:
+                        name = value.ToString();
+                        break;
+                }
+
+                return name;
+            }
+            set
+            { 
+                if(string.IsNullOrEmpty(value))
+                    this.Style.SetValue(StyleKeys.FontWeightKey, FontWeights.Bold);
+                else
+                {
+                    int weight;
+                    switch (value.ToLowerInvariant())
+                    {
+                        case("lighter"):
+                            weight = FontWeights.ExtraLight;
+                            break;
+                            case("light"):
+                                weight = FontWeights.Light;
+                            break;
+                            case("normal"):
+                            weight = FontWeights.Regular;
+                                break;
+                            case("bold"):
+                            weight = FontWeights.Bold;
+                                break;
+                            case("bolder"):
+                            weight = FontWeights.ExtraBold;
+                                break;
+                                default:
+                            if (int.TryParse(value, out var parsed))
+                                weight = parsed;
+                            else
+                            {
+                                weight = FontWeights.Regular;
+                            }
+                            break;
+                    }
+                    this.Style.SetValue(StyleKeys.FontWeightKey, weight);
+                }
+            }
         }
 
         [PDFAttribute("font-style")]

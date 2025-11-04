@@ -52,6 +52,8 @@ namespace Scryber.PDF.Layout
         {
             get { return _tblRef; }
         }
+        
+        protected bool IsInNotSplittingBlock { get; set; }
 
         public LayoutEngineTable(TableGrid table, IPDFLayoutEngine parent)
             : base(table, parent)
@@ -71,6 +73,20 @@ namespace Scryber.PDF.Layout
                 this.CurrentBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
                 if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                     this.CurrentBlock.CurrentRegion.CloseCurrentItem();
+
+                this.IsInNotSplittingBlock = false;
+                
+                var parents = this.CurrentBlock;
+                while (parents != null)
+                {
+                    if (parents.Position.OverflowSplit == OverflowSplit.Never)
+                    {
+                        this.IsInNotSplittingBlock = true;
+                        break;
+                    }
+
+                    parents = parents.GetParentBlock();
+                }
 
                 PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
@@ -262,7 +278,7 @@ namespace Scryber.PDF.Layout
                 PDFLayoutBlock origRow = this._rowblock;
 
                 //If we are the first row, or as a table we should never be split
-                if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                if (!this.CanSplitTable())
                 {
                     if (this.MoveFullTableToNextRegion())
                     {
@@ -1371,6 +1387,16 @@ namespace Scryber.PDF.Layout
         //
         // overflow methods
         //
+
+        protected virtual bool CanSplitTable()
+        {
+            if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                return false;
+            else if (this.IsInNotSplittingBlock)
+                return false;
+            else
+                return true;
+        }
 
         #region protected virtual void CloseTableAndReleaseRowsFrom(int rowindex)
 

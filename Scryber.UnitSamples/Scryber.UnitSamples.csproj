@@ -45,6 +45,7 @@
     <Folder Include="Templates\PageNumbers\" />
     <Folder Include="Templates\Overview\" />
     <Folder Include="Templates\Overview\Fragments\" />
+    <Folder Include="Templates\ProjectStatusReport\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
@@ -53,5 +54,6 @@
     <ProjectReference Include="..\Scryber.Expressions\Scryber.Expressive.csproj" />
     <ProjectReference Include="..\Scryber.Generation\Scryber.Generation.csproj" />
     <ProjectReference Include="..\Scryber.Styles\Scryber.Styles.csproj" />
+    <ProjectReference Include="..\Scryber.UnitTest\Scryber.UnitTests.csproj" />
   </ItemGroup>
 </Project>

@@ -1446,6 +1446,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
+            
             var rightOffset = (options.Right ?? Unit.Zero);
             
             //Knock out any explicit position values and set it to absolute.
@@ -1577,7 +1578,7 @@ namespace Scryber.PDF.Layout
                         positioned.TotalBounds.X, offsetY, positioned.Height);
                 }
             }
-            else
+            else //float right
             {
                 var leftOffset = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
                 
@@ -1944,6 +1945,14 @@ namespace Scryber.PDF.Layout
                 if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && line.HasInlineContent)
                     yoffset += line.Height;
                 pos.Right = region.GetRightInset(yoffset, 1.0);
+                
+                // if (pos.Width.HasValue == false && pos.MaximumWidth.HasValue == false && pos.MinimumWidth.HasValue == false)
+                // {
+                //     var h = pos.Height.HasValue ? pos.Height.Value : (Unit)1;
+                //     var availableWidth =
+                //         region.GetAvailableLineWidth(yoffset, h, pos.Right.Value, out var left, postLayout: false);
+                //     pos.MaximumWidth = availableWidth;
+                // }
             }
 
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);

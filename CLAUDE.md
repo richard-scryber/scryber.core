@@ -90,6 +90,8 @@ Scryber implements most CSS 2.1 properties plus common CSS3 features:
 - `border`, `border-width`, `border-style`, `border-color`, `border-radius`
 - `width`, `height`, `min-width`, `min-height`, `max-width`, `max-height`
 
+**Important - Margin Collapsing**: Unlike browsers, Scryber does NOT collapse adjacent top/bottom margins between sibling elements. If two siblings have `margin-bottom: 20pt` and `margin-top: 20pt`, the total space will be 40pt (not 20pt as in browsers). Plan your spacing accordingly and consider using smaller margins or margin on only one side.
+
 **Typography**:
 - `font-family`, `font-size`, `font-weight`, `font-style`
 - `color`, `text-align`, `text-decoration`, `text-transform`
@@ -103,6 +105,42 @@ Scryber implements most CSS 2.1 properties plus common CSS3 features:
 - `position` (relative, absolute), `top`, `right`, `bottom`, `left`
 - `display` (block, inline, inline-block, none, table, table-row, table-cell)
 - `float`, `clear`
+
+**Important - Float Behavior in Scryber**:
+
+1. **Element Order**: Elements with `float: right` must appear BEFORE non-floating inline content in HTML source order, otherwise they will wrap to the next line.
+
+❌ **Wrong** (float: right wraps to next line):
+```html
+<div>
+    <span class="label">Text</span>
+    <span class="value" style="float: right;">Value</span>
+</div>
+```
+
+✅ **Correct** (float: right appears first):
+```html
+<div>
+    <span class="value" style="float: right;">Value</span>
+    <span class="label">Text</span>
+</div>
+```
+
+2. **Element Width**: Floating elements should have explicit width to prevent page overflow. If a floated element's width is not constrained, its inner content may use full width and push beyond page boundaries.
+
+❌ **Wrong** (float: right with unconstrained width can overflow):
+```html
+<div class="header" style="float: right;">
+    <h1>Long Title Text</h1>  <!-- Takes full width -->
+</div>
+```
+
+✅ **Correct** (float: right with explicit width):
+```html
+<div class="header" style="float: right; width: 300pt;">
+    <h1>Long Title Text</h1>  <!-- Constrained to 300pt -->
+</div>
+```
 
 **Layout**:
 - `overflow` (hidden, visible, clip)
@@ -173,6 +211,36 @@ Template expressions use handlebars syntax: `{{expression}}`
 <!-- Use directly by name -->
 {{myVar}}
 {{myVar * 2}}
+```
+
+**Template Variables Inside Loops**:
+```html
+<!-- Variables inside loops update automatically each iteration -->
+{{#each model.items}}
+    <var data-id="itemX" data-value="{{this.value * 10}}" />
+    <var data-id="itemY" data-value="{{110 + (@index * 35)}}" />
+
+    <!-- Use the variables - they update each iteration -->
+    <rect x="{{itemX}}" y="{{itemY}}" width="50" height="25" />
+{{/each}}
+```
+
+**Important**: Don't try to create unique variable names with `@index`:
+
+❌ **Wrong** (nested binding doesn't work):
+```html
+{{#each collection}}
+    <var data-id="myVar_{{@index}}" data-value="{{calculation}}" />
+    <rect x="{{myVar_{{@index}}}}" />  <!-- Doesn't work! -->
+{{/each}}
+```
+
+✅ **Correct** (variables update each iteration):
+```html
+{{#each collection}}
+    <var data-id="myVar" data-value="{{calculation}}" />
+    <rect x="{{myVar}}" />  <!-- Works! Updates each iteration -->
+{{/each}}
 ```
 
 #### Handlebars Helpers (Block-Level Control Structures)
@@ -307,19 +375,21 @@ Functions are organized into 8 categories:
 
 **Collection Functions** (13 functions):
 - `count(collection)` - Count items
-- `countOf(collection, property, value)` - Conditional count
+- `countOf(collection, .property, value)` - Conditional count
 - `sum(collection)` - Sum values
-- `sumOf(collection, property)` - Sum property values
+- `sumOf(collection, .property)` - Sum property values
 - `min(collection)`, `max(collection)` - Find extremes
-- `minOf(collection, property)`, `maxOf(collection, property)` - Property extremes
-- `collect(collection, property)` - Extract property array
-- `selectWhere(collection, property, value)` - Filter collection
-- `firstWhere(collection, property, value)` - Find first match
-- `sortBy(collection, property)` - Sort ascending
+- `minOf(collection, .property)`, `maxOf(collection, .property)` - Property extremes
+- `collect(collection, .property)` - Extract property array
+- `selectWhere(collection, .property, value)` - Filter collection
+- `firstWhere(collection, .property, value)` - Find first match
+- `sortBy(collection, .property)` - Sort ascending
 - `reverse(collection)` - Reverse order
 
+**Important**: Property parameters use dot notation (`.property`), not strings (`'property'`)
+
 **Statistical Functions** (5 functions):
-- `average(collection)`, `averageOf(collection, property)` - Arithmetic mean
+- `average(collection)`, `averageOf(collection, .property)` - Arithmetic mean
 - `mean(collection)` - Mathematical mean (synonym for average)
 - `median(collection)` - Middle value (robust against outliers)
 - `mode(collection)` - Most frequent value
@@ -338,8 +408,8 @@ Functions are organized into 8 categories:
 
 **Collection Operations**:
 ```html
-<p>Total: ${{sum(collect(model.items, 'price'))}}</p>
-<p>Average: ${{round(average(collect(model.items, 'price')), 2)}}</p>
+<p>Total: ${{sumOf(model.items, .price)}}</p>
+<p>Average: ${{round(averageOf(model.items, .price), 2)}}</p>
 <p>Items: {{count(model.items)}}</p>
 ```
 
@@ -374,8 +444,14 @@ Functions are organized into 8 categories:
     <!-- Dot prefix = current item -->
     {{.name}}
 
-    <!-- Parent scope with ../ -->
-    {{../model.title}}
+    <!-- Root parameters (no ../ needed) -->
+    {{model.title}}
+
+    <!-- Parent scope with ../ (for nested loops) -->
+    {{#each this.children}}
+        {{../this.name}}  <!-- Parent loop item -->
+        {{model.title}}   <!-- Root parameter - no ../ needed -->
+    {{/each}}
 
     <!-- Special iteration variables -->
     {{@index}}  <!-- Zero-based index -->
@@ -383,6 +459,12 @@ Functions are organized into 8 categories:
     {{@last}}   <!-- true if last item -->
 {{/each}}
 ```
+
+**Important**: Root parameters (like `model`) are always accessible directly - you don't need `../` to access them:
+- ✅ Correct: `{{model.propertyName}}`
+- ❌ Wrong: `{{../model.propertyName}}`
+
+The parent selector `../` is only needed when navigating between nested loops, not for accessing root parameters.
 
 #### Critical Best Practice: Static Data for PDFs
 
@@ -480,10 +562,13 @@ doc.Params["model"] = model;  // That's it!
 ```html
 <svg width="200" height="100">
     {{#each model.data}}
-    <rect x="{{@index * 40}}"
-          y="{{100 - this.value}}"
+    <var data-id="barX" data-value="{{@index * 40}}" />
+    <var data-id="barHeight" data-value="{{this.value}}" />
+
+    <rect x="{{barX}}"
+          y="{{100 - barHeight}}"
           width="35"
-          height="{{this.value}}"
+          height="{{barHeight}}"
           fill="#336699" />
     {{/each}}
 </svg>
@@ -607,6 +692,49 @@ public class ReportController : Controller
 6. **Images not loading** - Check file paths are absolute or use data URLs
 7. **CSS not applied** - Ensure `<link>` has correct `href` path
 
+### Debug Trace Logging
+
+Scryber can append a detailed processing trace log to the end of generated PDFs for debugging and performance analysis.
+
+**Method 1: Processing Instruction in Template**
+```html
+<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html>
+<!-- your template content -->
+</html>
+```
+
+**Method 2: Programmatically on Document**
+```csharp
+using (var doc = Document.ParseDocument("template.html"))
+{
+    doc.AppendTraceLog = true;  // Enable trace log
+    doc.Params["model"] = data;
+
+    using (var stream = new FileStream("output.pdf", FileMode.Create))
+    {
+        doc.SaveAsPDF(stream);
+    }
+}
+```
+
+The trace log includes:
+- Parse time
+- Data binding time
+- Layout calculation time
+- Rendering time
+- Component breakdown
+- Performance metrics
+
+**Use Cases**:
+- Debug template processing issues
+- Identify performance bottlenecks
+- Verify component initialization
+- Understand PDF generation pipeline
+
+**Important**: Remove `appendlog='true'` from production templates as it increases file size and exposes internal processing details.
+
 ### Documentation Structure
 
 Scryber documentation is organized into two main sections:
@@ -686,6 +814,391 @@ The ARCHITECTURE.md file provides comprehensive details about:
 - Expression engine internals
 - Layout engine details
 - Extension points for custom components
+
+---
+
+## Creating Sample Projects and CLI Tools
+
+When creating sample projects that demonstrate Scryber capabilities:
+
+### Project Structure Pattern
+
+Use a consistent directory structure for sample projects:
+
+```
+sample-project/
+├── templates/          # HTML templates
+├── styles/            # CSS stylesheets
+├── data/              # Sample JSON data files
+├── images/            # Images and logos (SVG recommended)
+├── output/            # Generated PDFs (git-ignored)
+├── Program.cs         # CLI executable
+├── ProjectName.csproj # Project file
+└── README.md          # Documentation
+```
+
+### .csproj Configuration for Samples
+
+Sample projects should:
+1. **Multi-target frameworks** for broad compatibility: `net6.0;net8.0;net9.0`
+2. **Copy resource files** to output directory automatically
+3. **Reference NuGet packages** (not project references) to simulate real-world usage
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Use NuGet package, not project reference -->
+    <PackageReference Include="Scryber.Core" Version="9.1.1-rc.4" />
+    <PackageReference Include="Scryber.Core.OpenType" Version="5.0.3" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+
+  <!-- Copy resource files to output directory -->
+  <ItemGroup>
+    <None Update="templates/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="styles/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="images/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
+```
+
+**Important Notes**:
+- **Scryber.Core.OpenType dependency**: When using Scryber.Core from NuGet, you must also add `Scryber.Core.OpenType` package reference explicitly. This is required for font rendering.
+- **RC version format**: Use correct version format for pre-release packages: `9.1.1-rc.4` (with hyphen and dot), not `9.1.1.0-rc4`
+- **System.Text.Json version**: Use latest stable version to avoid security vulnerabilities in older versions
+
+### CLI Tool Pattern
+
+Sample CLI tools should follow this pattern:
+
+```csharp
+using System;
+using System.IO;
+using System.Text.Json;
+using Scryber.Components;
+
+namespace Scryber.Samples.ProjectName
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                // Parse arguments
+                string dataFile = args.Length > 0 ? args[0] : "data/default.json";
+                string outputFile = args.Length > 1 ? args[1] : "output/report.pdf";
+                string templateFile = "templates/template.html";
+
+                // Create output directory if needed
+                string? outputDir = System.IO.Path.GetDirectoryName(outputFile);
+                if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+
+                // Validate input files exist
+                if (!File.Exists(dataFile))
+                {
+                    Console.WriteLine($"ERROR: Data file not found: {dataFile}");
+                    return;
+                }
+
+                // Load JSON data
+                Console.WriteLine($"Loading data from: {dataFile}");
+                string jsonContent = File.ReadAllText(dataFile);
+                var model = JsonSerializer.Deserialize<object>(jsonContent);
+
+                // Parse template and generate PDF
+                Console.WriteLine($"Parsing template: {templateFile}");
+                using (var doc = Document.ParseDocument(templateFile))
+                {
+                    doc.Params["model"] = model;
+
+                    Console.WriteLine($"Generating PDF: {outputFile}");
+                    using (var stream = new FileStream(outputFile, FileMode.Create))
+                    {
+                        doc.SaveAsPDF(stream);
+                    }
+                }
+
+                Console.WriteLine("✓ PDF generated successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                Environment.Exit(1);
+            }
+        }
+    }
+}
+```
+
+**Important**: Use `System.IO.Path` fully qualified to avoid ambiguity with `Scryber.Components.Path` class.
+
+### Running Multi-Targeted Sample Projects
+
+When running a project that targets multiple frameworks, specify the framework explicitly:
+
+```bash
+# Specify framework explicitly
+dotnet run --framework net9.0
+
+# Or build for specific framework
+dotnet build --framework net8.0
+dotnet run --framework net8.0 --no-build
+```
+
+### Template Design for Samples
+
+Sample templates should showcase Scryber capabilities:
+
+**1. Use CSS Variables for Theming**:
+```css
+:root {
+  /* Theme: Corporate (Blue) */
+  --color-primary: #2563EB;
+  --color-success: #22C55E;
+  --color-warning: #EAB308;
+
+  /* Typography */
+  --font-family: 'Helvetica', 'Arial', sans-serif;
+  --font-size-base: 10pt;
+}
+```
+
+**2. Demonstrate Expression Capabilities**:
+```html
+<!-- Mathematical calculations -->
+<span>{{model.budget.spent / model.budget.total * 100}}%</span>
+
+<!-- Date formatting -->
+<span>{{format(model.reportDate, 'MMMM dd, yyyy')}}</span>
+
+<!-- Collection operations -->
+<span>Average: {{averageOf(model.items, .value)}}</span>
+<span>Total: {{count(model.items)}} items</span>
+```
+
+**3. Use Template Variables for Reusable Calculations**:
+```html
+<!-- Calculate once, use multiple times -->
+<var data-id="percentage" data-value="{{value / total * 100}}" />
+<rect width="{{percentage * 5}}" height="40" />
+<text>{{format(percentage, 'N1')}}%</text>
+```
+
+**4. Show Conditional Rendering**:
+```html
+{{#each model.items}}
+  {{#if this.value >= 100}}
+    <div class="high-value">{{this.name}}</div>
+  {{else if this.value >= 50}}
+    <div class="medium-value">{{this.name}}</div>
+  {{else}}
+    <div class="low-value">{{this.name}}</div>
+  {{/if}}
+{{/each}}
+```
+
+**5. Include SVG Charts with Dynamic Data**:
+```html
+<svg width="600" height="200" viewBox="0 0 600 200">
+  {{#each model.dataPoints}}
+    <!-- Variables update each iteration - no @index suffix needed -->
+    <var data-id="barX" data-value="{{@index * 50}}" />
+    <var data-id="barHeight" data-value="{{this.value / model.maxValue * 180}}" />
+
+    <rect x="{{barX}}"
+          y="{{200 - barHeight}}"
+          width="40"
+          height="{{barHeight}}"
+          fill="#2563EB" />
+  {{/each}}
+</svg>
+```
+
+**Note**: Variables inside loops update automatically - don't use `data-id="var_{{@index}}"` patterns. Root parameters like `model` are always accessible directly without `../` prefix.
+
+### HTML/XML Parsing Considerations
+
+**XML Entity Escaping**: When using HTML entities in templates that will be parsed as XML, remember to escape special characters:
+
+❌ **Wrong**:
+```html
+<h2>Risks & Issues</h2>  <!-- Ampersand will cause parse error -->
+```
+
+✅ **Correct**:
+```html
+<h2>Risks &amp; Issues</h2>  <!-- Properly escaped -->
+```
+
+**SVG Attribute Best Practices**: SVG text elements support both numeric and keyword font-weight values:
+
+✅ **Numeric values** (most precise):
+```html
+<text x="50" y="90" font-weight="700">Label</text>
+<!-- font-weight values: 100, 200, 300, 400 (normal), 500, 600, 700 (bold), 800, 900 -->
+```
+
+✅ **Keyword values** (also supported):
+```html
+<text x="50" y="90" font-weight="bold">Label</text>
+<text x="50" y="90" font-weight="normal">Label</text>
+<text x="50" y="90" font-weight="light">Label</text>
+<text x="50" y="90" font-weight="bolder">Label</text>
+<text x="50" y="90" font-weight="lighter">Label</text>
+```
+
+✅ **CSS classes** (for complex styling):
+```html
+<!-- In CSS -->
+.chart-label-bold {
+  font-weight: bold;
+  font-size: 14pt;
+}
+
+<!-- In SVG -->
+<text x="50" y="90" class="chart-label-bold">Label</text>
+```
+
+### JSON Data Structure Guidelines
+
+Keep sample data simple and focused:
+
+```json
+{
+  "reportDate": "2024-03-15T00:00:00",
+  "title": "Sample Report",
+  "summary": {
+    "total": 150000,
+    "spent": 75000
+  },
+  "items": [
+    {
+      "name": "Item 1",
+      "value": 100,
+      "status": "Active"
+    }
+  ]
+}
+```
+
+**Guidelines**:
+- Use ISO 8601 date format with time component: `"2024-03-15T00:00:00"`
+- Use simple property names that are self-documenting
+- Include variety of data types (strings, numbers, booleans, dates, arrays, nested objects)
+- Keep sample data realistic but concise
+
+### README Documentation for Samples
+
+Each sample should include a comprehensive README.md covering:
+
+1. **What the sample demonstrates** - List Scryber features showcased
+2. **File structure** - Explain organization
+3. **Building and running** - Commands to build and execute
+4. **Customization** - How to modify colors, data, layout
+5. **JSON data structure** - Document expected data format
+6. **Troubleshooting** - Common issues and solutions
+7. **Scryber expression examples** - Highlight interesting techniques used
+
+### Common Pitfalls in Sample Projects
+
+**Path Resolution Issues**:
+```csharp
+// ❌ Wrong - ambiguous reference
+using Scryber.Components;  // Contains Path class
+var outputDir = Path.GetDirectoryName(file);  // Ambiguous!
+
+// ✅ Correct - fully qualified
+var outputDir = System.IO.Path.GetDirectoryName(file);
+```
+
+**Missing Output Directory**:
+```csharp
+// ✅ Always ensure output directory exists
+string? outputDir = System.IO.Path.GetDirectoryName(outputFile);
+if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+{
+    Directory.CreateDirectory(outputDir);
+}
+```
+
+**Framework Selection**:
+```bash
+# ❌ Wrong - ambiguous which framework to use
+dotnet run
+
+# ✅ Correct - explicit framework
+dotnet run --framework net9.0
+```
+
+**Float: Right Element Ordering**:
+```html
+<!-- ❌ Wrong - float: right wraps to next line -->
+<div class="header">
+    <span class="title">My Title</span>
+    <span class="date" style="float: right;">2024-03-15</span>
+</div>
+
+<!-- ✅ Correct - float: right appears first -->
+<div class="header">
+    <span class="date" style="float: right;">2024-03-15</span>
+    <span class="title">My Title</span>
+</div>
+```
+
+**Important**: In Scryber, `float: right` elements must appear BEFORE non-floating inline content in HTML source order to prevent wrapping to a new line.
+
+**Float Width Issues**:
+```html
+<!-- ❌ Wrong - unconstrained width can cause overflow -->
+<div class="title-section" style="float: right;">
+    <h1>Very Long Project Status Report Title</h1>
+</div>
+
+<!-- ✅ Correct - explicit width prevents overflow -->
+<div class="title-section" style="float: right; width: 300pt;">
+    <h1>Very Long Project Status Report Title</h1>
+</div>
+```
+
+**Important**: Floating elements should have explicit width to prevent their inner content from using full width and causing page overflow.
+
+**Margin Collapsing**:
+```css
+/* ❌ Problem - margins don't collapse (40pt total space) */
+.section {
+    margin-bottom: 20pt;
+}
+.section + .section {
+    margin-top: 20pt;  /* Adds to margin-bottom, not collapsed */
+}
+
+/* ✅ Solution - use margin on one side only */
+.section {
+    margin-bottom: 12pt;  /* Reduced margin, one side only */
+}
+```
+
+**Important**: Unlike browsers, Scryber does NOT collapse adjacent top/bottom margins between siblings. Plan spacing with smaller margins or use margin on only one side.
 
 ---
 
@@ -973,6 +1486,25 @@ Variables stored with `<var>` are accessed directly by name:
 ```
 
 **Important**: Access variables by name only, NOT `Document.Params.varName` or `params.varName`.
+
+**Variables Inside Loops**: Variables defined inside `{{#each}}` loops update automatically with each iteration:
+
+```html
+{{#each model.dataPoints}}
+    <var data-id="barX" data-value="{{@index * 50}}" />
+    <var data-id="barHeight" data-value="{{this.value / model.maxValue * 180}}" />
+
+    <!-- Variables update each iteration - no unique names needed -->
+    <rect x="{{barX}}" y="{{200 - barHeight}}" width="40" height="{{barHeight}}" />
+{{/each}}
+```
+
+❌ **Don't** try to create unique variable names with `@index` - nested binding doesn't work:
+```html
+<!-- This won't work -->
+<var data-id="bar_{{@index}}" data-value="{{calculation}}" />
+<rect x="{{bar_{{@index}}}}" />
+```
 
 ### External CSS Files
 

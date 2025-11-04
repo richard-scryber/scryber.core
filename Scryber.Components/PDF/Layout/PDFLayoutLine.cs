@@ -230,7 +230,27 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public bool HasInlineContent
         {
-            get { return this._runs != null && this._runs.Count > 0; }
+            get
+            {
+                if (this._runs != null && this._runs.Count > 0)
+                {
+
+                    for (int i = 0; i < this._runs.Count; i++)
+                    {
+                        var run = this._runs[i];
+                        if (run is PDFLayoutPositionedRegionRun posrun &&
+                            (posrun.PositionOptions.PositionMode == PositionMode.Fixed ||
+                             posrun.PositionOptions.PositionMode == PositionMode.Absolute))
+                        {
+                            //ok
+                        }
+                        else
+                            return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         #endregion
