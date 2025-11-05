@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.1.2-rc.4</PackageVersion>
+    <PackageVersion>9.1.2-rc.5</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.1.2-rc.4
+    <PackageReleaseNotes>9.1.2-rc.5
+Couple of fixes for overflowing tables in a kept together parent, and svg font-weight bold and light are now supported.
+        
+9.1.2-rc.4
 Working modification of PDFs and templates using framesets and frames and support for SVG background images with opacity. 
 
 9.1.0.7-beta

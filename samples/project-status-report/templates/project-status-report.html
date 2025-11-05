@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <title>Project Status Report - {{model.projectName}}</title>
-    <link rel="stylesheet" href="./project-status-report.css" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;display=swap" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="../styles/project-status-report.css" type="text/css" />
 </head>
 <body>
     <!-- Report Header -->
@@ -135,7 +137,13 @@
             <tbody>
                 {{#each model.milestones}}
                 <tr>
-                    <td class="text-center">{{if(this.completed, 'Y', 'N')}}</td>
+                    <td class="text-center">
+                        {{#if this.completed}}
+                            <i class="fas fa-check-circle" style="color: #22C55E;"></i>
+                        {{else}}
+                            <i class="far fa-circle" style="color: #6B7280;"></i>
+                        {{/if}}
+                    </td>
                     <td class="{{if(this.completed, 'milestone-completed', 'milestone-pending')}}">{{this.name}}</td>
                     <td>{{format(date(this.date), 'MMM dd, yyyy')}}</td>
                     <td>{{if(this.completed, 'Completed', 'Pending')}}</td>

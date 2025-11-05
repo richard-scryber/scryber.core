@@ -262,9 +262,23 @@ SVG text elements support both numeric and keyword font-weight values:
 This template showcases various Scryber expression capabilities:
 
 ### Date Formatting
+
+**Important**: JSON date properties are strings and must be converted to DateTime objects before formatting using the `date()` function:
+
 ```handlebars
-{{format(model.reportDate, 'MMMM dd, yyyy')}}
-{{format(model.reportDate, 'yyyy-MM-dd HH:mm')}}
+<!-- Convert JSON date string to DateTime first, then format -->
+{{format(date(model.reportDate), 'MMMM dd, yyyy')}}
+{{format(date(model.reportDate), 'yyyy-MM-dd HH:mm')}}
+```
+
+❌ **Wrong** (trying to format a string directly):
+```handlebars
+{{format(model.reportDate, 'MMMM dd, yyyy')}}  <!-- Won't work! -->
+```
+
+✅ **Correct** (convert to DateTime first):
+```handlebars
+{{format(date(model.reportDate), 'MMMM dd, yyyy')}}  <!-- Works! -->
 ```
 
 ### Number Formatting
@@ -276,14 +290,20 @@ This template showcases various Scryber expression capabilities:
 ### Calculations
 ```handlebars
 {{model.budget.spent / model.budget.total}}   <!-- Division -->
-{{daysBetween(model.reportDate, model.endDate)}} <!-- Date math -->
+{{daysBetween(date(model.reportDate), date(model.endDate))}} <!-- Date math (convert strings first) -->
 {{averageOf(model.phases, .progress)}}        <!-- Collection average -->
 {{count(model.team)}}                         <!-- Count items -->
 ```
 
-**Important**: Collection functions that operate on properties use dot notation (`.property`), not string literals:
-- ✅ Correct: `averageOf(collection, .property)`
-- ❌ Wrong: `averageOf(collection, 'property')`
+**Important Notes**:
+
+1. **Collection functions**: Properties use dot notation (`.property`), not string literals:
+   - ✅ Correct: `averageOf(collection, .property)`
+   - ❌ Wrong: `averageOf(collection, 'property')`
+
+2. **Date functions**: JSON dates are strings and must be converted with `date()` first:
+   - ✅ Correct: `daysBetween(date(model.startDate), date(model.endDate))`
+   - ❌ Wrong: `daysBetween(model.startDate, model.endDate)`
 
 ### Template Variables
 ```handlebars
@@ -419,8 +439,8 @@ The generated PDF includes:
 **Problem**: Charts not rendering
 - **Solution**: Check that SVG elements have proper viewBox and dimensions
 
-**Problem**: Dates showing as raw strings
-- **Solution**: Ensure dates in JSON are in ISO 8601 format with time component
+**Problem**: Dates showing as raw strings or not formatting correctly
+- **Solution**: JSON date properties are strings and must be converted to DateTime objects before formatting. Use `{{format(date(model.reportDate), 'format')}}` NOT `{{format(model.reportDate, 'format')}}`. The `date()` function converts the ISO 8601 date string into a DateTime object that `format()` can process.
 
 ## License
 

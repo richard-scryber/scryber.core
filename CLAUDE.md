@@ -420,6 +420,30 @@ Functions are organized into 8 categories:
 <p>Days until delivery: {{daysBetween(model.today, model.deliveryDate)}}</p>
 ```
 
+**Important - JSON Date Strings**: When working with JSON data, date properties are strings and must be converted to DateTime objects before formatting:
+
+❌ **Wrong** (trying to format a string):
+```html
+<!-- JSON: "reportDate": "2024-03-15T00:00:00" -->
+<p>{{format(model.reportDate, 'MMMM dd, yyyy')}}</p>  <!-- Won't work - it's a string! -->
+```
+
+✅ **Correct** (convert string to DateTime first):
+```html
+<!-- JSON: "reportDate": "2024-03-15T00:00:00" -->
+<p>{{format(date(model.reportDate), 'MMMM dd, yyyy')}}</p>  <!-- Works! -->
+```
+
+The `date()` function parses the ISO 8601 date string into a DateTime object that `format()` can work with. This applies to all date operations:
+```html
+<!-- Formatting dates from JSON -->
+<p>Report Date: {{format(date(model.reportDate), 'MMMM dd, yyyy')}}</p>
+<p>Due: {{format(date(model.dueDate), 'MMM dd')}}</p>
+
+<!-- Date math with JSON dates -->
+<p>Days remaining: {{daysBetween(date(model.startDate), date(model.endDate))}}</p>
+```
+
 **String Manipulation**:
 ```html
 <p>{{toUpper(model.code)}}</p>
@@ -601,7 +625,98 @@ doc.Params["model"] = model;  // That's it!
 </html>
 ```
 
-**7. Multi-File Structure (Template + CSS + Data)**:
+**How Layout Engine Handles Headers/Footers**:
+
+Scryber's layout engine intelligently calculates available content space:
+
+1. **First**: Applies `@page` margin and padding from CSS
+2. **Second**: Positions and measures `<header>` and `<footer>` elements
+3. **Third**: Calculates remaining available space
+4. **Finally**: Flows content within that available space
+
+```css
+@page {
+    size: A4;
+    margin: 0;
+    padding: 10mm;  /* Applied first */
+}
+```
+
+With this CSS, Scryber will:
+- Apply 10mm padding on all sides
+- Render the header/footer and measure their **actual height**
+- Calculate: `availableContentHeight = pageHeight - padding - headerHeight - footerHeight`
+- Flow content in the remaining space (no overlap with header/footer)
+
+**Benefits**:
+- No need to guess footer height
+- Adapts automatically if header/footer content changes
+- Content never overlaps with headers or footers
+- Both `margin` and `padding` on `@page` are respected
+
+**7. Cover Pages with Custom Footers**:
+
+For multi-page reports with cover pages, you can prevent footers from appearing on the cover page:
+
+```html
+<html>
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        @page cover {
+            margin: 0;  /* No margins for cover */
+        }
+
+        .cover-page {
+            page: cover;  /* Use named page type */
+            page-break-after: always;
+            width: 210mm;
+            height: 297mm;
+            background-image: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            color: white;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover page -->
+    <div class="cover-page">
+        <h1>Report Title</h1>
+        <p>{{model.reportMonth}} {{model.reportYear}}</p>
+    </div>
+
+    <!-- Content pages -->
+    <div class="section">
+        <h2>Section 1</h2>
+        <p>Content...</p>
+    </div>
+
+    <!-- Empty footer (won't show anywhere) -->
+    <footer></footer>
+
+    <!-- Continuation footer (shows on all pages except cover) -->
+    <continuation-footer class="footer">
+        <p>{{model.companyName}} - Report</p>
+        <p>Page <page-number /> of <page-count /></p>
+    </continuation-footer>
+</body>
+</html>
+```
+
+**Key Points**:
+- `@page cover { margin: 0; }` creates a named page type with no margins
+- `.cover-page` uses `page: cover;` to use the named page type
+- Empty `<footer></footer>` ensures no footer appears on any page
+- `<continuation-footer>` shows footer only on continuation pages (not cover)
+- Cover page uses `position: absolute` with explicit dimensions for precise layout
+
+**8. Multi-File Structure (Template + CSS + Data)**:
 
 **template.html**:
 ```html
@@ -680,6 +795,82 @@ public class ReportController : Controller
 4. **Large Documents**: Enable compression in PDF writer for smaller file sizes
 5. **Fonts**: Standard PDF fonts (Helvetica, Times, Courier) are embedded - no external files needed
 
+### Page Break Management
+
+**Avoiding Blank Pages Between Sections**:
+
+When using both `page-break-after` and `page-break-before`, you may create unwanted blank pages:
+
+❌ **Wrong** (creates blank page between TOC and first section):
+```css
+.toc-page {
+    page-break-after: always;  /* Forces page break after TOC */
+}
+
+.section {
+    page-break-before: always;  /* Forces page break before section */
+}
+/* Result: TOC → blank page → Section */
+```
+
+✅ **Correct** (no blank page):
+```css
+.toc-page {
+    /* No page-break-after */
+}
+
+.section {
+    page-break-before: always;  /* Only one page break directive */
+}
+/* Result: TOC → Section (no blank page) */
+```
+
+**Best Practice**: Use `page-break-before: always` on content sections, but don't add `page-break-after: always` on preceding content unless you specifically want a blank page separator.
+
+### SVG and Template Variables
+
+**Namespace Considerations**:
+
+The `<var>` element is an HTML element, while SVG elements are in the SVG namespace. Complex nested variable references across namespaces can cause XML parsing errors.
+
+❌ **Problematic** (too many intermediate variables):
+```html
+<svg>
+    <var data-id="maxRevenue" data-value="{{maxOf(model.regions, .revenue)}}" />
+    <var data-id="chartHeight" data-value="250" />
+    <var data-id="barWidth" data-value="120" />
+
+    {{#each model.regions}}
+        <var data-id="barX" data-value="{{100 + (@index * 170)}}" />
+        <var data-id="barHeight" data-value="{{this.revenue / maxRevenue * chartHeight}}" />
+        <var data-id="barY" data-value="{{280 - barHeight}}" />
+
+        <rect x="{{barX}}" y="{{barY}}" width="{{barWidth}}" height="{{barHeight}}" />
+    {{/each}}
+</svg>
+```
+
+✅ **Better** (inline calculations with parentheses):
+```html
+<svg>
+    <var data-id="maxRevenue" data-value="{{maxOf(model.regions, .revenue)}}" />
+
+    {{#each model.regions}}
+        <var data-id="barX" data-value="{{100 + (@index * 170)}}" />
+        <var data-id="barHeight" data-value="{{(this.revenue / maxRevenue) * 250}}" />
+        <var data-id="barY" data-value="{{280 - barHeight}}" />
+
+        <rect x="{{barX}}" y="{{barY}}" width="120" height="{{barHeight}}" />
+    {{/each}}
+</svg>
+```
+
+**Guidelines**:
+- Minimize intermediate variables defined outside SVG elements
+- Use parentheses for clarity in calculations: `{{(value / max) * 250}}`
+- Define variables locally within loops where they're used
+- Use literal values for constants rather than variables
+
 ### Troubleshooting
 
 **Common Issues**:
@@ -689,8 +880,12 @@ public class ReportController : Controller
 3. **Math not working** - Use standard operators: `{{a + b}}`, not `{{calc(a, '+', b)}}`
 4. **Expressions not evaluating** - Use `{{expression}}` NOT `${expression}`. Scryber uses Handlebars syntax, not JavaScript template literals
 5. **DateTime.Now not working** - Templates can't call static C# methods. Using `{{DateTime.Now}}` won't work. Pass dates from C# code: `doc.Params["date"] = DateTime.Now;` then use `{{date}}` in template
-6. **Images not loading** - Check file paths are absolute or use data URLs
-7. **CSS not applied** - Ensure `<link>` has correct `href` path
+6. **Date formatting not working with JSON** - JSON date properties are strings, not DateTime objects. Convert them first: `{{format(date(model.reportDate), 'MMMM dd, yyyy')}}` NOT `{{format(model.reportDate, 'MMMM dd, yyyy')}}`. The `date()` function converts the string to a DateTime object that `format()` can process.
+7. **Special characters showing as ? or boxes** - Standard PDF fonts (Helvetica, Times, Courier) don't support Unicode symbols like ✓ ○ ★. Best solution: Use Font Awesome v5 icons with `<i class="fas fa-check-circle"></i>`. Alternative: Use ASCII like `[X]` and `[ ]`.
+8. **Images not loading** - Check file paths are absolute or use data URLs
+9. **CSS not applied** - Ensure `<link>` has correct `href` path
+10. **Blank pages appearing** - Check for duplicate page breaks (`page-break-after` on one element and `page-break-before` on the next). Use only one page break directive between sections.
+11. **XML parsing errors with SVG** - Reduce intermediate `<var>` elements and use inline calculations with parentheses for complex expressions
 
 ### Debug Trace Logging
 
@@ -988,13 +1183,15 @@ Sample templates should showcase Scryber capabilities:
 <!-- Mathematical calculations -->
 <span>{{model.budget.spent / model.budget.total * 100}}%</span>
 
-<!-- Date formatting -->
-<span>{{format(model.reportDate, 'MMMM dd, yyyy')}}</span>
+<!-- Date formatting (convert JSON string to DateTime first) -->
+<span>{{format(date(model.reportDate), 'MMMM dd, yyyy')}}</span>
 
 <!-- Collection operations -->
 <span>Average: {{averageOf(model.items, .value)}}</span>
 <span>Total: {{count(model.items)}} items</span>
 ```
+
+**Important**: When working with JSON data, date properties are strings that must be converted using `date()` before formatting: `{{format(date(model.dateProperty), 'format')}}`
 
 **3. Use Template Variables for Reusable Calculations**:
 ```html
@@ -1587,6 +1784,104 @@ Standard CSS box model: margin → border → padding → content
 - **Google Fonts**: Can load from external URLs
 - **Font Fallback**: Chain of fallbacks when exact font not found
 - **Note**: Font subsetting not implemented (embeds full fonts)
+
+### Unicode and Special Character Support
+
+**Important**: Standard PDF fonts (Helvetica, Times, Courier) have **very limited Unicode support**. Special characters, symbols, and emoji will not render correctly.
+
+❌ **Characters that won't render with standard fonts**:
+- Unicode symbols: ✓ ✔ ✗ ✘ ○ ● ◯ ◉ ★ ☆
+- Emoji: 😀 👍 ⚠️ ✨
+- Special punctuation: " " ' ' — – …
+- Math symbols: ≤ ≥ ≠ ∞ ∑ ∏
+- HTML entities: `&#10003;` (✓), `&#9675;` (○)
+
+These will appear as:
+- Question marks (??)
+- Empty boxes (□)
+- Missing/blank characters
+
+✅ **Reliable alternatives using ASCII**:
+```html
+<!-- Instead of ✓ and ○ -->
+<td>{{if(this.completed, '[X]', '[ ]')}}</td>
+
+<!-- Instead of ★ ratings -->
+<td>{{if(this.rating >= 4, '****', '***')}}</td>
+
+<!-- Instead of special quotes " " -->
+<td>"Standard quotes work fine"</td>
+
+<!-- Instead of — (em dash) -->
+<td>Text - with - dashes</td>
+```
+
+✅ **Best Solution - Font Awesome Icons** (Recommended):
+
+Font Awesome v5 is fully supported and provides reliable icon rendering:
+
+```html
+<head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" type="text/css" />
+</head>
+<body>
+    <!-- Solid icons (fas) -->
+    <i class="fas fa-check-circle" style="color: #22C55E;"></i>
+    <i class="fas fa-times-circle" style="color: #EF4444;"></i>
+    <i class="fas fa-star" style="color: #EAB308;"></i>
+
+    <!-- Regular icons (far) -->
+    <i class="far fa-circle"></i>
+    <i class="far fa-square"></i>
+
+    <!-- In conditional expressions -->
+    {{#if this.completed}}
+        <i class="fas fa-check-circle" style="color: #22C55E;"></i>
+    {{else}}
+        <i class="far fa-circle" style="color: #6B7280;"></i>
+    {{/if}}
+</body>
+```
+
+**Why Font Awesome works**:
+- Icon font specifically designed for symbols
+- Properly embeds in PDFs
+- Wide variety of icons (check marks, circles, stars, arrows, etc.)
+- Colored with inline styles
+- v5.15.4 is fully tested and working
+
+**Common Font Awesome icons for reports**:
+- `fas fa-check-circle` - Completed/success checkmark
+- `fas fa-times-circle` - Failed/error X
+- `fas fa-exclamation-triangle` - Warning
+- `far fa-circle` - Empty/pending circle
+- `fas fa-star` / `far fa-star` - Ratings
+- `fas fa-arrow-up` / `fas fa-arrow-down` - Trends
+
+✅ **Alternative - Custom Unicode Fonts** (If Font Awesome doesn't fit):
+
+Load a custom font with full Unicode coverage:
+
+```html
+<head>
+    <style>
+        @font-face {
+            font-family: 'NotoSans';
+            src: url('path/to/NotoSans-Regular.ttf');
+        }
+        body {
+            font-family: 'NotoSans', sans-serif;
+        }
+    </style>
+</head>
+```
+
+Recommended Unicode fonts:
+- **Noto Sans** - Google's font supporting all Unicode characters
+- **Arial Unicode MS** - Microsoft font with broad Unicode support
+- **DejaVu Sans** - Open source with extensive Unicode coverage
+
+**Note**: Custom fonts may not render all Unicode characters correctly in PDFs. Font Awesome is more reliable.
 
 ## Image Handling
 

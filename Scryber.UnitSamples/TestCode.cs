@@ -41,4 +41,22 @@ public class TestCode : SampleBase
             doc.SaveAsPDF(ms);
         }
     }
+    
+    
+    [TestMethod]
+    public void MonthlySalesReport()
+    {
+
+        var path = GetTemplatePath("MonthlySalesReport", "monthly-sales-report.html", true);
+
+        var doc = Document.ParseDocument(path);
+        var datapath = GetTemplatePath("MonthlySalesReport", "monthly-sales-sample.json");
+        var dataContent = System.IO.File.ReadAllText(datapath);
+        var data = System.Text.Json.JsonDocument.Parse(dataContent);
+        using (var ms = DocStreams.GetOutputStream("MonthlySalesReport.pdf"))
+        {
+            doc.Params["model"] = data.RootElement;
+            doc.SaveAsPDF(ms);
+        }
+    }
 }

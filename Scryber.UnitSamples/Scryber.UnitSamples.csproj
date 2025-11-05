@@ -37,7 +37,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
     <Folder Include="Images\" />
     <Folder Include="Templates\Links\" />
     <Folder Include="Templates\Lists\" />
@@ -46,6 +45,7 @@
     <Folder Include="Templates\Overview\" />
     <Folder Include="Templates\Overview\Fragments\" />
     <Folder Include="Templates\ProjectStatusReport\" />
+    <Folder Include="Templates\SalesReport\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />

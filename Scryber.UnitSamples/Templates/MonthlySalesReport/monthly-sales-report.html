@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<?scryber append-log='true' log-level='Verbose' ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>Monthly Sales Report - {{model.reportMonth}} {{model.reportYear}}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;display=swap" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="./monthly-sales-report.css" type="text/css" />
+</head>
+<body>
+    <!-- ============================================
+         COVER PAGE
+         ============================================ -->
+    <div class="cover-page">
+        <!-- Background watermark logo -->
+        <div class="cover-watermark" alt="" />
+
+        <div class="cover-content">
+            <!-- Company logo -->
+            <img src="./images/company-logo.svg" class="cover-logo" alt="Company Logo" />
+
+            <div class="cover-title">Monthly Sales</div>
+            <div class="cover-title">Performance Report</div>
+            <div class="cover-subtitle">{{model.reportMonth}} {{model.reportYear}}</div>
+            <div class="cover-meta">
+                <p>{{model.companyName}}</p>
+                <p>Generated on {{format(date(model.reportDate), 'MMMM dd, yyyy')}}</p>
+            </div>
+
+            <!-- Table of Contents on Cover -->
+            <div class="cover-toc">
+                {{#each model.sections}}
+                <a href="#{{this.id}}" class="cover-toc-item">
+                    <i class="{{this.icon}}"></i>
+                    <span>{{this.title}}</span>
+                </a>
+                {{/each}}
+            </div>
+        </div>
+        <div class="cover-footer">
+            <p>Confidential - Internal Use Only</p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 1: EXECUTIVE SUMMARY
+         ============================================ -->
+    <div class="section" id="executive-summary">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line section-icon"></i>
+                Executive Summary
+            </h2>
+        </div>
+
+        <p class="section-description">
+            This executive summary provides a comprehensive overview of sales performance for {{model.reportMonth}} {{model.reportYear}}.
+            Our analysis reveals strong revenue growth across multiple regions and product categories, with total revenue reaching
+            {{format(model.summary.totalRevenue, 'C0')}}, representing a {{format(model.summary.revenueChange / 100, 'P1')}} increase
+            from the previous month.
+        </p>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Total Revenue (000's)</span>
+                <span class="metric-value">{{format(model.summary.totalRevenue / 1000, 'C0')}}</span>
+                <span class="metric-change metric-change-{{if(model.summary.revenueChange > 0, 'positive', 'negative')}}">
+                    <i class="fas fa-arrow-{{if(model.summary.revenueChange > 0, 'up', 'down')}}"></i>
+                    {{format(model.summary.revenueChange / 100, 'P1')}}
+                </span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Total Orders</span>
+                <span class="metric-value">{{format(model.summary.totalOrders, 'N0')}}</span>
+                <span class="metric-change metric-change-{{if(model.summary.ordersChange > 0, 'positive', 'negative')}}">
+                    <i class="fas fa-arrow-{{if(model.summary.ordersChange > 0, 'up', 'down')}}"></i>
+                    {{format(model.summary.ordersChange / 100, 'P1')}}
+                </span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Avg Order Value</span>
+                <span class="metric-value">{{format(model.summary.averageOrderValue, 'C0')}}</span>
+                <span class="metric-change metric-change-{{if(model.summary.aovChange > 0, 'positive', 'negative')}}">
+                    <i class="fas fa-arrow-{{if(model.summary.aovChange > 0, 'up', 'down')}}"></i>
+                    {{format(model.summary.aovChange / 100, 'P1')}}
+                </span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Satisfaction</span>
+                <span class="metric-value">{{model.summary.customerSatisfaction}}/5.0</span>
+                <span class="metric-change metric-change-{{if(model.summary.satisfactionChange > 0, 'positive', 'negative')}}">
+                    <i class="fas fa-arrow-{{if(model.summary.satisfactionChange > 0, 'up', 'down')}}"></i>
+                    {{format(model.summary.satisfactionChange, 'N1')}}
+                </span>
+            </div>
+        </div>
+
+        <!-- 6-Month Trend Subsection -->
+        <h3 style="font-size: 16pt; color: #6366F1; margin-top: 20pt; margin-bottom: 8pt; font-weight: bold;">6-Month Revenue Trend</h3>
+
+        <!-- Trend Line Chart -->
+        <div class="chart-container">
+            <svg width="100%" height="200" viewBox="0 0 750 300" xmlns="http://www.w3.org/2000/svg">
+                <var data-id="maxTrendRevenue" data-value="{{maxOf(model.monthlyTrend, .revenue)}}" />
+
+                <!-- Calculate prediction: capture last two revenues -->
+                {{#each model.monthlyTrend}}
+                    {{#if (@index == 4)}}
+                        <var data-id="prevMonthRevenue" data-value="{{this.revenue}}" />
+                    {{/if}}
+                    {{#if (@index == 5)}}
+                        <var data-id="lastMonthRevenue" data-value="{{this.revenue}}" />
+                    {{/if}}
+                {{/each}}
+                <var data-id="trendDiff" data-value="{{lastMonthRevenue - prevMonthRevenue}}" />
+                <var data-id="predictedRevenue" data-value="{{lastMonthRevenue + trendDiff}}" />
+
+                <!-- Grid -->
+                <line x1="80" y1="50" x2="80" y2="270" class="chart-axis" />
+                <line x1="80" y1="270" x2="680" y2="270" class="chart-axis" />
+
+                <!-- Connecting lines (actual data) -->
+                {{#each model.monthlyTrend}}
+                    {{#if (@index > 0)}}
+                        <var data-id="lineX1" data-value="{{100 + ((@index - 1) * 100)}}" />
+                        <var data-id="lineX2" data-value="{{100 + (@index * 100)}}" />
+                        <var data-id="lineY2" data-value="{{270 - ((this.revenue / maxTrendRevenue) * 220)}}" />
+                        <line x1="{{lineX1}}" y1="{{prevLineY}}" x2="{{lineX2}}" y2="{{lineY2}}" class="chart-line" />
+                    {{/if}}
+                    <var data-id="prevLineY" data-value="{{270 - ((this.revenue / maxTrendRevenue) * 220)}}" />
+                {{/each}}
+
+                <!-- Prediction line (dashed) -->
+                <line x1="600" y1="{{270 - ((lastMonthRevenue / maxTrendRevenue) * 220)}}"
+                      x2="700" y2="{{270 - ((predictedRevenue / maxTrendRevenue) * 220)}}"
+                      stroke="#F59E0B" stroke-width="3" stroke-dasharray="5,5" fill="none" />
+
+                <!-- Data points -->
+                {{#each model.monthlyTrend}}
+                    <var data-id="pointX" data-value="{{100 + (@index * 100)}}" />
+                    <var data-id="pointY" data-value="{{270 - ((this.revenue / maxTrendRevenue) * 220)}}" />
+
+                    <!-- Point -->
+                    <circle cx="{{pointX}}" cy="{{pointY}}" r="5" fill="#6366F1" stroke="white" stroke-width="2" />
+
+                    <!-- Value label -->
+                    <text x="{{pointX}}" y="{{pointY - 15}}" class="chart-label" text-anchor="middle" fill="#6366F1">
+                        {{format(this.revenue / 1000, 'N0')}}K
+                    </text>
+
+                    <!-- Month label -->
+                    <text x="{{pointX}}" y="290" class="chart-label" text-anchor="middle">
+                        {{this.month}}
+                    </text>
+                {{/each}}
+
+                <!-- Predicted point (hollow) -->
+                <var data-id="predY" data-value="{{270 - ((predictedRevenue / maxTrendRevenue) * 220)}}" />
+                <circle cx="700" cy="{{predY}}" r="5" fill="white" stroke="#F59E0B" stroke-width="2" />
+
+                <!-- Predicted value label -->
+                <text x="700" y="{{predY - 15}}" class="chart-label" text-anchor="middle" fill="#F59E0B">
+                    {{format(predictedRevenue / 1000, 'N0')}}K
+                </text>
+
+                <!-- Predicted month label -->
+                <text x="700" y="290" class="chart-label" text-anchor="middle" fill="#F59E0B">
+                    Apr (Target)
+                </text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 2: REGIONAL PERFORMANCE
+         ============================================ -->
+    <div class="section" id="regional-performance">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-globe section-icon"></i>
+                Regional Performance
+            </h2>
+        </div>
+
+        <p class="section-description">
+            Regional analysis shows varying performance across our global markets. Asia Pacific leads in growth rate at
+            {{format(maxOf(model.regions, .growth) / 100, 'P1')}}, while North America maintains the largest market share at
+            {{format(maxOf(model.regions, .marketShare) / 100, 'P1')}} of total revenue.
+        </p>
+
+        <!-- Regional Revenue Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Revenue by Region</div>
+            <svg width="100%" height="200" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+                <var data-id="maxRevenue" data-value="{{maxOf(model.regions, .revenue)}}" />
+
+                <!-- Bars -->
+                {{#each model.regions}}
+                    <var data-id="barX" data-value="{{100 + (@index * 170)}}" />
+                    <var data-id="barHeight" data-value="{{(this.revenue / maxRevenue) * 250}}" />
+                    <var data-id="barY" data-value="{{280 - barHeight}}" />
+
+                    <!-- Bar -->
+                    <rect x="{{barX}}" y="{{barY}}" width="120" height="{{barHeight}}"
+                          class="chart-bar" />
+
+                    <!-- Value label -->
+                    <text x="{{barX + 60}}" y="{{barY - 10}}" class="chart-value" text-anchor="middle">
+                        {{format(this.revenue, 'C0')}}
+                    </text>
+
+                    <!-- Region name -->
+                    <text x="{{barX + 60}}" y="295" class="chart-label" text-anchor="middle">
+                        {{this.name}}
+                    </text>
+                {{/each}}
+            </svg>
+        </div>
+
+        <!-- Regional Details in Two Columns -->
+        <div class="two-column mt-lg">
+            {{#each model.regions}}
+            <div class="column-item">
+                <div class="column-item-title">{{this.name}}</div>
+                <p><strong>Revenue:</strong> {{format(this.revenue, 'C0')}}</p>
+                <p><strong>Orders:</strong> {{format(this.orders, 'N0')}}</p>
+                <p><strong>Growth:</strong>
+                    <span class="{{if(this.growth > 0, 'text-success', 'text-danger')}}">
+                        {{format(this.growth / 100, 'P1')}}
+                    </span>
+                </p>
+                <p><strong>Market Share:</strong> {{format(this.marketShare / 100, 'P1')}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 3: PRODUCT CATEGORIES
+         ============================================ -->
+    <div class="section" id="product-categories">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-tags section-icon"></i>
+                Product Categories
+            </h2>
+        </div>
+
+        <p class="section-description">
+            Product category performance shows strong momentum in Electronics, which generated
+            {{format(maxOf(model.categories, .revenue), 'C0')}} in revenue. Our diversified product portfolio continues
+            to drive sustainable growth across all major categories.
+        </p>
+
+        <!-- Category Revenue Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Category Revenue &amp; Growth</div>
+            <svg width="100%" height="200" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+                <var data-id="maxCatRevenue" data-value="{{maxOf(model.categories, .revenue)}}" />
+
+                {{#each model.categories}}
+                    <var data-id="catBarX" data-value="{{100 + (@index * 150)}}" />
+                    <var data-id="catBarHeight" data-value="{{(this.revenue / maxCatRevenue) * 220}}" />
+                    <var data-id="catBarY" data-value="{{250 - catBarHeight}}" />
+
+                    <!-- Revenue bar -->
+                    <rect x="{{catBarX}}" y="{{catBarY}}" width="100" height="{{catBarHeight}}"
+                          class="{{if(this.growth > 15, 'chart-bar-success', 'chart-bar')}}" />
+
+                    <!-- Value -->
+                    <text x="{{catBarX + 50}}" y="{{catBarY - 10}}" class="chart-value" text-anchor="middle">
+                        {{format(this.revenue / 1000, 'N0')}}K
+                    </text>
+
+                    <!-- Growth indicator -->
+                    <text x="{{catBarX + 50}}" y="{{catBarY - 25}}" class="chart-label" text-anchor="middle"
+                          fill="{{if(this.growth > 0, '#10B981', '#EF4444')}}">
+                        {{format(this.growth / 100, 'P0')}}
+                    </text>
+
+                    <!-- Category name -->
+                    <text x="{{catBarX + 50}}" y="270" class="chart-label" text-anchor="middle">
+                        {{this.name}}
+                    </text>
+                {{/each}}
+            </svg>
+        </div>
+
+        <!-- Category Details in Two Columns -->
+        <div class="two-column mt-lg">
+            {{#each model.categories}}
+            <div class="column-item">
+                <div class="column-item-title">{{this.name}}</div>
+                <p><strong>Revenue:</strong> {{format(this.revenue, 'C0')}}</p>
+                <p><strong>Orders:</strong> {{format(this.orders, 'N0')}}</p>
+                <p><strong>Growth:</strong>
+                    <span class="{{if(this.growth > 0, 'text-success', 'text-danger')}}">
+                        {{format(this.growth / 100, 'P1')}}
+                    </span>
+                </p>
+                <p><strong>Avg Price:</strong> {{format(this.avgPrice, 'C0')}}</p>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    <!-- ============================================
+         SECTION 4: TOP PERFORMERS
+         ============================================ -->
+    <div class="section" id="top-performers">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-trophy section-icon"></i>
+                Top Performing Products
+            </h2>
+        </div>
+
+        <p class="section-description">
+            Our top {{count(model.products)}} products generated {{format(sumOf(model.products, .revenue), 'C0')}}
+            in combined revenue this month. These bestsellers represent key growth drivers and demonstrate strong customer demand
+            across multiple categories.
+        </p>
+
+        <var data-id="sortedProducts" data-value="{{sortBy(model.products, .revenue)}}" />
+        <var data-id="topProducts" data-value="{{reverse(sortedProducts)}}" />
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 8%;" class="text-center"><i class="fas fa-arrow-up"></i></th>
+                    <th style="width: 34%;">Product Name</th>
+                    <th style="width: 20%;">Category</th>
+                    <th style="width: 15%;">Revenue</th>
+                    <th style="width: 10%;">Units</th>
+                    <th style="width: 13%;">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each topProducts}}
+                <tr>
+                    <td class="text-center">
+                        {{#if (@index == 0)}}
+                            <i class="fas fa-trophy" style="color: #F59E0B;"></i>
+                        {{else if (@index == 1)}}
+                            <i class="fas fa-medal" style="color: #9CA3AF;"></i>
+                        {{else if (@index == 2)}}
+                            <i class="fas fa-medal" style="color: #CD7F32;"></i>
+                        {{else}}
+                            {{@index + 1}}
+                        {{/if}}
+                    </td>
+                    <td><strong>{{this.name}}</strong></td>
+                    <td>{{this.category}}</td>
+                    <td><strong>{{format(this.revenue, 'C0')}}</strong></td>
+                    <td class="text-center">{{format(this.units, 'N0')}}</td>
+                    <td>{{format(this.price, 'C0')}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+    <footer></footer>
+    <continuation-footer class='footer'>
+        <p>{{model.companyName}} - Monthly Sales Performance Report</p>
+        <p>Generated on {{format(date(), 'MMMM dd, yyyy HH:mm')}} | Page <page-number /> of <page-count /></p>
+    </continuation-footer>
+</body>
+</html>
