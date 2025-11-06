@@ -1,7 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=_002FUsers_002Frichard_002FProjects_002FScryber_002FScryber_002ECore_002FScryber_002EImaging_002FImageSharp_002FNet5_002E0_002FSixLabors_002EImageSharp_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7f7196bc_002D2ef0_002D442b_002D9493_002De13924ae652a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Scryber.UnitTests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;MSTest::6930F3FB-89E2-4E30-A29F-2BFBF5FD0DEF::net6.0::Scryber.Core.UnitTests.Html.SVGParsing_Tests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
+  &lt;Namespace&gt;Scryber&lt;/Namespace&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
