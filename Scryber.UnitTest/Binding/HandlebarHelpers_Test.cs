@@ -162,7 +162,7 @@ namespace Scryber.Core.UnitTests.Binding
             <td>{{this.name}}</td>
             <td>${{this.price}}</td>
 </tr>
-{{/each}}
+{{/each }}
 ";
 
             var expected = @"

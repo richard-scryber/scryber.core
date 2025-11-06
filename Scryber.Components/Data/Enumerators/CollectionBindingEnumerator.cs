@@ -80,6 +80,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
             {
                 var source = this.Source;
                 this.DataContext.DataStack.Push(inner, source);
+                this._dataIsPushed = true;
             }
         }
 

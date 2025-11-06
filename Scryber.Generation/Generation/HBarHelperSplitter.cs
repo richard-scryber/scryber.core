@@ -17,7 +17,7 @@ namespace Scryber.Generation
         private static readonly Regex _helper_old = new Regex("{{#([a-z]+)\\s*(.*)*}}|{{\\/([a-z]*)}}|{{else}}|{{else\\s+if\\s(.*)}}|{{(log)\\s+(.*)}}");
 
         private static readonly Regex _helper =
-            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)}}|{{(else)}}|{{(else\\s+if)\\s(.*)}}|{{(log)\\s+(.*)}}");
+            new Regex("{{#([a-z]+)\\s*([^{])*}}|{{\\/([a-z]*)\\s*}}|{{(else)}}|{{(else\\s+if)\\s(.*)}}|{{(log)\\s+(.*)}}");
 
         private static readonly Dictionary<string, HBarHelperMapping> _knownMappings =
             new Dictionary<string, HBarHelperMapping>()
