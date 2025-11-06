@@ -8,6 +8,7 @@ using io = System.IO;
 using Scryber.Drawing;
 using Scryber.Imaging;
 using Scryber.PDF.Resources;
+using System.Threading.Tasks;
 
 namespace Scryber.Core.UnitTests.Imaging
 {
@@ -16,6 +17,20 @@ namespace Scryber.Core.UnitTests.Imaging
     {
         public const string PathToImages = "../../../Content/HTML/Images/";
 
+        private TestContext testContextInstance;
+
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+        
         public ImageLoad_Tests()
         {
         }
@@ -37,13 +52,13 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "group.png");
-            path = io.Path.GetFullPath(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
 
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
 
             Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
@@ -70,13 +85,10 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryJpeg();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "Group.jpg");
-            path = io.Path.GetFullPath(path);
-            
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
+                this.TestContext);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
             
             Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
@@ -88,6 +100,88 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.jpg image");
             Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.jpg image");
             Assert.AreEqual(path, data.SourcePath, "Source path was not matching the load path in the Group.jpg image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.jpg image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.jpg image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasAlpha);
+
+            //We should have the JCTDecode filter for jpeg images
+            Assert.IsTrue(data.IsPrecompressedData);
+            Assert.IsTrue(data.HasFilter);
+            Assert.IsNotNull(data.Filters);
+            Assert.AreEqual(1, data.Filters.Length);
+            Assert.AreEqual("DCTDecode" , data.Filters[0].FilterName);
+            
+
+            
+
+        }
+        
+        [TestMethod()]
+        public void LoadPngFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryPng();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.PngImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+
+            Assert.IsNotNull(data, "The returned image data was null in the Group.png image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.png image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.png image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.png image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.png image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.png image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.png image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".png"), "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.png image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasFilter);
+            Assert.IsNull(data.Filters);
+            Assert.IsFalse(data.IsPrecompressedData);
+            
+        }
+        
+        [TestMethod()]
+        public void LoadJpegFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryJpeg();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
+                this.TestContext);
+
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+            
+
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.JpegImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+            
+            Assert.IsNotNull(data, "The returned image data was null in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.jpg image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.jpg image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.jpg image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.jpg image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.jpg image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".jpg"), "Source path was not matching the load path in the Group.tiff image");
             Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.jpg image");
             Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.jpg image");
             Assert.AreEqual(data.Type, ObjectTypes.ImageData);
@@ -117,11 +211,8 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(factory);
 
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages, "group.png");
-            path = io.Path.GetFullPath(path);
-
-            if (!io.File.Exists(path))
-                throw new io.FileNotFoundException(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
 
             Image img = new Image();
             img.Source = path;
@@ -150,7 +241,7 @@ namespace Scryber.Core.UnitTests.Imaging
             Assert.IsTrue(xobj.Registered);
             Assert.IsTrue(xobj.Source.EndsWith("group.png"), "The source was expected to end with the name of the file");
             Assert.AreEqual(path, xobj.Source, "The source did not match the xObject source");
-            var data = xobj.ImageData;
+            var data = xobj.ImageData as ImageRasterData;
 
             Assert.IsNotNull(data, "The image data was null");
             Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.png image");
@@ -172,13 +263,14 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryTiff();
-            var path = io.Path.Combine(io.Directory.GetCurrentDirectory(), PathToImages , "groupBasic.tiff");
-            path = io.Path.GetFullPath(path);
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
+                this.TestContext);
             
+     
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
 
-            var data = factory.LoadImageData(doc, page, path);
+            var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
 
             Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
@@ -200,6 +292,45 @@ namespace Scryber.Core.UnitTests.Imaging
             
         }
         
+        [TestMethod()]
+        public void LoadTiffFromRawData()
+        {
+            var doc = new Document();
+            var page = new Page();
+            var factory = new Scryber.Imaging.ImageFactoryTiff();
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
+                this.TestContext);
+            
+     
+            if (!io.File.Exists(path))
+                throw new io.FileNotFoundException(path);
+            
+            
+            var raw = io.File.ReadAllBytes(path);
+            var type = MimeType.TiffImage;
+            
+            var data = factory.LoadImageData(doc, page, raw, type) as ImageRasterData;
+            
+            //doc.RemoteRequests.EnsureRequestsFullfilled();
+
+            Assert.IsNotNull(data, "The returned image data was null in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayHeight, data.DisplayHeight, "Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupDisplayWidth, data.DisplayWidth, "Widths did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorSpace, data.ColorSpace, "The color spaces did not match in the Group.tiff image");
+            Assert.AreEqual(GroupColorsPerSample, data.ColorsPerSample, "Expected Colours per sample did not match in the Group.tiff image");
+            Assert.AreEqual(GroupBitsPerColor,data.BitsPerColor, "Expected Bits per pixel did not match in the Group.tiff image");
+            Assert.AreEqual(GroupHPixel, data.PixelHeight, "Expected Pixel Heights did not match in the Group.tiff image");
+            Assert.AreEqual(GroupWPixel, data.PixelWidth, "Expected pixel widths did not match in the Group.tiff image");
+            Assert.IsTrue(data.SourcePath.EndsWith(".tiff"), "Source path was not matching the load path in the Group.tiff image");
+            Assert.AreEqual(GroupHResolution,data.HorizontalResolution, "Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(GroupVResolution,data.VerticalResolution,"Expected the horizontal resolutions did not match in the Group.tiff image");
+            Assert.AreEqual(data.Type, ObjectTypes.ImageData);
+            Assert.IsFalse(data.HasAlpha, "The image should not have an alpha channel");
+
+            Assert.IsFalse(data.IsPrecompressedData);
+            Assert.IsFalse(data.HasFilter);
+            
+        }
        
 
         /// <summary>
@@ -317,7 +448,7 @@ namespace Scryber.Core.UnitTests.Imaging
                 Span label = new Span();
                 label.Contents.Add(new TextLiteral(img.ID));
                 label.Margins = new Thickness(0, 0, 10, 0);
-                label.PositionMode = PositionMode.Block;
+                label.DisplayMode = DisplayMode.Block;
                 page.Contents.Add(label);
 
                 ids.Add(System.IO.Path.GetFileName(src));
@@ -534,5 +665,478 @@ namespace Scryber.Core.UnitTests.Imaging
 
         }
 
+        string urlWithParams = "https://media.githubusercontent.com/media/SixLabors/ImageSharp/main/tests/Images/Input/Png/basn3p01.png?t=" + Random.Shared.Next().ToString() + "&test=true";
+
+        [TestMethod]
+        public void TestRemoteImageWithParams()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included even with a parameter for url " + urlWithParams);
+            pg.Contents.Add(p);
+            var img = new Image();
+            img.Source = urlWithParams;
+            pg.Contents.Add(img);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+
+            using(var stream = DocStreams.GetOutputStream("ImageTypesWithParameters.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach(var rsrc in doc.SharedResources)
+            {
+                if(rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+        [TestMethod]
+        public void TestRemoteBackgroundImageWithParams()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.Style.Background.ImageSource = urlWithParams ;
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+
+            using (var stream = DocStreams.GetOutputStream("BackgroundImageWithParameters.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+
+        [TestMethod]
+        public async Task TestRemoteCSSBackgroundImageWithParams()
+        {
+            var doc = new Scryber.Html.Components.HTMLDocument();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            var style = ".bg-img{" +
+                "background-image: url('" + urlWithParams + "');" +
+                "}";
+            doc.Head = new Scryber.Html.Components.HTMLHead();
+            doc.Head.Contents.Add(new Scryber.Html.Components.HTMLStyle() { Contents = style });
+
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.StyleClass = "bg-img";
+
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+            
+            using (var stream = DocStreams.GetOutputStream("BackgroundCCSImageWithParameters.pdf"))
+            {
+                await doc.SaveAsPDFAsync(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+        [TestMethod]
+        public async Task TestRemoteCSSBackgroundImageWithEncodedParams()
+        {
+            var doc = new Scryber.Html.Components.HTMLDocument();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+            var p = new Paragraph();
+            p.Contents.Add("The image below should be included as a background with a parameter for url " + urlWithParams);
+            var style = ".bg-img{" +
+                "background-image: url('" + urlWithParams.Replace("&", "&amp;") + "');" +
+                "}";
+            doc.Head = new Scryber.Html.Components.HTMLHead();
+            doc.Head.Contents.Add(new Scryber.Html.Components.HTMLStyle() { Contents = style });
+
+            pg.Contents.Add(p);
+            var div = new Div();
+            div.StyleClass = "bg-img";
+
+            div.Width = 100;
+            div.Height = 100;
+            pg.Contents.Add(div);
+            doc.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+
+            using (var stream = DocStreams.GetOutputStream("BackgroundCCSImageWithEncodedParameters.pdf"))
+            {
+                await doc.SaveAsPDFAsync(stream);
+            }
+
+            var found = false;
+            Assert.AreEqual(2, doc.SharedResources.Count);
+            foreach (var rsrc in doc.SharedResources)
+            {
+                if (rsrc is PDFImageXObject imgx)
+                {
+                    var src = imgx.Source;
+                    Assert.AreEqual(urlWithParams, src);
+                    found = true;
+                }
+            }
+
+            Assert.IsTrue(found);
+        }
+
+
+
+
+        [TestMethod]
+        public void TestJPEGHeader_Group()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 396;
+            var imgSizeY = 342;
+
+            var resolutionX = 144;
+            var resolutionY = 144;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
+                this.TestContext);
+
+            
+            using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
+            {
+                byte[] marker = new byte[2];
+                stream.Read(marker);
+                Assert.AreEqual(0xFF, marker[0]);
+                Assert.AreEqual(0xD8, marker[1]);
+
+                long pos = 2;
+
+                byte[] appo = new byte[2];
+                stream.Read(appo);
+                Assert.AreEqual(0xFF, appo[0]);
+                Assert.AreEqual(0xE0, appo[1]);
+
+
+                byte[] len = new byte[2];
+                stream.Read(len);
+                ushort length = (ushort)((int)len[1] | (len[0] << 8));
+
+                Assert.AreEqual(16, length);
+
+                byte[] ident = new byte[5];
+                stream.Read(ident); //JFIF_
+                Assert.AreEqual(0x4A, ident[0]); //J
+                Assert.AreEqual(0x46, ident[1]); //F
+                Assert.AreEqual(0x49, ident[2]); //I
+                Assert.AreEqual(0x46, ident[3]); //F
+                Assert.AreEqual(0x00, ident[4]); //null
+
+                byte[] vers = new byte[2];
+                stream.Read(vers);
+
+                Assert.AreEqual(0x01, vers[0]);
+                Assert.AreEqual(0x01, vers[1]);
+
+                byte[] density = new byte[1];
+                stream.Read(density);
+                Assert.AreEqual(0, density[0]);
+
+                byte[] xdensities = new byte[2];
+                byte[] ydensities = new byte[2];
+
+                stream.Read(xdensities);
+                stream.Read(ydensities);
+
+                ushort xdensity = (ushort)(xdensities[0] << 8 | xdensities[1]);
+                ushort ydensity = (ushort)(ydensities[0] << 8 | ydensities[1]);
+
+
+                pos += 2 + length; // FF EO + len;
+
+                int w = 0;
+                int h = 0;
+                int bpp = 0;
+
+                while (pos < stream.Length)
+                {
+                    stream.Position = pos;
+                    stream.Read(marker); //looking for 0xFFC0 - start of frame;
+                    stream.Read(len);
+                    if (marker[0] != 0xFF)
+                        throw new Exception("did not hit the start of a JPEG file block");
+
+                    if (marker[1] == 0xC0) //start of frame marker
+                    {
+                        //byte - precision
+                        byte[] prec = new byte[1];
+                        stream.Read(prec);
+
+                        //ushort - no lines aka height
+                        var lines = new byte[2];
+                        stream.Read(lines);
+                        h = (ushort)((int)(lines[0] << 8) | lines[1]);
+
+                        //ushort - sample per line aka width
+                        var samples = new byte[2];
+                        stream.Read(samples);
+                        w = (ushort)((int)(samples[0] << 8) | samples[1]);
+
+                        byte[] components = new byte[1];
+                        stream.Read(components);
+
+                        bpp = prec[0] * (int)components[0];
+                        break;
+
+                    }
+                    else
+                    {
+                        length = (ushort)((int)len[1] | (len[0] << 8));
+                        pos += length + 2;
+                    }
+                }
+
+                Assert.AreEqual(imgSizeX, w);
+                Assert.AreEqual(imgSizeY, h);
+                Assert.AreEqual(bitsPerPixel, bpp);
+                Assert.AreEqual(resolutionX, xdensity);
+                Assert.AreEqual(resolutionY, ydensity);
+
+
+            }
+        }
+
+
+        [TestMethod]
+        public void TestJPEGHeader_Toroid()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 682;
+            var imgSizeY = 452;
+            var resolutionX = 72;
+            var resolutionY = 72;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg",
+                this.TestContext);
+            
+            using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
+            {
+                byte[] marker = new byte[2];
+                stream.Read(marker);
+                Assert.AreEqual(0xFF, marker[0]);
+                Assert.AreEqual(0xD8, marker[1]);
+
+                long pos = 2;
+
+                byte[] appo = new byte[2];
+                stream.Read(appo);
+                Assert.AreEqual(0xFF, appo[0]);
+                Assert.AreEqual(0xE0, appo[1]);
+
+
+                byte[] len = new byte[2];
+                stream.Read(len);
+                ushort length = (ushort)((int)len[1] | (len[0] << 8));
+
+                Assert.AreEqual(16, length);
+
+                byte[] ident = new byte[5];
+                stream.Read(ident); //JFIF_
+                Assert.AreEqual(0x4A, ident[0]); //J
+                Assert.AreEqual(0x46, ident[1]); //F
+                Assert.AreEqual(0x49, ident[2]); //I
+                Assert.AreEqual(0x46, ident[3]); //F
+                Assert.AreEqual(0x00, ident[4]); //null
+
+                byte[] vers = new byte[2];
+                stream.Read(vers);
+
+                Assert.AreEqual(0x01, vers[0]);
+                Assert.AreEqual(0x01, vers[1]);
+
+                byte[] density = new byte[1];
+                stream.Read(density);
+                Assert.AreEqual(0, density[0]);
+
+                byte[] xdensities = new byte[2];
+                byte[] ydensities = new byte[2];
+
+                stream.Read(xdensities);
+                stream.Read(ydensities);
+
+                ushort xdensity = (ushort)(xdensities[0] << 8 | xdensities[1]);
+                ushort ydensity = (ushort)(ydensities[0] << 8 | ydensities[1]);
+                
+                
+                pos += 2 + length; // FF EO + len;
+
+                int w = 0;
+                int h = 0;
+                int bpp = 0;
+
+                while (pos < stream.Length)
+                {
+                    stream.Position = pos;
+                    stream.Read(marker); //looking for 0xFFC0 - start of frame;
+                    stream.Read(len);
+                    if (marker[0] != 0xFF)
+                        throw new Exception("did not hit the start of a JPEG file block");
+
+                    if (marker[1] == 0xC0) //start of frame marker
+                    {
+                        //byte - precision
+                        byte[] prec = new byte[1];
+                        stream.Read(prec);
+
+                        //ushort - no lines aka height
+                        var lines = new byte[2];
+                        stream.Read(lines);
+                        h = (ushort)((int)(lines[0] << 8) | lines[1]);
+
+                        //ushort - sample per line aka width
+                        var samples = new byte[2];
+                        stream.Read(samples);
+                        w = (ushort)((int)(samples[0] << 8) | samples[1]);
+
+                        byte[] components = new byte[1];
+                        stream.Read(components);
+
+                        bpp = prec[0] * (int)components[0];
+                        break;
+
+                    }
+                    else
+                    {
+                        length = (ushort)((int)len[1] | (len[0] << 8));
+                        pos += length + 2;
+                    }
+                }
+
+                Assert.AreEqual(imgSizeX, w);
+                Assert.AreEqual(imgSizeY, h);
+                Assert.AreEqual(bitsPerPixel, bpp);
+                Assert.AreEqual(resolutionX, xdensity);
+                Assert.AreEqual(resolutionY, ydensity);
+            }
+
+
+        }
+
+        [TestMethod]
+        public void TestJPEGHeaderImageReader()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 396;
+            var imgSizeY = 342;
+            var resolutionX = 144;
+            var resolutionY = 144;
+            var bitsPerColor = 8;
+            var bitsPerPixel = 24; //8 x 3
+
+           
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
+                            this.TestContext);
+
+            Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            var image = factory.LoadImageData(null, null, path) as ImageRasterData;
+
+            stopwatch.Stop();
+
+            //ImageReader reader = ImageReader.Create();
+            //var image = reader.ReadStream(path, stream, true);
+
+            Assert.IsNotNull(image);
+            Assert.AreEqual(imgSizeX, image.PixelWidth);
+            Assert.AreEqual(imgSizeY, image.PixelHeight);
+            Assert.AreEqual(bitsPerColor, image.BitsPerColor);
+            Assert.AreEqual(bitsPerPixel, image.ColorsPerSample);
+            Assert.AreEqual(resolutionX, image.HorizontalResolution);
+            Assert.AreEqual(resolutionY, image.VerticalResolution);
+
+            
+        }
+
+        [TestMethod]
+        public void TestLargeJPEGHeaderImageReader()
+        {
+            //Faster loading of the JPG image data
+            var imgSizeX = 14220; // 682;
+            var imgSizeY = 3571; // 452;
+            var resolutionX = 72;
+            var resolutionY = 72;
+            var bitsPerPixel = 24; //8 x 3
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Superwide.jpeg",
+                this.TestContext);
+            
+            
+
+            Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            var image = factory.LoadImageData(null, null, path) as ImageRasterData;
+
+            stopwatch.Stop();
+
+            //ImageReader reader = ImageReader.Create();
+            //var image = reader.ReadStream(path, stream, true);
+
+            Assert.IsNotNull(image);
+            Assert.AreEqual(imgSizeX, image.PixelWidth);
+            Assert.AreEqual(imgSizeY, image.PixelHeight);
+            Assert.AreEqual(bitsPerPixel, image.BitsPerColor * image.ColorsPerSample);
+            Assert.AreEqual(resolutionX, image.HorizontalResolution);
+            Assert.AreEqual(resolutionY, image.VerticalResolution);
+
+            
+        }
+
+        
     }
 }

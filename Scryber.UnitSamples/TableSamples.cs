@@ -152,6 +152,21 @@ namespace Scryber.UnitSamples
 
             }
         }
+        
+        [TestMethod]
+        public void TableFlowingText()
+        {
+            var path = GetTemplatePath("Tables", "TableFlowingContent.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+                using (var stream = GetOutputStream("Tables", "TableFlowingContent.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
 
         [TestMethod]
         public void TableMixedNestedContent()
@@ -176,11 +191,13 @@ namespace Scryber.UnitSamples
             using (var doc = Document.ParseDocument(path))
             {
                 List<dynamic> all = new List<dynamic>();
-                for(int i = 0; i < 1000; i++)
+                for(int i = 0; i < 10000; i++)
                 {
                     all.Add(new { Key = "Item " + (i + 1).ToString(), Value = i * 50.0 });
                 }
 
+                doc.AppendTraceLog = true;
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Messages);
                 doc.Params["model"] = all;
                 using (var stream = GetOutputStream("Tables", "TableDatabound.pdf"))
                 {

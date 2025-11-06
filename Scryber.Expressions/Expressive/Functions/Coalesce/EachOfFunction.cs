@@ -31,7 +31,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 
 			value = each.Evaluate(variables);
 
-			ArrayList all = new ArrayList();
+			ArrayList all = new ResultList();
 			IEnumerable enumerate;
 
 			if(Helpers.Collections.TryIsCollection(value, out enumerate))

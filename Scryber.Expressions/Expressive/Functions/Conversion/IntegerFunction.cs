@@ -19,6 +19,19 @@ namespace Scryber.Expressive.Functions.Conversion
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }
 
+            if (objectToConvert is string str)
+            {
+                if (str.Length > 2)
+                {
+                    if (str.StartsWith("0x")) // hex conversion
+                        return Convert.ToInt32(str, 16);
+                    else if (str.StartsWith("0b"))
+                        return Convert.ToInt32(str.Substring(2), 2);
+                }
+            }
+            else if (objectToConvert is DateTime dt)
+                return (int)(dt.Ticks / TimeSpan.TicksPerMillisecond);
+
             return Convert.ToInt32(objectToConvert, context.CurrentCulture);
         }
 

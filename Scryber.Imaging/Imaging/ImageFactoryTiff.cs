@@ -25,8 +25,35 @@ namespace Scryber.Imaging
         }
 
         protected ImageFactoryTiff(Regex match, string name, bool shouldCache)
-            : base(match, name, shouldCache)
+            : base(match, MimeType.TiffImage,  name, shouldCache)
         {
+        }
+
+
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            IImageFormat format;
+            SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
+            var span = new ReadOnlySpan<byte>(rawData);
+            var img = Image.Load(config, span, out format);
+
+            ImageData data = null;
+
+            if (format.Name == "TIFF")
+            {
+                var meta = img.Metadata.GetFormatMetadata(TiffFormat.Instance);
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".tiff";
+                const ColorSpace colorSpace = ColorSpace.RGB;
+                const int bitDepth = 8; 
+                bool hasAlpha = img.PixelType.AlphaRepresentation.HasValue 
+                                && img.PixelType.AlphaRepresentation != PixelAlphaRepresentation.None;
+                
+                data = GetImageDataForImage(ImageFormat.Tiff, img, name, bitDepth, hasAlpha, colorSpace);
+            }
+
+
+
+            return data;
         }
 
 

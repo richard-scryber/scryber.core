@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+            width: 300pt;
+            height: 300pt;
+        }
+
+        .box {
+            border-radius: 5pt;
+        }
+
+        path.transparentish {
+            fill: aqua;
+            fill-opacity: 0.5;
+            stroke-opacity: 0.5;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,700;1,100&amp;display=swap" />
+    <style>
+
+
+        body {
+            font: 100 12pt 'Roboto';
+            padding: 20pt;
+        }
+
+        svg{
+            width: 150pt;
+            height: 150pt;
+        }
+
+    </style>
+</head>
+<body title="Rotation Samples" >
+
+<svg id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+     xmlns:xlink="http://www.w3.org/1999/xlink"    >
+    <style>
+
+        polyline{
+            fill-opacity: 0.5;
+        }
+        #Poly{
+        }
+
+        #Poly1{
+            fill: #F33;
+        }
+
+        #Poly2{
+            fill: #F66;
+        }
+        #Poly3{
+            fill: #F99;
+        }
+
+        #Poly-1{
+            fill: #A00;
+        }
+
+    </style>
+
+    <polyline id="Poly" points="100, 100 150, 25 150,75 200,0"
+              stroke-width="1" />
+    <use id="Poly1" href="#Poly" transform="skewY(20)" />
+    <use id="Poly2" href="#Poly" transform="skewY(40)"/>
+    <use id="Poly3" href="#Poly" transform="skewY(60)" />
+    <polyline id="Poly-1" points="100, 100 150, 25 150,75 200,0"
+              stroke-width="1"  transform="skewY(-20)" />
+</svg>
+
+</body>
+</html>

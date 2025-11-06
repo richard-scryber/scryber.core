@@ -38,6 +38,16 @@ namespace Scryber.Drawing
         Custom
     }
 
+    /// <summary>
+    /// Defines the type of an graphical image - Raster for pixel based (png, jpg), Vector for drawings (svg, eps), or unknown.
+    /// </summary>
+    public enum ImageType
+    {
+        Raster,
+        Vector,
+        Unknown
+    }
+
     public enum ImageFormat
     {
         Png,
@@ -66,7 +76,7 @@ namespace Scryber.Drawing
         ViewPortWidth = 9,
         ViewPortHeight = 10,
         ViewPortMin = 11,
-        ViewPortMax = 12
+        ViewPortMax = 12,
     }
 
     
@@ -258,37 +268,54 @@ namespace Scryber.Drawing
     public enum PositionMode
     {
         /// <summary>
+        /// Default positioning within the flow of the content
+        /// </summary>
+        Static = 0,
+
+        /// <summary>
         /// A postion that is set explicitly on the page, no matter where its parent is
         /// </summary>
-        Absolute,
+        Fixed = 1,
 
         /// <summary>
-        /// A postion that is set relative to this Components parent position.
+        /// A postion that is set relative to this Components (first positioned) parent position.
         /// </summary>
-        Relative,
+        Absolute = 2,
 
         /// <summary>
-        /// A block element breaks is rendered on it's own line
+        /// A block that still maintains the space used, but is shifted by the position
         /// </summary>
-        Block,
+        Relative = 3
 
+    }
+
+    public enum DisplayMode
+    {
         /// <summary>
         /// No Expicit postion - if it fits next to the last component on the current line, then it will be appended,
         /// otherwise a new line will be created. Following elements will be appended to the same line
         /// </summary>
-        Inline,
-
+        Inline = 0,
+        
         /// <summary>
         /// A block that sits on the current line of either a fixed size, or taking the space up that it's internal contents need.
         /// </summary>
-        InlineBlock,
-
+        InlineBlock = 1,
+        
+        /// <summary>
+        /// A block element breaks any current line is rendered on it's own, with any positioning
+        /// </summary>
+        Block = 2,
+        
+        /// <summary>
+        /// Specific dispaly mode that will vertically align content within a cell.
+        /// </summary>
+        TableCell = 4,
+        
         /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
-        Invisible
-
-        //TODO:Float - Appears at the current position with content flowing around it
+        Invisible = 10
     }
 
     public enum FloatMode
@@ -347,6 +374,12 @@ namespace Scryber.Drawing
         /// as per the baseline of a font with descenders below the the y position.
         /// </summary>
         Text_Top,
+        
+        /// <summary>
+        /// Aligns the text position
+        /// as per the baseline of a font with descenders below the the y position.
+        /// </summary>
+        Text_Bottom,
 
         /// <summary>
         /// Aligns the text to the middle of the lowercase x character height, based on the y position and the font size.
@@ -407,6 +440,12 @@ namespace Scryber.Drawing
         /// so the extra is not shown.
         /// </summary>
         Clip,
+        
+        /// <summary>
+        /// The layout will not be adjusted and assume the standard rendering,
+        /// however any content beyond the size of the contain will still be rendered.
+        /// </summary>
+        Visible,
 
         /// <summary>
         /// No new page will be generated, but child content will be rendered beyond any boundaries
@@ -495,6 +534,8 @@ namespace Scryber.Drawing
         Origin
     }
 
+    
+
     /// <summary>
     /// Defines a type of supported gradient
     /// </summary>
@@ -509,14 +550,14 @@ namespace Scryber.Drawing
     /// </summary>
     public enum GradientAngle
     {
-        Top = 0,
-        Left = 270,
-        Bottom = 180,
-        Right = 90,
-        Top_Left = 315,
-        Top_Right = 45,
-        Bottom_Left = 225,
-        Bottom_Right = 135
+        Top = 270,
+        Left = 180,
+        Bottom = 90,
+        Right = 0,
+        Top_Left = 225,
+        Top_Right = 315,
+        Bottom_Left = 135,
+        Bottom_Right = 45
     }
 
     /// <summary>
@@ -533,7 +574,7 @@ namespace Scryber.Drawing
     /// </summary>
     public enum RadialShape
     {
-        [Obsolete("Ellipse gradients are not currently supported", true)]
+        [Obsolete("Ellipse gradients are not currently supported", false)]
         Ellipse,
         Circle
     }
@@ -550,6 +591,35 @@ namespace Scryber.Drawing
         FarthestCorner
     }
 
+    public enum GradientSpreadMode
+    {
+        Pad,
+        Reflect,
+        Repeat
+    }
+
+    public enum GradientUnitType
+    {
+        ObjectBoundingBox,
+        UserSpaceOnUse
+    }
+
+    public enum AdornmentOrder
+    {
+        Before,
+        After
+    }
+
+    [Flags]
+    public enum AdornmentPlacements
+    {
+        None = 0,
+        Start = 1,
+        Middle = 2,
+        End = 4,
+        All = Start + Middle + End
+    }
+
 
     /// <summary>
     /// The supported types of style content values
@@ -563,6 +633,27 @@ namespace Scryber.Drawing
         Counters,
         Attribute,
         Quote
+    }
+    
+    public enum AspectRatioAlign : byte
+    {
+        None,
+        xMinYMin,
+        xMidYMin,
+        xMaxYMin,
+        xMinYMid,
+        xMidYMid,
+        xMaxYMid,
+        xMinYMax,
+        xMidYMax,
+        xMaxYMax
+    }
+
+    public enum AspectRatioMeet : byte
+    {
+        None,
+        Meet,
+        Slice
     }
 
 }

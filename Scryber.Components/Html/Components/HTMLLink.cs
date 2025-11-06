@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
+using Scryber.PDF;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -347,8 +349,12 @@ namespace Scryber.Html.Components
                 context.TraceLog.Add(TraceLevel.Verbose, "HTML Link", "href for link " + this.UniqueID + " mapped to path '" + path + "'");
 
             //Using the new remote reference loader
-
-            this._request = this.Document.RegisterRemoteFileRequest("CSSLink",path, (caller, args, stream) =>
+            var cacheDuration = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+            
+            type = HTMLLinkType.CSS;
+            
+            
+            this._request = this.Document.RegisterRemoteFileRequest(type + "Link",path, cacheDuration, (caller, args, stream) =>
             {
                 if (args.Owner != this)
                     return false;
@@ -359,23 +365,31 @@ namespace Scryber.Html.Components
                         if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
                             context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Initiating the load of remote href file " + path + " for link " + this.UniqueID);
 
-                        
-                        string str;
-                        if (stream != null)
-                            str = DoLoadReferenceResult(stream, args.FilePath, context);
+                        if (type == HTMLLinkType.CSS)
+                        {
+                            string str;
+                            if (stream != null)
+                                str = DoLoadReferenceResultAsString(stream, args.FilePath, context);
+                            else
+                                str = (args.Result as string) ?? throw new NullReferenceException(
+                                    "The previous result was not set or is not a string, and no stream was provided");
+
+                            args.CompleteRequest(str, true, null);
+                            
+                            this.ParseLoadedContent(type, str, args.FilePath, context);
+
+                            if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                context.TraceLog.Add(TraceLevel.Message, "HTML Link",
+                                    "Completed the load of remote href file " + path + " for link " + this.UniqueID);
+
+                            else if (context.TraceLog.ShouldLog(TraceLevel.Message))
+                                context.TraceLog.Add(TraceLevel.Message, "HTML Link",
+                                    "Loaded remote href file " + path + " for link " + this.UniqueID);
+                        }
                         else
-                            str = (args.Result as string) ?? throw new NullReferenceException(
-                                "The previous result was not set or is not a string, and no stream was provided");
-                        
-                        args.CompleteRequest(str, true, null);
-                        
-                        this.ParseLoadedContent(type, str, args.FilePath, context);
-
-                        if (context.TraceLog.ShouldLog(TraceLevel.Verbose))
-                            context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Completed the load of remote href file " + path + " for link " + this.UniqueID);
-
-                        else if (context.TraceLog.ShouldLog(TraceLevel.Message))
-                            context.TraceLog.Add(TraceLevel.Message, "HTML Link", "Loaded remote href file " + path + " for link " + this.UniqueID);
+                        {
+                            throw new InvalidOperationException("The relationship type for the link" + this.ID + " of " + type + " is not supported in html links");
+                        }
 
                         this._request = null;
                     }
@@ -416,64 +430,11 @@ namespace Scryber.Html.Components
             }
         }
 
-        //protected virtual string DoLoadRemoteReference(string path, ContextBase context)
-        //{
-        //    //TODO: Use the document for any client web requests.
-        //    //context.Document.LoadRemoteResource(path, context, new RemoteResourceRequest(DoLoadReferenceResult));
-        //    string content;
-        //    HttpClient client = null;
-        //    bool dispose = false;
-
-        //    try
-        //    {
-        //        this.LoadedSource = path;
-        //        client = this.GetServiceClient();
-        //        if (null == client)
-        //        {
-        //            client = new HttpClient();
-        //            dispose = true;
-        //        }
-        //        lock (context.Document)
-        //        {
-        //            var task = client.GetStreamAsync(path);
-        //            var awaiter = task.GetAwaiter();
-
-
-        //            using (var response = task.Result)
-        //                content = this.DoLoadReferenceResult(response, path, context);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        content = string.Empty;
-        //        if (context.Conformance == ParserConformanceMode.Lax)
-        //        {
-        //            context.TraceLog.Add(TraceLevel.Error, "HTML Link", "Could not load link href the response from '" + path + "'", ex);
-        //        }
-        //        else
-        //            throw;
-        //    }
-        //    finally
-        //    {
-        //        if (null != client && dispose)
-        //            client.Dispose();
-        //    }
-        //    return content;
-
-        //}
-
-        //private HttpClient GetServiceClient()
-        //{
-        //    var client = Scryber.ServiceProvider.GetService<HttpClient>();
-        //    return client;
-
-        //}
 
         /// <summary>
         /// Forces the completion and loading of the remote result.
         /// </summary>
-        private string DoLoadReferenceResult(System.IO.Stream stream, string path, ContextBase context)
+        private string DoLoadReferenceResultAsString(System.IO.Stream stream, string path, ContextBase context)
         {
 
             string content = string.Empty;
@@ -498,6 +459,7 @@ namespace Scryber.Html.Components
             }
             return content;
         }
+        
 
         #endregion
 

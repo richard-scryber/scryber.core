@@ -32,6 +32,18 @@ namespace Scryber.Expressive.Functions.Conversion
                     return DateTime.ParseExact(dateString, formatString, context.CurrentCulture);
                 }
             }
+            else if(objectToConvert is int i)
+            {
+                return new DateTime((long)i * TimeSpan.TicksPerMillisecond);
+            }
+            else if(objectToConvert is long l)
+            {
+                return new DateTime(l * TimeSpan.TicksPerMillisecond);
+            }
+            else if(long.TryParse(objectToConvert.ToString(), out l))
+            {
+                return new DateTime(l * TimeSpan.TicksPerMillisecond);
+            }
 
             return Convert.ToDateTime(objectToConvert, context.CurrentCulture);
         }

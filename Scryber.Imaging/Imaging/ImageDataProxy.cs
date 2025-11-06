@@ -11,7 +11,7 @@ namespace Scryber.Imaging
 	/// so it can be referenced and cached as normal before the image is actually loaded.
 	/// But the request should be fufilled before it is used.
 	/// </summary>
-	public class ImageDataProxy : ImageData
+	public class ImageDataProxy : ImageRasterData
 	{
 		/// <summary>
 		/// The captured async request
@@ -63,6 +63,24 @@ namespace Scryber.Imaging
 				else
 					return false;
 			}
+		}
+
+		public override ImageType ImageType
+		{
+			get
+			{
+				if (null == this.ImageData)
+					return ImageType.Unknown;
+				else
+					return this.ImageData.ImageType;
+			}
+			protected set => base.ImageType = value;
+		}
+
+
+		public ImageData ImageData
+		{
+			get{ return this._innerImage; }
 		}
 
 
@@ -133,7 +151,10 @@ namespace Scryber.Imaging
         {
 			this.EnsureFulfilled(null);
 
-            return base.GetSize();
+			if (null != this._innerImage)
+				return this._innerImage.GetSize();
+			else
+				return base.GetSize();
         }
 
         public override void ResetFilterCache()
@@ -143,6 +164,7 @@ namespace Scryber.Imaging
         }
 
 		private bool _logFulfilled = false;
+		private ImageType _imageType;
 
 		private bool EnsureFulfilled(Logging.TraceLog log)
 		{
@@ -181,6 +203,35 @@ namespace Scryber.Imaging
 			return false;
 		}
 
+		public override Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+
+			if (null != this._innerImage)
+				return this._innerImage.GetClippingRect(offset, available, context);
+			else
+				return base.GetClippingRect(offset, available, context);
+		}
+
+		public override Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+
+			if (null != this._innerImage)
+				return this._innerImage.GetRequiredOffsetForRender(offset, available, context);
+			else
+				return base.GetRequiredOffsetForRender(offset, available, context);
+		}
+
+		public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
+		{
+			this.EnsureFulfilled(context.TraceLog);
+			if (null != this._innerImage)
+				return this._innerImage.GetRequiredSizeForRender(offset, available, context);
+			else
+				return base.GetRequiredSizeForRender(offset, available, context);
+		}
+
 		protected ImageData GetMissingImage()
 		{
 			return null;
@@ -191,15 +242,19 @@ namespace Scryber.Imaging
 			this._initializing = true;
 			
 			this.SourcePath = inner.SourcePath;
-			this.PixelWidth = inner.PixelWidth;
-			this.PixelHeight = inner.PixelHeight;
-			this.BitsPerColor = inner.BitsPerColor;
-			this.ColorSpace = inner.ColorSpace;
-			this.ColorsPerSample = inner.ColorsPerSample;
-			this.HorizontalResolution = inner.HorizontalResolution;
-			this.VerticalResolution = inner.VerticalResolution;
 			this.Filters = inner.Filters;
 			this.HasAlpha = inner.HasAlpha;
+
+			if (inner is ImageRasterData rasterData)
+			{
+				this.PixelWidth = rasterData.PixelWidth;
+				this.PixelHeight = rasterData.PixelHeight;
+				this.BitsPerColor = rasterData.BitsPerColor;
+				this.ColorSpace = rasterData.ColorSpace;
+				this.ColorsPerSample = rasterData.ColorsPerSample;
+				this.HorizontalResolution = rasterData.HorizontalResolution;
+				this.VerticalResolution = rasterData.VerticalResolution;
+			}
 
 			this._initializing = false;
 		}

@@ -54,6 +54,13 @@ namespace Scryber.Html.Components
             : base(type)
         {
         }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Size.FullWidth = true;
+            return style;
+        }
     }
 
 

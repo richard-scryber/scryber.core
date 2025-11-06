@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>Project Status Report - {{model.projectName}}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;display=swap" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" type="text/css" />
+    <link rel="stylesheet" href="../styles/project-status-report.css" type="text/css" />
+</head>
+<body>
+    <!-- Report Header -->
+    <div class="report-header">
+        <div class="header-top clearfix">
+            <img src="../images/logo-placeholder.svg" class="logo" alt="Company Logo" width='100pt' />
+            <div class="report-title">
+                <h1 class='title'>Project Status Report</h1>
+                <div class="report-date">{{format(date(model.reportDate), 'MMMM dd, yyyy')}}</div>
+            </div>
+        </div>
+
+        <div class="header-info clearfix">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Project Name</span>
+                    <span class="info-value">{{model.projectName}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Project Manager</span>
+                    <span class="info-value">{{model.projectManager}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Client</span>
+                    <span class="info-value">{{model.clientName}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value">
+                        <span class="status-badge status-on-track">{{model.status}}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Section -->
+    <div class="kpi-section">
+        <div class="kpi-cards clearfix">
+            <!-- Budget KPI -->
+                <div class="kpi-card">
+                <span class="kpi-label">Budget Progress</span>
+                <span class="kpi-value">{{format(model.budget.spent / model.budget.total, 'P0')}}</span>
+                <span class="kpi-subtitle">{{format(model.budget.spent, 'C0')}} of {{format(model.budget.total, 'C0')}}</span>
+            </div>
+
+            <!-- Overall Progress KPI -->
+                <div class="kpi-card">
+                <span class="kpi-label">Overall Progress</span>
+                <span class="kpi-value">{{format(averageOf(model.phases, .progress) / 100, 'P0')}}</span>
+                <span class="kpi-subtitle">{{count(model.phases)}} phases</span>
+            </div>
+
+            <!-- Timeline KPI -->
+                <div class="kpi-card">
+                <span class="kpi-label">Days Remaining</span>
+                <span class="kpi-value">{{daysBetween(model.reportDate, model.endDate)}}</span>
+                <span class="kpi-subtitle">Until {{format(date(model.endDate), 'MMM dd, yyyy')}}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Visualization -->
+    <div class="section" >
+        <h2 class="section-title">Budget Overview</h2>
+
+        <div class="budget-chart">
+            <svg width="100%" height="80" viewBox="0 0 600 80" xmlns="http://www.w3.org/2000/svg">
+                <!-- Calculate budget percentage for visualization -->
+                <var data-id="budgetPercentage" data-value="{{model.budget.spent / model.budget.total * 100}}" />
+                <var data-id="budgetRemaining" data-value="{{model.budget.total - model.budget.spent}}" />
+
+                <!-- Spent budget bar -->
+                <rect x="0" y="20" width="{{budgetPercentage * 5}}" height="40" class="chart-bar-primary" />
+
+                <!-- Remaining budget bar -->
+                <rect x="{{budgetPercentage * 5}}" y="20" width="{{(100 - budgetPercentage) * 5}}" height="40" class="chart-bar-light" stroke="#E5E7EB" stroke-width="1" />
+
+                <!-- Labels -->
+                <text x="10" y="50" class="chart-label" fill="white">Spent: {{format(model.budget.spent, 'C0')}}</text>
+                <text x="{{budgetPercentage * 5 + 10}}" y="50" class="chart-label">Remaining: {{format(budgetRemaining, 'C0')}}</text>
+
+                <!-- Percentage marker -->
+                <line x1="{{budgetPercentage * 5}}" y1="10" x2="{{budgetPercentage * 5}}" y2="70" stroke="#1F2937" stroke-width="2" />
+                <text x="{{budgetPercentage * 5}}" y="8" class="chart-value" text-anchor="middle">{{format(budgetPercentage / 100, 'P0')}}</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Phase Progress -->
+    <div class="section" >
+        <h2 class="section-title">Phase Progress</h2>
+
+        {{#each model.phases}}
+        <div class="progress-item">
+            <div class="progress-header clearfix">
+                <span class="progress-percentage">{{this.progress}}% - {{this.status}}</span>
+                <span class="progress-label">{{this.name}}</span>
+            </div>
+            <div class="progress-bar-container">
+                {{#if (this.progress == 100)}}
+                    <div class="progress-bar progress-bar-success" style="width: {{this.progress}}%;"></div>
+                {{else if (this.progress >= 50)}}
+                    <div class="progress-bar" style="width: {{this.progress}}%;"></div>
+                {{else if (this.progress > 0)}}
+                    <div class="progress-bar progress-bar-warning" style="width: {{this.progress}}%;"></div>
+                {{else}}
+                    <div class="progress-bar" style="width: 0%;"></div>
+                {{/if}}
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- Milestones -->
+    <div class="section">
+        <h2 class="section-title">Key Milestones</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Status</th>
+                    <th style="width: 50%;">Milestone</th>
+                    <th style="width: 20%;">Target Date</th>
+                    <th style="width: 20%;">Days Until</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each model.milestones}}
+                <tr>
+                    <td class="text-center">
+                        {{#if this.completed}}
+                            <i class="fas fa-check-circle" style="color: #22C55E;"></i>
+                        {{else}}
+                            <i class="far fa-circle" style="color: #6B7280;"></i>
+                        {{/if}}
+                    </td>
+                    <td class="{{if(this.completed, 'milestone-completed', 'milestone-pending')}}">{{this.name}}</td>
+                    <td>{{format(date(this.date), 'MMM dd, yyyy')}}</td>
+                    <td>{{if(this.completed, 'Completed', 'Pending')}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Risks & Issues (Page 2) -->
+    <div class="section" >
+        <h2 class="section-title">Risks &amp; Issues</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Severity</th>
+                    <th style="width: 45%;">Description</th>
+                    <th style="width: 40%;">Mitigation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each model.risks}}
+                <tr>
+                    <td class="{{if(this.severity == 'High', 'risk-high', if(this.severity == 'Medium', 'risk-medium', 'risk-low'))}}">
+                        {{this.severity}}
+                    </td>
+                    <td>{{this.description}}</td>
+                    <td>{{this.mitigation}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Team Allocation -->
+    <div class="section">
+        <h2 class="section-title">Team Allocation</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Team Member</th>
+                    <th style="width: 30%;">Role</th>
+                    <th style="width: 20%;">Allocation</th>
+                    <th style="width: 20%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each model.team}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.role}}</td>
+                    <td>{{this.allocation}}%</td>
+                    <td>{{this.allocation}}%</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <p class="mt-md" style="font-size: 9pt; color: #6B7280;">
+            Total team members: {{count(model.team)}} |
+            Average allocation: {{format(averageOf(model.team, .allocation) / 100, 'P0')}}
+        </p>
+    </div>
+
+    <!-- Timeline Chart -->
+    <div class="section">
+        <h2 class="section-title">Project Timeline</h2>
+
+        <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Calculate project duration for scaling -->
+            <var data-id="projectDays" data-value="{{daysBetween(model.startDate, model.endDate)}}" />
+            <var data-id="elapsedDays" data-value="{{daysBetween(model.startDate, model.reportDate)}}" />
+
+            <!-- Timeline base -->
+            <line x1="50" y1="50" x2="650" y2="50" stroke="#E5E7EB" stroke-width="2" />
+
+            <!-- Start marker -->
+            <circle cx="50" cy="50" r="6" fill="#2563EB" />
+            <text x="50" y="75" class="chart-label" text-anchor="middle">{{format(date(model.startDate), 'MMM dd')}}</text>
+            <text x="50" y="90" class="chart-label" text-anchor="middle" font-weight="700">Start</text>
+
+            <!-- Current date marker -->
+            <var data-id="currentX" data-value="{{50 + (elapsedDays / projectDays * 600)}}" />
+            <line x1="{{currentX}}" y1="30" x2="{{currentX}}" y2="270" stroke="#EAB308" stroke-width="3" stroke-dasharray="5,5" />
+            <circle cx="{{currentX}}" cy="50" r="8" fill="#EAB308" />
+            <text x="{{currentX}}" y="20" class="chart-value" text-anchor="middle" fill="#EAB308">TODAY</text>
+
+            <!-- End marker -->
+            <circle cx="650" cy="50" r="6" fill="#2563EB" />
+            <text x="650" y="75" class="chart-label" text-anchor="middle">{{format(date(model.endDate), 'MMM dd')}}</text>
+            <text x="650" y="90" class="chart-label" text-anchor="middle" font-weight="700">End</text>
+
+            <!-- Phase bars -->
+            {{#each model.phases}}
+                <var data-id="phaseStart" data-value="{{daysBetween(model.startDate, this.startDate)}}" />
+                <var data-id="phaseDuration" data-value="{{daysBetween(this.startDate, this.endDate)}}" />
+                <var data-id="phaseX" data-value="{{50 + (phaseStart / projectDays * 600)}}" />
+                <var data-id="phaseWidth" data-value="{{phaseDuration / projectDays * 600}}" />
+                <var data-id="phaseY" data-value="{{110 + (@index * 35)}}" />
+
+                <!-- Phase bar background -->
+                <rect x="{{phaseX}}" y="{{phaseY}}"
+                      width="{{phaseWidth}}" height="25"
+                      fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" />
+
+                <!-- Phase progress bar -->
+                <rect x="{{phaseX}}" y="{{phaseY}}"
+                      width="{{phaseWidth * (this.progress / 100)}}" height="25"
+                      class="{{if(this.progress == 100, 'chart-bar-success', 'chart-bar-primary')}}" />
+
+                <!-- Phase label -->
+                <text x="{{phaseX + 5}}" y="{{phaseY + 17}}"
+                      class="chart-label" fill="{{if(this.progress > 50, 'white', '#1F2937')}}">
+                    {{this.name}} ({{this.progress}}%)
+                </text>
+            {{/each}}
+        </svg>
+    </div>
+
+    <!-- Footer - appears on every page -->
+    <footer class="report-footer">
+        <p>Generated on {{format(date(), 'MMMM dd, yyyy HH:mm')}} | Page <page-number /> of <page-count /></p>
+        <p style="margin-top: 4pt;">Confidential - For Internal Use Only</p>
+    </footer>
+</body>
+</html>

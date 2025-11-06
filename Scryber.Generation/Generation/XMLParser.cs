@@ -16,6 +16,8 @@
  * 
  */
 
+#define PROCESS_HANDLEBAR_HELPERS
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,6 +36,7 @@ namespace Scryber.Generation
         private static readonly string[] TextElements = new string[] { "BR" };
 
         protected const string ScryberProcessingInstructionsName = "scryber";
+        protected const string PaperworkProcessingInstructionsName = "paperwork";
         protected string ParserLogCategory = "Xml Parser";
         public const string InheritsAttributeName = "inherits";
         public const string CodeBehindAttributeName = "code-file";
@@ -202,7 +205,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, Stream stream, ParseSourceType type)
         {
-            using (XmlReader reader = new XmlHtmlEntityReader(stream))
+            using (XmlReader reader = CreateXmlReader(stream))
             {
                 return Parse(source, reader, type);
             }
@@ -217,7 +220,7 @@ namespace Scryber.Generation
         /// <returns>The parsed component</returns>
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
-            using (XmlReader xreader = new XmlHtmlEntityReader(reader))
+            using (XmlReader xreader = CreateXmlReader(reader))
             {
                 return this.Parse(source, xreader, type);
             }
@@ -249,6 +252,24 @@ namespace Scryber.Generation
 
         #endregion
 
+        private XmlReader CreateXmlReader(Stream stream)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(stream);
+#else
+            return new XmlHtmlEntityReader(stream);
+#endif           
+        }
+        
+        protected virtual XmlReader CreateXmlReader(TextReader reader)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(reader);
+#else
+            return new XmlHtmlEntityReader(reader);
+#endif
+        }
+
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 
 
@@ -261,6 +282,7 @@ namespace Scryber.Generation
         /// <returns></returns>
         protected virtual IComponent DoParse(string source, XmlReader reader, ParseSourceType type)
         {
+            var alreadyMoved = false; //allow the read to continue on, without actually moving to the next node.
             
             IDisposable recorder;
             if (type == ParseSourceType.Template)
@@ -269,13 +291,16 @@ namespace Scryber.Generation
                 recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Parse_Files, source);
 
             IComponent parsed = null;
-            while (reader.Read())
+            while (alreadyMoved || reader.Read())
             {
+                alreadyMoved = false;
                 if (reader.NodeType == XmlNodeType.ProcessingInstruction)
                 {
                     string name = reader.Name;
                     if (name == ScryberProcessingInstructionsName)
-                        this.ParseProcessingInstructions(reader);
+                        this.ParseProcessingInstructions(reader, name);
+                    else if(name == PaperworkProcessingInstructionsName)
+                        this.ParseProcessingInstructions(reader, name);
                 }
                 if (reader.NodeType == XmlNodeType.Element)
                 {
@@ -630,6 +655,10 @@ namespace Scryber.Generation
                     {
                         GenerateBindingExpression(reader, container, cdef, attr, value, factory);
                     }
+                    else if (ParserHelper.IsCSSVariableOrCalcExpression(ref value, out factory, this.Settings))
+                    {
+                        GenerateBindingExpression(reader, container, cdef, attr, value, factory);
+                    }
                     else
                     {
                         object actualValue;
@@ -697,10 +726,13 @@ namespace Scryber.Generation
         /// <param name="cdef">The class definition of the current component</param>
         private void ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
         {
+            bool alreadyMoved = false;
             
             LogAdd(reader, TraceLevel.Debug, "Parsing container contents");
-            while (reader.Read())
+            while (alreadyMoved || reader.Read())
             {
+                alreadyMoved = false;
+                
                 if (reader.NodeType == XmlNodeType.EndElement)
                 {
                     if (reader.LocalName == element && reader.NamespaceURI == ns)
@@ -719,7 +751,11 @@ namespace Scryber.Generation
                         else if (prop.ParseType == DeclaredParseType.ComplexElement)
                             this.ParseComplexType(container, reader, prop);
                         else if (prop.ParseType == DeclaredParseType.TempateElement)
+                        {
                             this.ParseTemplateContent(container, reader, prop);
+                            alreadyMoved = true; //The template parsing can consume past the end element node (even though we ready the inner content).
+                            
+                        }
                         else if (this.Mode == ParserConformanceMode.Strict)
                             throw BuildParserXMLException(reader, Errors.ParsedTypeDoesNotContainDefinitionFor, cdef.ClassType, "element", reader.LocalName);
                         else
@@ -731,11 +767,16 @@ namespace Scryber.Generation
                             this.ParseComplexType(container, reader, cdef.DefaultElement);
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
-
+                            var empty = reader.NodeType == XmlNodeType.Element && reader.IsEmptyElement;
+                            
                             ParserArrayDefinition arry = (ParserArrayDefinition)cdef.DefaultElement;
                             object collection = InitArrayCollection(container, arry);
                             object component = ParseComponent(reader, false);
 
+                            //Check - if we have parsed inner content and are now not on the end node of the element, then we want to parse the current node, rather than move past it.
+                            if (!empty && reader.NodeType != XmlNodeType.EndElement && reader.LocalName != element)
+                                alreadyMoved = true;
+                            
                             if (null != component)
                             {
                                 LogAdd(reader, TraceLevel.Debug, "Adding component '{0}' to default collection in property {1} of type '{2}'", component, arry.PropertyInfo.Name, cdef.ClassType);
@@ -769,6 +810,12 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Error, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
                 }
@@ -781,7 +828,14 @@ namespace Scryber.Generation
                             ParserSimpleElementDefinition se = (ParserSimpleElementDefinition)cdef.DefaultElement;
                             object value = se.GetValue(reader, this.Settings);
                             this.SetValue(container, value, se);
-                            break; //we have read past the end of the content of this container
+                            
+                            //Move to the end element
+                            while (reader.NodeType != XmlNodeType.EndElement && reader.LocalName != element)
+                            {
+                                reader.Read();
+                            }
+                            
+                            break;
                         }
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
@@ -813,6 +867,12 @@ namespace Scryber.Generation
                     {
                         LogAdd(reader, TraceLevel.Message, "Skipping unknown element '{0}'", reader.Name);
                         reader.Skip();
+                        //Break out now rather than doing another read to break.
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.LocalName == element && reader.NamespaceURI == ns)
+                                break;
+                        }
                     }
 
                 }
@@ -951,6 +1011,9 @@ namespace Scryber.Generation
 
             while (parsecurrentNode || reader.Read())
             {
+                
+                parsecurrentNode = false;
+                
                 if (reader.NodeType == XmlNodeType.Element)
                 {
                     var empty = reader.IsEmptyElement;
@@ -967,6 +1030,14 @@ namespace Scryber.Generation
                     }
                     if (empty)
                         lastWasEnd = true;
+                    else if (reader.NodeType == XmlNodeType.EndElement && reader.Name == endname)
+                    {
+                        //we want to read past this
+                    }
+                    else
+                    {
+                        parsecurrentNode = true; //The end node has already been read and we want to process the current node.
+                    }
                 }
                 else if (reader.NodeType == XmlNodeType.EndElement)
                 {
@@ -997,7 +1068,6 @@ namespace Scryber.Generation
                         AddWhitespaceString(space, prop, container, TextFormat.XML);
                     }
                 }
-                parsecurrentNode = false;
             }
 
             if (lastwastext && textString.Length > 0)
@@ -2024,7 +2094,7 @@ namespace Scryber.Generation
         /// Parses the scryber processing instructions
         /// </summary>
         /// <param name="reader"></param>
-        protected void ParseProcessingInstructions(XmlReader reader)
+        protected void ParseProcessingInstructions(XmlReader reader, string name)
         {
             string value = reader.Value;
 

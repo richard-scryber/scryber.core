@@ -43,6 +43,19 @@ namespace Scryber.PDF
         /// </summary>
         public PDFEmbeddedFileData NextFilteredData { get; set; }
 
+        public PDFEmbeddedFileData()
+        {
+            
+        }
+
+        public PDFEmbeddedFileData(string fullName, byte[] fileData) : this()
+        {
+            this.FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            this.FileData = fileData ?? throw new ArgumentNullException(nameof(fileData));
+            this.FileLength = fileData.Length;
+            this.DataLength = fileData.Length;
+        }
+
         /// <summary>
         /// Looks in this linked list of embedded file data for a matching filtered instance.
         /// </summary>
@@ -72,7 +85,7 @@ namespace Scryber.PDF
             }
         }
 
-        public static PDFEmbeddedFileData LoadFileDataFromFile(PDFLayoutContext context, string fullpath)
+        public static PDFEmbeddedFileData LoadFileDataFromFile(ContextBase context, string fullpath)
         {
             byte[] data = System.IO.File.ReadAllBytes(fullpath);
             PDFEmbeddedFileData all = new PDFEmbeddedFileData();
@@ -86,27 +99,18 @@ namespace Scryber.PDF
 
         public static PDFEmbeddedFileData LoadFileDataFromUri(PDFLayoutContext context, string fullpath)
         {
-            byte[] data;
             throw new NotSupportedException("Use the document remote file load capabilities");
+        }
 
-            using (System.Net.WebClient wc = new System.Net.WebClient())
-            {
-                data = wc.DownloadData(fullpath);
-            }
-
-            PDFEmbeddedFileData all = new PDFEmbeddedFileData();
-            all.FileData = data;
-            all.FullName = fullpath;
-            all.Filters = null;
-            all.FileLength = data.Length;
-            all.DataLength = data.Length;
-            
+        public static PDFEmbeddedFileData LoadFileFromData(ContextBase context, byte[] data, string name)
+        {
+            var all = new PDFEmbeddedFileData(name, data);
             return all;
         }
 
         public static PDFEmbeddedFileData Parse(string data)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         

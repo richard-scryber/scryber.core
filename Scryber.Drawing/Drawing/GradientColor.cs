@@ -44,6 +44,7 @@ namespace Scryber.Drawing
             Color colVal = Color.Transparent;
             double? opacity = null;
             double? distance = null;
+            double distanceFactor = 1;
 
             if (value.StartsWith("rgba(")) //We have opacity
             {
@@ -63,10 +64,14 @@ namespace Scryber.Drawing
 
                     value = value.Substring(end + 1).Trim();
                     if (value.EndsWith("%"))
+                    {
                         value = value.Substring(0, value.Length - 1);
+                        distanceFactor = 1;
+                    }
                     double distV;
+                    
                     if (double.TryParse(value, out distV))
-                        distance = distV;
+                        distance = distV / distanceFactor;
                 }
                 color = new GradientColor(colVal, distance, opacity);
                 return true;
@@ -84,10 +89,13 @@ namespace Scryber.Drawing
                     var colS = value.Substring(0, end);
                     value = value.Substring(end).Trim();
                     if (value.EndsWith("%"))
+                    {
                         value = value.Substring(0, value.Length - 1);
+                        distanceFactor = 1;
+                    }
                     double distV;
                     if (double.TryParse(value, out distV))
-                        distance = distV;
+                        distance = distV / distanceFactor;
                 }
                 color = new GradientColor(colVal, distance, opacity);
                 return true;
@@ -104,10 +112,13 @@ namespace Scryber.Drawing
                     return false;
 
                 if (value.EndsWith("%"))
+                {
                     value = value.Substring(0, value.Length - 1);
+                    distanceFactor = 1;
+                }
                 double distV;
                 if (double.TryParse(value, out distV))
-                    distance = distV;
+                    distance = distV / distanceFactor;
 
                 color = new GradientColor(colVal, distance, opacity);
                 return true;

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
@@ -21,12 +22,24 @@ namespace Scryber.Expressive.Functions.Statistical
             foreach (var p in parameters)
             {
                 var value = p.Evaluate(variables);
-
-                if (value is IEnumerable enumerable)
+                value = Comparison.ExtractAnyJsonValue(value);
+                if (null == value)
+                {
+                    continue;
+                }
+                if (Collections.TryIsCollection(value, out var enumerable))
                 {
                     foreach (var item in enumerable)
                     {
-                        decimalValues.Add(Convert.ToDecimal(item));
+                        var innerValue = Comparison.ExtractAnyJsonValue(item);
+                        if (null == innerValue)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            decimalValues.Add(Convert.ToDecimal(innerValue));
+                        }
                     }
                 }
                 else

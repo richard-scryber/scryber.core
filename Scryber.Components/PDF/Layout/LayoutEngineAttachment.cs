@@ -7,6 +7,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.Styles;
 
 namespace Scryber.PDF.Layout
 {
@@ -27,44 +28,133 @@ namespace Scryber.PDF.Layout
             
             if (this.Component.Page != null)
             {
-                PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
-                PDFTextRenderOptions opts = this.FullStyle.CreateTextOptions();
-                FontMetrics metrics = opts.Font.FontMetrics;
-                PDFLayoutRegion curReg = this.CurrentBlock.LastOpenBlock().CurrentRegion;
+                var icon = this.FullStyle.GetValue(StyleKeys.AttachmentDisplayIconKey, AttachmentDisplayIcon.None);
+                if (icon != AttachmentDisplayIcon.None)
+                {
+                    PDFColumnOptions cols = this.FullStyle.CreateColumnOptions();
+                    PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+                    PDFTextRenderOptions opts = this.FullStyle.CreateTextOptions();
+                    FontMetrics metrics = opts.Font.FontMetrics;
+                    PDFLayoutRegion curReg = this.CurrentBlock.LastOpenBlock().CurrentRegion;
 
-                if (curReg.CurrentItem == null)
-                    curReg.BeginNewLine();
+                    
+                    
+                    
 
-                Unit y = Unit.Zero;
-                Unit h;
-                Unit w;
+                    Unit y = Unit.Zero;
+                    Unit h;
+                    Unit w;
 
-                if (pos.Height.HasValue)
-                    h = pos.Height.Value;
-                
-                else
-                    h = opts.GetAscent(); //set the height as the height of the A
+                    if (pos.Height.HasValue)
+                        h = pos.Height.Value;
 
-
-                if (pos.Width.HasValue)
-                    w = pos.Width.Value;
-                
-                else
-                    w = h * this.WidthFactor;
+                    else
+                        h = opts.GetAscent(); //set the height as the height of the A
 
 
-                if (pos.Y.HasValue)
-                    y = pos.Y.Value;
-                else
-                    y = (opts.GetLineHeight() - h) - opts.GetDescender();
-                
+                    if (pos.Width.HasValue)
+                        w = pos.Width.Value;
 
-                PDFLayoutLine curLine = this.GetOpenLine(w, curReg, PositionMode.Inline);
-                Rect total = new Rect(0, y, w, h);
+                    else
+                        w = h * this.WidthFactor;
 
-                curLine.AddComponentRun(this.Component, total, Rect.Empty, total, total.Height, pos, this.FullStyle);
+
+                    if (pos.Y.HasValue)
+                        y = pos.Y.Value;
+                    else
+                        y = Unit.Zero;
+                    
+                    if (pos.DisplayMode != DisplayMode.Inline && pos.DisplayMode != DisplayMode.InlineBlock)
+                    {
+                        pos.DisplayMode = DisplayMode.InlineBlock;
+                        this.Context.TraceLog.Add(TraceLevel.Warning, "Attachment", "The only supported display modes for attachments are inline or inline-block. Converted to inline-block for " + this.Component.UniqueID);
+                    }
+
+                    var offset = Unit.Zero;
+
+                    PDFLayoutLine curLine = this.GetOpenLine(w, curReg, DisplayMode.Inline);
+                    Rect total = new Rect(0, y, w, h);
+                    Rect content = new Rect(0, y, w, h);
+                    Rect border = new Rect(0, y, w, h);
+                    
+                    if (pos.DisplayMode == DisplayMode.InlineBlock)
+                    {
+                        if (pos.Padding.IsEmpty == false)
+                        {
+                            total = new Rect(total.X, total.Y,
+                                total.Width + pos.Padding.Left + pos.Padding.Right,
+                                total.Height + pos.Padding.Top + pos.Padding.Bottom);
+
+                            border = new Rect(border.X, border.Y,
+                                border.Width + pos.Padding.Left + pos.Padding.Right,
+                                border.Height + pos.Padding.Top + pos.Padding.Bottom);
+
+                            // content.X += pos.Padding.Left;
+                            // content.Y += pos.Padding.Top;
+                        }
+
+                        if (pos.Margins.IsEmpty == false)
+                        {
+                            total.Size = new Size(total.Width + pos.Margins.Left + pos.Margins.Right, total.Height + pos.Margins.Top + pos.Margins.Bottom);
+                        }
+                    }
+                    else if(pos.DisplayMode == DisplayMode.Inline)
+                    {
+                        var marginStart = FullStyle.GetValue(StyleKeys.MarginsInlineStart, Unit.Empty);
+                        var marginEnd = FullStyle.GetValue(StyleKeys.MarginsInlineEnd, Unit.Empty);
+                        
+                        total.Width += marginStart + marginEnd;
+                        border.X += marginStart;
+                        content.X += marginStart;
+                        
+                        var paddingStart = FullStyle.GetValue(StyleKeys.PaddingInlineStart, Unit.Empty);
+                        var paddingEnd = FullStyle.GetValue(StyleKeys.PaddingInlineEnd, Unit.Empty);
+
+                        if (paddingStart != Unit.Zero)
+                        {
+                            total.Width += paddingStart;
+                            border.Width += paddingStart;
+                            content.X += paddingStart;
+                        }
+
+                        if (paddingEnd != Unit.Zero)
+                        {
+                            total.Width += paddingEnd;
+                            border.Width += paddingEnd;
+                        }
+                    }
+                    
+                    if (curReg.CurrentItem == null)
+                        curReg.BeginNewLine();
+
+                    //pos.VAlign = VerticalAlignment.Baseline;
+                    // total = new Rect(0, 0, 9, 12);
+                    // border = total;
+                    // content = total;
+                    //offset = 0;
+                    //pos.VAlign = VerticalAlignment.Baseline;
+                   
+                    var comp = this.Component;
+                    var style = this.FullStyle;
+                    
+                    var run = curLine.AddComponentRun(comp, total, border, content, offset, pos,
+                        style);
+                    
+                }
             }
 
+        }
+
+        protected virtual PDFLayoutBlock CreateWrapperBlock(PDFPositionOptions pos, PDFColumnOptions cols, Unit w, Unit h)
+        {
+            var currentBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            var currentRegion = currentBlock.CurrentRegion;
+            pos.Width = w;
+            pos.Height = h;
+            this.CreateContainerBlock(pos);
+            this.CreateBlockRegions(currentBlock, pos, cols);
+            
+            return this.CurrentBlock;
         }
     }
 }

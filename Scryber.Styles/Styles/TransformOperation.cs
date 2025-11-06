@@ -7,6 +7,7 @@ namespace Scryber.Styles
     /// <summary>
     /// A linked list of transformation operations that can be used to build a transformation matrix
     /// </summary>
+    [PDFParsableValue()]
     public class TransformOperation
     {
         protected static readonly float _notSet = float.NaN;
@@ -87,38 +88,74 @@ namespace Scryber.Styles
             }
         }
 
-        public virtual Scryber.Drawing.PDFTransformationMatrix GetMatrix(Scryber.Drawing.MatrixOrder order)
+        public virtual Scryber.PDF.Graphics.PDFTransformationMatrix GetResolvedMatrix(
+            Scryber.PDF.Graphics.PDFGraphics graphics, Scryber.Drawing.MatrixOrder order)
         {
-            var matrix = new Drawing.PDFTransformationMatrix();
+            var root = this;
+            if (root.Type == TransformType.Rotate)
+            {
+                var move = Matrix2D.Identity;
+                move.Translate(0, graphics.ContainerSize.Height.PointsValue);
+                var rotate = Matrix2D.Identity;
+                rotate.Rotate(root.Value1);
+
+                var returnTo = Matrix2D.Identity;
+                returnTo.Translate(0, 0 - graphics.ContainerSize.Height.PointsValue);
+
+                var full = move.Multiply(rotate).Multiply(returnTo);
+
+                return null; // new PDFTransformationMatrix(full);
+            }
+            else
+            {
+                return null;// this.GetMatrix(order);
+            }
+            
+        }
+        
+        
+        public virtual Scryber.PDF.Graphics.PDFTransformationMatrix GetMatrix(Rect containerBounds, Rect itemBounds, Point transformOrigin, Scryber.Drawing.MatrixOrder order)
+        {
+            var matrix = Matrix2D.Identity;
 
             switch (order)
             {
                 case Drawing.MatrixOrder.Append:
-                    this.AppendTransformations(matrix);
+                    matrix = this.ApplyAppendedTransformations(containerBounds, itemBounds, transformOrigin, matrix);
                     break;
                 default:
-                    this.PrependTransformations(matrix);
+                    matrix = this.ApplyPrependedTransformations(containerBounds, itemBounds, transformOrigin, matrix);
                     break;
             }
+
+            return null; // new PDFTransformationMatrix(matrix);
+        }
+
+        protected virtual Matrix2D ApplyAppendedTransformations(
+            Rect containerBounds, 
+            Rect itemBounds, Point transformOrigin, Matrix2D matrix)
+        {
+            var root = Matrix2D.Identity;
+            var currOp = this;
+            //ApplyTransformation(root, currOp, containerBounds, itemBounds, );
+
+            return root; // new PDFTransformationMatrix(root);
+        }
+
+        protected virtual Matrix2D ApplyPrependedTransformations(
+            Rect containerBounds, 
+            Rect itemBounds, Point transformOrigin, 
+            Matrix2D matrix)
+        {
+            
+            //if (null != this.Next)
+            //    this.Next.PrependTransformations(matrix);
+            //this.ApplyTransformation(matrix);
 
             return matrix;
         }
 
-        protected virtual void AppendTransformations(Drawing.PDFTransformationMatrix matrix)
-        {
-            this.ApplyTransformation(matrix);
-            if (null != this.Next)
-                this.Next.AppendTransformations(matrix);
-        }
-
-        protected virtual void PrependTransformations(Drawing.PDFTransformationMatrix matrix)
-        {
-            if (null != this.Next)
-                this.Next.PrependTransformations(matrix);
-            this.ApplyTransformation(matrix);
-        }
-
-        protected virtual void ApplyTransformation(Drawing.PDFTransformationMatrix matrix)
+        protected virtual void ApplyTransformation(PDF.Graphics.PDFTransformationMatrix matrix)
         {
             switch (this.Type)
             {
@@ -254,7 +291,7 @@ namespace Scryber.Styles
         {
             TransformType type;
             TransformOperation operation = null;
-            TransformOperation first = null;
+
             float value1 = TransformOperation.NotSetValue();
             float value2 = TransformOperation.NotSetValue();
 
@@ -444,15 +481,15 @@ namespace Scryber.Styles
     {
         private double[] _values;
 
-        protected override void AppendTransformations(PDFTransformationMatrix matrix)
-        {
-            throw new NotSupportedException("A Matrix operation cannot append further transformations");
-        }
-
-        protected override void PrependTransformations(PDFTransformationMatrix matrix)
-        {
-            throw new NotSupportedException("A Matrix operation cannot prepend further transformations");
-        }
+        // protected override void AppendTransformations(PDFTransformationMatrix matrix)
+        // {
+        //     throw new NotSupportedException("A Matrix operation cannot append further transformations");
+        // }
+        //
+        // protected override void PrependTransformations(PDFTransformationMatrix matrix)
+        // {
+        //     throw new NotSupportedException("A Matrix operation cannot prepend further transformations");
+        // }
 
         public TransformMatrixOperation(double[] values)
             : base(TransformType.Matrix, 0, 0)
@@ -466,12 +503,12 @@ namespace Scryber.Styles
             _values = values;
         }
 
-        public override PDFTransformationMatrix GetMatrix(MatrixOrder order)
-        {
-            Matrix2D d = new Matrix2D(_values[0], _values[1], _values[2], _values[3], _values[4], -(_values[5]));
-
-            return new PDFTransformationMatrix(d);
-        }
+        // public override PDFTransformationMatrix GetMatrix(MatrixOrder order)
+        // {
+        //     Matrix2D d = new Matrix2D(_values[0], _values[1], _values[2], _values[3], _values[4], -(_values[5]));
+        //
+        //     return new PDFTransformationMatrix(d);
+        // }
     }
 }
 

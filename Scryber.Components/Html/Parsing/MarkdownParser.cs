@@ -6,8 +6,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Configuration;
 
+
 namespace Scryber.Html.Parsing
 {
+    
     public class MarkdownOptions
     {
         /// <summary>
@@ -42,6 +44,7 @@ namespace Scryber.Html.Parsing
         public bool AsteriskIntraWordEmphasis { get; set; }
     }
 
+    ///TODO: Add credit! Where did we get this from.
 
     /// <summary>
     /// Markdown is a text-to-HTML conversion tool for web writers. 

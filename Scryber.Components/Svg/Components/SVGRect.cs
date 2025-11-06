@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
+using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
+using Scryber.PDF.Graphics;
+using Scryber.PDF.Native;
 
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("rect")]
-    public class SVGRect : Scryber.Components.Rectangle
+    public class SVGRect : Scryber.Components.Rectangle, ICloneable, IPDFRenderComponent
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -32,11 +37,20 @@ namespace Scryber.Svg.Components
             }
         }
 
+        [PDFElement("title")]
         [PDFAttribute("title")]
         public override string OutlineTitle
         {
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
         }
 
         //
@@ -46,16 +60,42 @@ namespace Scryber.Svg.Components
         // position
 
         [PDFAttribute("width")]
-        public override Unit Width { get => base.Width; set => base.Width = value; }
+        public override Unit Width { get { return base.Width; } set { base.Width = value; } }
 
         [PDFAttribute("height")]
-        public override Unit Height { get => base.Height; set => base.Height = value; }
+        public override Unit Height { get { return base.Height; } set { base.Height = value; } }
 
         [PDFAttribute("x")]
-        public override Unit X { get => base.X; set => base.X = value; }
+        public override Unit X {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryXKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryXKey, value);
+            }
+        }
 
         [PDFAttribute("y")]
-        public override Unit Y { get => base.Y; set => base.Y = value; }
+        public override Unit Y {
+            get
+            {
+                StyleValue<Unit> value;
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryYKey, out value))
+                    return value.Value(this.Style);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryYKey, value);
+            }
+        }
 
         [PDFAttribute("rx")]
         public Unit CornerRadiusX
@@ -63,14 +103,14 @@ namespace Scryber.Svg.Components
             get
             {
                 StyleValue<Unit> value;
-                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out value))
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusXKey, out value))
                     return value.Value(this.Style);
                 else
                     return Unit.Zero;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ShapeCornerRadiusXKey, value);
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusXKey, value);
             }
         }
 
@@ -79,12 +119,12 @@ namespace Scryber.Svg.Components
         {
             get
             {
-                if (this.Style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out var value))
+                if (this.Style.TryGetValue(StyleKeys.SVGGeometryRadiusYKey, out var value))
                     return value.Value(this.Style);
                 else
                     return Unit.Zero;
             }
-            set => this.Style.SetValue(StyleKeys.ShapeCornerRadiusYKey, value);
+            set => this.Style.SetValue(StyleKeys.SVGGeometryRadiusYKey, value);
         }
 
         // stroke
@@ -115,9 +155,172 @@ namespace Scryber.Svg.Components
         // fill
 
         [PDFAttribute("fill")]
-        public override Color FillColor { get => base.FillColor; set => base.FillColor = value; }
+        public SVGFillValue FillValue
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGFillKey, SVGFillColorValue.Black);
+                else
+                {
+                    return SVGFillColorValue.Black;
+                    
+                }
+            }
+            set
+            { 
+                this.Style.SetValue(StyleKeys.SVGFillKey, value);
+            }
+        }
 
+        [PDFAttribute("fill-opacity")]
+        public override double FillOpacity { get => base.FillOpacity; set => base.FillOpacity = value; }
 
+        [PDFAttribute("fill-rule")]
+        public string FillRule
+        {
+            get
+            {
+
+                if (this.Style.TryGetValue(StyleKeys.GraphicFillModeKey, out StyleValue<GraphicFillMode> mode))
+                {
+                    switch (mode.Value(this.Style))
+                    {
+                        case GraphicFillMode.EvenOdd: return "evenodd";
+                        default: return "nonzero";
+                    }
+                }
+                else
+                    return "nonzero";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    this.Style.RemoveValue(StyleKeys.GraphicFillModeKey);
+                else if(value == "evenodd")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.EvenOdd);
+                else if(value == "nonzero")
+                    this.Style.SetValue(StyleKeys.GraphicFillModeKey, GraphicFillMode.Winding);
+
+            }
+        }
+
+        [PDFAttribute("transform")]
+        public SVGTransformOperationSet Transform
+        {
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOperationKey, out var value))
+                    return value.Value(this.Style) as SVGTransformOperationSet;
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOperationKey, value);
+            }
+        }
+        
+        [PDFAttribute("transform-origin")]
+        public TransformOrigin TransformOrigin
+        {
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.TransformOriginKey, out var value))
+                    return value.Value(this.Style);
+                else
+                    return null;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.TransformOriginKey, value);
+            }
+        }
+
+        [PDFAttribute("display")]
+        public string Display
+        {
+            get
+            {
+                if (this.Visible == false)
+                    return "none";
+                else if (this.Style.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> posValue))
+                    return posValue.Value(this.Style).ToString().ToLower();
+                else
+                    return "inline";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value == "inherit")
+                    this.Style.RemoveValue(StyleKeys.PositionModeKey);
+                else if (value == "none")
+                    this.Visible = false;
+                else if (value == "initial")
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Inline);
+
+                else if (DisplayMode.TryParse(value, true, out DisplayMode parsed))
+                    this.Style.SetValue(StyleKeys.PositionDisplayKey, parsed);
+                else
+                    throw new ArgumentOutOfRangeException("The value '" + value + "' is not supported for the display");
+
+            }
+
+        }
+        
+        [PDFAttribute("marker-start")]
+        public SVGMarkerValue MarkerStart
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerStartKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerStartKey, value);
+            } 
+        }
+        
+        [PDFAttribute("marker-mid")]
+        public SVGMarkerValue MarkerMiddle
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerMidKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerMidKey, value);
+            } 
+        }
+
+        [PDFAttribute("marker-end")]
+        public SVGMarkerValue MarkerEnd
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerEndKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerEndKey, value);
+            } 
+        }
+        
         //
         // .ctor
         //
@@ -125,13 +328,38 @@ namespace Scryber.Svg.Components
         public SVGRect()
         {
         }
+        
+        
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+            return style;
+        }
+
+
+
+        protected override Point[] GetPoints(Rect bounds, Style style)
+        {
+            var x = style.GetValue(StyleKeys.SVGGeometryXKey, Unit.Zero);
+            var y = style.GetValue(StyleKeys.SVGGeometryYKey, Unit.Zero);
+            var w = style.GetValue(StyleKeys.SizeWidthKey, bounds.Width);
+            var h = style.GetValue(StyleKeys.SizeHeightKey, bounds.Height);
+
+            Point[] all = new Point[4];
+            all[0] = new Point(x, y);
+            all[1] = new Point(x + w, y);
+            all[2] = new Point(x + w, y + h);
+            all[3] = new Point(x, y + h);
+            return all;
+        }
 
 
         protected override void BuildPath(GraphicsPath path, Point[] points, Style style, bool end)
         {
-            if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusXKey))
+            if (this.Style.IsValueDefined(StyleKeys.SVGGeometryRadiusXKey))
                 this.BuildRoundRectPath(path, points, style, end);
-            else if (this.Style.IsValueDefined(StyleKeys.ShapeCornerRadiusYKey))
+            else if (this.Style.IsValueDefined(StyleKeys.SVGGeometryRadiusYKey))
                 this.BuildRoundRectPath(path, points, style, end);
             else
                 base.BuildPath(path, points, style, end);
@@ -191,10 +419,10 @@ namespace Scryber.Svg.Components
             
             StyleValue<Unit> found;
             
-            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusXKey, out found))
+            if (style.TryGetValue(StyleKeys.SVGGeometryRadiusXKey, out found))
                 xRadius = found.Value(style);
 
-            if (style.TryGetValue(StyleKeys.ShapeCornerRadiusYKey, out found))
+            if (style.TryGetValue(StyleKeys.SVGGeometryRadiusYKey, out found))
                 yRadius = found.Value(style);
             else
                 yRadius = xRadius;
@@ -209,5 +437,146 @@ namespace Scryber.Svg.Components
                 BuildRoundRectPath(path, points, xRadius, yRadius, style, end);
             }
         }
+
+        protected override void SetArrangement(ComponentArrangement arrange , PDFRenderContext context)
+        {
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                
+                if (null != context.RenderMatrix)
+                    bounds = context.RenderMatrix.TransformBounds(bounds);
+                
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+
+                
+                arrange.RenderBounds = bounds;
+            }
+            
+
+            base.SetArrangement(arrange, context);
+        }
+
+        private Style _applied;
+        
+        public override Style GetAppliedStyle()
+        {
+            if (null == _applied)
+            {
+                var style = base.GetAppliedStyle();
+                this.ResolveStyleReferences(style);
+                _applied = style;
+            }
+
+            return _applied;
+        }
+
+        protected void ResolveStyleReferences(Style forStyle)
+        {
+            StyleValue<SVGFillValue> value;
+            if (forStyle.TryGetValue(StyleKeys.SVGFillKey, out value))
+            {
+                var fillRef = value.GetValue(forStyle) as SVGFillReferenceValue;
+                if (null != fillRef)
+                {
+                    var svg = this.GetRootSVGCanvas();
+                    SVGFillBase fill;
+                    if (fillRef.Value.StartsWith("#"))
+                    {
+                        fill = svg.FindAComponentById(fillRef.Value.Substring(1)) as SVGFillBase;
+                    }
+                    else
+                    {
+                        fill = svg.FindAComponentByName(fillRef.Value) as SVGFillBase;
+                    }
+
+                    if (null != fill)
+                    {
+                        var bounds = new Rect(Unit.Zero, Unit.Zero, svg.Width, svg.Height);
+                        fillRef.Adapter = fill.CreateBrush(bounds);
+                    }
+                }
+            }
+        }
+
+        public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            PDFTransformationMatrix origMatrix = context.RenderMatrix;
+            
+            context.Graphics.SaveGraphicsState();
+            
+            if (null == this.Path)
+                this.Path = this.CreatePath(context.Space, context.FullStyle);
+            
+            if (context.FullStyle != null &&
+                context.FullStyle.TryGetValue(StyleKeys.TransformOperationKey, out var transformValue))
+            {
+                var transform = transformValue.Value(context.FullStyle);
+                if (null != transform && !transform.IsIdentity)
+                {
+                    var origin = context.FullStyle.GetValue(StyleKeys.TransformOriginKey, null);
+                    var matrix = transform.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
+                    
+                    context.Graphics.SetTransformationMatrix(matrix, false, true);
+                }
+            }
+            
+            var oref = base.OutputToPDF(context, writer);
+
+           context.Graphics.RestoreGraphicsState();
+
+            return oref;
+        }
+
+        protected override void OnDataBinding(DataContext context)
+        {
+            base.OnDataBinding(context);
+        }
+
+
+        private SVGCanvas GetRootSVGCanvas()
+        {
+            SVGCanvas root = null;
+            var parent = this.Parent;
+            while (null != parent)
+            {
+                if (parent is SVGCanvas canvas)
+                {
+                    root = canvas;
+                    if (root.IsDiscreetSVG)
+                        return root;
+                }
+                parent = parent.Parent;
+            }
+            //should always be inside an SVG
+            return root;
+        }
+
+        public SVGRect Clone()
+        {
+            var clone = (SVGRect)this.MemberwiseClone();
+            clone.Style = new Style();
+            
+            if(this.HasStyle)
+               this.Style.MergeInto(clone.Style);
+
+            return clone;
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        // protected override Style GetBaseStyle()
+        // {
+        //     var style = base.GetBaseStyle();
+        //     style.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+        //     return style;
+        // }
     }
 }

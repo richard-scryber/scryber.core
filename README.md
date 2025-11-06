@@ -1,8 +1,5 @@
-<h1 align='center'>
-    <img height='200' src='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png'/>
-    <br/>
-    scryber.core pdf engine
-</h1>
+
+# Scryber.Core PDF Engine
 
 ## Scryber makes creating beautiful documents easy.
 
@@ -14,7 +11,7 @@ With a styles based template layout, it is easy to create good looking, paginate
 
 With dynamic content from you applications or sites it is easy to add dynamic data, and repeaters.
 
-**Now** uncludes support for expressions in both templates and css styles.
+**Now** includes support for expressions in both templates and css styles.
 
 
 

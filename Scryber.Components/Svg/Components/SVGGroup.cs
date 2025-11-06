@@ -3,12 +3,29 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
 using Scryber.PDF;
+using Scryber.Svg.Layout;
 
 namespace Scryber.Svg.Components
 {
     [PDFParsableComponent("g")]
     public class SVGGroup : SVGBase, IPDFViewPortComponent
     {
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
+        
         [PDFElement()]
         [PDFArray(typeof(Component))]
         public ComponentList Contents
@@ -23,11 +40,19 @@ namespace Scryber.Svg.Components
         public override SVGBase Clone()
         {
             SVGGroup clone = base.Clone() as SVGGroup;
-            clone.Contents.Clear();
+            clone.InnerContent = new ComponentList(clone, this.InnerContent.Type);
+            
 
             for (int i = 0; i < this.Contents.Count; i++)
             {
-                clone.Contents.Add(((SVGBase)this.Contents[i]).Clone());
+                var clonable = this.Contents[i] as ICloneable;
+                if(null == clonable)
+                    continue;
+                var comp = clonable.Clone() as Component;
+                if(null == comp)
+                    continue;
+                
+                clone.Contents.Add(comp);
             }
             return clone;
         }
@@ -46,7 +71,7 @@ namespace Scryber.Svg.Components
             fullstyle.Overflow.Split = Drawing.OverflowSplit.Never;
             fullstyle.Overflow.Action = Drawing.OverflowAction.None; 
             //return new LayoutEnginePanel(this, parent);
-            return new LayoutEngineCanvas(this, parent);
+            return new LayoutEngineSVG(this, parent);
         }
     }
 }

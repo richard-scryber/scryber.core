@@ -85,7 +85,7 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style def = base.GetBaseStyle();
-            def.Position.PositionMode = Scryber.Drawing.PositionMode.Inline;
+            def.Position.DisplayMode = Scryber.Drawing.DisplayMode.Inline;
 
             return def;
         }

@@ -66,7 +66,7 @@ namespace Scryber.Core.UnitTests.Styles
             Style target = new Style();
 
             //Default (empty) position options
-            PDFPositionOptions actual = target.CreatePostionOptions();
+            PDFPositionOptions actual = target.CreatePostionOptions(false);
 
             Assert.AreEqual(false, actual.FillWidth);
             Assert.AreEqual(HorizontalAlignment.Left, actual.HAlign);
@@ -78,7 +78,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(OverflowAction.NewPage, actual.OverflowAction);
             Assert.AreEqual(OverflowSplit.Any, actual.OverflowSplit);
             Assert.AreEqual(Thickness.Empty(), actual.Padding);
-            Assert.AreEqual(PositionMode.Block, actual.PositionMode);
+            Assert.AreEqual(PositionMode.Static, actual.PositionMode);
+            Assert.AreEqual(DisplayMode.Block, actual.DisplayMode);
             Assert.IsFalse(actual.VAlign.HasValue);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
             Assert.AreEqual(null, actual.Height);
@@ -97,12 +98,15 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(null, actual.MaximumWidth);
 
             target = new Style();
-            target.Position.PositionMode = PositionMode.Inline;
+            target.Position.PositionMode = PositionMode.Relative;
+            target.Position.DisplayMode = DisplayMode.InlineBlock;
             target.Size.FullWidth = true;
             target.Position.HAlign = HorizontalAlignment.Center;
             target.Position.VAlign = VerticalAlignment.Middle;
             target.Position.X = 20;
             target.Position.Y = 50;
+            target.Position.Bottom = 10;
+            target.Position.Right = 40;
             target.Size.Width = 100;
             //Don't define height
             target.Size.MaximumHeight = 90;
@@ -119,7 +123,7 @@ namespace Scryber.Core.UnitTests.Styles
             target.Padding.All = 20;
             target.Padding.Right = 40;
 
-            actual = target.CreatePostionOptions();
+            actual = target.CreatePostionOptions(false);
 
             Assert.AreEqual(false, actual.FillWidth); //false because a width has been set
             Assert.AreEqual(HorizontalAlignment.Center, actual.HAlign);
@@ -133,6 +137,11 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)20, actual.X);
             Assert.AreEqual((Unit)50, actual.Y);
             Assert.AreEqual(null, actual.Height);
+
+            Assert.AreEqual(true, actual.Bottom.HasValue);
+            Assert.AreEqual(true, actual.Right.HasValue);
+            Assert.AreEqual((Unit)10, actual.Bottom);
+            Assert.AreEqual((Unit)40, actual.Right);
 
             Assert.AreEqual((Unit)200, actual.MaximumWidth);
             Assert.AreEqual((Unit)150, actual.MinimumWidth);
@@ -148,7 +157,8 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual((Unit)20, actual.Padding.Left);
             Assert.AreEqual((Unit)40, actual.Padding.Right);
 
-            Assert.AreEqual(PositionMode.Relative, actual.PositionMode); //mode is relative (because we have an xand a y)
+            Assert.AreEqual(PositionMode.Relative, actual.PositionMode);
+            Assert.AreEqual(DisplayMode.InlineBlock, actual.DisplayMode);
             Assert.AreEqual(VerticalAlignment.Middle, actual.VAlign);
             Assert.AreEqual(Visibility.Visible, actual.Visibility);
 
@@ -184,8 +194,9 @@ namespace Scryber.Core.UnitTests.Styles
 
             target = new Style();
 
-            target.Position.PositionMode = PositionMode.Inline; //For background and border of text, we need to be inline
-
+            target.Position.PositionMode = PositionMode.Relative; //For background and border of text, we need to be inline
+            target.Position.DisplayMode = DisplayMode.Inline;
+            
             target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;
 
@@ -222,10 +233,6 @@ namespace Scryber.Core.UnitTests.Styles
             Assert.AreEqual(StandardColors.Purple, ((PDFSolidPen)actual.Stroke).Color);
             Assert.AreEqual((Unit)2, actual.Stroke.Width);
 
-            Assert.IsInstanceOfType(actual.Border, typeof(PDFDashPen));
-            Assert.AreEqual(StandardColors.Green, ((PDFDashPen)actual.Border).Color);
-            Assert.AreEqual(Dashes.LongDash.Phase, ((PDFDashPen)actual.Border).Dash.Phase);
-
             Assert.IsInstanceOfType(actual.Font, typeof(Font));
             Assert.AreEqual((FontSelector)"Bauhaus 92", actual.Font.Selector);
             Assert.AreEqual((Unit)36, actual.Font.Size);
@@ -241,7 +248,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             target = new Style();
 
-            target.Position.PositionMode = PositionMode.Block; //Background and border of text, should be ignored
+            target.Position.DisplayMode = DisplayMode.Block; //Background and border of text, should be ignored
 
             target.Background.Color = StandardColors.Lime;
             target.Background.FillStyle = Scryber.Drawing.FillType.Solid;

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Components
@@ -42,7 +43,9 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Styles.Style inline = base.GetBaseStyle();
-            inline.Position.PositionMode = Drawing.PositionMode.Inline;
+            inline.Size.FullWidth = false;
+            inline.Position.PositionMode = Drawing.PositionMode.Static;
+            inline.Position.DisplayMode = DisplayMode.Inline;
             return inline;
         }
 

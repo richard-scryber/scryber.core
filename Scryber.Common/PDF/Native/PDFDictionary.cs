@@ -242,8 +242,8 @@ namespace Scryber.PDF.Native
 
         public virtual PDFDictionary Clone()
         {
-            PDFDictionary theClone = (PDFDictionary)this.MemberwiseClone();
-            theClone.Clear();
+            PDFDictionary theClone = new PDFDictionary();
+
             foreach (KeyValuePair<PDFName,IPDFFileObject> item in this)
             {
                 theClone.Add(item.Key, item.Value);

@@ -1,5 +1,7 @@
 ﻿using System;
 using Scryber.Styles;
+using Scryber.Drawing;
+
 
 namespace Scryber
 {
@@ -13,4 +15,17 @@ namespace Scryber
     /// <returns>True if the conversion was successfull</returns>
     public delegate bool StyleValueConvertor<T>(StyleBase onStyle, object value, out T result);
 
+
+
+    
+
+
+    /// <summary>
+    /// Delegate instances should return the size of a parent of the passed component, based on the requested size option.
+    /// </summary>
+    /// <param name="forComponent">The component to get the size of the parent for</param>
+    /// <param name="withStyle">The style of the component</param>
+    /// <param name="withPosition">The position mode of the component.</param>
+    /// <returns></returns>
+    public delegate Size ParentComponentSizer(IComponent forComponent, Style withStyle, PositionMode withPosition);
 }

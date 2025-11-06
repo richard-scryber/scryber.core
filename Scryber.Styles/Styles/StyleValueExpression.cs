@@ -168,7 +168,7 @@ namespace Scryber.Styles
 
             this._expression = CreateExpression();
             this._variableProvider = context.Items.ValueProvider(context.CurrentIndex,
-                                            context.DataStack.HasData ? context.DataStack.Current : null);
+                                            context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack);
 
             this._expression.BindExpression(this._variableProvider);
             //Execute once to make sure we are all set up - although css variables may not be there.
@@ -177,12 +177,33 @@ namespace Scryber.Styles
 
         #endregion
 
+        
+        
         public override void FlattenValue(StyleKey key, Style forStyle, Size page, Size container, Size font, Unit rootFont)
         {
 
-            if (this.EnsureExpression(forStyle))
-                this._variableProvider.AddRelativeDimensions(page, container, font, rootFont, key.UseRelativeWidthAsPriority);
+            this.EnsureExpression(forStyle);
 
+            if (null == this._variableProvider)
+                throw new InvalidOperationException(
+                    "The variable provider has not be set on the style value for key '" + key.ToString() +
+                    "'. Ensure that any included styles have been data bound");
+
+            this._variableProvider.AddRelativeCallback((Unit relativeValue) =>
+            {
+                if (relativeValue.IsRelative)
+                {
+                    if (key.CanBeRelative && key is RelativeStyleKey<Unit> unitKey)
+                        return unitKey.Flatten.FlattenValue(relativeValue, page, container, font, rootFont);
+                }
+
+                return relativeValue;
+                
+            });
+            
+            this._variableProvider.AddRelativeDimensions(page, container, font, rootFont,
+                key.UseRelativeWidthAsPriority);
+            
             base.FlattenValue(key, forStyle, page, container, font, rootFont);
             this.HasBeenFlattened = true;
         }
@@ -237,8 +258,9 @@ namespace Scryber.Styles
         {
             IVariableProvider provider = this._variableProvider;
 
+            
             if (forStyle is Style style && style.HasVariables)
-                provider = new StyleChainedVariableProvider(style.Variables, provider);
+                provider = new StyleChainedVariableProvider(style.Variables, provider, style);
 
             object value = _expression.Evaluate(provider);
             T result;
@@ -249,6 +271,7 @@ namespace Scryber.Styles
                 result = (T)value;
             else
                 throw new InvalidCastException("Could not convert the returned value to type " + typeof(T) + ", please provide a convertor");
+            
 
             return result;
         }

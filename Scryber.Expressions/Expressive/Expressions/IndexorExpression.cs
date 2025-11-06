@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Reflection;
 
 namespace Scryber.Expressive.Expressions
 {
@@ -51,34 +52,66 @@ namespace Scryber.Expressive.Expressions
                 {
                     return DoGetDictionaryValue(dict, rhs.ToString());
                 }
-#if NET6_0
+#if NET6_0_OR_GREATER
 
-                else if (lhsResult is System.Text.Json.JsonElement jele &&
-                    jele.ValueKind == System.Text.Json.JsonValueKind.Array)
+                else if (lhsResult is System.Text.Json.JsonElement jele)
                 {
                     System.Text.Json.JsonElement value;
 
-                    if (rhs is int index || int.TryParse(rhs.ToString(), out index))
+
+                    if (jele.ValueKind == System.Text.Json.JsonValueKind.Array)
                     {
-                        value = jele[index];
+                        if (rhs is int index || int.TryParse(rhs.ToString(), out index))
+                        {
+                            value = jele[index];
+                        }
+                        else
+                            throw new NotSupportedException(
+                                "The object indexing the array is not based on a number index");
+                        
+                        switch (value.ValueKind)
+                        {
+                            case System.Text.Json.JsonValueKind.Array:
+                            case System.Text.Json.JsonValueKind.Object:
+                                return value;
+                            case System.Text.Json.JsonValueKind.Null:
+                                return null;
+                            case System.Text.Json.JsonValueKind.False:
+                            case System.Text.Json.JsonValueKind.True:
+                                return value.GetBoolean();
+                            case System.Text.Json.JsonValueKind.Number:
+                                return value.GetDouble();
+                            default:
+                                return value.GetString();
+                        }
+                    }
+                    else if(jele.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        var rhsAccessor = rhs.ToString();
+                        var jnode = jele.GetProperty(rhsAccessor);
+                        
+                        switch (jnode.ValueKind)
+                        {
+                            case System.Text.Json.JsonValueKind.Array:
+                            case System.Text.Json.JsonValueKind.Object:
+                                return jnode;
+                            case System.Text.Json.JsonValueKind.Null:
+                                return null;
+                            case System.Text.Json.JsonValueKind.False:
+                            case System.Text.Json.JsonValueKind.True:
+                                return jnode.GetBoolean();
+                            case System.Text.Json.JsonValueKind.Number:
+                                return jnode.GetDouble();
+                            default:
+                                return jnode.GetString();
+                        }
+                        
+
                     }
                     else
-                        throw new NotSupportedException("The object indexing the array is not based on a number index");
-
-                    switch (value.ValueKind)
                     {
-                        case System.Text.Json.JsonValueKind.Array:
-                        case System.Text.Json.JsonValueKind.Object:
-                            return value;
-                        case System.Text.Json.JsonValueKind.Null:
-                            return null;
-                        case System.Text.Json.JsonValueKind.False:
-                        case System.Text.Json.JsonValueKind.True:
-                            return value.GetBoolean();
-                        case System.Text.Json.JsonValueKind.Number:
-                            return value.GetDouble();
-                        default:
-                            return value.GetString();
+                        throw new NotSupportedException(
+                            "The object indexing the array is not based on a number or dictionary index");
                     }
                 }
 #endif
@@ -86,14 +119,21 @@ namespace Scryber.Expressive.Expressions
                     jobject.Type == Newtonsoft.Json.Linq.JTokenType.Array)
                 {
                     Newtonsoft.Json.Linq.JToken result;
-
-                    if (rhs is int index || int.TryParse(rhs.ToString(), out index))
+                    int index;
+                    if (int.TryParse(rhs.ToString(), out index))
                     {
                         result = ((Newtonsoft.Json.Linq.JArray)jobject)[index];
+                    }
+                    else if (rhs is string str)
+                    {
+                        result = jobject[str];
                     }
                     else
                         throw new NotSupportedException("The object indexing the array is not based on a number index");
 
+                    if (null == result)
+                        return null;
+                    
                     switch (result.Type)
                     {
                         case Newtonsoft.Json.Linq.JTokenType.Array:
@@ -121,7 +161,9 @@ namespace Scryber.Expressive.Expressions
                         default:
                             return result.ToString(Newtonsoft.Json.Formatting.None);
                     }
+                    
                 }
+                
                 else
                 {
                     throw new NotSupportedException("The object to apply index or key value extraction is not of the supported type of Array, List or Dictionary");

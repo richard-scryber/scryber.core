@@ -24,7 +24,7 @@ namespace Scryber.Expressive.Functions.Coalesce
         {
 			this.ValidateParameterCount(parameters, -1, 1);
 
-			var list = new ArrayList();
+			var list = new ResultList();
 			Helpers.Collections.DoForEach(parameters, variables, context, (val, vars, cont) =>
 			{
 				list.Add(val);

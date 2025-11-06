@@ -25,6 +25,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.ComponentModel;
 using Scryber.Drawing;
+using Scryber.OpenType.Utility;
 
 namespace Scryber.PDF.Graphics
 {
@@ -126,6 +127,7 @@ namespace Scryber.PDF.Graphics
         public PDFImageBrush(string source)
         {
             this._source = source;
+            this._op = 1.0;
         }
 
 
@@ -164,6 +166,7 @@ namespace Scryber.PDF.Graphics
                 tile.Image = imagex;
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
+                
 
                 //Calculate the bounds of the pattern
 
@@ -203,6 +206,7 @@ namespace Scryber.PDF.Graphics
 
                 string name = g.Container.Register(tile);
 
+                g.SetFillOpacity(this.Opacity);
                 g.SetFillPattern((PDFName)name);
                 return true;
             }
@@ -212,14 +216,16 @@ namespace Scryber.PDF.Graphics
 
         private Size CalculateAppropriateImageSize(ImageData imgdata)
         {
+            var size = imgdata.GetSize();
+            
             if (this.XSize > 0 && this.YSize > 0)
             {
                 //We have both explicit widths
                 return new Size(this.XSize, this.YSize);
             }
-
-            Unit imgw = imgdata.DisplayWidth;
-            Unit imgh = imgdata.DisplayHeight;
+           
+            Unit imgw = size.Width;
+            Unit imgh = size.Height;
 
             //If we have one dimension, then calculate the other proportionally.
             if (this.XSize > 0)
@@ -227,10 +233,10 @@ namespace Scryber.PDF.Graphics
                 imgh = this.XSize * (imgh.PointsValue / imgw.PointsValue);
                 imgw = this.XSize;
             }
-            else if (this.XSize > 0)
+            else if (this.YSize > 0)
             {
-                imgw = this.XSize * (imgw.PointsValue / imgh.PointsValue);
-                imgh = this.XSize;
+                imgw = this.YSize * (imgw.PointsValue / imgh.PointsValue);
+                imgh = this.YSize;
             }
 
             return new Size(imgw, imgh);
@@ -241,6 +247,10 @@ namespace Scryber.PDF.Graphics
         private string GetImagePatternKey(string fullpath)
         {
             int code = this.GetHashCode(); //reference to this brush and image file
+            
+            if (fullpath.Length > 30000) //doesn't work past 32k as a dictionary key.
+                fullpath = fullpath.GetHashCode().ToString() + fullpath.Substring(0, 20000);
+            
             return string.Format(IMAGEPATTERNRESOURCEKEY, fullpath.ToLower(), code);
         }
 

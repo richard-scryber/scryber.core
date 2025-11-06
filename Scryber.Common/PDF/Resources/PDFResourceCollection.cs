@@ -25,7 +25,7 @@ namespace Scryber.PDF.Resources
 {
     public class PDFResourceCollection : IEnumerable<PDFResource>
     {
-        
+        private object _threadLock = new object();
 
         private IComponent _owner;
 
@@ -74,14 +74,24 @@ namespace Scryber.PDF.Resources
         
         public PDFResource Add(PDFResource resource)
         {
-            foreach (PDFResource resx in this.Items)
+            if (null == resource)
+                throw new ArgumentNullException("Cannot add a null resource");
+            
+            lock (_threadLock)
             {
-                if (resx.Equals(resource))
+                foreach (PDFResource resx in this.Items)
                 {
-                    return resx;
-                }
+                    if (null == resx)
+                        throw new NullReferenceException("One of the added resources was null");
+                    
+                    if (resx.Equals(resource))
+                    {
+                        return resx;
+                    }
 
+                }
             }
+
             this.Items.Add(resource);
             return resource;
         }

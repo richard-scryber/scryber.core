@@ -1,0 +1,654 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>Crib Sheet - Expressions</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./expressions.css" />
+    <base href='https://localhost:7055/' />
+</head>
+
+<body title='Crib Sheet - Expressions'>
+  <div class='header'>
+    <h1 class='title'>
+      CRIB SHEET<br/>
+      <span class='cb-type'>Expressions</span>
+    </h1>
+    <div class='branding' >
+      <svg width="30" height="25" viewBox="0 0 305 275" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+		xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
+		style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;display: inline-block;">
+          <path id="object-0" d="M79.215,66.736C79.215,66.736 116.139,34.156 134.384,18.517C152.629,2.878 180.134,6.491 193.166,17.786C206.198,29.081 252.977,70.646 270.353,85.85C287.729,101.054 284.3,125.015 270.834,138.047C257.368,151.079 218.476,184.826 190.24,209.152C162.004,233.478 121.353,220.082 103.977,201.402C86.601,182.722 90.53,150.394 103.746,138.528C116.962,126.662 152.492,94.173 160.746,87.656C169,81.139 177.505,84.342 182.603,89.76C187.701,95.178 189.166,103.043 182.215,109.559C175.264,116.075 146.455,138.94 133.423,151.538C120.391,164.136 124.393,179.682 131.778,186.198C139.163,192.714 158.917,196.67 168.474,188.416C178.031,180.162 229.954,135.372 238.642,126.684C247.33,117.996 247.581,117.196 247.146,111.983C246.711,106.77 244.974,104.781 240.196,100.437C235.418,96.093 180.34,47.281 175.128,42.502C169.916,37.723 161.752,35.894 155.67,40.672C149.588,45.45 78.346,109.742 66.183,119.734C54.02,129.726 52.282,137.979 52.282,147.536C52.282,157.093 51.848,208.352 52.716,223.991C53.584,239.63 58.889,243.974 70.183,244.408C81.477,244.842 245.661,244.339 256.956,244.339C268.251,244.339 275.817,236.796 275.817,229.48C275.817,222.164 275.383,186.929 275.566,177.075C275.749,167.221 285.122,164.912 292.073,164.912C299.024,164.912 307.963,167.016 308.146,176.871C308.329,186.726 308.214,222.69 307.963,238.693C307.712,254.696 285.514,271.959 265.531,272.828C245.548,273.697 87.468,273.079 64.011,273.079C40.554,273.079 19.702,255.702 19.268,232.244C18.834,208.786 19.701,163.174 19.701,144.494C19.701,125.814 27.955,113.218 37.512,104.095C47.069,94.972 79.215,66.736 79.215,66.736Z" 
+                  style="fill:rgb(0,168,160);fill-rule:nonzero;"/>
+      </svg><span class='branding-name' style='font-family: "Nunito"; font-size: 30pt; font-weight:500;' >paperwork</span>
+    </div>
+  </div>
+  <div class='cover'>
+    <div class='about'>
+      <h3>&apos;crib sheet&apos;</h3>
+      <p>A set of notes to help you remember important information,
+         especially one taken secretly into an exam room</p>
+    </div>
+    <div class='about'>
+      <h3>&apos;expression&apos;</h3>
+      <p>In mathematics, a symbol or group of symbols that represent an amount.</p>
+    </div>
+    <div class='history' >
+      <table class='aside'>
+        <thead>
+          <tr>
+            <td colspan='2'>Document Status</td>
+          </tr>
+        </thead>
+        <tr>
+          <td>Date Created</td>
+          <td class='value'>{{string(date(),"dd MMMM yyyy")}}</td>
+        </tr>
+        <tr>
+          <td>Author</td>
+          <td class='value'>Paperwork team</td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td class='value'>1.0</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  
+  <!-- 
+
+	Preamble section - defined in a separate layout
+  
+  -->
+  
+  <section id='about_doc' title='Expressions and Binding' class='preamble'>
+    <output data-content='{{_layouts["preamble"]}}' ></output>
+  </section>
+  
+  <!--
+
+	Table of contents
+
+  -->
+  
+  <section title='Table of Contents' class='preamble'>
+    <h2 id='toc' class='sub-title' >
+      <img src='/images/paperworklogoonly.png' class='logo' />
+      Table of Contents</h2>
+    <table class='toc'>
+      <thead>
+        <tr><td colspan='2'>Section</td><td class='pg-num'>Page</td></tr>
+      </thead>
+      <tr>
+        <td colspan='2'><a href='#expression_data' >Example data</a></td>
+        <td class='pg-num'><page for='#expression_data' /></td>
+      </tr>
+      <tr>
+        <td colspan='2'><a href='#expression_use' >Using expressions</a></td>
+        <td class='pg-num'><page for='#expression_use' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_use' >Adding an expression in a template</a></td>
+        <td class='pg-num'><page for='#expression_use' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_styles' >Adding an expression in styles</a></td>
+        <td class='pg-num'><page for='#expression_styles' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_notation' >Expression notation types</a></td>
+        <td class='pg-num'><page for='#expression_notation' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_variables' >Storing expression results in variables</a></td>
+        <td class='pg-num'><page for='#expression_variables' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_looping' >Looping over model data</a></td>
+        <td class='pg-num'><page for='#expression_looping' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_escaping' >Escaping expressions</a></td>
+        <td class='pg-num'><page for='#expression_escaping' /></td>
+      </tr>
+      <tr>
+        <td style='width: 40pt'></td>
+        <td><a href='#expression_errors' >Errors in expressions</a></td>
+        <td class='pg-num'><page for='#expression_escaping' /></td>
+      </tr>
+      <tr>
+        <td colspan='2'><a href='#binary_ops' >Available Operators and Functions</a></td>
+        <td class='pg-num'><page for='#binary_ops' /></td>
+      </tr>
+      <template data-bind='{{func.sections}}' >
+        <tr>
+          <td></td>
+          <td><a href='{{concat("#",.id)}}'>{{.name}}</a></td>
+          <td class='pg-num'><page for='{{concat("#",.id)}}' /></td>
+        </tr>
+      </template>
+      <tr>
+        <td colspan='2'><a href='#func_index' >Operator and Function Index</a></td>
+        <td class='pg-num'><page for='#func_index' /></td>
+       </tr>
+    </table>
+  </section>
+  
+  <section id='expression_data' title='Expression Data'>
+    <h2 class='sub-title' >
+      <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+      Example Data
+    </h2>
+    <p style='margin-top: 20pt;'>The following JSON data value is used throughout the example expressions as the <code>model</code></p>
+    <div class='expression-model'>
+      <pre class='code-block'>"model" : {{model}}</pre>
+    </div>
+    <table class='expressions' >
+      <thead>
+        <tr>
+          <td class='name'>For Example</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tr>
+        <td class='name'>\{{model.number}}\</td>
+        <td>{{model.number}}</td>
+      </tr>
+      <tr>
+        <td class='name'>\{{model.int}}\</td>
+        <td>{{model.int}}</td>
+      </tr>
+      <tr>
+        <td class='name'>\{{model.boolean}}\</td>
+        <td>{{model.boolean}}</td>
+      </tr>
+      <tr>
+        <td class='name'>\{{model.array}}\</td>
+        <td>{{model.array}}</td>
+      </tr>
+      <tr>
+        <td class='name'>\{{model.items}}\</td>
+        <td>{{model.items}}</td>
+      </tr>
+    </table>
+  </section>
+  
+  <section title='Using Expressions' hidden='false'>
+    <!--
+ 
+	Expressions in a template
+
+	-->
+    
+    <h2 id='expression_use' class='sub-title'>
+      <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+      Using Expressions</h2>
+    <div >
+      <h4 class='group-title mt-2' title='Adding an Expression to templates'>Adding an expression in a template</h4>
+      <p>In <span class='pwk-name' >paperwork</span> we use 'binding' of expressions within html content to add dynamic content. Simply wrap them in a 'handlebars' - double curly brackets e.g. \{{ ... }}\.<br/>
+      This can be to either update the textual content of the document, or to alter the layout or appearance of the document.</p>
+      <h5 class='sub-group-title' >Binding values within the content of a page</h5>
+      <p class='mtb-1'>
+        Within the content of a tag (or element) the binding statement can appear anywhere, <em>as long as</em> it does not overlap or change tags.
+      </p>
+      <pre class='code-block'>&lt;table&gt;
+   &lt;tr&gt;
+      &lt;td&gt;Count is \{{count(model.items)}}\&lt;/td&gt;
+   &lt;/tr&gt;
+&lt;/table&gt;
+
+<span class='comment' >&lt;!--  The following would fail as the closing 'td' is not present.
+      &lt;td&gt;Count is \{{concat(count(model.items), '&lt;/td&gt;')}}\
+--&gt;</span></pre>
+      <p class='mtb-1'>To add complex html content into a document see the help sheet on <a href='https://localhost:7055/view.html?s=awry3OdylFlpjs9gHZB3' >Binding Complex Content</a></p>
+      
+      <h5 class='sub-group-title' >Binding values within attributes</h5>
+      <p class='mtb-1'>
+        Inside a starting tag (or element), any of the available attributes can be bound to a value using the same handlebars notation.
+      </p>
+      <p class='mb-1' style=''>
+        <strong>NOTE:</strong> For all attributes, <em>(except <a href='#expression_styles' >'style'</a> )</em>, the entire value should either be an expression, 
+        or a simple value, not a combination of both.
+      </p>
+      <pre class='code-block'>&lt;table hidden=&quot;\{{if(count(model.items) &gt; 0, '','hidden')}}\&quot; &gt;
+      ...
+      
+&lt;/table&gt;
+      
+ <span class='comment' >&lt;-- This will not work with the units outside
+&lt;img width=&quot;\{{model.array[0]}}\pt&quot; &gt;...&lt;/&gt;  --&gt;</span>
+
+<span class='comment' >&lt;!-- But a calculated value can be used instead --&gt;</span>
+&lt;img width=&quot;\{{concat(model.array[0], 'pt')}}\&quot; &gt;...&lt;/&gt;
+      </pre>
+    </div>
+    
+    <!--
+ 
+	Expressions in styles
+
+	-->
+ 
+    <div class='preample-section new-page' >
+      <h2 id='expression_styles' class='sub-title'>
+      <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+      Using Expressions</h2>
+      <h4 class='group-title mt-2' title='Expressions in styles' >Adding expressions in styles</h4>
+      <p class='mtb1'><span class='pwk-name' >paperwork</span> supports CCS styles, as a tag, inline within an element tag or as a separate referenced stylesheet. <br/>
+        The <code>var(...)</code> and <code>calc(...)</code> functions support full calculations and expressions, either with the standard css variables, or with the 
+        current data model.<br/>
+      </p>
+      <h5 class='sub-group-title' >Binding values within stylesheets</h5>
+      <p class='mtb-1'>As part of a stylesheet or &lt;style&gt; tag <span class='pwk-name' >paperwork</span> can use both relative or absolute units or a combination of both with the <code>calc</code> funtion.<br/>
+      It supports both standard css variables, or bound values within the current template model using <code>var</code>.</p>
+      
+      <pre class='code-block'>pre.code {
+   width: calc(100% - 20pt);
+   border: solid 1pt var(--border-color);
+   background-color: var(model.color);
+   color: calc(concat("rgb(",model.array[0], model.array[1], model.array[2], ")");
+  }
+        </pre>
+      <h5 class='sub-group-title' >Binding values within style attributes</h5>
+      <p class='mtb-1'>The tag style attribute can also be bound to a css variable or template model value.<br/>
+      As the tag is part of the document generation process, it can be called multiple times for each <a href='#expression_looping' >loop itteration</a>, and use any values within the current context.</p>
+      <pre class='code-block'>&lt;table 
+  style='border: solid 1pt var(model.color ?? "black"); background-color: silver;' &gt;
+  
+  ...
+  
+  &lt;/table&gt;</pre>
+      <p class='mt-1'>
+        <strong>NOTE:</strong> Similiar to tag attributes, the value of a style component value should either be an expression, 
+        or a simple value, <em>not a combination of both</em>.
+      </p>
+    </div>
+    
+    <!--
+ 
+	Notation types
+
+	-->
+    
+    <div style='page-break-before: always'>
+      <h2 id='expression_notation' class='sub-title' style='margin-left: -20pt'>
+        <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+        Using Expressions</h2>
+       <h4 class='group-title mtb-1' title='Expression notation types' >Expression notation types</h4>
+      <p>When binding values in <span class='pwk-name' >paperwork</span> a data model or value is added to the template with a key name e.g. <code>model</code>.<br/>
+        If that model is a complex object then it's object graph can continue to be traversed using the standard notations, starting with the root item.
+      </p>
+      <table class='expressions' >
+        <thead>
+          <tr><td style='width:150pt'>Expression Type</td><td style='width:250pt'>Notation</td><td>Example</td></tr>
+        </thead>
+        <tr>
+          <td class='name'>Property (.) dot</td>
+          <td>\{{model.int}}\</td>
+          <td>{{model.int}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Array Indexor</td>
+          <td>\{{model.array[2]}}\</td>
+          <td>{{model.array[2]}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Dictionary access</td>
+          <td>\{{model.nested['p1']}}\</td>
+          <td>{{model.nested['p2']}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Array Indexor Property</td>
+          <td>\{{model.items[1].name}}\</td>
+          <td>{{model.items[1].name}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Constant</td>
+          <td>\{{Pi}}\</td>
+          <td>{{Pi}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Functions</td>
+          <td>\{{count(model.array)}}\</td>
+          <td>{{count(model.array)}}</td>
+        </tr>
+        <tr>
+          <td class='name'>Current item (.property) *</td>
+          <td>\{{eachof(model.items, .index)}}\</td>
+          <td>{{eachof(model.items, .index)}}</td>
+        </tr>
+      </table>
+    
+      <div><span class='footnote' >* Looping over items for the accessing the current item is supported with the template component tag discussed later.</span></div>
+    </div>
+    
+    <!-- 
+
+	Variables
+
+    -->
+    
+    <div style='page-break-before: always'>
+      <h2 id='expression_variables' class='sub-title' style='margin-left: -20pt'>
+        <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+        Using Expressions</h2>
+      <h4 title='Storing expression results in variables' class='group-title mtb-1' >Storing expression results in variables</h4>
+      <p>During the execution of a document, complex expressions may need to be calculated, or a look up set of values may need to be used multiple times.<br/>
+        It is often easier and more readable if the results of the expression be stored within the current document execution, rather than re-typed and re-run each time.
+      </p>
+      <p>To support this <span class='pwk-name' >paperwork</span> has extended the use of the 
+        &lt;var&gt; tag to create <em>or update</em> models within the document. 
+        These can either be simple values or complex object or arrays.</p>
+      <h5 class='sub-group-title' >Storing a value</h5>
+      <p class='mtb-1'><em>For example, the following will store all the items with an index &gt; 1 in &quot;newModel&quot;</em></p>
+      <pre class='code-block'>
+  &lt;var data-id='newModel' data-value='\{{selectWhere(model.items, .index &gt; 1)}}\' /&gt;
+  </pre>
+      <h5 class='sub-group-title' >Using the variable</h5>
+      <p class='mtb-1'><em>And these can then be accessed and used later in the template </em></p>
+      <pre class='code-block'>
+  &lt;span &gt;Items bigger than 1: \{{join(' ;', eachOf(newModel, .name))}}\&lt;/span&gt;
+  </pre>
+      <p class='mtb-1'>During the document processing the value can be updated any number of times, so parent values can be passed down or calculations made with new data. See <a href='#expression_looping' >Looping over model data</a></p>
+    </div>
+    
+    <div style='page-break-before: always'>
+      <h2 id='expression_looping' class='sub-title' style='margin-left: -20pt'>
+        <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+      </a>
+        Using Expressions</h2>
+      <h4 title='Looping over data' class='group-title mtb-1' >Looping over model data</h4>
+      <p>One of the most frequent requirements with any bound data is to enumerate over a list or array of results.<br/>
+        To do this in <span class='pwk-name' >paperwork</span> use the <code>&lt;template&gt;</code> tag, with the values to be used for each itteration set with the <code>data-bind</code> attribute.
+      </p>
+      <p class='mtb-1'><em>For example:</em></p>
+      <pre class='code-block'>&lt;ol&gt;
+  &lt;template data-bind'\{{model.items}}\' &gt;
+   &lt;li&gt;\{{.name}}\&lt;/li&gt;
+  &lt;/template&gt;
+&lt;/ol&gt;</pre>
+      <p class='mtb-1'><em>Will be output as:</em></p>
+      <pre class='sample-block'><ol>
+      <template data-bind='{{model.items}}' ><li>{{.name}}</li></template>
+      </ol></pre>
+      <p class='mtb-1'>The template tag can have any inner content, as long as it is one or more valid xhtml tags <em>(opened and closed within the template content)</em>.<br/>
+        It also has 4 more attributes specific to altering the items that are each being bound.</p>
+      <table class='expressions' >
+        <thead>
+          <tr><td style='width:130pt'>Attribute</td><td style='width:60pt'>Type</td><td>Description</td></tr>
+        </thead>
+        <tr>
+          <td class='name'><code>data-bind-start</code></td>
+          <td>Integer</td>
+          <td>The zero based index at which to start outputting the binding content. e.g. setting the value to 2 would skip the first to items found and begin output of the third.<br/><em>The default is 0</em></td>
+        </tr>
+        <tr>
+          <td class='name'><code>data-bind-step</code></td>
+          <td>Integer</td>
+          <td>The 'step' between each item to be bound (irrespective of the starting index). e.g. setting the value to 2 would skip every other item found.<br/><em>The default is 1</em></td>
+        </tr>
+        <tr>
+          <td class='name'><code>data-bind-max</code></td>
+          <td>Integer</td>
+          <td>The maximum number of items to be bound. e.g. setting the value to 3 would limit the number of bound items to 3 or less.<br/><em>The default is 0 which is treated as no max</em></td>
+        </tr>
+        <tr>
+          <td class='name'><code>data-content</code></td>
+          <td>html</td>
+          <td>This dynamically defines the content of the template based on binding to another source of xhtml/html.</td>
+        </tr>
+      </table>
+    </div>
+    <div style='page-break-before: always'>
+      <h2 id='expression_escaping' class='sub-title' style='margin-left: -20pt'>
+        <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+      </a>
+        Using Expressions</h2>
+      <h4 id='expression_escape' title='Escaping Expressions' class='group-title' style='margin-top:20pt'>Escaping expressions</h4>
+      <p>All content between 2 sets of handlebars will be treated as an expression, and an attempt made to compile the text inside.</p>
+      <p>If this is not meant to happen, then prefix and postfix the content with a backslash '\'.</p>
+      
+      <p class='mtb-1'><em>For example:</em></p>
+      <pre class='code-block'>&lt;span&gt;Some text that \\{{will stay as unparsed content}}\\.&lt;/span&gt;</pre>
+      <p class='mtb-1'><em>Will be output as:</em></p>
+      <pre class='sample-block'>Some text that \{{will stay as unparsed content}}\.</pre>
+      
+    </div>
+    <div style='page-break-before: always'>
+      <h2 id='expression_variables' class='sub-title' style='margin-left: -20pt'>
+        <a href='#toc' >
+        <img src='/images/paperworklogoonly.png' class='logo' />
+      </a>
+        Using Expressions</h2>
+      <h4 id='expression_errors' title='Errors in expressions' class='group-title' style='margin-top:20pt'>Checking errors in expressions</h4>
+      <p><span class='pwk-name'>paperwork</span> will attempt to evaluate an expression at runtime, and produce the result, however if it cannot undertand the content no result will be output.<br/>
+      If this is happening, and the reason is not evident then the document creation trace log should be used. 
+      </p>
+      <p>The easiest way from the <span class='pwk-name'>paperwork</span> IDE is to use the execution log, which can be shown from the bottom of the editor.</p>
+      <img src='/images/examples/execlogoption.png' style='margin-right:40pt;margin-left: 20pt' />
+      
+      <p class='mtb-1'>Or add the pocessing instruction to the top of the template manually:</p>
+      <pre class='code-block'>&lt;?paperwork append-log='true' log-level='Errors' ?&gt;</pre>
+      <p class='mtb-1'>The execution log will then be appended to the end of the document as a whole, and can be checked for expression issues.</p>
+      <div style='width:100%'>
+      	<img src='/images/examples/execlogoutput.png' style='display: block; max-height: 250pt; margin-left: 30%;border: solid 1pt black;padding:1pt;' />
+      </div>
+      <p class='mtb-1'>Finally, if you are all out for the code:</p>
+      <pre class='code-block'>
+      var doc = Scryber.Components.Document.ParseDocument('[path to source]');
+      doc.AppendTraceLog = true;
+      doc.TraceLog.SetRecordLevel(TraceRecordLevel.Errors);
+      doc.SaveAsPDF(ms);
+      </pre>
+    </div>
+    
+  </section>
+  
+  
+  <!-- 
+    The expressions are built up from the model.sections
+    sections -> funcs -> examples
+  -->
+  
+  <var data-id='allFuncs' data-value='{{collect(eachOf(func.sections, .funcs))}}' />
+  <var data-id='allFuncsSorted' data-value='{{sortBy(allFuncs, .name)}}' />
+
+  <template id='section-group' data-bind='{{func.sections}}' data-bind-start='0' data-bind-max='100' >
+    <var data-id='sectionName' data-value='{{.name}}' />
+    <var data-id='sectionId' data-value='{{.id}}' />
+    <section id='{{.id}}' title='{{.name}}' >
+      <h2 class='sub-title' >
+        <a href='#toc' >
+          <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+        </a>
+        <span>{{.name}}</span></h2>
+      <p hidden='{{length(.desc ?? "") == 0}}' >{{.desc}}</p>
+      <p >The following {{.name}} are supported</p>
+      <table class='toc' style='font-size: 12pt;'>
+          <template data-bind='{{sortBy(.funcs, .name)}}'>
+            <tr>
+              <td>
+                <a href='{{"#" + .id}}' >{{.name}}</a>
+              </td>
+              <td class='pg-num'><page for='{{"#" + .id}}' /></td>
+            </tr>
+          </template>
+      </table>
+      <var data-id='sectionIndex' data-value='{{index()}}' hidden='hidden' />
+      
+      <template id='function-group' data-bind='{{sortBy(.funcs, .name)}}' >
+        <var data-id='funcIndex' data-value='{{index()}}' hidden='hidden' />
+        <div class='function-group' >
+          <h2 class='sub-title' >
+            <a href='#toc' >
+              <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+            </a>
+            <a href='{{concat("#",sectionId)}}'><span class='section-link-content'>{{sectionName}}</span></a>
+          </h2>
+          <h3 title='{{.name}}' id='{{.id}}' style='margin-top: 20pt;' class='group-title'>{{.name}}</h3>
+          <p>{{.desc}}</p>
+          
+           <if data-test='{{length(.warning) > 0}}' >
+          <div class='alert alert-warning' >
+            <h5 class='alert-title' >Warning</h5>
+            <p class='alert-body' >
+              {{.warning}}
+            </p>
+          </div>
+        </if>
+          
+          <if data-test='{{length(.usage) > 0}}' >
+          	<h5 class='sub-group-title'>Usage</h5>
+            <pre class='code-block mt-1'>{{.usage}}</pre>
+          </if>
+          <if data-test='{{count(.parameters) > 0}}' >
+            
+            <!-- We have parameters - so output as a table -->
+            <div class='sub-group parameter-group' >
+              <h5 style='margin-top: 20pt;' class='sub-group-title'>Parameters</h5>
+              <table class='parameters'>
+                <thead>
+                  <tr>
+                    <td>Name</td>
+                    <td>Type</td>
+                    <td>Description</td>
+                  </tr>
+                </thead>
+                <template data-bind='{{.parameters}}' >
+                  <tr>
+                    <td class='param-name'>{{.name}}</td>
+                    <td class='param-type'><kbd>{{.type}}</kbd></td>
+                    <td class='param-desc'>{{.desc}}</td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <!-- End of parameters -->
+          </if>
+          
+          <if data-test='{{count(.returns) > 0}}' >
+            
+            <!-- We have returns - so output as a table -->
+            <div class='sub-group parameter-group' >
+              <h5 class='sub-group-title'>Returns</h5>
+              <table class='parameters'>
+                <thead>
+                  <tr>
+                    <td>Type</td>
+                    <td>Description</td>
+                  </tr>
+                </thead>
+                <template data-bind='{{.returns}}' >
+                  <tr>
+                    <td class='param-type'><kbd>{{.type}}</kbd></td>
+                    <td class='param-desc'>{{.desc}}</td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <!-- End of returns -->
+          </if>
+        </div>
+        
+        <if data-test='{{length(.notes) > 0}}'>
+          <!-- We have notes -->
+          <div class='' >
+            <h5 class='sub-group-title' >Notes</h5>
+            <p class='foot-note' >
+              {{.notes}}
+            </p>
+          </div>
+        </if>
+        
+        <if data-test='{{count(.examples) > 0}}' >
+          <!-- We have examples -->
+          <div class='sub-group example-group' style='break-inside: avoid' >
+            <h5 class='sub-group-title'>Examples</h5>
+            <table class='{{concat("expressions ",.id)}}' style='break-inside: avoid'>
+              <template id='example-group' data-bind='{{.examples}}'>
+                <tr>
+                  <td class='{{concat("name", if(.isinvalid," invalid", ""))}}'>{{.text}}</td>
+                  <td class='result'>{{eval(.expr)}}</td>
+                </tr>
+              </template>
+            </table>
+          </div>
+        </if>
+        
+        <if data-test='{{count(.seealso) > 0}}'>
+          <!-- We have others to look up -->
+          <div class='sub-group seealso-group' >
+            <h5 class='sub-group-title'>See Also</h5>
+            <p class='sub-group-content foot-note'>
+              <template id='seealso-group' data-bind='{{.seealso}}'>
+                <var data-id='lookup' data-value='{{string(.)}}' hidden='hidden' />
+                <a class='seealso-link' href='{{concat("#",lookup)}}' >{{(firstWhere(allFuncs, .id == lookup).name) ?? lookup}}</a></template>
+            </p>
+          </div>
+        </if>
+      </template>
+    </section>
+  </template>
+  
+  
+  
+  <section>
+    <h2 class='sub-title' title='Index'>
+        <a href='#toc' >
+          <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+        </a>
+        <span>Index</span>
+    </h2>
+      <var data-id='currLetter' data-value='{{"z"}}' hidden='hidden' />
+      <main id='func_index' style='column-count: 3; font-size: 10pt; margin-top:10pt; break-inside: auto;'>
+          <table id="indexTable" style='width: 100%; break-inside: auto;'>
+              <template data-bind='{{allFuncsSorted}}'>
+                  <tr hidden='{{if(substring(.name, 0, 1) == currLetter, "hidden", "")}}' >
+                      <td colspan='2' style='border: none;border-bottom: solid 1pt #006b6b; padding-top: 4pt; margin-bottom: 2pt; font-weight: 600;'>{{substring(.name, 0, 1)}}</td>
+                  </tr>
+                  <tr>
+                      <td style='border: none;padding-top: 0pt; padding-left: 10pt;'>
+                          <a href='{{concat("#", .id)}}' >{{.name}}</a></td>
+                      <td style='border: none;width:25pt; padding: 1pt'>
+                          <page for='{{"#" + .id}}' />
+                      </td>
+                  </tr>
+                  <var data-id='currLetter' data-value='{{subString(.name, 0, 1)}}' />
+              </template>
+          </table>
+      </main>
+      
+  </section>
+  
+  
+  <footer>
+    <table class='foot'>
+      <tr>
+        <td class='first'>Crib sheet - Expressions</td>
+        <td><span>{{string(date(),"dd MMM yyyy")}}</span></td>
+        <td class='last'>Page <page/></td>
+      </tr>
+    </table>
+  </footer>
+</body>
+
+</html>

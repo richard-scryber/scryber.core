@@ -234,6 +234,80 @@ namespace Scryber.Components
 
         #endregion
 
+        
+        #region public PDFUnit Right {get;set;} + public bool HasRight {get;}
+
+        /// <summary>
+        /// Gets or Sets the Right (Horizontal) position of this page Component
+        /// </summary>
+        [PDFAttribute("right", Const.PDFStylesNamespace)]
+        [PDFDesignable("Right", Ignore = true, Category ="Position",Priority = 1,Type ="PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"left\"")]
+        public virtual Unit Right
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionRightKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionRightKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identify if the X position has been set for this Page Component
+        /// </summary>
+        public virtual bool HasRight
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionRightKey, out x);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit Bottom {get;set;} + public bool HasBottom {get;}
+
+        /// <summary>
+        /// Gets or sets the Y (vertical) position of the Page Component
+        /// </summary>
+        [PDFAttribute("bottom", Const.PDFStylesNamespace)]
+        [PDFDesignable("Bottom", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        [PDFJSConvertor("scryber.studio.design.convertors.unit_css", JSParams = "\"top\"")]
+        public virtual Unit Bottom
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionBottomKey, Unit.Empty);
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionBottomKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the flag to identifiy is the Y value has been set on this page Component
+        /// </summary>
+        public virtual bool HasBottom
+        {
+            get
+            {
+                StyleValue<Unit> x;
+                return this.HasStyle && this._style.TryGetValue(StyleKeys.PositionBottomKey, out x);
+            }
+        }
+
+        #endregion
 
         #region public PDFUnit MinimumWidth {get;set;} + public bool HasMinimumWidth {get;}
 
@@ -1145,13 +1219,38 @@ namespace Scryber.Components
             get
             {
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
+                    return this.Style.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
                 else
-                    return PositionMode.Block;
+                    return PositionMode.Static;
             }
             set
             {
                 this.Style.SetValue(StyleKeys.PositionModeKey, value);
+            }
+        }
+
+        #endregion
+        
+        #region public DisplayMode DisplayMode
+
+        /// <summary>
+        /// Gets or sets the position mode of this component (flow, relative, absolute)
+        /// </summary>
+        [PDFAttribute("display-mode", Const.PDFStylesNamespace)]
+        [PDFDesignable("Display", Category = "Layout", Priority = 1, Type = "DisplayMode")]
+        [PDFJSConvertor("scryber.studio.design.convertors.displayMode_css")]
+        public DisplayMode DisplayMode
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                else
+                    return DisplayMode.Block;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.PositionDisplayKey, value);
             }
         }
 
@@ -1615,9 +1714,9 @@ namespace Scryber.Components
         #region public TransformOperation TransformOperation {get;set;}
 
         /// <summary>
-        /// Gets or sets the transform operation. NOTE setting will prepend the value onto the chain of any existing values. Set to null or use RemoveTransformOperation() to clear completely.
+        /// Gets or sets the transform operation.
         /// </summary>
-        public virtual TransformOperation TransformOperation
+        public virtual Scryber.Drawing.TransformOperationSet TransformOperation
         {
             get
             {
@@ -1632,8 +1731,6 @@ namespace Scryber.Components
                     this.Style.RemoveValue(StyleKeys.TransformOperationKey);
                 else
                 {
-                    var prev = this.Style.GetValue(StyleKeys.TransformOperationKey, null);
-                    value.Append(prev);
                     this.Style.SetValue(StyleKeys.TransformOperationKey, value);
                 }
                     

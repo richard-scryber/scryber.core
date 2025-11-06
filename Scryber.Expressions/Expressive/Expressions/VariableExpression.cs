@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define SEARCH_CURRENT_OBJECT_PROPERTIES
+
+using System;
 using System.Collections.Generic;
 
 namespace Scryber.Expressive.Expressions
@@ -6,10 +8,12 @@ namespace Scryber.Expressive.Expressions
     internal class VariableExpression : IExpression
     {
         public readonly string variableName;
+        public readonly bool isCaseInSensitive;
 
-        internal VariableExpression(string variableName)
+        internal VariableExpression(string variableName, bool caseInSensitive)
         {
             this.variableName = variableName;
+            this.isCaseInSensitive = caseInSensitive;
         }
 
         #region IExpression Members
@@ -17,12 +21,25 @@ namespace Scryber.Expressive.Expressions
         /// <inheritdoc />
         public object Evaluate(IDictionary<string, object> variables)
         {
-            if (variables is null ||
-                !variables.TryGetValue(this.variableName, out var variableValue))
-            {
+            if (variables is null)
                 return null;
+            
+            if(!variables.TryGetValue(this.variableName, out var variableValue))
+            {
+                #if SEARCH_CURRENT_OBJECT_PROPERTIES
 
-                //throw new ArgumentOutOfRangeException("The variable '" + this.variableName + "' has not been supplied.");
+                if (variables.TryGetValue(CurrentDataExpression.CurrentDataVariableName, out var curr))
+                {
+                    variableValue =
+                        PropertyExpression.GetPropertyValue(curr, this.variableName, this.isCaseInSensitive);
+                    return variableValue;
+
+                }
+                
+                #endif
+                
+                //not found
+                return null;
             }
 
             // Check to see if we have to referred to another expression.
@@ -35,5 +52,29 @@ namespace Scryber.Expressive.Expressions
         }
 
         #endregion
+    }
+    
+    internal class SelfVariableExpression : IExpression
+    {
+        public object Evaluate(IDictionary<string, object> variables)
+        {
+            var result = variables[CurrentDataExpression.CurrentDataVariableName];
+            return result;
+        }
+    }
+
+    internal class ParentVariableExpression : IExpression
+    {
+        
+
+        public ParentVariableExpression()
+        {
+        }
+        
+        public object Evaluate(IDictionary<string, object> variables)
+        {
+            var result = variables[ParentDataExpression.ParentDataVariableName];
+            return result;
+        }
     }
 }

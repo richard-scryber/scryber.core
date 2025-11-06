@@ -137,7 +137,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderTopStyle, new CSSBorderTopStyleParser());
             all.Add(CSSStyleItems.BorderBottomStyle, new CSSBorderBottomStyleParser());
 
-            all.Add(CSSStyleItems.FillColor, new CSSFillColourParser());
+            all.Add(CSSStyleItems.FillColor, new CSSFillColorParser());
 
 
             all.Add(CSSStyleItems.Background, new CSSBackgroundParser());
@@ -174,6 +174,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PaddingBottom, new CSSPaddingBottomParser());
             all.Add(CSSStyleItems.PaddingTop, new CSSPaddingTopParser());
             all.Add(CSSStyleItems.Padding, new CSSPaddingAllParser());
+            
+            all.Add(CSSStyleItems.PaddingInlineAll, new CSSPaddingInlineBothParser());
+            all.Add(CSSStyleItems.PaddingInlineStart, new CSSPaddingInlineStartParser());
+            all.Add(CSSStyleItems.PaddingInlineEnd, new CSSPaddingInlineEndParser());
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 
@@ -185,6 +189,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Left, new CSSLeftParser());
             all.Add(CSSStyleItems.Top, new CSSTopParser());
             all.Add(CSSStyleItems.Float, new CSSPositionFloatParser());
+            all.Add(CSSStyleItems.Bottom, new CSSBottomParser());
+            all.Add(CSSStyleItems.Right, new CSSRightParser());
 
             all.Add(CSSStyleItems.Width, new CSSWidthParser());
             all.Add(CSSStyleItems.Height, new CSSHeightParser());
@@ -201,6 +207,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.LetterSpacing, new CSSLetterSpacingParser());
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
             all.Add(CSSStyleItems.Hyphenation, new CSSHyphensParser());
+            all.Add(CSSStyleItems.HyphenateLimitChars, new CSSHyphenateLimitsParser());
+            all.Add(CSSStyleItems.HyphenateLimitLength, new CSSHyphenateMinLengthParser());
             all.Add(CSSStyleItems.HyphenationMinBefore, new CSSHyphensMinBeforeParser());
             all.Add(CSSStyleItems.HyphenationMinAfter, new CSSHyphensMinAfterParser());
             all.Add(CSSStyleItems.HyphenationCharAppend, new CSSHyphensCharAppendParser());
@@ -236,11 +244,13 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BreakBefore, new CSSColumnBreakBeforeParser());
 
             all.Add(CSSStyleItems.PositionModeType, new CSSPositionModeParser());
+            
 
             all.Add(CSSStyleItems.StrokeColor, new CSSStrokeColorParser());
             all.Add(CSSStyleItems.StrokeOpacity, new CSSStrokeOpacityParser());
             all.Add(CSSStyleItems.StrokeWidth, new CSSStrokeWidthParser());
             all.Add(CSSStyleItems.StrokeDash, new CSSStrokeDashParser());
+            all.Add(CSSStyleItems.StrokeDashOffset, new CSSStrokeDashOffsetParser());
             all.Add(CSSStyleItems.StrokeLineCap, new CSSStrokeLineCapParser());
             all.Add(CSSStyleItems.StrokeLineJoin, new CSSStrokeLineJoinParser());
 
@@ -252,6 +262,19 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());
             all.Add(CSSStyleItems.CounterIncrement, new CSSCounterIncrementParser());
+            
+            all.Add(CSSStyleItems.PaintOrder, new CSSPaintOrderParser());
+            
+            //TODO: Add all the SVG attributes
+            
+            all.Add(CSSStyleItems.GradientStopColor, new CSSSVGGradientStopColor());
+            all.Add(CSSStyleItems.GradientStopOpacity, new CSSSVGGradientStopOpacity());
+            
+            all.Add(CSSStyleItems.X1Position, new CSSSVGx1Position());
+            all.Add(CSSStyleItems.X2Position, new CSSSVGx2Position());
+            all.Add(CSSStyleItems.Y1Position, new CSSSVGy1Position());
+            all.Add(CSSStyleItems.Y2Position, new CSSSVGy2Position());
+            all.Add(CSSStyleItems.GradientSpreadMode, new CSSSVGLinearGradientSpreadMode());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

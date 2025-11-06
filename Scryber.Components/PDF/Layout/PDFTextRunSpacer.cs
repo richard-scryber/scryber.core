@@ -66,7 +66,20 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        
+        /// <summary>
+        /// Returns true if this spacer is at the start of a new line - so it will apply any horizontal alignment
+        /// </summary>
+        public bool IsNewLineSpacer
+        {
+            get;
+            protected set;
+        }
+
+        public PDFTextRunNewLine PreviousNewLine
+        {
+            get;
+            protected set;
+        }
 
         //
         // ctor
@@ -75,9 +88,11 @@ namespace Scryber.PDF.Layout
         #region public PDFTextRunSpacer(PDFUnit width, PDFUnit height, PDFLayoutLine line, IPDFComponent owner)
 
 
-        public PDFTextRunSpacer(Unit width, Unit height, PDFLayoutLine line, IComponent owner)
+        public PDFTextRunSpacer(Unit width, Unit height, PDFLayoutLine line, IComponent owner, PDFTextRunNewLine newLineSpacer)
             : base(line, owner)
         {
+            this.IsNewLineSpacer = null != newLineSpacer;
+            this.PreviousNewLine = newLineSpacer;
             this.SetSpacing(width, height);
         }
 
@@ -87,14 +102,14 @@ namespace Scryber.PDF.Layout
         // methods
         //
 
-        #region protected virtual void SetSpacing(PDFUnit width, PDFUnit height)
+        #region public virtual void SetSpacing(PDFUnit width, PDFUnit height)
 
         /// <summary>
         /// Sets the Width and Height spacing values to the required size.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        protected virtual void SetSpacing(Unit width, Unit height)
+        public virtual void SetSpacing(Unit width, Unit height)
         {
             this._w = width;
             this._h = height;
@@ -102,9 +117,10 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
-            if (xoffset > 0)
+            if (xoffset > 0 && this.IsNewLineSpacer)
             {
                 this._w += xoffset;
             }

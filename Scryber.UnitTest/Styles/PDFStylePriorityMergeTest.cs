@@ -241,7 +241,9 @@ namespace Scryber.Core.UnitTests.Styles
                 var first = doc.FindAComponentById("first");
                 var second = doc.FindAComponentById("second");
 
-                var style = pg.GetFirstArrangement().FullStyle;
+                var arrange = pg.GetFirstArrangement() as ComponentMultiArrangement;
+                arrange = arrange.NextArrangement; //we want the page arrangement not the content arrangement.
+                var style = arrange.FullStyle;
                 Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
                 Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 
@@ -263,40 +265,40 @@ namespace Scryber.Core.UnitTests.Styles
             //Checks that the nested values are used in a style stack
             //for inherited styles
 
-            var src = @"<?xml version='1.0' encoding='UTF-8' ?>
-            <doc:Document xmlns:doc='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Components.xsd'
-                          xmlns:style='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Styles.xsd'>
-              <Styles>
-                <style:Style match='doc:Section.red' >
-                    <style:Background color='#FF0000' />
-                    <style:Fill color='#880000' />
-                </style:Style>
-                <style:Style match='.green' >
-                    <style:Background color='#00FF00' />
-                    <style:Fill color='#008800' />
-                </style:Style>
-                <style:Style match='.blue' >
-                    <style:Background color='#0000FF' />
-                    <style:Fill color='#000088' />
-                </style:Style>
-              </Styles>
-              <Pages>
-                <doc:Section id='pg' style:class='red' >
-                  <Content>
-                    <doc:Div id='first' style:class='green' >
-                      This should be green
-                      <doc:Div id='second' style:class='blue'  >
-                        This should be blue
-                      </doc:Div>
-                      <doc:Div id='third' >
-                        This should also be green
-                      </doc:Div>
-                    </doc:Div>
-                    This should be red
-                  </Content>
-                </doc:Section>
-              </Pages>
-            </doc:Document>";
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+    <style>
+        body.red {
+           background-color: #FF0000;
+           color: #880000;
+        }
+
+        .green{
+            background-color: #00FF00;
+            color: #008800;
+        }
+
+        .blue{
+            background-color: #0000FF;
+            color: #000088;
+        }
+    </style>
+</head>
+<body  id='pg' class='red'>
+    <div id='first' class='green' >
+        This should be green
+        <div id='second' class='blue' >
+            This should be blue
+        </div>
+        <div id='third' class='' >
+            This should also be green
+        </div>
+    </div>
+    This should be red
+</body>
+
+</html>
+";
 
             using (var ms = new System.IO.StringReader(src))
             {
@@ -305,12 +307,14 @@ namespace Scryber.Core.UnitTests.Styles
                 using (var stream = DocStreams.GetOutputStream("StylePriorityNestedClasses.pdf"))
                     doc.SaveAsPDF(stream);
 
-                var pg = doc.FindAComponentById("pg");
+                var pg = doc.FindAComponentById("pg") as Page;
                 var first = doc.FindAComponentById("first");
                 var second = doc.FindAComponentById("second");
                 var third = doc.FindAComponentById("third");
 
-                var style = pg.GetFirstArrangement().FullStyle;
+                var arrange = pg.GetFirstArrangement() as ComponentMultiArrangement;
+                arrange = arrange.NextArrangement; //we want the page arrangement not the content arrangement.
+                var style = arrange.FullStyle;
                 Assert.AreEqual((Color)"#880000", style.Fill.Color, "Page fill color incorrect");
                 Assert.AreEqual((Color)"#FF0000", style.Background.Color, "Page bg color incorrect");
 

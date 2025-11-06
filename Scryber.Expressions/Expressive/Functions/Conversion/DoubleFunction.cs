@@ -18,6 +18,9 @@ namespace Scryber.Expressive.Functions.Conversion
 
             // No point converting if there is nothing to convert.
             if (objectToConvert is null) { return null; }
+            
+            else if (objectToConvert is DateTime dt)
+                return (double)dt.Ticks / TimeSpan.TicksPerMillisecond; 
 
             return Convert.ToDouble(objectToConvert, context.CurrentCulture);
         }

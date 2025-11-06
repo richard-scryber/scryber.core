@@ -4,6 +4,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.Drawing;
 using System.IO;
+using Scryber.Html.Components;
 using Scryber.PDF.Resources;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -527,7 +528,7 @@ namespace Scryber.UnitLayouts
 
             var pgHeight = layout.AllPages[0].Size.Height - pg.Margins.Top - pg.Margins.Bottom;
             var lineCount = 4.0;
-            var offsetY = pgHeight.PointsValue - (lineCount * lead);
+            double offsetY = 0; // pgHeight.PointsValue - (lineCount * lead);
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights
@@ -592,7 +593,7 @@ namespace Scryber.UnitLayouts
 
             //divide all the space by 2 and this should be our middle start point;
             var half = all / 2.0;
-            var offsetY = half;
+            double offsetY = 0; //should not affect the text
 
             //The textrunbegin holds the starting position for rendering the text from the TotalBounds
             //This is held from the line heights
@@ -628,7 +629,13 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
 
             doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.AppendTraceLog = true;
@@ -647,8 +654,10 @@ namespace Scryber.UnitLayouts
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
                 var offset = pgContentWidth - twidth;
@@ -656,12 +665,92 @@ namespace Scryber.UnitLayouts
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                }
+
+
+            }
+
+        }
+        
+        /// <summary>
+        /// Checks the font and line sizing along with offset Y for an explicit aligmnent in the middle
+        /// </summary>
+        [TestMethod()]
+        public void LiteralVeryLongWithHAlignRight()
+        {
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.HorizontalAlignment = HorizontalAlignment.Right;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page\r\n\r\nThis is on a new line on it's own"));
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new LineBreak());
+            //pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            //doc.AppendTraceLog = true;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LiteralHAlignRight");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            var region = layout.AllPages[0].ContentBlock.Columns[0];
+
+            var em = 24.0;  //Point size of font
+
+            //default sans-sefif is set up as follows
+            var pgContentWidth = layout.AllPages[0].Width - (pg.Margins.Left + pg.Margins.Right);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
+                Assert.AreEqual(3, line.Runs.Count);
+                var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
+                var twidth = text.Width;
+
+                var offset = pgContentWidth - twidth;
+
+                if (i == 0)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue, start.LineInset.PointsValue, "First line inset should be " + offset);
+                }
+                else
+                {
+                    //check the new line offset from the previous line to this line
+                    var space = line.Runs[0] as PDFTextRunSpacer;
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, (prevWidth - newWidth).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 
@@ -685,10 +774,16 @@ namespace Scryber.UnitLayouts
 
             doc.Pages.Add(pg);
             pg.Contents.Add(new TextLiteral("This is a text run that should flow over more than two lines in the page with a default line height so that we can check the leading of default lines as they flow down the page"));
-
-
+            pg.Contents.Add(new LineBreak());
+            pg.Contents.Add(new TextLiteral("This is on a new line on it's own"));
+            
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            
             doc.RenderOptions.Compression = OutputCompressionType.None;
-            doc.AppendTraceLog = true;
+            //doc.AppendTraceLog = true;
             doc.LayoutComplete += Doc_LayoutComplete;
             SaveAsPDF(doc, "Text_LiteralHAlignCenter");
 
@@ -704,21 +799,30 @@ namespace Scryber.UnitLayouts
             for (var i = 0; i < 4; i++)
             {
                 var line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsNotNull(line);
                 Assert.AreEqual(3, line.Runs.Count);
                 var text = line.Runs[1] as PDFTextRunCharacter;
+                Assert.IsNotNull(text);
                 var twidth = text.Width;
 
-                var offset = (pgContentWidth - twidth) / 2.0;
+                var offset = pgContentWidth - twidth;
 
                 if (i == 0)
                 {
                     var start = line.Runs[0] as PDFTextRunBegin;
-                    AssertAreApproxEqual(offset.PointsValue, start.TotalBounds.X.PointsValue, "First line inset should be " + offset);
+                    Assert.IsNotNull(start);
+                    AssertAreApproxEqual(offset.PointsValue / 2, start.LineInset.PointsValue, "First line inset should be " + (offset / 2));
                 }
                 else
                 {
+                    //check the new line offset from the previous line to this line
                     var space = line.Runs[0] as PDFTextRunSpacer;
-                    AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
+                    var prev = (PDFLayoutLine) region.Contents[i - 1];
+                    var last = (PDFTextRunNewLine)prev.Runs[prev.Runs.Count - 1];
+                    var prevWidth = pgContentWidth - prev.Width;
+                    var newWidth = pgContentWidth - twidth;
+                    AssertAreApproxEqual(last.NewLineOffset.Width.PointsValue, ((prevWidth - newWidth) / 2).PointsValue, "Line " + i + " has invalid offset from previous of " + last.NewLineOffset.Width );
+                    //AssertAreApproxEqual(offset.PointsValue, space.Width.PointsValue, "Line " + i + " spacer should be " + offset);
                 }
 
 
@@ -1072,7 +1176,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1180,7 +1284,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             //First Page
@@ -1231,7 +1335,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
             region = content.Columns[0] as PDFLayoutRegion;
 
@@ -1295,7 +1399,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1378,7 +1482,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2
@@ -1446,7 +1550,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(1, content.Columns.Length);
 
             var region = content.Columns[0];
@@ -1493,7 +1597,7 @@ namespace Scryber.UnitLayouts
 
             var lp = layout.AllPages[0];
             var content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column
@@ -1576,7 +1680,7 @@ namespace Scryber.UnitLayouts
 
             lp = layout.AllPages[1];
             content = lp.ContentBlock;
-            Assert.AreEqual(lp.Width, content.Width);
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
             Assert.AreEqual(2, content.Columns.Length);
 
             //First Column - Page 2 - full
@@ -1651,8 +1755,8 @@ namespace Scryber.UnitLayouts
 
 
             var content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
-                "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                          "Quisque gravida elementum nisl, at ultrices odio suscipit interdum. " +
+                          "Sed sed diam non sem fringilla varius. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Curabitur viverra ligula ut tellus feugiat mattis. Curabitur id urna sed nulla gravida ultricies." +
                 " Duis molestie mi id tincidunt mattis. Maecenas consectetur quis lectus nec lobortis. " +
                 "Donec nec sapien eu mi commodo porta in quis nibh. Sed quam sem, tristique vel lobortis nec, " +
@@ -1704,7 +1808,7 @@ namespace Scryber.UnitLayouts
             var contentW = layout.AllPages[0].ContentBlock.Width;
 
             Assert.AreEqual(36, region.Contents.Count);
-            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 31 };
+            var colHyphens = new int[] { 1, 3, 4, 8, 12, 14, 15, 17, 24, 31 };
 
             for (var i = 0; i < 36; i++)
             {
@@ -2657,6 +2761,69 @@ namespace Scryber.UnitLayouts
 
                 }
             }
+        }
+
+        [TestMethod]
+        public void MultiByteText_IncEmojies()
+        {
+
+            var src = @"<!DOCTYPE HTML>
+<html lang=""en"" xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+  <meta charset=""utf-8"" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: serif;
+      font-size: 12pt;
+    }
+    td {
+      padding: 4px 6px;
+      vertical-align: top;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr><td colspan=""8""><h6>HTML Entities &amp; Matching Unicode</h6></td></tr>
+  <tr><td>Bull (entity)</td><td>&bull;</td><td>Bull (unicode)</td><td>•</td><td>Em dash</td><td>—</td><td>Arrow</td><td>→</td></tr>
+  <tr id='emojiRow'><td>Emoji: rocket</td><td>🚀</td><td>Emoji: fire</td><td>🔥</td><td>Emoji: thumbs up</td><td>👍</td><td>Emoji: heart</td><td>❤️</td></tr>
+</table>
+</body>
+</html>";
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Text_MultibyteText.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                var row = doc.FindAComponentById("emojiRow") as HTMLTableRow;
+                
+                Assert.IsNotNull(row);
+                Assert.AreEqual(8, row.Cells.Count);
+
+                var first = row.Cells[1];
+                Assert.IsNotNull(first);
+                Assert.AreEqual(1, first.Contents.Count);
+
+                var lit = first.Contents[0] as TextLiteral;
+                Assert.IsNotNull(lit);
+                var chars = lit.Text;
+                Assert.AreEqual(2, lit.Text.Length);
+                
+                var stringInfo = new System.Globalization.StringInfo(lit.Text);
+                Assert.AreEqual(1, stringInfo.LengthInTextElements);
+                
+
+            }
+
+
         }
 
 

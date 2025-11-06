@@ -57,6 +57,8 @@ namespace Scryber.PDF
 
         #endregion
 
+        
+
         public PDFLayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(style, items, log, perfmon, document, OutputFormat.PDF)
         {

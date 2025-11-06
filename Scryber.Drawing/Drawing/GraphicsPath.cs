@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using Scryber.PDF.Graphics;
 using System.Text;
+using Scryber.Svg;
 
 namespace Scryber.Drawing
 {
@@ -26,15 +28,19 @@ namespace Scryber.Drawing
     /// Contains path drawing operations
     /// </summary>
     [PDFParsableValue()]
-    public class GraphicsPath : ITypedObject
+    public class GraphicsPath : ITypedObject, ICloneable
     {
         
         private List<Path> _paths = new List<Path>();
         private Stack<Path> _stack = new Stack<Path>();
-        private Rect _bounds;
+        private PathMultiAdornment _addornments; 
         private Point _cursor;
         private Point _lasthandle;
         private GraphicFillMode _mode = GraphicFillMode.Winding;
+        
+        //set the top left and bottom right to opposite values.
+        private Point _topLeft = new Point(Double.MaxValue, Double.MaxValue);
+        private Point _bottomRight = new Point(0.0, 0.0); 
 
         public GraphicFillMode Mode
         {
@@ -42,10 +48,10 @@ namespace Scryber.Drawing
             set { _mode = value; }
         }
 
-        public List<Path> Paths
-        {
-            get { return _paths; }
-        }
+        // public List<Path> Paths
+        // {
+        //     get { return _paths; }
+        // }
 
         public IEnumerable<Path> SubPaths
         {
@@ -83,14 +89,149 @@ namespace Scryber.Drawing
             get { return this._stack.Count > 0; }
         }
 
+        public bool HasAdornments
+        {
+            get { return this._addornments != null; }
+        }
+
+        public AdornmentOrientationValue AdornmentOrientation { get; set; }
+
+        public void OutputAdornments(PDFGraphics graphics, PathAdornmentInfo info, ContextBase context,
+            AdornmentOrder currentOrder)
+        {
+            
+            if (null != this._addornments)
+            {
+                
+                PathData prev = null;
+                PathData curr = null;
+               
+                var hasStarts = this._addornments.HasStarts(currentOrder);
+                var hasMids = this._addornments.HasMids(currentOrder);
+                var hasEnds = this._addornments.HasEnds(currentOrder);
+                
+                if(!hasStarts && !hasMids && !hasEnds) return; //no need to enumerate
+
+                else if (this._addornments.IsSingleAdornmentType)
+                {
+
+                    var builder = new VertexBuilder(hasStarts, hasMids, hasEnds, info.ReverseAngleAtStart,
+                        info.ExplicitAngle);
+                    var all = builder.CollectVertices(this);
+
+                    foreach (var vertex in all)
+                    {
+                        info.AngleRadians = vertex.Angle;
+                        info.Location = vertex.Location;
+
+                        this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                            AdornmentPlacements.All);
+                    }
+                }
+                else
+                {
+                    //GO through each one in turn
+                    if (hasStarts)
+                    {
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.Start);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.Start);
+                        var builder = new VertexBuilder(hasStarts, false, false, isReversed,
+                            angle);
+                        
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
+                        {
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.Start);
+                        }
+                    }
+                    
+                    if (hasMids)
+                    {
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.Middle);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.Middle);
+                        var builder = new VertexBuilder(false, hasMids, false, isReversed,
+                            angle);
+                        
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
+                        {
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.Middle);
+                        }
+                    }
+                    
+                    if (hasEnds)
+                    {
+                        var isReversed = this._addornments.IsReversed(currentOrder, AdornmentPlacements.End);
+                        var angle = this._addornments.TryGetAngle(currentOrder, AdornmentPlacements.End);
+                        
+                        var builder = new VertexBuilder(false, false, hasEnds, isReversed,
+                            angle);
+                        
+                        var all = builder.CollectVertices(this);
+
+                        foreach (var vertex in all)
+                        {
+                            info.AngleRadians = vertex.Angle;
+                            info.Location = vertex.Location;
+
+                            this._addornments.EnsureAdornments(graphics, info, context, currentOrder,
+                                AdornmentPlacements.End);
+                        }
+                    }
+                }
+
+            }
+        }
+        
+        
+
+        protected virtual void UpdateAdornmentForVertex(PathData previous, PathData current, PathData next,
+            PathAdornmentInfo info, AdornmentPlacements placement, AdornmentOrder order, PDFGraphics graphics, ContextBase context)
+        {
+            current.UpdateAdornmentInfo(previous, next, info, placement);
+            this._addornments.EnsureAdornments(graphics, info, context, order, placement);
+        }
+
+        
+
         /// <summary>
         /// Gets the bounds of this path
         /// </summary>
         public Rect Bounds
         {
-            get { return _bounds; }
+            get
+            {
+                if(this._paths == null || this._paths.Count == 0)
+                    return Rect.Empty;
+                else if (this._paths.Count == 1 && this._paths[0].Count == 0)
+                    return Rect.Empty;
+                else
+                {
+                    var x = _topLeft.X;
+                    var y = _topLeft.Y;
+                    var w = _bottomRight.X - _topLeft.X;
+                    var h = _bottomRight.Y - _topLeft.Y;
+                    return new Rect(x, y, w, h);
+                }
+            }
         }
+        
+        /// <summary>
+        /// Gets or sets any render matrix to be applied to the path data when rendering
+        /// </summary>
+        public PDFTransformationMatrix PathMatrix { get; set; }
 
+        
         public ObjectType Type
         {
             get { return ObjectTypes.GraphicsPath; }
@@ -105,6 +246,42 @@ namespace Scryber.Drawing
 
         }
 
+        public void AddAdornment(IPathAdorner adorner, AdornmentOrder order, AdornmentPlacements placements)
+        {
+            if(null != this._addornments)
+                this._addornments.Append(adorner, order, placements);
+            else
+            {
+                this.AdornmentOrientation = adorner.Orientation;
+                this._addornments = new PathMultiAdornment(adorner, order, placements);
+            }
+                
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public GraphicsPath Clone()
+        {
+            var newPath = (GraphicsPath)this.MemberwiseClone();
+            
+            if (null != this.PathMatrix)
+                newPath.PathMatrix = this.PathMatrix.Clone();
+            
+            if (null != this._paths)
+            {
+                newPath._paths = new List<Path>(this._paths.Count);
+                foreach (var p in this._paths)
+                {
+                    newPath._paths.Add(p.Clone());
+                }
+            }
+
+            return newPath;
+        }
+
         /// <summary>
         /// Creates a new empty graphics path, ready to start adding operations to.
         /// </summary>
@@ -116,7 +293,7 @@ namespace Scryber.Drawing
 
             _stack = new Stack<Path>();
             _stack.Push(p);
-            _bounds = Rect.Empty;
+
         }
 
         public void MoveTo(Point start)
@@ -445,10 +622,14 @@ namespace Scryber.Drawing
 
         private void IncludeInBounds(Point pt)
         {
-            if (_bounds.Width < pt.X)
-                _bounds.Width = pt.X;
-            if (_bounds.Height < pt.Y)
-                _bounds.Height = pt.Y;
+            if (pt.X < _topLeft.X)
+                _topLeft.X = pt.X;
+            if (pt.Y < _topLeft.Y)
+                _topLeft.Y = pt.Y;
+            if (pt.X > _bottomRight.X)
+                _bottomRight.X = pt.X;
+            if (pt.Y > _bottomRight.Y)
+                _bottomRight.Y = pt.Y;
         }
 
         private Point ConvertDeltaToActual(Point delta)
@@ -464,7 +645,7 @@ namespace Scryber.Drawing
         public Point[] GetAllPoints()
         {
             List<Point> pts = new List<Point>();
-            foreach (Path path in this.Paths)
+            foreach (Path path in this.SubPaths)
             {
                 path.FillAllPoints(pts);
             }

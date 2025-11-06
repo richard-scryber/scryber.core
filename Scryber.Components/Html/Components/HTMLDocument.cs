@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Scryber.Components;
+using Scryber.PDF;
 using Scryber.Styles;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Html.Components
 {
@@ -37,13 +39,22 @@ namespace Scryber.Html.Components
         }
 
         private HTMLBody _body;
+        private HTMLFrameset _frameset;
 
+        /// <summary>
+        /// When using the body, new document content can be defined. If the frameset is also set then an <see cref="InvalidOperationException" /> will be raised.
+        /// </summary>
+        /// <remarks>A body and </remarks>
         [PDFElement("body")]
         public HTMLBody Body
         {
             get { return this._body; }
             set
             {
+                if (null != this.Frameset && null != value)
+                    throw new InvalidOperationException(
+                        "A body and a frameset cannot be applied to the same document - use one or the other.");
+                
                 if (null != this._body)
                     this.Pages.Remove(this._body);
 
@@ -51,6 +62,30 @@ namespace Scryber.Html.Components
 
                 if (null != this._body)
                     this.Pages.Add(_body);
+            }
+        }
+
+        /// <summary>
+        /// When using the frameset, existing documents can be modifed and new content added. If the body is also set then an <see cref="InvalidOperationException" /> will be raised.
+        /// </summary>
+        /// <remarks>A body and </remarks>
+        [PDFElement("frameset")]
+        public HTMLFrameset Frameset
+        {
+            get { return this._frameset; }
+            set
+            {
+                if (null != this.Body && null != value)
+                    throw new InvalidOperationException(
+                        "A body and a frameset cannot be applied to the same document - use one or the other.");
+                
+                if (null != this._frameset)
+                    this.InnerContent.Remove(this._frameset);
+
+                this._frameset = value;
+
+                if (null != this._frameset)
+                    this.InnerContent.Add(this._frameset);
             }
         }
 
@@ -104,6 +139,9 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.SetValue(StyleKeys.FontSizeKey, Scryber.Drawing.Font.DefaultFontSize); //matches the HTML document
+
+            if (this.HasParams && this.HasRootStyles)
+                this.EnsureParamsInRoots();
             return style;
         }
 
@@ -125,17 +163,20 @@ namespace Scryber.Html.Components
                 return _roots;
             }
         }
+
+        public bool HasRootStyles
+        {
+            get{ return null != this._roots && this._roots.Count > 0; }
+        }
+
+        
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
-            //if (null == baseStyle)
-            //    baseStyle = new Style();
-
-            //this.RootStyles.MergeInto(baseStyle, forComponent);
-
             var applied = base.GetAppliedStyle(forComponent, baseStyle);
-            
             return applied;
         }
+
+        
 
         protected virtual void AddRootStyles()
         {
@@ -147,10 +188,40 @@ namespace Scryber.Html.Components
             defn = new StyleDefn("q:after");
             defn.SetValue(StyleKeys.ContentTextKey, new Drawing.ContentQuoteDescriptor("close-quote", "”"));
             this.RootStyles.Add(defn);
+        }
+
+        
+        
+        protected virtual void EnsureParamsInRoots()
+        {
+            StyleDefn innerRoot = new StyleDefn(":root");
+            foreach (var key in this.Params.Keys)
+            {
+                if (key is string str && str.StartsWith("--"))
+                {
+                    var value = this.Params[str];
+                    
+                    if (null != value)
+                        innerRoot.AddVariable(str, value.ToString());
+
+                }
+            }
+            
+            if(innerRoot.HasVariables)
+                this.RootStyles.Add(innerRoot);
+        }
 
 
-
-
+        public override IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context)
+        {
+            if (null != this.Frameset)
+            {
+                return new LayoutEngineFrameset(this, parent, context);
+            }
+            else
+            {
+                return base.GetEngine(parent, context);
+            }
         }
     }
 }

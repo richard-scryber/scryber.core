@@ -53,7 +53,9 @@ namespace Scryber.Expressive.Functions.Conversion
                 string converted;
 
                 if (objectToConvert is System.IFormattable conv)
+                {
                     converted = conv.ToString(formatString, cultureInfo);
+                }
                 else
                 {
                     if (!string.IsNullOrEmpty(formatString))

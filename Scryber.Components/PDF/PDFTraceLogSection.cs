@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Scryber.Components;
+using Scryber.Drawing;
+using Scryber.Imaging;
 using Scryber.PDF.Resources;
 using Scryber.Logging;
 
@@ -32,7 +34,7 @@ namespace Scryber.PDF
             }
             catch(Exception ex)
             {
-                throw new Scryber.PDFRenderException("Could not build the trace log: " + ex.Message);
+                throw new Scryber.PDFRenderException("Could not build the trace log: " + ex.Message, ex);
             }
         }
         private void InitAllContent()
@@ -153,7 +155,9 @@ namespace Scryber.PDF
             if (!string.IsNullOrEmpty(fnt.Definition.FilePath))
             {
                 cell.Contents.Add(new LineBreak());
-                cell.Contents.Add(new TextLiteral(fnt.Definition.FilePath));
+                var path = EnsureStringLength(fnt.Definition.FilePath);
+                
+                cell.Contents.Add(new TextLiteral(path));
             }
             tbl.Rows.Add(row);
         }
@@ -184,11 +188,26 @@ namespace Scryber.PDF
             {
                 if (img.ImageData != null)
                 {
-                    bold.Contents.Add(new TextLiteral(img.ImageData.SourcePath));
+                    var path = EnsureStringLength(img.ImageData.SourcePath);
+                    bold.Contents.Add(new TextLiteral(path));
                     cell.Contents.Add(bold);
                     cell.Contents.Add(new LineBreak());
-                    var str = img.ImageData.PixelWidth + " by " + img.ImageData.PixelHeight + " pixels, ";
-                    cell.Contents.Add(new TextLiteral(str));
+                    var data = img.ImageData;
+                    if(data is ImageDataProxy proxy)
+                        data = proxy.ImageData;
+
+                    string sizeStr;
+
+                    if (data is ImageRasterData raster)
+                        sizeStr = "Raster image " + raster.PixelWidth + " by " + raster.PixelHeight + " pixels, ";
+                    else if(data is ImageVectorData vector) //vector
+                        sizeStr = "vector image " + data.GetSize();
+                    else if(null == data)
+                        sizeStr = "image is null";
+                    else
+                        sizeStr = "Unknown image " + data.GetSize();
+                    
+                    cell.Contents.Add(new TextLiteral(sizeStr));
                 }
                 else
                 {
@@ -198,8 +217,22 @@ namespace Scryber.PDF
             }
             else if (rsrc is PDFLayoutXObjectResource xobj)
             {
-                bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Layout.Owner.ID));
-                cell.Contents.Add(bold);
+                if (null == xobj.Layout)
+                {
+                    if (null == xobj.Renderer)
+                        bold.Contents.Add(new TextLiteral("Layout xObject - unknown owner"));
+                    else
+                    {
+                        bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Renderer.Owner.ID));
+                    }
+
+                    cell.Contents.Add(bold);
+                }
+                else
+                {
+                    bold.Contents.Add(new TextLiteral("Layout XObject for " + xobj.Layout.Owner.ID));
+                    cell.Contents.Add(bold);
+                }
             }
 
             row.Cells.Add(cell);
@@ -278,7 +311,9 @@ namespace Scryber.PDF
 
 
             TableCell cell = new TableCell() {  ElementName = "td",DataStyleIdentifier = "PerfCategoryMeasure"};
-            cell.Contents.Add(new TextLiteral(measure.Key));
+            var key = EnsureStringLength(measure.Key);
+            
+            cell.Contents.Add(new TextLiteral(key));
             row.Cells.Add(cell);
 
             cell = new TableCell(){  ElementName = "td",DataStyleIdentifier = "PerfCategoryEntryRight"};
@@ -350,7 +385,10 @@ namespace Scryber.PDF
             cell = new TableCell() {ElementName = "td"};
             cell.DataStyleIdentifier = cellidentifier;
             if (!string.IsNullOrEmpty(entry.Message))
-                cell.Contents.Add(new TextLiteral(entry.Message));
+            {
+                var msg = EnsureStringLength(entry.Message);
+                cell.Contents.Add(new TextLiteral(msg));
+            }
 
             if (entry.HasException)
             {
@@ -410,6 +448,20 @@ namespace Scryber.PDF
 
             return sb.ToString();
 
+        }
+
+        private static string EnsureStringLength(string full)
+        {
+            if (null == full)
+                return string.Empty;
+            else if (full.Length > 200)
+            {
+                return full.Substring(0, 75) + " ... " + full.Substring(full.Length - 75);
+            }
+            else
+            {
+                return full;
+            }
         }
 
     }

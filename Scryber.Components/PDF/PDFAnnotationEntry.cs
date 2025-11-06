@@ -29,16 +29,16 @@ namespace Scryber.PDF
     public abstract class PDFAnnotationEntry : IArtefactEntry
     {
         public string AlternateText { get; set; }
-        private PDFObjectRef _refs;
+        private IEnumerable<PDFObjectRef> _refs;
 
-        public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        public IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             if (null == _refs)
                 _refs = this.DoOutputToPDF(context, writer);
             return _refs;
         }
 
-        protected abstract PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer);
+        protected abstract IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer);
 
     }
 

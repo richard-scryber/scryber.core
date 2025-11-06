@@ -24,8 +24,66 @@ namespace Scryber.Imaging
         }
 
         protected ImageFactoryPng(Regex match, string name, bool shouldCache)
-            : base(match, name, shouldCache)
+            : base(match, MimeType.PngImage, name, shouldCache)
         {
+        }
+
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            IImageFormat format;
+            SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
+            var span = new ReadOnlySpan<byte>(rawData);
+            var img = Image.Load(config, span, out format);
+
+            ImageData data = null;
+            
+            if (format.Name == "PNG")
+            {
+                var meta = img.Metadata.GetFormatMetadata(PngFormat.Instance);
+
+                
+                
+                ColorSpace colorSpace = meta.ColorType == PngColorType.Grayscale ? ColorSpace.G : ColorSpace.RGB;
+                int depth;
+
+                switch (meta.BitDepth)
+                {
+                    case (PngBitDepth.Bit1):
+                        depth = 1;
+                        break;
+                    case (PngBitDepth.Bit2):
+                        depth = 2;
+                        break;
+                    case (PngBitDepth.Bit4):
+                        depth = 4;
+                        break;
+                    case (PngBitDepth.Bit8):
+                        depth = 8;
+                        break;
+                    case (PngBitDepth.Bit16):
+                        depth = 16;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException("The bit depth for the raw Png image was out of range : " + meta.BitDepth.ToString());
+                }
+                
+                var alpha = meta.HasTransparency || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".png";
+                
+                data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, name, depth, alpha, colorSpace);
+            }
+            else
+            {
+                if (document.ConformanceMode == ParserConformanceMode.Strict)
+                    throw new PDFDataException(
+                        "The format of the raw image data was expected to be PNG, actual format for the data was returned as " +
+                        format.Name);
+                
+                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be PNG, actual format for the data was returned as " +
+                                                                format.Name);
+            }
+
+            return data;
         }
 
 

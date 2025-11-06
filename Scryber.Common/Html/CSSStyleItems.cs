@@ -68,6 +68,9 @@ namespace Scryber.Html
         public const string PaddingRight = "padding-right";
         public const string PaddingTop = "padding-top";
         public const string PaddingBottom = "padding-bottom";
+        public const string PaddingInlineStart = "padding-inline-start";
+        public const string PaddingInlineEnd = "padding-inline-end";
+        public const string PaddingInlineAll = "padding-inline";
 
         public const string Opacity = "opacity";
         public const string FillOpacity = "fill-opacity";
@@ -80,6 +83,8 @@ namespace Scryber.Html
 
         public const string Left = "left";
         public const string Top = "top";
+        public const string Right = "right";
+        public const string Bottom = "bottom";
         public const string Float = "float";
 
         public const string Width = "width";
@@ -99,9 +104,11 @@ namespace Scryber.Html
         public const string TextDecorationLine = "text-decoration-line";
         public const string LetterSpacing = "letter-spacing";
         public const string Hyphenation = "hyphens";
-        public const string HyphenationMinBefore = "hyphens-min-chars-before";
-        public const string HyphenationMinAfter = "hyphens-min-chars-after";
-        public const string HyphenationCharAppend = "hyphens-char-append";
+        public const string HyphenateLimitChars = "hyphenate-limit-chars";
+        public const string HyphenateLimitLength = "hyphens-limit-chars-length";
+        public const string HyphenationMinBefore = "hyphens-limit-chars-before";
+        public const string HyphenationMinAfter = "hyphens-limit-chars-after";
+        public const string HyphenationCharAppend = "hyphenate-character";
 
         public const string WordSpacing = "word-spacing";
 
@@ -125,6 +132,10 @@ namespace Scryber.Html
         public const string PageSize = "size";
         public const string PageGroupName = "page";
 
+        public const string PageNumberStyle = "-pdf-page-number-style";
+        public const string PageNumberStart = "-pdf-page-number-start";
+        public const string PageNumberPrefix = "-pdf-page-number-prefix";
+
         public const string BreakInside = "break-inside";
         public const string BreakAfter = "break-after";
         public const string BreakBefore = "break-before";
@@ -135,8 +146,19 @@ namespace Scryber.Html
         public const string StrokeOpacity = "stroke-opacity";
         public const string StrokeWidth = "stroke-width";
         public const string StrokeDash = "stroke-dasharray";
+        public const string StrokeDashOffset = "stroke-dashoffset";
         public const string StrokeLineCap = "stroke-linecap";
         public const string StrokeLineJoin = "stroke-linejoin";
+        
+        public const string GradientStopColor = "stop-color";
+        public const string GradientStopOffset = "stop-offset";
+        public const string GradientStopOpacity = "stop-opacity";
+        public const string X1Position = "x1";
+        public const string Y1Position = "y1";
+        public const string X2Position = "x2";
+        public const string Y2Position = "y2";
+        public const string GradientSpreadMode = "spreadMethod";
+        
 
         public const string TextAnchorType = "text-anchor";
         public const string DominantBaselineType = "dominant-baseline";
@@ -147,6 +169,7 @@ namespace Scryber.Html
         public const string CounterReset = "counter-reset";
         public const string CounterIncrement = "counter-increment";
 
+        public const string PaintOrder = "paint-order";
     }
 }
 

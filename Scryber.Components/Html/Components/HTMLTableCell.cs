@@ -63,6 +63,20 @@ namespace Scryber.Html.Components
 
         #endregion
 
+        [PDFAttribute("align")]
+        public override HorizontalAlignment HorizontalAlignment
+        {
+            get => base.HorizontalAlignment;
+            set => base.HorizontalAlignment = value;
+        }
+
+        [PDFAttribute("valign")]
+        public override VerticalAlignment VerticalAlignment
+        {
+            get => base.VerticalAlignment;
+            set => base.VerticalAlignment = value;
+        }
+        
         public HTMLTableCell()
             : this(HTMLObjectTypes.TableCell)
         {
@@ -120,6 +134,23 @@ namespace Scryber.Html.Components
             get;
             set;
         }
+        
+        [PDFAttribute("align")]
+        public override HorizontalAlignment HorizontalAlignment
+        {
+            get => base.HorizontalAlignment;
+            set => base.HorizontalAlignment = value;
+        }
+
+        [PDFAttribute("valign")]
+        public override VerticalAlignment VerticalAlignment
+        {
+            get => base.VerticalAlignment;
+            set => base.VerticalAlignment = value;
+        }
+        
+        [PDFAttribute("colspan")]
+        public override int CellColumnSpan { get => base.CellColumnSpan; set => base.CellColumnSpan = value; }
 
         public HTMLTableHeaderCell()
             : this(HTMLObjectTypes.TableHeaderCell)

@@ -70,7 +70,9 @@ namespace Scryber.UnitSamples
 
             //Clean the path
             path = Path.GetFullPath(path);
-
+            var found = File.Exists(path);
+            var content = File.ReadAllText(path);
+            
             if (assertExists)
                 Assert.IsTrue(File.Exists(path), "The sample file at path '" + path + "' does not exist");
 

@@ -1,0 +1,388 @@
+/* Financial Statement Styles */
+
+/* Theme: Professional Financial (Navy/Gray) */
+:root {
+  /* Primary Colors */
+  --color-primary: #1E3A8A;
+  --color-primary-dark: #1E293B;
+  --color-primary-light: #DBEAFE;
+  --color-accent: #0EA5E9;
+
+  /* Status Colors */
+  --color-positive: #059669;
+  --color-negative: #DC2626;
+  --color-warning: #D97706;
+  --color-neutral: #6B7280;
+
+  /* Neutral Colors */
+  --color-text: #111827;
+  --color-text-light: #6B7280;
+  --color-border: #D1D5DB;
+  --color-background: #FFFFFF;
+  --color-background-alt: #F9FAFB;
+  --color-background-header: #F3F4F6;
+
+  /* Spacing */
+  --spacing-xxs: 2pt;
+  --spacing-xs: 4pt;
+  --spacing-sm: 8pt;
+  --spacing-md: 12pt;
+  --spacing-lg: 16pt;
+  --spacing-xl: 24pt;
+
+  /* Typography */
+  --font-family: 'Helvetica', 'Arial', sans-serif;
+  --font-size-base: 9pt;
+  --font-size-sm: 8pt;
+  --font-size-lg: 11pt;
+  --font-size-xl: 14pt;
+  --font-size-xxl: 18pt;
+  --font-size-huge: 24pt;
+}
+
+/* Page Setup */
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  line-height: 1.4em;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+  margin-bottom: var(--spacing-xl);
+  border-bottom: 2pt solid var(--color-primary);
+  padding-bottom: var(--spacing-md);
+}
+
+.company-name {
+  font-size: var(--font-size-huge);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.report-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-dark);
+  margin-bottom: var(--spacing-xs);
+}
+
+.report-period {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-xs);
+}
+
+.report-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+
+.section {
+  margin-bottom: var(--spacing-xl);
+  page-break-inside: avoid;
+}
+
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1pt solid var(--color-primary);
+}
+
+.section-subtitle {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--color-primary-dark);
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+}
+
+thead {
+  background-color: var(--color-background-header);
+  border-bottom: 2pt solid var(--color-border);
+}
+
+th {
+  padding: var(--spacing-xs);
+  text-align: left;
+  font-weight: bold;
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+}
+
+th.text-right {
+  text-align: right;
+}
+
+td {
+  padding: var(--spacing-xxs);
+  border-bottom: 0.5pt solid var(--color-border);
+}
+
+td.indent-1 {
+  padding-left: 20pt;
+}
+
+td.indent-2 {
+  padding-left: 32pt;
+}
+
+tr.total-row {
+  font-weight: bold;
+  border-top: 1pt solid var(--color-primary-dark);
+  background-color: var(--color-background-alt);
+}
+
+tr.subtotal-row {
+  font-weight: bold;
+  border-top: 0.5pt solid var(--color-border);
+  background-color: var(--color-background-header);
+}
+
+tr.grand-total {
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  border-top: 2pt solid var(--color-primary-dark);
+  border-bottom: 2pt solid var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+}
+
+/* ============================================
+   FINANCIAL VALUES
+   ============================================ */
+
+.amount {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+
+.amount-positive {
+  color: var(--color-positive);
+}
+
+.amount-negative {
+  color: var(--color-negative);
+}
+
+.percentage {
+  text-align: right;
+  font-size: var(--font-size-sm);
+}
+
+.percentage-positive {
+  color: var(--color-positive);
+}
+
+.percentage-positive::before {
+  content: "\f062";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-right: 4pt;
+}
+
+.percentage-negative {
+  color: var(--color-negative);
+}
+
+.percentage-negative::before {
+  content: "\f063";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-right: 4pt;
+}
+
+/* ============================================
+   CHARTS
+   ============================================ */
+
+.chart-container {
+  margin: var(--spacing-xs) 0;
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-alt);
+  border: 1pt solid var(--color-border);
+  page-break-inside: avoid;
+}
+
+.chart-title {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+}
+
+svg {
+  display: block;
+}
+
+.chart-bar {
+  fill: var(--color-primary);
+}
+
+.chart-bar-accent {
+  fill: var(--color-accent);
+}
+
+.chart-bar-positive {
+  fill: var(--color-positive);
+}
+
+.chart-bar-negative {
+  fill: var(--color-negative);
+}
+
+.chart-label {
+  font-family: var(--font-family);
+  font-size: 8pt;
+  fill: var(--color-text);
+}
+
+.chart-value {
+  font-family: var(--font-family);
+  font-size: 9pt;
+  font-weight: bold;
+  fill: var(--color-text);
+}
+
+.chart-axis {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.chart-grid {
+  stroke: var(--color-border);
+  stroke-width: 0.5;
+  stroke-dasharray: 2,2;
+}
+
+.chart-line {
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* ============================================
+   METRICS GRID
+   ============================================ */
+
+.metrics-grid {
+  display: block;
+  margin-bottom: var(--spacing-lg);
+}
+
+.metric-box {
+  display: inline-block;
+  width: 32%;
+  margin-right: 2%;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-alt);
+  border-left: 3pt solid var(--color-primary);
+  vertical-align: top;
+  margin-bottom: var(--spacing-sm);
+}
+
+.metric-box:nth-child(3n) {
+  margin-right: 0;
+}
+
+.metric-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  font-weight: bold;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-value {
+  font-size: var(--font-size-xxl);
+  color: var(--color-primary);
+  font-weight: bold;
+  display: block;
+}
+
+.metric-change {
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.footer {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-sm);
+  border-top: 1pt solid var(--color-border);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+
+.footer p {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-positive {
+  color: var(--color-positive);
+}
+
+.text-negative {
+  color: var(--color-negative);
+}
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+
+.page-break {
+  page-break-before: always;
+}

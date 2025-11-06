@@ -23,6 +23,7 @@ using System.Text;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.Data;
 
 namespace Scryber.PDF.Layout
 {
@@ -42,6 +43,7 @@ namespace Scryber.PDF.Layout
         private ListItem _item;
         private LayoutEngineList2 _engine;
         private ListItemLabel _lbl;
+        private Panel _lblPanel;
 
         #endregion
 
@@ -56,15 +58,30 @@ namespace Scryber.PDF.Layout
             get { return _item; }
         }
 
+        /// <summary>
+        /// Gets the parent List engine for this item engine
+        /// </summary>
         protected LayoutEngineList2 ParentListEngine
         {
             get { return _engine; }
         }
 
+        /// <summary>
+        /// Gets the list item label that has been injected into the contents
+        /// </summary>
         public ListItemLabel LabelComponent
         {
             get { return _lbl; }
             protected set { _lbl = value; }
+        }
+
+        /// <summary>
+        /// Gets the panel that contains the label, that is positioned absolutely within the page.
+        /// </summary>
+        public Panel LabelPanel
+        {
+            get { return _lblPanel; }
+            protected set { _lblPanel = value; }
         }
 
 
@@ -124,21 +141,25 @@ namespace Scryber.PDF.Layout
             {
                 var nums = this.Component.Document.ListNumbering.CurrentGroup;
                 var style = this.FullStyle;
-                margins = position.Margins;
-                var left = margins.Left;
+                var explicitStyle = style.GetValue(StyleKeys.ListNumberStyleKey, ListNumberingGroupStyle.Bullet);
+                if (nums.Style != ListNumberingGroupStyle.None && explicitStyle != ListNumberingGroupStyle.None)
+                {
+                    margins = position.Margins;
+                    var left = margins.Left;
 
-                inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
-                var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
+                    inset = style.GetValue(StyleKeys.ListInsetKey, DefaultNumberWidth);
+                    var alley = style.GetValue(StyleKeys.ListAlleyKey, DefaultListItemAlley);
 
-                //Add the extra space for the list item number
-                margins.Left += inset + alley;
-                style.Padding.Left = margins.Left;
-                position.Margins = margins;
-                
-                var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
-                this.LabelComponent = comp;
+                    //Add the extra space for the list item number
+                    margins.Left += inset + alley;
+                    style.Margins.Left = margins.Left;
+                    position.Margins = margins;
 
-                inset += alley;
+                    var comp = BuildAListNumberComponent(this.ListItem, inset, alley, nums);
+                    this.LabelComponent = comp;
+                    
+                    inset += alley;
+                }
             }
 
             base.DoLayoutBlockComponent(position, columnOptions);
@@ -149,7 +170,10 @@ namespace Scryber.PDF.Layout
         {
             Panel num = null;
             if (null != this.LabelComponent)
+            {
                 num = this.AddLabelToBlock(this.LabelComponent, this.ListItem);
+                this.LabelPanel = num;
+            }
 
             base.DoLayoutChildren();
 
@@ -159,9 +183,66 @@ namespace Scryber.PDF.Layout
 
         protected internal override bool MoveToNextRegion(Unit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
         {
+            var prevRegion = region;
+            var prevBlock = block;
+            
             bool success = base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
             if (!success)
                 this.ContinueLayout = false;
+            else
+            {
+                var line = prevRegion.Contents[prevRegion.Contents.Count - 1] as PDFLayoutLine;
+                if (null != line)
+                {
+                    var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
+                    //if we are the last line, and we have the 
+                    if (null != posRun && posRun.Owner == this.LabelPanel)
+                    {
+                        try
+                        {
+                            //Move pos run and associated positioned region to the new region
+                            posRun.Line.Runs.Remove(posRun);
+                            
+                            //if we leave an empty line, then remove it.
+                            if (line.Runs.Count == 2 && line.Runs[0] is PDFTextRunBegin &&
+                                line.Runs[1] is PDFTextRunEnd)
+                                line.Region.Contents.Remove(line);
+                            
+                            //if the original containing region is empty, and we have just one region (column) then save to remove the block as well
+                            if (prevRegion.Contents.Count == 0 && prevBlock.Columns.Length == 1 && prevBlock.Parent is PDFLayoutBlock parentBlock)
+                                parentBlock.CurrentRegion.Contents.Remove(prevBlock);
+
+                            //take the positioned region off the old block
+                            prevBlock.PositionedRegions.Remove(posRun.Region);
+
+                            //now add it all back in on a line in the new region with the positioned block
+                            //And make that relative to the new block.
+                            if (region.CurrentItem == null)
+                            {
+                                line = region.BeginNewLine(line.Height.PointsValue);
+                            }
+                            else
+                            {
+                                line = (PDFLayoutLine)region.CurrentItem;
+                            }
+
+                            line.AddRun(posRun);
+                            posRun.SetParent(line);
+                            block.PositionedRegions.Add(posRun.Region);
+
+                            posRun.Region.SetParent(block);
+                            (posRun.Region as PDFLayoutPositionedRegion).RelativeTo = block;
+                        }
+                        catch (Exception ex)
+                        {
+                            if(this.Context.Conformance == ParserConformanceMode.Strict)
+                                throw new PDFLayoutException("Attempted to clean up the previous regions content with the list item block, but an error occurred - " + ex.Message, ex);
+                            else
+                            this.Context.TraceLog.Add(TraceLevel.Error, "ListItem", "Attempted to clean up the previous regions content with the list item block, but an error occurred - " + ex.Message, ex);
+                        }
+                    }
+                }
+            }
             return success;
         }
 
@@ -173,7 +254,7 @@ namespace Scryber.PDF.Layout
             panel.OverflowAction = OverflowAction.Clip;
             panel.Padding = new Thickness(0, 2, 0, 0); // add a little padding for space.
             panel.HorizontalAlignment = label.Alignment;
-            panel.PositionMode = PositionMode.Relative;
+            panel.PositionMode = PositionMode.Absolute;
             panel.X = -(label.NumberWidth.PointsValue + label.AlleyWidth.PointsValue);
             panel.Y = 0;
             //panel.Height = 20;
@@ -181,10 +262,12 @@ namespace Scryber.PDF.Layout
             panel.ID = (item.ID ?? "no_id") + "_Num";
             
             panel.Contents.Add(label);
-            if (item.Contents.Count > 1)
-                item.Contents.Insert(1, panel);
-            else
-                item.Contents.Add(panel);
+            item.Contents.Insert(0, panel);
+            
+            // if (item.Contents.Count > 0)
+            //     item.Contents.Insert(0, panel);
+            // else
+            //     item.Contents.Add(panel);
 
             return panel;
         }
@@ -212,6 +295,11 @@ namespace Scryber.PDF.Layout
 
             var type = group.Style;
 
+            if (this.FullStyle.IsValueDefined(StyleKeys.ListNumberStyleKey))
+            {
+                type = this.FullStyle.GetValue(StyleKeys.ListNumberStyleKey, type);
+            }
+
             var text = this.FullStyle.GetValue(StyleKeys.ListLabelKey, string.Empty);
             var halign = this.FullStyle.GetValue(StyleKeys.ListAlignmentKey, DefaultListItemAlignment);
 
@@ -236,6 +324,7 @@ namespace Scryber.PDF.Layout
                 {
                     label = new ListItemLabel();
                     label.Text = item.Document.ListNumbering.Increment();
+                    
                 }
 
                 label.Alignment = halign;

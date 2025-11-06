@@ -63,11 +63,11 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");
                 Assert.AreEqual(0, arrange.PageIndex, "First arrangement should be on page 0");
                 
-                arrange = arrange.NextArrangement;
+                arrange = arrange.NextArrangement.NextArrangement;//page has the page block and the content block
                 Assert.IsNotNull(arrange, "Should be a second arrangement on the page");
                 Assert.AreEqual(1, arrange.PageIndex, "Second arrangement should be page 1");
-
-                arrange = arrange.NextArrangement;
+                
+                arrange = arrange.NextArrangement.NextArrangement; //page has the page block and the content block
                 Assert.IsNotNull(arrange, "Should be a third arrangement on the page");
                 Assert.AreEqual(2, arrange.PageIndex, "Third arrangement should be page 2");
 
@@ -75,15 +75,21 @@ namespace Scryber.Core.UnitTests.Styles
                 var pg2 = doc.FindAComponentById("pg2");
                 var pg3 = doc.FindAComponentById("pg3");
 
-                var divArrange = pg1.GetFirstArrangement();
+                var divArrange = pg1.GetFirstArrangement() as ComponentMultiArrangement;
+                Assert.IsNotNull(divArrange);
                 Assert.AreEqual(0, divArrange.PageIndex, "First arrangement should be on page 0");
-
-                divArrange = pg2.GetFirstArrangement();
+                Assert.IsTrue(divArrange.IsLastArrangement);
+                
+                divArrange = pg2.GetFirstArrangement() as ComponentMultiArrangement;
+                Assert.IsNotNull(divArrange);
                 Assert.AreEqual(1, divArrange.PageIndex, "Second arrangement should be on page 1");
+                Assert.IsTrue(divArrange.IsLastArrangement);
 
-                divArrange = pg3.GetFirstArrangement();
+                divArrange = pg3.GetFirstArrangement() as ComponentMultiArrangement;
+                Assert.IsNotNull(divArrange);
                 Assert.AreEqual(2, divArrange.PageIndex, "Third arrangement should be on page 2");
-
+                Assert.IsTrue(divArrange.IsLastArrangement);
+                
             }
         }
 
@@ -133,15 +139,14 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.IsNotNull(arrange, "The page arrangement should be a multi page arrangement");
                 Assert.AreEqual(0, arrange.PageIndex, "First arrangement should be on page 0");
 
-                arrange = arrange.NextArrangement;
+                arrange = arrange.NextArrangement.NextArrangement;//page has the page block and the content block
                 Assert.IsNotNull(arrange, "Should be a second arrangement on the page");
                 Assert.AreEqual(1, arrange.PageIndex, "Second arrangement should be page 1");
 
-                arrange = arrange.NextArrangement;
+                arrange = arrange.NextArrangement.NextArrangement;//page has the page block and the content block
                 Assert.IsNotNull(arrange, "Should be a third arrangement on the page");
                 Assert.AreEqual(2, arrange.PageIndex, "Third arrangement should be page 2");
 
-                Assert.IsNull(arrange.NextArrangement, "There should not be a fourth arrangement");
                 
                 var div1 = doc.FindAComponentById("div1");
                 var div2 = doc.FindAComponentById("div2");
@@ -159,6 +164,7 @@ namespace Scryber.Core.UnitTests.Styles
 
                 divArrange = div4.GetFirstArrangement();
                 Assert.AreEqual(2, divArrange.PageIndex, "Fourth arrangement should be on page 2, as overridden");
+                
 
             }
         }

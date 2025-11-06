@@ -32,6 +32,8 @@ namespace Scryber.Styles.Selectors
                 print = true;
             else if (this.Type == "print" || this.Type.StartsWith("print "))
                 print = true;
+            else if (this.Type == "pdf") //special case explict to pdf output
+                print = true;
             else
                 print = false;
 

@@ -340,7 +340,12 @@ namespace Scryber.Styles
         /// <returns></returns>
         public virtual PDFPen CreatePen()
         {
-            return this.AssertOwner().DoCreateBorderPen();
+            StyleValue<Color> c;
+            StyleValue<LineType> t;
+            StyleValue<Dash> d;
+            StyleValue<Unit> w;
+
+            return this.AssertOwner().DoCreateBorderPen(out c, out w, out t, out d);
         }
 
         #endregion

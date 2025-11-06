@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title>Patterns Simple</title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="Repeating Fill patterns">Repeating fill patterns</p>
+    <svg id="Patterns" width="550" height="105" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+           
+        </style>
+        <defs>
+            <linearGradient id="rg" >
+                <stop offset="0" stop-color="red" />
+                <stop offset="100%" stop-color="blue" />
+            </linearGradient>
+            <pattern id="square" width="10%" height="10%" viewBox="0,0,10,10"  >
+                <rect id="withGradient" height="8" width="8" x="1" y="1" fill="red" />
+            </pattern>
+            <pattern id="star" viewBox="0,0,10,10" width="10%" height="10%">
+                <polygon points="0,0 2,5 0,10 5,8 10,10 8,5 10,0 5,2" />
+            </pattern>
+            <pattern id="squarewithGradient" width="20%" height="20%" viewBox="0,0,10,10"   >
+                <rect id="withGradient" height="8" width="8" x="1" y="1" fill="url(#rg)" />
+            </pattern>
+            <pattern id="circleswithStar" viewBox="0,0,10,10" width="20%" height="20%" >
+                <circle cx="5" cy="5" r="7" fill="url(#rg)" stroke="blue" stroke-width="0.4"  />
+                <polygon points="0,0 2,5 0,10 5,8 10,10 8,5 10,0 5,2" fill="#FFF" />
+                <circle cx="5" cy="5" r="3" fill="url(#rg)"  />
+            </pattern>
+        </defs>
+
+        <rect id="squarePattern" height="90" width="80" x="10" y="10" fill="url(#square)" stroke="black" stroke-width="0.1" />
+        
+        <rect id="starPattern" height="90" width="80" x="100" y="10" fill="url(#star)" />
+
+        <rect id="widePattern" height="30" width="80" x="190" y="40" fill="url(#squarewithGradient)" stroke="black" stroke-width="0.1" />
+
+        <rect id="highPattern" height="90" width="50" x="295" y="10" fill="url(#star)" stroke="green" stroke-width="0.1" />
+
+        <rect id="complexPattern" height="90" width="150" x="370" y="10" fill="url(#circleswithStar)" stroke="green" stroke-width="0.1" />
+        
+        
+    </svg>
+    
+    
+    
+
+</body>
+</html>

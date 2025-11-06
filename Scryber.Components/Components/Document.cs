@@ -113,9 +113,8 @@ namespace Scryber.Components
             : base(type)
         {
             this._incrementids = new Dictionary<ObjectType, int>();
-
-            var config = ServiceProvider.GetService<IScryberConfigurationService>();
-            this.ImageFactories = config.ImagingOptions.GetConfiguredFactories();
+            
+            this.ImageFactories = this.DoCreateImageFactories();
             this._startTime = DateTime.Now;
             this._requests = new RemoteFileRequestSet(this);
         }
@@ -140,6 +139,7 @@ namespace Scryber.Components
         }
 
         #endregion
+        
 
         #region public PDFDocumentListNumbering ListNumbering {get;}
 
@@ -294,6 +294,21 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public string DocumentIdentifierPrefix
+        
+        
+        private string _idPrefix = "";
+
+        /// <summary>
+        /// Gets the prefix for unique resources, fonts, and ID's that the document uses to identify individual components.
+        /// </summary>
+        public string DocumentIdentifierPrefix
+        {
+            get { return _idPrefix; }
+        }
+        
+        #endregion
+
         #region public string DocumentFormatting {get;set;}
 
 
@@ -310,6 +325,22 @@ namespace Scryber.Components
             set { this.RenderOptions.OuptputCompliance = value; }
         }
 
+        #endregion
+
+        #region public PDFFile PrependedFile
+        
+        private PDFFile _prependFile;
+        
+        /// <summary>
+        /// Gets or sets the PDFFile that this document should be a new version for.
+        /// This will then appear in the final output and be included as part of the document
+        /// </summary>
+        public PDFFile PrependedFile
+        {
+            get { return this._prependFile; }
+            set { this._prependFile = value; }
+        }
+        
         #endregion
 
         //
@@ -734,7 +765,24 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the collection of image data factories for this document
         /// </summary>
-        public ImageFactoryList ImageFactories { get; private set; }
+        public ImageFactoryList ImageFactories
+        {
+            get; 
+            private set;
+        }
+
+        protected virtual ImageFactoryList DoCreateImageFactories()
+        {
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+            var list = config.ImagingOptions.GetConfiguredFactories();
+             
+            var svgFactory = new Scryber.Svg.Imaging.SVGImagingFactory();
+            list.Insert(list.Count, svgFactory);
+            var svgDataFactory = new Scryber.Svg.Imaging.SVGDataUrlImagingFactory();
+            list.Insert(list.Count, svgDataFactory);
+            
+            return list;
+        }
 
         #endregion
 
@@ -785,18 +833,18 @@ namespace Scryber.Components
         /// <param name="owner">Optional owner for the request</param>
         /// <param name="arguments">Optional arguments that will be give back to the callback method</param>
         /// <returns>A new disposable RemoteFileRequest object</returns>
-        public virtual RemoteFileRequest RegisterRemoteFileRequest(string type, string filePath, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
+        public virtual RemoteFileRequest RegisterRemoteFileRequest(string type, string filePath, TimeSpan cacheDuration, RemoteRequestCallback callback, IComponent owner = null, object arguments = null)
         {
-            var request = new RemoteFileRequest(type, filePath, callback, owner, arguments);
+            var request = new RemoteFileRequest(type, filePath, cacheDuration, callback, owner, arguments);
             this.RegisterRemoteFileRequest(request);
 
             return request;
         }
 
-        IRemoteRequest IResourceRequester.RequestResource(string type, string path, RemoteRequestCallback callback,
+        IRemoteRequest IResourceRequester.RequestResource(string type, string path, TimeSpan cacheDuration, RemoteRequestCallback callback,
              IComponent owner, object arguments)
         {
-            return this.RegisterRemoteFileRequest(type, path, callback, owner, arguments);
+            return this.RegisterRemoteFileRequest(type, path, cacheDuration, callback, owner, arguments);
         }
 
         /// <summary>
@@ -1202,6 +1250,7 @@ namespace Scryber.Components
         #region GetIncrementID
 
         private Dictionary<ObjectType, int> _incrementids = null;
+        
 
         /// <summary>
         /// Gets the next unique id for an Component of a specific type
@@ -1211,7 +1260,12 @@ namespace Scryber.Components
         public override string GetIncrementID(ObjectType type)
         {
             if (this._incrementids == null)
+            {
                 this._incrementids = new Dictionary<ObjectType, int>();
+            }
+            if(string.IsNullOrEmpty(this._idPrefix))
+                this._idPrefix = GetRandomPrefix() + "_";
+
             int lastindex;
 
             if (this._incrementids.TryGetValue(type, out lastindex) == false)
@@ -1219,7 +1273,8 @@ namespace Scryber.Components
 
             lastindex += 1;
             this._incrementids[type] = lastindex;
-            string id = type.ToString() + lastindex.ToString();
+            
+            string id = this._idPrefix + type.ToString() + lastindex.ToString();
 
             if (null != _originalPageResources)
             {
@@ -1228,11 +1283,23 @@ namespace Scryber.Components
                 {
                     lastindex += 1;
                     this._incrementids[type] = lastindex;
-                    id = type.ToString() + lastindex.ToString();
+                    id = this._idPrefix + type.ToString()  + lastindex.ToString();
                 }
             }
             return id;
 
+        }
+
+        private static string GetRandomPrefix(int length = 3)
+        {
+            var rnd = new Random();
+            char[] all = new char[length];
+            for (var i = 0; i < length; i++)
+            {
+                all[i] = (char)((int)'a' + rnd.Next(25));
+            }
+
+            return new string(all);
         }
 
         #endregion
@@ -2215,6 +2282,8 @@ namespace Scryber.Components
             }
         }
 
+        
+
         /// <summary>
         /// Preforms the actual rendering of the document to the writer with the context
         /// </summary>
@@ -2516,7 +2585,7 @@ namespace Scryber.Components
         protected virtual PDFWriter DoCreateRenderWriter(System.IO.Stream tostream, PDFRenderContext context)
         {
             PDFWriter writer = this.RenderOptions.CreateWriter(this, tostream, 0, context.TraceLog);
-
+            
             writer.UseHex = (this.RenderOptions.StringOutput == OutputStringType.Hex);
             writer.DefaultStreamFilters = GetStreamFilters();
 
@@ -2553,7 +2622,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public PDFImageXObject LoadImageData(IComponent owner, string src)
         {
-            ImageData data;
+            ImageData data = null;
             string key = src;
 
             try
@@ -2564,24 +2633,37 @@ namespace Scryber.Components
                 src = RemoveReturns(src);
                 src = owner.MapPath(src);
 
+                
                 if (this.SharedResources.GetResource(PDFResource.XObjectResourceType, src) is PDFImageXObject exists)
                     return exists;
                 
-                if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src, out var cached))
+                if (this.ImageFactories.TryGetMatch(src, out var factory))
                 {
-                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Cache matched for the image source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
-                    
-                    data = (ImageData) cached;
-                    key = GetIncrementID(ObjectTypes.ImageXObject);
-                }
-                else if (this.ImageFactories.TryGetMatch(src, out var factory))
-                {
-                    if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
-                        this.TraceLog.Add(TraceLevel.Verbose, "Document","Factory '" + factory.Name +  "' found for image with source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
+                    if (factory.ShouldCache)
+                    {
+                        if (this.CacheProvider.TryRetrieveFromCache(ObjectTypes.ImageData.ToString(), src,
+                                out var cached))
+                        {
+                            if(this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                                this.TraceLog.Add(TraceLevel.Verbose, "Document","Cache matched for the image source " + (src.Length > 100 ? (src.Substring(50)+ "..." + src.Substring(src.Length-10)): src) + " adding to the resources and returning.");
 
-                    data = LoadImageDataFromFactory(owner, factory, src);
-                    key = GetIncrementID(ObjectTypes.ImageXObject);
+                            data = (ImageData) cached;
+                            key = GetIncrementID(ObjectTypes.ImageXObject);
+                        }
+                    }
+
+                    if (null == data)
+                    {
+                        if (this.TraceLog.ShouldLog(TraceLevel.Verbose))
+                            this.TraceLog.Add(TraceLevel.Verbose, "Document",
+                                "Factory '" + factory.Name + "' found for image with source " +
+                                (src.Length > 100
+                                    ? (src.Substring(50) + "..." + src.Substring(src.Length - 10))
+                                    : src) + " adding to the resources and returning.");
+
+                        data = LoadImageDataFromFactory(owner, factory, src);
+                        key = GetIncrementID(ObjectTypes.ImageXObject);
+                    }
                 }
                 else if (this.RenderOptions.AllowMissingImages)
                 {
@@ -2704,8 +2786,10 @@ namespace Scryber.Components
                 return null;
         }
 
-        
-
+        IComponent IDocument.FindComponentById(string id)
+        {
+            return this.FindAComponentById(id);
+        }
         #endregion
 
         #region  public PDFComponent FindAComponentByName(string name) + 1 overload
@@ -2948,6 +3032,8 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public static IComponent ParseHtml(string fullpath) + 6 overloads
+        
         public static IComponent ParseHtml(string fullpath)
         {
             using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -3018,6 +3104,8 @@ namespace Scryber.Components
             return comp;
         }
 
+        #endregion
+        
 
         #region public IPDFComponent ParseTemplate(IPDFRemoteComponent owner, string referencepath, Stream stream) + 2 overloads
 
@@ -3617,6 +3705,8 @@ namespace Scryber.Components
             {
                 if (null != this.RenderOptions)
                     this.RenderOptions.Dispose();
+                if(null != this.PrependedFile)
+                    this.PrependedFile.Dispose();
             }
             base.Dispose(disposing);
         }

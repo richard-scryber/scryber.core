@@ -94,6 +94,8 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+        
+        
 
         public PDFTextRenderOptions TextOptions { get; private set; }
 

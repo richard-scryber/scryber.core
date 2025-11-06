@@ -27,6 +27,7 @@ using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
 using Scryber.PDF;
+using Scryber.PDF.Resources;
 
 namespace Scryber.PDF.Layout
 {
@@ -209,8 +210,8 @@ namespace Scryber.PDF.Layout
 
 
 
-            StyleValue<PositionMode> found;
-            if (this._style.TryGetValue(StyleKeys.PositionModeKey, out found) && found.Value(this._style) == PositionMode.Invisible)
+            StyleValue<DisplayMode> found;
+            if (this._style.TryGetValue(StyleKeys.PositionDisplayKey, out found) && found.Value(this._style) == DisplayMode.Invisible)
             {
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, "Layout", "Skipping over the layout of component '" + this.Component.UniqueID + "' as it is invisible");
@@ -247,6 +248,136 @@ namespace Scryber.PDF.Layout
 #endregion
 
 
+        //
+        // abstract methods
+        //
+
+        /// <summary>
+        /// Abstract method that inheritors must implement in order to actually 
+        /// layout the component and any child components
+        /// </summary>
+        protected abstract void DoLayoutComponent();
+
+        //
+        // layout children methods
+        //
+
+        #region protected virtual void DoLayoutChildren()
+
+        /// <summary>
+        /// enumerates over any / each of the engines component children and performs the correct layout option for these.
+        /// The component this engine is laying out should implement the IPDFContainerComponent
+        /// </summary>
+        protected virtual void DoLayoutChildren()
+        {
+            //Set this at the top
+            this.ContinueLayout = true;
+            ComponentList children;
+            if (TryGetComponentChildren(this.Component, out children))
+            {
+                DoLayoutChildren(children);
+            }
+        }
+        
+        #endregion
+        
+        #region private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+
+        /// <summary>
+        /// Gets the list of child components and returns true if there are some
+        /// </summary>
+        /// <param name="parent">The parent component to get the children for.</param>
+        /// <param name="children"></param>
+        /// <returns></returns>
+        protected bool TryGetComponentChildren(IComponent parent, out ComponentList children)
+        {
+            children = GetComponentChildren(parent);
+
+#if COUNTERS_AND_PSEUDOCONTENT
+
+            //Apply the ::before and ::after states as children
+            if (this.FullStyle.HasStates)
+            {
+                Style state;
+                StyleValue<ContentDescriptor> content;
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddBeforeContent(parent, children, state, content.Value(state));
+                }
+
+                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
+                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
+                {
+                    if (null == children)
+                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
+                    AddAfterContent(parent, children, state, content.Value(state));
+                }
+            }
+
+#endif
+            return null != children && children.Count > 0;
+
+        }
+        
+        #endregion
+
+        #region protected virtual ComponentList GetComponentChildren(IComponent parent)
+        /// <summary>
+        /// Returns the child components of the IPDFcomponent if any.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        protected virtual ComponentList GetComponentChildren(IComponent parent)
+        {
+            if (parent is IContainerComponent)
+            {
+                IContainerComponent contaner = parent as IContainerComponent;
+                if (contaner.HasContent)
+                    return contaner.Content;
+            }
+            return null;
+        }
+
+        #endregion
+        
+        #region protected virtual void DoLayoutChildren(PDFComponentList children)
+
+        /// <summary>
+        /// enumerates over each of the components in the specified list 
+        /// and performs the layout of each individually
+        /// </summary>
+        /// <param name="children"></param>
+        protected virtual void DoLayoutChildren(ComponentList children)
+        {
+            
+            foreach (Component comp in children)
+            {
+                if (comp.Visible)
+                    this.DoLayoutAChild(comp);
+
+                if (this.ContinueLayout == false 
+                    || this.DocumentLayout.CurrentPage.IsClosed 
+                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                    break;
+            }
+            
+        }
+
+        
+
+        #endregion
+        
+        //
+        // counters
+        //
+        
+        
+        #region protected virtual void EnsureCounterUpdatesForStyle(Style style)
+
         /// <summary>
         /// Updates any counters on the style - either reset or increment
         /// </summary>
@@ -277,6 +408,7 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        #endregion
 
         #region protected bool ResetACounter(CounterStyleValue counter, Component current, bool resetIfNotFound = true)
 
@@ -358,78 +490,26 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-
-        //
-        // abstract methods
-        //
+        
+        #region protected void RemoveCountersFromStateStyle(Style style)
 
         /// <summary>
-        /// Abstract method that inheritors must implement in order to actually 
-        /// layout the component and any child components
+        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
+        /// then we do not want them to be executed again.
         /// </summary>
-        protected abstract void DoLayoutComponent();
-
-        //
-        // layout children methods
-        //
-
-        #region protected virtual void DoLayoutChildren()
-
-        /// <summary>
-        /// enumerates over any / each of the engines component children and performs the correct layout option for these.
-        /// The component this engine is laying out should implement the IPDFContainerComponent
-        /// </summary>
-        protected virtual void DoLayoutChildren()
+        /// <param name="style"></param>
+        protected void RemoveCountersFromStateStyle(Style style)
         {
-            //Set this at the top
-            this.ContinueLayout = true;
-            ComponentList children;
-            if (TryGetComponentChildren(this.Component, out children))
-            {
-                DoLayoutChildren(children);
-            }
+            style.RemoveValue(StyleKeys.CounterResetKey);
+            style.RemoveValue(StyleKeys.CounterIncrementKey);
         }
 
-        /// <summary>
-        /// Gets the list of child components and returns true if there are some
-        /// </summary>
-        /// <param name="children"></param>
-        /// <returns></returns>
-        private bool TryGetComponentChildren(IComponent parent, out ComponentList children)
-        {
-            children = GetComponentChildren(parent);
-
-#if COUNTERS_AND_PSEUDOCONTENT
-
-            //Apply the ::before and ::after states as children
-            if (this.FullStyle.HasStates)
-            {
-                Style state;
-                StyleValue<ContentDescriptor> content;
-
-                if (this.FullStyle.TryGetStyleState(ComponentState.Before, out state)
-                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
-                {
-                    if (null == children)
-                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
-                    AddBeforeContent(parent, children, state, content.Value(state));
-                }
-
-                if (this.FullStyle.TryGetStyleState(ComponentState.After, out state)
-                    && state.TryGetValue(StyleKeys.ContentTextKey, out content))
-                {
-                    if (null == children)
-                        children = new ComponentList(parent as Component, StyleKeys.ContentTextKey.StyleValueKey);
-                    AddAfterContent(parent, children, state, content.Value(state));
-                }
-            }
-
-#endif
-            return null != children && children.Count > 0;
-
-        }
-
+        #endregion
+        
+        // ::before and ::after content
+        
+        #region private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
+        
         private void AddBeforeContent(IComponent parent, ComponentList children, Style before, ContentDescriptor value)
         {
             Span span = new Span();
@@ -457,7 +537,11 @@ namespace Scryber.PDF.Layout
 
 
         }
+        
+        #endregion
 
+        #region private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
+        
         private void AddAfterContent(IComponent parent, ComponentList children, Style after, ContentDescriptor value)
         {
             Span span = new Span();
@@ -486,19 +570,11 @@ namespace Scryber.PDF.Layout
 
 
         }
+        
+        #endregion
 
-        /// <summary>
-        /// Becuase increments and resets for a state have been performed before we get here (so we can get the actual text for the ::before or ::after spans,
-        /// then we do not want them to be executed again.
-        /// </summary>
-        /// <param name="style"></param>
-        protected void RemoveCountersFromStateStyle(Style style)
-        {
-            style.RemoveValue(StyleKeys.CounterResetKey);
-            style.RemoveValue(StyleKeys.CounterIncrementKey);
-        }
-
-
+        #region private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
+        
         private bool AddCssContentToList(IStyledComponent wrapper, ContentDescriptor content, ComponentList children, int index)
         {
             bool added = false;
@@ -529,7 +605,7 @@ namespace Scryber.PDF.Layout
                         var img = new Image();
                         img.Source = (content as ContentImageDescriptor).Source;
                         img.ElementName = "img";
-                        img.PositionMode = PositionMode.Inline;
+                        img.DisplayMode = DisplayMode.Inline;
                         children.Add(img);
                         added = !string.IsNullOrEmpty(img.Source);
                     }
@@ -581,52 +657,13 @@ namespace Scryber.PDF.Layout
             }
             return added;
         }
-
-        /// <summary>
-        /// Returns the child components of the IPDFcomponent if any.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        private static ComponentList GetComponentChildren(IComponent parent)
-        {
-            if (parent is IContainerComponent)
-            {
-                IContainerComponent contaner = parent as IContainerComponent;
-                if (contaner.HasContent)
-                    return contaner.Content;
-            }
-            return null;
-        }
-
-        #endregion
-
-        #region protected virtual void DoLayoutChildren(PDFComponentList children)
-
-        /// <summary>
-        /// enumerates over each of the components in the specified list 
-        /// and performs the layout of each individually
-        /// </summary>
-        /// <param name="children"></param>
-        protected virtual void DoLayoutChildren(ComponentList children)
-        {
-            
-            foreach (Component comp in children)
-            {
-                if (comp.Visible)
-                    this.DoLayoutAChild(comp);
-
-                if (this.ContinueLayout == false 
-                    || this.DocumentLayout.CurrentPage.IsClosed 
-                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
-                    break;
-            }
-            
-        }
-
         
-
         #endregion
 
+        //
+        // Child layout
+        //
+        
         #region protected virtual void DoLayoutAChild(PDFComponent comp)
 
         /// <summary>
@@ -683,6 +720,9 @@ namespace Scryber.PDF.Layout
             }
             else
                 full = this.FullStyle;
+            
+            if(!ShouldLayoutComponent(comp, full))
+                return;
 
             CheckForPrecedingInlineWhitespace(comp, full);
 
@@ -731,6 +771,25 @@ namespace Scryber.PDF.Layout
 
         }
 
+        protected virtual bool ShouldLayoutComponent(Component comp, Style full)
+        {
+            if (comp.Visible == false)
+            {
+                return false;
+            }
+            else if (null != full)
+            {
+                StyleValue<DisplayMode> display;
+
+                if (full.TryGetValue(StyleKeys.PositionDisplayKey, out display) &&
+                    display.Value(full) == DisplayMode.Invisible)
+                    return false;
+                
+            }
+
+            return true;
+        }
+
         private static bool IsStyled(IComponent comp)
         {
             return comp is IStyledComponent && !(comp is ILayoutBreak);
@@ -745,7 +804,8 @@ namespace Scryber.PDF.Layout
 
         #region protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
 
-        private PositionMode _lastPositionMode = PositionMode.Block;
+        private DisplayMode _lastDisplayMode = DisplayMode.Block;
+        private PositionMode _lastPositionMode = PositionMode.Static;
         private Whitespace _lastWhitespace = null;
 
         /// <summary>
@@ -758,8 +818,10 @@ namespace Scryber.PDF.Layout
         protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
         {
             var currentIsText = IsText(current);
-            var nextPosMode = currentIsText ? PositionMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block);
-            if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+            var nextDisplayMode = currentIsText ? DisplayMode.Inline : currentFullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+            var nextPosMode = currentFullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Static);
+            
+            if (_lastDisplayMode == DisplayMode.Inline || _lastDisplayMode == DisplayMode.InlineBlock)
             {
                 if (current is Whitespace ws)
                 {
@@ -768,9 +830,10 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    if (_lastPositionMode == PositionMode.Inline || _lastPositionMode == PositionMode.InlineBlock)
+                    if ((_lastDisplayMode == DisplayMode.Inline || _lastDisplayMode == DisplayMode.InlineBlock) 
+                        && (_lastPositionMode == PositionMode.Relative || _lastPositionMode == PositionMode.Static))
                     {
-                        //We are inline
+                        //We are taking up space on the line
                         if (null != _lastWhitespace && _lastWhitespace.ReaderFormat != TextFormat.Plain)
                         {
                             //we have had a whitespace before
@@ -778,13 +841,24 @@ namespace Scryber.PDF.Layout
                             {
                                 //Do Nothing as the text spacing should be handled by this component
                             }
-                            else if (nextPosMode == PositionMode.Inline || nextPosMode == PositionMode.InlineBlock)
+                            else if ((nextDisplayMode == DisplayMode.Inline || nextDisplayMode == DisplayMode.InlineBlock) && 
+                                     (nextPosMode == PositionMode.Relative || nextPosMode == PositionMode.Static))
                             {
                                 TextLiteral literal = new TextLiteral(" ", TextFormat.Plain);
-                                literal.Parent = this.Component;
+                                literal.Parent = current.Parent;
 
                                 //TODO: Satisfy the edge case where the space overflows to the next line - it should be ignored, but a new line created.
-                                this.DoLayoutTextComponent(literal, currentFullStyle);
+                                
+                                //Take off any explicit style for this current component
+                                var prev = this.Context.StyleStack.Pop();
+                                
+                                //build the full style and layout the whitespace
+                                var literalFullStyle = this.BuildFullStyle(literal);
+                                
+                                this.DoLayoutTextComponent(literal, literalFullStyle);
+                                
+                                //now replace the previous style.
+                                this.Context.StyleStack.Push(prev);
                             }
                         }
                     }
@@ -793,9 +867,10 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            //Save the last position mode (always)
+            //Save the last position and display mode (if we interact with the line content)
+            _lastDisplayMode = nextDisplayMode; 
             _lastPositionMode = nextPosMode;
-
+            
         }
 
         #endregion
@@ -811,25 +886,93 @@ namespace Scryber.PDF.Layout
         {
             var page = this.DocumentLayout.CurrentPage;
             var pgSize = page.Size;
-            var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
-            Size containerSize;
-            if (null != container)
-                containerSize = container.CurrentRegion.TotalBounds.Size;
-            else if (null != page.CurrentBlock)
-                containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
-            else
-                containerSize = page.Size;
+            // var container = this.DocumentLayout.CurrentPage.LastOpenBlock();
+            // Size containerSize;
+            // if (null != container)
+            //     containerSize = container.CurrentRegion.TotalBounds.Size;
+            // else if (null != page.CurrentBlock)
+            //     containerSize = page.CurrentBlock.CurrentRegion.TotalBounds.Size;
+            // else
+            //     containerSize = page.Size;
 
             var font = this.FullStyle.CreateTextOptions();
 
             var fontSize = new Size(font.GetZeroCharWidth(), font.GetSize());
 
-            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, containerSize, fontSize, Font.DefaultFontSize);
+            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, new ParentComponentSizer(this.GetParentComponentSize), fontSize, Font.DefaultFontSize);
             return full;
         }
 
         #endregion
 
+        #region protected virtual Size GetParentComponentSize(IComponent component, Style style, PositionMode withMode)
+
+        protected virtual Size GetParentComponentSize(IComponent component, Style style, PositionMode withMode)
+        {
+            Size sz = Size.Empty;
+            var pg = this.DocumentLayout.CurrentPage;
+
+            if (withMode == PositionMode.Relative || withMode == PositionMode.Absolute)
+            {
+                var container = pg.LastOpenBlock();
+                bool foundRelative = false;
+
+                while(null != container)
+                {
+                    if(container.Position.PositionMode == PositionMode.Absolute
+                        || container.Position.PositionMode == PositionMode.Fixed
+                        || container.Position.PositionMode == PositionMode.Relative)
+                    {
+                        foundRelative = true;
+                        sz = container.CurrentRegion.TotalBounds.Size;
+                        if (container.Position.Padding.IsEmpty == false)
+                        {
+                            sz.Width += container.Position.Padding.Left + container.Position.Padding.Right;
+                        }
+                        break;
+                    }
+                    else if (container.Position.XObjectRender)
+                    {
+                        if (container.Position.ViewPort.HasValue)
+                        {
+                            sz = container.Position.ViewPort.Value.Size;
+                        }
+                        else
+                        {
+                            sz = new Size(container.Position.Width.Value, container.Position.Height.Value);
+                        }
+
+                        foundRelative = true;
+                        break;
+                    }
+                    container = container.Parent as PDFLayoutBlock;
+                }
+
+                if (!foundRelative)
+                {
+                    sz = pg.Size;
+                }
+            }
+            else if(withMode ==  PositionMode.Fixed)
+            {
+                sz = pg.Size;
+            }
+            else
+            {
+                var container = pg.LastOpenBlock();
+
+                if (null != container)
+                    sz = container.CurrentRegion.TotalBounds.Size;
+                else if (null != pg.CurrentBlock)
+                    sz = pg.CurrentBlock.CurrentRegion.TotalBounds.Size;
+                else
+                    sz = pg.Size;
+
+            }
+            return sz;
+        }
+        
+        #endregion
 
         #region protected virtual void DoLayoutAChild(IPDFComponent comp, PDFStyle full)
 
@@ -843,24 +986,42 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutRegion positioned = null;
             PDFPositionOptions options = null;
-
+            bool decrementDepthAfter = false;
+            
             //Here we can set up any required regions and then do the layout for the explicit types
             //If we have style then check if are actually relatively or absolutely positioned
             if (IsStyled(comp))
             {
-                options = full.CreatePostionOptions();
-
-                if (options.PositionMode == PositionMode.Absolute)
+                options = full.CreatePostionOptions(false); //this.Context.PositionDepth > 0);
+                
+                if (options.PositionMode == PositionMode.Fixed)
+                {
                     positioned = this.BeginNewAbsoluteRegionForChild(options, comp, full);
-
-                else if (options.PositionMode == PositionMode.Relative)
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
+                else if (options.PositionMode == PositionMode.Absolute)
+                {
                     positioned = this.BeginNewRelativeRegionForChild(options, comp, full);
-
-                else if (options.PositionMode == PositionMode.InlineBlock)
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
+                else if (options.DisplayMode == DisplayMode.InlineBlock)
+                {
                     positioned = this.BeginNewInlineBlockRegionForChild(options, comp, full);
-
+                    if(null == positioned)
+                        return;
+                }
                 else if (options.FloatMode != FloatMode.None)
+                {
                     positioned = this.BeginNewFloatingRegionForChild(options, comp, full);
+                    this.Context.PositionDepth += 1;
+                    decrementDepthAfter = true;
+                }
+                else if (options.XObjectRender && options.DisplayMode == DisplayMode.InlineBlock)
+                {
+                    positioned = this.BeginNewXObjectRegionForChild(options, comp, full);
+                }
             }
 
 
@@ -910,13 +1071,20 @@ namespace Scryber.PDF.Layout
             //close any relative or absolute region
             if (null != positioned)
             {
-                if (positioned.IsClosed) //we have overflowed and need to get the latest.
-                    positioned = this.CurrentBlock.PositionedRegions.Last();
-
+                if (positioned.IsClosed && positioned.PositionMode == PositionMode.Relative) //we have overflowed (only relative can cause an overflow) and need to get the latest.
+                {
+                   positioned = this.CurrentBlock.PositionedRegions.Last();
+                }
+                
                 positioned.Close();
+                
+                if (decrementDepthAfter)
+                    this.Context.PositionDepth -= 1;
 
                 if (positioned is PDFLayoutPositionedRegion posReg && posReg.AssociatedRun != null)
+                {
                     posReg.AssociatedRun.Close();
+                }
 
                 if (positioned.Contents.Count == 0 && positioned.Floats == null)
                 {
@@ -925,21 +1093,318 @@ namespace Scryber.PDF.Layout
                     positioned.ExcludeFromOutput = true;
                     positioned.TotalBounds = Rect.Empty;
                 }
+                else if(positioned.PositionMode == PositionMode.Fixed)
+                {
+                    this.UpdateFixedRegionPosition(positioned, options);
+                }
+                else if(positioned.PositionMode == PositionMode.Absolute)
+                {
+                    if (options.FloatMode != FloatMode.None)
+                    {
+                        positioned = EnsurePositionedOnPage(positioned, options);
+                        this.UpdateFloatingRegionPosition(positioned, options);
+                    }
+                    else
+                    {
+                        this.UpdateAbsoluteRegionPosition(positioned, options);
+                    }
+                    
+                }
+                else if (positioned.DisplayMode == DisplayMode.InlineBlock)
+                {
+                    this.UpdateInlineBlockPosition(positioned as PDFLayoutPositionedRegion, options);
+                }
+                
                 //If we are relative and we some transformations to apply
-                if (options != null && options.HasTransformation)
+                if (options.HasTransformation)
                 {
                     ApplyRelativeTransformations(positioned, options);
                 }
-                else if(options.FloatMode != FloatMode.None)
-                {
-                    positioned = EnsurePositionedOnPage(positioned, options);
-                    ApplyFloat(positioned, options);
-                }
+                
                 
             }
 
         }
 
+        #endregion
+
+        protected virtual void UpdateInlineBlockPosition(PDFLayoutPositionedRegion positioned, PDFPositionOptions options)
+        {
+ 
+            var block = this.CurrentBlock;
+            if (null == block)
+                block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            if (null == block) 
+                return;
+            
+            var reg = block.CurrentRegion;
+            if(null == reg)
+                return;
+            
+            bool newPage;
+            var line = reg.CurrentItem as PDFLayoutLine;
+            
+            //check the height - if it's not explicit
+            if (!positioned.PositionOptions.Height.HasValue)
+            {
+                var h = positioned.Height;
+                if (h > reg.AvailableHeight)
+                {
+                    //to high to fit the available space (if we are not clipped.
+                    if (!this.IsLastInClippedBlock(reg))
+                    {
+                        var origBlock = block;
+                        var origReg = reg;
+                        
+                        line.RemoveRun(positioned.AssociatedRun);//remove it before closing
+                        
+                        if (this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
+                        {
+                            origBlock.PositionedRegions.Remove(positioned);
+                            block.PositionedRegions.Add(positioned);
+                            positioned.SetParent(block);
+
+                            var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+                            newLine.AddRun(positioned.AssociatedRun);
+                            positioned.AssociatedRun.SetParent(newLine);
+                        }
+                        
+                    }
+                }
+            }
+            
+
+            //check the width - if it's not explicit
+            if (!positioned.PositionOptions.Width.HasValue)
+            {
+                if (line != null && line.AvailableWidth < 0) //we are beyond the available width
+                {
+
+                    if (positioned.Width > line.FullWidth)
+                    {
+                        if (line.Runs.Count == 1) //it's just the run and it's simply too big so, do nothing.
+                            return;
+                    }
+
+                    //no height available and we are not clipping
+                    if (reg.AvailableHeight < positioned.Height && !this.IsLastInClippedBlock(reg))
+                    {
+                        var origBlock = block;
+                        var origReg = reg;
+
+                        line.RemoveRun(positioned.AssociatedRun);
+
+                        if (this.MoveToNextRegion(positioned.Height, ref reg, ref block, out newPage))
+                        {
+
+                            //just move the inline block
+                            origBlock.PositionedRegions.Remove(positioned);
+                            block.PositionedRegions.Add(positioned);
+                            positioned.SetParent(block);
+
+                            var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+
+                            newLine.AddRun(positioned.AssociatedRun);
+                            positioned.AssociatedRun.SetParent(newLine);
+                        }
+
+                    }
+                    else
+                    {
+                        //We are wider than available width, but we have height to accomodate the block below.
+                        //so just move to a new line.
+                        
+                        line.RemoveRun(positioned.AssociatedRun);
+                        
+                        if (!line.IsClosed)
+                            line.Close();
+
+                        var newLine = this.GetOpenLine(positioned.Width, reg, DisplayMode.InlineBlock);
+                        newLine.AddRun(positioned.AssociatedRun);
+                        positioned.AssociatedRun.SetParent(newLine);
+                    }
+                }
+            }
+        }
+        
+        #region protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
+        
+        protected virtual void UpdateFixedRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions options)
+        {
+            var pg = this.Context.DocumentLayout.CurrentPage;
+            var bounds = positioned.TotalBounds;
+
+            if (options.X.HasValue == false)
+            {
+                var w = pg.Width;
+
+                if (options.Right.HasValue)
+                {
+                    //Move to the right
+                    w -= (options.Right.Value + positioned.TotalBounds.Width);
+                    bounds.X = w;
+                }
+                else
+                {
+                    var x = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while (null != parent)
+                    {
+                        x += parent.Position.Margins.Left + parent.Position.Padding.Left;
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                    bounds.X = x;
+                }
+            }
+            
+
+            if (options.Y.HasValue == false)
+            {
+                if (options.Bottom.HasValue)
+                {
+                    var h = pg.Height;
+                    h -= (options.Bottom.Value + positioned.TotalBounds.Height + options.Margins.Top + options.Margins.Bottom);
+
+                    bounds.Y = h;
+                }
+                else
+                {
+
+                    var y = Unit.Zero;
+                    var parent = positioned.Parent as PDFLayoutBlock;
+
+                    while(null != parent)
+                    {
+                        y += parent.Height + parent.Position.Margins.Top + parent.Position.Padding.Top;
+
+                        if (parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                            y += line.Height;
+
+                        parent = parent.Parent as PDFLayoutBlock;
+                    }
+                    if(pg.HeaderBlock != null)
+                    {
+                        y += pg.HeaderBlock.Height;
+                    }
+                    bounds.Y = y;
+                }
+            }
+            
+
+            //Put the bounds back on to the region.
+            positioned.TotalBounds = bounds;
+        }
+
+        #endregion
+        
+        #region protected PDFLayoutBlock GetClosestPositionedParent(PDFLayoutRegion region)
+        protected PDFLayoutBlock GetClosestPositionedParent(PDFLayoutRegion region)
+        {
+            var block = region.GetParentBlock();
+
+            while(null != block)
+            {
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                    return block;
+                else if (block.Position.PositionMode == PositionMode.Fixed)
+                    return block;
+                else if (block.Position.PositionMode == PositionMode.Relative)
+                    return block;
+                else
+                    block = block.GetParentBlock();
+            }
+
+            return null;
+        }
+        
+        #endregion
+        
+        #region protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
+
+        
+        protected virtual void UpdateAbsoluteRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
+        {
+            var positioned = (PDFLayoutPositionedRegion)region;
+            var pg = this.Context.DocumentLayout.CurrentPage;
+            var bounds = positioned.TotalBounds;
+            PDFLayoutBlock relativeTo = null;
+            
+            var parent = positioned.GetParentBlock();
+            var parentOffset = Point.Empty;
+            var firstParent = true;
+            
+            while (parent != null)
+            {
+                var mode = parent.Position.PositionMode;
+                if (mode == PositionMode.Absolute ||
+                    mode == PositionMode.Fixed ||
+                    mode == PositionMode.Relative)
+                {
+                    relativeTo = parent;
+                    break;
+                }
+                else
+                {
+                    parentOffset.Y += parent.CurrentRegion.Height;
+                    
+                    if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    {  parentOffset.Y += line.Height;}
+
+                    parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
+                    parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
+                    
+                    firstParent = false;
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
+
+            }
+            
+            var offsetX = Unit.Zero;
+            var offsetY = Unit.Zero;
+            
+            if (null == relativeTo)
+            {
+                //no positioned parent so we are relative to the structural parent
+                //and it's current position - even if we have x and y values
+                relativeTo = positioned.GetParentBlock();
+                
+                offsetX = relativeTo.CurrentRegion.OffsetX;
+                offsetY = relativeTo.CurrentRegion.Height;
+
+                if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    offsetY += line.Height;
+                //reset the positioned offset;
+                parentOffset = Point.Empty;
+            }
+            else
+            {
+                //We have a positioned parent
+                
+                if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                {
+                    //No vertical position - so relative to the positioned regions height
+                    //including any current open line.
+
+                    offsetY = relativeTo.CurrentRegion.Height + relativeTo.Position.Margins.Top;
+                    var open = relativeTo.CurrentRegion.LastOpenBlock();
+
+                    if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                        offsetY += line2.Height;
+                }
+
+                if (options.X.HasValue == false && options.Right.HasValue == false)
+                {
+                    //no horizontal position
+                    offsetX = relativeTo.CurrentRegion.OffsetX;
+                }
+            }
+
+            positioned.RelativeTo = relativeTo;
+            positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
+            
+        }
+        
         #endregion
 
         #region protected virtual PDFLayoutRegion EnsurePositionedOnPage(PDFLayoutRegion lastPositioned, PDFPositionOptions options)
@@ -977,88 +1442,218 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
+        #region protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion positioned, PDFPositionOptions pos)
 
-        protected virtual void ApplyFloat(PDFLayoutRegion positioned, PDFPositionOptions pos)
+        protected virtual void UpdateFloatingRegionPosition(PDFLayoutRegion region, PDFPositionOptions options)
         {
-            if (null == pos)
-                throw new ArgumentNullException("pos");
-
-            if (null == positioned)
-                throw new ArgumentNullException("positioned");
-
-            if (pos.FloatMode == FloatMode.None)
-                throw new ArgumentOutOfRangeException("pos.FloatMode", "Can not be None");
-
-            if(positioned.Contents.Count == 0)
-            {
-                this.Context.TraceLog.Add(TraceLevel.Warning, "Float Layout", "Block has moved to a new page and cannot find a parent that is valid. Float detail is lost");
-                return;
-            }
-            Unit floatWidth;
-            bool isImage;
-            if(!TryGetFloatingRegionWidth(positioned, out floatWidth, out isImage))
-                return;
             
-            Unit floatInset = Unit.Zero;
-            Unit height = positioned.Height;
-            Unit offset = pos.Y.Value;
+            var rightOffset = (options.Right ?? Unit.Zero);
+            
+            //Knock out any explicit position values and set it to absolute.
+            options.X = null;
+            options.Y = null;
+            options.Bottom = null;
+            options.Right = null;
+            options.PositionMode = PositionMode.Absolute;
+            
+            var positioned = (PDFLayoutPositionedRegion)region;
+            var pg = this.Context.DocumentLayout.CurrentPage;
             var bounds = positioned.TotalBounds;
-            var container = positioned.GetParentBlock();
-            var pageOffset = container.GetPageYOffset();
-            var rightAlign = container.Position.HAlign == HorizontalAlignment.Right;
-
-            if (pos.FloatMode == FloatMode.Left)
+            PDFLayoutBlock relativeTo = null;
+            
+            var parent = positioned.GetParentBlock();
+            var parentOffset = Point.Empty;
+            
+            while (parent != null)
             {
-                
-                floatInset = container.CurrentRegion.GetLeftInset(offset, height);
-
-                //if (floatLeft > 0)
-                //   bounds.X += floatLeft;
-                if(isImage)
+                var mode = parent.Position.PositionMode;
+                if (mode == PositionMode.Absolute ||
+                    mode == PositionMode.Fixed ||
+                    mode == PositionMode.Relative)
                 {
-                    if (pos.Width.HasValue && rightAlign)
-                        bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
+                    relativeTo = parent;
+                    break;
                 }
-                else if(pos.Margins.IsEmpty == false)
+                else
                 {
-                    height += pos.Margins.Top + pos.Margins.Bottom;
-                    //bounds.X += pos.Margins.Left;
-                    //bounds.Y += pos.Margins.Top;
-                    bounds.Height = height;
+                    parentOffset.Y += parent.CurrentRegion.Height;
+                    
+                    //if (firstParent && parent.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    //{  parentOffset.Y += line.Height;}
+
+                    parentOffset.Y += parent.Position.Padding.Top + parent.Position.Margins.Top;
+                    parentOffset.X += parent.Position.Padding.Left + parent.Position.Margins.Left;
+                    
+                    parent = parent.Parent as PDFLayoutBlock;
+                }
+
+            }
+            
+            var offsetX = Unit.Zero;
+            var offsetY = Unit.Zero;
+            
+            if (null == relativeTo)
+            {
+                //no positioned parent so we are relative to the structural parent
+                //and it's current position - even if we have x and y values
+                relativeTo = positioned.GetParentBlock();
+                
+                offsetX = relativeTo.CurrentRegion.OffsetX;
+                offsetY = relativeTo.CurrentRegion.Height;
+
+                if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line)
+                    offsetY += line.Height;
+                
+                //reset the positioned offset;
+                parentOffset = Point.Empty;
+            }
+            else
+            {
+                //We have a positioned parent
+                
+                if (options.Y.HasValue == false && options.Bottom.HasValue == false)
+                {
+                    //No vertical position - so relative to the positioned regions height
+                    //including any current open line.
+
+                    offsetY = relativeTo.CurrentRegion.Height;// + relativeTo.Position.Margins.Top;
+                    parentOffset.Y += relativeTo.Position.Margins.Top;
+                    
+                    var open = relativeTo.CurrentRegion.LastOpenBlock();
+//                    
+//TODO: check available space and if the current line can fit the floating region, move it to that line rather than shift down.
+//
+                    if (null != open)
+                    {
+                        if (open.CurrentRegion.CurrentItem is PDFLayoutLine line2)
+                            offsetY += line2.Height;
+                    }
+                    else if (relativeTo.CurrentRegion.CurrentItem is PDFLayoutLine line3)
+                        offsetY += line3.Height;
+                }
+
+                if (options.X.HasValue == false && options.Right.HasValue == false)
+                {
+                    //no horizontal position
+                    offsetX = relativeTo.CurrentRegion.OffsetX;
+                    //parentOffset.X += relativeTo.Position.Padding.Left;
+                }
+            }
+
+            positioned.RelativeTo = relativeTo;
+            positioned.RelativeOffset = new Point(offsetX + parentOffset.X, offsetY + parentOffset.Y);
+
+            if (options.FloatMode == FloatMode.Left)
+            {
+                rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY, positioned.Height);
+                if (positioned.TotalBounds.X + positioned.TotalBounds.Width + rightOffset >
+                    relativeTo.CurrentRegion.TotalBounds.Width)
+                {
+                    //move down as we cannot fit on the line.
+                    var requiredSpace = positioned.TotalBounds.Width;
+                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - rightOffset;
+                    var maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth,
+                        requiredSpace);
+                    offsetY = maxY;
+                    offsetX = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
+                    positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
+                    bounds = positioned.TotalBounds;
+                    bounds.X = offsetX;
                     positioned.TotalBounds = bounds;
                 }
-            }
-            else if(pos.FloatMode == FloatMode.Right)
-            {
-                floatInset = container.CurrentRegion.GetRightInset(offset, height);
-                
-                var avail = container.CurrentRegion.TotalBounds.Width;
-                var w = avail;
-                bounds.X = avail - (floatWidth + floatInset);
-                
 
-                if(isImage)
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
-                    //HACK: The width of the image is being used explicitly for in positioning, so need to
-                    //adjust back to the right size.
-                    //if (pos.Width.HasValue && rightAlign)
-                    //    bounds.X += pos.Margins.Left + pos.Margins.Right + pos.Padding.Left + pos.Padding.Right;
+                    if (!this.MoveFloatToNextRegion(FloatMode.Left, positioned.TotalBounds.X, positioned, relativeTo))
+                    {
+                        if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)
+                        {
+                            positioned.PositionOptions.Visibility = Visibility.Hidden;
+                        }
+                    }
                 }
-                else if (pos.Margins.IsEmpty == false)
+                else
                 {
-                    height += pos.Margins.Top + pos.Margins.Bottom;
-                    //bounds.X += pos.Margins.Left;
-                    //bounds.Y += pos.Margins.Top;
-                    bounds.Height = height;
+                    relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
+                        positioned.TotalBounds.X, offsetY, positioned.Height);
                 }
             }
-            positioned.TotalBounds = bounds;
-            positioned.HAlignment = HorizontalAlignment.Left;
-            container.CurrentRegion.AddFloatingInset(pos.FloatMode, floatWidth, floatInset, offset, height);
-            
+            else //float right
+            {
+                var leftOffset = relativeTo.CurrentRegion.GetLeftInset(offsetY, positioned.Height);
+                
+                if (rightOffset + positioned.TotalBounds.Width + leftOffset > relativeTo.CurrentRegion.TotalBounds.Width)
+                {
+                    //move down as we cannot fit on the line.
+                    var requiredSpace = positioned.TotalBounds.Width;
+                    var availableWidth = relativeTo.CurrentRegion.TotalBounds.Width - leftOffset;
+                    Unit maxY;
+                    if (availableWidth < requiredSpace) //We have left floats pushing us down.
+                        maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Left, availableWidth,
+                            requiredSpace);
+                    else //we have right floats pushing us down
+                        maxY = relativeTo.CurrentRegion.GetFloatsMaxVOffset(FloatMode.Right, availableWidth, requiredSpace);
+                    offsetY = maxY;
+                    rightOffset = relativeTo.CurrentRegion.GetRightInset(offsetY , positioned.Height);
+                    positioned.RelativeOffset = new Point(parentOffset.X, offsetY + parentOffset.Y);
+                    bounds = positioned.TotalBounds;
+                    bounds.X = offsetX;
+                    positioned.TotalBounds =  bounds;
+                }
+                
+                positioned.PositionOptions.Right = rightOffset;
+                
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                {
+                    if (!this.MoveFloatToNextRegion(FloatMode.Right, rightOffset, positioned, relativeTo))
+                    {
+                        if (relativeTo.Position.OverflowAction == OverflowAction.Truncate)
+                        {
+                            positioned.PositionOptions.Visibility = Visibility.Hidden;
+                        }
+                    }
+                }
+                else
+                {
+                    relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
+                        rightOffset, offsetY, positioned.Height);
+                }
+            }
         }
 
+        private bool MoveFloatToNextRegion(FloatMode floatMode, Unit floatInset, PDFLayoutPositionedRegion positioned, PDFLayoutBlock relativeTo)
+        {
+            var newRegion = relativeTo.CurrentRegion;
+            var newBlock = relativeTo;
+            bool newPage;
+            //POSTITIONED REGIONS IN THE HIERARCHY WILL NEVER FOARCE A NEW PAGE, OR COLUMN
+            if (this.MoveToNextRegion(positioned.Height, ref newRegion, ref newBlock, out newPage))
+            {
+                newRegion.AddFloatingInset(floatMode, positioned.TotalBounds.Width,
+                    floatInset, 0, positioned.Height);
+                
+                //swap the positioned region
+                
+                relativeTo.PositionedRegions.Remove(positioned);
+                newBlock.PositionedRegions.Add(positioned);
+                
+                var run = positioned.AssociatedRun;
+                run.Line.Runs.Remove(run);
+                var line = newRegion.StartOrReturnCurrentLine(DisplayMode.Inline);
+                line.AddRun(run);
+                
+                //To do - update the current position.
+                positioned.RelativeTo = newBlock;
+                var offset = positioned.RelativeOffset;
+                offset.Y = newRegion.UsedSize.Height;
+                
+                positioned.RelativeOffset = offset;
+                
+                return true;
+            }
+            else
+                return false;
+        }
 
 
         private bool TryGetFloatingRegionWidth(PDFLayoutRegion positioned, out Unit width, out bool isImage)
@@ -1132,7 +1727,7 @@ namespace Scryber.PDF.Layout
             if (null == positioned)
                 throw new ArgumentNullException("positioned");
 
-            if (pos.PositionMode == PositionMode.Inline)
+            if (pos.PositionMode == PositionMode.Static)
                 throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absolute");
 
             //Get the block that sits in the positioned region
@@ -1159,14 +1754,16 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.TransformMatrix.ToString() + " to the bounds for block " + relBlock.ToString());
+            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.Transformations.ToString() + " to the bounds for block " + relBlock.ToString());
 
             //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
 
-            PDFTransformationMatrix matrix = pos.TransformMatrix;
-
+            Scryber.Drawing.TransformOperationSet transform = pos.Transformations;
             Rect bounds = new Rect(Point.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
-            Rect transformed = matrix.TransformBounds(bounds, TransformationOrigin.CenterMiddle);
+
+            
+            var matrix = transform.GetTransformationMatrix(Context.Graphics.ContainerSize, pos.TransformationOrigin);
+            var transformed = matrix.TransformBounds(bounds);
 
             Unit xpos = transformed.X;
             Unit ypos = transformed.Y;
@@ -1232,6 +1829,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
             PDFLayoutRegion abs = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            
             return abs;
         }
 
@@ -1239,6 +1837,49 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
+
+            var line = last.CurrentRegion.CurrentItem as PDFLayoutLine;
+
+            if (pos.Height.HasValue && last.CurrentRegion.AvailableHeight < pos.Height)
+            {
+                if (line != null)
+                {
+                    last.CurrentRegion.CloseCurrentItem();
+                }
+
+                var region = last.CurrentRegion;
+                var block = last;
+                var newPage = false;
+                if (this.IsLastInClippedBlock(region))
+                {
+                    //We are ok, as we are clipped. Just continue
+                }
+                else if (this.MoveToNextRegion(pos.Height.Value, ref region, ref block, out newPage))
+                {
+                    last = block;
+                }
+                else
+                {
+                    this.ContinueLayout = false;
+                    return null;
+                }
+
+            }
+            if (pos.Width.HasValue)
+            {
+                //we have an explicit width so check if we have an open line with the available width.
+                
+                if (null != line && line.Runs.Count > 0)
+                {
+                    if (line.AvailableWidth < pos.Width)
+                    {
+                        //we cannot fit, so create a new line.
+                        last.CurrentRegion.CloseCurrentItem();
+                        last.CurrentRegion.BeginNewLine(1);
+                    }
+                }
+            }
+
             PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
             return ib;
         }
@@ -1248,36 +1889,203 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
             PDFLayoutBlock last = page.LastOpenBlock();
-            Unit offsetY = last.Height;
-            var region = last.CurrentRegion;
-            if (null != region)
-            {
-                //Check if we have an open line with existing content on it.
-                //If so, then we move down a line for the layout block.
-                //Otherwise just reduce the width of the current line by block width
-                if (region.CurrentItem != null && region.CurrentItem is PDFLayoutLine)
-                {
-                    var line = (region.CurrentItem as PDFLayoutLine);
-                    if (line.Runs.Count > 0)
-                        offsetY += region.CurrentItem.Height;
-                    else
-                        line.SetMaxWidth(line.AvailableWidth - pos.Width ?? Unit.Zero);
-
-                }
-                //there could be another float left, so make sure we inset to match this.
-                if (pos.FloatMode == FloatMode.Left)
-                {
-                    var x = region.GetLeftInset(offsetY, pos.Height ?? (Unit)1);
-                    if (x > 0)
-                        pos.X = x;
-                }
-            }
-            pos.Y = offsetY;
-            PDFLayoutRegion floating = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
+            PDFLayoutRegion region = last.CurrentRegion;
+            //Knock out any positioning, and treat the block as absolute.
+            //We can then exclude this in the line widths for the parent it is relative to.
             
-            return floating;
+            pos.X = null;
+            pos.Y = null;
+            pos.Bottom = null;
+            pos.Right = null;
+            pos.PositionMode = PositionMode.Absolute;
+
+            if (pos.FloatMode == FloatMode.Left)
+            {
+                var yoffset = region.UsedSize.Height;
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && line.Runs.Count > 0)
+                {
+                    var hasContent = false;
+                    //check for an empty line.
+                    
+                    foreach (var run in line.Runs)
+                    {
+                        if (run is PDFLayoutPositionedRegionRun positionedRegionRun)
+                        {
+                            if (positionedRegionRun.IsFloating)
+                            {
+                                //continue
+                            }
+                            else if (positionedRegionRun.Region.PositionMode == PositionMode.Fixed ||
+                                     positionedRegionRun.Region.PositionMode == PositionMode.Absolute)
+                            {
+                                //continue
+                            }
+                            else
+                            {
+                                hasContent = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            hasContent = true;
+                            break;
+                        }
+                    }
+
+                    if (hasContent)
+                        yoffset += line.Height;
+                }
+
+                pos.X = region.GetLeftInset(yoffset, 1.0);
+            }
+            else if (pos.FloatMode == FloatMode.Right)
+            {
+                var yoffset = region.UsedSize.Height;
+                if (region.CurrentItem is PDFLayoutLine line && !(line.IsClosed) && line.HasInlineContent)
+                    yoffset += line.Height;
+                pos.Right = region.GetRightInset(yoffset, 1.0);
+                
+                // if (pos.Width.HasValue == false && pos.MaximumWidth.HasValue == false && pos.MinimumWidth.HasValue == false)
+                // {
+                //     var h = pos.Height.HasValue ? pos.Height.Value : (Unit)1;
+                //     var availableWidth =
+                //         region.GetAvailableLineWidth(yoffset, h, pos.Right.Value, out var left, postLayout: false);
+                //     pos.MaximumWidth = availableWidth;
+                // }
+            }
+
+            PDFLayoutRegion ib = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: true);
+            return ib;
         }
 
+        protected virtual PDFLayoutRegion BeginNewXObjectRegionForChild(PDFPositionOptions pos, IComponent comp,
+            Style full)
+        {
+            PDFLayoutPage page = this.Context.DocumentLayout.CurrentPage;
+            PDFLayoutBlock last = page.LastOpenBlock();
+            if (pos.DisplayMode == DisplayMode.Block &&
+                !(pos.PositionMode == PositionMode.Absolute || pos.PositionMode == PositionMode.Fixed))
+            {
+                //We need to handle this differently
+                // if(last.CurrentRegion.HasOpenItem)
+                //     last.CurrentRegion.CloseCurrentItem();
+                //
+                // last = this.CreateContainerBlock(pos);
+                // if (null == last)
+                //     return null;
+                //
+                // CreateBlockRegions(last, pos, full.CreateColumnOptions());
+                // last = page.LastOpenBlock();
+            }
+            
+            PDFLayoutRegion xObj = last.BeginNewPositionedRegion(pos, page, comp, full, isfloating: false);
+            
+            return xObj;
+        }
+
+        protected virtual PDFLayoutBlock CreateContainerBlock(PDFPositionOptions position)
+        {
+            bool newPageOrRegion = false;
+            PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
+            PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
+
+            if (containerRegion.HasOpenItem)
+                containerRegion.CloseCurrentItem();
+
+            Unit required = Unit.Zero;
+
+            if (position.Height.HasValue)
+                required = position.Height.Value + position.Margins.Top + position.Margins.Bottom;
+            else if (position.MinimumHeight.HasValue)
+                required = position.MinimumHeight.Value + position.Margins.Top + position.Margins.Bottom;
+
+            //Do we have space
+            if (containerRegion.AvailableHeight <= 0 || (containerRegion.AvailableHeight < required))
+            {
+                var origRegion = containerRegion;
+                var origBlock = containerBlock;
+
+                if (position.OverflowAction == OverflowAction.Clip || this.IsLastInClippedBlock(containerRegion))
+                {
+                    //We are ok to continue in a clipped block.
+                }
+                else if (this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPageOrRegion))
+                {
+                    if (this.IsJustAnEmptyPositionedRegion(origRegion, origBlock))
+                        origBlock.ExcludeFromOutput = true;
+                    //We have moved to a new region or page
+                }
+                else
+                {
+                    this.Context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "Cannot fit the block for component " + this.Component.UniqueID + " in the avilable height (required = '" + position.Height + "', available = '" + containerRegion.AvailableHeight + "'), and we cannot overflow to a new region. Layout of component stopped and returning.");
+                    this.ContinueLayout = false;
+                    return null;
+                }
+
+            }
+
+
+            if (newPageOrRegion && position.PositionMode == PositionMode.Absolute)
+            {
+
+                CurrentBlock = containerBlock;
+                //containerRegion = this.BeginNewRelativeRegionForChild(position, this.Component, this.FullStyle);
+                containerRegion = containerBlock.BeginNewPositionedRegion(position, this.CurrentBlock.GetLayoutPage(), this.Component, this.FullStyle, isfloating: false, addAssociatedRun: true);
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, DisplayMode.Block);
+                return containerBlock;
+
+            }
+            else if (newPageOrRegion && position.FloatMode != FloatMode.None)
+            {
+                return null;
+            }
+            else
+            {
+                CurrentBlock = containerBlock.BeginNewContainerBlock(this.Component, this, this.FullStyle, DisplayMode.Block);
+                CurrentBlock.BlockRepeatIndex = 0;
+                return containerBlock;
+            }
+        }
+        
+        protected virtual void CreateBlockRegions(PDFLayoutBlock containerBlock, PDFPositionOptions position, PDFColumnOptions columnOptions)
+        {
+            Rect unused = containerBlock.CurrentRegion.UnusedBounds;
+            Unit yoffset = containerBlock.CurrentRegion.Height;
+
+            Rect total = new Rect(Unit.Zero, yoffset, unused.Width, unused.Height);
+
+            if (position.Width.HasValue)
+                total.Width = position.Width.Value;
+            //ADDED for min/max sizes. Include the margins as we are making this the available width.
+            else if (position.MaximumWidth.HasValue)
+                total.Width = position.MaximumWidth.Value + position.Margins.Left + position.Margins.Right;
+
+
+            if (position.Height.HasValue)
+                total.Height = position.Height.Value;
+            //ADDED for min/max sizes. Include the margins as we are making this the available height.
+            else if (position.MaximumHeight.HasValue)
+                total.Height = position.MaximumHeight.Value + position.Margins.Top + position.Margins.Bottom;
+
+            CurrentBlock.InitRegions(total, position, columnOptions, this.Context);
+        }
+        
+        private bool IsJustAnEmptyPositionedRegion(PDFLayoutRegion origRegion, PDFLayoutBlock origBlock)
+        {
+
+            if (origBlock.Columns.Length == 1 && origBlock.Columns[0].Contents.Count == 1)
+            {
+                var line = origBlock.Columns[0].Contents[0] as PDFLayoutLine;
+
+                if (null != line && line.Runs.Count == 1 && line.Runs[0] is PDFLayoutPositionedRegionRun)
+                    return true;
+
+            }
+
+            return false;
+        }
+        
         #endregion
 
         //
@@ -1441,10 +2249,11 @@ namespace Scryber.PDF.Layout
                             return;
                         }
                     }
-
-
+                    
+                    PDFLayoutLine prev = region.CurrentItem as PDFLayoutLine;
+                    PDFTextRunNewLine prevNewLine = ((null != prev && prev.Runs.Count > 1) ? prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine : null);
                     PDFLayoutLine line = region.BeginNewLine();
-                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null));
+                    line.AddRun(new PDFTextRunSpacer(Unit.Zero, height, line, null, prevNewLine));
                 }
                 region.CloseCurrentItem();
             }
@@ -1470,6 +2279,9 @@ namespace Scryber.PDF.Layout
             Style prev = this.FullStyle;
             this.FullStyle = style;
 
+            //Allow the container to apply any styles needed from the context or our applied style
+            if(invisible is IPassThroughStyleContainer passThrough)
+                passThrough.ApplyStylesToChildren(this, this.Context, style);
             
 
             //Extract the collection of child components in this container
@@ -1529,22 +2341,35 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            PDFPositionOptions options = style.CreatePostionOptions();
+            
+
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
 
             avail.Width -= options.Margins.Left + options.Margins.Right + options.Padding.Left + options.Padding.Right;
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
-
-            //Rects 
-            //PDFRect border, content, total;
-            //bool hasmargins, haspadding;
-            //PDFThickness marginThick, padThick;
+            
 
             Size sz = image.GetRequiredSizeForLayout(avail, this.Context, style);
-            //sz = BuildContentSizes(style, options, sz, out border, out content, out total, out hasmargins, out haspadding, out marginThick, out padThick);
+            
+            if (null != imgx.ImageData)
+            {
+                var data = imgx.ImageData;
+                if(data is Scryber.Imaging.ImageDataProxy proxy)
+                    data = proxy.ImageData;
 
+                if (null != data && data is ILayoutComponent tolayout)
+                {
+                    if(this.Context.ShouldLogVerbose)
+                        this.Context.TraceLog.Add(TraceLevel.Verbose, "Layout", "Laying out the image content for '" + data.SourcePath + " as it is implemenbting the ILayoutComponent interface");
+                    
+                    sz = tolayout.GetRequiredSizeForLayout(avail, this.Context, style);
+                }
+                    
+            }
+            
             AddComponentRunToLayoutWithSize(sz, image, style, ref linetoAddTo, options);
 
             return;
@@ -1562,7 +2387,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutPathComponent(IGraphicPathComponent comp, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
@@ -1571,10 +2396,14 @@ namespace Scryber.PDF.Layout
             avail.Height -= options.Margins.Top + options.Margins.Bottom + options.Padding.Top + options.Padding.Bottom;
 
             GraphicsPath path = comp.CreatePath(avail, style);
-            comp.Path = path;
-            Size required = path.Bounds.Size;
 
-            AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
+            if (null != path)
+            {
+                comp.Path = path;
+                Size required = path.Bounds.Size;
+
+                AddComponentRunToLayoutWithSize(required, comp, style, ref linetoAddTo, options);
+            }
 
         }
 
@@ -1589,6 +2418,15 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutTextComponent(ITextComponent text, Style style)
         {
+            if (text is Whitespace)
+            {
+                //Skip over whitespace unless it is preserved.
+                if (!style.TryGetValue(StyleKeys.TextWhitespaceKey, out var found))
+                    return;
+                if(found.Value(style) == false)
+                    return;
+            }
+            
             try
             {
                 using (IPDFLayoutEngine engine = new Layout.LayoutEngineText(text, this))
@@ -1614,8 +2452,7 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-
+        
         #region protected virtual void DoLayoutVisualRenderComponent(IPDFImageComponent image, PDFStyle style)
 
         /// <summary>
@@ -1625,7 +2462,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style">The image style</param>
         protected virtual void DoLayoutVisualRenderComponent(ILayoutComponent comp, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutLine linetoAddTo = EnsureComponentLineAvailable(options);
             Size avail = new Size(linetoAddTo.AvailableWidth, linetoAddTo.Region.AvailableHeight);
@@ -1678,6 +2515,72 @@ namespace Scryber.PDF.Layout
         //
         // overflow methods
         //
+        
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of block that is clipped. This means we just continue with the layout
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInClippedOrVisibleRegion(PDFLayoutBlock block)
+        {
+            if (_cachedIsInClipped.HasValue)
+                return _cachedIsInClipped.Value;
+            
+            var isInClipped = false;
+            
+            while (null != block)
+            {
+                if ((block.Position.OverflowAction == OverflowAction.Clip || block.Position.OverflowAction == OverflowAction.Visible) 
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    isInClipped = true;
+                    break;
+                }
+
+                block = block.GetParentBlock();
+            }
+
+            _cachedIsInClipped = isInClipped;
+            return isInClipped;
+        }
+
+        private bool? _cachedIsPositioned;
+        private bool? _cachedIsInClipped;
+
+        /// <summary>
+        /// Returns true if we are laying out text in the last column of an absolute or relatively positioned block. This means we do not overflow
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsInAbsoluteOrRelativeRegion(PDFLayoutBlock block)
+        {
+            if (_cachedIsPositioned.HasValue)
+                return _cachedIsPositioned.Value;
+            
+            var ispositioned = false;
+            
+            
+            while (null != block)
+            {
+                if ((block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Fixed)
+                    && block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
+                else if (block.Position.DisplayMode == DisplayMode.InlineBlock &&
+                         block.CurrentRegion == block.Columns[block.Columns.Length - 1])
+                {
+                    ispositioned = true;
+                    break;
+                }
+
+                block = block.GetParentBlock();
+            }
+
+            _cachedIsPositioned = ispositioned;
+            return ispositioned;
+        }
+        
+        #region protected bool IsLastInClippedBlock(PDFLayoutRegion container)
 
         protected bool IsLastInClippedBlock(PDFLayoutRegion container)
         {
@@ -1685,15 +2588,39 @@ namespace Scryber.PDF.Layout
 
             while (null != parent)
             {
-                //We are on the last column and the overflow is set to clip
-                if (parent.CurrentRegion == parent.Columns[parent.Columns.Length - 1] && parent.Position.OverflowAction == OverflowAction.Clip)
+                //Do we have multiple columns
+                if (parent.Columns.Length > 1)
+                {
+                    if (parent.CurrentRegion.NextRegion == null)
+                    {
+                        //we are on the last column
+                        if ( parent.Position.OverflowAction == OverflowAction.Clip)
+                            return true;
+                    }
+                    else
+                    {
+                        //we have more columns to overflow to
+                        return false;
+                    }
+                    
+                    
+                }
+                else if (parent.Position.OverflowAction == OverflowAction.Clip)
+                {
+                    //we have 1 column and are set to clip
                     return true;
+                }
+                
 
                 parent = parent.GetParentBlock();
             }
             return false;
         }
+        
+        #endregion
 
+        #region protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
+        
         protected virtual bool IsOutsideOfCurrentBlock(PDFLayoutBlock ablock)
         {
             if (ablock.Owner == this.Component)
@@ -1702,12 +2629,14 @@ namespace Scryber.PDF.Layout
             else if ((ablock.Owner is PDFPageHeader) || (ablock.Owner is PDFPageFooter))
                 return false;
 
-            else if (this.FullStyle.Position.PositionMode == PositionMode.Inline)
+            else if (this.FullStyle.Position.DisplayMode == DisplayMode.Inline)
                 return false;
 
             else
                 return true;
         }
+        
+        #endregion
 
         #region internal protected virtual bool MoveToNextRegion(ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
 
@@ -1892,8 +2821,10 @@ namespace Scryber.PDF.Layout
         /// <remarks>The base method returns false if the region is set as absolute or relative</remarks>
         protected virtual bool CanOverflowFromCurrentRegion(PDFLayoutRegion region)
         {
-            if (region.PositionMode == PositionMode.Absolute) // || region.PositionMode == PositionMode.Relative)
+            if (region.PositionMode == PositionMode.Absolute || region.PositionMode == PositionMode.Fixed) // || region.PositionMode == PositionMode.Relative)
                 return false;
+            else if (region.PositionMode == PositionMode.Relative)
+                return true;
             else
                 return true;
         }
@@ -1936,7 +2867,7 @@ namespace Scryber.PDF.Layout
 
                 var mode = tomove.Position.PositionMode;
 
-                if(mode == PositionMode.Absolute || mode == PositionMode.Relative)
+                if(mode == PositionMode.Fixed || mode == PositionMode.Absolute)
                 {
                     posRegion = tomove.GetParentBlock().CurrentRegion as PDFLayoutPositionedRegion;
                     posIsOpen = !tomove.IsClosed;
@@ -2025,7 +2956,7 @@ namespace Scryber.PDF.Layout
 
             int repeatindex = blockToClose.BlockRepeatIndex + 1;
 
-            PDFPositionOptions position = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions position = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions options = this.FullStyle.CreateColumnOptions();
 
             Rect total = new Rect(new Point(0, joinToRegion.Height), joinToRegion.UnusedBounds.Size);
@@ -2033,7 +2964,7 @@ namespace Scryber.PDF.Layout
             if (position.Width.HasValue)
                 total.Width = position.Width.Value;
 
-            PDFLayoutBlock block = ((PDFLayoutBlock)joinToRegion.Parent).BeginNewBlock(this.Component, this, this.FullStyle, position.PositionMode);
+            PDFLayoutBlock block = ((PDFLayoutBlock)joinToRegion.Parent).BeginNewBlock(this.Component, this, this.FullStyle, position.DisplayMode);
             block.InitRegions(total, position, options, this.Context);
             block.BlockRepeatIndex = repeatindex;
             this.CurrentBlock = block;
@@ -2075,11 +3006,11 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion region = block.CurrentRegion;
             PDFLayoutLine linetoAddTo = null;
-            PositionMode mode = options.PositionMode;
+            DisplayMode mode = options.DisplayMode;
 
             if (region.HasOpenItem)
             {
-                if (mode == PositionMode.Block)
+                if (mode == DisplayMode.Block)
                 {
                     region.CloseCurrentItem();
                     linetoAddTo = region.BeginNewLine();
@@ -2113,17 +3044,18 @@ namespace Scryber.PDF.Layout
         /// <param name="linetoAddTo">The current line in the layout.</param>
         /// <param name="options">The position options</param>
         /// <returns>True if the component could be added (i.e. there was enough space) or false.</returns>
-        protected bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
+        protected virtual bool AddComponentRunToLayoutWithSize(Size required, IComponent component, Style style, ref PDFLayoutLine linetoAddTo, PDFPositionOptions options, bool isInternalCall = false)
         {
+            
             Rect content = new Rect(
-                options.Padding.Top + options.Margins.Top,
                 options.Padding.Left + options.Margins.Left,
+                options.Padding.Top + options.Margins.Top,
                 required.Width,
                 required.Height);
 
             Rect border = new Rect(
-                options.Margins.Top,
                 options.Margins.Left,
+                options.Margins.Top,
                 required.Width + options.Padding.Left + options.Padding.Right,
                 required.Height + options.Padding.Top + options.Padding.Bottom);
 
@@ -2137,7 +3069,7 @@ namespace Scryber.PDF.Layout
             bool canfitVertical = linetoAddTo.Region.AvailableHeight >= total.Height;
             
             //If not - check that we can overflow onto new regions and pages
-            if (!canfitVertical && !isInternalCall && this.ContainerCanOverflow(options))
+            if (!canfitVertical && !isInternalCall && this.ContainerCanOverflow(options, linetoAddTo.GetParentBlock()))
             {
                 linetoAddTo.Close();
                 bool newPage;
@@ -2163,7 +3095,7 @@ namespace Scryber.PDF.Layout
                 }
             }
 
-            if (options.PositionMode != PositionMode.Inline)
+            if (options.DisplayMode != DisplayMode.Inline)
             {
                 if (component is IPDFImageComponent && !canfitVertical) //Did we overflow? If so recalculate an image size
                 {
@@ -2180,15 +3112,34 @@ namespace Scryber.PDF.Layout
                 }
 
                 linetoAddTo.AddComponentRun(component, total, border, content, total.Height, options, style);
-                //Close the current line because we are not inline
-
-                linetoAddTo.Region.CloseCurrentItem();
+                
+                //Close the current line if we are a block.
+                if (options.DisplayMode == DisplayMode.Block)
+                    linetoAddTo.Region.CloseCurrentItem();
             }
             else
             {
                 //We are inline and we need to calculate the baseline offset based on the fact
                 //that the image should sit on the baseline and push the text down so it can fit
                 //but also obey the leading rules
+                
+                //fist check we can fit on the line (and that it is not empty.
+                if (linetoAddTo.AvailableWidth < total.Width && linetoAddTo.Width > 0)
+                {
+                    linetoAddTo.Close();
+                    PDFLayoutRegion reg = linetoAddTo.Region;
+                    
+                    if (reg.AvailableHeight < total.Height && !this.IsLastInClippedBlock(reg))
+                    {
+                        
+                        PDFLayoutBlock block = reg.GetParentBlock();
+                        
+                        if (!this.MoveToNextRegion(total.Height, ref reg, ref block, out bool newPage))
+                            return false;
+                    }
+                    
+                    linetoAddTo = reg.BeginNewLine(total.Height.Value);
+                }
 
                 PDFTextRenderOptions txtOpts = style.CreateTextOptions();
 
@@ -2235,9 +3186,12 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="options">The current position options</param>
         /// <returns></returns>
-        protected virtual bool ContainerCanOverflow(PDFPositionOptions options)
+        protected virtual bool ContainerCanOverflow(PDFPositionOptions options, PDFLayoutBlock container)
         {
-            if (options.OverflowAction == OverflowAction.Clip)
+            if (this.IsInClippedOrVisibleRegion(container))
+                return false;
+            
+            if (options.OverflowAction == OverflowAction.Clip || options.OverflowAction == OverflowAction.Visible)
                 return false;
             else
                 return true;
@@ -2310,21 +3264,21 @@ namespace Scryber.PDF.Layout
         /// <param name="region"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        protected PDFLayoutLine GetOpenLine(Unit requiredwidth, PDFLayoutRegion region, PositionMode mode)
+        protected PDFLayoutLine GetOpenLine(Unit requiredwidth, PDFLayoutRegion region, DisplayMode mode)
         {
             PDFLayoutLine linetoAddTo;
             switch (mode)
             {
-                case PositionMode.Absolute:
-                case PositionMode.Relative:
-                case PositionMode.Block:
+                case DisplayMode.Block:
+                case DisplayMode.InlineBlock:
+                        
                     // Close the current line and start a new one
                     if (region.HasOpenItem)
                         region.CloseCurrentItem();
                     linetoAddTo = region.BeginNewLine();
                     break;
 
-                case PositionMode.Inline:
+                case DisplayMode.Inline:
                     //Check that the width fits on the current line
                     if (region.HasOpenItem && region.CurrentItem is PDFLayoutLine)
                     {
@@ -2342,7 +3296,7 @@ namespace Scryber.PDF.Layout
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("PositionMode");
+                    throw new ArgumentOutOfRangeException("mode");
             }
             return linetoAddTo;
         }
@@ -2359,7 +3313,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected void InitBlock(PDFLayoutBlock block, Rect bounds, Style style)
         {
-            PDFPositionOptions options = style.CreatePostionOptions();
+            PDFPositionOptions options = style.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = style.CreateColumnOptions();
             
             block.InitRegions(bounds, options, columns, this.Context);
@@ -2396,8 +3350,6 @@ namespace Scryber.PDF.Layout
         #endregion
 
         
-
-
         //
         // disposal
         //

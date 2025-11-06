@@ -6,6 +6,11 @@ namespace Scryber.Drawing
 {
 
 
+    /// <summary>
+    /// Base class for all gradient descriptors - Linear, linear repeating, radial and radial repeating.
+    /// </summary>
+    /// <remarks>The descriptors hold all information needed for rendering a gradient to the output stream
+    /// by the appropriate shading pattern. <see cref="Scryber.PDF.Resources.PDFLinearShadingPattern"/></remarks>
     [PDFParsableValue()]
     public abstract class GradientDescriptor
     {
@@ -62,6 +67,7 @@ namespace Scryber.Drawing
         //
         // instance method(s)
         //
+        
 
         #region public override PDFGradientFunction GetGradientFunction()
 
@@ -87,43 +93,36 @@ namespace Scryber.Drawing
                     this.Colors[this.Colors.Count - 1].Distance = 100;
             }
 
-            if (this.Repeating)
-            {
-                List<PDFGradientFunctionBoundary> bounds = GetRepeatingBoundaries(offset, size);
-                List<PDFGradientFunction2> functions = GetRepeatingFunctionsForBounds(bounds);
-
-                
-                bounds.RemoveAt(bounds.Count - 1);
-
-                while (bounds[bounds.Count - 1].Bounds > 1)
-                {
-                    bounds.RemoveAt(bounds.Count - 1);
-                    functions.RemoveAt(functions.Count - 1);
-                }
-
-                return new PDFGradientFunction3(functions.ToArray(), bounds.ToArray());
-            }
-            else if (this.Colors.Count == 2)
+            
+            if (this.Colors.Count == 2)
             {
                 var c0 = this.Colors[0];
                 var c1 = this.Colors[1];
-                var domainStart = c0.Distance.HasValue ? (c0.Distance.Value / 100.0) : 0;
-                var domainEnd = c1.Distance.HasValue ? 1.0/(c1.Distance.Value / 100) : 1;
-                return new PDFGradientFunction2(c0.Color, c1.Color, domainStart, domainEnd, 1.0);
+                
+                return new PDFGradientFunction2(c0.Color, c1.Color);
             }
             else
             {
-                List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
+                List<PDFGradientFunction> functions = new List<PDFGradientFunction>();
                 List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
                 double boundsValue = 1.0 / (this.Colors.Count - 1);
 
                 for (int i = 1; i < this.Colors.Count; i++)
                 {
-                    functions.Add(new PDFGradientFunction2(this.Colors[i - 1].Color, this.Colors[i].Color));
-
+                    
+                    var color0 = this.Colors[i - 1];
+                    var color1 = this.Colors[i];
+                    
+                    //we have a single gradient from the previous color to this color.
+                    //color 0 is specified at the start of the domain, so has a color, but no bounds.
+                    //last color is at the end of the domain, so no bounds either
+                    
+                    functions.Add(new PDFGradientFunction2(color0.Color, color1.Color));
+                    
                     if (i < this.Colors.Count - 1)
                     {
-                        bounds.Add(new PDFGradientFunctionBoundary(boundsValue * i));
+                        var distance = color1.Distance ?? boundsValue * i;
+                        bounds.Add(new PDFGradientFunctionBoundary(distance));
                     }
                 }
 
@@ -133,6 +132,9 @@ namespace Scryber.Drawing
 
         protected virtual List<PDFGradientFunction2> GetRepeatingFunctionsForBounds(List<PDFGradientFunctionBoundary> bounds)
         {
+            throw new NotSupportedException(
+                "Do not use the Repeating Functions - pre-caclulate the repeats and use the functions type 2 .");
+            
             List<PDFGradientFunction2> functions = new List<PDFGradientFunction2>();
 
             var col0Index = 0;
@@ -165,7 +167,7 @@ namespace Scryber.Drawing
         /// <param name="offset">The offset of the shape in the page</param>
         /// <param name="size">The size of the shape in the page</param>
         /// <returns>A list of function boundaries</returns>
-        protected virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
+        public virtual List<PDFGradientFunctionBoundary> GetRepeatingBoundaries(Point offset, Size size)
         {
             List<PDFGradientFunctionBoundary> bounds = new List<PDFGradientFunctionBoundary>();
 
@@ -180,8 +182,8 @@ namespace Scryber.Drawing
                 for (int i = 1; i < this.Colors.Count; i++)
                 {
                     var col = this.Colors[i];
-                    if (col.Distance.HasValue)
-                        curr = total + (col.Distance.Value / 100);
+                    if (col.Distance.HasValue && col.Distance.Value < 1.0)
+                        curr = total + col.Distance.Value;
                     else if (total == 0.0 && curr == 0.0)
                         curr = total + (1.0 / this.Colors.Count);
                     else
@@ -189,7 +191,7 @@ namespace Scryber.Drawing
                     
                     bounds.Add(new PDFGradientFunctionBoundary(curr));
                 }
-                total = curr;
+                total += curr;
             }
 
             return bounds;
@@ -287,7 +289,7 @@ namespace Scryber.Drawing
             if (null == value)
                 return false;
 
-            value = value.Trim();
+            value = value.Trim().ToLowerInvariant();
 
 
             if (string.IsNullOrEmpty(value))
@@ -298,7 +300,7 @@ namespace Scryber.Drawing
                 value = value.Substring("linear-gradient".Length).Trim();
                 GradientLinearDescriptor linear;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2).Trim(), out linear))
                 {
                     linear.Repeating = false;
                     descriptor = linear;
@@ -310,9 +312,8 @@ namespace Scryber.Drawing
                 value = value.Substring("repeating-linear-gradient".Length).Trim();
                 GradientLinearDescriptor linear;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseLinear(value.Substring(1, value.Length - 2), out linear))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientLinearDescriptor.TryParseRepeatingLinear(value.Substring(1, value.Length - 2), out linear))
                 {
-                    linear.Repeating = true;
                     descriptor = linear;
                     return true;
                 }
@@ -334,9 +335,8 @@ namespace Scryber.Drawing
                 value = value.Substring("repeating-radial-gradient".Length).Trim();
                 GradientRadialDescriptor radial;
 
-                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRadial(value.Substring(1, value.Length - 2), out radial))
+                if (value.StartsWith("(") && value.EndsWith(")") && GradientRadialDescriptor.TryParseRepeatingRadial(value.Substring(1, value.Length - 2), out radial))
                 {
-                    radial.Repeating = true;
                     descriptor = radial;
                     return true;
                 }
@@ -346,6 +346,54 @@ namespace Scryber.Drawing
         }
 
         #endregion
+        
+        
+        public static void FillMiddleDistances(List<GradientColor> colors)
+        {
+            var lastMeasureIndex = 0;
+            var lastMeasureDistance = 0.0;
+            bool inUnmeasuredBlock = false; //if we are currently looping over a set of colours without a distance value.
+            
+            for (var i = 0; i < colors.Count; i++)
+            {
+                GradientColor c = colors[i];
+                if (c.Distance.HasValue)
+                {
+                    if (inUnmeasuredBlock)
+                    {
+                        DivideUpDistances(lastMeasureIndex, i, lastMeasureDistance, c.Distance.Value, colors);
+                        lastMeasureIndex = -1;
+                    }
+                    else
+                    {
+                        lastMeasureDistance = c.Distance.Value;
+                        lastMeasureIndex = i;
+                    }
+                    inUnmeasuredBlock = false;
+                }
+                else
+                {
+                    inUnmeasuredBlock = true;
+                }
+            }
+        }
+
+        public static void DivideUpDistances(int lastDistanceIndex, int currentIndex, double lastDistance, double currentDistance,
+            List<GradientColor> colors)
+        {
+            
+            var factor = (currentDistance - lastDistance) / (currentIndex - lastDistanceIndex);
+            var count = currentIndex - lastDistanceIndex;
+            var newDistance = lastDistance;
+            
+            for (int i = 1; i < count; i++)
+            {
+                var c = colors[i + lastDistanceIndex];
+                newDistance += factor;
+                
+                c.Distance = newDistance;
+            }
+        }
 
     }
 

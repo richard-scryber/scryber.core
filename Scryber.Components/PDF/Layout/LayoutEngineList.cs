@@ -95,11 +95,11 @@ namespace Scryber.PDF.Layout
             if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                 this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions();
+            PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             
             
             //Set up the outer container block that will hold the list and all it's items
-            _listBlock = this.CurrentBlock.BeginNewContainerBlock(this.List, this, this.FullStyle, pos.PositionMode);
+            _listBlock = this.CurrentBlock.BeginNewContainerBlock(this.List, this, this.FullStyle, pos.DisplayMode);
             Rect bounds = this.CurrentBlock.CurrentRegion.UnusedBounds;
 
             if (bounds.X > 0)
@@ -221,7 +221,7 @@ namespace Scryber.PDF.Layout
                     else
                         this.StyleStack.Push(applied);
 
-                    if(full.Position.PositionMode == PositionMode.Invisible)
+                    if(full.Position.DisplayMode == DisplayMode.Invisible)
                     {
                         this.StyleStack.Pop();
 
@@ -364,7 +364,7 @@ namespace Scryber.PDF.Layout
 
             PDFArtefactRegistrationSet artefacts = entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
 
-            PDFPositionOptions itemopts = full.CreatePostionOptions();
+            PDFPositionOptions itemopts = full.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             Unit pageHeight = this.Context.DocumentLayout.CurrentPage.Height;
             Unit h = pageHeight;
@@ -397,7 +397,7 @@ namespace Scryber.PDF.Layout
 
             Rect totalBounds = new Rect(Unit.Zero,y,w,h);
 
-            this._itemblock = _listBlock.BeginNewContainerBlock(entry.ListItem, this, full, itemopts.PositionMode);
+            this._itemblock = _listBlock.BeginNewContainerBlock(entry.ListItem, this, full, itemopts.DisplayMode);
 
             PDFColumnOptions colOpts = new PDFColumnOptions() { AlleyWidth = alley, AutoFlow = false, ColumnCount = 2 };
             this._itemblock.InitRegions(totalBounds, itemopts, colOpts, this.Context);

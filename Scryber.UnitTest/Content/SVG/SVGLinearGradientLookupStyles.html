@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+
+        :root{
+            --font: serif;
+            --size: 10pt;
+            --w: 70pt;
+        }
+        
+        p{
+            font-family: var(--font, serif);
+            font-size: 12pt;
+        }
+
+        svg {
+            background-color: #AAA;
+        }
+
+        .stop3{
+            stop-color: maroon;
+        }
+       
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="2 Color Horizontal Gradients" style="font-size: var(--size)">Multi-Color Horizontal Gradients from CSS</p>
+    <svg id="2ColorHoriz" width="550" height="110" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            :root{
+                --colorM: maroon;
+                --colorB: blue;
+                
+            }
+            
+            .rect1{
+                width: 60pt;
+            }
+            
+            .stop1 {
+                stop-color: blue;
+            }
+            
+            .stop2{
+                stop-color: aqua;
+            }
+            
+            .blue{
+                fill: var(--colorM);
+            }
+
+            .halfWide
+            {
+                x1 : 0;
+                x2 :0.5;
+                y1: 0;
+                y2: 0;
+                spreadMethod: repeat;
+            }
+            
+            
+        </style>
+
+        <linearGradient id="2Color" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />
+
+       <linearGradient id="2ColorClass"  >
+           <stop class="stop1" offset="0%" />
+           <stop class="stop2" offset="100%" />
+       </linearGradient>
+       <rect class="rect1" height="90"  x="100" y="10" fill="url(#2ColorClass)" />
+        
+        <linearGradient id="3Color" >
+            <stop class="stop1" offset="0" />
+            <stop class="stop2" offset="0.5" />
+            <stop class="stop3" offset="1" />
+        </linearGradient>
+        <rect height="90" width="80" x="190" y="10" fill="url(#3Color)" />
+        
+        
+        <linearGradient id="3ColorRepeat" class="halfWide" >
+            <stop class="stop1" offset="0" stop-color="aqua" />
+            <stop class="stop1" offset="0.5" />
+            <stop class="stop3" offset="1" />
+        </linearGradient>
+        <rect height="90" width="var(--w, 20)" x="280" y="10" fill="url(#3ColorRepeat)" />
+
+        <linearGradient id="3ColorRepeatPadded" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0" >
+            <stop offset="0.2" stop-color="var(--colorM)" />
+            <stop offset="0.4" class="stop2" />
+            <stop offset="0.6" stop-color="var(--colorB)" />
+        </linearGradient>
+        <rect height="90" width="80" x="370" y="10" fill="url(#3ColorRepeatPadded)" />
+
+        <linearGradient id="4ColorRepeatOverride" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0" >
+            <stop offset="0.2" stop-color="var(--colorM)" />
+            <stop offset="0.5" class="stop2" />
+            <stop offset="0.8" class="stop3" stop-color="var(--colorB)" />
+            <stop offset="1" stop-color="var(--colorM)" />
+        </linearGradient>
+        <rect height="90" width="80" x="460" y="10" fill="url(#4ColorRepeatOverride)" />
+        
+    </svg>
+    
+    
+    
+
+</body>
+</html>

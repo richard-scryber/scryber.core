@@ -23,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber;
 using Scryber.Drawing;
+using Scryber.Svg;
 
 namespace Scryber.Styles
 {
@@ -49,22 +50,22 @@ namespace Scryber.Styles
         public static readonly StyleKey<PatternRepeat> BgRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((ObjectType)"rept", BgItemKey);
 
         public static readonly StyleKey<Unit> BgXPosKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xpos", BgItemKey
-                                                          , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                          , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> BgYPosKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ypos", BgItemKey
-                                                          , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                          , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> BgXStepKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xstp", BgItemKey
-                                                          , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                          , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> BgYStepKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ystp", BgItemKey
-                                                          , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                          , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> BgXSizeKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xsiz", BgItemKey
-                                                          , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                          , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> BgYSizeKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ysiz", BgItemKey
-                                                          , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                          , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Drawing.FillType> BgStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((ObjectType)"styl", BgItemKey);
 
@@ -77,7 +78,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<Color> BorderColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"colr", BorderItemKey);
 
         public static readonly StyleKey<Unit> BorderCornerRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"crad", BorderItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Dash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemKey);
 
@@ -94,7 +95,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> BorderStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemKey);
 
         public static readonly StyleKey<Unit> BorderWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", BorderItemKey
-                                                               , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         //Border Top
 
@@ -105,7 +106,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> BorderTopStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemTopKey);
 
         public static readonly StyleKey<Unit> BorderTopWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", BorderItemTopKey
-                                                                  , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                  , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Dash> BorderTopDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemTopKey);
 
@@ -118,7 +119,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> BorderLeftStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemLeftKey);
 
         public static readonly StyleKey<Unit> BorderLeftWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", BorderItemLeftKey
-                                                                    , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                    , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Dash> BorderLeftDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemLeftKey);
 
@@ -131,7 +132,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> BorderBottomStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemBottomKey);
 
         public static readonly StyleKey<Unit> BorderBottomWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", BorderItemBottomKey
-                                                                     ,false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                     ,new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Dash> BorderBottomDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemBottomKey);
 
@@ -144,7 +145,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> BorderRightStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", BorderItemRightKey);
 
         public static readonly StyleKey<Unit> BorderRightWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", BorderItemRightKey
-                                                                    , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                    , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Dash> BorderRightDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemRightKey);
 
@@ -153,63 +154,70 @@ namespace Scryber.Styles
         public static readonly StyleKey PaddingItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePadding, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> PaddingTopKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"top ", PaddingItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> PaddingBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"botm", PaddingItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> PaddingLeftKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"left", PaddingItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> PaddingRightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"righ", PaddingItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> PaddingAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", PaddingItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenPaddingAllThicknessPositionValue));
+                                                                , new StyleKeyFlattenThicknessValue(PaddingLeftKey, PaddingTopKey, PaddingRightKey, PaddingBottomKey));
 
+        public static readonly StyleKey<Unit> PaddingInlineStart = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inSt", PaddingItemKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> PaddingInlineEnd = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inEd", PaddingItemKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        
         // Margins
 
         public static readonly StyleKey MarginsItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleMargins, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> MarginsTopKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"top ", MarginsItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> MarginsBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"botm", MarginsItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> MarginsLeftKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"left", MarginsItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> MarginsRightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"righ", MarginsItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> MarginsAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", MarginsItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenMarginAllThicknessPositionValue));
+                                                                , new StyleKeyFlattenThicknessValue(MarginsLeftKey, MarginsTopKey, MarginsRightKey, MarginsBottomKey));
 
         public static readonly StyleKey<Unit> MarginsInlineStart = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inSt", MarginsItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> MarginsInlineEnd = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inEd", MarginsItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         // Clip
 
         public static readonly StyleKey ClipItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleClip, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> ClipTopKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"top ", ClipItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> ClipBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"botm", ClipItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> ClipLeftKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"left", ClipItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> ClipRightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"righ", ClipItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> ClipAllKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"all ", ClipItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenThicknessValue(ClipLeftKey, ClipTopKey, ClipRightKey, ClipBottomKey));
 
         // Columns
 
@@ -218,7 +226,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cont", ColumnItemKey);
 
         public static readonly StyleKey<Unit> ColumnAlleyKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ally", ColumnItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"flow", ColumnItemKey);
 
@@ -239,22 +247,22 @@ namespace Scryber.Styles
         public static readonly StyleKey<PatternRepeat> FillRepeatKey = StyleKey.InternalCreateStyleValueKey<PatternRepeat>((ObjectType)"rept", FillItemKey);
 
         public static readonly StyleKey<Unit> FillXPosKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xpos", FillItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> FillYPosKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ypos", FillItemKey
-                                                               , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                               , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> FillXStepKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xstp", FillItemKey
-                                                               , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> FillYStepKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ystp", FillItemKey
-                                                               , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                               , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> FillXSizeKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xsiz", FillItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> FillYSizeKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ysiz", FillItemKey
-                                                                , false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Drawing.FillType> FillStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FillType>((ObjectType)"styl", FillItemKey);
 
@@ -271,7 +279,7 @@ namespace Scryber.Styles
         public static readonly StyleKey<Drawing.FontStyle> FontStyleKey = StyleKey.InternalCreateStyleValueKey<Drawing.FontStyle>((ObjectType)"styl", FontItemKey);
 
         public static readonly StyleKey<Unit> FontSizeKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"size", FontItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenFontSizeValue));
+                                                                , new StyleKeyFlattenFontValue());
 
         //Overflow
 
@@ -286,40 +294,131 @@ namespace Scryber.Styles
         public static readonly StyleKey PositionItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePosition, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> PositionXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"xpos", PositionItemKey
-                                                                , true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> PositionYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ypos", PositionItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
+        
+        public static readonly StyleKey<Unit> PositionRightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"rpos", PositionItemKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> PositionBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bpos", PositionItemKey
+            , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<PositionMode> PositionModeKey = StyleKey.InternalCreateStyleValueKey<PositionMode>((ObjectType)"mode", PositionItemKey);
 
-        public static readonly StyleKey<Rect> PositionViewPort = StyleKey.InternalCreateRelativeStyleValueKey<Rect>((ObjectType)"vwpt", PositionItemKey
-                                                                , false , new FlattenUnits<Rect>(StyleKeyFlatteners.FlattenRectValue));
+        public static readonly StyleKey<Rect> PositionViewPort = StyleKey.InternalCreateStyleValueKey<Rect>((ObjectType)"vwpt", PositionItemKey);
 
+        public static readonly StyleKey<ViewPortAspectRatio> ViewPortAspectRatioStyleKey =
+            StyleKey.InternalCreateStyleValueKey<ViewPortAspectRatio>((ObjectType)"vpar", PositionItemKey);
+        
         public static readonly StyleKey<FloatMode> PositionFloat = StyleKey.InternalCreateStyleValueKey<FloatMode>((ObjectType)"flot", PositionItemKey);
 
+        public static readonly StyleKey<bool> PositionXObjectKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"xobj", PositionItemKey);
+
+        public static readonly StyleKey<DisplayMode> PositionDisplayKey = StyleKey.InternalCreateStyleValueKey<DisplayMode>((ObjectType)"disp", PositionItemKey);
+
+        //SVG - specific x, y, r, rx, ry, cx, cy.
+        // The width and height style keys are from standard as per spec - need to check with the drawing ops for this.
+
+        public static readonly StyleKey SVGGeometryKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSVGGeometry, NOT_INHERITED);
+
+        public static readonly StyleKey<bool> SVGGeometryInUseKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"guse", StyleKeys.SVGGeometryKey);
         
+        public static readonly StyleKey<Unit> SVGGeometryXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmxp", SVGGeometryKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmyp", SVGGeometryKey
+                                                                , new StyleKeyFlattenVerticalValue());
+        
+        public static readonly StyleKey<Unit> SVGGeometryX2Key = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmx2", SVGGeometryKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryY2Key = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmy2", SVGGeometryKey
+            , new StyleKeyFlattenVerticalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryDeltaXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmdx", SVGGeometryKey
+            , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryDeltaYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmdy", SVGGeometryKey
+            , new StyleKeyFlattenVerticalValue());
+
+        
+        public static readonly StyleKey<Unit> SVGGeometryRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmra", SVGGeometryKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryRadiusXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmrx", SVGGeometryKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryRadiusYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmry", SVGGeometryKey
+                                                                , new StyleKeyFlattenVerticalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryCentreXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmcx", SVGGeometryKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> SVGGeometryCentreYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"gmcy", SVGGeometryKey
+                                                                , new StyleKeyFlattenVerticalValue());
+
+        public static readonly StyleKey<GraphicFillMode> GraphicFillModeKey = StyleKey.InternalCreateStyleValueKey<GraphicFillMode>((ObjectType)"gfmd", SVGGeometryKey);
+        
+        public static readonly StyleKey<PaintOrder> SVGGeometryPaintOrderKey = StyleKey.InternalCreateStyleValueKey<PaintOrder>((ObjectType)"gmpo", SVGGeometryKey);
+
+        public static readonly StyleKey<SVGFillValue> SVGFillKey = StyleKey.InternalCreateStyleValueKey<SVGFillValue>((ObjectType)"gfil", SVGGeometryKey);
+        
+        public static readonly StyleKey<Unit> SVGGeometryGradientX1Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggx1", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientX2Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggx2", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientY1Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggy1", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientY2Key = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggy2", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<GradientSpreadMode> SVGGeometryGradientSpreadModeKey = StyleKey.InternalCreateStyleValueKey<GradientSpreadMode>((ObjectType)"ggsm", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<GradientUnitType> SVGGeometryGradientUnitKey = StyleKey.InternalCreateStyleValueKey<GradientUnitType>((ObjectType)"ggut", StyleKeys.SVGGeometryKey);
+
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstXKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfx", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondXKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcx", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstYKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfy", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondYKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcy", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientFirstRadiusKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggfr", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<Unit> SVGGeometryGradientSecondRadiusKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"ggcr", StyleKeys.SVGGeometryKey);
+
+        
+        public static readonly StyleKey<Unit> SVGGradientStopOffsetKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"gsof", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<Color> SVGGradientStopColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"gsco", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<double> SVGGradientStopOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"gsop", StyleKeys.SVGGeometryKey);
+
+        
+        public static readonly StyleKey<SVGMarkerValue> SVGMarkerStartKey =
+            StyleKey.InternalCreateStyleValueKey<SVGMarkerValue>((ObjectType)"gmst", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<SVGMarkerValue> SVGMarkerMidKey =
+            StyleKey.InternalCreateStyleValueKey<SVGMarkerValue>((ObjectType)"gmmd", StyleKeys.SVGGeometryKey);
+        public static readonly StyleKey<SVGMarkerValue> SVGMarkerEndKey =
+            StyleKey.InternalCreateStyleValueKey<SVGMarkerValue>((ObjectType)"gmed", StyleKeys.SVGGeometryKey);
+        
+        public static readonly StyleKey<AdornmentOrientationValue> SVGMarkerOrientationKey = 
+            StyleKey.InternalCreateStyleValueKey<AdornmentOrientationValue>((ObjectType)"gmov", StyleKeys.SVGGeometryKey);
+            
         //Size
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> SizeWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", SizeItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> SizeHeightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"heit", SizeItemKey
-                                                               , false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                               , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> SizeMinimumWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"minw", SizeItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> SizeMinimumHeightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"minh", SizeItemKey
-                                                               , false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                               , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<Unit> SizeMaximumWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"maxw", SizeItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> SizeMaximumHeightKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"maxh", SizeItemKey
-                                                               , false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                               , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<bool> SizeFullWidthKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"fulw", SizeItemKey);
 
@@ -331,6 +430,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Dash> StrokeDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", StrokeItemKey);
 
+        public static readonly StyleKey<Unit> StrokeDashOffsetKey =
+            StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"dsof", StrokeItemKey);
+            
         public static readonly StyleKey<LineCaps> StrokeEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", StrokeItemKey);
 
         public static readonly StyleKey<LineJoin> StrokeJoinKey = StyleKey.InternalCreateStyleValueKey<LineJoin>((ObjectType)"join", StrokeItemKey);
@@ -342,17 +444,17 @@ namespace Scryber.Styles
         public static readonly StyleKey<LineType> StrokeStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"styl", StrokeItemKey);
 
         public static readonly StyleKey<Unit> StrokeWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", StrokeItemKey
-                                                               ,true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               ,new StyleKeyFlattenHorizontalValue());
 
         //Text
 
         public static readonly StyleKey TextItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleText, INHERITED);
 
         public static readonly StyleKey<Unit> TextFirstLineIndentKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"indt", TextItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenFontSizeValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> TextLeadingKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"lead", TextItemKey
-                                                               ,false , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenFontSizeValue));
+                                                               ,new StyleKeyFlattenFontValue());
 
         public static readonly StyleKey<bool> TextWhitespaceKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"whit", TextItemKey);
 
@@ -361,10 +463,10 @@ namespace Scryber.Styles
         public static readonly StyleKey<string> TextNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"numf", TextItemKey);
 
         public static readonly StyleKey<Unit> TextWordSpacingKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"wspc", TextItemKey
-                                                                ,true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenFontSizeValue));
+                                                                ,new StyleKeyFlattenFontValue());
 
         public static readonly StyleKey<Unit> TextCharSpacingKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"cspc", TextItemKey
-                                                                ,true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenFontSizeValue));
+                                                                ,new StyleKeyFlattenFontValue());
 
         public static readonly StyleKey<double> TextHorizontalScaling = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"thsc", TextItemKey);
 
@@ -382,6 +484,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<HorizontalAlignment> PositionHAlignKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"hlgn", TextItemKey);
 
+        public static readonly StyleKey<int> TextHyphenationMinLength = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"minl", TextItemKey);
+        
         public static readonly StyleKey<int> TextHyphenationMinBeforeBreak = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"minb", TextItemKey);
 
         public static readonly StyleKey<int> TextHyphenationMinAfterBreak = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"mina", TextItemKey);
@@ -414,12 +518,12 @@ namespace Scryber.Styles
         public static readonly StyleKey ListItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleListItem, INHERITED);
 
         public static readonly StyleKey<Unit> ListInsetKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"inst", ListItemKey
-                                                               , true , new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                               , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<HorizontalAlignment> ListAlignmentKey = StyleKey.InternalCreateStyleValueKey<HorizontalAlignment>((ObjectType)"alig", ListItemKey);
 
         public static readonly StyleKey<Unit> ListAlleyKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ally", ListItemKey
-                                                                ,true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                ,new StyleKeyFlattenHorizontalValue());
 
         
 
@@ -455,6 +559,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<bool> OverlayShowColumnsKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"colm", OverlayItemKey);
 
+        public static readonly StyleKey<int> OverlayMajorCount = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"majc", OutlineItemKey);
+        
+        
         //Page
         public static readonly StyleKey PageItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePage, NOT_INHERITED);
 
@@ -486,6 +593,15 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<string> PageNameGroupKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"pgnm", PageItemKey);
 
+        //Header and Footer
+        
+        public static readonly StyleKey HeaderFooterItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.ComponentHeader, NOT_INHERITED);
+
+        public static readonly StyleKey<bool> RepeatHeader = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"thrp", HeaderFooterItemKey);
+        
+        [Obsolete("The footer currently do not support repeating", true)]
+        public static readonly StyleKey<bool> RepeatFooter = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"ftrp", HeaderFooterItemKey);
+        
         //Shape
 
         public static readonly StyleKey ShapeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.ShapeStyle, NOT_INHERITED);
@@ -499,10 +615,10 @@ namespace Scryber.Styles
         public static readonly StyleKey<double> ShapeRotationKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"rotn", ShapeItemKey);
 
         public static readonly StyleKey<Unit> ShapeCornerRadiusXKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType) "radX", ShapeItemKey
-                                                                ,true, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenHorizontalPositionValue));
+                                                                ,new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> ShapeCornerRadiusYKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType) "radY", ShapeItemKey
-                                                                , false, new FlattenUnits<Unit>(StyleKeyFlatteners.FlattenVerticalPositionValue));
+                                                                , new StyleKeyFlattenVerticalValue());
 
         //Table
 
@@ -541,9 +657,11 @@ namespace Scryber.Styles
 
         public static readonly StyleKey TransformItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleTransform, NOT_INHERITED);
 
-        public static readonly StyleKey<TransformOperation> TransformOperationKey = StyleKey.InternalCreateStyleValueKey<TransformOperation>((ObjectType)"trop", TransformItemKey);
+        public static readonly StyleKey<Scryber.Drawing.TransformOperationSet> TransformOperationKey = StyleKey.InternalCreateRelativeStyleValueKey<TransformOperationSet>((ObjectType)"trop", TransformItemKey,
+            new StyleKeyTransformOperationFlattener());
 
-        public static readonly StyleKey<TransformationOrigin> TransformOriginKey = StyleKey.InternalCreateStyleValueKey<TransformationOrigin>((ObjectType)"orig", TransformItemKey);
+        public static readonly StyleKey<TransformOrigin> TransformOriginKey = StyleKey.InternalCreateRelativeStyleValueKey<TransformOrigin>((ObjectType)"orig", TransformItemKey,
+            new StyleKeyTransformOriginFlattener());
 
         //FontFace
 

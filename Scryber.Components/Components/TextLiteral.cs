@@ -96,9 +96,9 @@ namespace Scryber.Components
         }
 
 
-        protected override void SetArrangement(ComponentArrangement arrange)
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
-            base.SetArrangement(arrange);
+            base.SetArrangement(arrange, context);
         }
         
     }

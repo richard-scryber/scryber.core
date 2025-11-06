@@ -194,13 +194,15 @@ namespace Scryber.PDF.Graphics
         private Size CalculateAppropriateImageSize(ImageData imgdata, Rect bounds)
         {
             //Find the dimension that makes sure the bounds are fully covered
-            double scale = (bounds.Width.PointsValue / imgdata.DisplayWidth.PointsValue);
-            double resultHeight = imgdata.DisplayHeight.PointsValue * scale;
+            var size = imgdata.GetSize();
+            
+            double scale = (bounds.Width.PointsValue /size.Width.PointsValue);
+            double resultHeight = size.Height.PointsValue * scale;
             if (resultHeight < bounds.Height)
-                scale = bounds.Height.PointsValue / imgdata.DisplayHeight.PointsValue;
+                scale = bounds.Height.PointsValue / size.Height.PointsValue;
 
-            Unit imgw = imgdata.DisplayWidth.PointsValue * scale;
-            Unit imgh = imgdata.DisplayHeight.PointsValue * scale;
+            Unit imgw = size.Width.PointsValue * scale;
+            Unit imgh = size.Height.PointsValue * scale;
 
             if(imgw > bounds.Width)
             {

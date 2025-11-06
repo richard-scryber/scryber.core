@@ -27,7 +27,7 @@ namespace Scryber.Core.UnitTests.Binding
     [TestClass()]
     public class ExpressionBinding_Test
     {
-        public TestContext TextContext
+        public TestContext TestContext
         {
             get;
             set;
@@ -193,6 +193,17 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.AreEqual("a string and a variable", strResult);
 
 
+        }
+
+        [TestMethod]
+        public void BindThisExpression()
+        {
+
+            var factory = new BindingCalcExpressionFactory();
+            var str = "this.currentItem";
+
+            var expression = factory.CreateBindingExpression(str, null);
+            
         }
 
         [TestMethod()]
@@ -432,7 +443,7 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = DateTime.Parse("30 June 2021 11:01:40").ToString()},
                 new FunctionTest() {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = DateTime.Parse("30 June 3021 11:00:00").ToString()},
 
-                new FunctionTest() {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
+                new FunctionTest() {grp = "Date Of Functions", name = "DayOf", function = "dayofmonth(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new FunctionTest() {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
                 new FunctionTest() {grp = "Date Of Functions", name = "MillisecondOf", function = "MillisecondOf(date('30 June 2021 11:40:10.345'))", result = "345"},
                 new FunctionTest() {grp = "Date Of Functions", name = "MinuteOf", function = "MinuteOf(date('30 June 2021 11:40:10.345'))", result = "40"},
@@ -514,8 +525,8 @@ namespace Scryber.Core.UnitTests.Binding
                 new FunctionTest() {grp = "String Functions", name = "PatLeft+PadRight", function = "padleft(padright(model.items[0].name, 15, '-'),20,'+++++')", result = "+++++First Item-----"},
                 new FunctionTest() {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6)", result = "Item"},
                 new FunctionTest() {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6, 2)", result = "It"},
-                new FunctionTest() {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\squick\\s')", result = "True"},
-                new FunctionTest() {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\sjump\\s')", result = "False"},
+                new FunctionTest() {grp = "String Functions", name = "IsMatch", function = "ismatch('The quick brown fox','\\squick\\s')", result = "True"},
+                new FunctionTest() {grp = "String Functions", name = "IsMatch", function = "ismatch('The quick brown fox','\\sjump\\s')", result = "False"},
 
             };
 
@@ -695,7 +706,11 @@ namespace Scryber.Core.UnitTests.Binding
         {
             var withEscapes = @"<html>
   <body>
-    <table class='expressions escaped'>
+    <table id='tbl' class='expressions escaped'>
+      <tr>
+        <td>{{model.number}}</td>
+        <td>\{{model.number}}\</td>
+      </tr>
       <tr>
         <td>A simple string (&amp;&amp;)</td>
         <td>A string with an inner {{model.number}} binding</td>
@@ -737,6 +752,72 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 doc.SaveAsPDF(stream);
             }
+            var listValues = new string[][]
+            {
+                new string[] { "20.9", "{{model.number}}" },
+                new string[] {"A simple string (&&)", "A string with an inner 20.9 binding" },
+                new string[] { "Wrapped in escapes {{ and after }} are ignored", "Wrapped in span {{ is ignored but not 20.9" },
+                new string[] { "{{model.number + 1}} ignored start", "\\21.9 binding start" },
+                new string[] { "Ignored end {{model.number + 1}}", "Bound end 21.9\\" },
+                new string[] { "Bound with space \\ 21.9 \\", "Bound with space  21.9 \\" },
+                new string[] { "Ignored middle {{concat('<', model.number + 1, '>')}} but not '21.9' after", "Bound middle 21.9 but ignored end {{model.number+2}}" }
+            };
+
+            var tbl = doc.FindAComponentById("tbl") as TableGrid;
+            Assert.IsNotNull(tbl);
+            Assert.AreEqual(listValues.Length, tbl.Rows.Count);
+
+            for(var r = 0; r < tbl.Rows.Count; r++)
+            {
+                var row = tbl.Rows[r];
+                var vals = listValues[r];
+
+                var cell1 = row.Cells[0];
+                var val1 = vals[0];
+
+                var output = "";
+
+                if (cell1.Contents.Count == 1)
+                {
+                    output = (cell1.Contents[0] as TextLiteral).Text;
+                }
+                else
+                {
+                    foreach (var comp in cell1.Contents)
+                    {
+                        if (comp is TextLiteral lit)
+                            output += lit.Text;
+                    }
+                }
+
+                Assert.AreEqual(val1, output);
+
+                var cell2 = row.Cells[1];
+                var val2 = vals[1];
+
+                output = "";
+
+                if (cell2.Contents.Count == 1)
+                {
+                    output = (cell2.Contents[0] as TextLiteral).Text;
+                }
+                else
+                {
+                    foreach (var comp in cell2.Contents)
+                    {
+                        if (comp is TextLiteral lit)
+                            output += lit.Text;
+                        else if(comp is Span span)
+                        {
+                            output += (span.Contents[0] as TextLiteral).Text;
+                        }
+                    }
+                }
+
+                Assert.AreEqual(val2, output);
+
+            }
+
         }
 
         [TestMethod]
@@ -885,8 +966,9 @@ namespace Scryber.Core.UnitTests.Binding
         [TestCategory("Binding")]
         public void BindCribsheetExpressions_PerformanceTest()
         {
-            var path = "../../../Content/HTML/CribSheet/";
-
+            //var path = "../../../Content/HTML/CribSheet/";
+            var path = DocStreams.AssertGetDirectoryPath("../../Scryber.UnitTest/Content/HTML/CribSheet/",
+                this.TestContext);
             var content = File.ReadAllText(path + "CribSheet-Expressions.txt");
             Assert.IsNotNull(content);
 
@@ -1280,22 +1362,22 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "Logical Operators", name = "Not (!)", function = "if(!(model.number &lt; 21 &amp;&amp; model.number &gt; 20),'Outside','Between')", result = "Between"},
                 //new {grp = "Logical Operators", name = "Not", function = "if(not(model.number &lt; 20 and model.number &gt; 21),'Between','Outside')", result = "Between"},
 
-                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01AM"},
+                new {grp = "Conversion Functions", name = "Date", function = "date('30 June 2021 11:00:01')", result = "6/30/2021 11:00:01 AM"},
                 new {grp = "Conversion Functions", name = "Decimal", function = "decimal(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Double", function = "double(20 + model.number)", result = (20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Integer", function = "integer(20 + model.number)", result = Convert.ToInt32(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "Long", function = "long(20 + model.number)", result = Convert.ToInt64(20 + model.number).ToString()},
                 new {grp = "Conversion Functions", name = "string", function = "string(20 + model.number)", result = (20 + model.number).ToString()},
 
-                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00AM"},
-                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00PM"},
-                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02AM"},
-                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00AM"},
-                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00AM"},
-                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40AM"},
-                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00AM"},
+                new {grp = "Date Add Functions", name = "AddDays", function = "adddays(date('30 June 2021 11:00:00'),10)", result = "7/10/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddHours", function = "addhours(date('30 June 2021 11:00:00'),10)", result = "6/30/2021 9:00:00 PM"},
+                new {grp = "Date Add Functions", name = "AddMilliSeconds", function = "addmilliseconds(date('30 June 2021 11:00:00'),2000)", result = "6/30/2021 11:00:02 AM"},
+                new {grp = "Date Add Functions", name = "AddMinutes", function = "addMinutes(date('30 June 2021 11:00:00'),40)", result = "6/30/2021 11:40:00 AM"},
+                new {grp = "Date Add Functions", name = "AddMonths", function = "addMonths(date('30 June 2021 11:00:00'),2)", result = "8/30/2021 11:00:00 AM"},
+                new {grp = "Date Add Functions", name = "AddSeconds", function = "addSeconds(date('30 June 2021 11:00:00'),100)", result = "6/30/2021 11:01:40 AM"},
+                new {grp = "Date Add Functions", name = "AddYears", function = "addYears(date('30 June 2021 11:00:00'),1000)", result = "6/30/3021 11:00:00 AM"},
 
-                new {grp = "Date Of Functions", name = "DayOf", function = "dayof(date('30 June 2021 11:40:10.345'))", result = "30"},
+                new {grp = "Date Of Functions", name = "DayOfMonth", function = "dayofMonth(date('30 June 2021 11:40:10.345'))", result = "30"},
                 new {grp = "Date Of Functions", name = "HourOf", function = "HourOf(date('30 June 2021 11:40:10.345'))", result = "11"},
                 new {grp = "Date Of Functions", name = "MillisecondOf", function = "MillisecondOf(date('30 June 2021 11:40:10.345'))", result = "345"},
                 new {grp = "Date Of Functions", name = "MinuteOf", function = "MinuteOf(date('30 June 2021 11:40:10.345'))", result = "40"},
@@ -1385,8 +1467,8 @@ namespace Scryber.Core.UnitTests.Binding
                 new {grp = "String Functions", name = "PatLeft+PadRight", function = "padleft(padright(model.items[0].name, 15, '-'),20,'+++++')", result = "+++++First Item-----"},
                 new {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6)", result = "Item"},
                 new {grp = "String Functions", name = "SubString", function = "substring(model.items[0].name, 6, 2)", result = "It"},
-                new {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\squick\\s')", result = "True"},
-                new {grp = "String Functions", name = "Regex", function = "regex('The quick brown fox','\\sjump\\s')", result = "False"},
+                new {grp = "String Functions", name = "IsMatch", function = "ismatch('The quick brown fox','\\squick\\s')", result = "True"},
+                new {grp = "String Functions", name = "IsMatch", function = "ismatch('The quick brown fox','\\sjump\\s')", result = "False"},
             };
 
             var src = @"<!DOCTYPE html>
@@ -1462,8 +1544,10 @@ namespace Scryber.Core.UnitTests.Binding
                     var row = table.Rows[i + grpIndex];
                     var cell = row.Cells[2];
                     var content = cell.Contents[0] as TextLiteral;
+                    var expected = fn.result;
+                    var actual = content.Text.Replace((char)8239,' ');
 
-                    Assert.AreEqual(fn.result, content.Text, "Text Literal for " + fn.function + " does not match");
+                    Assert.AreEqual(expected, actual, "Text Literal for " + fn.function + " does not match");
                 }
             }
 
@@ -1490,9 +1574,9 @@ namespace Scryber.Core.UnitTests.Binding
                                         <h2>{{culture.id}}</h2>
                                         <dl>
                                             <dt id='cultP1' >Number</dt>
-                                            <dd id='numP1' ><num value='{{culture.number}}' /></dd>
+                                            <dd id='numP1' ><num data-value='{{culture.number}}' /></dd>
                                             <dt id='cultP1' >Currency</dt>
-                                            <dd id='numP1' ><num data-format='C' value='{{culture.number}}' /></dd>
+                                            <dd id='numP1' ><num data-format='C' data-value='{{culture.number}}' /></dd>
                                             <dt id='cultP1' >Date</dt>
                                             <dd id='numP1' ><time data-format='D' datetime='{{culture.date}}' /></dd>
                                             <dt id='cultP1' >Time</dt>
@@ -1555,7 +1639,7 @@ namespace Scryber.Core.UnitTests.Binding
             cultureNumber = "-3456.56";
             cultureCurrency = "-$3,456.56";
             cutlureDate = "Tuesday, December 13, 2022";
-            cutlureTime = "10:45:59PM";
+            cutlureTime = "10:45:59 PM";
 
             data = new
             {
@@ -1614,7 +1698,8 @@ namespace Scryber.Core.UnitTests.Binding
             var line = container.Columns[0].Contents[0] as PDFLayoutLine;
             var span = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(span);
-            Assert.AreEqual(text, span.Characters, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
+            var actual = span.Characters.Replace((char)8239,' ');
+            Assert.AreEqual(text, actual, "The characters '" + span.Characters + "' did not match expected '" + text + "' for the " + name + " value in culture " + culture);
         }
 
         private void CulturedDoc_LayoutComplete(object sender, LayoutEventArgs args)
@@ -1654,7 +1739,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
-                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
                                         </tr>
                                     </template>";
 
@@ -1782,7 +1867,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
-                                            <td>{{.name}}</td><td><num value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
                                         </tr>
                                     </template>";
 
@@ -1948,6 +2033,172 @@ namespace Scryber.Core.UnitTests.Binding
 
         }
 
+        
+        private void CSSCalcDoc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            _doc = args.Context.GetLayout<PDFLayoutDocument>();
+        }
+        
+        [TestMethod]
+        public void ExpressionCSSCalc()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    #content{
+                                         border: solid 1px green;
+                                         width: calc(items.width - 10pt);
+                                    }
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='content' >Calculated width on the parargraph</p>
+                            </body>
+                        </html>";
+
+            
+            var json = @"{
+                'items': {
+                       'width':'100pt',
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_CSSWithCalc.pdf"))
+                {
+                    doc.LayoutComplete += CSSCalcDoc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("content") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+                Assert.AreEqual(1, p.Contents.Count);
+                
+
+                var layout = _doc;
+                Assert.IsNotNull(layout);
+                Assert.AreEqual(1, layout.AllPages.Count);
+                var content = layout.AllPages[0].ContentBlock;
+                var pblock = content.Columns[0].Contents[1] as PDFLayoutBlock;
+                Assert.IsNotNull(pblock);
+                
+                //make sure the width was applied to the position and the block
+                int pWidth = 100 - 10;
+                
+                Assert.AreEqual(pWidth, pblock.TotalBounds.Width);
+                Assert.AreEqual(pWidth, pblock.Position.Width);
+
+            }
+
+
+        }
+        
+        
+        [TestMethod]
+        public void ExpressionCSSRelativeCalc()
+        {
+
+            var src = @"<!DOCTYPE html>
+                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <html xmlns='http://www.w3.org/1999/xhtml' >
+                            <head>
+                                <title>Expression SelectWhere Indexor</title>
+                                <style>
+                                    #content{
+                                         border: solid 1px green;
+                                         width: calc(50% - items.width);
+                                    }
+                                    .even{ background-color: #EEE; }
+                                </style>
+                            </head>
+
+                            <body id='mainbody' class='strong' style='padding:20pt' >
+                                <h2>Expression binding with SelectWhere and an index</h2>
+                                 <p id='content' >Calculated width on the parargraph</p>
+                            </body>
+                        </html>";
+
+            
+            var json = @"{
+                'items': {
+                       'width':'100pt',
+                       'value':'Single',
+                       'items': { 'value' : 'DeepValue' },
+                       'array': [
+                            'first item',
+                            'second item'
+                        ],
+                       'deeparray' : [
+                            { 'value': '1', 'name' : 'One', 'object' : { 'value' : 'Deep deep down' }},
+                            { 'value': '2', 'name' : 'Two'}
+                        ]
+                    }
+                }".Replace('\'', '"'); //just easier with the @string
+
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+
+            using (Document doc = Document.ParseDocument(new System.IO.StringReader(src), ParseSourceType.DynamicContent))
+            {
+                foreach (var prop in parsed.RootElement.EnumerateObject())
+                {
+                    doc.Params.Add(prop.Name, prop.Value);
+                }
+
+                using (var stream = DocStreams.GetOutputStream("Expression_CSSWithCalc.pdf"))
+                {
+                    doc.LayoutComplete += CSSCalcDoc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+                }
+
+                var p = doc.FindAComponentById("content") as Paragraph;
+                Assert.IsNotNull(p, "Could not find the paragraph to inspect");
+                Assert.AreEqual(1, p.Contents.Count);
+                
+
+                var layout = _doc;
+                Assert.IsNotNull(layout);
+                Assert.AreEqual(1, layout.AllPages.Count);
+                var content = layout.AllPages[0].ContentBlock;
+                var pblock = content.Columns[0].Contents[1] as PDFLayoutBlock;
+                Assert.IsNotNull(pblock);
+                
+                Assert.Inconclusive("Relative units and calculations currently fail. Need to switch to DataBind and then evaluate on flatten");
+                
+                //make sure the width was applied to the position and the block
+                double pWidth = (content.TotalBounds.Width.PointsValue / 2) - 100;
+                
+                Assert.AreEqual(pWidth, pblock.TotalBounds.Width);
+                Assert.AreEqual(pWidth, pblock.Position.Width);
+
+            }
+
+
+        }
     }
 
 

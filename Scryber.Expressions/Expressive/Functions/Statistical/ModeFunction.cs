@@ -1,7 +1,9 @@
-﻿using Scryber.Expressive.Expressions;
+﻿using System;
+using Scryber.Expressive.Expressions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Statistical
 {
@@ -15,27 +17,29 @@ namespace Scryber.Expressive.Functions.Statistical
         {
             this.ValidateParameterCount(parameters, -1, 1);
             
-            IList<object> values = new List<object>();
+            IList<decimal> values = new List<decimal>();
 
             foreach (var p in parameters)
             {
                 var value = p.Evaluate(variables);
-                var enumerable = value as IEnumerable;
+                value = Comparison.ExtractAnyJsonValue(value);
 
-                if (enumerable != null)
+                if (Collections.TryIsCollection(value, out var enumerable))
                 {
                     foreach (var item in enumerable)
                     {
-                        values.Add(item);
+                        var inner = Comparison.ExtractAnyJsonValue(item);
+                        values.Add(Convert.ToDecimal(inner));
                     }
                 }
                 else
                 {
-                    values.Add(value);
+                    values.Add(Convert.ToDecimal(value));
                 }
             }
 
             var groups = values.GroupBy(v => v);
+            //TODO: This can be improved, as we just need the max count
             int maxCount = groups.Max(g => g.Count());
             return groups.First(g => g.Count() == maxCount).Key;
         }

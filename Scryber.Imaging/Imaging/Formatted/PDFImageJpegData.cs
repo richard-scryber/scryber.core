@@ -4,6 +4,7 @@ using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Native;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Metadata;
 
 namespace Scryber.Imaging.Formatted
 {
@@ -11,12 +12,30 @@ namespace Scryber.Imaging.Formatted
     {
         private const ColorSpace JpegColorSpace = ColorSpace.RGB;
         private const int JpegBitsPerColor = 8;
-        private const int JpegColorsPerSample = 24;
+        private const int JpegColorsPerSample = 3;
         
         private byte[] CompressedData { get; }
 
-        
-        
+
+        internal PDFImageJpegData(string source, PDFImageJpegMetadata metadata, byte[] compressedData)
+           : base(source, metadata.PixelWidth, metadata.PixelHeight)
+        {
+            if (null == metadata)
+                throw new ArgumentNullException(nameof(metadata));
+
+            this.CompressedData = compressedData;
+            this.Filters = new IStreamFilter[] { new PDFImageJpegStreamFilter() };
+            this.InitPixelData(
+                metadata.HasAlpha,
+                metadata.ColorSpace,
+                metadata.BitsPerColor,
+                metadata.ColorsPerSample,
+                metadata.HorizontalResolution,
+                metadata.VerticalResolution,
+                metadata.ResolutionUnits);
+        }
+
+
         public PDFImageJpegData(Image image, string source, byte[] compressedData)
             : base(image, source)
         {
@@ -90,6 +109,28 @@ namespace Scryber.Imaging.Formatted
             }
             
             
+        }
+
+        internal class PDFImageJpegMetadata
+        {
+
+            public int PixelWidth { get; set; }
+
+            public int PixelHeight { get; set; }
+
+            public bool HasAlpha { get; set; }
+
+            public ColorSpace ColorSpace { get; set; }
+
+            public int BitsPerColor { get; set; }
+
+            public int ColorsPerSample { get; set; }
+
+            public double HorizontalResolution { get; set; }
+
+            public double VerticalResolution { get; set; }
+
+            public PixelResolutionUnit ResolutionUnits { get; set; }
         }
 
 

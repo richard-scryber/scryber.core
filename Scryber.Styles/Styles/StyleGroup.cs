@@ -26,7 +26,7 @@ namespace Scryber.Styles
     /// To group styles by application with inner styles for components
     /// </summary>
     [PDFParsableComponent("StyleGroup")]
-    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer
+    public class StyleGroup : StyleBase, IEnumerable<StyleBase>, INamingContainer, IBindableComponent
     {
         //
         // properties
@@ -136,6 +136,7 @@ namespace Scryber.Styles
 
         #endregion
 
+        
         //
         // methods
         //
@@ -204,6 +205,43 @@ namespace Scryber.Styles
 
         #endregion
 
+        //
+        // databinding
+        //
+        
+        #region public event PDFDataBindEventHandler DataBinding + OnDataBinding(args)
+
+        [PDFAttribute("on-databinding")]
+        public event DataBindEventHandler DataBinding;
+
+        protected virtual void OnDataBinding(DataContext context)
+        {
+            if (this.DataBinding != null)
+                this.DataBinding(this, new DataBindEventArgs(context));
+        }
+
+        #endregion
+
+        #region public event PDFDataBindEventHandler DataBound + OnDataBound(args)
+
+        [PDFAttribute("on-databound")]
+        public event DataBindEventHandler DataBound;
+
+        protected virtual void OnDataBound(DataContext context)
+        {
+            if (this.DataBound != null)
+                this.DataBound(this, new DataBindEventArgs(context));
+        }
+
+        #endregion
+        
+        
+        public void DataBind(DataContext context)
+        {
+            this.OnDataBinding(context);
+            this.DoDataBind(context, true);
+            this.OnDataBound(context);
+        }
         
 
         #region protected override void DoDataBind(PDFDataContext context, bool includechildren)

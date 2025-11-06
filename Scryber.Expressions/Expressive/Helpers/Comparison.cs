@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Scryber.Expressive.Helpers
 {
@@ -15,16 +16,105 @@ namespace Scryber.Expressive.Helpers
             typeof(string),   // If it's not anything else, it can be a string.
         };
 
+        /// <summary>
+        /// If the value is a System.Text.Json.JsonElement or a NewtonSoft.Hson.Linq.JToken, then a native value will be extracted where possible.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static object ExtractAnyJsonValue(object value)
+        {
+            if (value is Newtonsoft.Json.Linq.JToken atoken)
+            {
+                switch (atoken.Type)
+                {
+                    case(JTokenType.Boolean):
+                        value = atoken.Value<bool>();
+                        break;
+                    case(JTokenType.Bytes):
+                        value = atoken.Value<long>();
+                        break;
+                    case(JTokenType.Date):
+                        value = atoken.Value<DateTime>();
+                        break;
+                    case(JTokenType.Array):
+                        break;
+                    case(JTokenType.Float):
+                        value = atoken.Value<double>();
+                        break;
+                    case(JTokenType.Integer):
+                        value = atoken.Value<int>();
+                        break;
+                    case(JTokenType.Null):
+                        value = null;
+                        break;
+                    case(JTokenType.String):
+                        value = atoken.Value<string>();
+                        break;
+                }
+            }
+#if NET6_0_OR_GREATER
+            else if (value is System.Text.Json.JsonElement jele)
+            {
+                switch (jele.ValueKind)
+                {
+                    case(System.Text.Json.JsonValueKind.False):
+                    case(System.Text.Json.JsonValueKind.True):
+                        value = jele.GetBoolean(); 
+                        break;
+                    case(System.Text.Json.JsonValueKind.Null):
+                        value = null;
+                        break;
+                    case(System.Text.Json.JsonValueKind.Number):
+                        value = jele.GetDouble();
+                        break;
+                    case(System.Text.Json.JsonValueKind.String):
+                        value = jele.GetString();
+                        break;
+                    default:
+                        break;
+                }
+            }
+#endif
+            return value;
+        }
+
         internal static int CompareUsingMostPreciseType(object a, object b, Context context)
         {
+            a = ExtractAnyJsonValue(a);
+            b = ExtractAnyJsonValue(b);
+            
+            
             var mostPreciseType = GetMostPreciseType(a?.GetType(), b?.GetType());
 
             if (mostPreciseType == typeof(string))
             {
-                return string.Compare(
-                    (string)Convert.ChangeType(a, mostPreciseType, context.CurrentCulture),
-                    (string)Convert.ChangeType(b, mostPreciseType, context.CurrentCulture),
-                    context.EqualityStringComparison);
+                string astr;
+                string bstr;
+                if (a == null && b == null)
+                    return 0;
+                
+                if (a == null)
+                    return -1;
+                
+                if(b == null)
+                    return 1;
+                   
+
+                if (a is string str1)
+                    astr = str1;
+                else if (a is IConvertible conv1)
+                    astr = conv1.ToString(context.CurrentCulture);
+                else
+                    astr = (string)Convert.ChangeType(a, TypeCode.String, context.CurrentCulture);
+
+                if (b is string str2)
+                    bstr = str2;
+                else if (b is IConvertible conv2)
+                    bstr = conv2.ToString(context.CurrentCulture);
+                else
+                    bstr = (string)Convert.ChangeType(a, TypeCode.String, context.CurrentCulture);
+                
+                return string.Compare(astr, bstr, context.EqualityStringComparison);
             }
 
             return Comparison.Compare(a, b, mostPreciseType, context);
@@ -32,10 +122,12 @@ namespace Scryber.Expressive.Helpers
 
         private static Type GetMostPreciseType(Type a, Type b)
         {
+            
             if (a == b)
             {
                 return a; // If they're the same type, just return one of them.
             }
+
             foreach (var t in Comparison.CommonTypes)
             {
                 if (a == t || b == t)
@@ -133,7 +225,7 @@ namespace Scryber.Expressive.Helpers
 
             }
 
-            return 0;
+            return -1;
         }
     }
 }

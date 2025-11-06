@@ -73,6 +73,7 @@ namespace Scryber.Html.Components
         public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
         {
             var style = base.GetAppliedStyle(forComponent, baseStyle);
+            style.Size.FullWidth = true;
             return style;
         }
 

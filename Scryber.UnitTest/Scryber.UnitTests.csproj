@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
     <SignAssembly>true</SignAssembly>
@@ -26,9 +26,9 @@
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,21 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\" />
-    <Folder Include="Binding\" />
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
     <Folder Include="Mocks\Fonts\Avenir\" />
-    <Folder Include="Content\HTML\" />
     <Folder Include="Content\HTML\Images\" />
     <Folder Include="Content\HTML\CSS\" />
     <Folder Include="Content\Markdown\" />
     <Folder Include="Content\PDFX\" />
     <Folder Include="Content\HTML\Fragments\" />
-    <Folder Include="Content\SVG\" />
     <Folder Include="Imaging\" />
     <Folder Include="Common\" />
     <Folder Include="Content\HTML\CribSheet\" />
-    <Folder Include="Attachments\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -76,6 +72,9 @@
     <None Remove="Common\" />
     <None Remove="Content\HTML\CribSheet\" />
     <None Remove="Attachments\" />
+    <None Update="Content\HTML\Images\ScyberLogo2_alpha_small.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />

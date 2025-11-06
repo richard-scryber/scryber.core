@@ -55,7 +55,7 @@ namespace Scryber.Components
             return this.CreatePath(available, fullstyle);
         }
 
-        public PDFObjectRef OutputToPDF(PDF.PDFRenderContext context, PDFWriter writer)
+        public virtual PDFObjectRef OutputToPDF(PDF.PDFRenderContext context, PDFWriter writer)
         {
             Style fullstyle = context.FullStyle;
             if (null == fullstyle)

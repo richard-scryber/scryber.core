@@ -23,6 +23,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.Svg;
 
 namespace Scryber.PDF.Graphics
 {
@@ -336,13 +337,38 @@ namespace Scryber.PDF.Graphics
 
         private void OutputPath(PDFBrush brush, PDFPen pen, Point location, GraphicsPath path)
         {
-
             Rect bounds = new Rect(path.Bounds.X + location.X, path.Bounds.Y + location.Y, path.Bounds.Width, path.Bounds.Height);
             
             if (null != brush)
                 brush.SetUpGraphics(this, bounds);
             if (null != pen)
                 pen.SetUpGraphics(this, bounds);
+
+            
+            PathAdornmentInfo info = null;
+            
+            
+            
+            if (null != path.PathMatrix)
+            {
+                this.SetTransformationMatrix(path.PathMatrix, false, true);
+            }
+            
+            if (path.HasAdornments)
+            {
+                AdornmentOrientationValue orientation = path.AdornmentOrientation;
+                double? angle;
+                if (orientation.HasAngle)
+                    angle = orientation.AngleRadians;
+                else
+                    angle = null;
+                
+                bool reverse = orientation.IsReverseAtStart;
+
+                info = new PathAdornmentInfo(location, angle, reverse, brush, pen);
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.Before);
+
+            }
 
             Point cursor = Point.Empty;
 
@@ -358,6 +384,14 @@ namespace Scryber.PDF.Graphics
             else if (null != pen)
                 this.RenderStrokePathOp();
 
+            //Transformation matrix will be released with restore graphics state
+            
+            
+
+            if (null != info)
+            {
+                path.OutputAdornments(this, info, this.Context, AdornmentOrder.After);
+            }
             
             if (null != brush)
                 brush.ReleaseGraphics(this, bounds);

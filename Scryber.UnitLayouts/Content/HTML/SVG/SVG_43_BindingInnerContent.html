@@ -1,0 +1,25 @@
+﻿<!DOCTYPE HTML>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta charset="utf-8" name="author" content="Matt" />
+   <title>SVG Test</title>
+</head>
+<body>
+<h1>SVG Test</h1>
+<h2>directly</h2>
+<svg id="direct" height="100" width="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+   <circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill="red" />
+   <text x="50" y="50" text-anchor="middle" fill="white">Hello</text>
+</svg>
+<h2>via variable with paths</h2>
+<svg id="variable" height="100" width="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" data-content="{{svg}}">
+</svg>
+<h2>via variable with full svg</h2>
+<div id="innerFull" data-content="{{svgFull}}" ></div>
+<h2> via template</h2>
+<svg id="inTemplate" height="100" width="200" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+   <!-- note the template element must reference the html namespace to be known and understood -->
+   <template data-content='{{svgParts}}' data-bind="{{toLoop}}" xmlns="http://www.w3.org/1999/xhtml"></template>
+</svg>
+</body>
+</html>

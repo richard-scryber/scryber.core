@@ -132,6 +132,7 @@ namespace Scryber.Drawing
 
         #endregion
 
+        
         public Size Subtract(Thickness thickness)
         {
             return new Size(this.Width - thickness.Left - thickness.Right, this.Height - thickness.Top - thickness.Bottom);
@@ -156,7 +157,16 @@ namespace Scryber.Drawing
         {
             return this.Clone();
         }
+        
+        //Returns the maximum width and height values in both sizes
+        public static Size Max(Size one, Size two)
+        {
+            Size max = Empty;
+            max.Width = Unit.Max(one.Width, two.Height);
+            max.Height = Unit.Max(one.Height, two.Height);
 
+            return max;
+        }
         
     }
 }

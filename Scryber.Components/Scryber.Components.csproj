@@ -1,19 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net9.0</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>6.0.5.0-beta</PackageVersion>
+    <PackageVersion>9.1.2-rc.6</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2023</Copyright>
+    <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>9.1.2-rc.5/6
+Couple of fixes for overflowing tables in a kept together parent, and svg font-weight bold and light are now supported and fixed an issue with the reverse function.
+        
+9.1.2-rc.4
+Working modification of PDFs and templates using framesets and frames and support for SVG background images with opacity. 
+
+9.1.0.7-beta
+First release of framesets for trimming and merging documents. Also hiding variables that do not have any content.
+
+9.0.0.1-rc.3
+Added extra html entity values to match available sources.
+
+9.0.0.1-rc.2
+Fixes for template parsing and added data-content to the template element, plus minor fixes and unit test updates. Second release candidate.
+
+9.0.0.1-rc.1
+Minor fixes for layout. First release candidate.
+        
+9.0.0.1-beta
+Fixed a minor layout issue with multiple footer elementnamed components being applite to a page footer, and also header.
+        
+9.0.0.0-beta
+Completely updated version for .NET 9.0 with support for html, css, svg and binding in a WASM compatible package with remote asset and content requests.
+NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
+        
+8.0.0.2-beta
+Added a fix for the rounding of expression results on decimal and double values when the results are very small.
+
+8.0.0.1-beta
+Updated to net8.0 sdk and dependancies updated to the latest stable versions.
+        
 6.0.5.0-beta
 Updated to net8.0 sdk and dependencies updated to latest version.
 
@@ -120,22 +151,21 @@ Allow missing images on the document is now supported.
 Contain fill style for background images.
 
 See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
-    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 6;</PackageTags>
+    <Summary>The scryber engine for beautiful, dynamic, PDF document creation using html templates, css support and model injection in dotnet 9, 8, 6 and Standard 2.0</Summary>
+    <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 9;</PackageTags>
     <Title>Scryber</Title>
-    <Description>The scryber pdf engine for dotnet 6 - Beautiful documents from templates made easy.
+    <Description>Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. 
+Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
-Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
-
-This framework is built entirely in .NET8 supporting Blazor and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>6.0.5.0-beta</Version>
+    <Version>9.1.0.7-beta</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>6.0.5.0</FileVersion>
+    <FileVersion>9.1.0.7-beta</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
@@ -158,6 +188,9 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />
@@ -216,10 +249,13 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Scryber.Core.OpenType" Version="9.1.2-rc.4" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.8" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">
@@ -230,6 +266,9 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
   </ItemGroup>
     
   <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\">
+        <IncludeInPackage>true</IncludeInPackage>
+    </None>
     <None Include="readme.txt" Pack="true">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
@@ -240,9 +279,6 @@ This framework is built entirely in .NET8 supporting Blazor and is released unde
   
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="Svg\Layout\" />
-    <Folder Include="PDF\" />
-    <Folder Include="PDF\Layout\" />
     <Folder Include="PDF\Secure\" />
     <Folder Include="Options\" />
   </ItemGroup>

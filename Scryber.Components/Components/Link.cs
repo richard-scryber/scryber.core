@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Scryber.Styles;
 using Scryber.PDF;
@@ -31,6 +32,8 @@ namespace Scryber.Components
 
         public const string LinkAnnotationChildEntries = "LinkChildren";
         public const string LinkArtefactName = "Link";
+        public const string LinkEmbeddedEntryName = "FileObject";
+        public const string LinkEmbeddedFileChildEntryName = "FileObjectChildren";
         public const string ComponentIDPrefix = "#";
 
         public Link()
@@ -74,7 +77,7 @@ namespace Scryber.Components
         /// If left undefined then the value will be (attempted to be) determined.
         /// </summary>
         [PDFAttribute("action")]
-        public LinkAction Action
+        public virtual LinkAction Action
         {
             get { return _action; }
             set { _action = value; }
@@ -168,8 +171,10 @@ namespace Scryber.Components
                 actiontype = this.ResolveActionType(this.Destination, this.File);
 
             object[] entries = null;
-            PDFAction action;
-
+            PDFAction action = null;
+            PDFEmbeddedAttachment attachment = null;
+            IconAttachment icon = null;
+            
             if (this.IsNamedAction(actiontype))
             {
                 PDFNamedAction named = new PDFNamedAction(this, this.Action);
@@ -186,7 +191,7 @@ namespace Scryber.Components
             else if (actiontype == LinkAction.Destination)
             {
                 //If we start with a # then we are an ID, otherwise we are a uniqueID or Name
-                PDFDestination dest;
+                PDFDestination dest = null;
                 Component comp;
                 if (string.IsNullOrEmpty(this.Destination))
                 {
@@ -208,26 +213,36 @@ namespace Scryber.Components
                 if (null == comp)
                 {
                     if (context.Conformance == ParserConformanceMode.Strict)
-                        throw new PDFLayoutException(string.Format(Errors.LinkToDestinationCouldNotBeMade, this.Destination));
+                        throw new PDFLayoutException(string.Format(Errors.LinkToDestinationCouldNotBeMade,
+                            this.Destination));
                     else
-                        context.TraceLog.Add(TraceLevel.Error, "PDFLink", string.Format(Errors.LinkToDestinationCouldNotBeMade, this.Destination));
+                        context.TraceLog.Add(TraceLevel.Error, "PDFLink",
+                            string.Format(Errors.LinkToDestinationCouldNotBeMade, this.Destination));
 
                     //cannot continue as we dont have anything to link to
                     return;
                 }
-
-                dest = new PDFDestination(comp, this.DestinationFit, this.UniqueID);
-
-                PDFDestinationAction destact = new PDFDestinationAction(this, actiontype, dest);
-                action = destact;
-                
-
-                if (null != dest)
+                else if (comp is IconAttachment)
                 {
-                    object link = context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.Names, dest);
-                    set.SetArtefact(LinkArtefactName, link);
+                    icon = (IconAttachment)comp;
+                    attachment = icon.GetAttachment(context);
+                    
+                    
                 }
+                else
+                {
 
+                    dest = new PDFDestination(comp, this.DestinationFit, this.UniqueID);
+
+                    PDFDestinationAction destact = new PDFDestinationAction(this, actiontype, dest);
+                    action = destact;
+
+                    object link =
+                        context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.Names, dest);
+                    set.SetArtefact(LinkArtefactName, link);
+
+                }
+                
             }
             else if (actiontype == LinkAction.ExternalDestination)
             {
@@ -238,13 +253,24 @@ namespace Scryber.Components
 
                 action = remote;
             }
+            else if (context.Conformance == ParserConformanceMode.Lax)
+            {
+                context.TraceLog.Add(TraceLevel.Warning, "Link",
+                    "No action type could be determined on the link " + this.UniqueID);
+                action = null;
+            }
             else
                 throw RecordAndRaise.Argument("actiontype");
-
+            
             if (null != action)
             {
                 entries = this.AddActionAnnotationToChildren(context, fullstyle, action);
                 set.SetArtefact(LinkAnnotationChildEntries, entries);
+            }
+            else if (null != attachment)
+            {
+                entries = this.AddAttachmentAnnotationToChildren(context, fullstyle, attachment, icon);
+                set.SetArtefact(LinkEmbeddedFileChildEntryName, entries);
             }
 
         }
@@ -262,6 +288,7 @@ namespace Scryber.Components
                                            PDFAction action, List<object> entries, 
                                            PDFLayoutPage pg, ComponentList contents)
         {
+            
             foreach (Component comp in contents)
             {
                 PDFAnnotationLinkEntry annot;
@@ -270,9 +297,12 @@ namespace Scryber.Components
                 {
                     FillActionAnnotations(context, style, action, entries, pg, inner);
                 }
+                else if (comp.Type == ObjectTypes.Whitespace)
+                {
+                    //Skip
+                }
                 else
                 {
-                    //TODO: Test with data source within link
                     annot = new PDFAnnotationLinkEntry(comp, style);
                     annot.Action = action;
 
@@ -312,11 +342,57 @@ namespace Scryber.Components
             return false;
         }
 
+        private object[] AddAttachmentAnnotationToChildren(PDFLayoutContext context, Styles.Style style,
+            PDFEmbeddedAttachment attach, IconAttachment icon)
+        {
+            PDFAttachmentAnnotationEntry entry =
+                new PDFAttachmentAnnotationEntry(icon, this, attach, style);
+            
+            List<object> entries = new List<object>();
+            PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
+            FillAttachmentAnnotations(context, style, attach, entries, pg, icon, this.Contents);
+            
+            return entries.ToArray();
+        }
+        
+        private void FillAttachmentAnnotations(PDFLayoutContext context, Styles.Style style,
+            PDFEmbeddedAttachment attach, List<object> entries, 
+            PDFLayoutPage pg, IconAttachment icon, ComponentList contents)
+        {
+            
+            foreach (Component comp in contents)
+            {
+                PDFAttachmentAnnotationEntry annot;
+                ComponentList inner;
+                if (IsContainer(comp, out inner))
+                {
+                    FillAttachmentAnnotations(context, style, attach, entries, pg, icon, inner);
+                }
+                else if (comp.Type == ObjectTypes.Whitespace)
+                {
+                    //Skip
+                }
+                else
+                {
+                    annot = new PDFAttachmentAnnotationEntry(icon, comp, attach, style);
+                    
+
+                    if (!string.IsNullOrEmpty(this.OutlineTitle))
+                        annot.AlternateText = this.OutlineTitle;
+
+                    object entry = pg.RegisterPageEntry(context, PDFArtefactTypes.Annotations, annot);
+
+                    if (null != entry)
+                        entries.Add(entry);
+                }
+            }
+        }
+
         protected override void DoCloseLayoutArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet artefacts, Styles.Style fullstyle)
         {
             base.DoCloseLayoutArtefacts(context, artefacts, fullstyle);
 
-            //Close the inner chid annotation entries
+            //Close the inner child annotation entries
             object entries;
             if (artefacts.TryGetArtefact(LinkAnnotationChildEntries, out entries))
             {
@@ -334,6 +410,25 @@ namespace Scryber.Components
             object link;
             if (artefacts.TryGetArtefact(LinkArtefactName, out link))
                 context.DocumentLayout.CloseArtefactEntry(PDFArtefactTypes.Names, link);
+
+
+            if (artefacts.TryGetArtefact(LinkEmbeddedFileChildEntryName, out entries))
+            {
+                object[] all = (object[])entries;
+                //TODO: Check the use of a link that flows over more than one page
+                PDFLayoutPage pg = context.DocumentLayout.CurrentPage;
+
+                for (int i = all.Length - 1; i >= 0; i--)
+                {
+                    pg.CloseArtefactEntry(IconAttachment.AttachmentAnotationEntryArtefact, all[i]);
+                }
+            }
+
+            if (artefacts.TryGetArtefact(LinkEmbeddedEntryName, out link))
+            {
+                context.DocumentLayout.CloseArtefactEntry(PDFArtefactTypes.Names, link);
+            }
+            
         }
 
         private bool IsNamedAction(LinkAction action)

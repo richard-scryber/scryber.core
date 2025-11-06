@@ -39,6 +39,8 @@ namespace Scryber.Styles
         public static readonly Unit DefaultXOffset = Unit.Empty;
         public static readonly Unit DefaultYOffset = Unit.Empty;
         public static readonly Unit DefaultGridPenWidth = new Unit(0.1, PageUnits.Points);
+        public static readonly int DefaultMajorCount = 0;
+        public static readonly Unit DefaultGridPenMajorWidth = new Unit(1.0, PageUnits.Points);
 
 
         #region public bool ShowGrid {get;set;} + RemoveGrid()
@@ -210,6 +212,7 @@ namespace Scryber.Styles
             }
         }
 
+        
         public void RemoveGridYOffset()
         {
             this.RemoveValue(StyleKeys.OverlayYOffsetKey);
@@ -217,6 +220,28 @@ namespace Scryber.Styles
 
         #endregion
 
+        [PDFAttribute("major-count")]
+        public int GridMajorCount
+        {
+            get
+            {
+                int c;
+                if (this.TryGetValue(StyleKeys.OverlayMajorCount, out c))
+                    return c;
+                else
+                    return DefaultMajorCount;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.OverlayMajorCount, value);
+            }
+        }
+
+        public void RemoveGridMajorCount()
+        {
+            this.RemoveValue(StyleKeys.OverlayMajorCount);
+        }
+        
         #region public bool HighlightColumns {get;set;} + RemoveHighlightColumns()
 
         [PDFAttribute("fill-columns")]
@@ -256,9 +281,9 @@ namespace Scryber.Styles
         /// Gets the pen to use to render the grid lines.
         /// </summary>
         /// <returns></returns>
-        public PDFPen GetPen()
+        public PDFPen GetPen(bool forMajor = false)
         {
-            return this.AssertOwner().DoCreateOverlayGridPen();
+            return this.AssertOwner().DoCreateOverlayGridPen(forMajor);
         }
 
         #endregion

@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define PROCESS_HANDLEBAR_HELPERS
+
+
+using System;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -219,13 +222,22 @@ namespace Scryber.Html.Parsing
 
             using (var sr = new StringReader(content))
             {
-                using (var xr = new XmlHtmlEntityReader(sr))
+                using (var xr = CreateXmlReader(sr))
                 {
                     parsed = Parse(source, xr, type);
                 }
             }
 
             return parsed;
+        }
+        
+        protected virtual XmlReader CreateXmlReader(TextReader reader)
+        {
+#if PROCESS_HANDLEBAR_HELPERS
+            return new XHtmlHandleHelperReader(reader);
+#else
+            return new XmlHtmlEntityReader(reader);
+#endif
         }
 
 

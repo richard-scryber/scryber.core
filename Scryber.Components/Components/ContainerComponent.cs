@@ -40,7 +40,7 @@ namespace Scryber.Components
         /// Interface implemented property to contain all the Page Components that this item contains.
         /// Inheritors can make this list publicly accessible.
         /// </summary>
-        protected ComponentList InnerContent
+        protected virtual ComponentList InnerContent
         {
             get
             {

@@ -92,6 +92,9 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected override void DoLayoutComponent()
         {
+            if(!this.ShouldLayoutComponent(this.Component, this.FullStyle))
+                return;
+            
             IDisposable record = this.Context.PerformanceMonitor.Record(PerformanceMonitorType.Layout_Pages, "Page " + this.Component.ID);
 
             //Take a copy of the style stack for the header and footer
@@ -102,7 +105,10 @@ namespace Scryber.PDF.Layout
             PageSize pgsize = this.FullStyle.CreatePageSize();
             pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size);
 
-            PDFPositionOptions options = this.FullStyle.CreatePostionOptions();
+            var style = this.FullStyle;
+            var isInPositioned = this.Context.PositionDepth > 0;
+            
+            PDFPositionOptions options = style.CreatePostionOptions(isInPositioned);
 
 
             
@@ -249,6 +255,7 @@ namespace Scryber.PDF.Layout
                 block = page.CurrentBlock;
                 region = block.CurrentRegion;
 
+                depth.Pop(); //As we build the PageBlock, and the inner ContentBlock we need to pop again.
                 if(this.Context.ShouldLogVerbose)
                     this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Built a new continuation page for " + this.Component + " and recreated the " + toclose.Count + " blocks and regions on the new page");
                 return true;
@@ -350,6 +357,7 @@ namespace Scryber.PDF.Layout
             if (headtemplate != null)
             {
                 PDFPageHeader header = new PDFPageHeader();
+                //header.ElementName = "header";
                 this.Page.AddGeneratedHeader(header, this.DocumentLayout.CurrentPageIndex);
                 //Create the content inside the header component
                 InstantiateTemplateForPage(header, headtemplate);
@@ -376,6 +384,7 @@ namespace Scryber.PDF.Layout
             if (foottemplate != null)
             {
                 PDFPageFooter footer = new PDFPageFooter();
+                //footer.ElementName = "footer";
                 this.Page.AddGeneratedFooter(footer, this.DocumentLayout.CurrentPageIndex);
 
                 InstantiateTemplateForPage(footer, foottemplate);

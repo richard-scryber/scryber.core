@@ -69,7 +69,7 @@ namespace Scryber
                         this.AddVerboseLog("The request for " + item.StubFilePathForLog + " was already marked as completed");
                 }
 
-                base.EnsureRequestsFullfilled();
+                //base.EnsureRequestsFullfilled();
 
                 if(this.LogVerbose)
                     this.EndVerboseLog(" Completed " + completed + " remote requests out of " + all.Length + " asyncronously.");
@@ -144,7 +144,7 @@ namespace Scryber
                     request.CompleteRequest(null,false, ex);
                 }
 
-                if (request.IsCompleted == false)
+                if (request.IsCompleted == false && request.IsExecuting == false)
                 {
                     if (raiseErrors)
                         throw new InvalidOperationException("Could not complete the request for a remote file", request.Error);
@@ -157,7 +157,18 @@ namespace Scryber
                     if (raiseErrors)
                         throw new InvalidOperationException("The request for the '" + (request.StubFilePathForLog ?? "Unknown File") + "' could not be completed", request.Error);
                     else
-                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory, "Remote request for " + (request.StubFilePathForLog ?? "Unknown File") + " failed with message '" + (request.Error.Message ?? "") + "'");
+                    {
+                        this.Log.Add(TraceLevel.Error, RemoteRequestCategory,
+                            "Remote request for " + (request.StubFilePathForLog ?? "Unknown File") +
+                            " failed with message '" + (request.Error.Message ?? "") + "'");
+                        
+                        if (null != request.Error && null != request.Error.InnerException)
+                        {
+                            this.Log.Add(TraceLevel.Error, RemoteRequestCategory,
+                                "Inner error for " + (request.StubFilePathForLog ?? "Unknown File") +
+                                " message '" + (request.Error.InnerException.Message ?? "") + "'" + "\r\n" + request.Error.InnerException.StackTrace);
+                        }
+                    }
                 }
             }
             return request.IsCompleted;
@@ -173,13 +184,11 @@ namespace Scryber
             if(this.LogDebug)
                 this.AddDebugLog( "ASYNCRONOUSLY fulfilling the request for the URL '" + urlRequest.StubFilePathForLog + "'");
 
+            urlRequest.StartRequest();
+            
             var client = this.GetHttpClient();
             var message = new HttpRequestMessage(HttpMethod.Get, urlRequest.FilePath);
-            //message.Headers.Add("user-agent", "-/-");
-            //message.Headers.Add("Access-Control-Allow-Origin", "*");
-            //message.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-            //message.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-            //message.Headers.Add("Access-Control-Allow-Credentials", "true");
+            
 
             using (var response = await client.SendAsync(message))
             {

@@ -48,17 +48,8 @@ namespace Scryber.Core.UnitTests.Configuration
 
         public void ConfigClassInitialize()
         {
-            var path = this.TestContext.TestRunDirectory;
-            path = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../scrybersettings.json"));
-            if (!File.Exists(path))
-            {
-                path = System.IO.Path.Combine(this.TestContext.DeploymentDirectory, "../../../scrybersettings.json");
-                path = System.IO.Path.GetFullPath(path);
-
-                if (!File.Exists(path))
-                    throw new FileNotFoundException("Cannot find the location of the scrybersettings.json file to run the tests from");
-            }
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/scrybersettings.json", this.TestContext);
+            
             var builder = new ConfigurationBuilder()
                                 .AddJsonFile(path, optional: false, reloadOnChange: false);
 
@@ -424,6 +415,11 @@ namespace Scryber.Core.UnitTests.Configuration
         public class DataBase64ImageFactory : IPDFImageDataFactory
         {
             public bool ShouldCache { get { return false; } }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type)
+            {
+                throw new NotImplementedException("Only testing the base 64 loading.");
+            }
 
             /// <summary>
             /// Loads an image from a base 64 data image

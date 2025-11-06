@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -52,5 +53,14 @@ namespace Scryber.Html.Components
 
         protected HTMLHorizontalRule(ObjectType type) : base(type)
         { }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Margins.Top = Unit.Em(0.5);
+            style.Margins.Bottom = Unit.Em(0.5);
+            style.Size.FullWidth = true;
+            return style;
+        }
     }
 }

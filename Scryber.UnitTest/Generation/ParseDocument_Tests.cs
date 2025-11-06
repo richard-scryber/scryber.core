@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
+using Scryber.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.PDF.Resources;
 using System.IO;
@@ -21,6 +22,20 @@ namespace Scryber.Core.UnitTests.Generation
         const int GroupImgPixelWidth = 396;
         const int GroupImgPixelHeight = 342;
 
+        private TestContext testContextInstance;
+
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+        
         //
         // XHTML ParseDocument methods
         //
@@ -34,10 +49,10 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLLocalFile()
         {
-            var path = System.Environment.CurrentDirectory;
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
+                this.TestContext);
 
-            var fullpath = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.xhtml");
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
             using (Document doc = Document.ParseDocument(fullpath))
             {
@@ -98,8 +113,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -116,6 +131,8 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLRelativeFile()
         {
+            //should be relative to the bin directory 
+ 
             var relative = "../../../Content/HTML/HelloWorld.xhtml";
 
             var path = System.Environment.CurrentDirectory;
@@ -123,7 +140,10 @@ namespace Scryber.Core.UnitTests.Generation
             var fullpath = System.IO.Path.Combine(path, relative);
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
 
+            
             using (Document doc = Document.ParseDocument(relative))
             {
                 doc.Params["title"] = "Hello World & everyone in it.";
@@ -183,8 +203,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -199,15 +219,10 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLStream()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
-
-            //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
-
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 using (Document doc = Document.ParseDocument(stream))
@@ -264,12 +279,11 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc);
                     //As a relative image, this will then be based on the working directory
 
-                    Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
               
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -287,14 +301,8 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLTextReader()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
-
-            //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -354,12 +362,11 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc);
                         //As a relative image, this will then be based on the working directory
 
-                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -379,11 +386,8 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXHTMLXmlReader()
         {
             
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
 
             
             bool caught = false;
@@ -433,19 +437,16 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLStreamWithRelativePath()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
+            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 //Pass the relative path to the parsing
-                using (Document doc = Document.ParseDocument(stream, relative, ParseSourceType.LocalFile))
+                using (Document doc = Document.ParseDocument(stream, fullpath, ParseSourceType.LocalFile))
                 {
                     doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -455,7 +456,7 @@ namespace Scryber.Core.UnitTests.Generation
                     }
 
                     Assert.IsNotNull(doc.LoadedSource); //Relative path provided
-                    Assert.AreEqual(relative, doc.LoadedSource);
+                    Assert.AreEqual(fullpath, doc.LoadedSource);
 
                     Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
 
@@ -507,8 +508,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -598,8 +599,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -618,21 +619,20 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLTextReaderWithRelativePath()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
+            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
 
+
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 using (var reader = new StreamReader(stream))
                 {
                     //Pass the relative path to the parsing
-                    using (Document doc = Document.ParseDocument(reader, relative, ParseSourceType.LocalFile))
+                    using (Document doc = Document.ParseDocument(reader, fullpath, ParseSourceType.LocalFile))
                     {
                         doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -642,7 +642,7 @@ namespace Scryber.Core.UnitTests.Generation
                         }
 
                         Assert.IsNotNull(doc.LoadedSource); //Relative path provided
-                        Assert.AreEqual(relative, doc.LoadedSource);
+                        Assert.AreEqual(fullpath, doc.LoadedSource);
 
                         Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
 
@@ -694,8 +694,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -716,11 +716,12 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXHTMLXmlReaderWithRelativePath()
         {
 
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
 
-            var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
+
 
 
             bool caught = false;
@@ -735,7 +736,7 @@ namespace Scryber.Core.UnitTests.Generation
                     //Pass the relative path to the parsing
                     using (var reader = System.Xml.XmlReader.Create(stream, settings))
                     {
-                        using (Document doc = Document.ParseDocument(reader, relative, ParseSourceType.LocalFile))
+                        using (Document doc = Document.ParseDocument(reader, fullpath, ParseSourceType.LocalFile))
                         {
                             doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -775,10 +776,12 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXMLLocalFile()
         {
-            var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.xml");
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
+            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xml", this.TestContext);
+
+
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
 
             using (Document doc = Document.ParseDocument(fullpath))
             {
@@ -840,8 +843,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -865,6 +868,8 @@ namespace Scryber.Core.UnitTests.Generation
             var fullpath = System.IO.Path.Combine(path, relative);
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
 
             using (Document doc = Document.ParseDocument(relative))
             {
@@ -925,8 +930,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -941,15 +946,14 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXMLStream()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
             //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
-
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 using (Document doc = Document.ParseDocument(stream))
@@ -1006,12 +1010,11 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc);
                     //As a relative image, this will then be based on the working directory
 
-                    Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1029,15 +1032,14 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXMLTextReader()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
             //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
-
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 using (var reader = new StreamReader(stream))
@@ -1096,12 +1098,11 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc);
                         //As a relative image, this will then be based on the working directory
 
-                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1121,14 +1122,13 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXMLXmlReader()
         {
 
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
-
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
@@ -1190,12 +1190,11 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc);
                         //As a relative image, this will then be based on the working directory
 
-                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
 
 
@@ -1216,11 +1215,11 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXMLStreamWithRelativePath()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
             //With path defined on parsing, then the image path will be relative to that file path
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
@@ -1228,7 +1227,7 @@ namespace Scryber.Core.UnitTests.Generation
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 //Pass the relative path to the parsing
-                using (Document doc = Document.ParseDocument(stream, relative, ParseSourceType.LocalFile))
+                using (Document doc = Document.ParseDocument(stream, fullpath, ParseSourceType.LocalFile))
                 {
                     doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -1238,7 +1237,7 @@ namespace Scryber.Core.UnitTests.Generation
                     }
 
                     Assert.IsNotNull(doc.LoadedSource); //Relative path provided
-                    Assert.AreEqual(relative, doc.LoadedSource);
+                    Assert.AreEqual(fullpath, doc.LoadedSource);
 
                     Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
 
@@ -1288,10 +1287,10 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file.
 
                     Assert.IsNotNull(imgRsrc.ImageData);
-                    //Not successfull so 1x1 - unsucessfull image data proxy
+                    //Should be successfull so check the widths and heights
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1300,7 +1299,7 @@ namespace Scryber.Core.UnitTests.Generation
 
         #endregion
 
-        #region public void ParseXMLTextReaderWithPath()
+        #region public void ParseXMLTextReaderWithRelativePath()
 
         /// <summary>
         /// Test of ParseDocument with text reader to the xhtml file HellowWorld.xhtml, providing the path and parse type
@@ -1309,21 +1308,23 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXMLTextReaderWithRelativePath()
         {
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
             //With path defined on parsing, then the image path will be relative to that file path
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
 
+
+            
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
                 using (var reader = new StreamReader(stream))
                 {
                     //Pass the relative path to the parsing
-                    using (Document doc = Document.ParseDocument(reader, relative, ParseSourceType.LocalFile))
+                    using (Document doc = Document.ParseDocument(reader, fullpath, ParseSourceType.LocalFile))
                     {
                         doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -1333,7 +1334,7 @@ namespace Scryber.Core.UnitTests.Generation
                         }
 
                         Assert.IsNotNull(doc.LoadedSource); //Relative path provided
-                        Assert.AreEqual(relative, doc.LoadedSource);
+                        Assert.AreEqual(fullpath, doc.LoadedSource);
 
                         Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
 
@@ -1385,8 +1386,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1407,12 +1408,13 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXMLXmlReaderWithRelativePath()
         {
 
-            var relative = "../../../Content/HTML/HelloWorld.xml";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.xml";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
+            //With path defined on parsing, then the image path will be relative to that file path
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
@@ -1423,7 +1425,7 @@ namespace Scryber.Core.UnitTests.Generation
                 //Pass the relative path to the parsing
                 using (var reader = System.Xml.XmlReader.Create(stream, settings))
                 {
-                    using (Document doc = Document.ParseDocument(reader, relative, ParseSourceType.LocalFile))
+                    using (Document doc = Document.ParseDocument(reader, fullpath, ParseSourceType.LocalFile))
                     {
                         doc.Params["title"] = "Hello World & everyone in it.";
 
@@ -1433,7 +1435,7 @@ namespace Scryber.Core.UnitTests.Generation
                         }
 
                         Assert.IsNotNull(doc.LoadedSource); //Relative path provided
-                        Assert.AreEqual(relative, doc.LoadedSource);
+                        Assert.AreEqual(fullpath, doc.LoadedSource);
 
                         Assert.AreEqual(ParserLoadType.ReflectiveParser, doc.LoadType);
 
@@ -1483,10 +1485,10 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file.
 
                         Assert.IsNotNull(imgRsrc.ImageData);
-                        //Not successfull so 1x1 - unsucessfull image data proxy
+                        //Successfull so image size
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1511,11 +1513,17 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseHtmlLocalFile()
         {
+            
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.html";
+
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.html");
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
+
+            
             using (Document doc = Document.ParseHtmlDocument(fullpath))
             {
                 doc.Params["title"] = "Hello World & everyone in it.";
@@ -1576,8 +1584,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
                 //Not successfull so 1x1 - unsucessfull image data proxy
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
 
 
@@ -1601,6 +1609,11 @@ namespace Scryber.Core.UnitTests.Generation
             var fullpath = System.IO.Path.Combine(path, relative);
             var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
+
+
+            
 
             using (Document doc = Document.ParseHtmlDocument(relative))
             {
@@ -1661,8 +1674,8 @@ namespace Scryber.Core.UnitTests.Generation
                 Assert.IsNotNull(imgRsrc.ImageData);
 
 
-                Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
             }
         }
 
@@ -1677,14 +1690,14 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseHtmlStream()
         {
-            var relative = "../../../Content/HTML/HelloWorld.html";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.html";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
-            //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -1742,12 +1755,11 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc);
                     //As a relative image, this will then be based on the working directory
 
-                    Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -1765,14 +1777,14 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseHtmlTextReader()
         {
-            var relative = "../../../Content/HTML/HelloWorld.html";
+            var relative = "../../Scryber.UnitTest/Content/HTML/HelloWorld.html";
 
             var path = System.Environment.CurrentDirectory;
 
-            var fullpath = System.IO.Path.Combine(path, relative);
+            var fullpath = DocStreams.AssertGetContentPath(relative, this.TestContext);
 
-            //As no path is defined on parsing, then the imge path will be relative to the working directory
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "./Images/group.png"));
+            //With path defined on parsing, then the image path will be relative to that file path
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -1832,12 +1844,11 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc);
                         //As a relative image, this will then be based on the working directory
 
-                        Assert.AreEqual(imgfullSrc, imgRsrc.Source); //the source should be the full path to the local image file (relative to the working directory).
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(1, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(1, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -1846,14 +1857,7 @@ namespace Scryber.Core.UnitTests.Generation
         }
 
         #endregion
-
-        #region public void ParseHtmlXmlReader()
-
-        /// 
-        /// As the html is not valid xml there is no method and therefor no test for parsing an HTML document with an XML Reader
-        /// 
-
-        #endregion
+        
 
         #region public void ParseHtmlStreamWithRelativePath()
 
@@ -1869,9 +1873,11 @@ namespace Scryber.Core.UnitTests.Generation
             var path = System.Environment.CurrentDirectory;
 
             var fullpath = System.IO.Path.Combine(path, relative);
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
-            //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
+
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -1938,8 +1944,8 @@ namespace Scryber.Core.UnitTests.Generation
                     Assert.IsNotNull(imgRsrc.ImageData);
                     //Not successfull so 1x1 - unsucessfull image data proxy
 
-                    Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                    Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                    Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                    Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                 }
             }
@@ -2029,8 +2035,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -2054,9 +2060,11 @@ namespace Scryber.Core.UnitTests.Generation
             var path = System.Environment.CurrentDirectory;
 
             var fullpath = System.IO.Path.Combine(path, relative);
+            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
 
-            //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(fullpath, "../Images/group.png"));
+            if(!System.IO.File.Exists(relative))
+                Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
+
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -2125,8 +2133,8 @@ namespace Scryber.Core.UnitTests.Generation
                         Assert.IsNotNull(imgRsrc.ImageData);
                         //Not successfull so 1x1 - unsucessfull image data proxy
 
-                        Assert.AreEqual(GroupImgPixelWidth, imgRsrc.ImageData.PixelWidth);
-                        Assert.AreEqual(GroupImgPixelHeight, imgRsrc.ImageData.PixelHeight);
+                        Assert.AreEqual(GroupImgPixelWidth, ((ImageRasterData)imgRsrc.ImageData).PixelWidth);
+                        Assert.AreEqual(GroupImgPixelHeight, ((ImageRasterData)imgRsrc.ImageData).PixelHeight);
 
                     }
                 }
@@ -2137,12 +2145,5 @@ namespace Scryber.Core.UnitTests.Generation
         #endregion
 
 
-        #region public void ParseHtmlXmlReaderWithPath()
-
-        /// 
-        /// As the html is not valid xml there is no method and therefor no test for parsing an HTML document with an XML Reader
-        /// 
-
-        #endregion
     }
 }

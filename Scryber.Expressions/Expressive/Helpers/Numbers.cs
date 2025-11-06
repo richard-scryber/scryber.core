@@ -40,7 +40,15 @@ namespace Scryber.Expressive.Helpers
         public static Unit ConvertRelativeUnit(Unit unit, IDictionary<string, object> variables)
         {
             Unit result, w, h;
+            object objCallback;
             bool useWidth;
+            
+            //New implementaion using a callback to get the absolute value.
+            if (variables.TryGetValue(UnitRelativeVars.RelativeCallbackVar, out objCallback) &&
+                objCallback is RelativeToAbsoluteDimensionCallback callback)
+            {
+                return callback(unit);
+            }
 
             if (!variables.TryGetValue(UnitRelativeVars.WidthIsPriority, out object widthPriority) || !(widthPriority is bool))
                 throw new InvalidOperationException("The relative conversion variables have not been set. Ensure the UnitRelativeVars.FillCssVars has populated the conversion variables for the expression.");

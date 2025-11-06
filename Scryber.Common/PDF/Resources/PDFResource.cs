@@ -53,7 +53,7 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
-        #region public static string GSStateResourceType
+        #region public static string GSStateResourceType {get;}
 
         /// <summary>
         /// Gets the type of an external graphics state resource
@@ -87,6 +87,18 @@ namespace Scryber.PDF.Resources
             get { return "Pattern"; }
         }
 
+        #endregion
+
+        #region public static string AttachmentFileSpecType {get;}
+        
+        /// <summary>
+        /// Returns the key for FileSpec types
+        /// </summary>
+        public static string AttachmentFileSpecType
+        {
+            get { return "FileSpec"; }
+        }
+        
         #endregion
 
         //
@@ -192,7 +204,7 @@ namespace Scryber.PDF.Resources
         /// <param name="writer">The writer to output any instructions to</param>
         /// <returns>A PDFObject reference for this resource</returns>
         /// <remarks>In order to ensure that this resource is output, then call the RegisterUse with a resource collection.</remarks>
-        public PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
+        public virtual PDFObjectRef EnsureRendered(ContextBase context, PDFWriter writer)
         {
 
             if (this.Registered)
@@ -219,7 +231,7 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         public virtual bool Equals(string resourcetype, string key)
         {
-            return String.Equals(this.ResourceType, resourcetype) && String.Equals(this.Name, key);
+            return String.Equals(this.ResourceType, resourcetype) && String.Equals((this.Name ?? PDFName.Empty).Value, key);
         }
 
         #endregion

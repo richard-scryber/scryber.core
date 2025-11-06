@@ -30,7 +30,7 @@ namespace Scryber.Data
         [PDFTemplate()]
         [PDFElement("Template")]
         [PDFAttribute("template")]
-        public ITemplate Template
+        public virtual ITemplate Template
         {
             get { return _template; }
             set { _template = value; }

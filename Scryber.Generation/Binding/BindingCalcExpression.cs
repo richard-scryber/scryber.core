@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Scryber.Drawing;
 using Scryber.Expressive;
@@ -33,7 +34,7 @@ namespace Scryber.Binding
             if (null == this.ItemValueProvider)
                 this.ItemValueProvider = args.Context.Items.ValueProvider(
                     args.Context.CurrentIndex,
-                    args.Context.DataStack.HasData ? args.Context.DataStack.Current : null);
+                    args.Context.DataStack.HasData ? args.Context.DataStack.Current : null, args.Context.DataStack);
 
             object value;
 
@@ -81,9 +82,9 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata)
+        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata, DataStack stack)
         {
-            return new ItemVariableProvider(items, index, currentdata);
+            return new ItemVariableProvider(items, index, currentdata, stack);
         }
     }
 
@@ -94,6 +95,9 @@ namespace Scryber.Binding
         private object _currentData;
         private int _currentIndex;
         private RelativeDimensions _relatives;
+        private DataStack _stack;
+        
+        private RelativeToAbsoluteDimensionCallback _relativeCallback;
 
 
         protected ItemCollection Items { get { return _items; } }
@@ -102,20 +106,38 @@ namespace Scryber.Binding
         protected int CurrentIndex { get { return _currentIndex; } }
 
         protected RelativeDimensions Relatives { get { return _relatives; } }
+        
+        protected DataStack DataStack
+        {
+            get { return _stack; }
+        }
+        
+        public RelativeToAbsoluteDimensionCallback RelativeCallback
+        {
+            get { return this._relativeCallback; }
+        }
 
-        public ItemVariableProvider(ItemCollection items, int index, object currentData)
+        public ItemVariableProvider(ItemCollection items, int index, object currentData, DataStack stack)
         {
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
             _items = items;
             _currentIndex = index;
             _currentData = currentData;
+            _stack = stack;
         }
 
         public void AddRelativeDimensions(Size page, Size container, Size font, Unit rootFont, bool useWidth)
         {
             this._relatives = new RelativeDimensions(page, container, font, rootFont, useWidth);
         }
+
+        public void AddRelativeCallback(RelativeToAbsoluteDimensionCallback callback)
+        {
+            this._relativeCallback = callback;
+        }
+
+        
 
         public bool TryGetValue(string variableName, out object value)
         {
@@ -128,6 +150,40 @@ namespace Scryber.Binding
             {
                 value = this.CurrentData;
 
+                return null != value;
+            }
+            else if (variableName == ParentDataExpression.ParentDataVariableName) //parent referernce
+            {
+                if (this.DataStack.HasData)
+                {
+                    var currSource = this.DataStack.Source;
+                    var curr = this.DataStack.Current;
+
+                    this.DataStack.Pop();
+                    object parent = null;
+                    if (this.DataStack.HasData)
+                    {
+
+                        parent = this.DataStack.Current;
+                    }
+                    else
+                        parent = null;
+
+                    this.DataStack.Push(curr, currSource);
+
+                    value = parent;
+                    
+                    return true;
+                }
+                else
+                {
+                    value = null;
+                    return false;
+                }
+            }
+            else if (variableName == UnitRelativeVars.RelativeCallbackVar)
+            {
+                value = this._relativeCallback;
                 return null != value;
             }
             else if(null != this.Relatives && this.Relatives.TryGetValue(variableName, out value))

@@ -13,13 +13,72 @@ namespace Scryber.Svg.Components
     {
 
         [PDFAttribute("cx")]
-        public Unit CentreX { get; set; }
+        public Unit CentreX 
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreXKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreXKey, value);
+            }
+        }
 
         [PDFAttribute("cy")]
-        public Unit CenterY { get; set; }
+        public Unit CenterY { get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryCentreYKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryCentreYKey, value);
+            } 
+        }
 
         [PDFAttribute("r")]
-        public Unit Radius { get; set; }
+        public Unit Radius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGGeometryRadiusKey, 0.0);
+                else
+                {
+                    return 0.0;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGGeometryRadiusKey, value);
+            } 
+        }
+        
+        [PDFElement("title")]
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        
+        [PDFElement("desc")]
+        public string Description
+        {
+            get;
+            set;
+        }
 
 
         public SVGCircle()
@@ -60,6 +119,26 @@ namespace Scryber.Svg.Components
             rect.Y = this.CenterY - this.Radius;
             rect.Height = this.Radius * 2;
             return rect;
+        }
+
+        protected override void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
+        {
+            var path = this.Path;
+            
+            //override the default to use the path
+            if(null != path)
+            {
+                var bounds = path.Bounds;
+                
+                if (null != context.RenderMatrix)
+                    bounds = context.RenderMatrix.TransformBounds(bounds);
+                
+                bounds.X += arrange.RenderBounds.X;
+                bounds.Y += arrange.RenderBounds.Y;
+                arrange.RenderBounds = bounds;
+            }
+            
+            base.SetArrangement(arrange, context);
         }
     }
 }

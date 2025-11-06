@@ -65,7 +65,12 @@ namespace Scryber.Generation
         private const string ItemBindingKey = "item";
         private const string QueryStringBindingKey = "qs";
         private const string XPathBindingKey = "xpath";
+        private const string CSSVariableExpressionStart = "var(";
+        private const string CSSVariableExpressionEnd = ")";
+        private const string CSSCalcExpressionStart = "calc(";
+        private const string CSSCalcExpressionEnd = ")";
         private const string HandlebarsExpressionBindingKey = "calc";
+        
         private const int HandlebarsExpressionInset = 2; // for {{
         private const int HandlebarsExpressionLength = 4; // for {{ and }}
 
@@ -187,7 +192,7 @@ namespace Scryber.Generation
                 factColl.Add(null);
             }
 
-            if (!found && partColl.Count > 1)
+            if (!found && partColl.Count > 0)
             {
                 //We did not find any factories but have split up the string,
                 //so bring it all back together as a single string with a null factory.
@@ -334,6 +339,41 @@ namespace Scryber.Generation
             }
             else
             {
+                return false;
+            }
+        }
+
+        internal static bool IsCSSVariableOrCalcExpression(ref string value,
+            out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        {
+            if (value.StartsWith(CSSVariableExpressionStart) && value.EndsWith(CSSVariableExpressionEnd))
+            {
+                if (null == _configFactories)
+                    _configFactories = InitFactories();
+                
+                if(_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                    return true;
+                else
+                {
+                    return false;
+                }
+                
+            }
+            else if (value.StartsWith(CSSVariableExpressionStart) && value.EndsWith(CSSVariableExpressionEnd))
+            {
+                if (null == _configFactories)
+                    _configFactories = InitFactories();
+                
+                if(_configFactories.TryGetValue(HandlebarsExpressionBindingKey, out bindingfactory))
+                    return true;
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                bindingfactory = null;
                 return false;
             }
         }

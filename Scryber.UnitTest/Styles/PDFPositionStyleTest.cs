@@ -169,7 +169,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Default 
 
-            PositionMode expected = PositionMode.Block;
+            PositionMode expected = PositionMode.Static;
             Assert.AreEqual(expected, target.PositionMode);
 
             //Set value
@@ -189,7 +189,7 @@ namespace Scryber.Core.UnitTests.Styles
 
             //Remove value
 
-            expected = PositionMode.Block;
+            expected = PositionMode.Static;
             target.RemovePositionMode();
             actual = target.PositionMode;
             Assert.AreEqual(expected, actual);
@@ -217,6 +217,53 @@ namespace Scryber.Core.UnitTests.Styles
             target.PositionMode = expected;
             actual = target.PositionMode;
             Assert.AreEqual(expected, actual);
+            
+        }
+
+
+        #endregion
+        
+        #region public void Position_PositionModeTest()
+
+        /// <summary>
+        ///A test for PositionMode
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_DisplayModeTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            //Default 
+
+            DisplayMode expected = DisplayMode.Block;
+            Assert.AreEqual(expected, target.DisplayMode);
+
+            //Set value
+
+            expected = DisplayMode.InlineBlock;
+            DisplayMode actual;
+            target.DisplayMode = expected;
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = DisplayMode.Invisible;
+            target.DisplayMode = expected;
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            //Remove value
+
+            expected = DisplayMode.Block;
+            target.RemoveDisplayMode();
+            actual = target.DisplayMode;
+            Assert.AreEqual(expected, actual);
+
+            // Check the X or Y setting to relative
+
+            
             
         }
 
@@ -343,6 +390,91 @@ namespace Scryber.Core.UnitTests.Styles
             expected = Unit.Empty;
             target.RemoveY();
             actual = target.Y;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        #endregion
+
+
+        #region public void Position_XTest()
+
+        /// <summary>
+        ///A test for X
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_RightTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            // Default value
+
+            Unit expected = Unit.Empty;
+            Unit actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Set Value
+
+            expected = 20;
+            target.Right = expected;
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = new Unit(120, PageUnits.Millimeters);
+            target.Right = expected;
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+
+            // Remove Value
+
+            expected = Unit.Empty;
+            target.RemoveRight();
+            actual = target.Right;
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        #endregion
+
+        #region public void Position_YTest()
+
+        /// <summary>
+        ///A test for Y
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Style Values")]
+        public void Position_BottomTest()
+        {
+            PositionStyle target = new PositionStyle();
+
+            // Default value
+
+            Unit expected = Unit.Empty;
+            Unit actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Set Value
+
+            expected = 20;
+            target.Bottom = expected;
+            actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Change Value
+
+            expected = new Unit(120, PageUnits.Millimeters);
+            target.Bottom = expected;
+            actual = target.Bottom;
+            Assert.AreEqual(expected, actual);
+
+            // Remove Value
+
+            expected = Unit.Empty;
+            target.RemoveBottom();
+            actual = target.Bottom;
             Assert.AreEqual(expected, actual);
         }
 
