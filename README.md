@@ -3,32 +3,17 @@
 
 ## Scryber makes creating beautiful documents easy.
 
-The scryber engine is an advanced, complete, pdf creation library for dotnet core.
+The scryber engine is an advanced, complete, pdf creation library for dotnet core (including support for Blazor WASM)
 
-It supports the easy definition of document templates with, pages, content, shapes and images using xhtml and/or code.
+It supports the easy definition of document templates with, pages, content, shapes and images using html, and svg.
+Bring your data in from an api or object model.
+Bind with handlebars syntax and full complex expression support.
+Layout with styles including calculated and relative values, and binding to your data.
+Finally with a couple of lines of code, output the document to a stream or file.
 
 With a styles based template layout, it is easy to create good looking, paginated and flowing documents.
+With dynamic content from your applications or sites it is easy to add dynamic data, and repeaters.
 
-With dynamic content from you applications or sites it is easy to add dynamic data, and repeaters.
-
-**Now** includes support for expressions in both templates and css styles.
-
-
-
-## scryber supports:
-
-- standard [html body, tables, lists, divs and spans](https://scrybercore.readthedocs.io/en/latest/document_components.html) and many newer html5 [tags](https://scrybercore.readthedocs.io/en/latest/document_components.html)
-- flowing and flexible layout with multiple [pages in css sizes](https://scrybercore.readthedocs.io/en/latest/document_pages.html), along with page [headers, footers and breaks](https://scrybercore.readthedocs.io/en/latest/document_pages.html), and [page numbering](https://scrybercore.readthedocs.io/en/latest/document_pagenumbering.html)
-- cascading styles: linked, embedded or inline using [css syntax and priority](https://scrybercore.readthedocs.io/en/latest/document_styles.html).
-- databinding for [dynamic content or style](https://scrybercore.readthedocs.io/en/latest/binding_model.html) on simple and complex object models with [repeating templates](https://scrybercore.readthedocs.io/en/latest/binding_model.html#using-objects).
-- [embedding](https://scrybercore.readthedocs.io/en/latest/document_references.html) of external content,
-- [sizing](https://scrybercore.readthedocs.io/en/latest/component_sizing.html) and [positioning](https://scrybercore.readthedocs.io/en/latest/component_positioning.html) of elements inline, block, relative or absolute.
-- [images](https://scrybercore.readthedocs.io/en/latest/drawing_images.html) and colours with text and shape [fills, backgrounds](https://scrybercore.readthedocs.io/en/latest/drawing_image_backgrounds.html) and borders.
-- [multiple fonts](https://scrybercore.readthedocs.io/en/latest/drawing_fonts.html), including google fonts, supporting text [alignment; spacing; leading; decoration](https://scrybercore.readthedocs.io/en/latest/document_textlayout.html) and breaking.
-- Graphics support for [drawing and paths](https://scrybercore.readthedocs.io/en/latest/drawing_paths.html) and text.
-- Password [security and restrictions](https://scrybercore.readthedocs.io/en/latest/document_security.html) on pdf files.
-- [Full code](https://scrybercore.readthedocs.io/en/latest/document_code_vs_xml.html) support either as a whole document, or partial content, and controllers, along with the html/css templates.
-- Document [controllers](https://scrybercore.readthedocs.io/en/latest/document_controllers.html) for complete control of the layout
 
 ## Getting Started
 
@@ -42,9 +27,31 @@ OR for asp.net mvc
 [scryber.core.mvc package](https://www.nuget.org/packages/scryber.core.mvc/)
 (Which includes the scryber.core package).
 
-Check out Read the Docs for more information on how to use the library.
+Check out the documentation for more information on how to use the library.
 
-[scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
+[getting started](https://www.paperworkday.info/learning/01-getting-started/)
+
+[scryber.core learning guides](https://www.paperworkday.info/learning/)
+
+[scryber.core reference guides](https://www.paperworkday.info/reference/)
+
+
+## scryber supports:
+
+- standard [html body, tables, lists, divs and spans](https://www.paperworkday.info/reference/htmltags/) and many newer html5 [tags](https://www.paperworkday.info/reference/htmltags/)
+- flowing and flexible layout with multiple [pages in css sizes](https://www.paperworkday.info/learning/04-layout/01_page_sizes_orientation.html), along with page [headers, footers and breaks](https://www.paperworkday.info/learning/04-layout/07_headers_footers.html), and [page numbering](https://www.paperworkday.info/reference/htmltags/elements/html_pagenumber_element.html)
+- cascading styles: linked, embedded or inline using [css syntax and priority](https://www.paperworkday.info/learning/03-styling/).
+- databinding for [dynamic content or style](https://www.paperworkday.info/learning/02-data-binding/) on simple and complex object models with [repeating templates](https://www.paperworkday.info/learning/02-data-binding/03_template_iteration.html) and conditional logic with [if else-if else](https://www.paperworkday.info/learning/02-data-binding/04_conditional_rendering.html)
+- [embedding](https://www.paperworkday.info/reference/htmltags/elements/html_iframe_embed_element.html) of external content, and [attaching](https://www.paperworkday.info/reference/htmltags/elements/html_object_element.html) of external files or streams.
+- [sizing](https://www.paperworkday.info/learning/03-styling/04_units_measurements.html) and [positioning](https://scrybercore.readthedocs.io/en/latest/component_positioning.html) of elements inline, block, relative or absolute.
+- [images](https://www.paperworkday.info/learning/06-content/01_images.html) and colours with text and shape [fills, backgrounds](https://www.paperworkday.info/reference/cssproperties/) and borders.
+- [multiple fonts](https://www.paperworkday.info/learning/05-typography/), including google fonts, supporting text [alignment; spacing; leading; decoration](https://www.paperworkday.info/learning/05-typography/05_text_spacing.html).
+- Graphics support with SVG for [drawing and paths](https://www.paperworkday.info/learning/06-content/02_svg_basics.html) and text.
+- Password [security and restrictions](https://www.paperworkday.info/learning/07-configuration/05_security.html) on pdf files.
+- Modifications of existing files using [frames and framesets](https://www.paperworkday.info/reference/htmltags/elements/html_frameset_frame_element.html)
+- Full code support either as a whole document, or partial content, and controllers, along with the html/css templates.
+- Document Controllers (https://scrybercore.readthedocs.io/en/latest/document_controllers.html) for complete control of the layout
+
 
 ## Example Template
 
@@ -203,10 +210,6 @@ Create a new html template file with your content.
 ### And the output
 
 ![Hello World Output](https://raw.githubusercontent.com/richard-scryber/scryber.core/svgParsing/docs/images/helloworld.png)
-
-Check out Read the Docs for more information on how to use the library.
-
-[scryber.core documentation](https://scrybercore.readthedocs.io/en/latest/)
 
 
 ## Getting Involved
