@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.1.2-rc.6</PackageVersion>
+    <PackageVersion>9.2.0.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.1.2-rc.5/6
+    <PackageReleaseNotes>
+9.2.0.0
+Public release will all added features from the betas. Too many to list, but consult the documentation here https://www.paperworkday.info/learning/ and the refererence section here https://www.paperworkday.info/learning/
+        
+9.1.2-rc.5/6
 Couple of fixes for overflowing tables in a kept together parent, and svg font-weight bold and light are now supported and fixed an issue with the reverse function.
         
 9.1.2-rc.4
@@ -160,14 +164,14 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.1.0.7-beta</Version>
+    <Version>9.2.0.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
+    <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.1.0.7-beta</FileVersion>
+    <FileVersion>9.2.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/PaperworkLogoTransparent.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
@@ -252,7 +256,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Scryber.Core.OpenType" Version="9.1.2-rc.4" />
+    <PackageReference Include="Scryber.Core.OpenType" Version="9.2.0.0" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
@@ -269,6 +273,9 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <None Include="../README.md" Pack="true" PackagePath="\">
         <IncludeInPackage>true</IncludeInPackage>
     </None>
+      <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
+          <IncludeInPackage>true</IncludeInPackage>
+      </None>
     <None Include="readme.txt" Pack="true">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
