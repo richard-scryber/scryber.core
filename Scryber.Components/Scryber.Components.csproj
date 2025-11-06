@@ -165,7 +165,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <PackageIcon>ScyberLogo2_alpha_small.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.1.0.7</FileVersion>
+    <FileVersion>9.1.0.7-beta</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/ScyberLogo2_alpha_small.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
