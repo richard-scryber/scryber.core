@@ -108,4 +108,31 @@ public class TestCode : SampleBase
             doc.SaveAsPDF(ms);
         }
     }
+    
+    
+    [TestMethod]
+    public void Expressions_JustIndex_CribSheet()
+    {
+        
+        var path = GetTemplatePath("ExpressionsCribSheet", "expressions_justindex.html", true);
+
+        var doc = Document.ParseDocument(path);
+        var datapath = GetTemplatePath("ExpressionsCribSheet", "expressions.json", true);
+        var dataContent = System.IO.File.ReadAllText(datapath);
+        var data = System.Text.Json.JsonDocument.Parse(dataContent);
+        
+        doc.Params["func"] = data.RootElement;
+        
+        
+        
+        datapath = GetTemplatePath("ExpressionsCribSheet", "model.json", true);
+        dataContent = System.IO.File.ReadAllText(datapath);
+        data = System.Text.Json.JsonDocument.Parse(dataContent);
+        doc.Params["model"] = data.RootElement;
+        
+        using (var ms = DocStreams.GetOutputStream("Expressions_JustIndexCribSheet.pdf"))
+        {
+            doc.SaveAsPDF(ms);
+        }
+    }
 }

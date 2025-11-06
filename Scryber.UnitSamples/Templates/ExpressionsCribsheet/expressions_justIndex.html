@@ -1,0 +1,54 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>Crib Sheet - Expressions</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./expressions.css" />
+    <base href='https://localhost:7055/' />
+</head>
+
+<body title='Crib Sheet - Expressions'>
+
+    <var data-id='allFuncs' data-value='{{collect(eachOf(func.sections, .funcs))}}' />
+    <var data-id='allFuncsSorted' data-value='{{sortBy(allFuncs, .name)}}' />
+    
+    <h2 class='sub-title' title='Index'>
+        <a href='#toc' >
+          <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
+        </a>
+        <span>Index</span>
+    </h2>
+      <var data-id='currLetter' data-value='{{"z"}}' hidden='hidden' />
+      <main id='func_index' style='column-count: 3; font-size: 9pt; margin-top:0pt; break-inside: any;'>
+          Before
+          <table id="indexTable" style='width: 100%; break-inside: auto;'>
+              <template data-bind='{{allFuncsSorted}}'>
+                  <tr hidden='{{if(substring(.name, 0, 1) == currLetter, "hidden", "")}}' >
+                      <td colspan='2' style='border: none;border-bottom: solid 1pt #006b6b; padding-top: 2pt; margin-bottom: 1pt; font-weight: 600;'>{{substring(.name, 0, 1)}}</td>
+                  </tr>
+                  <tr>
+                      <td style='border: none;padding-top: 0pt; padding-left: 10pt;'>
+                          <a href='{{concat("#", .id)}}' >{{.name}}</a></td>
+                      <td style='border: none;width:25pt; padding: 1pt'>
+                          <page for='{{"#" + .id}}' />
+                      </td>
+                  </tr>
+                  <var data-id='currLetter' data-value='{{subString(.name, 0, 1)}}' />
+              </template>
+          </table>
+      </main>
+  
+  
+  <footer>
+    <table class='foot'>
+      <tr>
+        <td class='first'>Crib sheet - Expressions</td>
+        <td><span>{{string(date(),"dd MMM yyyy")}}</span></td>
+        <td class='last'>Page <page/></td>
+      </tr>
+    </table>
+  </footer>
+</body>
+
+</html>

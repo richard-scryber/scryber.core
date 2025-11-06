@@ -618,24 +618,25 @@
         </a>
         <span>Index</span>
     </h2>
-    <var data-id='currLetter' data-value='{{"z"}}' hidden='hidden' />
-    <main id='func_index' style='column-count: 3; font-size: 10pt; margin-top:20pt; break-inside: any;'>
-      <table style='width: 100%; break-inside: any;'>
-      <template data-bind='{{allFuncsSorted}}'>
-        <tr hidden='{{if(substring(.name, 0, 1) == currLetter, "hidden", "")}}' >
-          <td colspan='2' style='border: none;border-bottom: solid 1pt #006b6b; padding-top: 4pt; margin-bottom: 2pt; font-weight: 600;'>{{substring(.name, 0, 1)}}</td>
-        </tr>
-        <tr>
-          <td style='border: none;padding-top: 3pt; padding-left: 10pt;'>
-            <a href='{{concat("#", .id)}}' >{{.name}}</a></td>
-          <td style='border: none;width:25pt; padding: 1pt'>
-            <page for='{{concat("#",.id)}}' />
-          </td>
-        </tr>
-        <var data-id='currLetter' data-value='{{subString(.name, 0, 1)}}' />
-      </template>
-      </table>
-    </main>
+      <var data-id='currLetter' data-value='{{"z"}}' hidden='hidden' />
+      <main id='func_index' style='column-count: 3; font-size: 10pt; margin-top:10pt; break-inside: auto;'>
+          <table id="indexTable" style='width: 100%; break-inside: auto;'>
+              <template data-bind='{{allFuncsSorted}}'>
+                  <tr hidden='{{if(substring(.name, 0, 1) == currLetter, "hidden", "")}}' >
+                      <td colspan='2' style='border: none;border-bottom: solid 1pt #006b6b; padding-top: 4pt; margin-bottom: 2pt; font-weight: 600;'>{{substring(.name, 0, 1)}}</td>
+                  </tr>
+                  <tr>
+                      <td style='border: none;padding-top: 0pt; padding-left: 10pt;'>
+                          <a href='{{concat("#", .id)}}' >{{.name}}</a></td>
+                      <td style='border: none;width:25pt; padding: 1pt'>
+                          <page for='{{"#" + .id}}' />
+                      </td>
+                  </tr>
+                  <var data-id='currLetter' data-value='{{subString(.name, 0, 1)}}' />
+              </template>
+          </table>
+      </main>
+      
   </section>
   
   

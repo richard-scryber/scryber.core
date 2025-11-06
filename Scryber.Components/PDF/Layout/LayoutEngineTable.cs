@@ -298,7 +298,7 @@ namespace Scryber.PDF.Layout
                 }
                 else if (this.StartNewTableInAnotherRegion(origRow, index))
                 {
-                    origregion.AddToSize(origtable);
+                    //origregion.AddToSize(origtable);
                     Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
                     Unit repeath = this.DoLayoutRepeatingRows(index);

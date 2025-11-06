@@ -1,0 +1,101 @@
+{
+  "companyName": "TechVision Global Inc.",
+  "reportPeriod": "Year Ended December 31, 2024",
+  "reportDate": "2025-01-31T00:00:00",
+  "currency": "USD",
+  "fiscalYear": 2024,
+  "previousFiscalYear": 2023,
+
+  "balanceSheet": {
+    "currentAssets": [
+      { "name": "Cash and Cash Equivalents", "current": 45000000, "prior": 38000000 },
+      { "name": "Short-term Investments", "current": 28000000, "prior": 25000000 },
+      { "name": "Accounts Receivable", "current": 32000000, "prior": 28000000 },
+      { "name": "Inventory", "current": 18000000, "prior": 16000000 },
+      { "name": "Prepaid Expenses", "current": 5000000, "prior": 4000000 }
+    ],
+    "nonCurrentAssets": [
+      { "name": "Property, Plant & Equipment", "current": 85000000, "prior": 78000000 },
+      { "name": "Intangible Assets", "current": 42000000, "prior": 38000000 },
+      { "name": "Goodwill", "current": 35000000, "prior": 35000000 },
+      { "name": "Long-term Investments", "current": 22000000, "prior": 18000000 }
+    ],
+    "currentLiabilities": [
+      { "name": "Accounts Payable", "current": 24000000, "prior": 22000000 },
+      { "name": "Short-term Debt", "current": 15000000, "prior": 18000000 },
+      { "name": "Accrued Expenses", "current": 12000000, "prior": 10000000 },
+      { "name": "Deferred Revenue", "current": 8000000, "prior": 7000000 }
+    ],
+    "nonCurrentLiabilities": [
+      { "name": "Long-term Debt", "current": 65000000, "prior": 72000000 },
+      { "name": "Deferred Tax Liabilities", "current": 18000000, "prior": 16000000 },
+      { "name": "Other Long-term Liabilities", "current": 9000000, "prior": 8000000 }
+    ],
+    "equity": [
+      { "name": "Common Stock", "current": 50000000, "prior": 50000000 },
+      { "name": "Retained Earnings", "current": 103000000, "prior": 80000000 },
+      { "name": "Additional Paid-in Capital", "current": 15000000, "prior": 12000000 }
+    ]
+  },
+
+  "incomeStatement": {
+    "revenue": [
+      { "name": "Product Revenue", "current": 285000000, "prior": 245000000 },
+      { "name": "Service Revenue", "current": 125000000, "prior": 105000000 },
+      { "name": "Licensing Revenue", "current": 42000000, "prior": 35000000 }
+    ],
+    "costOfRevenue": [
+      { "name": "Cost of Products Sold", "current": 142000000, "prior": 122000000 },
+      { "name": "Cost of Services", "current": 56000000, "prior": 48000000 }
+    ],
+    "operatingExpenses": [
+      { "name": "Research & Development", "current": 68000000, "prior": 58000000 },
+      { "name": "Sales & Marketing", "current": 85000000, "prior": 72000000 },
+      { "name": "General & Administrative", "current": 42000000, "prior": 38000000 }
+    ],
+    "otherIncomeExpense": [
+      { "name": "Interest Income", "current": 3500000, "prior": 2800000 },
+      { "name": "Interest Expense", "current": -5200000, "prior": -6100000 },
+      { "name": "Other Income (Expense)", "current": 1200000, "prior": -800000 }
+    ],
+    "incomeTax": {
+      "current": 12500000,
+      "prior": 10200000
+    }
+  },
+
+  "cashFlow": {
+    "operating": [
+      { "name": "Net Income", "current": 46500000, "prior": 38500000 },
+      { "name": "Depreciation & Amortization", "current": 12000000, "prior": 10500000 },
+      { "name": "Changes in Working Capital", "current": -5000000, "prior": -3000000 },
+      { "name": "Other Operating Activities", "current": 2500000, "prior": 1800000 }
+    ],
+    "investing": [
+      { "name": "Capital Expenditures", "current": -18000000, "prior": -15000000 },
+      { "name": "Acquisitions", "current": -8000000, "prior": -12000000 },
+      { "name": "Purchase of Investments", "current": -12000000, "prior": -9000000 },
+      { "name": "Sale of Investments", "current": 5000000, "prior": 4000000 }
+    ],
+    "financing": [
+      { "name": "Proceeds from Debt", "current": 10000000, "prior": 15000000 },
+      { "name": "Repayment of Debt", "current": -20000000, "prior": -18000000 },
+      { "name": "Dividends Paid", "current": -15000000, "prior": -12000000 },
+      { "name": "Stock Issuance", "current": 3000000, "prior": 2500000 }
+    ]
+  },
+
+  "quarterlyRevenue": [
+    { "quarter": "Q1", "revenue": 105000000 },
+    { "quarter": "Q2", "revenue": 110000000 },
+    { "quarter": "Q3", "revenue": 115000000 },
+    { "quarter": "Q4", "revenue": 122000000 }
+  ],
+
+  "revenueBySegment": [
+    { "segment": "North America", "revenue": 245000000, "percentage": 54.2 },
+    { "segment": "Europe", "revenue": 125000000, "percentage": 27.7 },
+    { "segment": "Asia Pacific", "revenue": 68000000, "percentage": 15.0 },
+    { "segment": "Other", "revenue": 14000000, "percentage": 3.1 }
+  ]
+}

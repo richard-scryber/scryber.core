@@ -1201,6 +1201,73 @@ Sample templates should showcase Scryber capabilities:
 <text>{{format(percentage, 'N1')}}%</text>
 ```
 
+**3b. Complex Variable Chaining for Financial Reports**:
+
+For reports with interdependent calculations (like financial statements), define all variables at the document top and reuse them throughout:
+
+```html
+<body>
+    <!-- ============================================
+         CALCULATE ALL METRICS AT THE TOP
+         ============================================ -->
+
+    <!-- Balance Sheet Calculations -->
+    <var data-id="totalCurrentAssets" data-value="{{sumOf(model.balanceSheet.currentAssets, .current)}}" />
+    <var data-id="totalNonCurrentAssets" data-value="{{sumOf(model.balanceSheet.nonCurrentAssets, .current)}}" />
+    <var data-id="totalAssets" data-value="{{totalCurrentAssets + totalNonCurrentAssets}}" />
+
+    <var data-id="totalLiabilities" data-value="{{sumOf(model.balanceSheet.liabilities, .current)}}" />
+    <var data-id="totalEquity" data-value="{{sumOf(model.balanceSheet.equity, .current)}}" />
+
+    <!-- Income Statement Calculations (using Balance Sheet variables) -->
+    <var data-id="totalRevenue" data-value="{{sumOf(model.incomeStatement.revenue, .current)}}" />
+    <var data-id="totalCostOfRevenue" data-value="{{sumOf(model.incomeStatement.costs, .current)}}" />
+    <var data-id="grossProfit" data-value="{{totalRevenue - totalCostOfRevenue}}" />
+    <var data-id="netIncome" data-value="{{grossProfit - sumOf(model.incomeStatement.expenses, .current)}}" />
+
+    <!-- Financial Ratios (using above variables) -->
+    <var data-id="grossMargin" data-value="{{(grossProfit / totalRevenue) * 100}}" />
+    <var data-id="currentRatio" data-value="{{totalCurrentAssets / totalLiabilities}}" />
+    <var data-id="debtToEquity" data-value="{{totalLiabilities / totalEquity}}" />
+    <var data-id="returnOnEquity" data-value="{{(netIncome / totalEquity) * 100}}" />
+
+    <!-- ============================================
+         USE VARIABLES THROUGHOUT THE DOCUMENT
+         ============================================ -->
+
+    <!-- Cover Page - Key Metrics -->
+    <div class="cover-page">
+        <h2>Key Financial Ratios</h2>
+        <div class="metric">Gross Margin: {{format(grossMargin, 'N1')}}%</div>
+        <div class="metric">ROE: {{format(returnOnEquity, 'N1')}}%</div>
+        <div class="metric">Current Ratio: {{format(currentRatio, 'N2')}}</div>
+    </div>
+
+    <!-- Page 2 - Balance Sheet -->
+    <div class="section">
+        <h2>Balance Sheet</h2>
+        <p>Total Assets: ${{format(totalAssets / 1000, 'N0')}}K</p>
+        <p>Total Liabilities: ${{format(totalLiabilities / 1000, 'N0')}}K</p>
+        <p>Total Equity: ${{format(totalEquity / 1000, 'N0')}}K</p>
+    </div>
+
+    <!-- Page 3 - Income Statement -->
+    <div class="section">
+        <h2>Income Statement</h2>
+        <p>Revenue: ${{format(totalRevenue / 1000, 'N0')}}K</p>
+        <p>Gross Profit: ${{format(grossProfit / 1000, 'N0')}}K</p>
+        <p>Net Income: ${{format(netIncome / 1000, 'N0')}}K</p>
+    </div>
+</body>
+```
+
+**Benefits of top-level variable calculation**:
+- Calculate once, use everywhere (performance)
+- Easy to reorganize sections without recalculating
+- Clear dependency chain (variables reference earlier variables)
+- Simpler templates (no duplicate calculation logic)
+- Perfect for financial reports with interdependent metrics
+
 **4. Show Conditional Rendering**:
 ```html
 {{#each model.items}}
@@ -1233,6 +1300,60 @@ Sample templates should showcase Scryber capabilities:
 
 **Note**: Variables inside loops update automatically - don't use `data-id="var_{{@index}}"` patterns. Root parameters like `model` are always accessible directly without `../` prefix.
 
+**5b. Fitting Multiple Charts on Same Page**:
+
+To fit multiple SVG charts on a single page, reduce chart heights and adjust spacing:
+
+```html
+<!-- First chart with reduced height -->
+<div class="section">
+    <h2 class="section-title">Quarterly Revenue</h2>
+    <div class="chart-container">
+        <svg width="100%" height="180" viewBox="0 0 600 180">
+            <var data-id="maxRevenue" data-value="{{maxOf(model.quarterly, .revenue)}}" />
+
+            <!-- Grid adjusted to smaller viewBox -->
+            <line x1="60" y1="20" x2="60" y2="140" class="chart-axis" />
+            <line x1="60" y1="140" x2="580" y2="140" class="chart-axis" />
+
+            {{#each model.quarterly}}
+                <var data-id="barX" data-value="{{100 + (@index * 120)}}" />
+                <var data-id="barHeight" data-value="{{(this.revenue / maxRevenue) * 110}}" />
+                <var data-id="barY" data-value="{{140 - barHeight}}" />
+
+                <rect x="{{barX}}" y="{{barY}}" width="80" height="{{barHeight}}" />
+            {{/each}}
+        </svg>
+    </div>
+
+    <!-- Second chart on same page with subtitle -->
+    <h2 class="section-subtitle">Revenue by Region</h2>
+    <div class="chart-container">
+        <svg width="100%" height="180" viewBox="0 0 600 180">
+            <!-- Similar structure with reduced dimensions -->
+        </svg>
+    </div>
+</div>
+```
+
+**Reduce chart container spacing in CSS**:
+```css
+.chart-container {
+  margin: var(--spacing-xs) 0;    /* Reduced from --spacing-md */
+  padding: var(--spacing-sm);     /* Reduced from --spacing-md */
+  background-color: var(--color-background-alt);
+  border: 1pt solid var(--color-border);
+}
+```
+
+**Tips for multiple charts per page**:
+- Reduce `height` and `viewBox` height proportionally (e.g., 250→180, 280→180)
+- Adjust all Y-coordinates proportionally (e.g., if height reduced by 30%, reduce Y coords by 30%)
+- Use `section-subtitle` for second chart instead of `section-title`
+- Remove `page-break` between charts
+- Reduce container margins and padding
+- Test with `page-break-inside: avoid` on chart containers to prevent splitting
+
 ### HTML/XML Parsing Considerations
 
 **XML Entity Escaping**: When using HTML entities in templates that will be parsed as XML, remember to escape special characters:
@@ -1240,12 +1361,34 @@ Sample templates should showcase Scryber capabilities:
 ❌ **Wrong**:
 ```html
 <h2>Risks & Issues</h2>  <!-- Ampersand will cause parse error -->
+<h2>Liabilities & Equity</h2>  <!-- Will fail XML parsing -->
 ```
 
 ✅ **Correct**:
 ```html
 <h2>Risks &amp; Issues</h2>  <!-- Properly escaped -->
+<h2>Liabilities &amp; Equity</h2>  <!-- Properly escaped -->
 ```
+
+**XML Entity Escaping in Expressions**: Operators like `<` and `>` must also be escaped when used in HTML attributes:
+
+❌ **Wrong**:
+```html
+<span class="{{if(value < 0, 'negative', 'positive')}}">  <!-- < will cause parse error -->
+```
+
+✅ **Correct**:
+```html
+<span class="{{if(value &lt; 0, 'negative', 'positive')}}">  <!-- &lt; properly escaped -->
+<span class="{{if(value > 0, 'positive', 'negative')}}">  <!-- > should be &gt; -->
+```
+
+**Common XML entities to escape**:
+- `&` → `&amp;`
+- `<` → `&lt;`
+- `>` → `&gt;`
+- `"` → `&quot;` (in attribute values)
+- `'` → `&apos;` (in attribute values)
 
 **SVG Attribute Best Practices**: SVG text elements support both numeric and keyword font-weight values:
 
@@ -1857,6 +2000,75 @@ Font Awesome v5 is fully supported and provides reliable icon rendering:
 - `far fa-circle` - Empty/pending circle
 - `fas fa-star` / `far fa-star` - Ratings
 - `fas fa-arrow-up` / `fas fa-arrow-down` - Trends
+
+**Font Awesome with CSS ::before Pseudo-elements**:
+
+Font Awesome icons can also be rendered using CSS `::before` pseudo-elements with Unicode escape codes. This is particularly useful for automatically adding icons to elements without modifying HTML:
+
+```html
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* Positive indicator with up arrow */
+        .percentage-positive::before {
+            content: "\f062";  /* fa-arrow-up Unicode */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 4pt;
+            color: #059669;
+        }
+
+        /* Negative indicator with down arrow */
+        .percentage-negative::before {
+            content: "\f063";  /* fa-arrow-down Unicode */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 4pt;
+            color: #DC2626;
+        }
+
+        /* Status indicators */
+        .status-complete::before {
+            content: "\f058";  /* fa-check-circle */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 4pt;
+            color: #22C55E;
+        }
+    </style>
+</head>
+<body>
+    <!-- Icons automatically added via CSS -->
+    <span class="percentage-positive">15.2%</span>
+    <span class="percentage-negative">-3.4%</span>
+    <span class="status-complete">Task completed</span>
+</body>
+```
+
+**Finding Font Awesome Unicode values**:
+- Visit: https://fontawesome.com/icons
+- Search for icon (e.g., "arrow-up")
+- Click icon → Copy Unicode value (e.g., `f062`)
+- Use in CSS as `content: "\f062";`
+
+**Common Font Awesome Unicode values**:
+- `\f062` - fa-arrow-up
+- `\f063` - fa-arrow-down
+- `\f058` - fa-check-circle
+- `\f057` - fa-times-circle
+- `\f06a` - fa-exclamation-circle
+- `\f071` - fa-exclamation-triangle
+- `\f005` - fa-star (solid)
+- `\f006` - fa-star (outline)
+- `\f0c8` - fa-square (unchecked)
+- `\f14a` - fa-check-square
+
+**Benefits of CSS ::before approach**:
+- No HTML changes needed for icon placement
+- Consistent styling across all matching elements
+- Easy to maintain and update icon styles
+- Reduces template clutter
+- Works automatically with conditional CSS classes
 
 ✅ **Alternative - Custom Unicode Fonts** (If Font Awesome doesn't fit):
 
