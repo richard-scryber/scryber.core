@@ -7,9 +7,9 @@ namespace Scryber.Generation
     public class XmlHtmlEntityReader : XmlTextReader
     {
         private string _nextEntity;
-        private Dictionary<string, char> _entities;
+        private IDictionary<string, char> _entities;
 
-        protected Dictionary<string, char> Entities
+        protected IDictionary<string, char> Entities
         {
             get { return _entities; }
         }
@@ -27,7 +27,7 @@ namespace Scryber.Generation
 
         protected virtual void AddDefaultEntities()
         {
-            _entities = Html.HtmlEntities.InitKnownHTMLEntities();
+            _entities = Html.HtmlEntities.DefaultKnownHTMLAndXMLEntities;
         }
 
         public void AddEntity(string entity, char value)

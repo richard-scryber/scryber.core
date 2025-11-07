@@ -114,6 +114,7 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        
         #region protected PDFExternalGraphicsState ExternalState {get;}
 
         private PDFExternalGraphicsState _extState;
@@ -208,16 +209,22 @@ namespace Scryber.PDF.Graphics
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace, (PDFReal)color.Gray);
+                    this.Writer.WriteRealS(color.Gray, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeGrayscaleSpace);
                     break;
                 case ColorSpace.CMYK:
                 case ColorSpace.RGB:
                     color = color.ToRGB();
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
+                    this.Writer.WriteRealS(color.Red, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Green, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Blue, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorStrokeRGBSpace);
+                    
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:
                 case ColorSpace.Custom:
+                    throw new NotSupportedException(String.Format(Errors.ColorValueIsNotCurrentlySupported, color.ColorSpace));
                 default:
                     throw new ArgumentOutOfRangeException("color.ColorSpace", String.Format(Errors.ColorValueIsNotCurrentlySupported, color.ColorSpace));
 
@@ -229,12 +236,16 @@ namespace Scryber.PDF.Graphics
             switch (color.ColorSpace)
             {
                 case ColorSpace.G:
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace, (PDFReal)color.Gray);
+                    this.Writer.WriteRealS(color.Gray, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillGrayscaleSpace);
                     break;
                 case ColorSpace.CMYK:
                 case ColorSpace.RGB:
                     color = color.ToRGB();
-                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace, (PDFReal)color.Red, (PDFReal)color.Green, (PDFReal)color.Blue);
+                    this.Writer.WriteRealS(color.Red, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Green, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteRealS(color.Blue, PDFWriterExtensions.ColorNumberFormat);
+                    this.Writer.WriteOpCodeS(PDFOpCode.ColorFillRGBSpace);
                     break;
                 case ColorSpace.HSL:
                 case ColorSpace.LAB:
@@ -306,12 +317,15 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
-        #region SetTransformationMatrix()
+        #region SetTransformationMatrix() + ClearTransformationMatrix()
 
         private const int Matrix2DTransformationLength = 6;
 
         public void SetTransformationMatrix(PDFTransformationMatrix matrix, bool appliesToText, bool appliesToDrawing)
         {
+            if(null == matrix)
+                throw new ArgumentNullException(nameof(matrix));
+            
             double[] all = matrix.Components;
             if (all.Length != Matrix2DTransformationLength)
                 throw new IndexOutOfRangeException("A 2D transformation matrix can only have 6 values");
@@ -335,8 +349,10 @@ namespace Scryber.PDF.Graphics
 
                 this.Writer.WriteOpCodeS(PDFOpCode.TxtTransformMatrix);
             }
-
+   
         }
+
+        
 
         #endregion
 
@@ -766,10 +782,16 @@ namespace Scryber.PDF.Graphics
                 y = ContainerSize.Height.RealValue - pos.Y.RealValue - height; 
             else
                 y = pos.Y.RealValue;
+            
+            //Write the matrix values with precision 4
+            this.Writer.WriteRealS(width.Value, "F4"); //x size
+            this.Writer.WriteRealS(0.0, "F4"); //no rotation
+            this.Writer.WriteRealS(0.0, "F4");
+            this.Writer.WriteRealS(height.Value, "F4"); //y size
+            this.Writer.WriteRealS(x.Value, "F4"); //offset h
+            this.Writer.WriteRealS(y.Value, "F4"); //offset v
 
-            this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix,
-                        width, PDFReal.Zero,
-                        PDFReal.Zero, height, x, y);
+            this.Writer.WriteOpCodeS(PDFOpCode.GraphTransformMatrix);
 
             this.Writer.WriteOpCodeS(PDFOpCode.XobjPaint, img.Name);
         }

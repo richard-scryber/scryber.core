@@ -97,6 +97,11 @@ namespace Scryber.Styles.Parsing
 
         #endregion
 
+        public bool IsImportantAttribute
+        {
+            get;
+            private set;
+        }
 
         //
         // .ctor
@@ -318,30 +323,7 @@ namespace Scryber.Styles.Parsing
                 return false;
         }
 
-        private void MoveToEndParentheses()
-        {
-            if (this.InnerEnumerator.Current != '(')
-                throw new InvalidOperationException("The string enumerator is not on an opening parenthese");
-
-            int count = 1;
-
-            while(this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
-            {
-                if (this.InnerEnumerator.Current == ')')
-                {
-                    count--;
-                    if (count == 0)
-                        break;
-                }
-                else if (this.InnerEnumerator.Current == '(')
-                {
-                    count++;
-                }
-                else if (this.InnerEnumerator.Offset == this.EndOffset)
-                    throw new InvalidOperationException("There are an odd number of open and close parenthese");
-            }
-        }
-
+        
         public bool ReadNextValue(char separator1, char separator2, char separator3, bool ignoreWhiteSpace = false)
         {
             if (!this.BeginValueRead())
@@ -399,12 +381,99 @@ namespace Scryber.Styles.Parsing
                 return false;
         }
 
+        public bool ReadNextValue(char[] separators, bool ignoreWhiteSpace = false)
+        {
+            if (!this.BeginValueRead())
+                return false;
 
-        
+            if (separators.Contains(this.InnerEnumerator.Current))
+            {
+                return false;
+            }
+
+            int end = this.InnerEnumerator.Offset;
+            int start = this.InnerEnumerator.Offset;
+
+            bool inquote = this.InnerEnumerator.Current == '\'';
+            bool indoublequote = this.InnerEnumerator.Current == '"';
+            bool inparentheses = this.InnerEnumerator.Current == '(';
+
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            {
+                char cur = this.InnerEnumerator.Current;
+                if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
+                {
+                    if (!inquote && !indoublequote && !inparentheses)
+                        break;
+                }
+                else if (separators.Contains(cur))
+                {
+                    if (!inquote && !indoublequote && !inparentheses)
+                        break;
+                }
+
+                else if (cur == '\'')
+                    inquote = !inquote;
+
+                else if (cur == '"')
+                    indoublequote = !indoublequote;
+
+                else if (cur == '(')
+                    inparentheses = true;
+
+                else if (cur == ')')
+                    inparentheses = false;
+
+                end = this.InnerEnumerator.Offset;
+            }
+
+            if (end > start)
+            {
+                return this.AddValueToBuffer(start, end - start + 1);
+                
+            }
+            else
+                return false;
+        }
+
+        private void MoveToEndParentheses()
+        {
+            if (this.InnerEnumerator.Current != '(')
+                throw new InvalidOperationException("The string enumerator is not on an opening parenthese");
+
+            int count = 1;
+
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            {
+                if (this.InnerEnumerator.Current == ')')
+                {
+                    count--;
+                    if (count == 0)
+                        break;
+                }
+                else if (this.InnerEnumerator.Current == '(')
+                {
+                    count++;
+                }
+                else if (this.InnerEnumerator.Offset == this.EndOffset)
+                    throw new InvalidOperationException("There are an odd number of open and close parenthese");
+            }
+        }
+
 
         //
         // private implementation
         //
+
+        private const string ImportantFlag = "!important";
+
+        private bool AddValueToBuffer(int start, int len)
+        {
+            var full = this.InnerEnumerator.Substring(start, len).TrimEnd();
+            this.Buffer.Append(len);
+            this._value = this.Buffer.ToString();
+            return true;
+        }
 
         private bool BeginValueRead()
         {

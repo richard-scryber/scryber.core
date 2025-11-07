@@ -21,6 +21,9 @@ namespace Scryber.Html.Components
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
 
+        [PDFAttribute("data-format")]
+        public override string DisplayFormat { get => base.DisplayFormat; set => base.DisplayFormat = value; }
+
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
         /// </summary>
@@ -67,6 +70,7 @@ namespace Scryber.Html.Components
         protected HTMLPageNumber(ObjectType type) : base(type)
         { }
 
+        private const string CurrentPage = "{0}";
         private const string TotalPageCountFormat = "{1}";
         private const string SectionPage = "{2}";
         private const string SectionTotal = "{3}";
@@ -93,6 +97,9 @@ namespace Scryber.Html.Components
             {
                 switch (this.Property.ToLower())
                 {
+                    case "current":
+                    case "c":
+                        return CurrentPage;
                     case ("total"):
                     case ("t"):
                         return TotalPageCountFormat;
@@ -115,7 +122,7 @@ namespace Scryber.Html.Components
         /// <summary>
         /// Looks for the component with the specified name or ID and sets instance variables appropriately
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="rendering"></param>
         /// <param name="name"></param>
         private Component LookupExternalComponent(bool rendering, string name)
         {
@@ -128,7 +135,7 @@ namespace Scryber.Html.Components
             }
             else
             {
-                comp = Document.FindAComponentById(name);
+                comp = Document.FindAComponentByName(name);
             }
 
             return comp;
@@ -136,5 +143,25 @@ namespace Scryber.Html.Components
 
         #endregion
 
+    }
+    
+    
+    
+    [PDFParsableComponent("page-number")]
+    public class HTMLCurrentPageNumber : HTMLPageNumber
+    {
+        public HTMLCurrentPageNumber()
+        {
+            this.Property = "current";
+        }
+    }
+
+    [PDFParsableComponent("page-count")]
+    public class HTMLPageCount : HTMLPageNumber
+    {
+        public HTMLPageCount()
+        {
+            this.Property = "total";
+        }
     }
 }

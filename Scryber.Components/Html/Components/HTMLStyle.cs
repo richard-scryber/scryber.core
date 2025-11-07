@@ -161,7 +161,13 @@ namespace Scryber.Html.Components
         {
             if (this.Visible && null != this.Styles)
             {
-                StyleGroup grp = new StyleGroup();
+                StyleGroup grp;
+
+                if (!string.IsNullOrEmpty(this.LoadedSource))
+                    grp = new StyleRemoteGroup() { LoadedSource = this.LoadedSource };
+                else
+                    grp = new StyleGroup();
+
                 foreach (var style in this.Styles)
                 {
                     grp.Styles.Add(style);

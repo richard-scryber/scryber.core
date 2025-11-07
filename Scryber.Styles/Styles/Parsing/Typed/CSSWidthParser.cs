@@ -23,13 +23,8 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     //Attach to both the Width and the FullWidth flag
                     result = AttachExpressionBindingHandler(onStyle, StyleKeys.SizeWidthKey, value, DoConvertExplicitWidth);
-                    result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
+                    //result &= AttachExpressionBindingHandler(onStyle, StyleKeys.SizeFullWidthKey, value, DoConvertFullWidth);
                 }
-                //else if (value == "100%")
-                //{
-                //    onStyle.SetValue(StyleKeys.SizeFullWidthKey, true);
-                //    result = true;
-                //}
                 else if (ParseCSSUnit(value, out parsed))
                 {
                     onStyle.SetValue(this.StyleAttribute, parsed);
@@ -61,24 +56,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
         }
 
-        protected bool DoConvertFullWidth(StyleBase style, object value, out bool fullWidth)
-        {
-            if(null == value)
-            {
-                fullWidth = false;
-                return false;
-            }
-            else if(value.ToString() == "100%")
-            {
-                fullWidth = true;
-                return true;
-            }
-            else
-            {
-                fullWidth = false;
-                return false;
-            }
-        }
+        
 
     }
 }

@@ -12,7 +12,7 @@ namespace Scryber.UnitLayouts
 	public class WhitespaceHandling_Tests
 	{
 
-        public const string WhitespaceSamplePath = "../../../Content/WhitespaceLayouts/";
+        public const string WhitespaceSamplePath = "../../../Content/Whitespace/";
 
         public static string LoadLayoutSample(string fileName)
         {
@@ -37,7 +37,54 @@ namespace Scryber.UnitLayouts
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
-        
+        private string WhitespaceSrc0 = "0_WhitespaceNoElements.html";
+
+        [TestMethod()]
+        public void Whitespace_0_NoElements()
+        {
+            var src = LoadLayoutSample(WhitespaceSrc0);
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Whitespace_0_NoElements.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                    
+
+                    var lit = pg.Contents[0] as TextLiteral;
+                    Assert.IsNotNull(lit);
+                    Assert.AreEqual("This is text. And this is after with a white space prepended.", lit.Text.Trim());
+
+                    
+                    //check the contents of the layout
+
+                    Assert.IsNotNull(this.layout);
+
+                    var lpg = this.layout.AllPages[0];
+                    var body = lpg.ContentBlock;
+                    Assert.AreEqual(1, body.Columns.Length);
+                    Assert.AreEqual(1, body.Columns[0].Contents.Count);
+
+                    
+                    var line = body.Columns[0].Contents[0] as PDFLayoutLine;
+                    Assert.IsNotNull(line);
+
+                    Assert.AreEqual(3, line.Runs.Count);
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                    Assert.AreEqual("This is text. And this is after with a white space prepended.", (line.Runs[1] as PDFTextRunCharacter).Characters);
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                }
+            }
+        }
 
         private string WhitespaceSrc1 = "1_WhitespaceSimpleSpans.html";
 
@@ -101,7 +148,7 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[4], typeof(PDFLayoutInlineEnd));
                     Assert.IsInstanceOfType(line.Runs[5], typeof(PDFTextRunBegin));
                     Assert.IsInstanceOfType(line.Runs[6], typeof(PDFTextRunCharacter));
-                    Assert.AreEqual(" And this is after with a white space prepended. ", (line.Runs[6] as PDFTextRunCharacter).Characters);
+                    Assert.AreEqual(" And this is after with a white space prepended.", (line.Runs[6] as PDFTextRunCharacter).Characters);
                     Assert.IsInstanceOfType(line.Runs[7], typeof(PDFTextRunEnd));
 
                 }
@@ -527,7 +574,7 @@ namespace Scryber.UnitLayouts
 
         private string WhitespaceSrc7 = "7_WhitespaceNonBreakingSpace.html";
 
-        [TestMethod("Whitespace_7_NonBreakingSpaceLiteral")]
+        [TestMethod()]
         public void Whitespace_7_NBSPLiteral()
         {
             var src = LoadLayoutSample(WhitespaceSrc7);
@@ -543,42 +590,7 @@ namespace Scryber.UnitLayouts
 
                     var pg = doc.Pages[0] as Page;
                     Assert.IsNotNull(pg);
-
-
-                    //var wrap = pg.FindAComponentById("wrapper_placebo") as Div;
-                    //Assert.IsNotNull(wrap);
-                    //Assert.AreEqual(1, wrap.Contents.Count);
-                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-
-
-                    //var lit = wrap.Contents[0] as TextLiteral;
-                    //Assert.IsNotNull(lit);
-                    //Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line of text.\n    ", lit.Text);
-                    //var index = lit.Text.IndexOf('-');
-                    //Assert.IsTrue(index > 0);
-
-
-                    //wrap = pg.FindAComponentById("wrapper") as Div;
-                    //Assert.IsNotNull(wrap);
-                    //Assert.AreEqual(1, wrap.Contents.Count);
-                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-                    //lit = wrap.Contents[0] as TextLiteral;
-                    //Assert.IsNotNull(lit);
-                    //Assert.AreEqual("\n        This is a long line of text that should wrap on multiple lines for testing the non-breaking space within a line" + (char)160 + "of text.\n    ", lit.Text);
-
-
-                    //wrap = pg.FindAComponentById("wrapper_column") as Div;
-                    //Assert.IsNotNull(wrap);
-                    //Assert.AreEqual(1, wrap.Contents.Count);
-                    //Assert.IsInstanceOfType(wrap.Contents[0], typeof(TextLiteral));
-
-                    //lit = wrap.Contents[0] as TextLiteral;
-                    //Assert.IsNotNull(lit);
-                    //Assert.AreEqual("\n            This is a long line of text that should wrap" + (char)160 + "on" + (char)160 + "multiple lines for testing" + (char)160 + "the" + (char)160 + "non-breaking" + (char)160 + "space" + (char)160 + "within a" + (char)160 + "line" + (char)160 + "of" + (char)160 + "text.\n        ", lit.Text);
-
-
+                    
                     var wrap = pg.FindAComponentById("wrapper_span") as Div;
                     Assert.IsNotNull(wrap);
                     Assert.AreEqual(3 * 2 + 1, wrap.Contents.Count);
@@ -696,8 +708,50 @@ namespace Scryber.UnitLayouts
         }
 
 
-        
 
+        [TestMethod()] 
+        public void Whitespace_8_WithAbsolute()
+        {
+            var src = LoadLayoutSample("8_WhitespaceWithAbsolute.html");
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Whitespace_8_WithAbsolute.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                }
+            }
+
+            var doclayout = this.layout;
+            Assert.AreEqual(1, doclayout.AllPages.Count);
+            var pglayout = doclayout.AllPages[0];
+            Assert.IsNotNull(pglayout);
+            var content = pglayout.ContentBlock;
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(2, content.Columns[0].Contents.Count);
+
+            var wrapped = content.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(wrapped);
+            
+            Assert.AreEqual(1, wrapped.Columns.Length);
+            //first wrapped block
+            //2 contents the div with text in and a line with height zero for the 2 positioned regions.
+            Assert.AreEqual(2, wrapped.Columns[0].Contents.Count);
+            var div = wrapped.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(div);
+            var line = wrapped.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+
+
+
+        }
 
 
 

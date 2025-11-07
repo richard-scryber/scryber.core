@@ -47,7 +47,11 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The total bounds of the component
         /// </summary>
-        public Rect TotalBounds { get; set; }
+        public Rect TotalBounds
+        {
+            get; 
+            set;
+        }
 
         #endregion
 
@@ -56,7 +60,11 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// The border rect relative the top left of the TotalBounds
         /// </summary>
-        public Rect BorderRect { get; set; }
+        public Rect BorderRect
+        {
+            get; 
+            set;
+        }
 
         #endregion
 
@@ -181,6 +189,19 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region public void SetOffsetX(Unit x)
+        
+        /// <summary>
+        /// Updates any X offset for this component run before rendering
+        /// </summary>
+        /// <param name="x"></param>
+        public void SetOffsetX(Unit x)
+        {
+            this.TotalBounds = this.TotalBounds.Offset(x, 0);
+        }
+        
+        #endregion
+
         #region public override void PushComponentLayout(PDFLayoutContext context, PDFUnit xoffset, PDFUnit yoffset)
 
         /// <summary>
@@ -195,6 +216,11 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        protected override bool DoClose(ref string msg)
+        {
+            return base.DoClose(ref msg);
+        }
+
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             Size prevSize = context.Space;
@@ -204,6 +230,19 @@ namespace Scryber.PDF.Layout
             PDFObjectRef oref;
             if (this.Owner is IPDFRenderComponent)
             {
+                //First render the border
+                
+                var border = this.FullStyle.CreateBorderPen();
+                var background = this.FullStyle.CreateBackgroundBrush();
+
+                Rect borderRect = this.BorderRect;
+                borderRect = borderRect.Offset(context.Offset.X + this.TotalBounds.X, context.Offset.Y + this.TotalBounds.Y);
+                
+                if (null != background)
+                    this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
+
+                //Calculate the image size and location
+                
                 Point loc = context.Offset;
                 loc = loc.Offset(this.TotalBounds.Location);
                 Size size = this.TotalBounds.Size;
@@ -212,21 +251,11 @@ namespace Scryber.PDF.Layout
                 context.Offset = loc;
                 context.Space = size;
 
-                if (opts.Margins.IsEmpty == false)
+                if (opts.DisplayMode != DisplayMode.Inline && opts.Margins.IsEmpty == false)
                 {
                     loc = loc.Offset(opts.Margins.Left, opts.Margins.Top);
                     size = size.Subtract(opts.Margins);
                 }
-                
-                var border = this.FullStyle.CreateBorderPen();
-
-
-                var background = this.FullStyle.CreateBackgroundBrush();
-
-                Rect borderRect = new Rect(loc, size);
-                if (null != background)
-                    this.OutputBackground(background, border.HasBorders? border.CornerRadius : null, context, borderRect);
-                
                
                 if (opts.Padding.IsEmpty == false)
                 {
@@ -237,6 +266,7 @@ namespace Scryber.PDF.Layout
                 //Set the offset, size and full style on the context
                 context.Offset = loc;
                 context.Space = size;
+                
                 context.FullStyle = this.FullStyle;
                 if (context.ShouldLogDebug)
                     context.TraceLog.Begin(TraceLevel.Verbose, "Layout Item", "Beginning the rendering the referenced component " + this.Owner + " with context offset of " + context.Offset + " and space " + context.Space);
@@ -248,7 +278,18 @@ namespace Scryber.PDF.Layout
                 Component owner = this.Owner as Component;
                 if (null != owner)
                 {
-                    owner.SetArrangement(context, context.FullStyle, borderRect);
+                    var block = this.GetParentBlock();
+                    var contentRect = new Rect(loc.X, loc.Y, size.Width, size.Height);
+                    
+                    if (block.IsExplicitLayout)
+                    {
+                        //we are explicit so we are always zero - need to take into account page locations
+
+                        contentRect.X += block.PagePosition.X + block.Position.Margins.Left;
+                        contentRect.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                    }
+                    
+                    owner.SetArrangement(context, context.FullStyle, contentRect);
                 }
 
                 //finally if we have a border then write this

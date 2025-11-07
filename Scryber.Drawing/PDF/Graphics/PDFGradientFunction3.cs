@@ -44,10 +44,7 @@ namespace Scryber.PDF.Graphics
         public PDFGradientFunction[] Functions { get; set; }
 
         public PDFGradientFunctionEncode[] Encodes { get; set; }
-
-        public double DomainStart { get; set; }
-
-        public double DomainEnd { get; set; }
+        
 
 
         /// <summary>
@@ -106,7 +103,7 @@ namespace Scryber.PDF.Graphics
             foreach (var boundary in this.Boundaries)
             {
                 writer.BeginArrayEntry();
-                writer.WriteRealS(boundary.Bounds);
+                writer.WriteRealS(boundary.Bounds, "F5");
                 writer.EndArrayEntry();
             }
             writer.EndArray();

@@ -1,4 +1,6 @@
 ﻿using System;
+using Scryber.Data;
+
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("template")]
@@ -103,7 +105,11 @@ namespace Scryber.Html.Components
         {
             if(!string.IsNullOrEmpty(this.DataContent))
             {
-                return this.GetDataContent(this.DataContent, context);
+                var ns = this.Document.NamespaceDeclarations;
+                Data.ParsableTemplateGenerator generator =
+                    new ParsableTemplateGenerator(this.DataContent, ns.GetMappings());
+
+                return generator;
             }
             else
                 return base.GetTemplateForBinding(context, index, count);

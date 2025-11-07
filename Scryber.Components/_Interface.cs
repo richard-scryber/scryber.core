@@ -134,10 +134,30 @@ namespace Scryber
         /// Gets or sets the list of Components in the footer of this Component
         /// </summary>
         ITemplate Footer { get; set; }
+        
     }
 
     #endregion
 
+    public interface ITopAndTailedContinuationComponent : ITopAndTailedComponent
+    {
+        /// <summary>
+        /// Gets or sets the list of Components in the header on ALL PAGES AFTER of the parent component extends too,
+        /// except the first. If not defined, then the the standard footer will be used (if defined)
+        /// </summary>
+        ITemplate ContinuationHeader { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of Components in the footer on
+        /// ALL PAGES PRE-CEEDING of this Component if defined, other-wise the standard footer will be used (if defined).
+        /// </summary>
+        ITemplate ContinuationFooter { get; set; }
+    }
+    
+    
+    
+    #region public interface IPDFRenderable
+    
     public interface IPDFRenderable
     {
         /// <summary>
@@ -148,6 +168,8 @@ namespace Scryber
         /// <returns></returns>
         PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer);
     }
+    
+    #endregion
 
     #region public interface IPDFRenderComponent : IComponent
 
@@ -251,8 +273,6 @@ namespace Scryber
 
     #endregion
 
-    
-
     #region public interface IInvisibleContainer : IPDFContainerComponent
 
     /// <summary>
@@ -264,6 +284,18 @@ namespace Scryber
     {
     }
 
+    #endregion
+
+    #region public interface IPassThroughStyleContainer : IInvisibleContainer
+    
+    /// <summary>
+    /// A special interface that allows the styles declared on an invisible component to 'pass through' (be applied to another component or set of components).
+    /// </summary>
+    public interface IPassThroughStyleContainer : IInvisibleContainer
+    {
+        void ApplyStylesToChildren(IPDFLayoutEngine engine, PDFLayoutContext context, Style toPass);
+    }
+    
     #endregion
 
     #region public interface IDataSetProviderCommand
@@ -414,8 +446,7 @@ namespace Scryber
     }
 
     #endregion
-
-
+    
     #region public interface IPDFSignatureFormField : IPDFFormField
 
     /// <summary>
@@ -441,7 +472,6 @@ namespace Scryber
     /// </summary>
     public interface IPDFXObjectComponent : IContainerComponent, IResourceContainer, IPDFRenderComponent
     {
-        IResourceContainer Resources { get; }
     }
 
     #endregion

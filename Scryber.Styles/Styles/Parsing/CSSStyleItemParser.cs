@@ -188,6 +188,8 @@ namespace Scryber.Styles.Parsing
 
         #endregion
 
+        #region public static bool TryConvertToUnit(object value, out Unit converted)
+
         public static bool TryConvertToUnit(object value, out Unit converted)
         {
             if(value is Unit)
@@ -212,6 +214,8 @@ namespace Scryber.Styles.Parsing
             }
         }
 
+        #endregion
+
         #region public static bool ParseCSSUnit(string part, out PDFUnit unit)
 
         /// <summary>
@@ -229,8 +233,12 @@ namespace Scryber.Styles.Parsing
             part = part.ToLower();
 
             //TODO: THis is really covered now with the Unit.TryParse and can be simplified
-
-            if (EndsWithRelativeUnit(part))
+            if (part == "auto")
+            {
+                unit = Unit.Auto;
+                return true;
+            }
+            else if (EndsWithRelativeUnit(part))
             {
                 if (Unit.TryParse(part, out unit))
                     return true;
@@ -413,19 +421,27 @@ namespace Scryber.Styles.Parsing
                                 buffer.Append(found);
                             }
                         }
-                        //else if (HTMLParserSettings.DefaultEscapedHTMLEntities.TryGetValue(entity, out found))
-                        //{
-                        //    buffer.Append(found);
-                        //    src.MoveNext();
-                        //}
+                        else if (HtmlEntities.DefaultKnownHTMLAndXMLEntities.TryGetValue(entity.Substring(1, entity.Length -2), out found))
+                        {
+                            buffer.Append(found);
+                            src.MoveNext();
+                        }
                     }
+                }
+                else
+                {
+
+                    var len = src.Offset - ampersandPos;
+                    buffer.Append(HTMLEntityStartMarker);
+                    src.Offset = ampersandPos + 1;
+
                 }
 
                 ampersandPos = value.IndexOf(HTMLEntityStartMarker, src.Offset);
             }
 
             if (src.Offset < src.Length)
-                buffer.Append(src.Substring(src.Length - src.Offset));
+                buffer.Append(src.Substring(src.Offset));
 
             return buffer.ToString();
         }

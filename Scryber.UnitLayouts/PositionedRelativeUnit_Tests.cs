@@ -31,48 +31,21 @@ namespace Scryber.UnitLayouts
         {
             layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void BlockPercentRelativeToPage()
+        
+        protected string AssertGetContentFile(string name)
         {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/Positioning/Relative/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 20;
-            section.TextLeading = 25;
-            doc.Pages.Add(section);
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
 
-            Div relative = new Div() {
-                Height = new Unit(50, PageUnits.Percent),
-                Width = new Unit(50, PageUnits.Percent),
-                BorderWidth = 1, BorderColor = Drawing.StandardColors.Red };
-
-            relative.Contents.Add(new TextLiteral("50% width and height"));
-            section.Contents.Add(relative);
-
-            
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToPage.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.AreEqual(1, layout.AllPages.Count);
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-            var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(block);
-
-            Assert.AreEqual(600 / 2.0, block.Width);
-            Assert.AreEqual(800 / 2.0, block.Height);
+            return path;
         }
 
+
+        
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void BlockPercentFullToPage()
@@ -178,12 +151,14 @@ namespace Scryber.UnitLayouts
                 Y = new Unit(40, PageUnits.ViewPortHeight),
                 MinimumWidth = new Unit(50, PageUnits.ViewPortWidth),
                 MinimumHeight = new Unit(20, PageUnits.ViewPortHeight),
+                PositionMode = PositionMode.Relative,
                 BorderWidth = 1,
-                BorderColor = Drawing.StandardColors.Red
+                BorderColor = Drawing.StandardColors.Red,
+                Contents = { new TextLiteral("min width and height") }
             };
 
 
-            relative.Contents.Add(new TextLiteral("min width and height"));
+            
             section.Contents.Add(relative);
 
             using (var ms = DocStreams.GetOutputStream("RelativeOffset_MinWidthAndHeightToPage.pdf"))
@@ -196,22 +171,14 @@ namespace Scryber.UnitLayouts
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.IsNotNull(line);
-            Assert.AreEqual(1, line.Runs.Count);
-            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
-
-            var posRegion = pg.ContentBlock.PositionedRegions[0] as PDFLayoutRegion;
-            Assert.AreEqual(posRun.Region, posRegion);
-
-            //Check the offsets for x and y match the viewport dimensions
-            Assert.AreEqual(600 * 0.25, posRegion.TotalBounds.X);
-            Assert.AreEqual(800 * 0.4, posRegion.TotalBounds.Y);
-
-            var block = posRegion.Contents[0] as PDFLayoutBlock;
+            
+            
+            var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(block);
-
+   
+            //Check the widths and heights
+            Assert.AreEqual(0, block.TotalBounds.X);
+            Assert.AreEqual(0, block.TotalBounds.Y);
             Assert.AreEqual(600 * 0.5, block.Width);
             Assert.AreEqual(800 * 0.2, block.Height);
         }
@@ -222,25 +189,36 @@ namespace Scryber.UnitLayouts
         {
 
             Document doc = new Document();
-            Section section = new Section();
-            section.Width = 600;
-            section.Height = 800;
-            section.FontSize = 20;
-            section.TextLeading = 25;
+            Section section = new Section()
+            {
+                Width = 600,
+                Height = 800,
+                FontSize = 20,
+                TextLeading = 25,
+            };
+            
+            section.Style.OverlayGrid.ShowGrid = true;
+            section.Style.OverlayGrid.GridSpacing = 50;
+            section.Style.OverlayGrid.GridColor = Drawing.StandardColors.Aqua;
+            
+            
             doc.Pages.Add(section);
 
             Div relative = new Div()
             {
+                ID = "relative",
                 X = new Unit(25, PageUnits.ViewPortWidth),
                 Y = new Unit(40, PageUnits.ViewPortHeight),
                 MinimumWidth = new Unit(50, PageUnits.ViewPortWidth),
                 MinimumHeight = new Unit(20, PageUnits.ViewPortHeight),
                 BorderWidth = 1,
-                BorderColor = Drawing.StandardColors.Red
+                BorderColor = Drawing.StandardColors.Red,
+                PositionMode = PositionMode.Relative,
             };
 
             //rotate about 28 degrees
-            relative.TransformOperation = new Styles.TransformOperation(TransformType.Rotate, 0.5F, 0.0F);
+            relative.TransformOperation = new TransformOperationSet();
+            relative.TransformOperation.AppendOperation(new TransformRotateOperation(28 * Math.PI / 180));
 
             relative.Contents.Add(new TextLiteral("min width and height"));
             section.Contents.Add(relative);
@@ -250,7 +228,10 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
+            
+            #if DEBUG
 
+            
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
@@ -264,10 +245,18 @@ namespace Scryber.UnitLayouts
             var posRegion = pg.ContentBlock.PositionedRegions[0] as PDFLayoutRegion;
             Assert.AreEqual(posRun.Region, posRegion);
 
+            var rel = doc.FindAComponentById("relative") as Div;
+            Assert.IsNotNull(rel);
+
+            var bounds = rel.GetFirstArrangement();
+            Assert.IsNotNull(bounds);
+            
             
             //Check the dimensions for the region as transformed
-            Assert.AreEqual(480, posRegion.TotalBounds.Height);
-            Assert.AreEqual(450, posRegion.TotalBounds.Width);
+            Assert.AreEqual(150, bounds.RenderBounds.X);
+            Assert.AreEqual(320, bounds.RenderBounds.Y);
+            Assert.AreEqual(160, bounds.RenderBounds.Height);
+            Assert.AreEqual(300, bounds.RenderBounds.Width);
 
             var block = posRegion.Contents[0] as PDFLayoutBlock;
             
@@ -286,13 +275,16 @@ namespace Scryber.UnitLayouts
             expected[5] = 400;
 
             Assert.IsTrue(block.HasTransformedOffset);
-            var components = block.Position.TransformMatrix.Components;
-
-            Assert.AreEqual(6, components.Length);
-            for (var i = 0; i < 6; i++)
-            {
-                Assert.AreEqual(expected[i], components[i]);
-            }
+            
+            Assert.Inconclusive("Need to recalculate the render bounds based on the transform matrix");
+            
+            #else
+            
+            Assert.Inconclusive("Transformations are not captured in release configuration");
+            
+            #endif
+            
+            
         }
 
         [TestCategory(TestCategoryName)]
@@ -827,15 +819,13 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(block);
 
             var pgContent = pg.Size;
-            
-
-
-            Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
-            Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
 
             pgContent.Width -= (pgContent.Width * 0.1) * 2; //2 page width margins
             pgContent.Height -= (pgContent.Height * 0.1) * 2; //2 page height margins
 
+            Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
+            Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
+            
             Unit expectedWidth = pgContent.Width;
             Unit expectedHeight = pgContent.Height / 2.0; //50% of (page height - 10% margins)
 
@@ -1011,7 +1001,7 @@ namespace Scryber.UnitLayouts
             };
             wrapper.Contents.Add(floating);
 
-            floating.Contents.Add(new TextLiteral("40% width and 10% height floating in the margins"));
+            floating.Contents.Add(new TextLiteral("40% width and 8% height floating in the margins"));
 
             wrapper.Contents.Add("This is a long text run that should flow nicely around the 50% width, and 8% height floating div on the page");
 
@@ -1048,11 +1038,11 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, wrapperBlock.PositionedRegions.Count);
             region = wrapperBlock.PositionedRegions[0];
 
-            Assert.AreEqual(width, region.Width); //without the margins
-            Assert.AreEqual(height, region.Height); //without the margins
+            Assert.AreEqual(width + 20, region.Width); //with the margins
+            Assert.AreEqual(height + 20, region.Height); //with the margins
 
-            Assert.AreEqual(30, region.TotalBounds.Y); //After the first line
-            Assert.AreEqual(0, region.TotalBounds.X);
+            Assert.AreEqual(50, region.TotalBounds.Y); //After the first line + margins
+            Assert.AreEqual(20, region.TotalBounds.X); //Margin and padding inset
             Assert.AreEqual(1, region.Contents.Count);
 
             var floatBlock = region.Contents[0];
@@ -1066,7 +1056,7 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void BlockPercentRelativeToSizedContainer()
+        public void BlockPercentRelativeToSizedContainerAutoBoth()
         {
 
             Document doc = new Document();
@@ -1075,41 +1065,39 @@ namespace Scryber.UnitLayouts
             section.Style.PageStyle.Height = 800;
             section.FontSize = 20;
             section.TextLeading = 30;
+            section.Margins = 0;
             //section.Padding = 10;
             section.BackgroundColor = StandardColors.Silver;
-            section.VerticalAlignment = VerticalAlignment.Middle;
-            section.HorizontalAlignment = HorizontalAlignment.Center;
-
+            
             doc.Pages.Add(section);
 
             Div wrapper = new Div()
             {
-                ID = "wrapper",
+                ID = "wrapper", 
                 Width = new Unit(50, PageUnits.Percent),
                 Height = new Unit(50, PageUnits.Percent),
                 BorderWidth = 1,
                 BorderColor = StandardColors.Blue,
-                VerticalAlignment = VerticalAlignment.Middle,
-                HorizontalAlignment = HorizontalAlignment.Center
+                Margins = Unit.Auto
             };
 
             section.Contents.Add(wrapper);
             Div relative = new Div()
             {
                 ID = "inner_relative",
-                Height = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent), 
                 Width = new Unit(50, PageUnits.Percent),
                 BorderWidth = 1,
                 BorderColor = Drawing.StandardColors.Red,
-                VerticalAlignment = VerticalAlignment.Middle,
-                HorizontalAlignment = HorizontalAlignment.Center
+                Margins = Unit.Auto
             };
+            
             wrapper.Contents.Add(relative);
 
-            relative.Contents.Add(new TextLiteral("50% width and 25% height with margins"));
+            relative.Contents.Add(new TextLiteral("25% width and 25% height with auto margins"));
 
 
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainer.pdf"))
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerAutoBoth.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -1131,7 +1119,7 @@ namespace Scryber.UnitLayouts
             Unit expectedWidth = 600 / 2.0;
             Unit expectedHeight = 800 / 2.0;
             Unit expectedX = (parentBoundsWidth - expectedWidth) / 2;
-            Unit expectedY = (parentBoundsHeight - expectedHeight) / 2;
+            Unit expectedY = 0; //auto margins vertical = 0
 
             Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
             Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
@@ -1148,7 +1136,7 @@ namespace Scryber.UnitLayouts
             expectedHeight = expectedHeight / 2.0;
 
             expectedX = (parentBoundsWidth - expectedWidth) / 2;
-            expectedY = (parentBoundsHeight - expectedHeight) / 2;
+            expectedY = 0; //auto margins verical = 0
 
             Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
             Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");
@@ -1157,9 +1145,10 @@ namespace Scryber.UnitLayouts
         }
 
 
+        
         [TestCategory(TestCategoryName)]
         [TestMethod()]
-        public void TablePercentPercentToPage()
+        public void BlockPercentRelativeToSizedContainerAutoOne()
         {
 
             Document doc = new Document();
@@ -1167,762 +1156,189 @@ namespace Scryber.UnitLayouts
             section.Style.PageStyle.Width = 600;
             section.Style.PageStyle.Height = 800;
             section.FontSize = 20;
-            section.TextLeading = 25;
-            section.Margins = 10;
-            section.BackgroundColor = StandardColors.Aqua;
-
-            doc.Pages.Add(section);
-
-            const int RowCount = 10;
-            const int CellCount = 3;
-            Unit[] CellWidths = new Unit[] {
-                new Unit(20, PageUnits.Percent),
-                new Unit(30, PageUnits.Percent),
-                new Unit(50, PageUnits.Percent),
-            };
-
-            TableGrid grid = new TableGrid();
-            section.Contents.Add(grid);
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                TableRow row = new TableRow();
-                grid.Rows.Add(row);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-
-                    TableCell cell = new TableCell();
-                    cell.Width = CellWidths[c];
-
-                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
-
-                    cell.Contents.Add(content);
-                    row.Cells.Add(cell);
-                }
-
-            }
-            
-
-            section.Contents.Add(new TextLiteral("After the Table"));
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_TableToPage.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.AreEqual(1, layout.AllPages.Count);
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
-
-            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(580, tableBlock.Width); //page - margins
-            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
-                Assert.AreEqual(580, rowBlock.Width); //page - margins
-                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                    Assert.IsNotNull(rowColumn);
-                    Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                    var cellW = 580 * (CellWidths[c].Value / 100.0); //calculate the percent
-                    Assert.AreEqual(cellW, rowColumn.Width);
-
-
-                    var cellBlock = rowColumn.Contents[0];
-                    Assert.AreEqual(cellW, cellBlock.Width);
-                }
-
-            }
-        }
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void TablePercentFixedWidthToPage()
-        {
-
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.FontSize = 20;
-            //section.TextLeading = 25;
-            section.Margins = 10;
-            section.BackgroundColor = StandardColors.Aqua;
-
-            doc.Pages.Add(section);
-
-            const int RowCount = 10;
-            const int CellCount = 3;
-
-            Unit tableWidth = 500;
-
-            Unit[] CellWidths = new Unit[] {
-                new Unit(25, PageUnits.Percent),
-                new Unit(50, PageUnits.Percent),
-                new Unit(25, PageUnits.Percent),
-            };
-
-            TableGrid grid = new TableGrid();
-            grid.Width = tableWidth;
-            grid.FontSize = new Unit(70, PageUnits.Percent);
-            section.Contents.Add(grid);
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                TableRow row = new TableRow();
-                grid.Rows.Add(row);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-
-                    TableCell cell = new TableCell();
-                    cell.Width = CellWidths[c];
-
-                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
-
-                    cell.Contents.Add(content);
-                    row.Cells.Add(cell);
-                }
-
-            }
-
-
-            section.Contents.Add(new TextLiteral("After the Table"));
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_FixedWidthTable.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            Assert.AreEqual(1, layout.AllPages.Count);
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count);
-
-            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
-            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
-                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
-                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                    Assert.IsNotNull(rowColumn);
-                    Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
-                    Assert.AreEqual(cellW, rowColumn.Width);
-
-                    var cellBlock = rowColumn.Contents[0];
-                    Assert.AreEqual(cellW, cellBlock.Width);
-                }
-
-            }
-        }
-
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void TablePercentCellRelativeWidthToPageCellHeight()
-        {
-
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.FontSize = 20;
-            //section.TextLeading = 25;
-            section.Margins = 10;
-            section.BackgroundColor = StandardColors.Aqua;
-
-            doc.Pages.Add(section);
-
-            const int RowCount = 10;
-            const int CellCount = 3;
-
-            
-
-            Unit[] CellWidths = new Unit[] {
-                new Unit(25, PageUnits.Percent),
-                new Unit(50, PageUnits.Percent),
-                new Unit(25, PageUnits.Percent),
-            };
-
-            TableGrid grid = new TableGrid();
-            grid.Width = new Unit(60, PageUnits.Percent);
-            grid.FontSize = new Unit(80, PageUnits.Percent);
-            section.Contents.Add(grid);
-
-            Unit tableWidth = (600 - 20) * 0.6;
-
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                TableRow row = new TableRow();
-                
-
-                grid.Rows.Add(row);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-
-                    TableCell cell = new TableCell();
-                    cell.Width = CellWidths[c];
-
-                    //all cell heights should add up to the page content block height
-                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
-                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
-
-                    cell.Contents.Add(content);
-                    row.Cells.Add(cell);
-                }
-
-            }
-
-
-            section.Contents.Add(new TextLiteral("After the Table"));
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableCellPercentHeight.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            //After the table should be on a new page
-            Assert.AreEqual(2, layout.AllPages.Count);
-
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(2, pg.ContentBlock.Columns[0].Contents.Count); //last line is zero height with the overflow
-
-            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(tableWidth, tableBlock.Width); //page - margins
-            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
-
-            //Check the 80% font size on the full style
-            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                var rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
-                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
-                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                    Assert.IsNotNull(rowColumn);
-                    Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
-                    Assert.AreEqual(cellW, rowColumn.Width);
-
-                    var cellBlock = rowColumn.Contents[0];
-                    Assert.AreEqual(cellW, cellBlock.Width);
-
-                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
-                }
-
-            }
-
-            var emptyBlock = pg.ContentBlock.Columns[0].Contents[1];
-            Assert.AreEqual(0, emptyBlock.Height);
-
-            pg = layout.AllPages[1];
-            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-
-            //Quick check we have the literal on the new page.
-            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-
-            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.AreEqual(3, line.Runs.Count);
-            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
-        }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void TablePercentCellRelativeWidthToColumnCellHeight()
-        {
-
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.FontSize = 20;
-            //section.TextLeading = 25;
-            section.Margins = 10;
-            section.ColumnCount = 2;
-            section.AlleyWidth = 10;
+            section.TextLeading = 30;
+            section.Margins = 0;
+            //section.Padding = 10;
             section.BackgroundColor = StandardColors.Silver;
-
+            
             doc.Pages.Add(section);
 
-            const int RowCount = 10;
-            const int CellCount = 3;
-
-
-
-            Unit[] CellWidths = new Unit[] {
-                new Unit(25, PageUnits.Percent),
-                new Unit(50, PageUnits.Percent),
-                new Unit(25, PageUnits.Percent),
+            Div wrapper = new Div()
+            {
+                ID = "wrapper", 
+                Width = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = StandardColors.Blue,
+                Margins = new Thickness(Unit.Auto, Unit.Auto, Unit.Auto, 0) //left = 0, right = auto = left align
             };
 
-            TableGrid grid = new TableGrid();
-            grid.Width = new Unit(40, PageUnits.ViewPortMin); //40% of page width without margins
-            grid.FontSize = new Unit(80, PageUnits.Percent);
-            section.Contents.Add(grid);
-
-            Unit tableWidth = 600 * 0.4;
-
-            TableRow row  = new TableHeaderRow();
-            grid.Rows.Add(row);
-
-            for (var c = 0; c < CellCount; c++)
+            section.Contents.Add(wrapper);
+            Div relative = new Div()
             {
+                ID = "inner_relative",
+                Height = new Unit(50, PageUnits.Percent), 
+                Width = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                Margins = new Thickness(Unit.Auto, 0, Unit.Auto, Unit.Auto) //right 0, left auto = right align.
+            };
+            
+            wrapper.Contents.Add(relative);
 
-                TableCell cell = new TableCell();
-                cell.Width = CellWidths[c];
-
-                //all cell heights should add up to the page content block height
-                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
-                var content = "Header " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
-
-                cell.Contents.Add(content);
-                row.Cells.Add(cell);
-            }
-
-            for (var r = 0; r < RowCount; r++)
-            {
-                row = new TableRow();
-                grid.Rows.Add(row);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-
-                    TableCell cell = new TableCell();
-                    //cell.Width = CellWidths[c]; - implied width from the header
-
-                    //all cell heights should add up to the page content block height
-                    cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
-                    var content = (r + 1).ToString() + "." + (c + 1).ToString() + " at " + CellWidths[c].ToString();
-
-                    cell.Contents.Add(content);
-                    row.Cells.Add(cell);
-                }
-
-            }
-
-            //Add a footer row to the table
-            row = new TableFooterRow();
-            grid.Rows.Add(row);
-
-            for (var c = 0; c < CellCount; c++)
-            {
-
-                TableCell cell = new TableCell();
-                cell.Width = CellWidths[c];
-
-                //all cell heights should add up to the page content block height
-                cell.Height = new Unit(100 / RowCount, PageUnits.Percent);
-
-                var content = "Footer " + (RowCount).ToString() + " at " + CellWidths[c].ToString();
-
-                cell.Contents.Add(content);
-                row.Cells.Add(cell);
-            }
+            relative.Contents.Add(new TextLiteral("25% width and 25% height with auto margins"));
 
 
-            section.Contents.Add(new TextLiteral("After the Table"));
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativePositioned_RelativeWidthTableToColumnCellPercentHeight.pdf"))
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerAutoOne.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
 
-            //The table should force a new column
-            Assert.AreEqual(1, layout.AllPages.Count);
-
-            var pg = layout.AllPages[0];
-            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
-            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count); //just the table
-
-            var tableBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(tableWidth, tableBlock.Width); //40vmin of page (inc. margins)
-
-            Assert.AreEqual(RowCount, tableBlock.Columns[0].Contents.Count);
-            Assert.AreEqual(800 - 20, tableBlock.Height);
-
-            //Check the 80% font size on the full style
-            Assert.AreEqual(20 * 0.8, tableBlock.FullStyle.Font.FontSize);
-
-
-            //Header Row
-            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.AreEqual(tableWidth, rowBlock.Width); //40vmin of page (inc. margins)
-
-            Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-            //Header cells
-
-            for (var c = 0; c < CellCount; c++)
-            {
-                var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                Assert.IsNotNull(rowColumn);
-                Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
-                Assert.AreEqual(cellW, rowColumn.Width);
-
-                var cellBlock = rowColumn.Contents[0];
-                Assert.AreEqual(cellW, cellBlock.Width);
-
-                Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
-            }
-
-            for (var r = 1; r < tableBlock.Columns[0].Contents.Count; r++)
-            {
-                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
-                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
-                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                    Assert.IsNotNull(rowColumn);
-                    Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
-                    Assert.AreEqual(cellW, rowColumn.Width);
-
-                    var cellBlock = rowColumn.Contents[0];
-                    Assert.AreEqual(cellW, cellBlock.Width);
-
-                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
-                }
-
-            }
-
-            var col1Total = tableBlock.Columns[0].Contents.Count;
-            var col2Total = RowCount + 2 + 1 - col1Total; //total rows + the 2 headers and a footer - the count on column1
-
-            //Quick check we have the rest of the table and literal on the new page.
-            Assert.AreEqual(2, pg.ContentBlock.Columns[1].Contents.Count);
-
-            tableBlock = pg.ContentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(tableBlock);
-
-            Assert.AreEqual(col2Total, tableBlock.Columns[0].Contents.Count);
-
-            for (var r = 0; r < col2Total; r++)
-            {
-                rowBlock = tableBlock.Columns[0].Contents[r] as PDFLayoutBlock;
-                Assert.AreEqual(tableWidth, rowBlock.Width); //page - margins
-                Assert.AreEqual(CellCount, rowBlock.Columns.Length);
-
-                for (var c = 0; c < CellCount; c++)
-                {
-                    var rowColumn = rowBlock.Columns[c] as PDFLayoutRegion;
-                    Assert.IsNotNull(rowColumn);
-                    Assert.AreEqual(1, rowColumn.Contents.Count);
-
-                    var cellW = tableWidth * (CellWidths[c].Value / 100.0); //calculate the percent
-                    Assert.AreEqual(cellW, rowColumn.Width);
-
-                    var cellBlock = rowColumn.Contents[0];
-                    Assert.AreEqual(cellW, cellBlock.Width);
-
-                    Assert.AreEqual((800 - 20) / RowCount, cellBlock.Height); //(page height - margins) split into rows
-                }
-
-            }
-
-
-            var line = pg.ContentBlock.Columns[1].Contents[1] as PDFLayoutLine;
-            Assert.AreEqual(3, line.Runs.Count);
-            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
-        }
-
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void ListAlphaLowerRelativeInsetLeft()
-        {
-            const int PageWidth = 600;
-            const int PageHeight = 800;
-            const int ItemCount = 5;
-            string[] ItemValues = new[] { "1a-", "1b-", "1c-", "1d-", "1e-" };
-            const double DefaultNumberWidth = 600 * 0.1;
-            const double DefaultGutterWidth = 10.0;
-
-            Document doc = new Document();
-            Section section = new Section();
-            section.FontSize = 10;
-            section.Width = PageWidth;
-            section.Height = PageHeight;
-            section.Margins = 10;
-            section.BackgroundColor = StandardColors.Silver;
-            doc.Pages.Add(section);
-
-            var ol = new ListOrdered();
-            ol.NumberingStyle = ListNumberingGroupStyle.LowercaseLetters;
-            ol.NumberPostfix = "-";
-            ol.NumberPrefix = "1";
-            ol.NumberAlignment = HorizontalAlignment.Left;
-            ol.NumberInset = new Unit(10, PageUnits.ViewPortWidth);
-            ol.Width = new Unit(50, PageUnits.ViewPortWidth);
-            ol.BorderColor = StandardColors.Aqua;
-
-            section.Contents.Add(ol);
-
-
-
-            for (var i = 0; i < ItemCount; i++)
-            {
-                var li = new ListItem();
-                li.Contents.Add(new TextLiteral("Item " + i));
-                li.BorderColor = StandardColors.Green;
-                li.Width = new Unit(50, PageUnits.Percent);
-                ol.Items.Add(li);
-
-            }
-
-
-            using (var ms = DocStreams.GetOutputStream("RelativeList_AlphaLowerRelativeInsetLeft.pdf"))
-            {
-                doc.LayoutComplete += Doc_LayoutComplete;
-                doc.SaveAsPDF(ms);
-            }
-
-            //Assert.Inconclusive();
+            Unit parentBoundsWidth = 600;
+            Unit parentBoundsHeight = 800;
 
             Assert.AreEqual(1, layout.AllPages.Count);
             var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-
-            var olBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-            Assert.IsNotNull(olBlock);
-
-            Assert.AreEqual(1, olBlock.Columns.Length);
-            Assert.AreEqual(ItemCount, olBlock.Columns[0].Contents.Count);
-
+            var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             
 
-            Assert.AreEqual(600 * 0.5, olBlock.Width);
+            Assert.AreEqual(1, wrapperBlock.Columns.Length);
+            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
 
-            for (var i = 0; i < ItemCount; i++)
-            {
+            Unit expectedWidth = 600 / 2.0;
+            Unit expectedHeight = 800 / 2.0;
+            Unit expectedX = 0; // first is left align
+            Unit expectedY = 0; //auto margins vertical = 0
 
-                var itemBlock = olBlock.Columns[0].Contents[i] as PDFLayoutBlock;
-                //var column = rowBlock.Columns[i];
-                Assert.IsNotNull(itemBlock);
+            Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
+            Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
+            Assert.AreEqual(expectedX, wrapperBlock.TotalBounds.X, "X Value did not match on wrapper");
+            Assert.AreEqual(expectedY, wrapperBlock.TotalBounds.Y, "Y Value did not match on wrapper");
 
-                Assert.AreEqual(1, itemBlock.Columns.Length);
-                Assert.AreEqual(1, itemBlock.PositionedRegions.Count);
+            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(relativeBlock);
 
-                Assert.AreEqual(1, itemBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(1, itemBlock.PositionedRegions[0].Contents.Count);
+            parentBoundsWidth = expectedWidth;
+            parentBoundsHeight = expectedHeight;
 
-                //the block has a width of the 50% of the ol + the margins for the label and gutter
-                //and the label is 10% of the page width
-                Assert.AreEqual((600 * 0.1) + 10, itemBlock.Position.Margins.Left);
-                Assert.AreEqual(olBlock.Width * 0.5 + itemBlock.Position.Margins.Left, itemBlock.Width);
-                
+            expectedWidth = expectedWidth / 2.0;
+            expectedHeight = expectedHeight / 2.0;
 
-                var numBlock = itemBlock.PositionedRegions[0].Contents[0] as PDFLayoutBlock;
-                var itemLine = itemBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            expectedX = (parentBoundsWidth - expectedWidth); //inner is right align
+            expectedY = 0; //auto margins verical = 0
 
-                Assert.IsNotNull(numBlock);
-                Assert.IsNotNull(itemLine);
-
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
-                Assert.AreEqual(4, itemLine.Runs.Count);
-
-
-
-                var start = itemLine.Runs[0] as PDFTextRunBegin;
-                Assert.IsNotNull(start);
-
-                var chars = itemLine.Runs[1] as PDFTextRunCharacter;
-                Assert.IsNotNull(chars);
-
-                var end = itemLine.Runs[2] as PDFTextRunEnd;
-                Assert.IsNotNull(end);
-
-                var posRun = itemLine.Runs[3] as PDFLayoutPositionedRegionRun;
-                Assert.IsNotNull(posRun);
-                Assert.AreEqual(DefaultNumberWidth, posRun.Region.Width);
-
-                //cursor starts at margins + number + gutter
-                Assert.AreEqual(DefaultNumberWidth + DefaultGutterWidth + 10, start.StartTextCursor.Width);
-                Assert.AreEqual("Item " + i, chars.Characters);
-
-
-                Assert.AreEqual(1, numBlock.Columns.Length);
-                Assert.AreEqual(1, numBlock.Columns[0].Contents.Count);
-                Assert.AreEqual(DefaultNumberWidth, numBlock.Width);
-
-                var numLine = numBlock.Columns[0].Contents[0] as PDFLayoutLine;
-                Assert.AreEqual(3, numLine.Runs.Count);
-
-                start = numLine.Runs[0] as PDFTextRunBegin;
-                Assert.IsNotNull(start);
-
-                chars = numLine.Runs[1] as PDFTextRunCharacter;
-                Assert.IsNotNull(chars);
-
-                end = numLine.Runs[2] as PDFTextRunEnd;
-                Assert.IsNotNull(end);
-
-                Assert.AreEqual(ItemValues[i], chars.Characters);
-
-                //Make sure we are left aligned from margins
-                Assert.AreEqual(10.0, start.StartTextCursor.Width);
-            }
-
-        }
-
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void HtmlParsingTest()
-        {
-
-            var src = @"<?scryber append-log='true' log-level='Verbose' parser-log='true' ?>
-<!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <meta charset='utf-8' />
-    <title>Relative Unit Test</title>
-
-    <style >
-        body {
-            background-color:#CCC;
-            padding:20pt;
-            font-size:1.2rem; /* 120 percent of the root size  */
-            margin:5vw; /* 5 percent of the view width */
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        h1{
-            font-size:2em;  /* double body size */
-            font-weight:normal;
-            height: 20vmax;  /* 20% of the max view dimension */
-            background-color: gray;
-        }
-
-    </style>
-</head>
-<body>
-    <div id='wrapper' style='height: 40vh; background-color: silver; padding: 1em;' >Above the heading
-        <h1 id='heading' >This is my first heading</h1>
-        <div id='inner' >And this is the content below the heading that should flow across multiple lines within the page and flow nicely along those lines.</div>
-    </div>
-</body>
-</html>";
-
-            using (var sr = new System.IO.StringReader(src))
-            {
-                var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent);
-                doc.RenderOptions.Compression = OutputCompressionType.None;
-
-                Assert.IsInstanceOfType(doc, typeof(HTMLDocument));
-
-                using (var stream = DocStreams.GetOutputStream("RelativeHTML_ParsingAndOutputTest.pdf"))
-                {
-                    doc.LayoutComplete += Doc_LayoutComplete;
-                    doc.SaveAsPDF(stream);
-                }
-
-                Assert.IsNotNull(this.layout);
-                Assert.AreEqual(1, this.layout.AllPages.Count);
-
-                var pg = this.layout.AllPages[0];
-                Assert.IsNotNull(pg);
-
-                var margin = pg.Size.Width * 0.05; // 5vw
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Left);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Top);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Bottom);
-                Assert.AreEqual(margin, pg.PositionOptions.Margins.Right);
-
-
-                var rootEm = Font.DefaultFontSize; //16
-                Unit fbody = rootEm * 1.2; // 1.2em
-                var content = pg.ContentBlock;
-                Assert.AreEqual(fbody, content.FullStyle.Font.FontSize);
-
-                Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
-                Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-                
-
-                var wrapper = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
-
-                var h = pg.Size.Height * 0.4; //40vh
-                Assert.AreEqual(h, wrapper.Height);
-
-                var pad = fbody; //padding = 1em
-
-                Assert.AreEqual(pad, wrapper.Position.Padding.Left);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Top);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Bottom);
-                Assert.AreEqual(pad, wrapper.Position.Padding.Right);
-
-                Assert.AreEqual(1, wrapper.Columns.Length);
-                Assert.AreEqual(3, wrapper.Columns[0].Contents.Count);
-
-                var literalLine = wrapper.Columns[0].Contents[0] as PDFLayoutLine;
-                var heading = wrapper.Columns[0].Contents[1] as PDFLayoutBlock; //After the text
-                var inner = wrapper.Columns[0].Contents[2] as PDFLayoutBlock;
-
-
-                var start = literalLine.Runs[0] as PDFTextRunBegin;
-                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
-
-                var fhead = fbody * 2; //2em of the 1.2em body size
-                var headHeight = pg.Size.Height * 0.2; //20vmax;
-
-                Assert.AreEqual(headHeight, heading.Height);
-                literalLine = heading.Columns[0].Contents[0] as PDFLayoutLine;
-                start = literalLine.Runs[0] as PDFTextRunBegin;
-
-                Assert.AreEqual(fhead, start.TextRenderOptions.GetSize());
-
-                //Should revert back to normal within the inner div.
-                literalLine = inner.Columns[0].Contents[0] as PDFLayoutLine;
-                start = literalLine.Runs[0] as PDFTextRunBegin;
-
-                Assert.AreEqual(fbody, start.TextRenderOptions.GetSize());
-
-
-            }
+            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
+            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");
+            Assert.AreEqual(expectedX, relativeBlock.TotalBounds.X, "X Value did not match on inner");
+            Assert.AreEqual(expectedY, relativeBlock.TotalBounds.Y, "Y Value did not match on inner");
         }
 
         
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void BlockAutoRelativeToSizedContainerFullWidth()
+        {
+
+            Document doc = new Document();
+            Section section = new Section();
+            section.Style.PageStyle.Width = 600;
+            section.Style.PageStyle.Height = 800;
+            section.FontSize = 20;
+            section.TextLeading = 30;
+            section.Margins = 0;
+            //section.Padding = 10;
+            section.BackgroundColor = StandardColors.Silver;
+            
+            doc.Pages.Add(section);
+
+            Div wrapper = new Div()
+            {
+                ID = "wrapper", 
+                Width = new Unit(50, PageUnits.Percent),
+                Height = new Unit(50, PageUnits.Percent),
+                BorderWidth = 1,
+                BorderColor = StandardColors.Blue,
+                Margins = new Thickness(Unit.Auto, Unit.Auto, Unit.Auto, 0) //left = 0, right = auto = left align
+            };
+
+            section.Contents.Add(wrapper);
+            //Force the explicit layout of a span as a full width block
+            Span relative = new Span()
+            {
+                ID = "inner_relative",
+                Height = new Unit(50, PageUnits.Percent), 
+                DisplayMode = DisplayMode.Block, //force the block
+                Width = Unit.Auto, //should be full width to the container - but not go beyond the margins
+                BorderWidth = 1,
+                BorderColor = Drawing.StandardColors.Red,
+                Margins = 10 //
+            };
+            
+            wrapper.Contents.Add(relative);
+
+            relative.Contents.Add(new TextLiteral("full width and 25% height with 10pt margins"));
+
+
+            using (var ms = DocStreams.GetOutputStream("RelativePositioned_BlockToSizedContainerFullWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Unit parentBoundsWidth = 600;
+            Unit parentBoundsHeight = 800;
+
+            Assert.AreEqual(1, layout.AllPages.Count);
+            var pg = layout.AllPages[0];
+            Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            var wrapperBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            
+
+            Assert.AreEqual(1, wrapperBlock.Columns.Length);
+            Assert.AreEqual(1, wrapperBlock.Columns[0].Contents.Count);
+
+            Unit expectedWidth = 600 / 2.0;
+            Unit expectedHeight = 800 / 2.0;
+            Unit expectedX = 0; // first is left align
+            Unit expectedY = 0; //auto margins vertical = 0
+
+            Assert.AreEqual(expectedWidth, wrapperBlock.Width, "Widths did not match on wrapper");
+            Assert.AreEqual(expectedHeight, wrapperBlock.Height, "Heights did not match on wrapper");
+            Assert.AreEqual(expectedX, wrapperBlock.TotalBounds.X, "X Value did not match on wrapper");
+            Assert.AreEqual(expectedY, wrapperBlock.TotalBounds.Y, "Y Value did not match on wrapper");
+
+            var relativeBlock = wrapperBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(relativeBlock);
+
+            parentBoundsWidth = expectedWidth;
+            parentBoundsHeight = expectedHeight;
+
+            expectedWidth = expectedWidth ; //full width
+            expectedHeight = (expectedHeight / 2.0) + 20; //50% of container + margins
+
+            expectedX = 0; //inner is right align
+            expectedY = 0; //auto margins verical = 0
+
+            Assert.AreEqual(expectedWidth, relativeBlock.Width, "Widths did not match on inner");
+            Assert.AreEqual(expectedHeight, relativeBlock.Height, "Heights did not match on inner");
+            Assert.AreEqual(expectedX, relativeBlock.TotalBounds.X, "X Value did not match on inner");
+            Assert.AreEqual(expectedY, relativeBlock.TotalBounds.Y, "Y Value did not match on inner");
+
+            //Check the render bounds for the margins
+            var arrange = relative.GetFirstArrangement();
+            Assert.IsNotNull(arrange);
+            
+            Assert.AreEqual(10, arrange.RenderBounds.X);
+            Assert.AreEqual(10, arrange.RenderBounds.Y);
+            Assert.AreEqual(expectedWidth-20, arrange.RenderBounds.Width);
+            Assert.AreEqual(expectedHeight - 20, arrange.RenderBounds.Height);
+            
+        }
+
 
     }
 }

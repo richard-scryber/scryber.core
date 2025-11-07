@@ -1,0 +1,47 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body {
+            font-size: 12pt;
+            line-height: 15pt;
+            border: solid 1px red;
+            margin: 20pt
+        }
+
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            line-height: 30pt;
+            font-size: 15pt;
+            border: solid 1px green;
+            padding: 0px;
+        }
+
+
+        #abs {
+            position: absolute;
+            border: solid 2px blue;
+            width: 50%;
+        }
+
+        #nest{
+            margin: 10pt 20pt;
+            padding:0pt;
+            border: solid 1px aqua;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h5>Block below is nested, absolute positioned without a location.</h5>
+    <div id="nest">
+        <span id="before">Before the absolute.</span>
+        <div id="abs">Absolute to the page</div>
+        <span id="after"> After the absolute block</span>
+    </div>
+</body>
+</html>
+

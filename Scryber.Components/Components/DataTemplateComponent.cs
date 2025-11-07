@@ -68,8 +68,8 @@ namespace Scryber.Components
         #endregion
 
 
-        public DataTemplateComponent(ObjectType type)
-            : base(type)
+        protected DataTemplateComponent(ObjectType type, DataBindingBehaviour behaviour)
+            : base(type, behaviour)
         {
         }
 

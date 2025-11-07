@@ -78,5 +78,62 @@ namespace Scryber.Styles
                     other[kvp.Key] = kvp.Value;
             }
         }
+
+        public void DataBind(DataContext context, Style forStyle)
+        {
+            foreach(var kvp in this)
+            {
+                if (!string.IsNullOrEmpty(kvp.Value.Value) && kvp.Value.Value.StartsWith("url("))
+                {
+                    var url = kvp.Value.Value;
+                    context.TraceLog.Add(TraceLevel.Message, "Styles", "Variable with remote url value found. Attempting pre-load of " + url);
+                    try
+                    {
+                        
+                        url = url.Substring(4, url.Length - 5);
+
+                        if (url.StartsWith("'"))
+                            url = url.Substring(1, url.Length - 2);
+
+                        else if (url.StartsWith("\""))
+                            url = url.Substring(1, url.Length - 2);
+
+                        url = forStyle.MapPath(url);
+
+                        Uri uri = new Uri(url);
+                        var path = uri.LocalPath;
+
+                        if (IsFontVariable(path))
+                        {
+                            context.Document.GetResource(Scryber.PDF.Resources.PDFResource.FontDefnResourceType, url, true);
+                            context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Pre-load request made for the font variable from " + url);
+                        }
+                        else
+                        {
+                            context.Document.GetResource(Scryber.PDF.Resources.PDFResource.XObjectResourceType, url, true);
+                            context.TraceLog.Add(TraceLevel.Verbose, "Styles", "Pre-load request made for the image variable from " + url);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        context.TraceLog.Add(TraceLevel.Error, "Styles", "Remote images or font '" + kvp.Value.Value + "' on variables " + kvp.Key + " failed to load from '" + url + "'. Another attempt will be made later but may fail as it is too late.", ex);
+
+                    }
+                    
+                }
+
+                //Set the value on data-binding for any attributes that have var(...) or calc(..) as their value.
+                if (null != kvp.Value && null != kvp.Value.Value)
+                    context.Items[kvp.Key] = kvp.Value.Value;
+
+            }
+        }
+
+        private static bool IsFontVariable(string path) {
+            if (path.EndsWith(".ttf") || path.EndsWith("ttc") || path.EndsWith("otf") || path.EndsWith("otc") || path.EndsWith("woff"))
+                return true;
+            else
+                return false;
+        }
     }
 }

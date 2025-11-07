@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Scryber.Expressive.Expressions;
+using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.String
 {
@@ -21,16 +22,18 @@ namespace Scryber.Expressive.Functions.String
 
             object value = parameters[0].Evaluate(variables);
 
-            if (value is null) { return null; }
+            if (value is null) { return 0; }
 
+            value = Comparison.ExtractAnyJsonValue(value);
             string text = value as string;
+            
             if (text != null)
             {
                 return text.Length;
             }
             else
             {
-                return value.ToString().Length;
+                return 0; // value.ToString().Length;
             }
         }
 

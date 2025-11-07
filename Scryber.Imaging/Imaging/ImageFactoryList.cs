@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 
@@ -20,6 +21,15 @@ namespace Scryber.Imaging
 
         public bool TryGetMatch(string path, out ImageFactoryBase factory)
         {
+            if (path.StartsWith("data:"))
+            {
+                //Do Nothing as we are a data URL.
+            }
+            else if (Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute))
+            {
+                path = new Uri(path).LocalPath;
+            }
+
             foreach (var match in this)
             {
                 if (match.IsMatch(path))

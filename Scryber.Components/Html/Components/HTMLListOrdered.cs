@@ -80,6 +80,13 @@ namespace Scryber.Html.Components
         protected HTMLListOrdered(ObjectType type) : base(type)
         { }
 
+        protected override Style GetBaseStyle()
+        {
+            var style =  base.GetBaseStyle();
+            style.List.NumberPostfix = ".";
+            style.List.ConcatenateWithParent = true;
+            return style;
+        }
     }
 
 }

@@ -76,9 +76,15 @@ namespace Scryber.PDF
             List<PDFObjectRef> entries = new List<PDFObjectRef>();
             foreach(PDFAnnotationEntry entry in this._annots)
             {
-                PDFObjectRef oref = entry.OutputToPDF(context, writer);
-                if (null != oref)
-                    entries.Add(oref);
+                var orefs = entry.OutputToPDF(context, writer);
+                
+                if (orefs != null)
+                {
+                    foreach (var oref in orefs)
+                    {
+                        entries.Add(oref);
+                    }
+                }
             }
 
             return entries.ToArray();
@@ -94,9 +100,15 @@ namespace Scryber.PDF
             //TODO:Render annotations
             foreach (PDFAnnotationEntry entry in this._annots)
             {
-                PDFObjectRef oref = entry.OutputToPDF(context, writer);
-                if (oref != null)                    
-                    entries.Add(oref);
+                var orefs = entry.OutputToPDF(context, writer);
+                
+                if (orefs != null)
+                {
+                    foreach (var oref in orefs)
+                    {
+                        entries.Add(oref);
+                    }
+                }
             }
 
             writer.WriteArrayRefEntries(entries.ToArray());

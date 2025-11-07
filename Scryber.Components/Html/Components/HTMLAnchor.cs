@@ -12,6 +12,9 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("a")]
     public class HTMLAnchor : Scryber.Components.Link
     {
+
+        public static readonly string LinkActionPrefix = "!";
+
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
@@ -93,28 +96,34 @@ namespace Scryber.Html.Components
                     this.NewWindow = true;
             }
 
-            LinkAction result;
-            if(Enum.TryParse<LinkAction>(file, true, out result))
+            if (string.IsNullOrEmpty(file))
             {
-                switch (result)
-                {
-                    case (LinkAction.FirstPage):
-                    case (LinkAction.LastPage):
-                    case (LinkAction.NextPage):
-                    case (LinkAction.PrevPage):
-                        this.Action = result;
-                        return result;
-                    default:
-                        return LinkAction.Undefined;
-                }
+                return LinkAction.Undefined;
+            }
 
-            }
-            else if(string.Equals("PreviousPage", file, StringComparison.OrdinalIgnoreCase))
+            LinkAction result;
+            if (file.StartsWith(LinkActionPrefix) && file.Length > LinkActionPrefix.Length)
             {
-                this.Action = LinkAction.PrevPage;
-                return this.Action;
+                var named = file.Substring(LinkActionPrefix.Length);
+                if (Enum.TryParse<LinkAction>(named, true, out result))
+                {
+                    switch (result)
+                    {
+                        case (LinkAction.FirstPage):
+                        case (LinkAction.LastPage):
+                        case (LinkAction.NextPage):
+                        case (LinkAction.PrevPage):
+                            this.Action = result;
+                            return result;
+                        default:
+                            return LinkAction.Undefined;
+                    }
+
+                }
+                
             }
-            else if (!string.IsNullOrEmpty(file) && file.StartsWith("#"))
+
+            if (file.StartsWith("#"))
             {
                 this.Destination = file;
                 return LinkAction.Destination;

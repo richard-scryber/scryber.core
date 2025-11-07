@@ -130,6 +130,12 @@ namespace Scryber.Data
         }
 
         #endregion
+        
+        private static readonly DataBindingBehaviour foreachBehaviour = new DataBindingBehaviour(
+            enumerate: true,
+            expandObject: false,
+            setContextData: true,
+            incrementIndex: true);
 
         public ForEach()
             : this(ObjectTypes.NoOp)
@@ -137,7 +143,7 @@ namespace Scryber.Data
         }
 
         protected ForEach(ObjectType type)
-            : base(type)
+            : base(type, foreachBehaviour)
         {
             _start = 0;
             _count = int.MaxValue;
@@ -194,7 +200,7 @@ namespace Scryber.Data
                     data = source.Select(this.SelectPath, context);
                     dataSource = source;
                 }
-#if NET6_0
+#if NET6_0_OR_GREATER
                 else if(data is System.Text.Json.JsonElement jele && jele.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {
                     data = jele.EnumerateArray();

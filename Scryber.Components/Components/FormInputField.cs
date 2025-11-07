@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
@@ -125,7 +126,8 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
 
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = Drawing.PositionMode.Static;
+            style.Position.DisplayMode = DisplayMode.InlineBlock;
             style.Border.Width = 1;
             style.Border.LineStyle = Drawing.LineType.Solid;
             style.Border.Color = Drawing.StandardColors.Black;

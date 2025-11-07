@@ -6,7 +6,7 @@ namespace Scryber.Expressive.Expressions
     public class CurrentDataExpression : IExpression
     {
 
-        public const string CurrentDataVariableName = "[CurrentData]";
+        public const string CurrentDataVariableName = "[_CurrentData_]";
 
         private Context context;
 

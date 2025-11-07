@@ -709,7 +709,8 @@ namespace Scryber.Components
             get { return _class; }
             set 
             {
-                _class = value; 
+                _class = value;
+                _appliedStyle = null;
             }
         }
 
@@ -1160,7 +1161,7 @@ namespace Scryber.Components
         /// Gets the Defined Style for this Component (Style Items that are to be applied directly)
         /// </summary>
         /// <returns></returns>
-        public Style GetAppliedStyle()
+        public virtual Style GetAppliedStyle()
         {
             if (null == _appliedStyle)
             {
@@ -1409,13 +1410,14 @@ namespace Scryber.Components
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()
 
 
-        public void SetArrangement(PDFRenderContext context, Style style, Rect contentBounds)
+        public ComponentArrangement SetArrangement(PDFRenderContext context, Style style, Rect borderBounds)
         {
             ComponentMultiArrangement arrange = new ComponentMultiArrangement();
             arrange.PageIndex = context.PageIndex;
-            arrange.RenderBounds = contentBounds;
+            arrange.RenderBounds = borderBounds;
             arrange.FullStyle = style;
-            this.SetArrangement(arrange);
+            this.SetArrangement(arrange, context);
+            return arrange;
         }
         
         
@@ -1423,7 +1425,7 @@ namespace Scryber.Components
         /// Sets an arrangement for this component
         /// </summary>
         /// <param name="arrange"></param>
-        protected virtual void SetArrangement(ComponentArrangement arrange)
+        protected virtual void SetArrangement(ComponentArrangement arrange, PDFRenderContext context)
         {
             if (arrange is ComponentMultiArrangement)
             {

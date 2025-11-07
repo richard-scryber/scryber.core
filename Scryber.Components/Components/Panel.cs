@@ -129,7 +129,8 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            style.Position.PositionMode = Drawing.PositionMode.Block;
+            style.Position.PositionMode = Drawing.PositionMode.Static;
+            style.Position.DisplayMode = DisplayMode.Block;
             return style;
         }
         
@@ -148,11 +149,7 @@ namespace Scryber.Components
 
         #endregion
 
-        protected override void SetArrangement(ComponentArrangement arrange)
-        {
-            base.SetArrangement(arrange);
-        }
-
+        
         
     }
 

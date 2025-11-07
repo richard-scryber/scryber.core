@@ -22,6 +22,8 @@ using System.Linq;
 using System.Text;
 using Scryber.Html;
 using Scryber.Styles.Parsing;
+using Scryber.Drawing;
+using Scryber.Styles;
 
 namespace Scryber
 {
@@ -90,5 +92,16 @@ namespace Scryber
         bool SetStyleValue(Styles.Style onStyle, CSSStyleItemReader styleReader, ContextBase context);
 
         bool SetStyleValue(IHtmlContentParser parser, IStyledComponent component, CSSStyleItemReader stylereader);
+    }
+    
+    /// <summary>
+    /// Implementors will convert a relative value of type T to an absolute value of type T using the provided sizes.
+    /// The only supported relative type is <see cref="Scryber.Drawing.Unit"/>.
+    /// </summary>
+    public interface IStyleKeyFlattenValue<T>
+    {
+        T FlattenValue(T known, Size page, Size container, Size font, Unit rootFont);
+
+        void SetFlattenedValue(Style onStyle, StyleKey<T> key, Size page, Size container, Size font, Unit rootFont);
     }
 }

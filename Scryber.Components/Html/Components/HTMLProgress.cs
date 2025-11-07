@@ -127,7 +127,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-			style.Position.PositionMode = PositionMode.InlineBlock;
+			style.Position.DisplayMode = DisplayMode.InlineBlock;
 			style.Background.Color = Color.Parse("#C0C0C0");
 			style.Size.Width = ProgressBarWidth;
 			style.Size.Height = ProgressBarHeight;

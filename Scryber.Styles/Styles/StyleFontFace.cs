@@ -225,8 +225,9 @@ namespace Scryber.Styles
                         if (context.ShouldLogMessage)
                             context.TraceLog.Add(TraceLevel.Message, FontLogCategory,
                                 "Initiating the remote request for font " + name + " from source " + source.Source);
-
-                        doc.RequestResource(source.Type.ToString(), source.Source, ResolveFontRequest, context.Document,
+                        var cache = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
+                        
+                        doc.RequestResource(source.Type.ToString(), source.Source, cache, ResolveFontRequest, context.Document,
                             context);
                     }
                 }

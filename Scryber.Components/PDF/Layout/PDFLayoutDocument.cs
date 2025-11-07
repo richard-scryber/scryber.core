@@ -84,7 +84,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the total number of document pages in this document after layout
         /// </summary>
-        public int TotalPageCount
+        public virtual int TotalPageCount
         {
             get
             {
@@ -122,6 +122,15 @@ namespace Scryber.PDF.Layout
             get { return _renderopts; }
         }
 
+        #endregion
+        
+        #region public PDFFile PrependFile { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the existing PDFFile to that this document will be appended to as a new version
+        /// </summary>
+        public PDFFile PrependFile { get; set; }
+        
         #endregion
 
         /// <summary>
@@ -330,6 +339,8 @@ namespace Scryber.PDF.Layout
                     return new PDFOutlineStack(type);
                 case (PDFArtefactTypes.AcrobatForms):
                     return new PDFAcrobatFormFieldCollection(type, this.Owner);
+                case (PDFArtefactTypes.EmbeddedFiles):
+                    return new PDFEmbeddedAttachmentDictionary(this.Owner as Document);
                 default:
                     throw RecordAndRaise.NotSupported("The catalog type {0} is not a known catalog type", type);
 
@@ -404,7 +415,18 @@ namespace Scryber.PDF.Layout
         protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             context.TraceLog.Begin(TraceLevel.Message, "Layout Document", "Outputting document to the PDFWriter");
-            writer.OpenDocument();
+
+            if (null != this.PrependFile)
+            {
+                context.TraceLog.Add(TraceLevel.Message, "Layout Document", "Copying the PDFFile to the writer, to prepend this file output");
+                writer.OpenDocument(this.PrependFile, true);
+                writer.WriteLine();
+                writer.WriteCommentLine("--- START OF THE NEXT DOCUMENT ---");
+                writer.WriteLine();
+            }
+            else
+                writer.OpenDocument();
+            
             PDFObjectRef catalog = this.WriteCatalog(context, writer);
 
             this.WriteInfo(context, writer);
@@ -571,6 +593,10 @@ namespace Scryber.PDF.Layout
         private PDFObjectRef WritePageLabels(PDFRenderContext context, PDFWriter writer)
         {
             PageNumbers nums = this.Numbers;
+            
+            if (null == nums)
+                return null;
+            
             PDFObjectRef labels = writer.BeginObject("PageLabels");
             writer.BeginDictionary();
             writer.BeginDictionaryEntry("Nums");

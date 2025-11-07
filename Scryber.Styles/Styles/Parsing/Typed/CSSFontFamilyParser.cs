@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Scryber.Drawing;
 using Scryber.Html;
+using Scryber.OpenType;
 
 namespace Scryber.Styles.Parsing.Typed
 {
@@ -29,7 +31,7 @@ namespace Scryber.Styles.Parsing.Typed
 
                     hasExpr = AttachExpressionBindingHandler(onStyle, StyleKeys.FontFamilyKey, fontfamily, DoConvertFontSelector);
                 }
-                if (TryGetActualFontFamily(fontfamily, out found))
+                else if (TryGetActualFontFamily(fontfamily, out found))
                 {
                     if(hasExpr)
                         throw new InvalidOperationException("Expressions - calc() and var() cannot be used within part of a font selector, us calc(concat(...)) instead.");
@@ -68,14 +70,54 @@ namespace Scryber.Styles.Parsing.Typed
                 selector = f;
                 return true;
             }
-            else if(TryGetActualFontFamily(value.ToString(), out selector))
-            {
-                return true;
-            }
             else
             {
-                selector = null;
-                return false;
+                var str = value.ToString().Trim();
+                FontSelector curr = null;
+                FontSelector root = null;
+                try
+                {
+                    if (str.IndexOf(" ") > 0)
+                    {
+                        var parts = str.Split(' ');
+                        foreach (var part in parts)
+                        {
+                            if (!string.IsNullOrEmpty(part))
+                            {
+                                FontSelector found;
+                                if (TryGetActualFontFamily(part, out found))
+                                {
+                                    if (null == root)
+                                        root = found;
+                                    if (null == curr)
+                                        curr = found;
+                                    else
+                                    {
+                                        curr.Next = found;
+                                        curr = found;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    selector = root;
+                    return null != root;
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException("Could not understand the font family expression '" + str + "'");
+                }
+                
+                if (TryGetActualFontFamily(str, out selector))
+                {
+                    return true;
+                }
+                else
+                {
+                    selector = null;
+                    return false;
+                }
             }
         }
 

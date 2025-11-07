@@ -1,0 +1,106 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        body{
+            margin: 20pt;
+            line-height: 15pt;
+            font-size: 12pt;
+            text-align: left;
+            font-family: sans-serif;
+        }
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 12pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+        
+        p {
+            margin-bottom: 10pt;
+            margin-top: 10pt;
+        }
+
+        .floating{
+            float: left;
+            top:100pt;
+            margin: 5pt;
+            border: solid 1pt blue;
+            font-size: 10pt;
+            width: 80pt;
+            text-align: left;
+        }
+        
+        .floating.right{
+            float: right;
+        }
+        
+        p{
+            border: solid 1pt lime;
+            margin: 0pt;
+            text-align: left;
+            width: 100%;
+        }
+        
+        #after{
+            border: solid 1pt red;
+        }
+
+        .nest{
+            border: solid 1pt green;
+            margin: 0pt;
+            margin-bottom: 10pt;
+            padding: 10pt;
+        }
+        
+        .spacer{
+            border: gray solid 1pt ;
+            height: 650pt;
+            
+        }
+        
+        .columns{
+            column-count: 2;
+            border: red solid 1pt ;
+            margin: 0pt
+        }
+
+    </style>
+</head>
+<body>
+<h5>Block below is floating left positioned without any position values</h5>
+<div class="columns">
+    <div class="spacer">This is the spacer</div>
+    <div class="spacer">This is the spacer</div>
+    <div class="nest" >
+        Before the float
+            <div id="firstFloat" class="floating">
+                1. Inside the floating block.
+            </div>
+            <div class="floating">
+                2. Inside the floating block.
+            </div>
+            <div class="floating">
+                3. Inside the floating block.
+            </div>
+            <div class="floating">
+                4. Inside the floating block.
+            </div>
+            <div class="floating">
+                5. Inside the floating block.
+            </div>
+            <div class="floating">
+                7. Inside the floating block.
+            </div>
+            This is after the floating block, that will continue along the page until it comes to
+            
+            a new line and then it will go onto a new line again.
+    </div>
+</div>
+
+</body>
+</html>
+

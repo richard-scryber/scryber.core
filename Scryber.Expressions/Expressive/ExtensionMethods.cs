@@ -19,7 +19,34 @@ namespace Scryber.Expressive
 
         internal static bool IsNumeric(this string source, CultureInfo cultureInfo)
         {
-            return double.TryParse(source, NumberStyles.Any, cultureInfo, out _);
+            if (source.StartsWith("0x"))
+            {
+                try
+                {
+                    int val = Convert.ToInt32(source, 16);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else if (source.StartsWith("0b"))
+            {
+                try
+                {
+                    int val = Convert.ToInt32(source.Substring(2), 2);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+                return double.TryParse(source, NumberStyles.Any, cultureInfo, out _);
         }
 
         internal static T PeekOrDefault<T>(this Queue<T> queue)

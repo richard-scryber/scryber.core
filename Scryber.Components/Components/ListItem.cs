@@ -130,6 +130,7 @@ namespace Scryber.Components
         {
             Styles.Style defaultStyle = base.GetBaseStyle();
             defaultStyle.Size.FullWidth = true;
+            defaultStyle.Position.PositionMode = PositionMode.Relative;
             //defaultStyle.Overflow.Split = Drawing.OverflowSplit.Never;
             return defaultStyle;
         }

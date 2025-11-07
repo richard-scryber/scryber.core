@@ -184,99 +184,7 @@ namespace Scryber.PDF.Native
         }
 
         #endregion
-
-        // not used
-
-        /*
-        #region private PDFObjectRef[] InitPageRefs()
-
-        private PDFObjectRef[] InitPageRefs()
-        {
-            List<PDFObjectRef> all = new List<PDFObjectRef>();
-            PDFObjectRef pagetree = this.DocumentCatalog[PagesName] as PDFObjectRef;
-            if (null != pagetree)
-                this.InitAPageOrTree(pagetree, all, null);
-
-            return all.ToArray();
-        }
-
-        #endregion
-
-        #region private void InitAPageOrTree(PDFObjectRef pagetree, List<PDFObjectRef> all)
-
-        private void InitAPageOrTree(PDFObjectRef pageref, List<PDFObjectRef> all, PDFDictionary inherited)
-        {
-            IParsedIndirectObject obj = this._reader.GetObject(pageref);
-            if (null == obj)
-                throw new PDFNativeParserException("Cannot find object with reference '" + pageref.ToString());
-
-            PDFDictionary dict = obj.GetContents() as PDFDictionary;
-            if (null == dict)
-                return;
-
-            PDFName type = dict[TypeName] as PDFName;
-            if (null == type)
-            {
-                return;
-            }
-            else if (type.Value == "Pages")
-            {
-                PDFDictionary newinherited = null;
-                PDFArray kids = null;
-                //Type, Parent, Kids, Count are standard
-                //Others are then inherited in the page.
-                foreach (KeyValuePair<PDFName, IFileObject> item in dict)
-                {
-                    switch (item.Key.Value)
-                    {
-                        case ("Type"):
-                        case ("Parent"):
-                        case ("Count"):
-                            //Do nothing
-                            break;
-                        case ("Kids"):
-                            kids = item.Value as PDFArray;
-                            break;
-                        default:
-                            if (null == newinherited)
-                                newinherited = new PDFDictionary();
-
-                            newinherited.Add(item.Key, item.Value);
-                            break;
-                    }
-
-                }
-                if (null != newinherited && newinherited.Count > 0)
-                {
-                    if (null != inherited && inherited.Count > 0)
-                    {
-                        foreach (KeyValuePair<PDFName, IFileObject> item in inherited)
-                        {
-                            newinherited.Add(item.Key, item.Value);
-                        }
-                    }
-                }
-                else
-                    newinherited = inherited;
-
-                if (null != kids)
-                {
-                    foreach (PDFObjectRef oref in kids)
-                    {
-                        InitAPageOrTree(oref, all, newinherited);
-                    }
-                }
-            }
-            else if (type.Value == "Page")
-            {
-                all.Add(pageref);
-                
-            }
-
-        }
-
-        #endregion
-        */
+        
 
         //
         // public interface
@@ -373,6 +281,15 @@ namespace Scryber.PDF.Native
 
         #endregion
 
+        public override string ToString()
+        {
+            if (!string.IsNullOrEmpty(this.OriginalPath))
+                return "PDFFile : " + this.OriginalPath;
+            else
+            {
+                return "PDFFile : Dynamic";
+            }
+        }
         //
         // disposal
         //
@@ -453,6 +370,16 @@ namespace Scryber.PDF.Native
             if (log.ShouldLog(TraceLevel.Message))
                 log.Begin(TraceLevel.Message, PDFFileLogCategory, "Creating a new PDFFile to read the existing data from a stream");
 
+            if (null == stream)
+                throw new NullReferenceException("Cannot load from an null stream");
+
+            if (!stream.CanRead)
+                throw new InvalidOperationException("Cannot read from this stream, has it been disposed");
+
+            if (!stream.CanSeek)
+                throw new InvalidOperationException(
+                    "Cannot load a PDF file from a non-seekable stream as random byte access is required. If using an http request, then copy the contents to a new memory stream");
+            
             PDFFile file = new PDFFile();
             file._log = log;
             file._innerStream = stream;

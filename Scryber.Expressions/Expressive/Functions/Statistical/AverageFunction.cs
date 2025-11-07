@@ -23,9 +23,9 @@ namespace Scryber.Expressive.Functions.Statistical
             {
                 int increment = 1;
                 object evaluatedValue = value.Evaluate(variables);
-                IEnumerable enumerable = evaluatedValue as IEnumerable;
+                IEnumerable enumerable;
 
-                if (enumerable != null)
+                if (Collections.TryIsCollection(evaluatedValue, out enumerable))
                 {
                     int enumerableCount = 0;
                     object enumerableSum = 0;

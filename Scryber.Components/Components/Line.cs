@@ -41,7 +41,7 @@ namespace Scryber.Components
             Style inherited = base.GetBaseStyle();
             inherited.Stroke.Width = new Unit(1, PageUnits.Points);
             inherited.Stroke.Color = StandardColors.Black;
-            inherited.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
+            inherited.Position.DisplayMode = Scryber.Drawing.DisplayMode.Block;
             inherited.Fill.Style = FillType.None;
 
             return inherited;
@@ -50,7 +50,7 @@ namespace Scryber.Components
 
         protected override GraphicsPath CreatePath(Size available, Style fullstyle)
         {
-            var pos = fullstyle.CreatePostionOptions();
+            var pos = fullstyle.CreatePostionOptions(false);
 
             Point start = Point.Empty;
             Point end = new Point(available.Width, start.Y);

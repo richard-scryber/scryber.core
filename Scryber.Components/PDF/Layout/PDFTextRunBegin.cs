@@ -22,14 +22,16 @@ using System.Linq;
 using System.Text;
 using Scryber.Drawing;
 using Scryber.Components;
+using Scryber.Expressive.Functions.Date;
 using Scryber.PDF.Graphics;
+using Scryber.Svg.Components;
 
 namespace Scryber.PDF.Layout
 {
     /// <summary>
     /// Marks the beginning of a bunch of characters on the page
     /// </summary>
-    public class PDFTextRunBegin : PDFTextRun
+    public class PDFTextRunBegin : PDFTextRun, IFallbackStyledRun
     {
         #region ivars
 
@@ -62,7 +64,7 @@ namespace Scryber.PDF.Layout
         {
             get { return _caclulatedBounds; }
         }
-        
+
 
         #region public PDFTextRenderOptions TextRenderOptions
 
@@ -105,32 +107,30 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        
+
         /// <summary>
         /// Gets or sets the first line inset for this beginning text run.
         /// </summary>
-        public Unit LineInset
-        {
-            get;
-            set;
-        }
+        public Unit LineInset { get; set; }
 
         /// <summary>
         /// Gets the total bounds of this text run
         /// </summary>
-        public Rect TotalBounds
-        {
-            get;
-            set;
-        }
+        public Rect TotalBounds { get; set; }
 
         /// <summary>
         /// Gets the start text cursor point within the page for this text
         /// </summary>
-        public Size StartTextCursor
+        public Size StartTextCursor { get; private set; }
+
+        private Unit _offsetY;
+
+        /// <summary>
+        /// Gets the Y offset for this text run.
+        /// </summary>
+        public override Unit OffsetY
         {
-            get;
-            private set;
+            get { return _offsetY; }
         }
 
         private Unit _charspace, _wordspace;
@@ -150,6 +150,21 @@ namespace Scryber.PDF.Layout
         {
             get { return _hascustomspace; }
         }
+        
+        private PDFBrush _fallbackBackground;
+        private PDFPenBorders _fallbackBorder;
+        
+        PDFBrush IFallbackStyledRun.FallbackBackground
+        {
+            get { return this._fallbackBackground;} 
+            set {this._fallbackBackground = value;} 
+        }
+
+        PDFPenBorders IFallbackStyledRun.FallbackBorder
+        {
+            get {return this._fallbackBorder; }
+            set {this._fallbackBorder = value; }
+        }
 
         //
         // ctor
@@ -167,22 +182,32 @@ namespace Scryber.PDF.Layout
         // implementation
         //
 
+
+
         public override void SetOffsetY(Unit y)
         {
-            base.SetOffsetY(y);
             Rect bounds = this.TotalBounds;
-            bounds.Y += y;
+            bounds.Y -= this._offsetY;
+            this._offsetY = y;
+            bounds.Y += this._offsetY;
             this.TotalBounds = bounds;
+
+            base.SetOffsetY(y);
+            //Rect bounds = this.TotalBounds;
+            //bounds.Y += y;
+            //this.TotalBounds = bounds;
         }
 
-        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
+        protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset,
+            Unit yoffset)
         {
             Rect final = TotalBounds;
             if (yoffset != Unit.Zero)
             {
                 final.Y += yoffset;
-                
+
             }
+
             if (xoffset > 0)
             {
                 final.X += xoffset;
@@ -204,7 +229,8 @@ namespace Scryber.PDF.Layout
         /// <param name="pageIndex"></param>
         /// <param name="xoffset"></param>
         /// <param name="yoffset"></param>
-        public void PushCompleteTextBlock(PDFTextRunEnd ending, PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
+        public void PushCompleteTextBlock(PDFTextRunEnd ending, PDFLayoutContext context, int pageIndex, Unit xoffset,
+            Unit yoffset)
         {
             Rect[] all = new Rect[3];
 
@@ -223,6 +249,7 @@ namespace Scryber.PDF.Layout
                 all[1] = CalculateInnerTotalBounds(all[0].Height, ending);
                 all[2] = CalculateLastLineBounds(all[0].Height + all[1].Height, ending);
             }
+
             _caclulatedBounds = all;
         }
 
@@ -235,6 +262,8 @@ namespace Scryber.PDF.Layout
 
             bool counting = false;
             Unit linewidth = Unit.Zero;
+            Unit lineOffset = line.RightInset;
+            bool first = true;
 
             foreach (PDFLayoutRun run in line.Runs)
             {
@@ -243,10 +272,24 @@ namespace Scryber.PDF.Layout
                 else if (run == end)
                     break;
                 else if (counting)
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
+                else if (!first)
+                {
+                    lineOffset += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        lineOffset += chars.ExtraSpace;
+                }
+
+                first = false;
             }
+
             full.Width = linewidth;
             full.Height = line.Height;
+            full.X += lineOffset;
 
             return full;
         }
@@ -258,24 +301,41 @@ namespace Scryber.PDF.Layout
 
             bool counting = false;
             Unit linewidth = Unit.Zero;
+            Unit lineOffset = line.RightInset;
+            bool first = true;
 
             foreach (PDFLayoutRun run in line.Runs)
             {
                 if (run == this)
                     counting = true;
                 else if (counting)
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
+                else if (!first)
+                {
+                    lineOffset += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        lineOffset += chars.ExtraSpace;
+                }
+
+                first = false;
             }
+
             full.Width = linewidth;
             full.Height = line.Height;
+            full.X += lineOffset;
 
             return full;
         }
 
         private Rect CalculateLastLineBounds(Unit voffset, PDFTextRunEnd end)
         {
-            PDFLayoutLine line = this._lines[this._lines.Count -1];
+            PDFLayoutLine line = this._lines[this._lines.Count - 1];
             Rect full = new Rect(this.TotalBounds.Location, Size.Empty);
+            full.X += line.RightInset;
             full.Y += voffset;
             Unit linewidth = Unit.Zero;
             full.Height = line.Height;
@@ -284,10 +344,16 @@ namespace Scryber.PDF.Layout
             {
                 if (run == end)
                     break;
-                if (run is PDFTextRunSpacer)
-                    full.X = run.Width;
+                if (run is PDFTextRunSpacer && linewidth == 0) //spacer at the start of the line - so push right
+                {
+                    full.X += run.Width;
+                }
                 else
+                {
                     linewidth += run.Width;
+                    if (run is PDFTextRunCharacter chars)
+                        linewidth += chars.ExtraSpace;
+                }
             }
 
             full.Width = linewidth;
@@ -311,17 +377,23 @@ namespace Scryber.PDF.Layout
             for (int i = firstIndex; i <= lastIndex; i++)
             {
                 PDFLayoutLine line = this.Lines[i];
+
 #if FULL_WIDTH
                 minleft = 0;
                 maxright = PDFUnit.Max(maxright, line.FullWidth);
 #else
 
-                Unit x = Unit.Zero;
-                Unit w = line.Width;
+                Unit x = Unit.Zero; // line.RightInset;
+                Unit w = line.Width + line.RightInset;
+
+                if (line.ExtraSpace.HasValue)
+                    w += line.ExtraSpace.Value;
+
                 if (line.Runs[0] is PDFTextRunSpacer)
                 {
-                    x = line.Runs[0].Width;
+                    x += line.Runs[0].Width;
                 }
+
                 maxright = Unit.Max(maxright, w);
                 minleft = Unit.Min(minleft, x);
                 full.Height += line.Height;
@@ -350,82 +422,137 @@ namespace Scryber.PDF.Layout
             bounds.X += context.Offset.X;
             bounds.Y += context.Offset.Y;
 
+
+
             //Set the arrangement for this text run
             Component owner = this.Owner as Component;
-            if (owner != null && null != this._caclulatedBounds)
-            {
-                for (int i = 0; i < this._caclulatedBounds.Length; i++)
-                {
-                    Rect b = this._caclulatedBounds[i];
-                    if (b.IsEmpty == false)
-                    {
-                        if (i == 0)
-                            b.X += this.LineInset;
 
-                        b.X += context.Offset.X;
-                        b.Y += context.Offset.Y;
-                        owner.SetArrangement(context, context.FullStyle, b);
-                    }
-                }
-               
-            }
+            var boxorder = this.TextRenderOptions.BoxPaintOrder;
 
-            //TODO:Add any backgrounds and borders based on the 3 rects in the calculated bounds.
-            //FontMetrics metrics = this.TextRenderOptions.Font.FontMetrics;
+
 
             bounds.X += this.LineInset;
-
-            Size cursor = new Size(bounds.X,bounds.Y);
+            Size cursor = new Size(bounds.X, bounds.Y);
 
 
             //pdf text rendering is done from the baseline, we need the rendering to appear to start from the top
             //so add the ascent of the font metrics
 
-            //Previous 27 Feb 20
-            //cursor.Height += this.TextRenderOptions.Font.FontMetrics.Ascent;
 
             //With mixed content
             cursor.Height += this.Line.BaseLineOffset;
-            
+
+            if (this.Owner is SVGTextSpan svgText)
+            {
+                var offset = context.Offset;
+
+                if (svgText.X != Unit.Auto)
+                {
+                    cursor.Width = svgText.X;
+                }
+
+                if (svgText.DeltaX != Unit.Auto)
+                {
+                    cursor.Width += svgText.DeltaX;
+                    offset.X += svgText.DeltaX;
+                }
+
+                if (svgText.Y != Unit.Auto)
+                {
+                    cursor.Height = svgText.Y;
+                }
+
+                if (svgText.DeltaY != Unit.Zero)
+                {
+                    cursor.Height += svgText.DeltaY;
+                    offset.Y += svgText.DeltaY;
+                }
+
+                //we need to apply this as deltas are cumulative over the
+                context.Offset = offset;
+
+            }
+
 
             if (context.ShouldLogDebug)
-                context.TraceLog.Add(TraceLevel.Debug, "Text Begin", "Marker to beginning to render the text for component " + this.Owner.ToString() + " at cursor position " + cursor);
+                context.TraceLog.Add(TraceLevel.Debug, "Text Begin",
+                    "Marker to beginning to render the text for component " + this.Owner.ToString() +
+                    " at cursor position " + cursor);
 
-            if (this.ShouldRenderBackground(context))
-                this.RenderTextBackground(context, writer);
 
-            context.Graphics.SaveGraphicsState();
-            context.Graphics.BeginText();
-
-            var block = this.GetParentBlock();
-
-            //if (null != block && block.Position != null && block.Position.TransformMatrix != null)
-            //    context.Graphics.SetTransformationMatrix(block.Position.TransformMatrix, true, false);
-
-            context.Graphics.SetTextRenderOptions(this.TextRenderOptions, bounds);
-            if (_hascustomspace && this.TextRenderOptions.CharacterSpacing.HasValue == false && this.TextRenderOptions.WordSpacing.HasValue == false)
-                context.Graphics.SetTextSpacing(this._wordspace, this._charspace, this.TextRenderOptions.Font.Size);
-
-            if (this.ShouldRenderBorder(context))
-                this.RenderTextBorder(context, writer);
+            var arrangemnt = GetTextArrangement(context, writer);
+            
+            RenderRunForPaintOrder(boxorder.First, bounds, arrangemnt, context, writer);
+            RenderRunForPaintOrder(boxorder.Second, bounds, arrangemnt, context, writer);
+            RenderRunForPaintOrder(boxorder.Third, bounds, arrangemnt, context, writer);
 
             context.Graphics.MoveTextCursor(cursor, true);
             this.StartTextCursor = cursor;
 
 
-            
+
 
             return null;
         }
 
-        public bool ShouldRenderBackground(PDFRenderContext context)
+        private void RenderRunForPaintOrder(PaintOrders order, Rect bounds, ComponentMultiArrangement arrangement, PDFRenderContext context, PDFWriter writer)
         {
-            return this.TextRenderOptions.Background != null;
+
+            if (order == PaintOrders.Fill)
+            {
+
+
+                this.RenderTextBackground(context, writer, arrangement);
+            }
+            else if (order == PaintOrders.Markers)
+            {
+
+                context.Graphics.SaveGraphicsState();
+                context.Graphics.BeginText();
+
+                if (null != arrangement)
+                    bounds.Size = arrangement.RenderBounds.Size;
+
+
+                context.Graphics.SetTextRenderOptions(this.TextRenderOptions, bounds);
+
+                if (_hascustomspace && this.TextRenderOptions.CharacterSpacing.HasValue == false &&
+                    this.TextRenderOptions.WordSpacing.HasValue == false)
+                    context.Graphics.SetTextSpacing(this._wordspace, this._charspace, this.TextRenderOptions.Font.Size);
+            }
+            else if (order == PaintOrders.Stroke)
+            {
+
+                if (this.ShouldRenderBorder(context))
+                    this.RenderTextBorder(context, writer, arrangement);
+            }
         }
+
+        protected PDFLayoutBlock GetExplicitBlock()
+        {
+            var block = this.GetParentBlock();
+            while (null != block)
+            {
+                if (block.Owner is SVGCanvas)
+                    return block;
+
+                block = block.GetParentBlock();
+
+            }
+
+            return block;
+        }
+
 
         public bool ShouldRenderBorder(PDFRenderContext context)
         {
-            return this.TextRenderOptions.Border != null;
+            var border = this.TextRenderOptions.Border;
+            if (border != null)
+                return true;
+            else if (_fallbackBorder != null && _fallbackBorder.HasBorders)
+                return true;
+            else
+                return false;
         }
 
         public bool ShouldRenderUnderline(PDFRenderContext context)
@@ -443,193 +570,616 @@ namespace Scryber.PDF.Layout
             return (this.TextRenderOptions.TextDecoration & Text.TextDecoration.Overline) > 0;
         }
 
-        public void RenderTextBackground(PDFRenderContext context, PDFWriter writer)
+        /// <summary>
+        /// Calculates the total line sizes for this text - until it hits the end. And returns the dimensions as an arrangement.
+        /// This will either be 1, 2 or 3 rects - the first line, any following lines, and the last line.
+        /// </summary>
+        /// <param name="context">The current render context</param>
+        /// <param name="writer">The stream writer for the document</param>
+        /// <returns>A linked list component multi arrangement</returns>
+        protected ComponentMultiArrangement GetTextArrangement(PDFRenderContext context, PDFWriter writer)
         {
-            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
-            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
-            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
-
-            if(lineh > top + bottom)
-            {
-                var dif = (lineh - (top + bottom)) / 2;
-                top += dif;
-                bottom += dif;
-            }
-
-            var drawing = false;
-            var finished = false;
+            ComponentMultiArrangement firstArrangement = null;
             
-            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
-            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
-            Unit recth = bottom + top;
-            Unit rectw = 0;
-            Unit padl = 0;
-
-            if (this.TextRenderOptions.Padding.HasValue)
+            if (null == this.CalculatedBounds || this.CalculatedBounds.Length == 0)
             {
-            //    //TODO: Add the padding all around
-                var pad = this.TextRenderOptions.Padding.Value;
-                padl = pad.Left;
+                if (context.ShouldLogVerbose)
+                {
+                    context.TraceLog.Add(TraceLevel.Warning, "Text",
+                        "The calculated bounds for a text run begin was null or empty so cannot render background for component " +
+                        (this.Owner == null ? "unknown" : this.Owner.ID));
+                }
 
-                rectx -= pad.Left;
-                recty -= pad.Top;
-                recth += pad.Top + pad.Bottom;
+                return null;
             }
 
-            foreach(var line in this.Lines)
-            {
-                foreach(var run in line.Runs)
-                {
-                    if (run is PDFTextRunBegin begin)
-                    {
-                        if (run == this)
-                        {
-                            drawing = true;
-                            rectw = 0;
-                        }
-                    }
-                    else if (run is PDFTextRunEnd end)
-                    {
-                        if (end.Start == this)
-                        {
-                            //render the background here.
-                            //As there is a spacer added for the right padding we have already calculated the right value.
-                            Rect bounds = new Rect(rectx, recty, rectw, recth);
-                            var brush = this.TextRenderOptions.Background;
-                            context.Graphics.FillRectangle(brush, bounds);
-                            drawing = false;
-                            finished = true;
-                            break;
-                        }
-                    }
-                    else if (drawing)
-                    {
-                        if (run is PDFTextRunNewLine nl)
-                        {
-                            //Render the background here.
-                            Rect bounds = new Rect(rectx, recty, rectw, recth);
-                            var brush = this.TextRenderOptions.Background;
-                            context.Graphics.FillRectangle(brush, bounds);
 
-                            //move down and back, then reset the width.
-                            recty += nl.NewLineOffset.Height;
-                            rectx -= (nl.NewLineOffset.Width - padl);
-                            rectw = 0;
-                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
+            Component toArrange = this.Owner as Component;
+            Point componentOffset = Scryber.Drawing.Point.Empty;
+
+            if (null != toArrange && toArrange is SVGTextSpan)
+            {
+                var block = this.GetCanvasBlock();
+
+
+                if (null != block && block.IsExplicitLayout)
+                {
+                    //we are explicit so we are always zero - need to take into account page locations
+
+                    componentOffset.X += block.PagePosition.X + block.Position.Margins.Left;
+                    componentOffset.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                }
+            }
+
+            var brush = this.TextRenderOptions.Background;
+           
+            if (null == brush) //we use the fall back as the backgrouns could have been set higher up in the object graph
+                brush = _fallbackBackground;
+            
+            var pad = this.TextRenderOptions.Padding.HasValue
+                ? this.TextRenderOptions.Padding.Value
+                : Thickness.Empty();
+            
+            var rad = this.TextRenderOptions.BorderRadius;
+            var metrics = this.TextRenderOptions.Font.FontMetrics;
+            var textLeft = Unit.Zero;
+            var rect = this.CalculatedBounds[0];
+
+
+            Unit height = metrics.TotalLineHeight; // this.TextRenderOptions.GetLineHeight(); //The height of the line
+            PDFTextRunNewLine rn = null;
+            var halfH = (height - (metrics.Ascent + metrics.Descent)) / 2;
+            Unit ascOffset =
+                this.Line.BaseLineOffset -
+                (this.TextRenderOptions.GetAscent() +
+                 halfH); //The ascender offset from the top of the line - usually zero unless we have leading.
+
+
+            Unit padInlineStart = Unit.Zero;
+            
+            if (this.LineInset > pad.Left)
+            {
+                //We are not the first run on the line, so we use the inset to know where we are.
+                rect.X = this.LineInset - pad.Left;
+            }
+
+            if (!rect.IsEmpty && rect.Width > 0)
+            {
+                rect = rect.Offset(context.Offset);
+                rect.Y += ascOffset;
+                rect.Height = height;
+
+                var padRect = rect;
+
+                if (pad.IsEmpty == false)
+                {
+                    //we add the vertical padding - there should be spacers for the let and right padding
+                    padRect.Y -= pad.Top;
+                    padRect.Height += pad.Top + pad.Bottom;
+                }
+                
+                
+                if (this.TextRenderOptions.InlinePadding.HasValue)
+                {
+                    if (this.TextRenderOptions.InlinePadding.Value.Left > Unit.Zero)
+                    {
+                        var index = this.Line.Runs.IndexOf(this);
+                        index--;
+                        if (index >= 0 && this.Line.Runs[index] is PDFLayoutInlineBegin)
+                        {
+                            padInlineStart = this.TextRenderOptions.InlinePadding.Value.Left;
+                            padRect.X -= padInlineStart;
+                        }
+                    }
+                }
+                
+
+                if (null != toArrange)
+                {
+                    var bounds = padRect.Offset(componentOffset);
+                    firstArrangement =
+                        toArrange.SetArrangement(context, context.FullStyle, bounds) as ComponentMultiArrangement;
+                }
+
+                textLeft = rect.X;
+
+
+                //move the rect down to the next line
+                var first = this.Lines[0];
+                rn = first.Runs[first.Runs.Count - 1] as PDFTextRunNewLine;
+                if (null != rn)
+                    rect.Y += rn.NewLineOffset.Height;
+                else
+                    rect.Y += this.TextRenderOptions.GetLineHeight();
+            }
+
+            if (this.Lines.Count > 1)
+            {
+                
+                rect.Height = height;
+                rect.X = textLeft;
+                //we render the background for the second to the pen-ultimate line
+
+                for (var l = 1; l < this.Lines.Count; l++)
+                {
+                    var isLastRunOnLine = false;
+                    var lastLine = false;
+                    var line = this.Lines[l];
+                    var lineRect = rect.Clone();
+
+                    lineRect.X += line.RightInset;
+                    if (l == 1 && padInlineStart > Unit.Zero)
+                        lineRect.X += padInlineStart;
+
+                    if (l == this.Lines.Count - 1) // we are the last line in this inline block so calculate the width
+                    {
+                        lastLine = true;
+                        lineRect.Width = 0;
+                        for (var r = 0; r < line.Runs.Count; r++)
+                        {
+                            var run = line.Runs[r];
+                            if (run is PDFTextRunEnd)
+                            {
+                                if (r == line.Runs.Count - 1)
+                                    isLastRunOnLine = true;
+                                else if (r == line.Runs.Count - 2 && line.Runs[r + 1] is PDFLayoutInlineEnd)
+                                    isLastRunOnLine = true;
+                                break;
+                            }
+                            else
+                            {
+                                lineRect.Width += run.Width;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        lineRect.Width = line.Width;
+                        isLastRunOnLine = true;
+                    }
+
+                    if (line.ExtraSpace.HasValue)
+                    {
+                        lineRect.Width += line.ExtraSpace.Value;
+                    }
+
+                    if (line.Runs.Count > 0 && line.Runs[0] is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer)
+                    {
+                        var prev = this.Lines[l - 1];
+                        var newLine = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
+                        if (null != newLine)
+                        {
+                            lineRect.X = spacer.Width + textLeft - newLine.NewLineOffset.Width;
+                        }
+
+                        lineRect.Width -= spacer.Width;
+                    }
+
+                    if (lineRect.Width > Unit.Zero)
+                    {
+                        var padRect = lineRect.Clone();
+
+                        if (isLastRunOnLine && this.Line.HAlignment != HorizontalAlignment.Justified &&
+                            this.Line.HAlignment != HorizontalAlignment.Right)
+                        {
+                            //add extra space for the left side bearing of the first character so the last of the line ends correctly
+                            padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
+
+                        }
+
+                        padRect.Y -= pad.Top;
+                        padRect.Height += pad.Top + pad.Bottom;
+
+                        if (null != toArrange)
+                        {
+                            var bounds = padRect.Offset(componentOffset);
+                            toArrange.SetArrangement(context, context.FullStyle, bounds);
+                        }
+
+                    }
+
+                    rn = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+
+                    //move the actual rect down to the next line
+                    if (null != rn)
+                        rect.Y += rn.NewLineOffset.Height;
+                    else
+                        rect.Y += this.TextRenderOptions.GetLineHeight();
+
+                    textLeft = lineRect.X;
+                }
+            }
+
+
+            return firstArrangement;
+        }
+        
+        
+        /// <summary>
+        /// Not used any more, but calculates the arrangement and also renders the background.
+        /// We now use the paint order and calculate the arrangement independently.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <returns></returns>
+        protected ComponentMultiArrangement RenderTextBackgroundAndArrange(PDFRenderContext context, PDFWriter writer)
+        {
+            ComponentMultiArrangement firstArrangement = null;
+            if (null == this.CalculatedBounds || this.CalculatedBounds.Length == 0)
+            {
+                if (context.ShouldLogVerbose)
+                {
+                    context.TraceLog.Add(TraceLevel.Warning, "Text",
+                        "The calculated bounds for a text run begin was null or empty so cannot render background for component " +
+                        (this.Owner == null ? "unknown" : this.Owner.ID));
+                }
+
+                return null;
+            }
+
+
+            Component toArrange = this.Owner as Component;
+            Point componentOffset = Scryber.Drawing.Point.Empty;
+
+            if (null != toArrange && toArrange is SVGTextSpan)
+            {
+                var block = this.GetCanvasBlock();
+
+
+                if (null != block && block.IsExplicitLayout)
+                {
+                    //we are explicit so we are always zero - need to take into account page locations
+
+                    componentOffset.X += block.PagePosition.X + block.Position.Margins.Left;
+                    componentOffset.Y += block.PagePosition.Y + block.Position.Margins.Top;
+                }
+            }
+
+            var brush = this.TextRenderOptions.Background;
+           
+            if (null == brush) //we use the fall back as the backgrouns could have been set higher up in the object graph
+                brush = _fallbackBackground;
+            
+            var pad = this.TextRenderOptions.Padding.HasValue
+                ? this.TextRenderOptions.Padding.Value
+                : Thickness.Empty();
+            var rad = this.TextRenderOptions.BorderRadius;
+            var metrics = this.TextRenderOptions.Font.FontMetrics;
+            var textLeft = Unit.Zero;
+            var rect = this.CalculatedBounds[0];
+
+
+            Unit height = metrics.TotalLineHeight; // this.TextRenderOptions.GetLineHeight(); //The height of the line
+            PDFTextRunNewLine rn = null;
+            var halfH = (height - (metrics.Ascent + metrics.Descent)) / 2;
+            Unit ascOffset =
+                this.Line.BaseLineOffset -
+                (this.TextRenderOptions.GetAscent() +
+                 halfH); //The ascender offset from the top of the line - usually zero unless we have leading.
+
+
+
+            if (this.LineInset > pad.Left)
+            {
+                //We are not the first run on the line, so we use the inset to know where we are.
+                rect.X = this.LineInset - pad.Left;
+            }
+
+            if (!rect.IsEmpty && rect.Width > 0)
+            {
+                rect = rect.Offset(context.Offset);
+                rect.Y += ascOffset;
+                rect.Height = height;
+
+                var padRect = rect;
+
+                if (pad.IsEmpty == false)
+                {
+                    if (this.Lines.Count == 1)
+                        padRect = rect.Inflate(pad);
+                    else
+                    {
+                        //We only pad horizontally on the first and last run
+                        padRect.X -= pad.Left;
+                        padRect.Y -= pad.Top;
+                        padRect.Width += pad.Left;
+                        padRect.Height += pad.Top + pad.Bottom;
+                    }
+                }
+
+                if (this.TextRenderOptions.InlinePadding.HasValue)
+                {
+                    if(this.TextRenderOptions.InlinePadding.Value.Left > Unit.Zero)
+                        padRect.X -= this.TextRenderOptions.InlinePadding.Value.Left;
+                }
+
+                if (null != brush)
+                {
+                    if (this.Lines.Count > 1 && this.Line.HAlignment != HorizontalAlignment.Justified &&
+                        this.Line.HAlignment != HorizontalAlignment.Right)
+                        padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
+
+                    if (rad > 0)
+                    {
+                        if (this.CalculatedBounds.Length == 3 && (this.CalculatedBounds[1].IsEmpty == false ||
+                                                                  this.CalculatedBounds[2].IsEmpty == false))
+                        {
+                            //we have further lines so we only apply the corners to the top left and bottom right.
+                            context.Graphics.FillRoundRectangle(brush, padRect, Sides.Left | Sides.Top | Sides.Bottom,
+                                rad);
                         }
                         else
                         {
-                            rectw += run.Width;
+                            context.Graphics.FillRoundRectangle(brush, padRect, rad);
                         }
-                        
                     }
-                    
+                    else
+                        context.Graphics.FillRectangle(brush, padRect);
                 }
 
-                if (finished) { break; } //the begin should have happend
+                if (null != toArrange)
+                {
+                    var bounds = padRect.Offset(componentOffset);
+                    firstArrangement =
+                        toArrange.SetArrangement(context, context.FullStyle, bounds) as ComponentMultiArrangement;
+                }
+
+                textLeft = rect.X;
+
+
+                //move the rect down to the next line
+                var first = this.Lines[0];
+                rn = first.Runs[first.Runs.Count - 1] as PDFTextRunNewLine;
+                if (null != rn)
+                    rect.Y += rn.NewLineOffset.Height;
+                else
+                    rect.Y += this.TextRenderOptions.GetLineHeight();
             }
-            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
+
+            if (this.Lines.Count > 1)
+            {
+
+
+                rect.Height = height;
+                rect.X = textLeft;
+                //we render the background for the second to the pen-ultimate line
+
+                for (var l = 1; l < this.Lines.Count; l++)
+                {
+                    var isLastRunOnLine = false;
+                    var lastLine = false;
+                    var line = this.Lines[l];
+                    var lineRect = rect.Clone();
+
+                    lineRect.X += line.RightInset;
+
+                    if (l == this.Lines.Count - 1) // we are the last line in this inline block so calculate the width
+                    {
+                        lastLine = true;
+                        lineRect.Width = 0;
+                        for (var r = 0; r < line.Runs.Count; r++)
+                        {
+                            var run = line.Runs[r];
+                            if (run is PDFTextRunEnd)
+                            {
+                                if (r == line.Runs.Count - 1)
+                                    isLastRunOnLine = true;
+                                else if (r == line.Runs.Count - 2 && line.Runs[r + 1] is PDFLayoutInlineEnd)
+                                    isLastRunOnLine = true;
+                                break;
+                            }
+                            else
+                            {
+                                lineRect.Width += run.Width;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        lineRect.Width = line.Width;
+                        isLastRunOnLine = true;
+                    }
+
+                    if (line.ExtraSpace.HasValue)
+                    {
+                        lineRect.Width += line.ExtraSpace.Value;
+                    }
+
+                    if (line.Runs.Count > 0 && line.Runs[0] is PDFTextRunSpacer spacer && spacer.IsNewLineSpacer)
+                    {
+                        var prev = this.Lines[l - 1];
+                        var newLine = prev.Runs[prev.Runs.Count - 1] as PDFTextRunNewLine;
+                        if (null != newLine)
+                        {
+                            lineRect.X = spacer.Width + textLeft - newLine.NewLineOffset.Width;
+                        }
+
+                        lineRect.Width -= spacer.Width;
+                    }
+
+                    if (lineRect.Width > Unit.Zero)
+                    {
+                        var padRect = lineRect.Clone();
+
+                        if (isLastRunOnLine && this.Line.HAlignment != HorizontalAlignment.Justified &&
+                            this.Line.HAlignment != HorizontalAlignment.Right)
+                        {
+                            //add extra space for the left side bearing of the first character so the last of the line ends correctly
+                            padRect.Width += this.TextRenderOptions.GetLeftSideBearing();
+
+                        }
+
+                        padRect.Y -= pad.Top;
+                        padRect.Height += pad.Top + pad.Bottom;
+                        
+
+                        if (null != brush)
+                        {
+                            if (rad > 0 && lastLine)
+                            {
+                                //edge case where we overflow, but there are no (significant) characters after. Show the radii
+                                context.Graphics.FillRoundRectangle(brush, padRect,
+                                    Sides.Right | Sides.Top | Sides.Bottom, rad);
+                            }
+                            else
+                            {
+                                //otherwise no rounded corners on intermediate lines
+                                context.Graphics.FillRectangle(brush, padRect);
+                            }
+                        }
+
+                        if (null != toArrange)
+                        {
+                            var bounds = padRect.Offset(componentOffset);
+                            toArrange.SetArrangement(context, context.FullStyle, bounds);
+                        }
+
+                    }
+
+                    rn = line.Runs[line.Runs.Count - 1] as PDFTextRunNewLine;
+
+                    //move the actual rect down to the next line
+                    if (null != rn)
+                        rect.Y += rn.NewLineOffset.Height;
+                    else
+                        rect.Y += this.TextRenderOptions.GetLineHeight();
+
+                    textLeft = lineRect.X;
+                }
+            }
+
+
+            return firstArrangement;
         }
 
-
-        private const Sides StartSides = Sides.Left | Sides.Top | Sides.Bottom;
-        private const Sides EndSides = Sides.Right | Sides.Top | Sides.Bottom;
-        private const Sides MidSides = Sides.Top | Sides.Bottom;
-        private const Sides AllSides = Sides.Left | Sides.Right | Sides.Top | Sides.Bottom;
-
-
-
-        public void RenderTextBorder(PDFRenderContext context, PDFWriter writer)
+        public void RenderTextBackground(PDFRenderContext context, PDFWriter writer,
+            ComponentMultiArrangement firstArrangement)
         {
-            Unit top = new Unit(this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
-            Unit bottom = new Unit(this.TextRenderOptions.GetDescender().PointsValue, PageUnits.Points);
-            Unit lineh = new Unit(this.TextRenderOptions.GetLineHeight().PointsValue, PageUnits.Points);
+            var arrange = firstArrangement;
 
-            if (lineh > top + bottom)
+            var rad = this.TextRenderOptions.BorderRadius;
+            var brush = this.TextRenderOptions.Background;
+           
+            if (null == brush) //we use the fall back as the backgrouns could have been set higher up in the object graph
+                brush = _fallbackBackground;
+            
+            Rect rect;
+
+            if(null == brush)
+                return;
+            
+            
+            while (null != arrange)
             {
-                var dif = (lineh - (top + bottom)) / 2;
-                top += dif;
-                bottom += dif;
-            }
+                rect = arrange.RenderBounds;
+                //rect = rect.Inflate(pad);
 
-            var drawing = false;
-            var finished = false;
-            var pen = this.TextRenderOptions.Border;
-            var penOffset = pen.Width;
-            var halfPenOffset = penOffset / 2;
+                var sides = Sides.Top | Sides.Bottom;
+                //reset the pens
 
-            Unit rectx = this.StartTextCursor.Width + this.LineInset + context.Offset.X;
-            Unit recty = this.StartTextCursor.Height + context.Offset.Y;
-            Unit recth = bottom + top;
-            Unit rectw = 0;
-            Unit padl = 0;
-            Sides sides = 0;
-
-            if (this.TextRenderOptions.Padding.HasValue)
-            {
-                var pad = this.TextRenderOptions.Padding.Value;
-                padl = pad.Left;
-
-                rectx -= pad.Left;
-                recty -= pad.Top;
-                recth += pad.Top + pad.Bottom;
-            }
-
-            foreach (var line in this.Lines)
-            {
-                foreach (var run in line.Runs)
+                if (arrange == firstArrangement)
                 {
-                    if (run is PDFTextRunBegin begin)
-                    {
-                        if (run == this)
-                        {
-                            drawing = true;
-                            sides = StartSides;
-                            rectw = 0;
-                        }
-                    }
-                    else if (run is PDFTextRunEnd end)
-                    {
-                        if (end.Start == this)
-                        {
-                            //render the background here.
-                            //As there is a spacer added for the right padding we have already calculated the right value.
-                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
-                            sides = sides | Sides.Right;
-                            context.Graphics.DrawRectangle(pen, bounds, sides);
-                            drawing = false;
-                            finished = true;
-                            break;
-                        }
-                    }
-                    else if (drawing)
-                    {
-                        if (run is PDFTextRunNewLine nl)
-                        {
-                            //Render the background here.
-                            Rect bounds = new Rect(rectx - halfPenOffset, recty - halfPenOffset, rectw + penOffset, recth + penOffset);
+                    //First so left
+                    sides |= Sides.Left;
+                }
+                
 
-                            context.Graphics.DrawRectangle(pen, bounds, sides);
-                            sides = MidSides;
-
-                            //move down and back, then reset the width.
-                            recty += nl.NewLineOffset.Height;
-                            rectx -= (nl.NewLineOffset.Width - padl);
-                            rectw = 0;
-                            padl = 0; //reset the padding as it's only used at the very start, not on new lines
-                        }
-                        else
-                        {
-                            rectw += run.Width;
-                        }
-
-                    }
-
+                if (null == arrange.NextArrangement)
+                {
+                    //Last so right
+                    sides |= Sides.Right;
                 }
 
-                if (finished) { break; } //the begin should have happend
+                if (rad > Unit.Auto)
+                    context.Graphics.FillRoundRectangle(brush, rect, sides, rad);
+                else
+                {
+                    context.Graphics.FillRectangle(brush, rect);
+                }
+                arrange = arrange.NextArrangement;
             }
-            context.TraceLog.Add(TraceLevel.Warning, "Text render options", "Background colors on inline text is not supported");
+
+        }
+
+        public void RenderTextBorder(PDFRenderContext context, PDFWriter writer,
+            ComponentMultiArrangement firstArrangement)
+        {
+            var arrange = firstArrangement;
+
+            var rad = this.TextRenderOptions.BorderRadius;
+            var border = this.TextRenderOptions.Border;
+            Rect rect;
+
+            if (null == border && this._fallbackBorder != null)
+            {
+                border = this._fallbackBorder;
+                
+                if(border == null)
+                        return; //nothing to draw with
+            }
+
+            if (null != arrange && null == arrange.NextArrangement) //There is only one arrangement - we are a simple rect.
+            {
+                this.OutputBorder(null, border, context, arrange.RenderBounds);
+                return;
+            }
+
+
+            var all = border.AllPen;
+            var left = border.LeftPen;
+            var right = border.RightPen;
+            
+            border.TopPen ??= all;
+            border.BottomPen ??= all;
+            
+            while (null != arrange)
+            {
+                rect = arrange.RenderBounds;
+                //rect = rect.Inflate(pad);
+
+                var sides = Sides.Top | Sides.Bottom;
+                //reset the pens
+                border.LeftPen = null;
+                border.RightPen = null;
+                border.AllPen = null;
+
+                
+                if (arrange == firstArrangement)
+                {
+                    //First so left
+                    sides |= Sides.Left;
+                    border.LeftPen = left ?? all;
+                    
+                }
+                else
+                {
+                    border.LeftPen = null;
+                    border.AllPen = null;
+                }
+
+                if (null == arrange.NextArrangement)
+                {
+                    //Last so right
+                    sides |= Sides.Right;
+                    border.RightPen = right ?? all;
+                    border.AllPen = null;
+                }
+                    
+                    
+                    
+
+                this.OutputBorder(null, border, context, rect);
+                
+                //Back to the original state
+                border.AllPen = all;
+                border.RightPen = right;
+                border.LeftPen = left;
+
+                arrange = arrange.NextArrangement;
+            }
+
         }
 
         public static double ThicknessFactor = 12.0;
@@ -638,17 +1188,18 @@ namespace Scryber.PDF.Layout
 
         public void RenderUnderlines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
-            
+
             Unit offsetV = this.TextRenderOptions.GetAscent() / UnderlineOffsetFactor;
             Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
-            
+
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
         }
 
         public void RenderStrikeThrough(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
             //Strike through is up offset one third the font ascent
-            Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue * StrikeThroughOffset,PageUnits.Points);
+            Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue * StrikeThroughOffset,
+                PageUnits.Points);
 
             Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
@@ -661,20 +1212,21 @@ namespace Scryber.PDF.Layout
             this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
         }
 
-        protected virtual void RenderTextDecoration(PDFTextRunEnd endRun, PDFRenderContext context, PDFWriter writer, Unit vOffset, Unit linethickness)
+        protected virtual void RenderTextDecoration(PDFTextRunEnd endRun, PDFRenderContext context, PDFWriter writer,
+            Unit vOffset, Unit linethickness)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Text Decoration", "Starting to render text decorations");
-            
+
             //set up the graphics context
             PDFPen pen = PDFPen.Create(this.TextRenderOptions.FillBrush, linethickness);
-            
+
             context.Graphics.SaveGraphicsState();
             pen.SetUpGraphics(context.Graphics, this.TotalBounds);
 
             bool drawing = false;
             Point linestart = new Point(this.StartTextCursor.Width, this.StartTextCursor.Height + vOffset);
-            
+
 
             foreach (PDFLayoutLine line in this.Lines)
             {
@@ -698,10 +1250,12 @@ namespace Scryber.PDF.Layout
                         {
                             PDFTextRunCharacter chars = (PDFTextRunCharacter)run;
                             Point start = new Point(linestart.X + linewidth, linestart.Y);
-                            Point end = new Point(linestart.X + linewidth + chars.Width + chars.ExtraSpace, linestart.Y);
+                            Point end = new Point(linestart.X + linewidth + chars.Width + chars.ExtraSpace,
+                                linestart.Y);
                             context.Graphics.DrawLine(start, end);
                             if (context.ShouldLogDebug)
-                                context.TraceLog.Add(TraceLevel.Debug, "Text Decoration", "Drawn line from " + start + " to " + end);
+                                context.TraceLog.Add(TraceLevel.Debug, "Text Decoration",
+                                    "Drawn line from " + start + " to " + end);
                             linewidth += chars.Width;
                         }
                         else if (run is PDFTextRunEnd)
@@ -716,6 +1270,7 @@ namespace Scryber.PDF.Layout
                                 Unit nextoffset = newline.NextLineSpacer.Width;
                                 offset.Width = nextoffset - offset.Width;
                             }
+
                             linestart.X += offset.Width;
                             linestart.Y += offset.Height;
                         }
@@ -731,22 +1286,39 @@ namespace Scryber.PDF.Layout
                             Point end = new Point(linestart.X + linewidth + chars.Width, linestart.Y);
                             context.Graphics.DrawLine(start, end);
                             if (context.ShouldLogDebug)
-                                context.TraceLog.Add(TraceLevel.Debug, "Text Decoration", "Drawn line from " + start + " to " + end);
+                                context.TraceLog.Add(TraceLevel.Debug, "Text Decoration",
+                                    "Drawn line from " + start + " to " + end);
                             linewidth += chars.Width;
                         }
                     }
-                    
+
                 }
 
             }
 
             if (context.ShouldLogDebug)
-                context.TraceLog.End(TraceLevel.Debug, "Text Decoration", "Completed the renderering of text decorations");
+                context.TraceLog.End(TraceLevel.Debug, "Text Decoration",
+                    "Completed the renderering of text decorations");
 
             //tear down the current graphics state
             context.Graphics.RestoreGraphicsState();
         }
 
-        
+        private PDFLayoutBlock GetCanvasBlock()
+        {
+            var block = this.GetParentBlock();
+            while (null != block)
+            {
+                if (block.Owner is SVGCanvas)
+                    return block;
+                else
+                {
+                    block = block.GetParentBlock();
+                }
+            }
+
+            return null;
+        }
+
     }
 }

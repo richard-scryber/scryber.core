@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using Scryber.Expressive.Tokenisation;
 using Scryber.Drawing;
+using Scryber.Expressive.Functions.Relational;
 
 namespace Scryber.Expressive
 {
@@ -202,7 +203,18 @@ namespace Scryber.Expressive
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
 
                     tokens.Dequeue();
-
+                    if (currentToken.CurrentToken.StartsWith("0b"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken.Substring(2), 2);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
+                    else if (currentToken.CurrentToken.StartsWith("0x"))
+                    {
+                        //we should not error here as the IsNumeric check has already confirmed it's valid
+                        var parsedInt = Convert.ToInt32(currentToken.CurrentToken, 16);
+                        leftHandSide = new ConstantValueExpression(parsedInt);
+                    }
                     if (int.TryParse(currentToken.CurrentToken, NumberStyles.Any, this.context.DecimalCurrentCulture, out var intValue))
                     {
                         leftHandSide = new ConstantValueExpression(intValue);
@@ -364,6 +376,10 @@ namespace Scryber.Expressive
             {
                 constant = new ConstantValueExpression(Math.E);
             }
+            else if (currentToken.Equals("@index", this.context.ParsingStringComparison) && this.context.TryGetFunction("@index", out var func))
+            {
+                constant = new FunctionExpression("@index", func, this.context, Array.Empty<IExpression>());
+            }
             else
             {
                 constant = null;
@@ -423,14 +439,22 @@ namespace Scryber.Expressive
             return new string(buffer, 0, outIdx);
         }
 
+        private const string SelfExpression = "this";
+        private const string ParentExpression = "_ParentData_";
+
         protected virtual IExpression CreateVariableExpression(string token, Context context)
         {
-            return new VariableExpression(token);
+            if (token.Equals(SelfExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                return new SelfVariableExpression();
+            else if (token.Equals(ParentExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase: StringComparison.Ordinal))
+                return new ParentVariableExpression();
+            else
+                return new VariableExpression(token, context.IsCaseInsensitiveParsingEnabled);
         }
 
         
 
-        private static void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
+        private void CheckForExistingParticipant(IExpression participant, Token token, bool isWithinFunction)
         {
             if (participant != null)
             {

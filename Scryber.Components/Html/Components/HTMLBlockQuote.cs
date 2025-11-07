@@ -53,6 +53,9 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
+        
+        [PDFAttribute("cite")]
+        public string Citation { get; set; }
 
         public HTMLBlockQuote()
             : this(HTMLObjectTypes.BlockQuote)

@@ -26,7 +26,7 @@ namespace Scryber.PDF
             this.AnnotationStyle = style;
         }
 
-        protected override PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
+        protected override IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
 
             List<PDFObjectRef> all = new List<PDFObjectRef>();
@@ -110,19 +110,11 @@ namespace Scryber.PDF
 
                 return null;
             }
-            else if(all.Count == 1)
-            {
-                return all[0];
-            }
             else
             {
-                if (context.ShouldLogDebug)
-                    context.TraceLog.End(TraceLevel.Debug, "Link Annotation", "All " + all.Count + " link annotations for component " + this.Component.UniqueID + " were output");
-                PDFObjectRef array = writer.BeginObject();
-                writer.WriteArrayRefEntries(all.ToArray());
-                writer.EndObject();
-                return array;
+                return all;
             }
+            
         }
 
         protected virtual Rect GetComponentBounds(Component comp, ComponentArrangement arrange)

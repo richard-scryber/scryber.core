@@ -1,4 +1,5 @@
-﻿using Scryber.Expressive.Expressions;
+﻿using System;
+using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Helpers;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,41 +17,69 @@ namespace Scryber.Expressive.Functions.Relational
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
-            var result = parameters[0].Evaluate(variables);
-
-            if (result is IEnumerable enumerableResult)
+            object min = null;
+            object result;
+            
+            for (var i = 0; i < parameters.Length; i++)
             {
-                result = Min(enumerableResult, context);
-            }
+                var param = parameters[i];
 
-            // Null means we should bail out.
-            if (result is null)
-            {
-                return null;
-            }
+                result = param.Evaluate(variables);
+                result = Comparison.ExtractAnyJsonValue(result);
 
-            // Skip the first item in the list as it has already been evaluated.
-            foreach (var value in parameters.Skip(1))
-            {
-                var evaluatedValue = value.Evaluate(variables);
-
-                if (evaluatedValue is IEnumerable enumerable)
+                if (result != null)
                 {
-                    evaluatedValue = Min(enumerable, context);
-                }
+                    if (Collections.TryIsCollection(result, out var ienm))
+                    {
+                        foreach (var innerResult in ienm)
+                        {
+                            var innerValue = Comparison.ExtractAnyJsonValue(innerResult);
+                            if (null == min)
+                            {
+                                min = innerValue;
+                            }
+                            else if (null == innerValue)
+                            {
+                                //ignore nulls
+                            }
+                            else if (innerValue is string innerStr)
+                            {
+                                if (System.String.Compare(min.ToString(), innerStr, context.EqualityStringComparison) > 0)
+                                {
+                                    min = innerValue;
+                                }
+                            }
+                            else if(innerValue is IComparable comp)
+                            {
+                                if (Comparison.CompareUsingMostPreciseType(min, comp, context) > 0)
+                                    min = comp;
+                            }
+                        }
+                    }
+                    else //not a collection
+                    {
+                        if (null == min)
+                        {
+                            min = result;
+                        }
+                        else if (result is string str)
+                        {
+                            if (System.String.Compare(min.ToString(), str, context.EqualityStringComparison) > 0)
+                            {
+                                min = str;
+                            }
+                        }
+                        else if (result is IComparable comp)
+                        {
+                            if (Comparison.CompareUsingMostPreciseType(min, comp, context) > 0)
+                                min = comp;
+                        }
 
-                result = Comparison.CompareUsingMostPreciseType(result, evaluatedValue, context) < 0
-                    ? result
-                    : evaluatedValue;
-
-                // Null means we should bail out.
-                if (result is null)
-                {
-                    return null;
+                    }
                 }
             }
 
-            return result;
+            return min;
         }
 
         #endregion

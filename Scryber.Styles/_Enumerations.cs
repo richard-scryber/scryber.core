@@ -123,7 +123,11 @@ namespace Scryber
         RepeatAtTop
     }
 
-    
+    public enum HeadTailRepeat
+    {
+        None,
+        Repeat
+    }
     
 
     public enum NumberingOutputType
@@ -140,6 +144,13 @@ namespace Scryber
         Scale,
         Skew,
         Matrix
+    }
+
+    public enum PreferredFlattenDimension
+    {
+        Width,
+        Height,
+        Font
     }
 
     public enum AttachmentDisplayIcon

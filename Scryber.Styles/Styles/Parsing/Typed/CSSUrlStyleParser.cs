@@ -51,7 +51,7 @@ namespace Scryber.Styles.Parsing.Typed
                 return false;
         }
 
-        private bool IsGradient(string value, out string finalValue)
+        public static bool IsGradient(string value, out string finalValue)
         {
             if (!string.IsNullOrEmpty(value))
             {

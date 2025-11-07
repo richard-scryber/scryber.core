@@ -129,7 +129,7 @@ namespace Scryber.UnitSamples
                 bodyStyle.Columns.ColumnCount = 2;
 
                 var textStyle = new StyleDefn(".preserve");
-                textStyle.Text.PreserveWhitespace = true;
+                //textStyle.Text.PreserveWhitespace = true;
 
                 //Add the styles to the document
                 doc.Styles.Add(bodyStyle);

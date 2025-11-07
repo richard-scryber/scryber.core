@@ -37,6 +37,19 @@ namespace Scryber.PDF.Layout
         protected const int NULL_COLUMNINDEX = -1;
         protected const string LOG_CATEGORY = "PDFLayout";
 
+
+        //
+        // events
+        //
+
+        public event EventHandler LayoutBlockClosed;
+
+        protected virtual void OnLayoutItemClosed()
+        {
+            if (null != LayoutBlockClosed)
+                LayoutBlockClosed(this, EventArgs.Empty);
+        }
+
         //
         // properties
         //
@@ -107,6 +120,11 @@ namespace Scryber.PDF.Layout
         //
         // ctor(s)
         //
+        
+        /// <summary>
+        /// Gets or set the flag for the items' layout - Explicit means no adjustment for the flow should be made.
+        /// </summary>
+        public bool IsExplicitLayout { get; set; }
 
         #region protected PDFLayoutItem(PDFLayoutItem parent)
 
@@ -185,6 +203,9 @@ namespace Scryber.PDF.Layout
                         msg = String.Empty;
                     throw new InvalidOperationException(Errors.LayoutItemCouldNotBeClosed + msg);
                 }
+
+                this.OnLayoutItemClosed();
+
                 return perform;
             }
             else
@@ -468,14 +489,15 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        #region protected virtual void OutputClipping(PDFBorderStyle border, PDFRenderContext context, PDFRect cliprect)
+        #region OutputClipping / ReleaseGraphicsState
 
         /// <summary>
         /// Outputs the border for this block in the specified rect with the border style
         /// </summary>
         /// <param name="context">The current render context</param>
         /// <param name="cliprect">The rectangle that shoud be rendered as the border</param>
-        protected virtual void OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
+        /// <returns>True if the clippong rect was set</returns>
+        protected virtual bool OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
         {
             var g = context.Graphics;
             g.SaveGraphicsState();
@@ -494,6 +516,8 @@ namespace Scryber.PDF.Layout
             {
                 g.SetClipRect(cliprect);
             }
+
+            return true;
         }
 
         protected virtual void ReleaseClipping(PDFRenderContext context)

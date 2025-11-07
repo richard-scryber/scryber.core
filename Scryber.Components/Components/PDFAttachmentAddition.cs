@@ -375,18 +375,15 @@ namespace Scryber.Components
             DateTime expires;
             if (this.NeverCache)
                 return DateTime.MinValue;
-            else
-                return DateTime.MinValue;
+            
 
             //TODO: Support the caching
 
-            //int cachedur = this.Document.RenderOptions.ImageCacheDurationMinutes;
+            int cachedur = this.Document.RenderOptions.ImageCacheDurationMinutes;
 
-            //if (cachedur == Scryber.Configuration.ImagingConfigurationSection.ImageCacheNeverExpires)
-            //    expires = DateTime.MaxValue;
-            //else
-            //    expires = DateTime.Now.AddMinutes(cachedur);
-            //return expires;
+            expires = DateTime.Now.AddMinutes(cachedur);
+            
+            return expires;
         }
 
 
@@ -398,7 +395,6 @@ namespace Scryber.Components
 
         public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            
             return null;
         }
         

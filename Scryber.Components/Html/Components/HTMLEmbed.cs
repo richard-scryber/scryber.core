@@ -1,5 +1,6 @@
 ﻿using System;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -14,6 +15,8 @@ namespace Scryber.Html.Components
 
         [PDFAttribute("style")]
         public override Style Style { get => base.Style; set => base.Style = value; }
+        
+        
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -44,11 +47,12 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        [PDFArray()]
         [PDFElement("")]
-        [PDFArray(typeof(Component))]
-        public ComponentList Contents
-        {
-            get { return base.InnerContent; }
+        public ComponentList Contents 
+        { 
+            get { return this.InnerContent; } 
+            set { this.InnerContent = value; }
         }
 
 
@@ -56,7 +60,10 @@ namespace Scryber.Html.Components
         {
         }
 
-        protected HTMLEmbed(ObjectType type): base(type)
-        { }
+        protected HTMLEmbed(ObjectType type) : base(type)
+        {
+        }
+
+        
     }
 }

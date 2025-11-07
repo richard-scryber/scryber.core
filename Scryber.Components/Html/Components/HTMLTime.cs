@@ -65,14 +65,21 @@ namespace Scryber.Html.Components
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
+                string format = fullstyle.GetValue(StyleKeys.TextDateFormatKey, string.Empty);
+                
+                //We have no format so we return the string unaltered.
+                if(string.IsNullOrEmpty(format))
+                    return PDFTextReader.Create(this.Text, TextFormat.Plain, false, context.TraceLog);
+                
+                //Otherwise parse the string, set the value and return the reader from base which will use the format.
                 DateTime parsed;
                 if (DateTime.TryParse(this.Text, out parsed))
                 {
                     this.Value = parsed;
                     return base.CreateReader(context, fullstyle);
                 }
-                else
-                    return Scryber.Text.PDFTextReader.Create(this.Text, TextFormat.Plain, false, context.TraceLog);
+                else //We could not parse the format.
+                    return PDFTextReader.Create(this.Text, TextFormat.Plain, false, context.TraceLog);
             }
             else
                 return base.CreateReader(context, fullstyle);

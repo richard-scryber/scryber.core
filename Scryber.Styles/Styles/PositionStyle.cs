@@ -50,7 +50,7 @@ namespace Scryber.Styles
                 else if (this.IsDefined(StyleKeys.PositionXKey) || this.IsDefined(StyleKeys.PositionYKey))
                     return PositionMode.Relative;
                 else
-                    return PositionMode.Block;
+                    return PositionMode.Static;
             }
             set
             {
@@ -58,9 +58,32 @@ namespace Scryber.Styles
             }
         }
 
+        public DisplayMode DisplayMode
+        {
+            get
+            {
+                DisplayMode val;
+                if (this.TryGetValue(StyleKeys.PositionDisplayKey, out val))
+                    return val;
+                else
+                {
+                    return DisplayMode.Block;
+                }
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionDisplayKey, value);
+            }
+        }
+
         public void RemovePositionMode()
         {
             this.RemoveValue(StyleKeys.PositionModeKey);
+        }
+
+        public void RemoveDisplayMode()
+        {
+            this.RemoveValue(StyleKeys.PositionDisplayKey);
         }
 
         #endregion
@@ -230,7 +253,83 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public PDFUnit Right {get;set;} + RemoveRight()
 
+        [PDFAttribute("right")]
+        [PDFDesignable("Right", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public Unit Right
+        {
+            get
+            {
+                Unit f;
+                if (this.TryGetValue(StyleKeys.PositionRightKey, out f))
+                    return f;
+                else
+                    return Unit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionRightKey, value);
+            }
+        }
+
+        public void RemoveRight()
+        {
+            this.RemoveValue(StyleKeys.PositionRightKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit Bottom {get;set;} + RemoveBottom()
+
+        [PDFAttribute("bottom")]
+        [PDFDesignable("Bottom", Ignore = true, Category = "Position", Priority = 1, Type = "PDFUnit")]
+        public Unit Bottom
+        {
+            get
+            {
+                Unit f;
+                if (this.TryGetValue(StyleKeys.PositionBottomKey, out f))
+                    return f;
+                else
+                    return Unit.Empty;
+
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionBottomKey, value);
+            }
+        }
+
+        public void RemoveBottom()
+        {
+            this.RemoveValue(StyleKeys.PositionBottomKey);
+        }
+
+        #endregion
+
+        public bool XObject
+        {
+            get
+            {
+                bool xobj;
+                if (this.TryGetValue(StyleKeys.PositionXObjectKey, out xobj))
+                    return xobj;
+                else
+                    return false;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionXObjectKey, value);
+            }
+        }
+
+        public void RemoveXObject()
+        {
+            this.RemoveValue(StyleKeys.PositionXObjectKey);
+        }
+        
         // obselete legacy properties - moved to Size
 
 

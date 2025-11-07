@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF.Graphics;
+using Scryber.Styles.Parsing.Typed;
 
 namespace Scryber.PDF.Layout
 {
@@ -271,7 +272,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public override Unit Height
         {
-            get { return this.UsedSize.Height; }
+            get
+            {
+                return this.UsedSize.Height;
+            }
         }
 
         #endregion
@@ -289,6 +293,12 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public DisplayMode DisplayMode
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Gets or sets the floating blocks in this region.
         /// </summary>
@@ -300,6 +310,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         public bool ExcludeFromOutput { get; set; }
 
+        
         //
         // ctor(s)
         //
@@ -307,7 +318,7 @@ namespace Scryber.PDF.Layout
         #region public PDFLayoutRegion(PDFLayoutBlock block, IPDFComponent owner, PDFRect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign)
 
         public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign)
-            : this(block,owner,contentbounds,columnindex,halign,valign, PositionMode.Block)
+            : this(block,owner,contentbounds,columnindex,halign,valign, DisplayMode.Block, PositionMode.Static)
         {
         }
 
@@ -321,7 +332,7 @@ namespace Scryber.PDF.Layout
         /// <param name="block"></param>
         /// <param name="columnindex"></param>
         /// <param name="contentbounds"></param>
-        public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign, PositionMode mode)
+        public PDFLayoutRegion(PDFLayoutBlock block, IComponent owner, Rect contentbounds, int columnindex, HorizontalAlignment halign, VerticalAlignment valign, DisplayMode display, PositionMode position)
             : base(block, owner)
         {
             this.UsedSize = Size.Empty;
@@ -329,7 +340,8 @@ namespace Scryber.PDF.Layout
             this.TotalBounds = contentbounds;
             this.HAlignment = halign;
             this.VAlignment = valign;
-            this.PositionMode = mode;
+            this.PositionMode = position;
+            this.DisplayMode = display;
         }
 
         #endregion
@@ -398,6 +410,10 @@ namespace Scryber.PDF.Layout
             Unit h = item.Height;
             Unit w = item.Width;
 
+            if (item is PDFLayoutLine line)
+            {
+                w += line.LeftInset + line.RightInset;
+            }
             //Update the size
             Size sz = this.UsedSize;
             sz.Height += h;
@@ -412,16 +428,20 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Begins a new line on the current region and sets up it's width.
         /// </summary>
-        /// <param name="startparagraph">Set to true if this is the first line in a run or the first line in a new paragraph</param>
+        /// <param name="height">Set to true if this is the first line in a run or the first line in a new paragraph</param>
         /// <returns>The newly created and added line</returns>
-        public PDFLayoutLine BeginNewLine()
+        public PDFLayoutLine BeginNewLine(double heightPts = 1.0)
         {
             this.AssertIsOpen();
             var last = this.AssertLastItemIsClosed() as PDFLayoutLine;
-            
-            Unit width = this.GetAvailableWidth();
+            Unit leftInset;
+            Unit width = this.GetAvailableLineWidth(heightPts, out leftInset);
 
             PDFLayoutLine line = new PDFLayoutLine(this, width, this.HAlignment, VerticalAlignment.Baseline, this.Contents.Count);
+            
+            if (leftInset != Unit.Empty)
+                line.LeftInset = leftInset;
+            
             line.SetOffset(line.OffsetX, this.UsedSize.Height);
             //if (null != last)
             //    line.BaseLineOffset = last.BaseLineOffset;
@@ -487,10 +507,28 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="ensureItem"></param>
         /// <returns></returns>
-        public bool RemoveItem(PDFLayoutItem ensureItem)
+        public bool RemoveItem(PDFLayoutItem ensureItem, bool updateSize = false)
         {
             if (null != ensureItem)
-                return this.Contents.Remove(ensureItem);
+            {
+                var removed = this.Contents.Remove(ensureItem);
+
+                if (removed && updateSize)
+                {
+                    if (ensureItem is PDFLayoutLine line)
+                    {
+                        
+                    }
+                    else if (ensureItem is PDFLayoutBlock block)
+                    {
+                        var height = block.Height;
+                        this.UsedSize = new Size(this.UsedSize.Width, this.UsedSize.Height - height);
+                        //this.TotalBounds.Height = this.UsedSize.Height;
+                    }
+                }
+                
+                return removed;
+            }
             else
                 return false;
         }
@@ -523,7 +561,7 @@ namespace Scryber.PDF.Layout
         /// And increasing the size of this region if the block is closed.
         /// </summary>
         /// <param name="block"></param>
-        public virtual void AddExistingItem(PDFLayoutBlock block)
+        public virtual void AddExistingItem(PDFLayoutBlock block, int atIndex = -1)
         {
             if (null == block)
                 throw new ArgumentNullException("block");
@@ -531,7 +569,14 @@ namespace Scryber.PDF.Layout
             if (block.Parent != this.Parent) //make sure the parent blocks match
                 block.SetParent(this.Parent);
 
-            this.Contents.Add(block);
+            if (atIndex < 0 || atIndex >= this.Contents.Count)
+            {
+                this.Contents.Add(block);
+            }
+            else
+            {
+                this.Contents.Insert(atIndex, block);
+            }
 
             //Set the blocks new available bounds based on our size
             Rect newbounds = block.AvailableBounds;
@@ -607,18 +652,59 @@ namespace Scryber.PDF.Layout
         /// Gets the current available width for a line
         /// </summary>
         /// <returns></returns>
-        protected Unit GetAvailableWidth()
+        protected Unit GetAvailableLineWidth(Unit height, out Unit leftInset)
         {
-            return GetAvailableWidth(this.UsedSize.Height, 1.0);
+            return GetAvailableLineWidth(this.UsedSize.Height, height, this.OffsetX, out leftInset);
         }
 
-        public virtual Unit GetAvailableWidth(Unit yoffset, Unit height)
+        public virtual Unit GetAvailableLineWidth(Unit yoffset, Unit height, Unit regionInset, out Unit leftInset, bool postLayout = false)
         {
             Unit avail = this.UnusedBounds.Width;
-
             if (null != this.Floats)
-                avail = this.Floats.ApplyWidthInset(avail, yoffset, height);
-            return avail;
+                return this.Floats.ApplyWidthInset(avail, yoffset, height, out leftInset);
+            else
+            {
+                var block = this.GetParentBlock();
+                leftInset = Unit.Zero;
+                
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                {
+                    return avail;
+                    
+                }
+                else if (block.Owner is TableCell)
+                {
+                    return avail;
+                }
+                else
+                {
+                    var parent = block.GetParentBlock();
+                    if (null != parent)
+                    {
+                        if (postLayout)
+                            yoffset += block.TotalBounds.Y + block.Position.Margins.Top;
+                        else
+                            yoffset += parent.CurrentRegion.UsedSize.Height + block.Position.Margins.Top +
+                                       block.Position.Padding.Top;
+                        
+                        leftInset = parent.CurrentRegion.GetLeftInset(yoffset, height);
+                        var right = parent.CurrentRegion.GetRightInset(yoffset, height);
+                        
+                        avail -= (leftInset + right);
+                        
+                        return avail;
+                        
+                        var parentAvail = parent.CurrentRegion.GetAvailableLineWidth(yoffset, height, regionInset, out leftInset); 
+                        parentAvail -= block.Position.Margins.Left + block.Position.Margins.Right;
+                        parentAvail -= block.Position.Padding.Left + block.Position.Padding.Right;
+                        
+                    }
+                    else
+                    {
+                        return avail;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -628,7 +714,30 @@ namespace Scryber.PDF.Layout
             Unit x = Unit.Zero;
             if (null != this.Floats)
                 x = this.Floats.GetLeftOffset(x, yoffset, height);
+            else
+            {
+                var block = this.GetParentBlock();
 
+                if (block.Position.PositionMode == PositionMode.Absolute || block.Position.PositionMode == PositionMode.Relative || block.Position.PositionMode == PositionMode.Fixed)
+                    return x;
+                else if (block.Owner is TableCell)
+                    return x;
+                else
+                {
+                    var parent = block.GetParentBlock();
+
+                    if (null != parent)
+                    {
+                        yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
+                        
+                        x = parent.CurrentRegion.GetLeftInset(yoffset, height);
+                    }
+                    else
+                    {
+                        return x;
+                    }
+                }
+            }
             return x;
         }
 
@@ -637,7 +746,29 @@ namespace Scryber.PDF.Layout
             Unit x = Unit.Zero;
             if (null != this.Floats)
                 x = this.Floats.GetRightInset(x, yoffset, height);
+            else
+            {
+                var block = this.GetParentBlock();
 
+                if (block.Position.PositionMode == PositionMode.Absolute)
+                    return x;
+                else if (block.Owner is TableCell)
+                    return x;
+                else
+                {
+                    var parent = block.GetParentBlock();
+
+                    if (null != parent)
+                    {
+                        yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
+                        x = parent.CurrentRegion.GetRightInset(yoffset, height);
+                    }
+                    else
+                    {
+                        return x;
+                    }
+                }
+            }
             return x;
         }
 
@@ -659,6 +790,27 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        public virtual Unit GetFloatsMaxVOffset(FloatMode mode, Unit availableWidth, Unit reqiredSpace)
+        {
+            var maxY = Unit.Zero;
+            
+            var afloat = this.Floats;
+            
+            while (null != afloat)
+            {
+                if (afloat.Mode == mode)
+                {
+                    if (afloat.FloatInset + afloat.FloatWidth + reqiredSpace > availableWidth)
+                        maxY = Unit.Max(maxY, afloat.YOffset + afloat.FloatHeight);
+                }
+
+                afloat = afloat.Next;
+            }
+
+            return maxY;
+
+        }
+
         public virtual void AddFloatingInset(FloatMode mode, Unit floatWidth, Unit floatInset, Unit offsetY, Unit floatHeight)
         {
             var line = this.CurrentItem as PDFLayoutLine;
@@ -666,14 +818,22 @@ namespace Scryber.PDF.Layout
             //If we have a current line and the float is on this line
             if (null != line && line.OffsetY >= offsetY)
                 line.SetMaxWidth(line.FullWidth - floatWidth);
-
+            
             if (mode == FloatMode.Left)
             {
-                this.Floats = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
+                var floating = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY);
+                if (null == this.Floats)
+                    this.Floats = floating;
+                else
+                    this.Floats.AppendFloat(floating);
             }
             else if(mode == FloatMode.Right)
             {
-                this.Floats = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY, this.Floats);
+                var floating = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY);
+                if (null == this.Floats)
+                    this.Floats = floating;
+                else
+                    this.Floats.AppendFloat(floating);
             }
         }
 
@@ -708,10 +868,11 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            bool applyAlignments = this.ShouldApplyAlignment();
+            bool applyHAlignments = this.ShouldApplyHorizontalAlignment();
+            bool applyVAlignments = this.ShouldApplyVerticalAlignment();
             Unit yoffset = origYoffset;
 
-            if (applyAlignments)
+            if (applyVAlignments)
             {
                 VerticalAlignment v = this.VAlignment;
                 if (v != VerticalAlignment.Top)
@@ -739,25 +900,49 @@ namespace Scryber.PDF.Layout
             foreach (PDFLayoutItem item in this.Contents)
             {
                 Unit actYOffset = yoffset + item.OffsetY;
-             
-                Unit xInset = this.GetLeftInset(actYOffset, item.Height);
+                
+                var line = item as PDFLayoutLine;
+                var block = item as PDFLayoutBlock;
+                
+                Unit xInset = 0;
+
+                if (null != line)
+                {
+                    xInset = this.GetLeftInset(actYOffset, item.Height);
+                }
+
                 Unit itemXOffset = origXoffset;
 
                 if (xInset != 0) //We have floating left item(s)
                 {
+                    
                     itemXOffset += xInset;
                 }
                
 
                 ///Individually calculate each lines horizontal offset
-                if (applyAlignments && h != HorizontalAlignment.Left)
+                if (applyHAlignments && h != HorizontalAlignment.Left)
                 {
-                    Unit width = this.GetAvailableWidth(actYOffset, item.Height);
+                    Unit width = this.UnusedBounds.Width;
+                    Unit right = Unit.Zero;
+
+                    if (null != line)
+                    {
+                        bool postLayout = true;
+                        Unit left;
+                        width = this.GetAvailableLineWidth(actYOffset, item.Height, this.OffsetX, out left, postLayout);
+                        right = this.GetRightInset(actYOffset, item.Height);
+
+                        if (width > line.FullWidth)
+                            width = line.FullWidth;
+                    }
+
                     Unit space = width - item.Width;
+                    
 
                     if(h == HorizontalAlignment.Justified)
                     {
-                        if (item is PDFLayoutLine line)
+                        if (null != line)
                         {
                             if (logdebug)
                                 context.TraceLog.Add(TraceLevel.Verbose, PDFLayoutItem.LOG_CATEGORY, "Justifying the textual content of the line " + line.LineIndex);
@@ -772,17 +957,105 @@ namespace Scryber.PDF.Layout
                             }
 
                             lastwasapplied = didjustify;
+                            space = 0;
                         }
-                        space = 0; // reset space to zero as already accounted for.
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
                     }
                     else if(h == HorizontalAlignment.Center)
                     {
-                        space = space / 2;
+                        if (null != line)
+                        {
+                            bool didcenter = line.CenterAlignContent(width, item.Width, space, xInset, right, cache, context);
+                            lastwasapplied = didcenter;
+                            space = 0;
+                        }
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
+                    }
+                    else if (h == HorizontalAlignment.Right)
+                    {
+                        if (null != line)
+                        {
+                            bool didright = line.RightAlignContent(width, item.Width, space, xInset, right, cache, context);
+                            lastwasapplied = didright;
+                            space = 0;
+                        }
+                        else if (null != block && block.Position.Width.HasValue)
+                        {
+                            if (block.Position.AutoMarginLeft)
+                            {
+                                if (block.Position.AutoMarginRight)
+                                    space /= 2;
+                            }
+                            else
+                            {
+                                space = 0;
+                            }
+                        }
+                        else
+                        {
+                            space = 0;
+                        }
+                        
                     }
                     
                     itemXOffset = itemXOffset + space;
                 }
+                else if (null != block && block.Position.Width.HasValue)
+                {
+                    var w = block.Position.Width.Value;
+                    //This is a block with a width - check the margin auto values to see if we need to align it.
+                    if (block.Position.AutoMarginLeft)
+                    {
+                        var left = this.TotalBounds.Width - w;
+                        
+                        if (block.Position.AutoMarginRight)
+                        {
+                            //both left and right so centre align
+                            left /= 2;
+                        }
+
+                        var bounds = block.TotalBounds;
+                        bounds.X += left;
+                        
+                        block.TotalBounds = bounds;
+
+                    }
+                }
                 
+
+                lastXInset = xInset;
                 item.PushComponentLayout(context, pageIndex, itemXOffset, yoffset);
             }
 
@@ -796,12 +1069,47 @@ namespace Scryber.PDF.Layout
         /// and the contents within that block are not of our concern.
         /// </summary>
         /// <returns></returns>
-        private bool ShouldApplyAlignment()
+        private bool ShouldApplyHorizontalAlignment()
         {
-            if (this.PositionMode == Drawing.PositionMode.Absolute || this.PositionMode == Drawing.PositionMode.Relative)
+            if (this.PositionMode == PositionMode.Fixed || this.PositionMode == Drawing.PositionMode.Absolute)
                 return false;
+            else if(this.PositionMode == PositionMode.Relative)
+            {
+                return false; //Check with relative unit tests.
+            }
+            else if (this.IsExplicitLayout)
+            {
+                return false; //canvas should not be aligned.
+            }
             else
                 return true;
+        }
+        
+        /// <summary>
+        /// Checks if this region should apply allignements - if we are a positioned region then we do not 
+        /// as the content of this region (and it should only be 1 block) will specify position data
+        /// and the contents within that block are not of our concern.
+        /// </summary>
+        /// <returns></returns>
+        private bool ShouldApplyVerticalAlignment()
+        {
+            if (this.Parent is PDFLayoutBlock block && block.Position.DisplayMode == DisplayMode.TableCell && block.Position.PositionMode == PositionMode.Static)
+                return true;
+            else
+                return false;
+            
+            // if (this.PositionMode == PositionMode.Fixed || this.PositionMode == Drawing.PositionMode.Absolute)
+            //     return false;
+            // else if(this.PositionMode == PositionMode.Relative)
+            // {
+            //     return false; //Check with relative unit tests.
+            // }
+            // else if (this.IsExplicitLayout)
+            // {
+            //     return false; //canvas should not be aligned.
+            // }
+            // else
+            //     return true;
         }
 
         /// <summary>
@@ -874,47 +1182,64 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            bool logdebug = context.ShouldLogDebug;
-            string name = string.Empty;
-
-            if (logdebug)
+            try
             {
-                name = this.ToString();
-                context.TraceLog.Begin(TraceLevel.Debug, "Layout Region", "Outputting region " + name);
-            }
-
-            if(this.ExcludeFromOutput)
-            {
-                if (logdebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Region " + name + " is marked as excluded from output, so not rendering anything");
-            }
-            else if (this._contents != null && this._contents.Count > 0)
-            {
-                Size prevsize = context.Space;
-                Point prevloc = context.Offset;
-                Point offset = new Point(prevloc.X + this.TotalBounds.X, prevloc.Y + this.TotalBounds.Y);
-
-                context.Space = this.TotalBounds.Size;
-                context.Offset = offset;
+                bool logdebug = context.ShouldLogDebug;
+                string name = string.Empty;
 
                 if (logdebug)
-                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Adjusted bounds of context for region " + name + " with offset " + context.Offset + " and space " + context.Space + ", now rendering contents");
-
-                foreach (PDFLayoutItem item in this._contents)
                 {
-                    item.OutputToPDF(context, writer);
+                    name = this.ToString();
+                    context.TraceLog.Begin(TraceLevel.Debug, "Layout Region", "Outputting region " + name);
                 }
 
-                context.Space = prevsize;
-                context.Offset = prevloc;
+                if (this.ExcludeFromOutput)
+                {
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                            "Region " + name + " is marked as excluded from output, so not rendering anything");
+                }
+                else if (this._contents != null && this._contents.Count > 0)
+                {
+                    Size prevsize = context.Space;
+                    Point prevloc = context.Offset;
+                    Point offset = new Point(prevloc.X + this.TotalBounds.X, prevloc.Y + this.TotalBounds.Y);
+
+                    context.Space = this.TotalBounds.Size;
+                    context.Offset = offset;
+
+                    if (logdebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                            "Adjusted bounds of context for region " + name + " with offset " + context.Offset +
+                            " and space " + context.Space + ", now rendering contents");
+
+                    foreach (PDFLayoutItem item in this._contents)
+                    {
+                        item.OutputToPDF(context, writer);
+                    }
+
+                    context.Space = prevsize;
+                    context.Offset = prevloc;
+                }
+                else if (logdebug)
+                    context.TraceLog.Add(TraceLevel.Debug, "Layout Region",
+                        "Region " + name + " does not have any contents so no inner rendering required");
+
+
+
+                if (logdebug)
+                    context.TraceLog.End(TraceLevel.Debug, "Layout Region", "Completed output of region " + name);
             }
-            else if (logdebug)
-                context.TraceLog.Add(TraceLevel.Debug, "Layout Region", "Region " + name + " does not have any contents so no inner rendering required");
-
-            
-
-            if (logdebug)
-                context.TraceLog.End(TraceLevel.Debug, "Layout Region", "Completed output of region " + name);
+            catch (PDFLayoutException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PDFLayoutException(
+                    "Could not render the region contents to the output file. : " + ex.Message +
+                    ". See the inner exception for more details.", ex);
+            }
 
             return null;
         }
@@ -935,10 +1260,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="positionMode"></param>
         /// <returns></returns>
-        public PDFLayoutLine StartOrReturnCurrentLine(PositionMode mode)
+        public PDFLayoutLine StartOrReturnCurrentLine(DisplayMode mode)
         {
             PDFLayoutLine line;
-            if (mode == PositionMode.Inline)
+            if (mode == DisplayMode.Inline)
             {
                 //Just make sure we have an open and current line.
                 if (this.CurrentItem is PDFLayoutLine)
@@ -950,7 +1275,7 @@ namespace Scryber.PDF.Layout
                     line = this.BeginNewLine();
                 }
             }
-            else if (mode == PositionMode.Block)
+            else if (mode == DisplayMode.Block)
             {
                 if (this.HasOpenItem)
                     this.CloseCurrentItem();

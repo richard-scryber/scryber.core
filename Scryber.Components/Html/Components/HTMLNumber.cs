@@ -61,13 +61,21 @@ namespace Scryber.Html.Components
             }
         }
 
+        [PDFAttribute("data-value")]
+        public override double Value { 
+            get => base.Value; 
+            set=> base.Value = value; 
+        }
+
 
         public HTMLNumber() : this(HTMLObjectTypes.Number)
         {
         }
 
         protected HTMLNumber(ObjectType type) : base(type)
-        { }
+        {
+            
+        }
 
         protected override PDFTextReader CreateReader(ContextBase context, Style fullstyle)
         {
@@ -81,10 +89,15 @@ namespace Scryber.Html.Components
                     return base.CreateReader(context, fullstyle);
                 }
                 else
-                    return Scryber.Text.PDFTextReader.Create(this.Text, TextFormat.Plain, false, context.TraceLog);
+                    return Scryber.Text.PDFTextReader.Create(this.Text, TextFormat.XHTML, false, context.TraceLog);
             }
             else
                 return base.CreateReader(context, fullstyle);
+        }
+
+        protected override void OnDataBound(DataContext context)
+        {
+            base.OnDataBound(context);
         }
     }
 }

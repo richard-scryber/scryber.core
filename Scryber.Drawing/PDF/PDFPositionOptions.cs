@@ -34,12 +34,21 @@ namespace Scryber.PDF
         /// Gets or sets the position mode
         /// </summary>
         public PositionMode PositionMode { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the display mode
+        /// </summary>
+        public DisplayMode DisplayMode { get; set; }
 
         /// <summary>
         /// Gets or set the float mode for this component
         /// </summary>
         public FloatMode FloatMode { get; set; }
 
+        /// <summary>
+        /// Gets or sets the rendering mode for this component - in stream or as an xobject.
+        /// </summary>
+        public bool XObjectRender { get; set; }
 
         private Visibility _vis;
         /// <summary>
@@ -54,12 +63,26 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets the X (horizontal) offset
         /// </summary>
-        public Unit? X { get; set; }
+        public Unit? X 
+        { 
+            get; 
+            set; 
+        }
 
         /// <summary>
         /// Gets or sets the Y (vertical offset)
         /// </summary>
         public Unit? Y { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Right offset (an X value overrides any right value)
+        /// </summary>
+        public Unit? Right { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Bottom offset (a Y value overrides any bottom value)
+        /// </summary>
+        public Unit? Bottom { get; set; }
 
         /// <summary>
         /// Gets or sets the Width
@@ -96,11 +119,24 @@ namespace Scryber.PDF
         /// </summary>
         public Rect? ViewPort { get; set; }
 
+        public ViewPortAspectRatio ViewPortRatio { get; set; } = ViewPortAspectRatio.Default;
+
+        
         /// <summary>
         /// Gets or sets if these options specifiy that the copmonent these options refer to should fill the available horizontal space
         /// </summary>
         public bool FillWidth { get; set; }
 
+        /// <summary>
+        /// If true then the margins are automatically applied when the component has a width. Right align, unless AutoMarginsRight is true - then centerd.
+        /// </summary>
+        public bool AutoMarginLeft { get; set; }
+        
+        /// <summary>
+        /// If true then the margins are automatically applied when the component has a width. Requires AutoMarginsLeft to have any impact and centre the content
+        /// </summary>
+        public bool AutoMarginRight { get; set; }
+        
         /// <summary>
         /// Gets or sets the overflow action to be taken when the available space is reached
         /// </summary>
@@ -117,6 +153,11 @@ namespace Scryber.PDF
         /// Gets or sets any margins
         /// </summary>
         public Thickness Margins { get; set; }
+        
+        /// <summary>
+        /// Gets or sets any auto magin sizing on the component.
+        /// </summary>
+        public Sides MarginsAutoSides { get; set; }
 
         /// <summary>
         /// Gets or sets any padding
@@ -166,30 +207,45 @@ namespace Scryber.PDF
         /// <summary>
         /// Gets or sets any transformation matrix
         /// </summary>
-        public PDFTransformationMatrix TransformMatrix
+        public Scryber.Drawing.TransformOperationSet Transformations
         {
             get;
             set;
         }
 
-    
-        /* Not currently supported
-         * 
         
         /// <summary>
         /// Gets or sets the origin for any transformation
         /// </summary>
-        public TransformationOrigin TransformationOrigin { get; set; }
+        public Scryber.Drawing.TransformOrigin TransformationOrigin { get; set; }
 
-        *
-        */
+        
 
         /// <summary>
         /// Returns true if these position options have an explict non-identity transformation matrix
         /// </summary>
         public bool HasTransformation
         {
-            get { return null != this.TransformMatrix && !this.TransformMatrix.IsIdentity; }
+            get { return null != this.Transformations && !this.Transformations.IsIdentity; }
+        }
+
+        /// <summary>
+        /// Returns true if these position options have an explicit position mode of Relative, Absolute or Fixed
+        /// </summary>
+        public bool HasExplicitPositionMode
+        {
+            get
+            {
+                if (this.PositionMode == PositionMode.Absolute || this.PositionMode == PositionMode.Fixed ||
+                    this.PositionMode == PositionMode.Relative)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -197,7 +253,8 @@ namespace Scryber.PDF
         /// </summary>
         public PDFPositionOptions()
         {
-            this.PositionMode = Drawing.PositionMode.Block;
+            this.PositionMode = Drawing.PositionMode.Static;
+            this.DisplayMode = DisplayMode.Block;
             this.OverflowAction = Drawing.OverflowAction.NewPage;
             this.OverflowSplit = Drawing.OverflowSplit.Any;
             this.ColumnCount = 1;

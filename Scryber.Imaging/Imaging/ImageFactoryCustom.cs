@@ -13,7 +13,7 @@ namespace Scryber.Imaging
         
         
         public ImageFactoryCustom(Regex match, string name, bool shouldCache, IPDFImageDataFactory factory)
-        : base(match, name, shouldCache)
+        : base(match, MimeType.Empty, name, shouldCache)
         {
             this.CustomFactory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
@@ -24,7 +24,12 @@ namespace Scryber.Imaging
             return Task.FromResult(data);
         }
 
-        
+        protected override ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
+        {
+            throw new NotSupportedException(
+                "The custom factory only supports the primary interface method for document, owner and path");
+        }
+
 
         protected override ImageData DoDecodeImageData(Stream stream, IDocument document, IComponent owner, string path)
         {

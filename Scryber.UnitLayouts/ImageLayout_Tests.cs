@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
+using Scryber.Html.Components;
 using Scryber.PDF;
 using Scryber.Drawing;
 
@@ -17,6 +19,8 @@ namespace Scryber.UnitLayouts
         const string TestCategoryName = "Layout";
 
         const string ImagePath = "../../../Content/Images/Toroid32.png";
+        private const string VLargeImagePath = "../../../Content/Images/Toroid32x9.png";
+        const string SVGPath = "../../../Content/Images/Background.svg";
         const double ImageWidth = 682.0;
         const double ImageHeight = 452.0;
 
@@ -55,6 +59,115 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(one, two, message);
         }
 
+        [TestMethod]
+        public void WidthAsBlock()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 10;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            pg.Style.OverlayGrid.GridColor = StandardColors.Aqua;
+            
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            div.Padding = 10;
+            pg.Contents.Add(div);
+            
+            
+
+            var img = new Image();
+            img.Source = path;
+            img.BorderColor = StandardColors.Black;
+            img.BackgroundColor = StandardColors.Silver;
+            img.DisplayMode = DisplayMode.Block;
+            img.Width = new Unit(200);
+            img.Margins = new Thickness(0, 0, 0, 100);
+            
+            div.Contents.Add(new TextLiteral("Before the block image"));
+            div.Contents.Add(img);
+            div.Contents.Add(new TextLiteral("After the block image"));
+            
+            using (var stream = DocStreams.GetOutputStream("Images_WidthAsBlock.pdf"))
+            {
+                doc.AppendTraceLog = true;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var lpg = layout.AllPages[0];
+            Assert.IsNotNull(lpg);
+            Assert.IsNotNull(lpg.ContentBlock);
+            Assert.AreEqual(1, lpg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, lpg.ContentBlock.Columns[0].Contents.Count);
+
+            var ldiv = lpg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(ldiv);
+            
+            Assert.AreEqual(1, ldiv.Columns.Length);
+            Assert.AreEqual(3, ldiv.Columns[0].Contents.Count);
+
+            var line = ldiv.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(3, line.Runs.Count);
+
+            var chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("Before the block image", chars.Characters);
+
+            var runnningHeight = line.Height; //height of the first line.
+            
+            line = ldiv.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line);
+            Assert.AreEqual(1, line.Runs.Count);
+
+            var compRun = line.Runs[0] as PDFLayoutComponentRun;
+            Assert.IsNotNull(compRun);
+            
+            var border = compRun.BorderRect;
+            Assert.AreEqual(0, border.Y);
+            Assert.AreEqual(100, border.X); //img margin
+            Assert.AreEqual(200, border.Width); //explicit width
+            
+            Assert.AreEqual(img, compRun.Owner);
+
+            //now check the actual render bounds - offset 20, 20 for margins and padding
+            
+            var arrange = img.GetFirstArrangement();
+            border = arrange.RenderBounds;
+            
+            Assert.AreEqual(20 + runnningHeight, border.Y);
+            Assert.AreEqual(20 + 100, border.X);
+            Assert.AreEqual(200, border.Width);
+
+            runnningHeight += border.Height;
+            
+            //last line
+            
+            line = ldiv.Columns[0].Contents[2] as PDFLayoutLine;
+            
+            Assert.IsNotNull(line);
+            Assert.AreEqual(runnningHeight, line.OffsetY);
+
+            Assert.AreEqual(3, line.Runs.Count);
+
+            chars = line.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("After the block image", chars.Characters);
+        }
 
 
         [TestMethod]
@@ -943,7 +1056,7 @@ namespace Scryber.UnitLayouts
             doc.Pages.Add(pg);
 
             var div = new Div();
-            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 100;
+            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 250;
             div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
@@ -1121,8 +1234,8 @@ namespace Scryber.UnitLayouts
             lrun = GetBlockImageRunForPage(0, 0, 1);
 
             //1. Natural size in container
-            var width = naturalWidth.PointsValue * (80.0 / naturalHeight.PointsValue);
-            var height = 80.0; //available space (100 - margins)
+            var width = naturalWidth.PointsValue * (230.0 / naturalHeight.PointsValue);
+            var height = 230.0; //available space (250 - margins)
 
             AssertAreApproxEqual(width, lrun.Width.PointsValue, "Width does not match for squeezing in the space");
             AssertAreApproxEqual(height, lrun.Height.PointsValue, "Height does not match for squeezing in the space");
@@ -1233,13 +1346,19 @@ namespace Scryber.UnitLayouts
             pg.FontSize = 20;
             doc.Pages.Add(pg);
 
+            pg.Style.OverlayGrid.ShowGrid = true;
+            pg.Style.OverlayGrid.GridSpacing = 20;
+            pg.Style.OverlayGrid.GridMajorCount = 5;
+            pg.Style.OverlayGrid.GridXOffset = 10;
+            pg.Style.OverlayGrid.GridYOffset = 10;
+
             Image img;
 
             img = new Image();
             img.Source = path;
             img.ID = "Image1";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 1. An inline image at natural size, new line at text size that will flow onto multiple lines afterwards"));
 
@@ -1261,8 +1380,9 @@ namespace Scryber.UnitLayouts
             var reg = lpg.ContentBlock.Columns[0];
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(ImageNaturalHeight, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, ImageNaturalHeight.PointsValue);
 
             Assert.AreEqual(4, line.Runs.Count);
 
@@ -1274,7 +1394,9 @@ namespace Scryber.UnitLayouts
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
-
+            Assert.AreEqual(txtBegin.StartTextCursor.Width, ImageNaturalWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, ImageNaturalHeight + 10); //text is baseline with the image height
+            
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
             //Important to keep the space 
@@ -1337,7 +1459,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image2";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("2. Inline and text size of 60pt with overflowing content"));
 
@@ -1359,8 +1481,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
 
             //first layout line
+            var halflead = (60 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(ImageNaturalHeight, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, ImageNaturalHeight.PointsValue);
 
             Assert.AreEqual(4, line.Runs.Count);
 
@@ -1372,7 +1495,9 @@ namespace Scryber.UnitLayouts
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
-
+            Assert.AreEqual(txtBegin.StartTextCursor.Width, ImageNaturalWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, ImageNaturalHeight + 10); //text is baseline with the image height
+            
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
 
@@ -1444,13 +1569,14 @@ namespace Scryber.UnitLayouts
             pg.Margins = new Thickness(10);
             pg.BackgroundColor = new Color(240, 240, 240);
             pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 20;
             doc.Pages.Add(pg);
 
             var img = new Image();
             img.Source = path;
             img.ID = "Image3";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 3. Inline at explicit 60pt height"));
@@ -1474,21 +1600,25 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, reg.Contents.Count);
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(60.0, line.Height.PointsValue);
+            Assert.AreEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(4, line.Runs.Count);
 
             var imgRun = line.Runs[0] as PDFLayoutComponentRun;
+            var calcImgWidth = (60.0 / ImageNaturalHeight.PointsValue) * ImageNaturalWidth.PointsValue;
             Assert.IsNotNull(imgRun);
             Assert.AreEqual(60.0, imgRun.Height.PointsValue);
-            AssertAreApproxEqual((60.0 / ImageNaturalHeight.PointsValue) * ImageNaturalWidth.PointsValue, imgRun.Width.PointsValue, "Image not scales proportionately");
+            AssertAreApproxEqual(calcImgWidth, imgRun.Width.PointsValue, "Image not scales proportionately");
 
             Assert.AreEqual(0, imgRun.OffsetX);
             Assert.AreEqual(0, imgRun.OffsetY);
 
             var txtBegin = line.Runs[1] as PDFTextRunBegin;
             Assert.IsNotNull(txtBegin);
+            AssertAreApproxEqual(txtBegin.StartTextCursor.Width.PointsValue, calcImgWidth + 10); //text begins after the image width + page margin
+            Assert.AreEqual(txtBegin.StartTextCursor.Height, 60 + 10); //text is baseline with the image height
 
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
@@ -1524,7 +1654,7 @@ namespace Scryber.UnitLayouts
             img.Source = path;
             img.ID = "Image4";
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Width = 100;
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral(" 4. Inline with explicit width with content overflowing onto multiple lines"));
@@ -1550,8 +1680,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
 
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            AssertAreApproxEqual(expectedImgHeight, line.Height.PointsValue);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, expectedImgHeight);
             
 
             Assert.AreEqual(4, line.Runs.Count);
@@ -1618,7 +1749,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image5";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 
@@ -1644,8 +1775,9 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(2, reg.Contents.Count);
             var line = reg.Contents[0] as PDFLayoutLine;
 
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
             Assert.IsNotNull(line);
-            Assert.AreEqual(60.0, line.Height.PointsValue);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(7, line.Runs.Count);
 
@@ -1729,7 +1861,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image6";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 
@@ -1739,7 +1871,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image6";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 80;
             pg.Contents.Add(img);
 
@@ -1768,7 +1900,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            Assert.AreEqual(60, line.Height.PointsValue);
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
+            Assert.IsNotNull(line);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(7, line.Runs.Count);
 
@@ -1804,13 +1938,17 @@ namespace Scryber.UnitLayouts
 
             var txtBr = line.Runs[6] as PDFTextRunNewLine;
             //Should the max height of the line - which is the 80 point second image
-            Assert.AreEqual(80, txtBr.NewLineOffset.Height.PointsValue);
+            Assert.AreEqual(80 + txtBegin.TextRenderOptions.GetDescender(), txtBr.NewLineOffset.Height.PointsValue);
 
 
             //Second line 
             line = reg.Contents[1] as PDFLayoutLine;
             Assert.AreEqual(7, line.Runs.Count);
-            Assert.AreEqual(80, line.Height);
+            
+            var h = txtBegin.TextRenderOptions.GetDescender(); //descender + half the leading (1.2 line height) below the baseline
+            h += (txtBegin.TextRenderOptions.GetLineHeight() - txtBegin.TextRenderOptions.GetSize()) / 2;
+            h += 80; //+ image height aligned to the baseline
+            Assert.AreEqual(h, line.Height);
 
             var txtSpace = line.Runs[0] as PDFTextRunSpacer;
             Assert.AreEqual(0, txtSpace.Width);
@@ -1893,7 +2031,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image1";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 40;
             
             pg.Contents.Add(img);
@@ -1904,7 +2042,7 @@ namespace Scryber.UnitLayouts
             img.ID = "Image2";
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.PositionMode = PositionMode.Inline;
+            img.DisplayMode = DisplayMode.Inline;
             img.Height = 60;
             pg.Contents.Add(img);
 
@@ -1929,7 +2067,9 @@ namespace Scryber.UnitLayouts
             var line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            Assert.AreEqual(60, line.Height.PointsValue);
+            var halflead = (20 * 0.2) / 2; //half leading between the last descender and the bottom
+            Assert.IsNotNull(line);
+            AssertAreApproxEqual(line.Height.PointsValue - line.BaseLineToBottom.PointsValue - halflead, 60);
 
             Assert.AreEqual(11, line.Runs.Count);
 
@@ -2009,6 +2149,467 @@ namespace Scryber.UnitLayouts
             txtEnd = line.Runs[2] as PDFTextRunEnd;
             Assert.AreEqual(0, txtEnd.Width);
            
+        }
+        
+        [TestMethod]
+        public void PngLargeImageFromDataUrlAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, VLargeImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.None;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            var ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            var data = ms.ToArray();
+            var base64 = Convert.ToBase64String(data);
+            var dataurl = "data:image/png;base64," + base64;
+            pg.Style.Background.ImageSource = dataurl;
+
+            var h2 = new Head2();
+            h2.Contents.Add("Adding a png Image from the data url");
+            pg.Contents.Add(h2);
+            pg.Contents.Add(new TextLiteral("Image Size : " + (data.Length / 1024) + "kb"));
+            
+            using (var stream = DocStreams.GetOutputStream("Images_LargeImageFromDataUrl.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(3, doc.SharedResources.Count); // 2 fonts 1 image
+                
+            }
+
+        }
+
+        [TestMethod]
+        public void SVGImageFromPathAsABlock()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Adding an SVG Image from a file path");
+            pg.Contents.Add(h2);
+
+            var img = new HTMLImage();
+            img.Source = path;
+            img.Width = 200;
+            img.Height = 200;
+            img.DisplayMode = DisplayMode.Block;
+            pg.Contents.Add(img);
+            
+            using (var stream = DocStreams.GetOutputStream("Images_9_SVGImageFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(4, doc.SharedResources.Count);
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void PngImageFromPathAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.RepeatBoth;
+            pg.Style.Background.PatternXSize = 100;
+            pg.Style.Background.PatternYSize = 150;
+            pg.Style.Background.PatternXStep = 200;
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_10_ImageAsBackgroundFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(2, doc.SharedResources.Count); //Font and image
+                
+            }
+
+        }
+        
+        [TestMethod]
+        public void SvgImageFromPathAsABackground()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.RepeatBoth;
+            pg.Style.Background.PatternXSize = 100;
+            pg.Style.Background.PatternYSize = 100;
+            pg.Style.Background.PatternXSize = 50;
+            pg.Style.Background.PatternYSize = 100;
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_11_SvgAsBackgroundFromAFilePath.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(4, doc.SharedResources.Count); //font, pattern, Transform XObject and Drawing
+                
+            }
+
+        }
+
+        [TestMethod]
+        public void MultipleImagesVariousSizesAndOptions()
+        {
+            
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            var bgPath = path;
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Checking opactity and positioning of the standard image");
+            pg.Contents.Add(h2);
+
+            var h4 = new Head4();
+            h4.Contents.Add("1. As Image Path ");
+            pg.Contents.Add(h4);
+            var img = new HTMLImage();
+            img.Source = path;
+            img.Style.Position.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+
+
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("2. As Base64 Data Url"));
+            pg.Contents.Add(h4);
+
+            var ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            var data = ms.ToArray();
+            var base64 = Convert.ToBase64String(data);
+            var dataurl = "data:image/png;base64," + base64;
+
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+            pg.Contents.Add("Data size: " + (ms.Length / 1024) + "kb");
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("3. As Base64 Data Url 50% opacity "));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.Style.Fill.Opacity = 0.5;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 60;
+            pg.Contents.Add(img);
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("4. As Base64 Data Url 50% opacity as Fixed, and first"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            img.Style.Fill.Opacity = 0.2;
+            img.PositionMode = PositionMode.Fixed;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            pg.Contents.Insert(0, img); //Make it the first thing render - so it's in the background of the page.
+            
+            //
+            //New page for the very large images
+            //
+            
+            pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            h2 = new Head2();
+            h2.Contents.Add("Using a much larger image");
+            pg.Contents.Add(h2);
+            
+            path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, VLargeImagePath); //This one is 2.1Mb on disk.
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            data = ms.ToArray();
+            base64 = Convert.ToBase64String(data);
+            dataurl = "data:image/png;base64," + base64;
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("5. As Base64 Data Url 50% opacity"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img);
+            pg.Contents.Add("URL size: " + (dataurl.Length / 1024) + "kb");
+            
+            
+            //
+            // 6 uses the actual byte[] as data for the image
+            //
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.6;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
+            
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.2;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            img.PositionMode = PositionMode.Fixed;
+            pg.Contents.Insert(0, img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
+            
+            
+            //
+            //Final Page for the SVG Images
+            //
+            
+            pg = new Page();
+            pg.Margins = new Thickness(10);
+            //pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+            
+            h2 = new Head2();
+            h2.Contents.Add("Using the SVG Image");
+            pg.Contents.Add(h2);
+            
+            path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGPath); //This one is 2.1Mb on disk.
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            ms = new MemoryStream();
+            using (var reader = File.Open(path, FileMode.Open, FileAccess.Read))
+            {
+                reader.CopyTo(ms);
+            }
+
+
+            data = ms.ToArray();
+            base64 = Convert.ToBase64String(data);
+            dataurl = "data:" + MimeType.SvgImage + ";base64," + base64;
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("8. As File path Url"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = path;
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img);
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("9. As an SVG data Url"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.Source = dataurl;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = 100;
+            pg.Contents.Add(img);
+
+
+            pg.Style.Background.ImageSource = path; //dataurl;
+            pg.Style.Background.PatternRepeat = PatternRepeat.None;
+            pg.Style.Background.PatternXSize = 300;
+            pg.Style.Background.PatternYSize = 300;
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("6. As byte[] Data 50% opacity"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.SvgImage; //"image/svg+xml";
+            img.Style.Fill.Opacity = 0.6;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Height = 120;
+            pg.Contents.Add(img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
+            
+            h4 = new Head4();
+            h4.Contents.Add(new TextLiteral("7. As byte[] Data 50% opacity in the background"));
+            pg.Contents.Add(h4);
+            
+            img = new HTMLImage();
+            img.RawImageData = data;
+            img.RawImageDataType = MimeType.PngImage; //"image/png";
+            img.Style.Fill.Opacity = 0.2;
+            
+            img.DisplayMode = DisplayMode.Block;
+            img.BorderColor = StandardColors.Black;
+            img.Width = Unit.Percent(100);
+            img.X = 0;
+            img.Y = 0;
+            img.PositionMode = PositionMode.Fixed;
+            pg.Contents.Insert(0, img); 
+            pg.Contents.Add("Data size: " + (data.Length / 1024) + "kb");
+            
+            
+
+            using (var stream = DocStreams.GetOutputStream("Images_8_LargeDataImagesDifferentMethods.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = true;
+                doc.RenderOptions.Compression = OutputCompressionType.FlateDecode;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(17, doc.SharedResources.Count);
+                
+            }
         }
     }
 }

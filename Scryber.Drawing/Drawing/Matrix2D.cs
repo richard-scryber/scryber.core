@@ -6,19 +6,20 @@ namespace Scryber.Drawing
     [Flags]
     public enum MatrixTransformTypes
     {
-        IsIdentity = 0,
-        IsTranslation = 1,
-        IsScaling = 2,
-        IsSkew = 4,
-        IsRotate = 8,
-        IsUnknown = 32
+        Identity = 0,
+        Translation = 1,
+        Scaling = 2,
+        Skew = 4,
+        Rotate = 8,
+        Matrix = 32,
+        Unknown = 64
     }
 
     public struct Matrix2D
     {
         
 
-        private static readonly Matrix2D _identity = new Matrix2D(1, 0, 0, 1, 0, 0, MatrixTransformTypes.IsIdentity);
+        private static readonly Matrix2D _identity = new Matrix2D(1, 0, 0, 1, 0, 0, MatrixTransformTypes.Identity);
         
         private double _m11, _m12, _m21, _m22, _dx, _dy;
         private MatrixTransformTypes _type;
@@ -48,7 +49,7 @@ namespace Scryber.Drawing
             _m22 = m22;
             _dx = dx;
             _dy = dy;
-            _type = MatrixTransformTypes.IsUnknown;
+            _type = MatrixTransformTypes.Matrix;
         }
         
         private Matrix2D(double m11, double m12, double m21, double m22, double dx, double dy, MatrixTransformTypes type)
@@ -68,7 +69,7 @@ namespace Scryber.Drawing
         {
             this._dx += x;
             this._dy += y;
-            this._type |= MatrixTransformTypes.IsTranslation;
+            this._type |= MatrixTransformTypes.Translation;
         }
 
         public void Scale(double x, double y)
@@ -175,10 +176,10 @@ namespace Scryber.Drawing
 
         public static Matrix2D Multiply(Matrix2D one, Matrix2D two)
         {
-            if (two._type == MatrixTransformTypes.IsIdentity)
+            if (two._type == MatrixTransformTypes.Identity)
                 return one;
 
-            if (one._type == MatrixTransformTypes.IsIdentity)
+            if (one._type == MatrixTransformTypes.Identity)
                 return two;
 
             Matrix2D result = new Matrix2D(
@@ -205,7 +206,7 @@ namespace Scryber.Drawing
                 scaleX, 0, 
                 0, scaleY, 
                 0, 0, 
-                MatrixTransformTypes.IsScaling);
+                MatrixTransformTypes.Scaling);
             return result;
         }
 
@@ -215,7 +216,7 @@ namespace Scryber.Drawing
                 1.0, skewY,
                 skewX, 1.0,
                 0, 0, 
-                MatrixTransformTypes.IsSkew);
+                MatrixTransformTypes.Skew);
             return result;
         }
 
@@ -237,7 +238,7 @@ namespace Scryber.Drawing
                 cos, sin,
                 -sin, cos,
                 dx, dy,
-                MatrixTransformTypes.IsRotate);
+                MatrixTransformTypes.Rotate);
 
             return result;
         }

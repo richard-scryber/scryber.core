@@ -109,6 +109,7 @@ namespace Scryber
 
         public virtual bool AddRequest(RemoteFileRequest request)
         {
+            
             this.Requests.Add(request ?? throw new ArgumentNullException(nameof(request)));
             
             if(this.LogVerbose)
@@ -212,6 +213,10 @@ namespace Scryber
         {
             var client = this.GetHttpClient();
 
+            if (this.Owner.RemoteRequests.ExecMode != DocumentExecMode.Immediate)
+                throw new InvalidOperationException(
+                    "Cannot call the direct fulfill request from an asynchronous document");
+            
             if(this.LogDebug)
                 this.AddDebugLog( "SYNC fulfilling the request for the URL '" + urlRequest.StubFilePathForLog + "' as this is not an async execution");
             

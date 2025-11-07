@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Scryber.Core.UnitTests
 {
@@ -35,6 +36,30 @@ namespace Scryber.Core.UnitTests
             return ms;
 #endif
 
+        }
+
+        public static string AssertGetContentPath(string relative, TestContext context)
+        {
+            var path = context.TestRunDirectory;
+            path = System.IO.Path.Combine(path, relative);
+            path = System.IO.Path.GetFullPath(path);
+            
+            if(!System.IO.File.Exists(path))
+                Assert.Inconclusive("Test cannot run as the content file cannot be found at path " + path);
+
+            return path;
+        }
+        
+        public static string AssertGetDirectoryPath(string relative, TestContext context)
+        {
+            var path = context.TestRunDirectory;
+            path = System.IO.Path.Combine(path, relative);
+            path = System.IO.Path.GetFullPath(path);
+            
+            if(!System.IO.Directory.Exists(path))
+                Assert.Inconclusive("Test cannot run as the content directory cannot be found at path " + path);
+
+            return path;
         }
     }
 }

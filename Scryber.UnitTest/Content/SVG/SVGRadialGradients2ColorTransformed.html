@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="2 Color Radial Gradients">2 Color Radial Gradients</p>
+    <svg id="2ColorHoriz" width="550" height="110" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+            
+        </style>
+
+        <radialGradient id="2Color" spreadMethod="pad">
+            <stop offset="0%" stop-color="gold" />
+            <stop offset="100%" stop-color="red" />
+        </radialGradient>
+        
+        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />
+
+        <radialGradient id="2Color" spreadMethod="pad"
+            style="transform: skewX(20)">
+            <stop offset="0%" stop-color="gold" />
+            <stop offset="100%" stop-color="red" />
+        </radialGradient>
+
+        <rect height="90" width="80" x="100" y="10" fill="url(#2Color)" />
+        
+        <radialGradient id="2ColorRepeat4Stops" spreadMethod="repeat" cx="50%" cy="90%" fx="50%" fy="90%"  r="25%" >
+            <stop offset="0%" stop-color="red" />
+            <stop offset="25%" stop-color="gold" />
+            <stop offset="50%" stop-color="red" />
+            <stop offset="75%" stop-color="gold" />
+        </radialGradient>
+
+        <rect height="90" width="80" x="190" y="10" fill="url(#2ColorRepeat4Stops)" />
+
+        <radialGradient id="2ColorRepeat4Stops" cx="50%" cy="90%" fx="50%" fy="90%"  r="25%" gradientTransform="skewX(20) ">
+            <stop offset="0%" stop-color="red" />
+            <stop offset="25%" stop-color="gold" />
+            <stop offset="50%" stop-color="red" />
+            <stop offset="75%" stop-color="gold" />
+        </radialGradient>
+
+        <rect height="90" width="80" x="280" y="10" fill="url(#2ColorRepeat4Stops)" />
+
+
+        <radialGradient id="2ColorReflect" spreadMethod="reflect" cx="50%" cy="90%" fx="50%" fy="90%"  r="50%" >
+            <stop offset="0%" stop-color="red" />
+            <stop offset="75%" stop-color="gold" />
+        </radialGradient>
+
+        <rect height="90" width="80" x="370" y="10" fill="url(#2ColorReflect)" />
+
+        <radialGradient id="2ColorOffsetReflect" spreadMethod="reflect" cx="50%" cy="90%" fx="50%" fy="90%"  r="25%" >
+            <stop offset="0%" stop-color="red" />
+            <stop offset="25%" stop-color="gold" />
+            <stop offset="50%" stop-color="red" />
+            <stop offset="75%" stop-color="gold" />
+        </radialGradient>
+
+        <rect height="90" width="80" x="460" y="10" fill="url(#2ColorOffsetReflect)" />
+    </svg>
+    
+    
+    
+
+</body>
+</html>

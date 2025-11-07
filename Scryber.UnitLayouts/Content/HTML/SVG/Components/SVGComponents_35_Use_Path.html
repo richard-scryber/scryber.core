@@ -1,0 +1,40 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style type="text/css">
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+            padding: 10pt;
+            border: solid 1px lime;
+        }
+        
+       svg{
+           margin: 30pt;
+           width: 100pt;
+           height: 100pt;
+           display: block;
+           position: relative;
+           border: solid 1pt silver;
+           background-color: #AAA;
+       }
+    </style>
+</head>
+<body>
+Before the SVG
+    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
+         xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <path id="Path"
+                d="M 10,30
+           A 20,20 0,0,1 50,30
+           A 20,20 0,0,1 90,30
+           Q 90,60 50,90
+           Q 10,60 10,30 z" />
+        <use href="#Path" x="20" y="35" fill="blue" fill-opacity="0.5" stroke="blue" stroke-opacity="0.5" stroke-width="10pt" />
+    </svg>
+After the SVG
+</body>
+</html>

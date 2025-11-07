@@ -1,0 +1,35 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style type="text/css">
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+            padding: 10pt;
+            border: solid 1px lime;
+        }
+        
+       svg{
+           margin: 30pt;
+           width: 100pt;
+           height: 100pt;
+           display: block;
+           position: relative;
+           border: solid 1pt silver;
+           background-color: #AAA;
+       }
+    </style>
+</head>
+<body>
+Before the SVG
+    <svg  version="1.1" id="Canvas1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+         xmlns:xlink="http://www.w3.org/1999/xlink"    >
+        <line id="Line" x1="15" y1="30" x2="40" y2="20" stroke="black" stroke-width="1pt" />
+        <use href="#Line" x="10" y="15" fill="blue" fill-opacity="0.5" stroke="blue" stroke-opacity="0.5" stroke-width="10pt" />
+    </svg>
+After the SVG
+</body>
+</html>

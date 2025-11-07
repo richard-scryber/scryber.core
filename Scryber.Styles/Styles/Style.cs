@@ -40,7 +40,7 @@ namespace Scryber.Styles
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Style : StyleBase, IBindableComponent
     {
-        #region InnerClass - StateList
+        #region InnerClass - StatedStyle
 
         /// <summary>
         /// A linked list of states with styles associated. Accessed via the Styles.GetState() method.
@@ -1016,6 +1016,58 @@ namespace Scryber.Styles
 
         #endregion
 
+        public IEnumerable<StyleKey> Keys
+        {
+            get
+            {
+                var all = new List<StyleKey>(this.ValueCount);
+                if(this.InheritedValues.Count > 0)
+                    all.AddRange(this.InheritedValues.Keys);
+                if(this.DirectValues.Count > 0)
+                    all.AddRange(this.DirectValues.Keys);
+                return all;
+            }
+        }
+
+        // SVG
+
+        #region IsSVGGeomertry
+        
+        /// <summary>
+        /// Returns true if this style has the SVGGeomery flag - if set then some syle values should not cascade normally
+        /// </summary>
+        public bool IsSVGGeometry
+        {
+            get
+            {
+                StyleValue<bool> value;
+                if (this.TryGetValue(StyleKeys.SVGGeometryInUseKey, out value))
+                    return value.Value(this);
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                if (value)
+                {
+                    this.SetValue(StyleKeys.SVGGeometryInUseKey, true);
+                }
+                else
+                {
+                    this.SetValue(StyleKeys.SVGGeometryInUseKey, false);
+                }
+            }
+        }
+
+        public void RemoveSVGGeometry()
+        {
+            this.RemoveValue(StyleKeys.SVGGeometryInUseKey);
+        }
+        
+        #endregion
+        
         //
         // .ctors
         //
@@ -1041,21 +1093,26 @@ namespace Scryber.Styles
             this.OnDataBound(context);
         }
 
-        
+
+        public bool CopyValue(StyleKey key, Style from)
+        {
+            return key.CopyValue(from, this);
+        }
         
         //
         // createXXX methods
         //
 
-        #region public PDFPositionOptions CreatePostionOptions()
+        #region public PDFPositionOptions CreatePostionOptions(bool isInPositioned)
 
         /// <summary>
         /// Creates and returns the position options for this style.
         /// </summary>
+        /// <param name="isInPositioned">Specifies if these options are being created for a component that is within a positioned region</param>
         /// <returns></returns>
-        public PDFPositionOptions CreatePostionOptions()
+        public PDFPositionOptions CreatePostionOptions(bool isInPositioned)
         {
-           return this.DoCreatePositionOptions();
+           return this.DoCreatePositionOptions(isInPositioned);
         }
 
         #endregion
@@ -1233,9 +1290,9 @@ namespace Scryber.Styles
         /// for this style if it has any overlay grid attributes set, otherwise returns null
         /// </summary>
         /// <returns></returns>
-        public PDFPen CreateOverlayGridPen()
+        public PDFPen CreateOverlayGridPen(bool forMajor = false)
         {
-            return this.DoCreateOverlayGridPen();
+            return this.DoCreateOverlayGridPen(forMajor);
         }
 
         #endregion
@@ -1246,19 +1303,24 @@ namespace Scryber.Styles
         /// <summary>
         /// Returns a flat version of the PDFStyle, calculating any relative sizes to absolute.
         /// </summary>
+        /// <param name="keyHolder">A collection to cache keys into and enumerate over without worrying oub modifying the actual collection. Imporoves memory usage and performance by only allocating once and dyamically growing as needed.</param>
         /// <returns></returns>
-        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
+        public virtual Style Flatten(Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize, List<StyleKey> keyHolder)
         {
             if (this.InheritedValues.Count > 0)
             {
-                foreach (var key in this.InheritedValues.Keys)
+                keyHolder.Clear();
+                keyHolder.AddRange(this.InheritedValues.Keys);
+                foreach (var key in keyHolder)
                 {
                     this.InheritedValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }
             }
             if (this.DirectValues.Count > 0)
             {
-                foreach (var key in this.DirectValues.Keys)
+                keyHolder.Clear();
+                keyHolder.AddRange(this.DirectValues.Keys);
+                foreach (var key in keyHolder)
                 {
                     this.DirectValues[key].FlattenValue(key, this, pageSize, containerSize, fontSize, rootFontSize);
                 }

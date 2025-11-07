@@ -428,7 +428,7 @@ namespace Scryber.Styles
         /// <param name="foritem"></param>
         /// <returns></returns>
         /// <remarks>Used by the PDFStyleKeys style type constructor - as we are assured this is threadsafe</remarks>
-        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, bool useWidth, FlattenUnits<T> flatten)
+        internal static StyleKey<T> InternalCreateRelativeStyleValueKey<T>(ObjectType name, StyleKey foritem, IStyleKeyFlattenValue<T> flatten)
         {
             if (foritem.IsItemKey == false)
                 throw new InvalidOperationException("forItem is not an item");
@@ -436,12 +436,18 @@ namespace Scryber.Styles
             string full = GetStyleKeyAsString(foritem.StyleItemKey, name);
             int hash = InternalGetStyleHash(full);
 
-            return new RelativeStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, useWidth, flatten);
+            return new RelativeStyleKey<T>(hash, foritem.StyleItemKey, name, foritem.Inherited, flatten);
 
         }
 
         #endregion
 
+        public virtual bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            //Base implementation does nothing and returns false
+            return false;
+        }
+        
         public virtual void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
             //Does nothing in the default implementation
@@ -462,6 +468,17 @@ namespace Scryber.Styles
         {
         }
 
+        public override bool CopyValue(Style fromStyle, Style toStyle)
+        {
+            StyleValue<T> value;
+            if (fromStyle.TryGetValue(this, out value))
+            {
+                toStyle.SetValue(this, value.Value(fromStyle));
+                return true;
+            }
+            else
+                return base.CopyValue(fromStyle, toStyle);
+        }
     }
 
     public delegate void FlattenUnits<T>(Style style, StyleKey<T> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize);
@@ -470,21 +487,19 @@ namespace Scryber.Styles
     public class RelativeStyleKey<T> : StyleKey<T>
     {
         public override bool CanBeRelative { get { return true; } }
-
         
 
-        public FlattenUnits<T> Flatten { get; protected set; }
+        public IStyleKeyFlattenValue<T> Flatten { get; protected set; }
 
-        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, bool useWidth, FlattenUnits<T> flatten)
+        public RelativeStyleKey(int fullhash, ObjectType item, ObjectType value, bool inherited, IStyleKeyFlattenValue<T> flatten)
             : base(fullhash, item, value, inherited, false)
         {
             Flatten = flatten ?? throw new ArgumentNullException(nameof(flatten));
-            this.UseRelativeWidthAsPriority = useWidth;
         }
 
         public override void FlattenValue(Style style, Size pageSize, Size containerSize, Size fontSize, Unit rootFontSize)
         {
-            this.Flatten(style, this, pageSize, containerSize, fontSize, rootFontSize);
+            this.Flatten.SetFlattenedValue(style, this, pageSize, containerSize, fontSize, rootFontSize);
         }
 
     }

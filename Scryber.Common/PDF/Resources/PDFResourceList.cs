@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Scryber.PDF.Native;
 
@@ -85,13 +86,15 @@ namespace Scryber.PDF.Resources
                 writer.WriteArrayNameEntries(ProcSets);
                 writer.EndDictionaryEntry();
             }
-            foreach (PDFResourceItemList list in this.types)
+
+            var all = this.Types.ToArray();
+            foreach (PDFResourceItemList list in all)
             {
                 writer.BeginDictionaryEntry(list.Type);
                 writer.BeginDictionary();
-                foreach (PDFResource rsrc in list)
+                for(var i = 0; i < list.Count; i++)
                 {
-
+                    PDFResource rsrc = list[i];
                     PDFObjectRef rref = rsrc.EnsureRendered(context, writer);
                     if (rref != null)
                     {

@@ -1,19 +1,28 @@
 ﻿using System;
 using Scryber.Html;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
+using Scryber.Svg;
 
 namespace Scryber.Styles.Parsing.Typed
 {
-    public class CSSFillParser : CSSColorStyleParser
+    /// <summary>
+    /// Parses the SVG fill value - can either be a color value e.g. '#AAAAA', or a gradient reference e.g. 'url(#gradientId)'.
+    /// </summary>
+    public class CSSFillParser : CSSStyleValueParser
     {
+        private StyleKey<SVGFillValue> FillAttribute;
+        
         public CSSFillParser()
-            : this(CSSStyleItems.FillColor, StyleKeys.FillColorKey, StyleKeys.FillOpacityKey)
+            : this(CSSStyleItems.FillColor, StyleKeys.SVGFillKey)
         {
         }
 
-        public CSSFillParser(string css, StyleKey<Color> key, StyleKey<double> opacity)
-            : base(css, key, opacity)
-        { }
+        public CSSFillParser(string css, StyleKey<SVGFillValue> key)
+            : base(css)
+        {
+            this.FillAttribute = key;
+        }
 
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
@@ -26,10 +35,20 @@ namespace Scryber.Styles.Parsing.Typed
             {
 
                 var val = reader.CurrentTextValue;
-
+                string valId;
                 if (IsExpression(val))
                 {
-                    result = AttachExpressionBindingHandler(onStyle, this.StyleAttribute, val, DoConvertFillValue);
+                    result = AttachExpressionBindingHandler(onStyle, this.FillAttribute, val, DoConvertFillValue);
+                }
+                else if (IsReferenceValue(val, out valId))
+                {
+                    SVGFillReferenceValue gradient = new SVGFillReferenceValue(null, valId);
+                    onStyle.SetValue(this.FillAttribute, gradient);
+                }
+                else if (IsNamedValue(val, out PDFBrush brush))
+                {
+                    SVGFillNamedValue named = new SVGFillNamedValue(brush, val);
+                    onStyle.SetValue(this.FillAttribute, named);
                 }
                 else if (SetColorValue(onStyle, val, out color))
                 {
@@ -42,8 +61,30 @@ namespace Scryber.Styles.Parsing.Typed
             return result;
         }
 
-        protected bool DoConvertFillValue(StyleBase style, object value, out Color color)
+        protected bool IsReferenceValue(string value, out string refId)
         {
+            if (value.StartsWith("url(", StringComparison.InvariantCulture))
+            {
+                if (value.EndsWith(")", StringComparison.InvariantCulture))
+                {
+                    value = value.Substring(4);
+                    value = value.Substring(value.Length - 1);
+                    refId = value;
+                    return true;
+                }
+            }
+
+            refId = string.Empty;
+            return false;
+        }
+
+        
+        
+
+        protected bool DoConvertFillValue(StyleBase style, object value, out SVGFillValue fill)
+        {
+            Color color;
+            fill = null;
             if(null == value)
             {
                 color = Color.Transparent;
@@ -52,10 +93,22 @@ namespace Scryber.Styles.Parsing.Typed
             else if(value is Color c)
             {
                 color = c;
+                fill = new SVGFillColorValue(color, color.ToString());
+                return true;
+            }
+            else if (IsReferenceValue(value.ToString(), out string refId))
+            {
+                fill = new SVGFillReferenceValue(null, refId);
+                return true;
+            }
+            else if (IsNamedValue(value.ToString(), out PDFBrush brush))
+            {
+                fill = new SVGFillNamedValue(brush, value.ToString());
                 return true;
             }
             else if(SetColorValue(style, value.ToString(), out color))
             {
+                fill = new SVGFillColorValue(color, value.ToString());
                 return true;
             }
             else
@@ -65,30 +118,18 @@ namespace Scryber.Styles.Parsing.Typed
             }    
         }
 
+        protected virtual bool IsNamedValue(string value, out PDFBrush brush)
+        {
+            return SVGFillValue.IsNamedValue(value, out brush);
+        }
+
         private bool SetColorValue(StyleBase onStyle, string val, out Color color)
         {
-            if (val.StartsWith("url("))
+            if (ParseCSSColor(val, out color, out double? opacity))
             {
-                val = val.Substring(4);
-                if (val.EndsWith(")"))
-                    val = val.Substring(0, val.Length - 1);
-
-                if (val.StartsWith("#"))
-                {
-                    throw new NotSupportedException("Setting background fills to patterns is not currently supported");
-                }
-                else
-                    onStyle.SetValue(StyleKeys.FillImgSrcKey, val);
-
-                color = Color.Transparent;
-            }
-            else if (ParseCSSColor(val, out color, out double? opacity))
-            {
-                onStyle.SetValue(this.StyleAttribute, color);
-
-                if (opacity.HasValue && null != this.OpacityStyleKey)
-                    onStyle.SetValue(this.OpacityStyleKey, opacity.Value);
-
+                var fill = new SVGFillColorValue(color, val);
+                onStyle.SetValue(this.FillAttribute, fill);
+                
                 return true;
             }
             else

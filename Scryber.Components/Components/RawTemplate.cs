@@ -26,8 +26,19 @@ namespace Scryber.Components
     public class RawTemplate :  BindingTemplateComponent
     {
 
+        private static readonly DataBindingBehaviour rawBehaviour = new DataBindingBehaviour(
+            enumerate: false,
+            expandObject: true,
+            setContextData: true,
+            incrementIndex: false);
+        
         public RawTemplate()
-            : base((ObjectType)"RawT")
+            : this((ObjectType)"RawT", rawBehaviour)
+        {
+        }
+
+        protected RawTemplate(ObjectType type, DataBindingBehaviour behaviour)
+            : base(type, behaviour)
         {
         }
 

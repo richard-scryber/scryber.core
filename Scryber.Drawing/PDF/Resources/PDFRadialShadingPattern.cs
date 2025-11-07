@@ -61,7 +61,7 @@ namespace Scryber.PDF.Resources
 
             Size graphicsSize = new Size(size.Width + offset.X, size.Height + offset.Y);
             var func = this._descriptor.GetGradientFunction(offset, size);
-            var coords = GetCoords(offset, size, _descriptor.Size, _descriptor.XCentre, _descriptor.YCentre);
+            var coords = this._descriptor.GetCoordsForBounds(offset, size); // GetCoords(offset, size, _descriptor.Size, _descriptor.StartCenter, _descriptor.StartRadius, _descriptor.EndCenter, _descriptor.EndRadius);
             
 
             writer.BeginDictionaryEntry("Shading");
@@ -108,7 +108,7 @@ namespace Scryber.PDF.Resources
         }
 
 
-        protected virtual double[] GetCoords(Point offset, Size size, RadialSize radiusSize, Unit? centreX, Unit? centreY)
+        protected virtual double[] GetCoords(Point offset, Size size, RadialSize radiusSize, Point startCentre, Unit startRadius, Point endCentre, Unit endRadius)
         {
 
             double[] all = new double[6];
@@ -117,20 +117,28 @@ namespace Scryber.PDF.Resources
             var width = size.Width.PointsValue;
 
             //Get the centre and the radius
-            Point c = CacluateRadialCentre(centreX, centreY, height, width);
-            double radius = CalculateRadiusForSize(radiusSize, height, width, c.X.PointsValue, c.Y.PointsValue);
+            //Point c = CacluateRadialCentre(centreX, centreY, height, width);
+            //double radius = CalculateRadiusForSize(radiusSize, height, width, c.X.PointsValue, c.Y.PointsValue);
 
-            if (radius <= 0)
-                radius = 0.01;
+            if (startRadius <= 0)
+                startRadius = 0.01;
+            
+            
+            if (endRadius <= startRadius)
+                endRadius = startRadius + 0.01;
+            
+             
+            
 
             //apply the centres based on the page location
-            all[0] = c.X.PointsValue + offset.X.PointsValue;
-            all[1] = offset.Y.PointsValue - c.Y.PointsValue;
-            all[2] = 0.0;
-            all[3] = c.X.PointsValue + offset.X.PointsValue;
-            all[4] = offset.Y.PointsValue - c.Y.PointsValue;
-            all[5] = radius;
+            // all[0] = offset.X.PointsValue;
+            // all[1] = offset.Y.PointsValue - c.Y.PointsValue;
+            // all[2] = 0.0;
+            // all[3] = c.X.PointsValue + offset.X.PointsValue;
+            // all[4] = offset.Y.PointsValue - c.Y.PointsValue;
+            // all[5] = radius;
 
+            
 
 
             return all;

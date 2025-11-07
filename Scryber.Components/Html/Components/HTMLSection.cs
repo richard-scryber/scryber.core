@@ -26,7 +26,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.PageStyle.BreakBefore = true;
-
+            
             return style;
         }
     }

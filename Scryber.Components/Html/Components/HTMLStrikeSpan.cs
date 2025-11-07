@@ -24,6 +24,12 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("del")]
     public class HTMLDelSpan : HTMLStrikeSpan
     {
+        
+        [PDFAttribute("cite")]
+        public string Citation { get; set; }
+
+        [PDFAttribute("datetime")]
+        public string DateTime { get; set; }
 
         public HTMLDelSpan() : this(HTMLObjectTypes.Delete)
         {

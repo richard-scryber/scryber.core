@@ -35,12 +35,14 @@ namespace Scryber.Expressive.Functions.Statistical
 
             object total = 0;
 
-            if (value is IEnumerable enumerate)
+            if (Collections.TryIsCollection(value, out var enumerate))
             {
                 foreach (var item in enumerate)
                 {
                     CurrentDataExpression.SetCurrentData(item, variables);
                     var one = lookup.Evaluate(variables);
+                    
+                    
                     total = Numbers.Add(total ?? 0, one ?? 0, variables);
                     count++;
                 }

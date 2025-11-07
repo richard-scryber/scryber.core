@@ -138,6 +138,10 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     this.IgnoreToken(expression, length);
                 }
+                else if (IsParentReference(expression, this.CurrentIndex, out length))
+                {
+                    TokeniseIsParent(expression, length);
+                }
                 else if (IsKeyword(expression, this.CurrentIndex, out length))
                 {
                     TokeniseKeyword(expression, length);
@@ -241,6 +245,34 @@ namespace Scryber.Expressive.Tokenisation
             this.AddNewToken(start, length, value, ExpressionTokenType.Color);
         }
 
+        protected virtual bool IsParentReference(string expression, int index, out int length)
+        {
+            int start = index;
+            if (expression[start] == '.')
+            {
+                if (expression.Length > 3 && expression[start + 1] == '.' && expression[start + 2] == '/')
+                {
+                    length = 3;
+                    return true;
+                }
+            }
+
+            length = 0;
+            return false;
+        }
+
+        protected virtual bool TokeniseIsParent(string expression, int length)
+        {
+            var str = Expressions.ParentDataExpression.ParentDataVariableName;
+            int start = this.CurrentIndex;
+            this.CurrentIndex += length;
+            
+            this.AddNewToken(start, length, str, ExpressionTokenType.Variable);
+            this.AddNewToken(start+ length, 0, ".", ExpressionTokenType.Operator);
+
+            return true;
+        }
+
         #region IsKeyword + TokeniseKeyword
 
         /// <summary>
@@ -253,6 +285,17 @@ namespace Scryber.Expressive.Tokenisation
         protected virtual bool IsKeyword(string expression, int index, out int length)
         {
             int start = index;
+            bool hasAtIndexStart = false;
+            if (expression[start] == '@')
+            {
+                //Explicit check for @index special notation.
+                if (expression.Length >= 6 && expression.Substring(start, 6) == "@index")
+                {
+                    length = 6;
+                    return true;
+                }
+            }
+            
             while (index < expression.Length)
             {
                 if (char.IsLetter(expression, index))
@@ -290,7 +333,7 @@ namespace Scryber.Expressive.Tokenisation
 
             ExecFunction func;
             int constLen;
-            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && expression[start + length] == '(')
+            if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && (expression[start + length] == '('))
             {
                 this.AddNewToken(start, length, name, ExpressionTokenType.Function);
             }
@@ -397,6 +440,11 @@ namespace Scryber.Expressive.Tokenisation
                     length = 1;
                     result = true;
                 }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
             }
             else
             {
@@ -437,7 +485,12 @@ namespace Scryber.Expressive.Tokenisation
                 }
                 else if (name.Equals("E", this.Context.ParsingStringComparison))
                 {
-                    length = 4;
+                    length = 1;
+                    result = true;
+                }
+                else if (name.Equals("@index", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
                     result = true;
                 }
             }
@@ -794,6 +847,9 @@ namespace Scryber.Expressive.Tokenisation
 
         #region IsNumber + TokeniseNumber
 
+        private const char BINARYFORMATCHAR = 'b';
+        private const char HEXFORMATCHAR = 'x';
+        
         /// <summary>
         /// Checks if the characters at the specified index is a number returning true, along with the length of the number string.
         /// </summary>
@@ -806,10 +862,20 @@ namespace Scryber.Expressive.Tokenisation
         {
             int start = index;
             isUnit = false;
+            var isBinary = false;
+            var isHex = false;
 
             while (index < expression.Length)
             {
                 if (char.IsDigit(expression, index))
+                {
+                    index++;
+                }
+                else if (isHex && ((expression[index] >= 'A' && expression[index] <= 'F') || (expression[index] >= 'a' && expression[index] <= 'f')))
+                {
+                    index++;
+                }
+                else if (isBinary && expression[index] == '_')
                 {
                     index++;
                 }
@@ -821,6 +887,16 @@ namespace Scryber.Expressive.Tokenisation
                         index++;
                     else
                         break;
+                }
+                else if (expression[start] == '0' && index - start == 1 &&  expression[index] == BINARYFORMATCHAR)
+                {
+                    isBinary = true;
+                    index++;
+                }
+                else if (expression[start] == '0' && index - start == 1 &&  expression[index] == HEXFORMATCHAR)
+                {
+                    isHex = true;
+                    index++;
                 }
                 else if (index > start)
                 {
@@ -834,65 +910,6 @@ namespace Scryber.Expressive.Tokenisation
                     {
                         break;
                     }
-                    if (expression[index] == 'p') //1234.5pt, 1234.5px
-                    {
-                        if (index + 1 < expression.Length && expression[index + 1] == 't')
-                        {
-                            index += 2;
-                            isUnit = true;
-                            break;
-                        }
-                        else if(index + 1 < expression.Length && expression[index + 1] == 'x')
-                        {
-                            index += 2;
-                            isUnit = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-                    else if (expression[index] == 'm') //1234.5mm
-                    {
-                        if (index + 1 < expression.Length && expression[index + 1] == 'm')
-                        {
-                            index += 2;
-                            isUnit = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-                    else if (expression[index] == 'c') //1234.5cm
-                    {
-                        if (index + 1 < expression.Length && expression[index + 1] == 'm')
-                        {
-                            index += 2;
-                            isUnit = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-                    else if (expression[index] == 'i') //1234.5in
-                    {
-                        if (index + 1 < expression.Length && expression[index + 1] == 'n')
-                        {
-                            index += 2;
-                            isUnit = true;
-                            break;
-                        }
-                        else
-                            break;
-                    }
-                    else if (expression[index] == '%')
-                    {
-                        index++;
-                        isUnit = true;
-                        break;
-                    }
-                    else
-                        break;
-
                 }
                 else
                     break;

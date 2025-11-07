@@ -32,12 +32,11 @@ namespace Scryber.Html.Components
             if (string.IsNullOrEmpty(dataContent))
                 return null;
 
-            Component found;
+            Component found = null;
 
             if (dataContent.StartsWith("#"))
                 found = container.Document.FindAComponentById(dataContent.Substring(1));
-            else
-                found = container.Document.FindAComponentByName(dataContent);
+            
 
             if (null == found)
             {
@@ -62,6 +61,74 @@ namespace Scryber.Html.Components
                 return (found as ITemplate);
             }
 
+        }
+
+        /// <summary>
+        /// Actually creates an isntace of the data.Content and adds it to the container
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="data"></param>
+        /// <param name="context"></param>
+        public static void ParseDataContent(this ContainerComponent container, Data.DataBindingContent data,
+            DataContext context)
+        {
+            if (string.IsNullOrEmpty(data.Content))
+            {
+                if (context.ShouldLogVerbose)
+                    context.TraceLog.Add(TraceLevel.Warning, "Binding", "Binding data-content value was null or empty on the '" + container.ID + " component, even though other options had been set");
+
+                return;
+            }
+
+
+            if (null == data.Type)
+                data.Type = container.Document.GetDefaultContentMimeType();
+
+            //Load the parser from the document - will throw an error if not known
+            var parser = container.Document.EnsureParser(data.Type);
+
+            if (context.ShouldLogVerbose)
+                context.TraceLog.Add(TraceLevel.Verbose, "Binding", "Binding data-content value onto the '" + container.ID + " component, with mime-type " + data.Type.ToString());
+
+            
+            using (var sr = new System.IO.StringReader(data.Content))
+            {
+                var component = parser.Parse(null, sr, ParseSourceType.Template) as Component;
+
+                //We clear out even if the returned content is null
+                if (data.Action == DataContentAction.Replace)
+                {
+                    ((IContainerComponent) container).Content.Clear();
+
+                    if (context.ShouldLogDebug)
+                        context.TraceLog.Add(TraceLevel.Debug, "Binding", "Cleared inner content of the '" + container.ID + " component, as data-content-action is set to replace.");
+                }
+                if (null != component)
+                {
+                    if (data.Action == DataContentAction.PrePend)
+                    {
+                        ((IContainerComponent) container).Content.Insert(0, component);
+
+                        if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Debug, "Binding", "Inserted bound content of the '" + container.ID + " component at index 0, as data-content-action is set to prepend.");
+                    }
+                    else
+                    {
+                        ((IContainerComponent) container).Content.Add(component);
+
+                        if (context.ShouldLogDebug)
+                            context.TraceLog.Add(TraceLevel.Debug, "Binding", "Added bound content of the '" + container.ID + " component, to the end.");
+                    }
+                    
+                    //actually perfrom the data binding of the content
+                    //TODO: check on the init and load implementation.
+
+                    component.DataBind(context);
+                }
+                else if (context.ShouldLogVerbose)
+                    context.TraceLog.Add(TraceLevel.Verbose, "Binding", "No component was retruned from the parser with data-content value '" + (data.Content.Length > 50 ? data.Content.Substring(45) + "..." : data.Content) + " on the '" + container.ID + " component");
+
+            }
         }
     }
 }

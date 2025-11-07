@@ -2,6 +2,9 @@
 
 namespace Scryber.Expressive
 {
+
+
+    
     /// <summary>
     /// Interface definition for providing variable values.
     /// </summary>
@@ -17,5 +20,8 @@ namespace Scryber.Expressive
 
 
         void AddRelativeDimensions(Size page, Size container, Size font, Unit rootFont, bool useWidth);
+
+        
+        void AddRelativeCallback(RelativeToAbsoluteDimensionCallback callback);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Scryber;
 using System.Collections.Generic;
+using System.Linq;
 using Scryber.Svg;
 
 namespace Scryber.Core.UnitTests.Drawing
@@ -93,8 +94,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
-            Assert.IsNotNull(target.Paths);
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsNotNull(target.SubPaths);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
         }
 
         #endregion
@@ -109,12 +110,12 @@ namespace Scryber.Core.UnitTests.Drawing
         public void BeginPath_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             target.BeginPath();
             Assert.IsTrue(target.HasCurrentPath);
-            Assert.IsTrue(target.Paths.Count == 2);
+            Assert.IsTrue(target.SubPaths.Count() == 2);
             Assert.AreEqual(target.CurrentPath.Count,0);
             
         }
@@ -131,15 +132,16 @@ namespace Scryber.Core.UnitTests.Drawing
         public void ClosePath_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             bool end = false;
             target.ClosePath(end);
-            Assert.IsTrue(target.Paths.Count == 1,"Paths count after close was not 1");
-            Assert.IsTrue(target.Paths[0].Count == 1, "First path does not have one entry");
-            Assert.IsTrue(target.Paths[0].Operations.Count == 1,"First path operations count was not 1");
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathCloseData), "Opertation type was not a PathClose");
+            Assert.IsTrue(target.SubPaths.Count() == 1,"Paths count after close was not 1");
+            var paths = target.SubPaths.ToArray();
+            Assert.IsTrue(paths[0].Count == 1, "First path does not have one entry");
+            Assert.IsTrue(paths[0].Operations.Count == 1,"First path operations count was not 1");
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathCloseData), "Opertation type was not a PathClose");
 
             //should still have a current path.
             Assert.IsTrue(target.HasCurrentPath,"There is no current path");
@@ -148,14 +150,15 @@ namespace Scryber.Core.UnitTests.Drawing
 
             end = true;
             target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             target.ClosePath(true);
-            Assert.IsTrue(target.Paths.Count == 1, "Paths count after close was not 1");
-            Assert.IsTrue(target.Paths[0].Count == 1, "First path does not have one entry");
-            Assert.IsTrue(target.Paths[0].Operations.Count == 1, "First path operations count was not 1");
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathCloseData), "Opertation type was not a PathClose");
+            paths = target.SubPaths.ToArray();
+            Assert.IsTrue(paths.Length == 1, "Paths count after close was not 1");
+            Assert.IsTrue(paths[0].Count == 1, "First path does not have one entry");
+            Assert.IsTrue(paths[0].Operations.Count == 1, "First path operations count was not 1");
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathCloseData), "Opertation type was not a PathClose");
 
             //should NOT have a current path.
             Assert.IsFalse(target.HasCurrentPath, "There is a current path after ending it"); 
@@ -174,12 +177,13 @@ namespace Scryber.Core.UnitTests.Drawing
         public void EndPath_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             target.EndPath();
-            Assert.IsTrue(target.Paths.Count == 1, "Paths count after close was not 1");
-            Assert.IsTrue(target.Paths[0].Count == 0, "First path should not have any entries");
+            Assert.IsTrue(target.SubPaths.Count() == 1, "Paths count after close was not 1");
+            var paths = target.SubPaths.ToArray();
+            Assert.IsTrue(paths[0].Count == 0, "First path should not have any entries");
             
             //should NOT have a current path.
             Assert.IsFalse(target.HasCurrentPath, "There is a current path after ending it");
@@ -199,7 +203,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void MoveTo_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -208,17 +212,18 @@ namespace Scryber.Core.UnitTests.Drawing
             target.MoveTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathMoveData));
-            PathMoveData data = (PathMoveData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathMoveData));
+            PathMoveData data = (PathMoveData)paths[0].Operations[0];
             Assert.AreEqual(data.MoveTo, pos);
 
             pos = new Point(40, 40);
             target.MoveTo(pos);
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathMoveData));
-            data = (PathMoveData)target.Paths[0].Operations[1];
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathMoveData));
+            data = (PathMoveData)paths[0].Operations[1];
             Assert.AreEqual(data.MoveTo, pos);
         }
 
@@ -231,7 +236,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void MoveBy_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -240,9 +245,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.MoveTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathMoveData));
-            PathMoveData data = (PathMoveData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathMoveData));
+            PathMoveData data = (PathMoveData)paths[0].Operations[0];
             Assert.AreEqual(data.MoveTo, pos);
 
             Point pos2 = new Point(40, 40);
@@ -250,9 +256,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Point total = new Point(pos.X + pos2.X, pos.Y + pos2.Y);
 
             Assert.AreEqual(target.Cursor, total);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathMoveData));
-            data = (PathMoveData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathMoveData));
+            data = (PathMoveData)paths[0].Operations[1];
             Assert.AreEqual(data.MoveTo, total);
         }
 
@@ -268,7 +275,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LineTo_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -277,18 +284,20 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Point pos2 = new Point(40, 40);
             target.LineTo(pos2);
             
             Assert.AreEqual(target.Cursor, pos2);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, pos2);
             
         }
@@ -305,7 +314,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void LineFor_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -314,9 +323,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Point pos2 = new Point(40, 40);
@@ -324,9 +334,10 @@ namespace Scryber.Core.UnitTests.Drawing
             Point total = new Point(pos.X + pos2.X, pos.Y + pos2.Y);
 
             Assert.AreEqual(target.Cursor, total);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, total);
 
         }
@@ -343,7 +354,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void VerticalLineTo_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -352,9 +363,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Unit v = 40;
@@ -362,9 +374,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             pos = new Point(pos.X, v);
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, pos);
 
         }
@@ -381,7 +394,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void VerticalLineFor_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -390,9 +403,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Unit v = 40;
@@ -400,9 +414,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             pos = new Point(pos.X, pos.Y + v);
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, pos);
 
         }
@@ -419,7 +434,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void HorizontalLineTo_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -428,9 +443,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Unit h = 40;
@@ -438,9 +454,9 @@ namespace Scryber.Core.UnitTests.Drawing
 
             pos = new Point(h, pos.Y);
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, pos);
 
         }
@@ -457,7 +473,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void HorizontalLineFor_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -466,9 +482,10 @@ namespace Scryber.Core.UnitTests.Drawing
             target.LineTo(pos);
 
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathLineData));
-            PathLineData data = (PathLineData)target.Paths[0].Operations[0];
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathLineData));
+            PathLineData data = (PathLineData)paths[0].Operations[0];
             Assert.AreEqual(data.LineTo, pos);
 
             Unit h = 40;
@@ -476,9 +493,10 @@ namespace Scryber.Core.UnitTests.Drawing
 
             pos = new Point(pos.X + h, pos.Y);
             Assert.AreEqual(target.Cursor, pos);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathLineData));
-            data = (PathLineData)target.Paths[0].Operations[1];
+            paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            data = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(data.LineTo, pos);
 
         }
@@ -490,7 +508,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicTo_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -502,10 +520,11 @@ namespace Scryber.Core.UnitTests.Drawing
             target.CubicCurveTo(end, handleStart, handleEnd);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathBezierCurveData));
             
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[0];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[0];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsTrue(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
@@ -520,7 +539,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicToWithHandleStart_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -532,10 +551,11 @@ namespace Scryber.Core.UnitTests.Drawing
             target.CubicCurveToWithHandleStart(end, handleStart);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathBezierCurveData));
 
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[0];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[0];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsTrue(data.HasStartHandle);
             Assert.IsFalse(data.HasEndHandle);
@@ -549,7 +569,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicToWithHandleEnd_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Assert.AreEqual(target.Cursor, Point.Empty);
@@ -561,10 +581,11 @@ namespace Scryber.Core.UnitTests.Drawing
             target.CubicCurveToWithHandleEnd(end, handleEnd);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathBezierCurveData));
 
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[0];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[0];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsFalse(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
@@ -578,7 +599,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicFor_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Point pos = new Point(10, 10);
@@ -596,10 +617,11 @@ namespace Scryber.Core.UnitTests.Drawing
             handleStart = handleStart.Offset(pos);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathBezierCurveData));
 
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[1];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[1];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsTrue(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
@@ -613,7 +635,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicForWithHandleStart_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Point pos = new Point(10, 10);
@@ -631,10 +653,11 @@ namespace Scryber.Core.UnitTests.Drawing
             handleStart = handleStart.Offset(pos);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathBezierCurveData));
 
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[1];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[1];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsTrue(data.HasStartHandle);
             Assert.IsFalse(data.HasEndHandle);
@@ -648,7 +671,7 @@ namespace Scryber.Core.UnitTests.Drawing
         public void CubicForWithHandleEnd_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
 
             Point pos = new Point(10, 10);
@@ -666,10 +689,11 @@ namespace Scryber.Core.UnitTests.Drawing
             handleStart = handleStart.Offset(pos);
 
             Assert.AreEqual(target.Cursor, end);
-            Assert.AreEqual(target.Paths[0].Operations.Count, 2);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[1], typeof(PathBezierCurveData));
+            var paths = target.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 2);
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathBezierCurveData));
 
-            PathBezierCurveData data = (PathBezierCurveData)target.Paths[0].Operations[1];
+            PathBezierCurveData data = (PathBezierCurveData)paths[0].Operations[1];
             Assert.AreEqual(data.Points.Length, 3);
             Assert.IsFalse(data.HasStartHandle);
             Assert.IsTrue(data.HasEndHandle);
@@ -689,8 +713,10 @@ namespace Scryber.Core.UnitTests.Drawing
         public void Bounds_Test()
         {
             GraphicsPath target = new GraphicsPath();
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
             Assert.IsTrue(target.HasCurrentPath);
+            Rect bounds = target.Bounds;
+            Assert.AreEqual(Rect.Empty, bounds);
 
             Point pos = new Point(10, 10);
             target.MoveTo(pos);
@@ -705,12 +731,12 @@ namespace Scryber.Core.UnitTests.Drawing
             handleEnd = handleEnd.Offset(pos);
             handleStart = handleStart.Offset(pos);
 
-            Rect bounds = target.Bounds;
+            bounds = target.Bounds;
 
-            Assert.AreEqual(bounds.X, Unit.Zero);
-            Assert.AreEqual(bounds.Y, Unit.Zero);
-            Assert.AreEqual(bounds.Width, end.X);
-            Assert.AreEqual(bounds.Height, end.Y);
+            Assert.AreEqual(10, bounds.X);
+            Assert.AreEqual(10, bounds.Y);
+            Assert.AreEqual(100, bounds.Width);
+            Assert.AreEqual(100, bounds.Height);
         }
 
         /* Path construction options (matches svg)
@@ -767,8 +793,8 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
-            Assert.IsNotNull(target.Paths);
-            Assert.IsTrue(target.Paths.Count == 1);
+            Assert.IsNotNull(target.SubPaths);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
         }
 
         [TestMethod()]
@@ -780,10 +806,12 @@ namespace Scryber.Core.UnitTests.Drawing
             Assert.IsNotNull(target);
             Assert.IsTrue(target.CurrentPath != null);
             Assert.IsTrue(target.HasCurrentPath);
-            Assert.IsNotNull(target.Paths);
-            Assert.IsTrue(target.Paths.Count == 1);
-            Assert.IsTrue(target.Paths[0].Operations.Count == 1);
-            Assert.IsInstanceOfType(target.Paths[0].Operations[0], typeof(PathCloseData));
+            Assert.IsNotNull(target.SubPaths);
+            Assert.IsTrue(target.SubPaths.Count() == 1);
+
+            var paths = target.SubPaths.ToArray();
+            Assert.IsTrue(paths[0].Operations.Count == 1);
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathCloseData));
         }
 
         [TestCategory("Graphics Path")]
@@ -833,35 +861,36 @@ c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,
             GraphicsPath path = new GraphicsPath();
 
             parser.ParseSVG(path, pathData);
-            Assert.AreEqual(path.Paths.Count, 1);
-            Assert.AreEqual(path.Paths[0].Operations.Count, 5);
+            Assert.AreEqual(path.SubPaths.Count(), 1);
+            var paths = path.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 5);
 
             //M-84.1487,-15.8513
-            Assert.IsInstanceOfType(path.Paths[0].Operations[0], typeof(PathMoveData));
-            PathMoveData move = (PathMoveData)path.Paths[0].Operations[0];
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathMoveData));
+            PathMoveData move = (PathMoveData)paths[0].Operations[0];
             Assert.AreEqual(move.MoveTo.X.PointsValue, -84.1487);
             Assert.AreEqual(move.MoveTo.Y.PointsValue, -15.8513);
 
             //h168.2974
-            Assert.IsInstanceOfType(path.Paths[0].Operations[1], typeof(PathLineData));
-            PathLineData line = (PathLineData)path.Paths[0].Operations[1];
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData));
+            PathLineData line = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(line.LineTo.X.PointsValue, -84.1487 + 168.2974);
             Assert.AreEqual(line.LineTo.Y.PointsValue, -15.8513);
 
             //V10.053
-            Assert.IsInstanceOfType(path.Paths[0].Operations[2], typeof(PathLineData));
-            line = (PathLineData)path.Paths[0].Operations[2];
+            Assert.IsInstanceOfType(paths[0].Operations[2], typeof(PathLineData));
+            line = (PathLineData)paths[0].Operations[2];
             Assert.AreEqual(line.LineTo.X.PointsValue, -84.1487 + 168.2974);
             Assert.AreEqual(line.LineTo.Y.PointsValue, 10.053);
 
             //H-2
-            Assert.IsInstanceOfType(path.Paths[0].Operations[3], typeof(PathLineData));
-            line = (PathLineData)path.Paths[0].Operations[3];
+            Assert.IsInstanceOfType(paths[0].Operations[3], typeof(PathLineData));
+            line = (PathLineData)paths[0].Operations[3];
             Assert.AreEqual(line.LineTo.X.PointsValue, -2.0);
             Assert.AreEqual(line.LineTo.Y.PointsValue, 10.053);
 
             //Z close
-            Assert.IsInstanceOfType(path.Paths[0].Operations[path.Paths[0].Operations.Count -1], typeof(PathCloseData));
+            Assert.IsInstanceOfType(paths[0].Operations[paths[0].Operations.Count -1], typeof(PathCloseData));
         }
 
         [TestCategory("Graphics Path")]
@@ -877,44 +906,45 @@ c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,
             GraphicsPath path = new GraphicsPath();
 
             parser.ParseSVG(path, pathData);
-            Assert.AreEqual(path.Paths.Count, 1);
+            Assert.AreEqual(path.SubPaths.Count(), 1);
 
             //Check the operation count
-            Assert.AreEqual(path.Paths[0].Operations.Count, 19);
+            var paths = path.SubPaths.ToArray();
+            Assert.AreEqual(paths[0].Operations.Count, 19);
 
             //M-84.1487,-15.8513
-            Assert.IsInstanceOfType(path.Paths[0].Operations[0], typeof(PathMoveData), "Operation 6 Invalid");
-            PathMoveData move = (PathMoveData)path.Paths[0].Operations[0];
+            Assert.IsInstanceOfType(paths[0].Operations[0], typeof(PathMoveData), "Operation 6 Invalid");
+            PathMoveData move = (PathMoveData)paths[0].Operations[0];
             Assert.AreEqual(move.MoveTo.X.PointsValue, -84.1487);
             Assert.AreEqual(move.MoveTo.Y.PointsValue, -15.8513);
 
             //h168.2974
-            Assert.IsInstanceOfType(path.Paths[0].Operations[1], typeof(PathLineData), "Operation 1 Invalid");
-            PathLineData line = (PathLineData)path.Paths[0].Operations[1];
+            Assert.IsInstanceOfType(paths[0].Operations[1], typeof(PathLineData), "Operation 1 Invalid");
+            PathLineData line = (PathLineData)paths[0].Operations[1];
             Assert.AreEqual(line.LineTo.X.PointsValue, -84.1487 + 168.2974);
             Assert.AreEqual(line.LineTo.Y.PointsValue, -15.8513);
 
             //V10.053
-            Assert.IsInstanceOfType(path.Paths[0].Operations[2], typeof(PathLineData), "Operation 2 Invalid");
-            line = (PathLineData)path.Paths[0].Operations[2];
+            Assert.IsInstanceOfType(paths[0].Operations[2], typeof(PathLineData), "Operation 2 Invalid");
+            line = (PathLineData)paths[0].Operations[2];
             Assert.AreEqual(line.LineTo.X.PointsValue, -84.1487 + 168.2974);
             Assert.AreEqual(line.LineTo.Y.PointsValue, 10.053);
 
             //H-2
-            Assert.IsInstanceOfType(path.Paths[0].Operations[3], typeof(PathLineData), "Operation 3 Invalid");
-            line = (PathLineData)path.Paths[0].Operations[3];
+            Assert.IsInstanceOfType(paths[0].Operations[3], typeof(PathLineData), "Operation 3 Invalid");
+            line = (PathLineData)paths[0].Operations[3];
             Assert.AreEqual(line.LineTo.X.PointsValue, -2.0);
             Assert.AreEqual(line.LineTo.Y.PointsValue, 10.053);
 
             //a22.4171,22.4171 0 1 0 0,31.7026 
-            Assert.IsInstanceOfType(path.Paths[0].Operations[4], typeof(PathArcData), "Operation 4 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[4], typeof(PathArcData), "Operation 4 Invalid");
 
             //h168.2974
-            Assert.IsInstanceOfType(path.Paths[0].Operations[5], typeof(PathLineData), "Operation 5 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[5], typeof(PathLineData), "Operation 5 Invalid");
 
             //A22.4171,22.4171 0 1 0 0,-31.7026 
-            Assert.IsInstanceOfType(path.Paths[0].Operations[6], typeof(PathArcData), "Operation 6 Invalid");
-            PathArcData arc = (PathArcData)path.Paths[0].Operations[6];
+            Assert.IsInstanceOfType(paths[0].Operations[6], typeof(PathArcData), "Operation 6 Invalid");
+            PathArcData arc = (PathArcData)paths[0].Operations[6];
             Assert.AreEqual(22.4171, arc.RadiusX, "Operation 6 Invalid - Radius X");
             Assert.AreEqual(22.4171, arc.RadiusY, "Operation 6 Invalid - Radius Y");
             Assert.AreEqual(0, arc.XAxisRotation, "Operation 6 Invalid - Rotation");
@@ -924,30 +954,30 @@ c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,
             Assert.AreEqual(-31.7026, arc.EndPoint.Y, "Operation 6 Invalid - EndPoint Y");
 
             //M70.491,50.826
-            Assert.IsInstanceOfType(path.Paths[0].Operations[7], typeof(PathMoveData), "Operation 7 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[7], typeof(PathMoveData), "Operation 7 Invalid");
 
             //c-2.232,1.152-6.913,2.304-12.817,2.304
-            Assert.IsInstanceOfType(path.Paths[0].Operations[8], typeof(PathBezierCurveData), "Operation 8 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[8], typeof(PathBezierCurveData), "Operation 8 Invalid");
 
             //c-13.682,0-23.906-8.641-23.906-24.626
-            Assert.IsInstanceOfType(path.Paths[0].Operations[9], typeof(PathBezierCurveData), "Operation 9 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[9], typeof(PathBezierCurveData), "Operation 9 Invalid");
 
             //c0-15.266,10.297-25.49,25.346-25.49
-            Assert.IsInstanceOfType(path.Paths[0].Operations[10], typeof(PathBezierCurveData), "Operation 10 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[10], typeof(PathBezierCurveData), "Operation 10 Invalid");
 
             //c5.977,0,9.865,1.296,11.521,2.16
-            Assert.IsInstanceOfType(path.Paths[0].Operations[11], typeof(PathBezierCurveData), "Operation 11 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[11], typeof(PathBezierCurveData), "Operation 11 Invalid");
             
             //L-1.584,5.112
-            Assert.IsInstanceOfType(path.Paths[0].Operations[12], typeof(PathLineData), "Operation 12 Invalid");
-            line = (PathLineData)path.Paths[0].Operations[12];
+            Assert.IsInstanceOfType(paths[0].Operations[12], typeof(PathLineData), "Operation 12 Invalid");
+            line = (PathLineData)paths[0].Operations[12];
 
             Assert.AreEqual(-1.584, line.LineTo.X);
             Assert.AreEqual(5.112, line.LineTo.Y);
 
             //C66.747,9.134,63.363,8.27,59.33,8.27
-            Assert.IsInstanceOfType(path.Paths[0].Operations[13], typeof(PathBezierCurveData), "Operation 13 Invalid");
-            PathBezierCurveData curve = (PathBezierCurveData)path.Paths[0].Operations[13];
+            Assert.IsInstanceOfType(paths[0].Operations[13], typeof(PathBezierCurveData), "Operation 13 Invalid");
+            PathBezierCurveData curve = (PathBezierCurveData)paths[0].Operations[13];
             Assert.AreEqual(66.747, curve.StartHandle.X);
             Assert.AreEqual(9.134, curve.StartHandle.Y);
             Assert.AreEqual(63.363, curve.EndHandle.X);
@@ -956,19 +986,19 @@ c-11.377,0-18.938,7.272-18.938,20.018c0,11.953,6.841,19.514,18.578,19.514c3.888,
             Assert.AreEqual(8.27, curve.EndPoint.Y);
 
             //c-11.377,0-18.938,7.272-18.938,20.018
-            Assert.IsInstanceOfType(path.Paths[0].Operations[14], typeof(PathBezierCurveData), "Operation 14 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[14], typeof(PathBezierCurveData), "Operation 14 Invalid");
             
             //c0,11.953,6.841,19.514,18.578,19.514
-            Assert.IsInstanceOfType(path.Paths[0].Operations[15], typeof(PathBezierCurveData), "Operation 15 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[15], typeof(PathBezierCurveData), "Operation 15 Invalid");
             
             //c3.888,0,7.777-0.792,10.297-2.016
-            Assert.IsInstanceOfType(path.Paths[0].Operations[16], typeof(PathBezierCurveData), "Operation 16 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[16], typeof(PathBezierCurveData), "Operation 16 Invalid");
             
             //L70.491,50.826
-            Assert.IsInstanceOfType(path.Paths[0].Operations[17], typeof(PathLineData), "Operation 17 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[17], typeof(PathLineData), "Operation 17 Invalid");
             
             //Z close
-            Assert.IsInstanceOfType(path.Paths[0].Operations[18], typeof(PathCloseData), "Operation 18 Invalid");
+            Assert.IsInstanceOfType(paths[0].Operations[18], typeof(PathCloseData), "Operation 18 Invalid");
         }
 
     }

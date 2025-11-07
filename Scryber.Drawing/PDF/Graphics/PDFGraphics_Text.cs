@@ -237,18 +237,21 @@ namespace Scryber.PDF.Graphics
                     {
                         var strategy = options.HyphenationStrategy;
                         var opportunity = this.GetWordHypenation(chars, startIndex, charsfitted, strategy);
-
-                        if (opportunity.NewLength > 0)
+                        var len = opportunity.NewLength;
+                        if (len > 0)
                         {
-                            var tomeasure = chars.Substring(startIndex, opportunity.NewLength);
+                            if (len + startIndex >= chars.Length)
+                                len = chars.Length - startIndex;
+                            
+                            var tomeasure = chars.Substring(startIndex, len);
                             appendChar = opportunity.AppendHyphenCharacter;
 
                             if (appendChar.HasValue)
-                                tomeasure += opportunity.AppendHyphenCharacter.Value;
+                                tomeasure += appendChar.Value;
 
                             measured = defn.MeasureStringWidth(tomeasure, 0, fsize.PointsValue, (double)(int.MaxValue), true, out charsfitted);
                         }
-                        charsfitted = opportunity.NewLength; //override anyway
+                        charsfitted = len;
 
                     }
                 }

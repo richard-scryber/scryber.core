@@ -36,7 +36,7 @@ namespace Scryber.Components
         [PDFAttribute("src")]
         [PDFJSConvertor("scryber.studio.design.convertors.imgSource_attr")]
         [PDFDesignable("Source",Category = "General",Type ="ImageSource")]
-        public string Source
+        public virtual string Source
         {
             get { return _src; }
             set 

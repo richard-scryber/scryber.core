@@ -1,6 +1,7 @@
 ﻿using Scryber.Expressive.Expressions;
 using System.Collections;
 using System.Collections.Generic;
+using Scryber.Expressive.Helpers;
 
 namespace Scryber.Expressive.Functions.Relational
 {
@@ -20,16 +21,36 @@ namespace Scryber.Expressive.Functions.Relational
 
             foreach (var value in parameters)
             {
-                var increment = 1;
-                var evaluatedValue = value.Evaluate(variables);
-                IEnumerable ienum;
+                int increment;
 
-                if (Helpers.Collections.TryIsCollection(evaluatedValue, out ienum) && ienum is ICollection col)
+                if (null != value)
                 {
-                    increment = col.Count;
-                }
+                    var evaluatedValue = value.Evaluate(variables);
+                    if (null != evaluatedValue)
+                    {
+                        increment = 1;
 
-                count += increment;
+
+                        IEnumerable ienum;
+
+                        if (Helpers.Collections.TryIsCollection(evaluatedValue, out ienum))
+                        {
+                            increment = 0;
+                            
+                            foreach (var inner in ienum)
+                            {
+                                var innerVal = Comparison.ExtractAnyJsonValue(inner);
+                                if (null != innerVal)
+                                {
+                                    increment++;
+                                }
+                            }
+
+                        }
+
+                        count += increment;
+                    }
+                }
             }
 
             return count;

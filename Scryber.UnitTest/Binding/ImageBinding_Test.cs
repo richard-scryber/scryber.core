@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 using Scryber.PDF.Resources;
 
 namespace Scryber.Core.UnitTests.Binding
@@ -15,7 +16,8 @@ namespace Scryber.Core.UnitTests.Binding
     {
 
         private TestContext testContextInstance;
-
+        private PDFLayoutDocument _layout;
+        
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
@@ -64,21 +66,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                var path = this.TestContext.TestRunDirectory;
-
-
-                path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg"); ;
-
-                path = System.IO.Path.GetFullPath(path);
-
-                if (!System.IO.File.Exists(path))
-                {
-                    path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images/Toroid24.jpg");
-                    path = System.IO.Path.GetFullPath(path);
-                    
-                    if (!System.IO.File.Exists(path))
-                        throw new System.IO.FileNotFoundException("Could not load the test image at path " + path);
-                }
+                var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg", this.TestContext);
 
                 var imgReader = Scryber.Imaging.ImageReader.Create();
                 ImageData data;
@@ -108,36 +96,26 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod()]
         public void ImageDataParameterBinding()
         {
-            var path = this.TestContext.TestRunDirectory;
+            
+            var path = DocStreams.AssertGetDirectoryPath("../../Scryber.UnitTest/Content/HTML/Images/", this.TestContext);
 
-            path = System.IO.Path.Combine(path, "../../../../Scryber.UnitTest/Content/HTML/Images"); ;
-
-            path = System.IO.Path.GetFullPath(path);
-
-            if (!System.IO.Directory.Exists(path))
-            {
-                path = System.IO.Path.Combine(this.TestContext.TestDir, "../../Content/HTML/Images");
-                path = System.IO.Path.GetFullPath(path);
-
-                if (!System.IO.Directory.Exists(path))
-                    throw new System.IO.FileNotFoundException("Could not load the test image directory at path " + path);
-            }
 
 
             var imgReader = Scryber.Imaging.ImageReader.Create();
-            ImageData data1, data2;
+            
+            ImageRasterData data1, data2;
 
             if (!path.EndsWith(System.IO.Path.DirectorySeparatorChar))
                 path += System.IO.Path.DirectorySeparatorChar;
 
             using (var fs = new System.IO.FileStream(path + "Toroid24.jpg", FileMode.Open))
             {
-                data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false);
+                data1 = imgReader.ReadStream(path + "Toroid24.jpg", fs, false) as ImageRasterData;
             }
             
             using (var fs = new System.IO.FileStream(path + "group.png", FileMode.Open))
             {
-                data2 = imgReader.ReadStream(path + "group.png", fs, false);
+                data2 = imgReader.ReadStream(path + "group.png", fs, false) as ImageRasterData;
             }
             
             var model = new
@@ -185,6 +163,7 @@ namespace Scryber.Core.UnitTests.Binding
 
             var found1 = doc.FindAComponentById("LoadedImage1") as Image;
             var found2 = doc.FindAComponentById("LoadedImage2") as Image;
+            
             Assert.IsNotNull(found1);
             Assert.IsNotNull(found1.Data);
             Assert.AreEqual(data1, found1.Data);
@@ -201,25 +180,18 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsTrue(rsrc1.Registered, "First image was not registered");
             Assert.AreEqual(data1.SourcePath, rsrc1.ImageData.SourcePath, "First Image, Paths did not match");
             Assert.IsTrue(rsrc1.ImageData.SourcePath.EndsWith("Toroid24.jpg"), "First image source path did not end with Toroid24.jpg");
-            Assert.AreEqual(data1.PixelWidth, rsrc1.ImageData.PixelWidth, "First Image, Sizes did not match");
+            Assert.AreEqual(data1.PixelWidth, ((ImageRasterData)rsrc1.ImageData).PixelWidth, "First Image, Sizes did not match");
             
             Assert.IsNotNull(rsrc2, "Second resource image was null");
             Assert.IsTrue(rsrc2.Registered, "Second image was not registered");
             Assert.AreEqual(data2.SourcePath, rsrc2.ImageData.SourcePath, "Second Image, Paths did not match");
             Assert.IsTrue(rsrc2.ImageData.SourcePath.EndsWith("group.png"), "Second image source path did not end with group.png");
-            Assert.AreEqual(data2.PixelWidth, rsrc2.ImageData.PixelWidth, "Second Image, Sizes did not match");
-        }
-
-        /// <summary>
-        /// Checks the layout to ensure it has a Component layout and the images are registered with the layout.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
-        {
-            var context = (PDFLayoutContext)(args.Context);
-
-            var layoutPg = context.DocumentLayout.AllPages[0];
+            Assert.AreEqual(data2.PixelWidth, ((ImageRasterData)rsrc2.ImageData).PixelWidth, "Second Image, Sizes did not match");
+            
+            //Check the actual layout
+            Assert.IsNotNull(_layout, "The layout was not captured");
+            
+            var layoutPg = _layout.AllPages[0];
             var layoutLine1 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine1);
@@ -231,7 +203,7 @@ namespace Scryber.Core.UnitTests.Binding
             Assert.IsNotNull(compRun1.Owner);
             Assert.AreEqual("LoadedImage1", compRun1.Owner.ID);
 
-            layoutPg = context.DocumentLayout.AllPages[1];
+            layoutPg = _layout.AllPages[1];
             var layoutLine2 = layoutPg.ContentBlock.Columns[0].Contents[0] as Scryber.PDF.Layout.PDFLayoutLine;
 
             Assert.IsNotNull(layoutLine2);
@@ -242,8 +214,125 @@ namespace Scryber.Core.UnitTests.Binding
 
             Assert.IsNotNull(compRun2.Owner);
             Assert.AreEqual("LoadedImage2", compRun2.Owner.ID);
-            
+        }
+
+        /// <summary>
+        /// Checks the layout to ensure it has a Component layout and the images are registered with the layout.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Doc_LayoutComplete(object sender, LayoutEventArgs args)
+        {
+            var context = (PDFLayoutContext)(args.Context);
+            this._layout = context.DocumentLayout;
 
         }
+
+        [TestMethod]
+        public void LargeImageBoundWithFixedContainer()
+        {
+            var imgReader = Scryber.Imaging.ImageReader.Create();
+
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/LongRedBar.png", this.TestContext); ;
+
+            path = System.IO.Path.GetFullPath(path);
+
+            
+            ImageData data;
+
+            using (var fs = new System.IO.FileStream(path, FileMode.Open))
+            {
+                data = imgReader.ReadStream(path, fs, false);
+            }
+
+            var model = new
+            {
+                ClientHasLogo = true,
+                ClientLogo = data
+            };
+
+            var html = @"<?xml version='1.0' encoding='utf-8' ?>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+    <head>
+        <style>
+            .logo-container {
+               background: #dddddd;
+               width: 35mm;
+               height: 21mm;
+               vertical-align: middle;
+               text-align: center;
+               overflow: clip;
+               padding:0px;
+            }
+
+        </style>
+    </head>
+    <body style='padding: 20pt'>
+        <table>
+           <tr>
+               <td class=""logo-container"">
+                   <if data-test=""{@:Model.ClientHasLogo}"">
+                       <img img-data=""{@:Model.ClientLogo}"" style='width: 100%' />
+                   </if>
+               </td>
+               <td>After the image</td>
+           </tr>
+        </table>
+    </body>
+</html>";
+
+            Document doc;
+
+            using (var reader = new System.IO.StringReader(html))
+            {
+                doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+            }
+
+            doc.Params["Model"] = model;
+            
+
+            using (var stream = DocStreams.GetOutputStream("OverflowImageOutput.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(1, _layout.AllPages.Count);
+            var pg = _layout.AllPages[0];
+
+            var content = pg.ContentBlock;
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+            
+            var tbl = content.Columns[0].Contents[0] as PDFLayoutBlock; //
+            
+            Assert.IsNotNull(tbl);
+            Assert.AreEqual(1, tbl.Columns.Length);
+            Assert.AreEqual(1, tbl.Columns[0].Contents.Count);
+            
+            var row = tbl.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(row);
+
+            Assert.AreEqual(2, row.Columns.Length);
+            Assert.AreEqual(1, row.Columns[0].Contents.Count);
+            Assert.AreEqual(1, row.Columns[1].Contents.Count);
+
+            //first cell has the image if and image - but should maintain the explicit height.
+            var cell = row.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(cell);
+            Assert.AreEqual(Math.Round(new Unit(35, PageUnits.Millimeters).PointsValue, 4), Math.Round(cell.Width.PointsValue, 4)); //zero padding 
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue, cell.Height.PointsValue);
+            Assert.AreEqual(1, cell.Columns.Length);
+            Assert.AreEqual(1, cell.Columns[0].Contents.Count);
+            
+            //second empty cell - still the same height
+            cell = row.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(cell);
+            Assert.AreEqual(new Unit(21, PageUnits.Millimeters).PointsValue, cell.Height.PointsValue);
+        }
+
+
     }
 }

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Scryber.Logging;
+using Scryber.PDF.Resources;
 
 namespace Scryber
 {
@@ -361,6 +362,13 @@ namespace Scryber
         string GetIncrementID(ObjectType type);
 
         /// <summary>
+        /// Returns any component registered with the document with a specific ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        IComponent FindComponentById(string id);
+
+        /// <summary>
         /// Gets the current conformance mode (strict or lax)
         /// </summary>
         ParserConformanceMode ConformanceMode { get; }
@@ -384,6 +392,8 @@ namespace Scryber
     {
 
         IDocument Document { get; }
+        
+        PDFResourceList Resources { get; }
 
         string Register(ISharedResource rsrc);
 
@@ -498,7 +508,7 @@ namespace Scryber
     /// </summary>
     public interface IResourceRequester
     {
-        IRemoteRequest RequestResource(string type, string path, RemoteRequestCallback callback, IComponent owner, object arguments);
+        IRemoteRequest RequestResource(string type, string path, TimeSpan cacheDuration, RemoteRequestCallback callback, IComponent owner, object arguments);
     }
 
 
@@ -759,6 +769,14 @@ namespace Scryber
     {
         string Text { get; set; }
         TextFormat ReaderFormat { get; set; }
+    }
+
+    /// <summary>
+    /// Placeholder for the Canvas - has its own styles and resources.
+    /// </summary>
+    public interface ICanvas : IResourceContainer, IComponent
+    {
+        
     }
 
 }

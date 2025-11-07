@@ -43,12 +43,13 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
-
+        
         [PDFAttribute("data-content")]
-        public string DataContent
+        public new string DataContent
         {
             get; set;
         }
+        
 
         [PDFAttribute("for")]
         public string ForComponent

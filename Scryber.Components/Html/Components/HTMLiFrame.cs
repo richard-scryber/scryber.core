@@ -76,7 +76,7 @@ namespace Scryber.Html.Components
 
         protected HTMLiFrame(ObjectType type): base(type)
         {
-            this.Passthrough = true;
+            this.Passthrough = false;
         }
 
 
@@ -90,5 +90,7 @@ namespace Scryber.Html.Components
             else
                 return base.GetAppliedStyle(forComponent, baseStyle);
         }
+        
+        
     }
 }

@@ -26,6 +26,7 @@ using Scryber.Expressive.Expressions;
 using Scryber.Expressive.Exceptions;
 using Scryber.Expressive;
 using Scryber.PDF.Secure;
+using Scryber.Html;
 using System.Collections;
 
 
@@ -160,9 +161,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void LoadHtmlFromSource()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HtmlFromSource.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HtmlFromSource.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 var defn = new StyleDefn("h1.border");
@@ -185,9 +185,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void HelloWorld()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HelloWorld.xhtml");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 
@@ -204,9 +203,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void MultipleImageReferences()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/MultipleImageReferences.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/MultipleImageReferences.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
 
@@ -263,7 +262,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
                 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -307,7 +306,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -357,7 +356,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -450,7 +449,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -473,8 +472,11 @@ namespace Scryber.Core.UnitTests.Html
                         var img = rsrc as PDFImageXObject;
                         Assert.IsNotNull(img);
                         //Just check the image size for validation it was loaded
-                        Assert.AreEqual(640, img.ImageData.PixelWidth, "Unexpected image width for the png");
-                        Assert.AreEqual(643, img.ImageData.PixelHeight, "Unexpected image height for the png");
+                        var raster = img.ImageData as ImageRasterData;
+                        Assert.IsNotNull(raster);
+                        
+                        Assert.AreEqual(640, raster.PixelWidth, "Unexpected image width for the png");
+                        Assert.AreEqual(643, raster.PixelHeight, "Unexpected image height for the png");
                     }
                 }
 
@@ -527,9 +529,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyAsASection()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyheadfoot.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyheadfoot.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = DocStreams.GetOutputStream("bodyheadfoot.pdf"))
@@ -588,9 +590,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithBinding()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithBinding.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithBinding.html",
+                this.TestContext);
+            
             var model = new
             {
                 headerText = "Bound Header",
@@ -722,8 +724,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithJsonBinding()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithBinding.html");
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithBinding.html",
+                this.TestContext);
+            
             var modeljson = "{\r\n" +
                 "\"headerText\" : \"Bound Header\"," +
                 "\"footerText\" : \"Bound Footer\"," +
@@ -822,9 +825,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithExpressionBinding()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithExpressionBinding.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithExpressionBinding.html",
+                this.TestContext);
             var model = new
             {
                 headerText = "Bound Header",
@@ -947,12 +949,10 @@ namespace Scryber.Core.UnitTests.Html
             var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
             var client = new System.Net.Http.HttpClient();
             var data = client.GetByteArrayAsync(imagepath).Result;
-
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LocalAndRemoteImages.html");
-
-            Assert.IsTrue(System.IO.File.Exists(path));
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LocalAndRemoteImages.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = DocStreams.GetOutputStream("LocalAndRemoteImages.pdf"))
@@ -999,10 +999,10 @@ namespace Scryber.Core.UnitTests.Html
             var client = new System.Net.Http.HttpClient();
             var data = client.GetByteArrayAsync(imagepath).Result;
 
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LocalAndRemoteImages.html");
 
-            Assert.IsTrue(System.IO.File.Exists(path));
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LocalAndRemoteImages.html",
+                this.TestContext);
+
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -1051,9 +1051,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyTemplating()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodytemplating.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodytemplating.html",
+                this.TestContext);
+            
             dynamic[] all = new dynamic[100];
             int total = 0;
 
@@ -1101,9 +1101,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyTemplatingWithJson()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodytemplating.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodytemplating.html",
+                this.TestContext);
             StringBuilder content = new StringBuilder();
 
             
@@ -1182,10 +1181,10 @@ namespace Scryber.Core.UnitTests.Html
                 }
             };
 
-
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/displaynone.html");
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/displaynone.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = DocStreams.GetOutputStream("htmlDisplayNone.pdf"))
@@ -1211,9 +1210,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void TopAndTailed()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/topandtailed.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/topandtailed.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["title"] = "Title in code";
@@ -1239,9 +1237,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void TextDecoration()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/textdecoration.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/textdecoration.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["title"] = "Title in code";
@@ -1256,36 +1254,477 @@ namespace Scryber.Core.UnitTests.Html
                 var pg = doc.Pages[0] as Section;
                 var body = _layoutcontext.DocumentLayout.AllPages[0];
 
-                //Assert.Inconclusive("There are no specific tests written for the text decoration");
+                Assert.Inconclusive("There are no specific tests written for the text decoration");
 
             }
 
         }
-
-        [TestMethod()]
-        public void BordersAndSides()
+        
+        [TestMethod]
+        public void CSSTransformParsing()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/BorderSides.html");
+            //rotate examples
+            string toParse = "rotate(3.142)";
+            
+            var parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            var root = parsed.Root;
+            var rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(3.142, rotate.AngleRadians);
+            
+            toParse = "rotate(-0.5turn) ";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(-3.142, Math.Round(rotate.AngleRadians, 3));
 
-            using (var doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("BorderSides.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-                }
-            }
+            toParse = "rotate(180deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            rotate = root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            
+            Assert.AreEqual(3.142, Math.Round(rotate.AngleRadians, 3));
 
-            Assert.Inconclusive();
+            toParse = "scale(1)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.0, Math.Round(scale.XScaleValue));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue));
+            
+            toParse = "scale(0.7)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(0.7, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(0.7, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scale(1.3, 0.4)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.3, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(0.4, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scale(-0.5,1)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(-0.5, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scaleX(0.7)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(0.7, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            
+            toParse = "scaleX(1.3)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(1.3, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "scaleX(-0.5)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            scale = root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            
+            Assert.AreEqual(-0.5, Math.Round(scale.XScaleValue, 5));
+            Assert.AreEqual(1.0, Math.Round(scale.YScaleValue, 5));
+            
+            toParse = "skew(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skew(15deg, 15deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            const double Deg2Rad = Math.PI / 180.0;
+
+            Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(15 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+
+            toParse = "skew(-0.06turn, 18deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(Math.Round((-0.06 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(Math.Round(18 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skew(.312rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.312, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.312, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewX(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewX(-0.6turn)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.YAngleRadians);
+            
+            toParse = "skewX(35deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.YAngleRadians);
+
+            toParse = "skewX(.234rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.234, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewY(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.YAngleRadians, 5));
+            
+            toParse = "skewY(-0.6turn)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round((-0.6 * 360) * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.XAngleRadians);
+            
+            toParse = "skewY(35deg)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            
+            Assert.AreEqual(Math.Round(35 * Deg2Rad, 5), Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0.0, skew.XAngleRadians);
+
+            toParse = "skewY(.234rad)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            skew = root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            
+            Assert.AreEqual(0.234, Math.Round(skew.YAngleRadians, 5));
+            Assert.AreEqual(0, Math.Round(skew.XAngleRadians, 5));
+            
+            toParse = "translate(200px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Px(200), translate.XOffset);
+            Assert.AreEqual(Unit.Zero, translate.YOffset);
+
+            toParse = "translate(50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(50), translate.XOffset);
+            Assert.AreEqual(Unit.Zero, translate.YOffset);
+            
+            toParse = "translate(100pt,200pt)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Pt(100), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(200), translate.YOffset);
+            
+            toParse = "translate(100px,50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Px(100), translate.XOffset);
+            Assert.AreEqual(Unit.Percent(50), translate.YOffset);
+            
+            toParse = "translate(-30%, 210.5px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(-30), translate.XOffset);
+            Assert.AreEqual(Unit.Px(210.5), translate.YOffset);
+            
+            toParse = "translate(30%, -50%)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+
+            Assert.AreEqual(Unit.Percent(30), translate.XOffset);
+            Assert.AreEqual(Unit.Percent(-50), translate.YOffset);
+            
+            toParse = "translateX(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(42px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Px(42.0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(-2.1rem)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.RootEm(-2.1), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateX(3ch)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Ch(3), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateY(0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Pt(0), translate.YOffset);
+            
+            toParse = "translateY(42px)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Px(42.0), translate.YOffset);
+            
+            toParse = "translateY(-2.1rem)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.RootEm(-2.1), translate.YOffset);
+            
+            toParse = "translateY(3ch)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            translate = root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            
+            Assert.AreEqual(Unit.Pt(0), translate.XOffset);
+            Assert.AreEqual(Unit.Ch(3), translate.YOffset);
+            
+            toParse = "matrix(1, 0, 0, 1, 0, 0)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            var matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(1.0, matrix.MatrixValues[0]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[3]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[5]);
+            
+            toParse = "matrix(0.4, 0, 0.5, 1.2, 60, 10)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(0.4, matrix.MatrixValues[0]);
+            Assert.AreEqual(0.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(0.5, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.2, matrix.MatrixValues[3]);
+            Assert.AreEqual(60.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(10.0, matrix.MatrixValues[5]);
+            
+            toParse = "matrix(0.1, 1, -0.3, 1, 20, 20.2)";
+            parsed = CSSTransformOperationSet.Parse(toParse);
+            Assert.IsNotNull(parsed);
+            Assert.IsNotNull(parsed.Root);
+            root = parsed.Root;
+            matrix = root as Scryber.Drawing.TransformMatrixOperation;
+            Assert.IsNotNull(matrix);
+            
+            Assert.AreEqual(6, matrix.MatrixValues.Length);
+            Assert.AreEqual(0.1, matrix.MatrixValues[0]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[1]);
+            Assert.AreEqual(-0.3, matrix.MatrixValues[2]);
+            Assert.AreEqual(1.0, matrix.MatrixValues[3]);
+            Assert.AreEqual(20.0, matrix.MatrixValues[4]);
+            Assert.AreEqual(20.2, matrix.MatrixValues[5]);
         }
 
         [TestMethod()]
         public void HtmlIFrameFragments()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/BodyFraming.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/BodyFraming.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 var model = new
@@ -1337,9 +1776,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void HtmlPlaceholderFragments()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/BodyWithPlaceholder.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/BodyWithPlaceholder.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 var model = new
@@ -1378,40 +1816,13 @@ namespace Scryber.Core.UnitTests.Html
 
         }
 
-        [TestMethod()]
-        public void HtmlLinksLocalAndRemote()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LinksLocalAndRemote.html");
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                var model = new
-                {
-                    fragmentContent = "Content for the fragment"
-                };
-                doc.Params["model"] = model;
-
-                using (var stream = DocStreams.GetOutputStream("LinksLocalAndRemote.pdf"))
-                {
-                    doc.LayoutComplete += DocumentParsing_Layout;
-                    doc.SaveAsPDF(stream);
-
-                }
-                
-            }
-
-            Assert.Inconclusive();
-
-        }
 
 
         [TestMethod()]
         public void BodyWithPageNumbers()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithPageNums.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithPageNums.html",
+                this.TestContext);
             var model = new
             {
                 headerText = "Bound Header",
@@ -1453,9 +1864,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void Html5Tags()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/Html5AllTags.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Html5AllTags.html",
+                this.TestContext);
+            
             using (var doc = Document.ParseDocument(path))
             {
                 var model = new
@@ -1480,9 +1891,10 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void FontFace()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFace.html");
 
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFace.html",
+                this.TestContext);
+            
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -1565,9 +1977,10 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void FontFaceAveryLocal()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceAvery.html");
 
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceAvery.html",
+                this.TestContext);
+            
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -1622,9 +2035,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void FontFaceBase64()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceBase64.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceBase64.html",
+                this.TestContext);
+            
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -1709,9 +2122,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public async Task FontFaceAsync()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFace.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFace.html",
+                this.TestContext);
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -1794,9 +2206,10 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public async Task FontFaceBase64Async()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceBase64.html");
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceBase64.html",
+                this.TestContext);
+            
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -1885,9 +2298,8 @@ namespace Scryber.Core.UnitTests.Html
         public void FontFaceWeightFallback()
         {
 
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FontFaceFallback.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceFallback.html",
+                this.TestContext);
 
             using var doc = Document.ParseDocument(path);
             //doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -2025,223 +2437,16 @@ namespace Scryber.Core.UnitTests.Html
         }
 
 
-        [TestMethod()]
-        public void READMESample()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/READMESample.html");
-
-            //pass paramters as needed, supporting arrays or complex classes.
-            var items = new[]
-            {
-                new { name = "First item" },
-                new { name = "Second item" },
-                new { name = "Third item" },
-            };
-
-            var model = new{
-                titlestyle = "color:#ff6347",
-                title = "Hello from scryber",
-                items = items
-            };
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.Params["author"] = "Scryber Engine";
-                doc.Params["model"] = model;
-                using (var stream = DocStreams.GetOutputStream("READMESample.pdf"))
-                {
-                    
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                doc.Params["author"] = "Scryber Engine";
-                doc.Params["model"] = model;
-                using (var stream = DocStreams.GetOutputStream("READMESample2.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void DocumentationOutput()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/documentation.html");
-            Document doc;
-
-            using (doc = Document.ParseDocument(path))
-            {
-                using (var stream = DocStreams.GetOutputStream("documentation.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-            
-        }
-
         
-
-        [TestMethod()]
-        public void BodyWithLongContent()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithLongContent.html");
-
-
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("bodyWithLongContent.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void BodyWithMultipleColumns()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/bodyWithMultipleColumns.html");
-
-
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("bodyWithMultipleColumns.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void AbsolutelyPositioned()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HtmlAbsolutePositioned.html");
-
-            
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-
-                using (var stream = DocStreams.GetOutputStream("HtmlAbsolutePositioned.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void FloatLeft()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatLeft.html");
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatLeft.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-        }
-
-
-        [TestMethod()]
-        public void FloatRight()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatRight.html");
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatRight.pdf"))
-                {
-                    doc.SaveAsPDF(stream);
-                }
-            }
-
-            Assert.Inconclusive();
-        }
-
-        [TestMethod()]
-        public void FloatMixed()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/FloatMixed.html");
-
-            using (var doc = Document.ParseDocument(path))
-            {
-                doc.ConformanceMode = ParserConformanceMode.Strict;
-                //pass paramters as needed, supporting simple values, arrays or complex classes.
-                var style = doc.Pages[0].Style;
-                //style.OverlayGrid.ShowGrid = true;
-                style.OverlayGrid.GridSpacing = 10;
-
-                using (var stream = DocStreams.GetOutputStream("FloatMixed.pdf"))
-                {
-
-                    doc.SaveAsPDF(stream);
-                }
-
-            }
-
-            Assert.Inconclusive();
-        }
 
 
         [TestMethod()]
         public void ArticlesWithCountersHtml()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/ArticleCounters.html");
-
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/ArticleCounters.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
-                
                 doc.Params["title"] = "Hello World";
 
                 using (var stream = DocStreams.GetOutputStream("ArticleCounters.pdf"))
@@ -2392,8 +2597,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RestrictedHtml()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
+                this.TestContext);
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -2407,15 +2612,15 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
         [TestMethod()]
         public void RestrictedWithoutPasswordHtml()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
+                this.TestContext);
             using (var doc = Document.ParseDocument(path))
             {
                 //Need to set this, otherwise the 
@@ -2429,14 +2634,14 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
         [TestMethod()]
         public void RestrictedProtectedHtml()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/RestrictedHtml.html");
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
+                this.TestContext);
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -2461,16 +2666,15 @@ namespace Scryber.Core.UnitTests.Html
 
             }
 
-            Assert.Inconclusive();
+            Assert.Inconclusive("Can only check by opening the document");
         }
 
 
         [TestMethod()]
         public void BasePath()
         {
-            //var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/Images/Toroid24.png";
-
-            var src = @"<html xmlns='http://www.w3.org/1999/xhtml' >
+             var src = @"<?scryber append-log=true parser-log=true ?>
+                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Html document title</title>
                                 <base href='https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/' />
@@ -2494,6 +2698,7 @@ namespace Scryber.Core.UnitTests.Html
                 using (var stream = DocStreams.GetOutputStream("DynamicBasePath.pdf"))
                 {
                     doc.LayoutComplete += DocumentParsing_Layout;
+                    doc.AppendTraceLog = true;
                     doc.SaveAsPDF(stream);
                 }
                 Assert.AreEqual(1, doc.Styles.Count, "Remote styles were not loaded");
@@ -2504,7 +2709,7 @@ namespace Scryber.Core.UnitTests.Html
 
                 var embed = doc.FindAComponentById("myDrawing") as SVGCanvas;
                 Assert.IsNotNull(embed);
-                Assert.AreNotEqual(0, embed.Contents.Count, "SVG drawing was not loaded from the source");
+                Assert.AreNotEqual(0, embed.Contents.Count, "Embedded content was not loaded from the source");
                 
             }
         }
@@ -2561,28 +2766,50 @@ namespace Scryber.Core.UnitTests.Html
             }
         }
 
-        private StringReader LoadTermsStream()
+        
+        
+        private class CustomReferenceResolver
         {
-            return new StringReader("<p xmlns='http://www.w3.org/1999/xhtml'>These are my terms</p>");
-        }
 
-        private IComponent CustomResolve(string filepath, string xpath, ParserSettings settings)
-        {
-            if (filepath == "MyTsAndCs")
+            private int _invocationCount = 0;
+            
+            public IComponent CustomResolve(string filepath, string xpath, ParserSettings settings)
             {
-                using (var tsAndCs = LoadTermsStream())
+                if (filepath == "MyTsAndCs")
                 {
-                    //We have our stream so just do the parsing again with the same settings
-                    var comp = Document.Parse(filepath, tsAndCs, ParseSourceType.DynamicContent, CustomResolve, settings);
-                    return comp;
+                    this._invocationCount++;
+                    using (var tsAndCs = LoadTermsStream())
+                    {
+                        //We have our stream so just do the parsing again with the same settings
+                        var comp = Document.Parse(filepath, tsAndCs, ParseSourceType.DynamicContent, CustomResolve, settings);
+                        return comp;
+                    }
+                }
+                else
+                {
+                    filepath = System.IO.Path.Combine("C:/", filepath);
+                    return Document.Parse(filepath, CustomResolve, settings);
                 }
             }
-            else
+
+            private StringReader LoadTermsStream()
             {
-                filepath = System.IO.Path.Combine("C:/", filepath);
-                return Document.Parse(filepath, CustomResolve, settings);
+                return new StringReader("<p xmlns='http://www.w3.org/1999/xhtml'>These are my terms</p>");
+            }
+
+            public bool AssertWasInvokedOnce()
+            {
+                if (this._invocationCount == 1)
+                    return true;
+                else
+                {
+                    throw new InvalidOperationException("The custom resolver method was invoked " +
+                                                        this._invocationCount + " times - expected 1");
+                }
             }
         }
+
+        
 
         [TestMethod()]
         public void StringParsingWithResolver()
@@ -2597,9 +2824,11 @@ namespace Scryber.Core.UnitTests.Html
                             </body>
                         </html>";
 
+            var resolver = new CustomReferenceResolver();
+            
             using (var reader = new StringReader(src))
             {
-                var comp = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, CustomResolve);
+                var comp = Document.Parse(string.Empty, reader, ParseSourceType.DynamicContent, resolver.CustomResolve);
 
                 Assert.IsNotNull(comp);
                 Assert.IsInstanceOfType(comp, typeof(HTMLDocument));
@@ -2609,7 +2838,7 @@ namespace Scryber.Core.UnitTests.Html
                     doc.SaveAsPDF(stream);
                 
                 Assert.AreEqual("Hello World", doc.Info.Title);
-                Assert.Inconclusive();
+                resolver.AssertWasInvokedOnce();
             }
         }
 
@@ -2743,7 +2972,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void HTMLOrderItems()
         {
-            var doc = Document.ParseDocument("../../../Content/HTML/OrderItems.html");
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/OrderItems.html",
+                this.TestContext);
+            var doc = Document.ParseDocument(path);
             var service = new OrderMockService();
             var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
             var order = service.GetOrder(1);
@@ -2821,8 +3052,8 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void InvalidBackgroundImage()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/InvalidBackgroundImage.html");
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/InvalidBackgroundImage.html",
+                this.TestContext);
             bool error = false;
             try
             {
@@ -2837,7 +3068,7 @@ namespace Scryber.Core.UnitTests.Html
                 }
 
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 error = true;
             }
@@ -2862,7 +3093,7 @@ namespace Scryber.Core.UnitTests.Html
                 error = false;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 error = true;
             }
@@ -2873,10 +3104,9 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void LargeFileTest()
         {
-
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LargeFile.html");
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LargeFile.html",
+                this.TestContext);
             var data = new
             {
                 Items = GetListItems(10000)
@@ -2954,120 +3184,22 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         private PDFLayoutDocument _layout;
-
-        [TestMethod]
-        public void LinearGradientTest()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/LinearGradients.html");
-
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("LinearGradient.pdf"))
-                    {
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    var resources = pg.Resources;
-                    Assert.AreEqual(2, resources.Types.Count);
-
-                    var patterns = resources.Types["Pattern"];
-                    Assert.IsNotNull(patterns);
-                    Assert.AreEqual(9, patterns.Count);
-
-                    
-                    ValidateLinearGradient(patterns[0] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom);
-                    ValidateLinearGradient(patterns[1] as PDFLinearShadingPattern, rg, (double)GradientAngle.Bottom_Left);
-                    ValidateLinearGradient(patterns[2] as PDFLinearShadingPattern, rg, (double)GradientAngle.Left);
-                    ValidateLinearGradient(patterns[3] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Left);
-                    ValidateLinearGradient(patterns[4] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top);
-                    ValidateLinearGradient(patterns[5] as PDFLinearShadingPattern, rg, (double)GradientAngle.Top_Right);
-                    ValidateLinearGradient(patterns[6] as PDFLinearShadingPattern, rg, (double)GradientAngle.Right);
-                    ValidateLinearGradient(patterns[7] as PDFLinearShadingPattern, rgby, (double)GradientAngle.Bottom_Right);
-                    ValidateLinearGradient(patterns[8] as PDFLinearShadingPattern, ryg, (double)GradientAngle.Bottom, true);
-                }
-            }
-
-            
-        }
-
-        private static void ValidateLinearGradient(PDFLinearShadingPattern one, Color[] cols, double angle, bool repeating = false)
-        {
-            Assert.IsTrue(one.PatternType == PatternType.ShadingPattern);
-            Assert.IsTrue(one.Registered);
-            Assert.IsNotNull(one.Descriptor);
-            Assert.AreEqual(cols.Length, one.Descriptor.Colors.Count);
-            Assert.AreEqual(angle, one.Descriptor.Angle);
-            Assert.AreEqual(repeating, one.Descriptor.Repeating, "Repeating flag does not match");
-            Assert.AreEqual(GradientType.Linear, one.Descriptor.GradientType);
-            for (int i = 0; i < cols.Length; i++)
-            {
-                Assert.AreEqual(cols[i], one.Descriptor.Colors[i].Color, "Color '" + i + "' does not match '" + cols[i].ToString() + "'");
-            }
-        }
-
+        
         private void Gradient_LayoutComplete(object sender, LayoutEventArgs args)
         {
             var context = (PDFLayoutContext)(args.Context);
             _layout = context.DocumentLayout;
         }
 
-
-
-        [TestMethod]
-        public void RadialGradientTest()
-        {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/RadialGradients.html");
-
-            using (var sr = new System.IO.StreamReader(path))
-            {
-                using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
-                {
-                    using (var stream = DocStreams.GetOutputStream("RadialGradient.pdf"))
-                    {
-                        doc.LayoutComplete += Gradient_LayoutComplete;
-                        doc.SaveAsPDF(stream);
-                    }
-
-                    
-                    var rg = new Color[] { StandardColors.Red, StandardColors.Green };
-                    var rgby = new Color[] { StandardColors.Red, StandardColors.Green, StandardColors.Blue, StandardColors.Yellow };
-                    var ryg = new Color[] { StandardColors.Red, StandardColors.Yellow, StandardColors.Green };
-
-                    Assert.IsNotNull(_layout);
-                    var pg = _layout.AllPages[0];
-
-                    //var resources = pg.Resources;
-                    //Assert.AreEqual(2, resources.Types.Count);
-
-                    //var patterns = resources.Types["Pattern"];
-                    //Assert.IsNotNull(patterns);
-                    //Assert.AreEqual(9, patterns.Count);
-
-                }
-            }
-
-            Assert.Inconclusive();
-
-        }
+        
 
 
         [TestMethod]
         public void JeromeTest()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/JeroemTest.html");
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/JeroemTest.html",
+                this.TestContext);
             var model = new
             {
                 repeat = true,
@@ -3099,10 +3231,10 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void HahyesTest()
         {
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/HahyesTest.html");
-
-
+            
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HahyesTest.html",
+                this.TestContext);
+            
             using (var sr = new System.IO.StreamReader(path))
             {
                 var text = sr.ReadToEnd();
@@ -3118,33 +3250,6 @@ namespace Scryber.Core.UnitTests.Html
             }
 
             Assert.Inconclusive();
-        }
-
-        [TestMethod]
-        public void HelloWorldFromBlazorTest()
-        {
-            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-
-<head>
-    <title>Hello World</title>
-</head>
-
-<body>
-    <h1 class='title'>Hello World</h1>
-</body>
-
-</html>";
-
-            using (var sr = new StringReader(src))
-            {
-                using (var doc = Document.ParseDocument(sr))
-                {
-                    using (var stream = DocStreams.GetOutputStream("HelloWorldBlazor.pdf"))
-                    {
-                        doc.SaveAsPDF(stream);
-                    }
-                }
-            }
         }
 
     }

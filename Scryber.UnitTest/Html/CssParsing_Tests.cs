@@ -460,9 +460,9 @@ body.grey div.reverse{
         public void ParseMinifiedCssFile()
         {
             //This is a minimised version of the styles above
-            var path = System.Environment.CurrentDirectory;
-            path = System.IO.Path.Combine(path, "../../../Content/HTML/CSS/include.min.css");
-            path = System.IO.Path.GetFullPath(path);
+
+            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/CSS/include.min.css",
+                this.TestContext);
             var css = System.IO.File.ReadAllText(path);
 
             var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);
@@ -553,7 +553,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -1382,7 +1382,7 @@ body.grey div.reverse{
                 
                 text = line.Runs[7] as PDF.Layout.PDFTextRunCharacter;
                 Assert.IsNotNull(text);
-                Assert.AreEqual(" This will have text before, in the italic span. ", text.Characters);
+                Assert.AreEqual(" This will have text before, in the italic span.", text.Characters);
 
 
                 // .empty::before { content: url('imgPath'); width: 20pt; padding-top: 5pt; }
@@ -1664,7 +1664,7 @@ body.grey div.reverse{
                         }
 
                         .multiple {
-                          transform: rotate(20deg) scale(2, 4) translate(5pt, 20pt);
+                          transform: rotate(20deg) scale(2, -4) translate(5pt, 20pt);
                         }
 ";
 
@@ -1684,42 +1684,56 @@ body.grey div.reverse{
             var t4 = found[3].GetValue(StyleKeys.TransformOperationKey, null);
             var multiple = found[4].GetValue(StyleKeys.TransformOperationKey, null);
 
+            //Assert.Fail("Need to resolve the parsing");
+            
             Assert.IsNotNull(t1);
-            Assert.AreEqual(TransformType.Rotate, t1.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 10, 4), Math.Round(t1.Value1, 4));
-            Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
-
+            var rotate = t1.Root as TransformRotateOperation;
+            Assert.IsNotNull(rotate);
+            Assert.AreEqual(MatrixTransformTypes.Rotate, rotate.OperationType);
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 10, 4), Math.Round(rotate.AngleRadians, 4));
+            //Assert.IsFalse(TransformOperation.IsSet(t1.Value2));
+            
             Assert.IsNotNull(t2);
-            Assert.AreEqual(TransformType.Skew, t2.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 25, 4), Math.Round(t2.Value1, 4));
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 15, 4), Math.Round(t2.Value2, 4));
-
+            var skew = t2.Root as TransformSkewOperation;
+            Assert.IsNotNull(skew);
+            Assert.AreEqual(MatrixTransformTypes.Skew, skew.OperationType);
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 25, 4), Math.Round(skew.XAngleRadians, 4));
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 15, 4), Math.Round(skew.YAngleRadians, 4));
+            
             Assert.IsNotNull(t3);
-            Assert.AreEqual(TransformType.Translate, t3.Type);
-            Assert.AreEqual(Math.Round(10.0, 4), Math.Round(t3.Value1, 4));
-            Assert.AreEqual(-Math.Round(15.0, 4), Math.Round(t3.Value2, 4));
-
+            var translate = t3.Root as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            Assert.AreEqual(MatrixTransformTypes.Translation, translate.OperationType);
+            Assert.AreEqual(Math.Round(10.0, 4), Math.Round(translate.XOffset.PointsValue, 4));
+            Assert.AreEqual(Math.Round(15.0, 4), Math.Round(translate.YOffset.PointsValue, 4));
+            
             Assert.IsNotNull(t4);
-            Assert.AreEqual(TransformType.Scale, t4.Type);
-            Assert.AreEqual(Math.Round(1.0, 4), Math.Round(t4.Value1, 4));
-            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(t4.Value2, 4));
-
+            var scale = t4.Root as TransformScaleOperation;
+            Assert.IsNotNull(scale);
+            Assert.AreEqual(MatrixTransformTypes.Scaling, scale.OperationType);
+            Assert.AreEqual(Math.Round(1.0, 4), Math.Round(scale.XScaleValue, 4));
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(scale.YScaleValue, 4));
+            
             Assert.IsNotNull(multiple);
-            Assert.AreEqual(TransformType.Rotate, multiple.Type);
-            Assert.AreEqual(-Math.Round((Math.PI / 180) * 20, 4), Math.Round(multiple.Value1, 4));
-            Assert.IsFalse(TransformOperation.IsSet(multiple.Value2));
-            Assert.IsNotNull(multiple.Next);
+            rotate = multiple.Root as TransformRotateOperation;
 
-            multiple = multiple.Next;
-            Assert.AreEqual(TransformType.Scale, multiple.Type);
-            Assert.AreEqual(Math.Round(2.0, 4), Math.Round(multiple.Value1, 4));
-            Assert.AreEqual(Math.Round(4.0, 4), Math.Round(multiple.Value2, 4));
-            Assert.IsNotNull(multiple.Next);
+            Assert.AreEqual(MatrixTransformTypes.Rotate, rotate.OperationType);
+            Assert.AreEqual(Math.Round((Math.PI / 180) * 20, 4), Math.Round(rotate.AngleRadians, 4));
+            
+            Assert.IsNotNull(rotate.NextOp);
+            scale = rotate.NextOp as TransformScaleOperation;
 
-            multiple = multiple.Next;
-            Assert.AreEqual(TransformType.Translate, multiple.Type);
-            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(multiple.Value1, 4));
-            Assert.AreEqual(-Math.Round(20.0, 4), Math.Round(multiple.Value2, 4));
+            Assert.AreEqual(MatrixTransformTypes.Scaling, scale.OperationType);
+            Assert.AreEqual(Math.Round(2.0, 4), Math.Round(scale.XScaleValue, 4));
+            Assert.AreEqual(-Math.Round(4.0, 4), Math.Round(scale.YScaleValue, 4));
+            Assert.IsNotNull(scale.NextOp);
+            translate = scale.NextOp as TransformTranslateOperation;
+            Assert.IsNotNull(translate);
+            Assert.AreEqual(MatrixTransformTypes.Translation, translate.OperationType);
+            Assert.AreEqual(Math.Round(5.0, 4), Math.Round(translate.XOffset.PointsValue, 4));
+            Assert.AreEqual(Math.Round(20.0, 4), Math.Round(translate.YOffset.PointsValue, 4));
+            
+            Assert.IsNull(translate.NextOp);
         }
 
         [TestMethod()]
@@ -1816,12 +1830,11 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithVariablesOverriden()
         {
-            //3. Third check that will use the items collection rather than the declared value
+            //3. Third check that will use the items collection
             string cssWithVariable = @"
 
                 :root{
                     color: #00FF00;
-                    --main-color: #FF0000;
                 }
 
                 .other{
@@ -1900,13 +1913,20 @@ body.grey div.reverse{
 
                 using (var stream = DocStreams.GetOutputStream("CSSVariableApplicationTest.pdf"))
                 {
-                    doc.LayoutComplete += ParseCSSWithInnerVariableApplied_LayoutComplete;
+                    doc.LayoutComplete += SaveLayout;
                     doc.SaveAsPDF(stream);
+                    this.ParseCSSWithInnerVariableApplied_LayoutComplete(doc, _layoutArgs);
                 }
 
             }
         }
 
+        private LayoutEventArgs _layoutArgs;
+
+        private void SaveLayout(object sender, LayoutEventArgs args)
+        {
+            this._layoutArgs = args;
+        }
         private void ParseCSSWithInnerVariableApplied_LayoutComplete(object sender, LayoutEventArgs args)
         {
             //Make sure the variables are correctly assigned to the inline begin spans.
@@ -2362,8 +2382,9 @@ body.grey div.reverse{
                 var pg = new Size(400, 600);
                 var contain = new Size(400, 300);
                 var fnt = new Size(10, 16);
-
-                var flat = applied.Flatten(pg, contain, fnt, 20);
+                
+                List<StyleKey> keyHolder = new List<StyleKey>();
+                var flat = applied.Flatten(pg, contain, fnt, 20, keyHolder);
 
                 Assert.AreEqual(Unit.Pt((20 * 10) - 60), flat.Size.Width, "Width did not match");
                 Assert.AreEqual(Unit.Pt(3 * 16), flat.Margins.Top, "Top margin did not match");
@@ -2403,25 +2424,38 @@ body.grey div.reverse{
         [TestMethod]
         public void ParseCSSWithCalcExpressionAndVariable()
         {
-            var cssWithCalc = @"
+            var cssWithCalc = $@"
 
-            :root{
-               --text-color: #000000;
-            }
-            .other{
+            :root{{
+               --text-color: #FFFF00;
+            }}
+            .declared{{
+                background-color: calc(concat('#', '00', 'FF', '00'));
+                color: var(--text-color, #00FFFF);
+            }}
+            .other{{
                background-color: calc(concat('#', 'FF', '00', '00'));
-               color: var(--text-color, #00FFFF);
-            }";
+               color: var(--other-color, #00FFFF);
+            }}";
 
 
             using (var doc = BuildDocumentWithStyles(cssWithCalc))
             {
-                doc.StyleClass = "other";
-                doc.Params["--text-color"] = StandardColors.Lime;
+                //First check the declared
+                doc.StyleClass = "declared";
                 var applied = doc.GetAppliedStyle();
+                
+                Assert.AreEqual("rgb(0,255,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
+                Assert.AreEqual(new Color(255,255,0), applied.Fill.Color, "The parameter value for the variable --text-color was not used");
+                
+                //Now switch to use the parameter
+                doc.Params["--other-color"] = StandardColors.Lime;
+                doc.StyleClass = "other";
 
+                applied = doc.GetAppliedStyle();
+                
                 Assert.AreEqual("rgb(255,0,0)", applied.Background.Color.ToString(), "Expression was not applied to the document");
-                Assert.AreEqual(StandardColors.Lime.ToString(), applied.Fill.Color.ToString(), "The parameter value for the variable --text-color was not used");
+                Assert.AreEqual(StandardColors.Lime, applied.Fill.Color, "The parameter value for the variable --other-color was not used");
             }
         }
 
@@ -2695,7 +2729,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -2714,8 +2748,8 @@ body.grey div.reverse{
                 Assert.IsNotNull(imgXObject);
                 Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
 
-                var w = imgXObject.ImageData.PixelWidth;
-                var h = imgXObject.ImageData.PixelHeight;
+                var w = ((ImageRasterData)imgXObject.ImageData).PixelWidth;
+                var h = ((ImageRasterData) imgXObject.ImageData).PixelHeight;
 
                 Assert.AreEqual(396, w);
                 Assert.AreEqual(342, h);
@@ -2747,7 +2781,7 @@ body.grey div.reverse{
                 }
 
 
-                var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
+                var body = _layoutcontext.DocumentLayout.AllPages[0].PageBlock;
 
                 Assert.AreEqual("Html document title", doc.Info.Title, "Title is not correct");
 
@@ -2766,8 +2800,8 @@ body.grey div.reverse{
                 Assert.IsNotNull(imgXObject);
                 Assert.AreEqual("https://raw.githubusercontent.com/richard-scryber/scryber.core/inlineblock/Scryber.UnitTest/Content/HTML/Images/group.png", imgXObject.ResourceKey);
 
-                var w = imgXObject.ImageData.PixelWidth;
-                var h = imgXObject.ImageData.PixelHeight;
+                var w = ((ImageRasterData)imgXObject.ImageData).PixelWidth;
+                var h = ((ImageRasterData) imgXObject.ImageData).PixelHeight;
 
                 Assert.AreEqual(396, w);
                 Assert.AreEqual(342, h);
@@ -2816,8 +2850,7 @@ body.grey div.reverse{
                     doc.SaveAsPDF(stream);
                 }
 
-                Assert.Inconclusive("Need to sort the standard and solid font programmes from the css stylesheet");
-
+                
                 var body = _layoutcontext.DocumentLayout.AllPages[0].ContentBlock;
 
                 Assert.AreEqual("Font Awesome document", doc.Info.Title, "Title is not correct");
@@ -2826,14 +2859,39 @@ body.grey div.reverse{
 
                 var html = (HTMLDocument)_layoutcontext.Document;
 
-                //The font and the image
-                Assert.AreEqual(1, html.SharedResources.Count);
-
-                //could be first or second
-                var fa = html.SharedResources[0] as PDFFontResource;
+                //There are 3 fonts in the all css - brands, fa and fa-900.
+                var names = new string[]
+                {
+                    "Font Awesome 5 Brands",
+                    "Font Awesome 5 Free",
+                    "Font Awesome 5 Free,Bold",
+                };
+                
+                    
+                Assert.AreEqual(3, html.SharedResources.Count);
+                
+                var font = html.SharedResources[0] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
                 
 
-                Assert.IsNotNull(fa);
+                var exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
+                font = html.SharedResources[1] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
+
+                exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
+                font = html.SharedResources[2] as PDFFontResource;
+                Assert.IsNotNull(font);
+                Assert.IsNotNull(font.Definition);
+
+                exists = names.Contains(font.FontName);
+                Assert.IsTrue(exists, font.FontName + " is not known");
+                
             }
 
         }
@@ -2872,7 +2930,7 @@ body.grey div.reverse{
         /// <returns>The applied style</returns>
         private Document BuildDocumentWithStyles(string css)
         {
-            var doc = new Document();
+            var doc = new HTMLDocument();
             var pg = new Page();
             doc.Pages.Add(pg);
 

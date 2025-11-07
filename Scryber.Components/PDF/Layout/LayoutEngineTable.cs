@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Scryber.Drawing;
@@ -51,6 +52,8 @@ namespace Scryber.PDF.Layout
         {
             get { return _tblRef; }
         }
+        
+        protected bool IsInNotSplittingBlock { get; set; }
 
         public LayoutEngineTable(TableGrid table, IPDFLayoutEngine parent)
             : base(table, parent)
@@ -71,7 +74,21 @@ namespace Scryber.PDF.Layout
                 if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                     this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions();
+                this.IsInNotSplittingBlock = false;
+                
+                var parents = this.CurrentBlock;
+                while (parents != null)
+                {
+                    if (parents.Position.OverflowSplit == OverflowSplit.Never)
+                    {
+                        this.IsInNotSplittingBlock = true;
+                        break;
+                    }
+
+                    parents = parents.GetParentBlock();
+                }
+
+                PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
                 //fix for width - if we have an explicit width, then we should fill it.
                 if (tablepos.Width.HasValue)
@@ -85,7 +102,7 @@ namespace Scryber.PDF.Layout
 
                 this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Table_Build_Process);
 
-                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.PositionMode);
+                PDFLayoutBlock tableBlock = this.CurrentBlock.BeginNewContainerBlock(this.Table, this, this.FullStyle, tablepos.DisplayMode);
 
                 Rect available = this.CalculateTableSpace(tableBlock, tablepos);
 
@@ -155,6 +172,7 @@ namespace Scryber.PDF.Layout
             {
                 if (row.Visible == false)
                     continue;
+                
 
                 _rowIndex = index;
                 this.DoLayoutTableRow(row, index, false);
@@ -197,7 +215,7 @@ namespace Scryber.PDF.Layout
             this.Context.StyleStack.Push(rowRef.AppliedStyle);
 
 
-            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+            if (row.Visible == false || rowStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
                 return Unit.Zero;
 
             if (repeating) //for repeating rows we hold it in the grid
@@ -217,9 +235,9 @@ namespace Scryber.PDF.Layout
 
             //create the row block and region and hold a reference in the ivar _rowblock
 
-            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions();
+            PDFPositionOptions rowpos = rowStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
-            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.PositionMode);
+            this._rowblock = tableblock.BeginNewContainerBlock(row, this, rowStyle, rowpos.DisplayMode);
 
             rowRef.Block = this._rowblock;
 
@@ -260,7 +278,7 @@ namespace Scryber.PDF.Layout
                 PDFLayoutBlock origRow = this._rowblock;
 
                 //If we are the first row, or as a table we should never be split
-                if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                if (!this.CanSplitTable())
                 {
                     if (this.MoveFullTableToNextRegion())
                     {
@@ -280,7 +298,7 @@ namespace Scryber.PDF.Layout
                 }
                 else if (this.StartNewTableInAnotherRegion(origRow, index))
                 {
-                    origregion.AddToSize(origtable);
+                    //origregion.AddToSize(origtable);
                     Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
                     Unit repeath = this.DoLayoutRepeatingRows(index);
@@ -379,7 +397,7 @@ namespace Scryber.PDF.Layout
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
-                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) != PositionMode.Invisible)
+                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) != DisplayMode.Invisible)
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
@@ -537,7 +555,7 @@ namespace Scryber.PDF.Layout
             List<List<Style>> cellapplieds = new List<List<Style>>();
             int maxcolcount = 0;
 
-            var tablePos = this.FullStyle.CreatePostionOptions();
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             var tableFont = this.FullStyle.CreateTextOptions();
 
             foreach (TableRow row in this.Table.Rows)
@@ -571,8 +589,8 @@ namespace Scryber.PDF.Layout
 
                 //If we are set to invisible then ingnore eveything
 
-                StyleValue<PositionMode> found;
-                if(rowfull.GetValue(StyleKeys.PositionModeKey, PositionMode.Block) == PositionMode.Invisible)
+                StyleValue<DisplayMode> found;
+                if(rowfull.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
                 {
                     this.StyleStack.Pop();
                     row.Visible = false;
@@ -582,7 +600,7 @@ namespace Scryber.PDF.Layout
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
 
-                var rowPos = rowfull.CreatePostionOptions();
+                var rowPos = rowfull.CreatePostionOptions(this.Context.PositionDepth > 0);
                 var rowFont = rowfull.CreateTextOptions();
 
                 //For each of the cells in the row
@@ -621,8 +639,8 @@ namespace Scryber.PDF.Layout
 
                     //If we are set to invisible then ingnore eveything
 
-                    if (cellfull.TryGetValue(StyleKeys.PositionModeKey, out found)
-                        && found.Value(cellfull) == PositionMode.Invisible)
+                    if (cellfull.TryGetValue(StyleKeys.PositionDisplayKey, out found)
+                        && found.Value(cellfull) == DisplayMode.Invisible)
                     {
                         this.StyleStack.Pop();
                         cell.Visible = false;
@@ -704,35 +722,42 @@ namespace Scryber.PDF.Layout
         protected virtual Style BuildRowFullStyle(TableRow row, PDFPositionOptions tablePosition, PDFTextRenderOptions tablefont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
-
+            
             Size pageSize = page.Size;
-
-            Size tableSize = GetSize(tablePosition.Width, block.AvailableBounds.Width,
-                                     tablePosition.Height, block.AvailableBounds.Height);
 
             Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(row, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(row, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
         }
 
         protected virtual Style BuildCellFullStyle(TableCell cell, TableRow inrow, Style rowStyle, PDFPositionOptions tablePosition, PDFPositionOptions rowPosition, PDFTextRenderOptions rowfont)
         {
             var page = this.DocumentLayout.CurrentPage;
-            var block = this.CurrentBlock;
 
             Size pageSize = page.Size;
-
-            Size tableSize = GetSize(rowPosition.Width, tablePosition.Width.HasValue ? tablePosition.Width.Value : block.AvailableBounds.Width,
-                                     rowPosition.Height, tablePosition.Height.HasValue ? tablePosition.Height.Value : block.AvailableBounds.Height);
 
             Size fontSize = new Size(rowfont.GetZeroCharWidth(), rowfont.GetSize());
 
             Unit root = Font.DefaultFontSize;
 
-            return this.Context.StyleStack.GetFullStyle(cell, pageSize, tableSize, fontSize, root);
+            return this.Context.StyleStack.GetFullStyle(cell, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
+        }
+
+        protected virtual Size GetTableContainerSize(IComponent forComponent, Style withStyle, PositionMode inMode)
+        {
+            var block = this.CurrentBlock;
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+
+            var width = tablePos.Width;
+            var height = tablePos.Height;
+
+            
+            var w = width.HasValue ? width.Value : block.AvailableBounds.Width;
+            var h = height.HasValue ? height.Value : block.AvailableBounds.Height;
+
+            return new Size(w, h);
         }
 
         #region private void CalculateTableSpace()
@@ -1363,6 +1388,16 @@ namespace Scryber.PDF.Layout
         // overflow methods
         //
 
+        protected virtual bool CanSplitTable()
+        {
+            if (this.AllCells.CurrentGrid.Position.OverflowSplit == OverflowSplit.Never)
+                return false;
+            else if (this.IsInNotSplittingBlock)
+                return false;
+            else
+                return true;
+        }
+
         #region protected virtual void CloseTableAndReleaseRowsFrom(int rowindex)
 
         /// <summary>
@@ -1751,7 +1786,7 @@ namespace Scryber.PDF.Layout
             /// <param name="fullstyle"></param>
             private void PopulateStyleValues(Style fullstyle)
             {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions(); //Full Styles cache this so should be quick anyway
+                PDFPositionOptions opts = fullstyle.CreatePostionOptions(false); //Full Styles cache this so should be quick anyway
                 _margins = opts.Margins;
                 if (opts.Width.HasValue)
                     _totalWidth = opts.Width.Value + _margins.Left + _margins.Right;
@@ -1961,7 +1996,7 @@ namespace Scryber.PDF.Layout
             /// <param name="fullstyle"></param>
             private void PopulateStyleValues(Style fullstyle)
             {
-                PDFPositionOptions opts = fullstyle.CreatePostionOptions();
+                PDFPositionOptions opts = fullstyle.CreatePostionOptions(false);
                 _margins = opts.Margins;
 
                 if (opts.Height.HasValue)

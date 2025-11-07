@@ -20,7 +20,10 @@ namespace Scryber.Svg.Components
 
         protected GraphicsPath Path
         {
-            get { return _path; }
+            get
+            {
+                return _path;
+            }
             set { _path = value; }
         }
 
@@ -28,6 +31,74 @@ namespace Scryber.Svg.Components
         {
             get { return this.Path; }
             set { this.Path = value; }
+        }
+        
+        [PDFAttribute("marker-start")]
+        public SVGMarkerValue MarkerStart
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerStartKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerStartKey, value);
+            } 
+        }
+        
+        [PDFAttribute("marker-mid")]
+        public SVGMarkerValue MarkerMiddle
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerMidKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerMidKey, value);
+            } 
+        }
+
+        [PDFAttribute("marker-end")]
+        public SVGMarkerValue MarkerEnd
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.SVGMarkerEndKey, SVGMarkerValue.Empty);
+                else
+                {
+                    return SVGMarkerValue.Empty;
+                }
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.SVGMarkerEndKey, value);
+            } 
+        }
+
+        
+
+        protected PDFTransformationMatrix DrawingTransformMatrix
+        {
+            get;
+            set;
+        }
+
+        protected Rect DrawingTransformBounds
+        {
+            get;
+            set;
         }
 
 
@@ -48,14 +119,27 @@ namespace Scryber.Svg.Components
             if (null == graphics)
                 throw new ArgumentNullException("context.Graphics");
 
+            if (null == this.Path)
+            {
+                this.Path = this.CreatePath(context.Space, context.FullStyle);
+            }
+
             if (null != this.Path)
             {
                 var transform = fullstyle.GetValue(StyleKeys.TransformOperationKey, null);
                 if(transform != null)
                 {
-                    var matrix = transform.GetMatrix(MatrixOrder.Append);
+                    var origin = fullstyle.GetValue(StyleKeys.TransformOriginKey, null);
+                    //throw new InvalidOperationException("Need to set the graphics state here");
+                    var size = context.Graphics.ContainerSize;
+                    var matrix = transform.GetTransformationMatrix(size, origin);
                     graphics.SaveGraphicsState();
                     graphics.SetTransformationMatrix(matrix, false, true);
+
+                    var bounds = this.Path.Bounds;
+                    var transformed = matrix.TransformBounds(bounds);
+                    this.DrawingTransformMatrix = matrix;
+                    this.DrawingTransformBounds = transformed;
                 }
 
                 PDFBrush brush = fullstyle.CreateFillBrush();

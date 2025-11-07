@@ -1,0 +1,70 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+
+        
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 10pt;
+            font-family: sans-serif;
+        }
+        
+        
+        .rel{
+            position: relative;
+            border: solid 1pt aqua;
+            color: black;
+        }
+        
+        .abs{
+            position: absolute;
+            border: solid 1pt red;
+            color: black;
+        }
+        
+        .position{
+            display: block;
+            border: solid 1pt blue;
+        }
+        
+        .padd{
+            background: #AAA;
+            color: #CCC;
+            padding: 5pt;
+            margin: 10pt;
+        }
+        
+        .fix{
+            position: fixed;
+            left: 100pt;
+        }
+    </style>
+</head>
+<body>
+    <header>This is the page header</header>
+    <h5>Blocks below are fixed, relative and absoutely positioned.</h5>
+    <div class="position">
+        Below are the nested positioned blocks
+        <div class="rel" style="" >
+            <div class="padd">This is content within the block</div>
+            <div class="rel" style="left: 20pt; top: 10pt; height: 100pt; width: 200pt;" >After another relative block
+                <div id="deep1" class="abs" style="right: 30pt;">Absolute</div>
+            </div>
+        </div>
+        <div class="fix" >
+            <div class="padd" >
+                This is content within the block
+                <div id="deep2" class="abs">Absolute within the fixed</div>
+            </div>
+        </div>
+    </div>
+    
+    
+</body>
+</html>
+

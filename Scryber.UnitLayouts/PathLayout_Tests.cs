@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 
@@ -206,7 +207,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Line();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -218,7 +219,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Line();
             path2.Height = 20;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -230,8 +231,8 @@ namespace Scryber.UnitLayouts
 
             var path3 = new Line();
             path3.Height = 20;
-            path3.PositionMode = Drawing.PositionMode.Inline;
-            path3.FullWidth = true;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
+            path3.Width = Unit.Auto;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -244,7 +245,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Line();
             path4.Height = 20;
             path4.Width = 200;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path4);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -379,7 +380,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Line();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             path.Padding = new Drawing.Thickness(10);
             path.BackgroundColor = Drawing.StandardColors.White;
             page.Contents.Add(path);
@@ -396,7 +397,7 @@ namespace Scryber.UnitLayouts
             path2.Height = 20;
             path2.Padding = new Drawing.Thickness(10);
             path2.BackgroundColor = Drawing.StandardColors.White;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -411,8 +412,8 @@ namespace Scryber.UnitLayouts
             path3.Height = 20;
             path3.Padding = new Drawing.Thickness(10);
             path3.BackgroundColor = Drawing.StandardColors.White;
-            path3.PositionMode = Drawing.PositionMode.Inline;
-            path3.FullWidth = true;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
+            path3.Width = Unit.Auto;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -428,7 +429,7 @@ namespace Scryber.UnitLayouts
             path4.Width = 200;
             path4.BackgroundColor = Drawing.StandardColors.White;
             path4.Padding = new Drawing.Thickness(10);
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path4);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -481,7 +482,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
 
-            AssertAreApproxEqual(40, line.Height.PointsValue); //20pt line + padding
+            AssertAreApproxEqual(40, line.BaseLineOffset.PointsValue); //20pt line + padding
 
             Assert.AreEqual(7, line.Runs.Count); //3 text + line + 3 text
 
@@ -505,7 +506,7 @@ namespace Scryber.UnitLayouts
 
             //Make sure the line is the full width of the region.
             Assert.AreEqual(line.Width, reg.Width);
-            AssertAreApproxEqual(40.0, line.Height.PointsValue);
+            AssertAreApproxEqual(40.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(6, line.Runs.Count); //3 text, line, begin, newline
 
@@ -529,7 +530,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(40.0, line.Height.PointsValue);
+            AssertAreApproxEqual(40.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); // 3 text, line, 3 text
 
@@ -735,7 +736,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Ellipse();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
             //TODO: Sort out the overflow
@@ -750,7 +751,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Ellipse();
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -766,7 +767,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Ellipse();
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -781,7 +782,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Ellipse();
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -798,7 +799,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Ellipse();
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -833,7 +834,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(graphic.Owner, path);
 
             Assert.AreEqual(reg.Width, graphic.Width + chars.Width);
-            Assert.AreEqual(reg.Height, graphic.Height.PointsValue);
+            Assert.AreEqual(line.BaseLineOffset, graphic.Height.PointsValue);
 
             
 
@@ -848,7 +849,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
 
-            AssertAreApproxEqual(40, line.Height.PointsValue); //40pt ellipse
+            AssertAreApproxEqual(40, line.BaseLineOffset.PointsValue); //40pt ellipse
 
             Assert.AreEqual(6, line.Runs.Count); //3 text + ellipse + text begin and new line
 
@@ -873,7 +874,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
             //Make sure the line is the full width of the region.
-            Assert.AreEqual(100.0, line.Height.PointsValue);
+            Assert.AreEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); //3  text + graphic + 3 text
 
@@ -900,7 +901,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(140.0, line.Height.PointsValue);
+            AssertAreApproxEqual(140.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); // 3 text, ellipse, 3 text
 
@@ -930,7 +931,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(100.0, line.Height.PointsValue);
+            AssertAreApproxEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(6, line.Runs.Count); // 3 text, line, begin, newline
 
@@ -1136,7 +1137,7 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Rectangle();
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
             //TODO: Sort out the overflow
@@ -1151,7 +1152,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Rectangle();
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1167,7 +1168,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Rectangle();
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1182,7 +1183,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Rectangle();
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -1199,7 +1200,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Rectangle();
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1234,7 +1235,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(graphic.Owner, path);
 
             Assert.AreEqual(reg.Width, graphic.Width + chars.Width);
-            Assert.AreEqual(reg.Height, graphic.Height.PointsValue);
+            Assert.AreEqual(line.BaseLineOffset, graphic.Height);
 
 
 
@@ -1249,7 +1250,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
 
-            AssertAreApproxEqual(40, line.Height.PointsValue); //40pt ellipse
+            AssertAreApproxEqual(40, line.BaseLineOffset.PointsValue); //40pt ellipse
 
             Assert.AreEqual(6, line.Runs.Count); //3 text + ellipse + text begin and new line
 
@@ -1274,7 +1275,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
             //Make sure the line is the full width of the region.
-            Assert.AreEqual(100.0, line.Height.PointsValue);
+            Assert.AreEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); //3  text + graphic + 3 text
 
@@ -1301,7 +1302,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(140.0, line.Height.PointsValue);
+            AssertAreApproxEqual(100.0 + 40.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); // 3 text, ellipse, 3 text
 
@@ -1331,7 +1332,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(100.0, line.Height.PointsValue);
+            AssertAreApproxEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(6, line.Runs.Count); // 3 text, line, begin, newline
 
@@ -1361,11 +1362,10 @@ namespace Scryber.UnitLayouts
             page.Contents.Add(new TextLiteral("Before"));
 
             var path = new Polygon() { VertexCount = 5, Closed = true, VertexStep = 2};
-            path.PositionMode = Drawing.PositionMode.Inline;
+            path.DisplayMode = Drawing.DisplayMode.Inline;
             //No Size should fill the container.
             page.Contents.Add(path);
-            //TODO: Sort out the overflow
-            //page.Contents.Add(new TextLiteral("After"));
+            
 
             page = new Page();
             page.Margins = new Drawing.Thickness(20);
@@ -1376,7 +1376,7 @@ namespace Scryber.UnitLayouts
 
             var path2 = new Polygon() { VertexCount = 3, Closed = true, VertexStep = 1 };
             path2.Height = 40;
-            path2.PositionMode = Drawing.PositionMode.Inline;
+            path2.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path2);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1392,7 +1392,7 @@ namespace Scryber.UnitLayouts
             var path3 = new Polygon() { VertexCount = 6, Closed = true, VertexStep = 2 };
             path3.Height = 100;
             path3.Width = 100;
-            path3.PositionMode = Drawing.PositionMode.Inline;
+            path3.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path3);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1407,7 +1407,7 @@ namespace Scryber.UnitLayouts
             var path4 = new Polygon() { VertexCount = 7, Closed = true, VertexStep = 1 };
             path4.Height = 100;
             path4.Width = 100;
-            path4.PositionMode = Drawing.PositionMode.Inline;
+            path4.DisplayMode = Drawing.DisplayMode.Inline;
             path4.Padding = 20;
             page.Contents.Add(path4);
 
@@ -1424,7 +1424,7 @@ namespace Scryber.UnitLayouts
             var path5 = new Polygon() { VertexCount = 8, Closed = true, VertexStep = 2 };
             path5.Height = 100;
             path5.Width = 450; //Force a new line for the width
-            path5.PositionMode = Drawing.PositionMode.Inline;
+            path5.DisplayMode = Drawing.DisplayMode.Inline;
             page.Contents.Add(path5);
 
             page.Contents.Add(new TextLiteral("After"));
@@ -1459,7 +1459,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(graphic.Owner, path);
 
             Assert.AreEqual(reg.Width, graphic.Width + chars.Width);
-            Assert.AreEqual(reg.Height, graphic.Height.PointsValue);
+            Assert.AreEqual(line.BaseLineOffset, graphic.Height.PointsValue);
 
 
 
@@ -1468,15 +1468,15 @@ namespace Scryber.UnitLayouts
             reg = layout.AllPages[1].ContentBlock.Columns[0];
             Assert.IsInstanceOfType(reg, typeof(PDFLayoutRegion));
 
-            //All on 2 lines
-            Assert.AreEqual(2, reg.Contents.Count);
+            //All on 1 line
+            Assert.AreEqual(1, reg.Contents.Count);
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
 
-            AssertAreApproxEqual(30, line.Height.PointsValue); //Triangle is transcribed by the circle containing it, and will result in a reduced point path height
+            AssertAreApproxEqual(30, line.BaseLineOffset.PointsValue); //Triangle is transcribed by the circle containing it, and will result in a reduced point path height
 
-            Assert.AreEqual(6, line.Runs.Count); //3 text + poly + text begin and new line
+            Assert.AreEqual(7, line.Runs.Count); //3 text + poly + text begin and new line
 
             graphic = line.Runs[3] as PDFLayoutComponentRun;
             chars = line.Runs[1] as PDFTextRunCharacter;
@@ -1484,8 +1484,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(graphic);
 
             Assert.AreEqual(graphic.Owner, path2);
-
-            Assert.AreEqual(reg.Width, graphic.Width + chars.Width);
+            
             AssertAreApproxEqual(30.0, graphic.Height.PointsValue);
 
 
@@ -1499,7 +1498,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(line);
 
             //Make sure the line is the full width of the region.
-            Assert.AreEqual(100.0, line.Height.PointsValue);
+            Assert.AreEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); //3  text + graphic + 3 text
 
@@ -1512,7 +1511,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(graphic.Owner, path3);
 
-            AssertAreApproxEqual(93.3, graphic.Width.PointsValue); //6 sides has a reduced width
+            AssertAreApproxEqual(86.6, graphic.Width.PointsValue); //6 sides has a reduced width
             Assert.AreEqual(100.0, graphic.Height.PointsValue);
 
             Assert.AreEqual(line.Width, chars.Width + graphic.Width + chars2.Width);
@@ -1526,7 +1525,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(135.0, line.Height.PointsValue);
+            AssertAreApproxEqual(135.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(7, line.Runs.Count); // 3 text, poly, 3 text
 
@@ -1540,7 +1539,7 @@ namespace Scryber.UnitLayouts
 
             Assert.AreEqual(graphic.Owner, path4);
 
-            AssertAreApproxEqual(138.7, graphic.Width.PointsValue); //Reduced size for each points
+            AssertAreApproxEqual(137.5, graphic.Width.PointsValue); //Reduced size for each points
             AssertAreApproxEqual(135.0, graphic.Height.PointsValue); //Reduced size for the points
             Assert.AreEqual(line.Width.PointsValue, graphic.Width.PointsValue + chars.Width.PointsValue + chars2.Width.PointsValue);
 
@@ -1553,7 +1552,7 @@ namespace Scryber.UnitLayouts
             line = reg.Contents[0] as PDFLayoutLine;
             Assert.IsNotNull(line);
 
-            AssertAreApproxEqual(100.0, line.Height.PointsValue);
+            AssertAreApproxEqual(100.0, line.BaseLineOffset.PointsValue);
 
             Assert.AreEqual(6, line.Runs.Count); // 3 text, poly, begin, newline
 

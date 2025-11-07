@@ -477,7 +477,17 @@ namespace Scryber.Generation
                         if (string.IsNullOrEmpty(name))
                             name = t.Name;
 
-                        nsdefn.Add(name, t);
+                        try
+                        {
+
+                            nsdefn.Add(name, t);
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            throw new ArgumentException(
+                                "Could not add the type '" + t.FullName +
+                                "' as a parsable component with element name '" + name + "' : " + ex.Message, ex);
+                        }
 
                         //check to see if it has a remote name too
                         attrs = t.GetCustomAttributes(typeof(PDFRemoteParsableComponentAttribute), false);

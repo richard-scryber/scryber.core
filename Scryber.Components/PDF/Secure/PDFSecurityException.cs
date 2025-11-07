@@ -17,9 +17,6 @@ namespace Scryber.PDF.Secure
 
         public PDFSecurityException(string message, Exception inner) : base(message, inner) { }
 
-        protected PDFSecurityException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 }

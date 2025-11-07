@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.Html.Components
@@ -69,6 +70,7 @@ namespace Scryber.Html.Components
 
             style.Margins.Left = 2;
             style.Margins.Right = 2;
+            style.Margins.Top = Unit.Em(1.0);
 
             style.Padding.Top = new Drawing.Unit(0.35, Drawing.PageUnits.EMHeight);
             style.Padding.Bottom = new Drawing.Unit(0.625, Drawing.PageUnits.EMHeight);

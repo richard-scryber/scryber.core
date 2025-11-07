@@ -81,5 +81,12 @@ namespace Scryber.Html.Components
         {
 
         }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.SetValue(StyleKeys.MarginsAllKey, 8);
+            return base.GetBaseStyle();
+        }
     }
 }

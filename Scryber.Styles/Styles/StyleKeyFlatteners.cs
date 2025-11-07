@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Scryber.Drawing;
 
 namespace Scryber.Styles
@@ -167,6 +168,8 @@ namespace Scryber.Styles
 
             return result;
         }
+        
+
 
 
         public static void FlattenPaddingAllThicknessPositionValue(Style style, StyleKey<Unit> key, Size pageSize, Size containerSize, Size fontSize, Unit rootFontHeight)

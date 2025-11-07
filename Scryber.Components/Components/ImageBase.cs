@@ -147,8 +147,8 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style s = base.GetBaseStyle();
-            s.Position.PositionMode = Scryber.Drawing.PositionMode.Block;
-            
+            s.Position.DisplayMode = Scryber.Drawing.DisplayMode.Block;
+            s.Position.PositionMode = PositionMode.Static;
             return s;
         }
 
@@ -160,20 +160,26 @@ namespace Scryber.Components
         /// <param name="fullstyle"></param>
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDF.PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            IResourceContainer resources = this.GetResourceContainer();
-            if (null == resources)
-                throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
-            PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
+            if (this.Visible && fullstyle.Position.DisplayMode != DisplayMode.Invisible)
+            {
+                IResourceContainer resources = this.GetResourceContainer();
+                if (null == resources)
+                    throw RecordAndRaise.NullReference(Errors.ResourceContainerOfComponnetNotFound, "Image", this.ID);
+                PDFImageXObject xobj = this.GetImageObject(context, fullstyle);
 
-            if (null != xobj)
-                resources.Register(xobj);
+                if (null != xobj)
+                    resources.Register(xobj);
 
-            base.DoRegisterArtefacts(context, set, fullstyle);
+                base.DoRegisterArtefacts(context, set, fullstyle);
+            }
         }
 
 
         public virtual PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            if (!this.Visible)
+                return null;
+
             PDFGraphics graphics = context.Graphics;
             Style full = null;
 
@@ -184,17 +190,19 @@ namespace Scryber.Components
             if (null == full)
                 full = context.FullStyle;
 
+            if (full.Position.DisplayMode == DisplayMode.Invisible)
+                return null;
+
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
             {
-                Point pos = context.Offset;
+                img.RegisterUse(context.Graphics.Container.Resources, this);
+                
+                Point pos = img.GetRequiredOffsetForRender(context.Offset, context.Space, context);
+                
+                Size imgsize = img.GetRequiredSizeForRender(context.Offset, context.Space, context);
 
-
-                Size imgsize = context.Space;
-
-                //the pictures are drawn from their bottom left corner, so take off the height.
-                //if (context.DrawingOrigin == DrawingOrigin.TopLeft)
-                //    pos.Y = pos.Y + imgsize.Height;
+                Rect? clipRect = img.GetClippingRect(context.Offset, context.Space, context);
 
                 graphics.SaveGraphicsState();
 
@@ -206,6 +214,12 @@ namespace Scryber.Components
                         graphics.SetFillOpacity(op.Value(full));
                     }
                 }
+
+                if (clipRect.HasValue)
+                {
+                    graphics.SetClipRect(clipRect.Value);
+                }
+                
                 PDFObjectRef imgref = img.EnsureRendered(context, writer);
                 graphics.PaintImageRef(img, imgsize, pos);
 
@@ -218,7 +232,7 @@ namespace Scryber.Components
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
-            PDFPositionOptions pos = appliedstyle.CreatePostionOptions();
+            PDFPositionOptions pos = appliedstyle.CreatePostionOptions(context.PositionDepth > 0);
             PDFTextRenderOptions opts = appliedstyle.CreateTextOptions();
             PDFImageXObject xobj = this.GetImageObject(context, appliedstyle);
             Size naturalSize = xobj.GetImageSize();

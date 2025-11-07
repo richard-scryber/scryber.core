@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<?scryber append-log='true' ?>
+<html xmlns="http://www.w3.org/1999/xhtml" title="All SVG Components">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        svg {
+            background-color: #AAA;
+        }
+        
+        
+    </style>
+    
+</head>
+<body title="SVG Samples" style="padding: 8pt;" >
+    <p title="2 Color 45 Degree Reflected Gradients">2 Color 45 Degree Reflected Gradients</p>
+    <svg id="2ColorHoriz" width="550" height="110" xmlns="http://www.w3.org/2000/svg" >
+        <style>
+            text{ font-size: 6pt; font-family: sans-serif; fill-opacity: 70%; font-weight: 700; }
+            
+        </style>
+
+        <linearGradient id="2Color" x1="0" y1="0" x2="1" y2="1" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="10" y="10" fill="url(#2Color)" />
+
+        <linearGradient id="2ColorShort" x1="0.2" x2="0.5" y1="0.2" y2="0.5" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="100" y="10" fill="url(#2ColorShort)" />
+
+        <linearGradient id="2ColorPadded" x1="0" y1="0" x2="1" y2="1"  >
+            <stop offset="40%" stop-color="aqua" />
+            <stop offset="60%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="190" y="10" fill="url(#2ColorPadded)" />
+
+
+        <linearGradient id="2ColorRepeat" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0.5" >
+            <stop offset="0%" stop-color="aqua" />
+            <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="280" y="10" fill="url(#2ColorRepeat)" />
+
+        <linearGradient id="2ColorRepeatPadded" spreadMethod="repeat" x1="0" x2="0.5" y1="0" y2="0.5" >
+            <stop offset="40%" stop-color="aqua" />
+            <stop offset="60%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="370" y="10" fill="url(#2ColorRepeatPadded)" />
+
+        <linearGradient id="2ColorRepeatPaddedShort" spreadMethod="repeat" x1="0.1" x2="0.3" y1="0.1" y2="0.3" >
+            <stop offset="40%" stop-color="aqua" />
+            <stop offset="60%" stop-color="blue" />
+        </linearGradient>
+        <rect height="90" width="80" x="460" y="10" fill="url(#2ColorRepeatPaddedShort)" />
+        
+    </svg>
+    
+
+</body>
+</html>

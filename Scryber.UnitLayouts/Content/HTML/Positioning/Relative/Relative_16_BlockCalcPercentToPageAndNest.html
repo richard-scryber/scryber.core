@@ -1,0 +1,46 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+
+    <style>
+        h5{
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+            font-size: 15pt;
+            line-height: 30pt;
+            padding: 0pt;
+        }
+
+        body{
+            font-size: 12pt;
+            line-height: 15pt;
+            margin: 20pt;
+            border: solid 1pt green;
+        }
+        
+        .calc-rel {
+            position: relative;
+            border: solid 1pt blue;
+            width: calc(50% - 20pt);
+            padding: 10pt;
+        }
+        
+        .nest{
+            width: 300pt;
+            border: solid 1pt red;
+            margin: calc(10% - 5pt);
+        }
+        
+    </style>
+</head>
+<body>
+    <h5>Block below is relative positioned to the page, on the second column</h5>
+    <div id="outerRelative" class="calc-rel" >Width to page</div>
+    <div class="nest" >
+        <div id="innerRelative" class="calc-rel">Width to parent</div>
+    </div>
+    <span id="after"> After the relative block.</span>
+</body>
+</html>
+
