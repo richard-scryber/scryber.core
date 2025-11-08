@@ -108,6 +108,7 @@ namespace Scryber.PDF.Graphics
         public PDFFullImageBrush(string source)
         {
             this._source = source;
+            this._op = 1.0;
         }
 
 
@@ -145,9 +146,11 @@ namespace Scryber.PDF.Graphics
                 tile.Image = imagex;
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
-                
+
                 if (this.Opacity < 1.0 && this.Opacity >= 0.0)
                     tile.Opacity = this.Opacity.Value;
+                else 
+                    tile.Opacity = 1.0;
                 
                 //Calculate the bounds of the pattern
 
@@ -165,24 +168,40 @@ namespace Scryber.PDF.Graphics
 
                 tile.ImageSize = imgsize;
 
-                Size step = new Size();
-                if (this.XStep == 0)
-                    step.Width = width;
-                else
-                    step.Width = this.XStep;
-
-                if (this.YStep == 0)
-                    step.Height = height;
-                else
-                    step.Height = this.YStep;
+                Size step = new Size(Unit.Max(bounds.Width, imgsize.Width), Unit.Max(bounds.Height, imgsize.Height));
+                // if (this.XStep == 0)
+                //     step.Width = width;
+                // else
+                //     step.Width = this.XStep;
+                //
+                // if (this.YStep == 0)
+                //     step.Height = height;
+                // else
+                //     step.Height = this.YStep;
                 tile.Step = step;
 
                 Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
 
-                if (g.Origin == DrawingOrigin.TopLeft)
+                if (imgsize.Height > bounds.Height)
                 {
-                    start.Y = g.ContainerSize.Height - start.Y;
+                    //we are higher than the boundaries of the container
+                    //so centre in the container.
+                    var offsetV = imgsize.Height - bounds.Height;
+                    offsetV /= 2;
+                    start.Y -= offsetV;
                 }
+                else if (imgsize.Width > bounds.Width)
+                {
+                    //we are wider than the boundaries of the container
+                    //so center the container vertically
+                    var offsetV = imgsize.Height - bounds.Height;
+                    offsetV /= 2;
+                    start.Y -= offsetV;
+                }
+                // if (g.Origin == DrawingOrigin.TopLeft)
+                // {
+                //     start.Y = g.ContainerSize.Height - start.Y;
+                // }
                 tile.Start = start;
 
                 string name = g.Container.Register(tile);

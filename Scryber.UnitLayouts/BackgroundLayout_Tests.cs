@@ -478,7 +478,8 @@ namespace Scryber.UnitLayouts
 
             div.BackgroundImage = path;
             div.BackgroundRepeat = PatternRepeat.Fill;
-
+            //div.BackgroundOpacity = 0.5;
+            
             //height = 700
             //width will be expanded so the image retains proportions
             //and will fill all the availalbe space.
@@ -491,6 +492,7 @@ namespace Scryber.UnitLayouts
 
             using (var ms = DocStreams.GetOutputStream("Backgrounds_RepatingImageFill.pdf"))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
@@ -515,7 +517,7 @@ namespace Scryber.UnitLayouts
 
             var offset = (width - divBlock.Width.PointsValue) / 2.0;
             AssertAreApproxEqual(10 - offset, pattern.Start.X.PointsValue); //image scaled width, centered based on margins
-            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
             Assert.AreEqual(width, pattern.Step.Width);
             Assert.AreEqual(height, pattern.Step.Height);
 
@@ -630,6 +632,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(div);
 
             div.BackgroundImage = dataSvg;
+            div.BackgroundRepeat = PatternRepeat.RepeatBoth;
             div.Style.Background.PatternXSize = ImageNaturalWidth / 5.0;
             div.Style.Background.PatternYSize = ImageNaturalHeight / 4.0;
 

@@ -214,7 +214,7 @@ namespace Scryber.PDF.Resources
                 //     y = graphicsContainer.ContainerSize.Height.PointsValue - offset.Y.PointsValue -
                 //         tilesize.Height.PointsValue;
                 // else
-                    y = offset.Y.PointsValue;
+                y = offset.Y.PointsValue;
 
                 //Scale is done by the bounding box of the image being drawn
                 sh = 1;

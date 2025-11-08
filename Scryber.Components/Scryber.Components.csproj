@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.2.0.0</PackageVersion>
+    <PackageVersion>9.2.0.1</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2025</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>9.2.0.1
+Added support for repeating SVG background images from Data urls
+        
 9.2.0.0
 Public release will all added features from the betas. Too many to list, but consult the documentation here https://www.paperworkday.info/learning/ and the refererence section here https://www.paperworkday.info/learning/
         
