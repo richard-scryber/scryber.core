@@ -154,30 +154,13 @@ namespace Scryber.PDF.Graphics
                 
                 //Calculate the bounds of the pattern
 
-                Unit width;
-                Unit height;
                 Size imgsize = CalculateAppropriateImageSize(imagex.ImageData, bounds);
-                width = imgsize.Width;
-                height = imgsize.Height;
-
-
-                //Patterns are drawn from the bottom of the page so Y is the container height minus the vertical position and offset
-                Unit y = 0;// g.ContainerSize.Height - (bounds.Y);// g.ContainerSize.Height - (bounds.Y + height + this.YPostion);
-                //X is simply the horizontal position plus offset
-                Unit x = 0;// bounds.X + this.XPostion;
-
+                
                 tile.ImageSize = imgsize;
 
+                //Make the step the maximum of either the bounds or the image size - so no visible repeat.
                 Size step = new Size(Unit.Max(bounds.Width, imgsize.Width), Unit.Max(bounds.Height, imgsize.Height));
-                // if (this.XStep == 0)
-                //     step.Width = width;
-                // else
-                //     step.Width = this.XStep;
-                //
-                // if (this.YStep == 0)
-                //     step.Height = height;
-                // else
-                //     step.Height = this.YStep;
+                
                 tile.Step = step;
 
                 Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
