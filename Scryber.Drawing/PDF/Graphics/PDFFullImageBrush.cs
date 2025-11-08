@@ -181,27 +181,11 @@ namespace Scryber.PDF.Graphics
                 tile.Step = step;
 
                 Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
-
-                if (imgsize.Height > bounds.Height)
+                
+                if (g.Origin == DrawingOrigin.TopLeft)
                 {
-                    //we are higher than the boundaries of the container
-                    //so centre in the container.
-                    var offsetV = imgsize.Height - bounds.Height;
-                    offsetV /= 2;
-                    start.Y -= offsetV;
+                    start.Y = g.ContainerSize.Height - start.Y;
                 }
-                else if (imgsize.Width > bounds.Width)
-                {
-                    //we are wider than the boundaries of the container
-                    //so center the container vertically
-                    var offsetV = imgsize.Height - bounds.Height;
-                    offsetV /= 2;
-                    start.Y -= offsetV;
-                }
-                // if (g.Origin == DrawingOrigin.TopLeft)
-                // {
-                //     start.Y = g.ContainerSize.Height - start.Y;
-                // }
                 tile.Start = start;
 
                 string name = g.Container.Register(tile);
