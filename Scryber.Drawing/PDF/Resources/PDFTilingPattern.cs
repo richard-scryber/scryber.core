@@ -87,7 +87,14 @@ namespace Scryber.PDF.Resources
 
         #endregion
 
+        #region public double Opacity { get; set; }
         
+        /// <summary>
+        /// Gets or sets the background pattern opacity
+        /// </summary>
+        public PDFReal? Opacity { get; set; }
+        
+        #endregion
 
         /// <summary>
         /// Protected 

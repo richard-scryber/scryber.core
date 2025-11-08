@@ -8,6 +8,7 @@ using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 
 namespace Scryber.UnitLayouts
 {
@@ -97,8 +98,7 @@ namespace Scryber.UnitLayouts
             pg.Contents.Add(div);
 
             div.BackgroundImage = path;
-
-
+            
             using (var ms = DocStreams.GetOutputStream("Backgrounds_RepatingImage.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
@@ -126,6 +126,72 @@ namespace Scryber.UnitLayouts
 
             var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(divBlock);
+
+            
+
+        }
+        
+        [TestMethod]
+        public void RepeatingImageWithTransparency()
+        {
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.Margins = 10;
+            pg.BackgroundColor = Drawing.StandardColors.Gray;
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            //div.Width = 400;
+            div.Height = 700;
+            div.BorderColor = Drawing.StandardColors.Black;
+            pg.Contents.Add(div);
+
+            div.BackgroundImage = path;
+            div.BackgroundOpacity = 0.5;
+            
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_RepatingImageWithTransparency.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", path);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+
+            Assert.AreEqual(ImageNaturalWidth, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(ImageNaturalHeight, pattern.ImageSize.Height.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(path, pattern.Image.ResourceKey);
+
+            Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(ImageNaturalWidth, pattern.Step.Width);
+            Assert.AreEqual(ImageNaturalHeight, pattern.Step.Height);
+
+            var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(divBlock);
+            
+            var brush = divBlock.FullStyle.CreateBackgroundBrush();
+            Assert.IsInstanceOfType(brush, typeof(Scryber.PDF.Graphics.PDFImageBrush));
+            var imgBrush = brush as PDF.Graphics.PDFImageBrush;
+            Assert.AreEqual(0.5, imgBrush.Opacity);
 
             
 
@@ -456,7 +522,7 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void RepeatingMultipleBackgrounds()
+        public void RepeatingMultipleGradientBackgrounds()
         {
             var path = AssertGetContentFile("MultipleBackgrounds");
             var doc = Document.ParseDocument(path);
@@ -467,14 +533,13 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.Inconclusive("Multiple backgrounds are not currently supported");
+            Assert.AreEqual(1, doc.SharedResources.Count);
         }
         
         [TestMethod]
         public void RepeatingImageSVG_ExplicitSize()
         {
 
-            Assert.Inconclusive("SVG Imaages are not currently supported as backgrounds");
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, SVGImagePath);
             path = System.IO.Path.GetFullPath(path);
@@ -531,6 +596,107 @@ namespace Scryber.UnitLayouts
 
 
 
+        }
+        
+        [TestMethod]
+        public void RepeatingImageSVGAsBase64_ExplicitSize()
+        {
+
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, SVGImagePath);
+            path = System.IO.Path.GetFullPath(path);
+
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+
+            //convert to base 64 url
+            var bin = System.IO.File.ReadAllBytes(path);
+            var dataSvg = System.Convert.ToBase64String(bin);
+            dataSvg = "data:" + MimeType.SvgImage + ";base64," + dataSvg;
+            
+            var doc = new Document();
+            var pg = new Page();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.Margins = 10;
+            pg.BackgroundColor = Drawing.StandardColors.Gray;
+            doc.Pages.Add(pg);
+
+            var div = new Div();
+            //div.Width = 400;
+            div.Height = 700;
+            div.BorderColor = Drawing.StandardColors.Black;
+            pg.Contents.Add(div);
+
+            div.BackgroundImage = dataSvg;
+            div.Style.Background.PatternXSize = ImageNaturalWidth / 5.0;
+            div.Style.Background.PatternYSize = ImageNaturalHeight / 4.0;
+
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_RepeatingImageSVGAsBase64ExplicitSize.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", dataSvg);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+
+            Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(ImageNaturalHeight / 4.0, pattern.ImageSize.Height.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(dataSvg, pattern.Image.ResourceKey);
+
+            Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.Step.Width);
+            Assert.AreEqual(ImageNaturalHeight / 4.0, pattern.Step.Height);
+
+            var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(divBlock);
+
+
+
+        }
+        
+        
+        [TestMethod]
+        public void CoverBackgroundImageSVGMultipleComponents()
+        {
+            var path = AssertGetContentFile("SVGBackgrounds");
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_CoverBackgroundImageSVGMultipleComponents.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+        }
+        
+        
+        [TestMethod]
+        public void CoverBackgroundImageSVGWithTransparency()
+        {
+            var path = AssertGetContentFile("SVGBackgrounds");
+            var doc = Document.ParseDocument(path);
+            
+            using (var ms = DocStreams.GetOutputStream("Backgrounds_CoverBackgroundImageSVGWithTransparency.pdf"))
+            {
+                var para = doc.FindAComponentById("myPara2") as HTMLParagraph;
+                Assert.IsNotNull(para);
+                para.Style.Background.Opacity = 0.05;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
         }
         
 

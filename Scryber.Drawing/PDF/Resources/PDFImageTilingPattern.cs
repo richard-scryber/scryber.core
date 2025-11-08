@@ -131,9 +131,6 @@ namespace Scryber.PDF.Resources
 
             writer.WriteDictionaryRealEntry("XStep", this.Step.Width.PointsValue);
             writer.WriteDictionaryRealEntry("YStep", this.Step.Height.PointsValue);
-
-            PDFObjectRef all = this.Resources.WriteResourceList(context, writer);
-            writer.WriteDictionaryObjectRefEntry("Resources", all);
             
             writer.BeginStream(pattern);
             
@@ -141,12 +138,19 @@ namespace Scryber.PDF.Resources
                 graphicsSize, context))
             {
                 g.SaveGraphicsState();
+                
+                if(this.Opacity.HasValue)
+                    g.SetFillOpacity(this.Opacity.Value);
+                
                 var matrix = this.GetTilingImageMatrix(this.Image.ImageData, g, offset, size);
                 g.SetTransformationMatrix(matrix, true, true);
                 g.PaintXObject(this.Image);
                 g.RestoreGraphicsState();
             }
             long len = writer.EndStream();
+            
+            PDFObjectRef all = this.Resources.WriteResourceList(context, writer);
+            writer.WriteDictionaryObjectRefEntry("Resources", all);
 
             if (null != filters && filters.Length > 0)
             {

@@ -145,7 +145,10 @@ namespace Scryber.PDF.Graphics
                 tile.Image = imagex;
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
-
+                
+                if (this.Opacity < 1.0 && this.Opacity >= 0.0)
+                    tile.Opacity = this.Opacity.Value;
+                
                 //Calculate the bounds of the pattern
 
                 Unit width;

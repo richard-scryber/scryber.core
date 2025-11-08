@@ -137,7 +137,6 @@ namespace Scryber.PDF.Graphics
             Scryber.PDF.Resources.PDFImageXObject imagex;
 
             string fullpath = _source; // g.Container.MapPath(_source) - paths are mapped from the document now.
-            //TODO: Add XStep, YStep etc.
             string resourcekey = GetImagePatternKey(fullpath);
 
 
@@ -166,7 +165,8 @@ namespace Scryber.PDF.Graphics
                 tile.Image = imagex;
                 tile.PaintType = PatternPaintType.ColoredTile;
                 tile.TilingType = PatternTilingType.NoDistortion;
-                
+                if (this.Opacity < 1.0 && this.Opacity >= 0.0)
+                    tile.Opacity = this.Opacity.Value;
 
                 //Calculate the bounds of the pattern
 

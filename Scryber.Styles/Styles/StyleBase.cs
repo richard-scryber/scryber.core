@@ -402,6 +402,8 @@ namespace Scryber.Styles
             }
             else if (IsDataImage(source))
             {
+                //just make sure it is loaded - specifically for the SVG components to get the layout
+                var existingData = context.Document.GetResource(PDFResource.XObjectResourceType, source, true);
                 return source;
             }
 
