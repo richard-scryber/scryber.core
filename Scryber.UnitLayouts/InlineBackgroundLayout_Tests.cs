@@ -1028,6 +1028,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
 
 
+            Assert.Inconclusive("There is an offset on the left for returns with the padding - this should be pushed right.");
         }
 
         
@@ -1308,6 +1309,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(x, ltextStart.CalculatedBounds[2].X);
 
 
+            Assert.Inconclusive("With a single return the output is OK. With a double return the offset is not reset.");
         }
 
     }
