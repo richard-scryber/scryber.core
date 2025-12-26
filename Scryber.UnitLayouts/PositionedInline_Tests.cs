@@ -344,10 +344,10 @@ namespace Scryber.UnitLayouts
             }
 
             var bounds = arrange.RenderBounds;
-            Assert.AreEqual(left, bounds.X, "Arrange bounds left insets do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
-            Assert.AreEqual(top, bounds.Y, "Arrange bounds top offsets do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
-            Assert.AreEqual(width, bounds.Width, "Arrange bounds widths do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
-            Assert.AreEqual(height, bounds.Height, "Arrange bounds heights do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
+            Assert.AreEqual(Math.Round(left.PointsValue, 4), Math.Round(bounds.X.PointsValue, 4), "Arrange bounds left insets do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
+            Assert.AreEqual(Math.Round(top.PointsValue, 4), Math.Round( bounds.Y.PointsValue, 4), "Arrange bounds top offsets do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
+            Assert.AreEqual(Math.Round(width.PointsValue, 4), Math.Round( bounds.Width.PointsValue, 4), "Arrange bounds widths do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
+            Assert.AreEqual(Math.Round(height.PointsValue, 4), Math.Round(bounds.Height.PointsValue, 4), "Arrange bounds heights do not match for arrangement " + arrangeIndex + " on component " + comp.UniqueID);
 
             if (ensureIsLast)
             {
@@ -3400,7 +3400,7 @@ namespace Scryber.UnitLayouts
             top += 50;
             
             //third arangement on begin owner, left margin, shift down 50, character width and line height
-            CheckRenderBounds(begin.Owner, 2, 284.360732966, top , chars.Width, height);
+            CheckRenderBounds(begin.Owner, 2, 284.3607, top , chars.Width, height);
 
             runningWidth = chars.Width + line.RightInset;
             

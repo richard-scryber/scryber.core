@@ -50,7 +50,7 @@ namespace Scryber.Core.UnitTests.Html
         public string GetLocalProjectPath()
         {
             var dir = new DirectoryInfo(TestContext.TestRunDirectory);
-            while (dir.Name != "Scryber.Core")
+            while (dir.Name.Equals("Scryber.Core", StringComparison.InvariantCultureIgnoreCase) == false)
             {
                 dir = dir.Parent;
                 Assert.IsNotNull(dir);
