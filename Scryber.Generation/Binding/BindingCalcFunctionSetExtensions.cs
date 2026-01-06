@@ -37,6 +37,7 @@ namespace Scryber.Binding
             _all.Add(new LongFunction());
             _all.Add(new StringFunction());
             _all.Add(new BoolFunction());
+            _all.Add(new BooleanFunction()); //Just a rename bool => boolean
             _all.Add(new TypeOfFunction());
             // Date
             _all.Add(new AddDaysFunction());
@@ -144,6 +145,7 @@ namespace Scryber.Binding
             //css
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());
+            _all.Add(new RGBFunction());
 
             _all.Add(new EvalFunction());
         }

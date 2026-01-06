@@ -52,8 +52,10 @@ namespace Scryber.Expressive.Functions.Coalesce
                     all.Add(one, item);
                 }
             }
-
-            return all.Values;
+            
+            var array = new object[all.Count];
+            all.Values.CopyTo(array, 0);
+            return array;
 
         }
 

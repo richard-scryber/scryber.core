@@ -42,7 +42,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 
                 }
 
-                return matched;
+                return matched.ToArray();
             }
             else
             {

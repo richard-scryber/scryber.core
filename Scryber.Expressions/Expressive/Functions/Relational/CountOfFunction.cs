@@ -40,7 +40,15 @@ namespace Scryber.Expressive.Functions.Relational
 
 					CurrentDataExpression.SetCurrentData(item, variables);
 					var one = lookup.Evaluate(variables);
-					if (null != one)
+					if (null == one)
+					{
+						//skip
+					}
+					else if (one is bool b && !b)
+					{
+						//skip
+					}
+					else
 					{
 						count += 1;
 					}

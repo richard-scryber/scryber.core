@@ -145,8 +145,17 @@ namespace Scryber.Expressive
                     return default;
                 else if (value is T t)
                     return t;
-                else
+                else if (value is IConvertible)
                     return (T)Convert.ChangeType(value, typeof(T));
+                else if (typeof(T) == typeof(string))
+                {
+                    var str = value.ToString();
+                    return (T)Convert.ChangeType(str, typeof(T));
+                }
+                else
+                {
+                    throw new NotSupportedException($"Cannot convert {value.GetType()} to {typeof(T)}");
+                }
             }
             catch (ExpressiveException)
             {

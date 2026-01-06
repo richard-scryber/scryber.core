@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Functions.Conversion
     {
         #region FunctionBase Members
 
-        public override string Name => "Boolean";
+        public override string Name => "Bool";
 
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
@@ -123,5 +123,15 @@ namespace Scryber.Expressive.Functions.Conversion
                 return result;
             }
         }
+    }
+
+
+    public class BooleanFunction : BoolFunction
+    {
+        
+        public override string Name => "Boolean";
+        
+        public BooleanFunction() : base()
+        {}
     }
 }

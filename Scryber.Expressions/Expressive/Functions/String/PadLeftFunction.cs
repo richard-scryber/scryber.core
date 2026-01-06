@@ -18,7 +18,7 @@ namespace Scryber.Expressive.Functions.String
 
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
-            this.ValidateParameterCount(parameters, 3, 3);
+            this.ValidateParameterCount(parameters, -1, 2);
 
             object value = parameters[0].Evaluate(variables);
             object length = parameters[1].Evaluate(variables);
@@ -37,7 +37,8 @@ namespace Scryber.Expressive.Functions.String
 
             int totalLength = Convert.ToInt32(length);
 
-            var third = parameters[2].Evaluate(variables);
+            var third = (parameters.Length > 2) ? parameters[2].Evaluate(variables) : null;
+            
             char character = ' ';
 
             if (third is char)

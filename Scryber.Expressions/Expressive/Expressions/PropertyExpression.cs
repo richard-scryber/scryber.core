@@ -5,6 +5,8 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using Scryber.Expressive.Exceptions;
 
 #if NET6_0_OR_GREATER
 
@@ -81,7 +83,7 @@ namespace Scryber.Expressive.Expressions
         public static object GetPropertyValue(object parent, string name, bool caseInSensitive)
         {
 
-        if(null == parent)
+            if(null == parent)
             {
                 throw new ArgumentNullException(nameof(parent));
             }
@@ -91,7 +93,9 @@ namespace Scryber.Expressive.Expressions
             if (parent is Newtonsoft.Json.Linq.JObject jobject)
             {
                 if (jobject.ContainsKey(name) == false)
+                {
                     return null;
+                }
 
                 var result = jobject.GetValue(name);
                 return GetJTokenValue(result);
@@ -104,7 +108,9 @@ namespace Scryber.Expressive.Expressions
             {
                 JsonElement result;
                 if (!jelement.TryGetProperty(name, out result))
+                {
                     return null;
+                }
                 else
                     return GetJsonElementValue(result);
                 

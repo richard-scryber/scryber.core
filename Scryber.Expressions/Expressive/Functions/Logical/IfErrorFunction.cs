@@ -14,12 +14,18 @@ namespace Scryber.Expressive.Functions.Logical
         {
             this.ValidateParameterCount(parameters, 2, 2);
             object result;
-
+            
             try
             {
                 result = parameters[0].Evaluate(variables);
+                
+                if(null == result)
+                    result = parameters[1].Evaluate(variables);
+                
+                else if(result is double d && (double.IsNaN(d)  || double.IsInfinity(d)))
+                    result = parameters[1].Evaluate(variables);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = parameters[1].Evaluate(variables);
             }

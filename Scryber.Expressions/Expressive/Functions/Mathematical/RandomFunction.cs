@@ -9,15 +9,18 @@ namespace Scryber.Expressive.Functions.Mathematical
         #region FunctionBase Members
 
         public override string Name { get { return "Random"; } }
+        
+        
+        private static readonly Random _random = new Random();
 
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
         {
-            this.ValidateParameterCount(parameters, 2, 2);
+            this.ValidateParameterCount(parameters, -1, -1);
 
-            object min = parameters[0].Evaluate(variables);
-            object max = parameters[1].Evaluate(variables);
-            
-            var random = new Random(DateTime.UtcNow.Millisecond);
+            object min = parameters.Length > 0 ? parameters[0].Evaluate(variables) : 0.0;
+            object max = parameters.Length > 1 ? parameters[1].Evaluate(variables) : 1.0;
+
+            var random = _random;
 
             if (min is int && max is int)
             {

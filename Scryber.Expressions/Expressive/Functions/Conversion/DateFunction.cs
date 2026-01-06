@@ -7,6 +7,9 @@ namespace Scryber.Expressive.Functions.Conversion
 {
     public class DateFunction : FunctionBase
     {
+        
+        private static readonly DateTime EpochDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        
         #region FunctionBase Members
 
         public override string Name => "Date";
@@ -34,15 +37,24 @@ namespace Scryber.Expressive.Functions.Conversion
             }
             else if(objectToConvert is int i)
             {
-                return new DateTime((long)i * TimeSpan.TicksPerMillisecond);
+                var timespan = new TimeSpan(i * TimeSpan.TicksPerMillisecond);
+                var date = EpochDate;
+                date = date.Add(timespan);
+                return date;
             }
             else if(objectToConvert is long l)
             {
-                return new DateTime(l * TimeSpan.TicksPerMillisecond);
+                var timespan = new TimeSpan(l * TimeSpan.TicksPerMillisecond);
+                var date = EpochDate;
+                date = date.Add(timespan);
+                return date;
             }
             else if(long.TryParse(objectToConvert.ToString(), out l))
             {
-                return new DateTime(l * TimeSpan.TicksPerMillisecond);
+                var timespan = new TimeSpan(l * TimeSpan.TicksPerMillisecond);
+                var date = EpochDate;
+                date = date.Add(timespan);
+                return date;
             }
 
             return Convert.ToDateTime(objectToConvert, context.CurrentCulture);

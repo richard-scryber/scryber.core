@@ -44,7 +44,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 				}
 			});
 			list.Reverse();
-			return list;
+			return list.ToArray();
 
 			
         }

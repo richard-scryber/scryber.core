@@ -153,17 +153,20 @@ namespace Scryber.Expressive.Helpers
             a = EnsureJsonExpanded(a);
             b = EnsureJsonExpanded(b);
 
+            bool aIsUnit, bIsUnit;
             a = ConvertIfStringOrUnit(a, variables);
             b = ConvertIfStringOrUnit(b, variables);
 
-            if (a is double && double.IsNaN((double)a))
+            if (a is double d && double.IsNaN((double)a))
             {
-                return a;
+               return a;
             }
             if (b is double && double.IsNaN((double)b))
             {
                 return b;
             }
+
+            
 
             TypeCode typeCodeA = TypeHelper.GetTypeCode(a);
             TypeCode typeCodeB = TypeHelper.GetTypeCode(b);

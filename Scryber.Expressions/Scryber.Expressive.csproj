@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Expressive\" />
     <Folder Include="Expressive\Exceptions\" />
-    <Folder Include="Expressive\Functions\CSS\" />
   </ItemGroup>
 
   <ItemGroup>

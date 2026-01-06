@@ -106,7 +106,7 @@ namespace Scryber.Expressive
         public Context(ExpressiveOptions options, CultureInfo mainCurrentCulture, CultureInfo decimalCurrentCulture, FunctionSet functions, OperatorSet operators)
         {
             Options = options;
-
+            
             this.CurrentCulture = mainCurrentCulture ?? throw new ArgumentNullException(nameof(mainCurrentCulture));
             // For now we will ignore any specific cultures but keeping it in a single place to simplify changing later if required.
             this.DecimalCurrentCulture = decimalCurrentCulture ?? throw new ArgumentNullException(nameof(decimalCurrentCulture));
