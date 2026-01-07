@@ -43,6 +43,11 @@ namespace Scryber.Styles.Parsing.Typed
             }
             var str = value.ToString();
 
+            if (string.Equals("none", str, StringComparison.InvariantCultureIgnoreCase))
+            {
+                result = string.Empty;
+                return true;
+            }
             if (IsGradient(str, out result) || ParseCSSUrl(str, out result))
             {
                 return true;

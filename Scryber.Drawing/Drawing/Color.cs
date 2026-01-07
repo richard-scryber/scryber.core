@@ -643,6 +643,8 @@ namespace Scryber.Drawing
 
         #endregion
 
+        #region TryParseRGBA(value, out color, out opacity)
+        
         /// <summary>
         /// Creates a new PDFColor from the provided string  rgb(Red,Green,Blue) or g(Gray) or #GG or #RGB or #RRGGBB
         /// </summary>
@@ -708,6 +710,9 @@ namespace Scryber.Drawing
                 return false;
             }
         }
+        
+        #endregion
+        
 
         private const float ByteToFloatFactor = (1.0F / 255.0F);
 
@@ -733,7 +738,34 @@ namespace Scryber.Drawing
         {
             get { return StandardColors.Transparent; }
         }
+
+
+        /// <summary>
+        /// Static construction method for an RGB color
+        /// </summary>
+        /// <param name="r">The red component (between 0 and 255)</param>
+        /// <param name="g">The green component (between 0 and 255)</param>
+        /// <param name="b">The blue component (between 0 and 255)</param>
+        /// <returns>A new valid color</returns>
+        /// <exception cref="ArgumentOutOfRangeException">If one or more of the color components are not in the allowed range</exception>
+        public static Color FromRGB(int r, int g, int b)
+        {
+            return new Color(r, g, b);
+        }
         
+        /// <summary>
+        /// Static construction method for a CMYK color
+        /// </summary>
+        /// <param name="c">The cyan component (between 0 and 255)</param>
+        /// <param name="m">The magenta component (between 0 and 255)</param>
+        /// <param name="y">The yellow component (between 0 and 255)</param>
+        /// <param name="k">The black component (between 0 and 255)</param>
+        /// <returns>A new valid color</returns>
+        /// <exception cref="ArgumentOutOfRangeException">If one or more of the color components are not in the allowed range</exception>
+        public static Color FromCMYK(int c, int m, int y, int k)
+        {
+            return new Color(c, m, y, k);
+        }
 
     }
 }

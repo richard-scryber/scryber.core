@@ -172,7 +172,11 @@ namespace Scryber.Styles.Parsing
             {
                 string hexValue;
 
-                if (CSSColors.Names2Colors.TryGetValue(part, out hexValue))
+                if (string.Equals("transparent", part, StringComparison.InvariantCultureIgnoreCase) ||
+                    string.Equals("none", part, StringComparison.InvariantCultureIgnoreCase))
+                    result = true; //it was parsed to default transparent value
+
+                else if (CSSColors.Names2Colors.TryGetValue(part, out hexValue))
                     result = Color.TryParse(hexValue, out color);
 
                 else if (part.StartsWith("#"))
