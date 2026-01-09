@@ -44,11 +44,13 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     SVGFillReferenceValue gradient = new SVGFillReferenceValue(null, valId);
                     onStyle.SetValue(this.FillAttribute, gradient);
+                    result = true;
                 }
                 else if (IsNamedValue(val, out PDFBrush brush))
                 {
                     SVGFillNamedValue named = new SVGFillNamedValue(brush, val);
                     onStyle.SetValue(this.FillAttribute, named);
+                    result = true;
                 }
                 else if (SetColorValue(onStyle, val, out color))
                 {

@@ -74,7 +74,10 @@ namespace Scryber.Styles.Parsing.Typed
             //special case of a single double value - is proportional to the current font size if set.
             if (double.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out proportional))
             {
-                height = new Unit(proportional, PageUnits.EMHeight);
+                if (proportional == 0)
+                    height = Unit.Zero;
+                else
+                    height = new Unit(proportional, PageUnits.EMHeight);
                 return true;
             }
 

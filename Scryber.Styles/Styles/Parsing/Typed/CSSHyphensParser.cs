@@ -50,6 +50,10 @@ namespace Scryber.Styles.Parsing.Typed
                     onStyle.SetValue(StyleKeys.TextWordHyphenation, hyphenate);
                     success = true;
                 }
+                else
+                {
+                    success = false;
+                }
                 
             }
             return success;

@@ -23,7 +23,7 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     return AttachExpressionBindingHandler(onStyle, this.StyleAttribute, val, DoConvertColumnSpan);
                 }
-                else if (ParseInteger(val, out number) && number >= 1)
+                else if (DoConvertColumnSpan(onStyle, val, out number) && number >= 1)
                 {
                     this.SetValue(onStyle, number);
                     return true;
@@ -56,6 +56,11 @@ namespace Scryber.Styles.Parsing.Typed
                     span = 1;
                     return false;
                 }
+            }
+            else if (value.ToString() == "none")
+            {
+                span = 1; //no column span is 1 column
+                return true;
             }
             else if(ParseInteger(value.ToString(), out span) && span >= 1)
             {

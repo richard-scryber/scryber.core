@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Styles;
 
 namespace Scryber.UnitLayouts
 {
@@ -213,7 +215,10 @@ namespace Scryber.UnitLayouts
         {
 
             Document doc = new Document();
+            var defaultMargins = new StyleDefn(typeof(Section), null, null);
+            defaultMargins.Margins.All = new Unit(10);
             
+            doc.Styles.Add(defaultMargins);
             var names = Enum.GetNames(typeof(PaperSize));
 
             foreach (var name in names)
@@ -230,6 +235,8 @@ namespace Scryber.UnitLayouts
                     section.Height = 300;
                 }
                 section.Padding = new Thickness(10);
+                section.Margins = new Thickness(10);
+                
                 section.FontSize = 20;
                 section.HorizontalAlignment = HorizontalAlignment.Center;
 
@@ -402,6 +409,36 @@ namespace Scryber.UnitLayouts
 
         }
 
+
+        [TestMethod("9. Defining the page sizes in an html template")]
+        public void PageSizeDefaultInHTMLTemplate()
+        {
+
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body>
+    <h1>Page in the default size</h1>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("Page_SizesDefaultHTMLTemplate.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
 
     }
 }

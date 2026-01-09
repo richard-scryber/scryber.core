@@ -25,6 +25,34 @@ public class TestCode : SampleBase
 
 
     }
+    
+    [TestMethod]
+    public void LargeSVGImage()
+    {
+        
+
+        //documents can either contain a body **or** a frameset.
+        //Not both.
+        var doc = new HTMLDocument();
+        doc.Body = new HTMLBody();
+        doc.Body.Contents.Add("All the content goes here.");
+        var img = new Image();
+        var path = GetTemplatePath("images", "tyre.svg", true);
+        img.Source = path;
+        img.Style.Border.Width = 1;
+        img.Style.Size.Width = 400;
+        img.Style.Size.Height = 300;
+        doc.Body.Contents.Add(img);
+        
+        
+        
+        using (var ms = DocStreams.GetOutputStream("ComplexSVGTyre.pdf"))
+        {
+            doc.SaveAsPDF(ms);
+        }
+    }
+    
+    
 
     [TestMethod]
     public void ProjectStatusReport()

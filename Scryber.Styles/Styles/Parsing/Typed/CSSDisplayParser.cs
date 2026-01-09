@@ -31,6 +31,10 @@ namespace Scryber.Styles.Parsing.Typed
                     this.SetValue(onStyle, display);
                     result = true;
                 }
+                else
+                {
+                    result = false;
+                }
             }
             else
                 result = false;

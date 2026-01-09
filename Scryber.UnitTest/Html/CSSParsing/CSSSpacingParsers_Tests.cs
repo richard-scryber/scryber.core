@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Styles.Parsing;
 using Scryber.Styles.Parsing.Typed;
@@ -327,7 +328,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "25pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(25.0, style.Margins.Left.PointsValue, 0.001);
+            var margins = style.GetValue(StyleKeys.MarginsInlineStart, Unit.Zero);
+            Assert.AreEqual(25.0, margins.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -340,7 +342,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "30pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(30.0, style.Margins.Right.PointsValue, 0.001);
+            var margins = style.GetValue(StyleKeys.MarginsInlineEnd, Unit.Zero);
+            Assert.AreEqual(30.0, margins.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -353,8 +356,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "12pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(12.0, style.Margins.Left.PointsValue, 0.001);
-            Assert.AreEqual(12.0, style.Margins.Right.PointsValue, 0.001);
+            var margins = style.GetValue(StyleKeys.MarginsInlineStart, Unit.Zero);
+            Assert.AreEqual(12.0, margins.PointsValue, 0.001);
+            margins = style.GetValue(StyleKeys.MarginsInlineEnd, Unit.Zero);
+            Assert.AreEqual(12.0, margins.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -367,8 +372,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "10pt 20pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(10.0, style.Margins.Left.PointsValue, 0.001);
-            Assert.AreEqual(20.0, style.Margins.Right.PointsValue, 0.001);
+            var margins = style.GetValue(StyleKeys.MarginsInlineStart, Unit.Zero);
+            Assert.AreEqual(10.0, margins.PointsValue, 0.001);
+            margins = style.GetValue(StyleKeys.MarginsInlineEnd, Unit.Zero);
+            Assert.AreEqual(20.0, margins.PointsValue, 0.001);
         }
 
         #endregion
@@ -437,7 +444,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "auto");
 
-            Assert.IsFalse(result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(Unit.AutoValue, style.Padding.Top.PointsValue, 0.001);
         }
 
         #endregion
@@ -622,7 +630,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "auto");
 
-            Assert.IsFalse(result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(Unit.AutoValue, style.Padding.All.PointsValue, 0.001);
         }
 
         #endregion
@@ -639,7 +648,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "18pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(18.0, style.Padding.Left.PointsValue, 0.001);
+            var padding = style.GetValue(StyleKeys.PaddingInlineStart, Unit.Zero);
+            Assert.AreEqual(18, padding.PointsValue, 0.001); //not set
+            padding = style.GetValue(StyleKeys.PaddingInlineEnd, Unit.Zero);
+            Assert.AreEqual(0, padding.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -652,7 +664,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "22pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(22.0, style.Padding.Right.PointsValue, 0.001);
+            var padding = style.GetValue(StyleKeys.PaddingInlineStart, Unit.Zero);
+            Assert.AreEqual(0, padding.PointsValue, 0.001); //not set
+            padding = style.GetValue(StyleKeys.PaddingInlineEnd, Unit.Zero);
+            Assert.AreEqual(22.0, padding.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -665,8 +680,11 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "14pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(14.0, style.Padding.Left.PointsValue, 0.001);
-            Assert.AreEqual(14.0, style.Padding.Right.PointsValue, 0.001);
+            
+            var padding = style.GetValue(StyleKeys.PaddingInlineStart, Unit.Zero);
+            Assert.AreEqual(14.0, padding.PointsValue, 0.001);
+            padding = style.GetValue(StyleKeys.PaddingInlineEnd, Unit.Zero);
+            Assert.AreEqual(14.0, padding.PointsValue, 0.001);
         }
 
         [TestMethod()]
@@ -679,8 +697,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "12pt 16pt");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(12.0, style.Padding.Left.PointsValue, 0.001);
-            Assert.AreEqual(16.0, style.Padding.Right.PointsValue, 0.001);
+            var padding = style.GetValue(StyleKeys.PaddingInlineStart, Unit.Zero);
+            Assert.AreEqual(12, padding.PointsValue, 0.001); //not set
+            padding = style.GetValue(StyleKeys.PaddingInlineEnd, Unit.Zero);
+            Assert.AreEqual(16.0, padding.PointsValue, 0.001);
         }
 
         #endregion

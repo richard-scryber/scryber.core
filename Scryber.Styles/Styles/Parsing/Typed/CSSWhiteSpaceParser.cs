@@ -37,6 +37,10 @@ namespace Scryber.Styles.Parsing.Typed
                 onStyle.SetValue(StyleKeys.TextWhitespaceKey, preserve);
                 success = true;
             }
+            else
+            {
+                success = false;
+            }
             return success;
         }
 

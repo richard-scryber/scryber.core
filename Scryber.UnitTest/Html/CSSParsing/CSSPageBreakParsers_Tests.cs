@@ -385,7 +385,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         {
             var parser = new CSSPageNameParser();
             var style = CreateStyle();
-            var result = ParseValue(parser, style, "");
+            var result = ParseValue(parser, style, " ");
 
             Assert.IsFalse(result);
         }

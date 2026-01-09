@@ -72,6 +72,7 @@ namespace Scryber.Styles.Parsing.Typed
             {
                 case ("auto"):
                 case ("scroll"):
+                case("new-page"):
                     over = OverflowAction.NewPage;
                     return true;
 
@@ -80,6 +81,7 @@ namespace Scryber.Styles.Parsing.Typed
                     return true;
 
                 case ("hidden"):
+                case("truncate"):
                     over = OverflowAction.Truncate;
                     return true;
 

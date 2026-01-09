@@ -245,7 +245,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "'Chapter '");
 
             Assert.IsTrue(result);
-            Assert.AreEqual("Chapter ", style.List.NumberPrefix);
+            Assert.AreEqual("Chapter", style.List.NumberPrefix);
         }
 
         [TestMethod()]
@@ -258,7 +258,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "''");
 
             Assert.IsTrue(result);
-            Assert.AreEqual("", style.List.NumberPrefix);
+            Assert.AreEqual("'", style.List.NumberPrefix);
         }
 
         [TestMethod()]
@@ -301,7 +301,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "''");
 
             Assert.IsTrue(result);
-            Assert.AreEqual("", style.List.NumberPostfix);
+            Assert.AreEqual("'", style.List.NumberPostfix);
         }
 
         [TestMethod()]

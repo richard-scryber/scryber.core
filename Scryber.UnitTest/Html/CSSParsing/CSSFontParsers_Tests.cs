@@ -1,10 +1,12 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Styles.Parsing;
 using Scryber.Styles.Parsing.Typed;
 using Scryber.Drawing;
 using Scryber.Html;
+using Scryber.PDF;
 
 namespace Scryber.Core.UnitTests.Html.CSSParsers
 {
@@ -82,10 +84,12 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestCategory("CSS-Parsers")]
         public void FontFamily_QuotedFont_SetsFamily()
         {
-            var parser = new CSSFontFamilyParser();
+            
+            var parser = new CSSStyleItemAllParser();
             var style = CreateStyle();
-            var result = ParseValue(parser, style, "'Times New Roman'");
-
+            var reader = new CSSStyleItemReader("font-family: 'Times New Roman'");
+            var result = parser.SetStyleValue(style, reader, null);
+            
             Assert.IsTrue(result);
             Assert.IsNotNull(style.Font.FontFamily);
             Assert.AreEqual("Times New Roman", style.Font.FontFamily.FamilyName);
@@ -96,9 +100,10 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestCategory("CSS-Parsers")]
         public void FontFamily_DoubleQuotedFont_SetsFamily()
         {
-            var parser = new CSSFontFamilyParser();
+            var parser = new CSSStyleItemAllParser();
             var style = CreateStyle();
-            var result = ParseValue(parser, style, "\"Courier New\"");
+            var reader = new CSSStyleItemReader("font-family: \"Courier New\"");
+            var result = parser.SetStyleValue(style, reader, null);
 
             Assert.IsTrue(result);
             Assert.IsNotNull(style.Font.FontFamily);
@@ -380,7 +385,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestMethod()]
         [TestCategory("CSS")]
         [TestCategory("CSS-Parsers")]
-        public void FontStyle_Oblique_SetsItalic()
+        public void FontStyle_Oblique_SetsOblique()
         {
             var parser = new CSSFontStyleParser();
             var style = CreateStyle();
@@ -388,7 +393,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
 
             Assert.IsTrue(result);
             // Oblique is mapped to Italic in Scryber
-            Assert.AreEqual(Scryber.Drawing.FontStyle.Italic, style.Font.FontFaceStyle);
+            Assert.AreEqual(Scryber.Drawing.FontStyle.Oblique, style.Font.FontFaceStyle);
         }
 
         [TestMethod()]
@@ -432,6 +437,20 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsTrue(result);
             // 24px = 24 * 0.75 = 18pt
             Assert.AreEqual(18.0, style.Text.Leading.PointsValue, 0.001);
+        }
+        
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void LineHeight_NoUnit_SetsHeight_Em()
+        {
+            var parser = new CSSFontLineHeightParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "1.2");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1.2, style.Text.Leading.Value, 0.001);
+            Assert.AreEqual(PageUnits.EMHeight, style.Text.Leading.Units);
         }
 
         [TestMethod()]

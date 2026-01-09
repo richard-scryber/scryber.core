@@ -36,7 +36,7 @@ namespace Scryber.Drawing
             get
             {
                 if (null == _widths || _widths.Length == 0)
-                    return this._explicit.IsZero;
+                    return this._explicit.IsZero || this._explicit == Unit.AutoValue;
                 else
                     return false;
             }

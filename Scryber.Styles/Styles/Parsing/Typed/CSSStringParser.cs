@@ -34,13 +34,26 @@ namespace Scryber.Styles.Parsing.Typed
                     //if in quotes then remove the quotes (single or double)
 
                     if (str.StartsWith("'") && str.EndsWith("'"))
-                        str = str.Substring(1, str.Length - 2);
+                    {
+                        if (str.Length > 1)
+                            str = str.Substring(1, str.Length - 2);
+                    }
 
                     else if (str.StartsWith("\"") && str.EndsWith("\""))
-                        str = str.Substring(1, str.Length - 2);
+                    {
+                        if (str.Length > 1)
+                            str = str.Substring(1, str.Length - 2);
+                    }
 
-                    style.SetValue(this.StyleKey, str);
-                    success = true;
+                    if (DoConvertString(style, str, out str))
+                    {
+                        style.SetValue(this.StyleKey, str);
+                        success = true;
+                    }
+                    else
+                    {
+                        success = false;
+                    }
                 }
                 else
                 {
@@ -52,7 +65,7 @@ namespace Scryber.Styles.Parsing.Typed
         }
 
 
-        protected bool DoConvertString(StyleBase style, object value, out string converted)
+        protected virtual bool DoConvertString(StyleBase style, object value, out string converted)
         {
             if(null == value)
             {

@@ -94,7 +94,7 @@ namespace Scryber.Drawing
 			}
 			else if (value.StartsWith("attr("))
 			{
-				return null;
+				return ContentAttributeDescriptor.Parse(value);
 			}
 			else if (value == "open-quote")
 			{
@@ -127,7 +127,7 @@ namespace Scryber.Drawing
 					return new ContentTextDescriptor(value.Substring(1, value.Length - 2));
 			}
 			else
-				throw new NotSupportedException("The content value " + value + " is not supported, or cannot be parsed");
+				return new ContentTextDescriptor(value);
         }
 
 
@@ -491,6 +491,18 @@ namespace Scryber.Drawing
 			: base(ContentDescriptorType.Attribute)
 		{
 			this.Attribute = val;
+		}
+		
+		/// <summary>
+		/// Parses an attribute descriptor, making sure the attribute name is correct.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static new ContentAttributeDescriptor Parse(string value)
+		{
+			if(value.StartsWith("attr(") && value.EndsWith(")"))
+				value = value.Substring(5, value.Length - 6);
+			return new ContentAttributeDescriptor(value);
 		}
 	}
 

@@ -83,6 +83,10 @@ namespace Scryber.Styles.Parsing.Typed
                     breakval = true;
                     result = true;
                     break;
+                case("auto"):
+                    breakval = false;
+                    result = true;
+                    break;
 
                 default:
                     breakval = false;

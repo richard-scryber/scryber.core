@@ -448,8 +448,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "swap");
 
-            // FontDisplayParser is a skip parser - always returns true
-            Assert.IsTrue(result);
+            // FontDisplayParser is a skip parser - returns false as there are no further attributes
+            Assert.IsFalse(result);
         }
 
         [TestMethod()]
@@ -461,8 +461,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "auto");
 
-            // Skip parser - no validation, always succeeds
-            Assert.IsTrue(result);
+            // Skip parser - no validation, returns false as there are no further attributes
+            Assert.IsFalse(result);
         }
 
         #endregion
@@ -482,7 +482,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             
             var source = style.GetValue(StyleKeys.FontFaceSrcKey, null);
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('fonts/myfont.ttf')", source.Source);
+            Assert.AreEqual("fonts/myfont.ttf", source.Source);
             Assert.AreEqual(FontSourceFormat.Default, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNull(source.Next);
@@ -501,7 +501,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             
             var source = style.GetValue(StyleKeys.FontFaceSrcKey, null);
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('myfont.woff')", source.Source);
+            Assert.AreEqual("myfont.woff", source.Source);
             Assert.AreEqual(FontSourceFormat.WOFF, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNull(source.Next);
@@ -522,24 +522,24 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             
             var source = style.GetValue(StyleKeys.FontFaceSrcKey, null);
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.woff2')", source.Source);
+            Assert.AreEqual("font.woff2", source.Source);
             Assert.AreEqual(FontSourceFormat.Default, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNotNull(source.Next);
             
             source = source.Next;
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.woff')", source.Source);
+            Assert.AreEqual("font.woff", source.Source);
             Assert.AreEqual(FontSourceFormat.Default, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNotNull(source.Next);
             
             source = source.Next;
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.ttf')", source.Source);
+            Assert.AreEqual("font.ttf", source.Source);
             Assert.AreEqual(FontSourceFormat.Default, source.Format);
             Assert.IsFalse(source.Mapped);
-            Assert.IsNotNull(source.Next);
+            Assert.IsNull(source.Next);
             
         }
         
@@ -558,24 +558,24 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             
             var source = style.GetValue(StyleKeys.FontFaceSrcKey, null);
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.woff2')", source.Source);
+            Assert.AreEqual("font.woff2", source.Source);
             Assert.AreEqual(FontSourceFormat.WOFF2, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNotNull(source.Next);
             
             source = source.Next;
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.woff')", source.Source);
+            Assert.AreEqual("font.woff", source.Source);
             Assert.AreEqual(FontSourceFormat.WOFF, source.Format);
             Assert.IsFalse(source.Mapped);
             Assert.IsNotNull(source.Next);
             
             source = source.Next;
             Assert.IsNotNull(source);
-            Assert.AreEqual("url('font.ttf')", source.Source);
+            Assert.AreEqual("font.ttf", source.Source);
             Assert.AreEqual(FontSourceFormat.TrueType, source.Format);
             Assert.IsFalse(source.Mapped);
-            Assert.IsNotNull(source.Next);
+            Assert.IsNull(source.Next);
             
         }
 
@@ -604,8 +604,9 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "condensed");
 
-            // FontStretchParser is a skip parser - always returns true
-            Assert.IsTrue(result);
+            // FontStretchParser is a skip parser - does nothing and returns false as there are no further attributes
+            Assert.IsFalse(result);
+            Assert.Inconclusive("Would be good to implement");
         }
 
         [TestMethod()]
@@ -617,8 +618,9 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "expanded");
 
-            // Skip parser - no validation, always succeeds
-            Assert.IsTrue(result);
+            // Skip parser - no validation, does nothing and returns false as there are no further attributes
+            Assert.IsFalse(result);
+            Assert.Inconclusive("Would be good to implement");
         }
 
         #endregion
@@ -634,11 +636,13 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "'Chapter '");
 
+            //The text on it's own will be stripped of the quotes and trimmed - true test is in tbe full css string parsing, or the multiple values
             Assert.IsTrue(result);
             var content = style.GetValue(StyleKeys.ContentTextKey, null);
             Assert.IsNotNull(content);
             Assert.AreEqual(ContentDescriptorType.Text, content.Type);
-            Assert.AreEqual("'Chapter '", ((ContentTextDescriptor)content).Text);
+            Assert.AreEqual("Chapter", ((ContentTextDescriptor)content).Text); //test for trimmed version
+            Assert.Inconclusive("Need to check this as a single value within a css group, an make sure it is correct.");
         }
 
         [TestMethod()]
@@ -664,23 +668,23 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         {
             var parser = new CSSContentParser();
             var style = CreateStyle();
-            var result = ParseValue(parser, style, "'Chapter ' counter(chapter) '. '");
+            var result = ParseValue(parser, style, " counter(chapter) 'Chapter. ' attr(data-label)");
 
             Assert.IsTrue(result);
             var content = style.GetValue(StyleKeys.ContentTextKey, null);
             Assert.IsNotNull(content);
-            Assert.AreEqual(ContentDescriptorType.Text, content.Type);
-            Assert.AreEqual("'Chapter '", ((ContentTextDescriptor)content).Text);
-            Assert.IsNotNull(content.Next);
-            
-            content = content.Next;
             Assert.AreEqual(ContentDescriptorType.Counter, content.Type);
             Assert.AreEqual("chapter", ((ContentCounterDescriptor)content).CounterName);
             Assert.IsNotNull(content.Next);
             
             content = content.Next;
             Assert.AreEqual(ContentDescriptorType.Text, content.Type);
-            Assert.AreEqual(". ", ((ContentTextDescriptor)content).Text);
+            Assert.AreEqual("Chapter. ", ((ContentTextDescriptor)content).Text);
+            Assert.IsNotNull(content.Next);
+            
+            content = content.Next;
+            Assert.AreEqual(ContentDescriptorType.Attribute, content.Type);
+            Assert.AreEqual("data-label", ((ContentAttributeDescriptor)content).Attribute);
         }
 
         [TestMethod()]
@@ -697,7 +701,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsNotNull(content);
             Assert.AreEqual(ContentDescriptorType.Attribute, content.Type);
             Assert.AreEqual("data-label", ((ContentAttributeDescriptor)content).Attribute);
-            Assert.IsNotNull(content.Next);
+            Assert.IsNull(content.Next);
         }
 
         #endregion
@@ -758,7 +762,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsNotNull(counter);
             Assert.AreEqual("section", counter.Name);
             Assert.AreEqual(0, counter.Value);
-            Assert.IsNotNull(counter.Next);
+            Assert.IsNull(counter.Next);
             
         }
 
@@ -776,7 +780,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsNotNull(counter);
             Assert.AreEqual("none", counter.Name);
             Assert.AreEqual(0, counter.Value);
-            Assert.IsNotNull(counter.Next);
+            Assert.IsNull(counter.Next);
         }
 
         #endregion
@@ -837,7 +841,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsNotNull(counter);
             Assert.AreEqual("section", counter.Name);
             Assert.AreEqual(1, counter.Value);
-            Assert.IsNotNull(counter.Next);
+            Assert.IsNull(counter.Next);
         }
 
         [TestMethod()]

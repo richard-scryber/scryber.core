@@ -918,6 +918,7 @@ Scryber.core has **excellent layout and visual rendering test coverage** but **s
 4. **Font System** (No dedicated font handling tests)
 5. **Complex Table Scenarios** (Colspan/rowspan edge cases)
 6. **Image Processing** (Limited format-specific tests)
+7. **Overflow Integration Tests** (Checks for overflowing content within columns and pages - using css)
 
 **Priority:** Focus on adding comprehensive unit tests for the Expression Engine and implementing systematic error scenario testing across all components. These are the highest-risk areas that could lead to production issues.
 

@@ -117,7 +117,7 @@ namespace Scryber.Styles.Parsing.Typed
 
                 result = true;
             }
-            else if (value == "avoid")
+            else if (value == "avoid" || value == "avoid-column")
             {
                 split = OverflowSplit.Never;
                 action = OverflowAction.NewPage;

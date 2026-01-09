@@ -43,6 +43,10 @@ namespace Scryber.Styles.Parsing.Typed
                     final |= decor;
                     result &= true;
                 }
+                else
+                {
+                    result = false; //not for any
+                }
             }
 
             if (result && !hasExpr)

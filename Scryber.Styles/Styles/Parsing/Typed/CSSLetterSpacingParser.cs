@@ -32,6 +32,10 @@ namespace Scryber.Styles.Parsing.Typed
                     onStyle.SetValue(StyleKeys.TextCharSpacingKey, size);
                     result = true;
                 }
+                else
+                {
+                    result =false;
+                }
             }
             else
                 result = false;

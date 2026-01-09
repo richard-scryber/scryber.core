@@ -19,10 +19,14 @@ namespace Scryber.Styles.Parsing.Typed
                 {
                     return AttachExpressionBindingHandler(style, StyleKeys.PageNameGroupKey, val, DoConvertPageName);
                 }
+                else if(DoConvertPageName(style, val, out var converted))
+                {
+                    style.PageStyle.PageNameGroup = converted;
+                    return true;
+                }
                 else
                 {
-                    style.PageStyle.PageNameGroup = reader.CurrentTextValue;
-                    return true;
+                    return false;
                 }
             }
             else
