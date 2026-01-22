@@ -162,7 +162,11 @@ namespace Scryber.PDF.Native
             try
             {
                 byte[] header = new byte[HeaderByteLength];
-                seekableStream.Read(header, 0, HeaderByteLength);
+                
+                var count = seekableStream.Read(header, 0, HeaderByteLength);
+                if(count != HeaderByteLength)
+                    throw new PDFException("The header bytes were not properly formed");
+                
                 string headerValue = System.Text.Encoding.ASCII.GetString(header);
                 int major = int.Parse(headerValue[MajorVersionOffset].ToString());
                 int minor = int.Parse(headerValue[MinorVersionOffset].ToString());

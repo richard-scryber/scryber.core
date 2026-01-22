@@ -11,9 +11,6 @@ namespace Scryber.PDF.Parsing
         public PDFDocumentStructureException() { }
         public PDFDocumentStructureException(string message) : base(message) { }
         public PDFDocumentStructureException(string message, Exception inner) : base(message, inner) { }
-        protected PDFDocumentStructureException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        
     }
 }

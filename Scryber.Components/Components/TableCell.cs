@@ -185,7 +185,7 @@ namespace Scryber.Components
         /// <returns></returns>
         public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new PDF.Layout.LayoutEnginePanel(this, parent);
+            return new PDF.Layout.LayoutEngineTableCell(this, parent);
         }
 
         #endregion

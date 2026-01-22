@@ -206,5 +206,23 @@ namespace Scryber.UnitSamples
 
             }
         }
+
+        [TestMethod]
+        public void TableCenteredContent()
+        {
+            var path = GetTemplatePath("Tables", "TableCenteredContent.html");
+
+            using (var doc = Document.ParseDocument(path))
+            {
+
+                doc.AppendTraceLog = false;
+                doc.TraceLog.SetRecordLevel(TraceRecordLevel.Messages);
+                using (var stream = GetOutputStream("Tables", "TablesCentered.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+        }
     }
 }

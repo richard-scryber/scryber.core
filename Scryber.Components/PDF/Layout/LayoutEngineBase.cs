@@ -720,9 +720,14 @@ namespace Scryber.PDF.Layout
             }
             else
                 full = this.FullStyle;
-            
-            if(!ShouldLayoutComponent(comp, full))
+
+            if (!ShouldLayoutComponent(comp, full))
+            {
+                if (null != applied)
+                     this.StyleStack.Pop();
+                
                 return;
+            }
 
             CheckForPrecedingInlineWhitespace(comp, full);
 

@@ -35,7 +35,6 @@
     <None Remove="Content\HTML\Positioning\Absolute\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\" />
     <Folder Include="Content\HTML\SVG\ViewPort\" />
     <Folder Include="Content\HTML\Transform\" />
     <Folder Include="Content\HTML\Positioning\Fixed\" />

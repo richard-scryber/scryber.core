@@ -40,8 +40,8 @@ public class TestCode : SampleBase
         var path = GetTemplatePath("images", "tyre.svg", true);
         img.Source = path;
         img.Style.Border.Width = 1;
-        img.Style.Size.Width = 400;
-        img.Style.Size.Height = 300;
+        //img.Style.Size.Width = 400;
+        //img.Style.Size.Height = 300;
         doc.Body.Contents.Add(img);
         
         
@@ -50,6 +50,8 @@ public class TestCode : SampleBase
         {
             doc.SaveAsPDF(ms);
         }
+        
+        Assert.Inconclusive("Need to validate the size and layout.");
     }
     
     

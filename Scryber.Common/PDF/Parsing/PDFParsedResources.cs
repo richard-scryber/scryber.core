@@ -16,7 +16,7 @@ namespace Scryber.PDF.Parsing
         private const string ColorSpaceKey = "ColorSpace";
         private const string PatternKey = "Pattern";
         private const string ShadingKey = "Shading";
-        private const string xObjectKey = "XObject";
+        private const string XObjectKey = "XObject";
         private const string PropertiesKey = "Properties";
 
         private PDFDictionary _source;
@@ -76,17 +76,16 @@ namespace Scryber.PDF.Parsing
                 this.PopulateResourceContents();
         }
 
-        protected virtual void PopulateResourceContents()
+        private void PopulateResourceContents()
         {
-            PDFDictionary found;
-            this._source.TryGet(ProcSetKey,out found);
+            this._source.TryGet(ProcSetKey,out this._procset);
             this._source.TryGet(FontsKey, out this._fonts);
             this._source.TryGet(ColorSpaceKey, out this._colorspace);
             this._source.TryGet(ExtGStateKey, out this._extGstate);
             this._source.TryGet(PatternKey, out this._pattern);
             this._source.TryGet(PropertiesKey, out this._properties);
             this._source.TryGet(ShadingKey, out this._shading);
-            this._source.TryGet(xObjectKey, out this._xObject);
+            this._source.TryGet(XObjectKey, out this._xObject);
             
         }
 
@@ -125,36 +124,5 @@ namespace Scryber.PDF.Parsing
 
             return count;
         }
-
-        // public virtual void CopyResourcesToPage(PageBase page, PDFFile source)
-        // {
-        //     foreach (PDFName rsrcType in this.OriginalDictionary.Keys)
-        //     {
-        //         if (rsrcType.Value == ProcSetKey)
-        //             //We automatically include the ProcSet anyway
-        //             continue;
-        //
-        //         IPDFFileObject value = this.OriginalDictionary[rsrcType];
-        //         if (value is PDFObjectRef)
-        //             value = source.AssertGetContent(value as PDFObjectRef);
-        //
-        //         //We only support Dictionary entries within the Resource Dictionary
-        //         if (value is PDFDictionary)
-        //         {
-        //             this.CopyResourceEntriesToPage(page, rsrcType, value as PDFDictionary, source);
-        //         }
-        //         
-        //     }
-        // }
-        //
-        // private void CopyResourceEntriesToPage(PageBase page, PDFName rstcType, PDFDictionary contents, PDFFile source)
-        // {
-        //     foreach (PDFName key in contents.Keys)
-        //     {
-        //         PDFExistingResource rsrc = new PDFExistingResource(rstcType.Value, key.Value, key.Value, contents[key]);
-        //         page.Register(rsrc);
-        //         page.Document.RegisterExistingResource(rsrc);
-        //     }
-        // }
     }
 }
