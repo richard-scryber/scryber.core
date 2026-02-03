@@ -431,6 +431,28 @@ namespace Scryber.PDF.Layout
             }
         }
 
+        protected virtual void OutputBackground(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
+        {
+            var g = context.Graphics;
+            if (null != bg)
+            {
+                if (border.TopLeftRadius.HasValue || border.TopRightRadius.HasValue || border.BottomLeftRadius.HasValue || border.BottomRightRadius.HasValue)
+                {
+                    g.FillRoundRectangle(bg, rect.X, rect.Y, rect.Width, rect.Height, 
+                        border.TopLeftRadius ?? Unit.Zero, border.TopRightRadius ?? Unit.Zero, 
+                        border.BottomLeftRadius ?? Unit.Zero, border.BottomRightRadius ?? Unit.Zero);
+                }
+                else if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
+                {
+                    g.FillRoundRectangle(bg, rect, border.CornerRadius.Value);
+                }
+                else
+                {
+                    g.FillRectangle(bg, rect);
+                }
+            }
+        }
+
         #endregion
 
         #region protected void OutputBorder(PDFBackgroundStyle bg, PDFBorderStyle border, PDFRenderContext context, PDFRect rect)
@@ -445,43 +467,50 @@ namespace Scryber.PDF.Layout
         protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
-            
+
+            Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+            Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+            bool hasAnyCorner = tl != Unit.Zero || tr != Unit.Zero || bl != Unit.Zero || br != Unit.Zero;
+
             if (null != border.AllPen && border.AllSides > 0)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.AllPen, rect, border.AllSides, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.AllPen, rect.X, rect.Y, rect.Width, rect.Height, border.AllSides, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.AllPen, rect, border.AllSides);
             }
 
             if(null != border.TopPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.TopPen, rect, Sides.Top, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.TopPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Top, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.TopPen, rect, Sides.Top);
             }
 
             if (null != border.RightPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.RightPen, rect, Sides.Right, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.RightPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Right, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.RightPen, rect, Sides.Right);
             }
 
             if (null != border.BottomPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.BottomPen, rect, Sides.Bottom, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.BottomPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Bottom, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.BottomPen, rect, Sides.Bottom);
             }
 
             if (null != border.LeftPen)
             {
-                if (border.CornerRadius.HasValue && border.CornerRadius.Value != Unit.Zero)
-                    g.DrawRoundRectangle(border.LeftPen, rect, Sides.Left, border.CornerRadius.Value);
+                if (hasAnyCorner)
+                    g.DrawRoundRectangle(border.LeftPen, rect.X, rect.Y, rect.Width, rect.Height, Sides.Left, tl, tr, bl, br);
                 else
                     g.DrawRectangle(border.LeftPen, rect, Sides.Left);
             }
@@ -499,6 +528,11 @@ namespace Scryber.PDF.Layout
         /// <returns>True if the clippong rect was set</returns>
         protected virtual bool OutputClipping(PDFRenderContext context, Rect cliprect, Unit corner, Sides sides, Thickness inset)
         {
+            return this.OutputClipping(context, cliprect, corner, corner, corner, corner, sides, inset);
+        }
+
+        protected virtual bool OutputClipping(PDFRenderContext context, Rect cliprect, Unit tl, Unit tr, Unit bl, Unit br, Sides sides, Thickness inset)
+        {
             var g = context.Graphics;
             g.SaveGraphicsState();
 
@@ -510,8 +544,8 @@ namespace Scryber.PDF.Layout
                 cliprect.Height -= (inset.Top + inset.Bottom);
             }
 
-            if (corner != Unit.Zero)
-                g.SetClipRect(cliprect, sides, corner);
+            if (tl != Unit.Zero || tr != Unit.Zero || bl != Unit.Zero || br != Unit.Zero)
+                g.SetClipRect(cliprect, sides, tl, tr, bl, br);
             else
             {
                 g.SetClipRect(cliprect);

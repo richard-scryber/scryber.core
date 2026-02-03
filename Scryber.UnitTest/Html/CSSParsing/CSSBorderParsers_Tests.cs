@@ -364,6 +364,70 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsFalse(result);
         }
 
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void BorderRadius_MultipleValues_SetsCorrectRadii()
+        {
+            var parser = new CSSBorderRadiusParser();
+            var style = CreateStyle();
+
+            // 1 value: all corners
+            var result = ParseValue(parser, style, "10pt");
+            Assert.IsTrue(result);
+            Assert.AreEqual(10.0, style.Border.TopLeftRadius.PointsValue, 0.001);
+            Assert.AreEqual(10.0, style.Border.TopRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(10.0, style.Border.BottomRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(10.0, style.Border.BottomLeftRadius.PointsValue, 0.001);
+
+            // 2 values: top-left & bottom-right, top-right & bottom-left
+            style = CreateStyle();
+            result = ParseValue(parser, style, "10pt 20pt");
+            Assert.IsTrue(result);
+            Assert.AreEqual(10.0, style.Border.TopLeftRadius.PointsValue, 0.001);
+            Assert.AreEqual(20.0, style.Border.TopRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(10.0, style.Border.BottomRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(20.0, style.Border.BottomLeftRadius.PointsValue, 0.001);
+
+            // 3 values: top-left, top-right & bottom-left, bottom-right
+            style = CreateStyle();
+            result = ParseValue(parser, style, "10pt 20pt 30pt");
+            Assert.IsTrue(result);
+            Assert.AreEqual(10.0, style.Border.TopLeftRadius.PointsValue, 0.001);
+            Assert.AreEqual(20.0, style.Border.TopRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(30.0, style.Border.BottomRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(20.0, style.Border.BottomLeftRadius.PointsValue, 0.001);
+
+            // 4 values: top-left, top-right, bottom-right, bottom-left
+            style = CreateStyle();
+            result = ParseValue(parser, style, "10pt 20pt 30pt 40pt");
+            Assert.IsTrue(result);
+            Assert.AreEqual(10.0, style.Border.TopLeftRadius.PointsValue, 0.001);
+            Assert.AreEqual(20.0, style.Border.TopRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(30.0, style.Border.BottomRightRadius.PointsValue, 0.001);
+            Assert.AreEqual(40.0, style.Border.BottomLeftRadius.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void BorderIndividualCornerRadii_SetsCorrectRadius()
+        {
+            var style = CreateStyle();
+
+            Assert.IsTrue(ParseValue(new CSSBorderTopLeftRadiusParser(), style, "10pt"));
+            Assert.AreEqual(10.0, style.Border.TopLeftRadius.PointsValue, 0.001);
+
+            Assert.IsTrue(ParseValue(new CSSBorderTopRightRadiusParser(), style, "20pt"));
+            Assert.AreEqual(20.0, style.Border.TopRightRadius.PointsValue, 0.001);
+
+            Assert.IsTrue(ParseValue(new CSSBorderBottomRightRadiusParser(), style, "30pt"));
+            Assert.AreEqual(30.0, style.Border.BottomRightRadius.PointsValue, 0.001);
+
+            Assert.IsTrue(ParseValue(new CSSBorderBottomLeftRadiusParser(), style, "40pt"));
+            Assert.AreEqual(40.0, style.Border.BottomLeftRadius.PointsValue, 0.001);
+        }
+
         #endregion
 
         #region Border Side Parsers Tests

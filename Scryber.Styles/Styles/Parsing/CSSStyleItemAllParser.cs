@@ -117,6 +117,10 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BorderColor, new CSSBorderColorParser());
             all.Add(CSSStyleItems.BorderWidth, new CSSBorderWidthParser());
             all.Add(CSSStyleItems.BorderRadius, new CSSBorderRadiusParser());
+            all.Add(CSSStyleItems.BorderTopLeftRadius, new CSSBorderTopLeftRadiusParser());
+            all.Add(CSSStyleItems.BorderTopRightRadius, new CSSBorderTopRightRadiusParser());
+            all.Add(CSSStyleItems.BorderBottomLeftRadius, new CSSBorderBottomLeftRadiusParser());
+            all.Add(CSSStyleItems.BorderBottomRightRadius, new CSSBorderBottomRightRadiusParser());
             all.Add(CSSStyleItems.BorderLeft, new CSSBorderLeftParser());
             all.Add(CSSStyleItems.BorderRight, new CSSBorderRightParser());
             all.Add(CSSStyleItems.BorderTop, new CSSBorderTopParser());

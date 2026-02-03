@@ -724,11 +724,21 @@ namespace Scryber.PDF.Graphics
             this.SetClipRect(rect.Location, rect.Size, sides, cornerradius);
         }
 
+        public void SetClipRect(Rect rect, Sides sides, Unit tl, Unit tr, Unit bl, Unit br)
+        {
+            this.SetClipRect(rect.Location, rect.Size, sides, tl, tr, bl, br);
+        }
+
         public void SetClipRect(Point pt, Size sz, Sides sides, Unit cornerradius)
         {
-            if (cornerradius > Unit.Zero)
+            this.SetClipRect(pt, sz, sides, cornerradius, cornerradius, cornerradius, cornerradius);
+        }
+
+        public void SetClipRect(Point pt, Size sz, Sides sides, Unit tl, Unit tr, Unit bl, Unit br)
+        {
+            if (tl > Unit.Zero || tr > Unit.Zero || bl > Unit.Zero || br > Unit.Zero)
             {
-                this.DoOutputRoundRectangleWithSidesFill(pt.X, pt.Y, sz.Width, sz.Height, cornerradius, sides);
+                this.DoOutputRoundRectangleWithSidesFill(pt.X, pt.Y, sz.Width, sz.Height, sides, tl, tr, bl, br);
             }
             else
                 this.RenderRectangle(pt.X, pt.Y, sz.Width, sz.Height);

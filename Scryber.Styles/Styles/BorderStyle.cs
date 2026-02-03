@@ -63,6 +63,110 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public PDFUnit TopLeftRadius {get;set;} + RemoveTopLeftRadius()
+
+        [PDFAttribute("top-left-radius")]
+        public Unit TopLeftRadius
+        {
+            get
+            {
+                Unit rad;
+                if (this.TryGetValue(StyleKeys.BorderTopLeftRadiusKey, out rad))
+                    return rad;
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.BorderTopLeftRadiusKey, value);
+            }
+        }
+
+        public void RemoveTopLeftRadius()
+        {
+            this.RemoveValue(StyleKeys.BorderTopLeftRadiusKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit TopRightRadius {get;set;} + RemoveTopRightRadius()
+
+        [PDFAttribute("top-right-radius")]
+        public Unit TopRightRadius
+        {
+            get
+            {
+                Unit rad;
+                if (this.TryGetValue(StyleKeys.BorderTopRightRadiusKey, out rad))
+                    return rad;
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.BorderTopRightRadiusKey, value);
+            }
+        }
+
+        public void RemoveTopRightRadius()
+        {
+            this.RemoveValue(StyleKeys.BorderTopRightRadiusKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit BottomLeftRadius {get;set;} + RemoveBottomLeftRadius()
+
+        [PDFAttribute("bottom-left-radius")]
+        public Unit BottomLeftRadius
+        {
+            get
+            {
+                Unit rad;
+                if (this.TryGetValue(StyleKeys.BorderBottomLeftRadiusKey, out rad))
+                    return rad;
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.BorderBottomLeftRadiusKey, value);
+            }
+        }
+
+        public void RemoveBottomLeftRadius()
+        {
+            this.RemoveValue(StyleKeys.BorderBottomLeftRadiusKey);
+        }
+
+        #endregion
+
+        #region public PDFUnit BottomRightRadius {get;set;} + RemoveBottomRightRadius()
+
+        [PDFAttribute("bottom-right-radius")]
+        public Unit BottomRightRadius
+        {
+            get
+            {
+                Unit rad;
+                if (this.TryGetValue(StyleKeys.BorderBottomRightRadiusKey, out rad))
+                    return rad;
+                else
+                    return Unit.Empty;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.BorderBottomRightRadiusKey, value);
+            }
+        }
+
+        public void RemoveBottomRightRadius()
+        {
+            this.RemoveValue(StyleKeys.BorderBottomRightRadiusKey);
+        }
+
+        #endregion
+
         #region public Sides Sides {get; set;} + RemoveSides()
 
         [PDFAttribute("sides")]

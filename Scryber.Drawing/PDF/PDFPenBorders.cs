@@ -38,6 +38,14 @@ namespace Scryber.PDF
 
         public Unit? CornerRadius { get; set; }
 
+        public Unit? TopLeftRadius { get; set; }
+
+        public Unit? TopRightRadius { get; set; }
+
+        public Unit? BottomLeftRadius { get; set; }
+
+        public Unit? BottomRightRadius { get; set; }
+
         public bool HasBorders
         {
             get
