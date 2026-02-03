@@ -752,5 +752,160 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(10, borders.BottomRightRadius.Value.PointsValue);
         }
 
+        
+        
+        [TestMethod]
+        public void FullBorderVariousRadiiFromStyle7()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>All Borders</title>
+    <style>
+        div{
+            border: solid 1pt blue;
+        }
+
+        #withBorders{
+            border-radius: 10pt 20pt;
+        }
+    </style>
+</head>
+
+<body style='padding:20px'>
+  <div id='withBorders' style='height: 200px; padding: 20px;'>Inside the div</div>
+</body>
+
+</html>";
+
+
+            var doc = Document.ParseDocument(new System.IO.StringReader(html));
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Borders_FullBorderVariousRadiiFromStyle7.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+
+
+            var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(divBlock);
+
+            ((Scryber.Styles.StyleFull)divBlock.FullStyle).ClearFullRefs();
+
+            var borders = divBlock.FullStyle.CreateBorderPen();
+
+            Assert.AreEqual(Sides.Top | Sides.Bottom | Sides.Left | Sides.Right, borders.AllSides); //Not Bottom or Left
+            Assert.IsNotNull(borders.AllPen);
+            Assert.IsInstanceOfType(borders.AllPen, typeof(Scryber.PDF.Graphics.PDFSolidPen));
+            var penAll = borders.AllPen as PDF.Graphics.PDFSolidPen;
+            
+            //all - not set
+            Assert.IsFalse(borders.CornerRadius.HasValue);
+            
+            
+            //bottom-left : 20
+            Assert.IsTrue(borders.BottomLeftRadius.HasValue);
+            Assert.AreEqual(20, borders.BottomLeftRadius.Value.PointsValue);
+            
+            //top-left: 10
+            Assert.IsTrue(borders.TopLeftRadius.HasValue);
+            Assert.AreEqual(10, borders.TopLeftRadius.Value.PointsValue);
+            
+            //top-right: 20
+            Assert.IsTrue(borders.TopRightRadius.HasValue);
+            Assert.AreEqual(20, borders.TopRightRadius.Value.PointsValue);
+            
+            //bottom-right 10.
+            Assert.IsTrue(borders.BottomRightRadius.HasValue);
+            Assert.AreEqual(10, borders.BottomRightRadius.Value.PointsValue);
+        }
+        
+         
+        
+        [TestMethod]
+        public void FullBorderVariousRadiiFromStyle8()
+        {
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <title>All Borders</title>
+    <style>
+        div{
+            border: solid 1pt blue;
+        }
+
+        #withBorders{
+            border-radius: 10pt 20pt 30pt 40pt;
+        }
+
+        div#withBorders{
+            border-top-left-radius: 3rem;
+            background-color: lime;
+        }
+    </style>
+</head>
+
+<body style='padding:20px'>
+  <div id='withBorders' style='height: 200px; padding: 20px;'>Inside the div</div>
+</body>
+
+</html>";
+
+
+            var doc = Document.ParseDocument(new System.IO.StringReader(html));
+
+
+
+            using (var ms = DocStreams.GetOutputStream("Borders_FullBorderVariousRadiiFromStyle8.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+
+
+            var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(divBlock);
+
+            ((Scryber.Styles.StyleFull)divBlock.FullStyle).ClearFullRefs();
+
+            var borders = divBlock.FullStyle.CreateBorderPen();
+
+            Assert.AreEqual(Sides.Top | Sides.Bottom | Sides.Left | Sides.Right, borders.AllSides); //Not Bottom or Left
+            Assert.IsNotNull(borders.AllPen);
+            Assert.IsInstanceOfType(borders.AllPen, typeof(Scryber.PDF.Graphics.PDFSolidPen));
+            var penAll = borders.AllPen as PDF.Graphics.PDFSolidPen;
+            
+            //all - not set
+            Assert.IsFalse(borders.CornerRadius.HasValue);
+            
+            
+            //bottom-left : 40
+            Assert.IsTrue(borders.BottomLeftRadius.HasValue);
+            Assert.AreEqual(40, borders.BottomLeftRadius.Value.PointsValue);
+            
+            //top-right: 20
+            Assert.IsTrue(borders.TopRightRadius.HasValue);
+            Assert.AreEqual(20, borders.TopRightRadius.Value.PointsValue);
+            
+            //bottom-right 30.
+            Assert.IsTrue(borders.BottomRightRadius.HasValue);
+            Assert.AreEqual(30, borders.BottomRightRadius.Value.PointsValue);
+            
+            
+            //top-left: 10, overridden to 3rem explicitly
+            
+            var rem = Font.DefaultFontSize; //rem should use the default font size.
+            Assert.IsTrue(borders.TopLeftRadius.HasValue);
+            Assert.AreEqual(3 * rem, borders.TopLeftRadius.Value.PointsValue);
+            
+            
+        }
     }
 }
