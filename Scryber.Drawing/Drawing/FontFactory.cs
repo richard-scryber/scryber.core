@@ -636,9 +636,19 @@ namespace Scryber.Drawing
                     if(!file.Exists) continue;
 
                     var info = reader.ReadTypeface(file);
-                    
-                    if (null != info && string.IsNullOrEmpty(info.ErrorMessage))
-                        custom.AddTypefaceFonts(info);
+
+                    if (null != info && string.IsNullOrEmpty(info.ErrorMessage) && info.FontCount > 0)
+                    {
+                        foreach (var font in info.Fonts)
+                        {
+                            var family = known.Family ?? font.FamilyName;
+                            
+                            custom.AddFont(info, font, family);
+
+
+                        }
+                        //custom.AddTypefaceFonts(info);
+                    }
                 }
 
                 var defaultDir = options.DefaultDirectory;

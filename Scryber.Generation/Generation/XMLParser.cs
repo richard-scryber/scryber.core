@@ -1569,7 +1569,7 @@ namespace Scryber.Generation
 
         private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IPDFBindingExpressionFactory factory)
         {
-            using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, factory.BindingKey))
+            using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, expression))
             {
                 if (factory.BindingStage == DocumentGenerationStage.Bound)
                 {

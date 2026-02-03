@@ -7,7 +7,7 @@ complete definition of a dynamic PDF document based
 on HTML, code, cascading stylesheets,
 databinding and templates in referenced files.
 
-This framework is built entirely in .NETCore 5 and is
+This framework is built entirely in .NET and is
 open source under the LGPL licence so you can link to
 it in commercial applications.
 
@@ -19,7 +19,7 @@ Getting Started
 There's an article here about creating your first
 document on 'read the docs' here.
 
-https://scrybercore.readthedocs.io/en/latest/
+https://www.paperwork.info
 
 
 

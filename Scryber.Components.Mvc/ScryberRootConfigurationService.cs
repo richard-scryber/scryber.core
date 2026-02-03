@@ -5,6 +5,9 @@ using Scryber.Options;
 
 namespace Scryber.Components.Mvc
 {
+    /// <summary>
+    /// Access to the configuration via a dependency injection service.
+    /// </summary>
     internal class ScryberRootConfigurationService : IScryberConfigurationService
     {
 

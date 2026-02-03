@@ -456,9 +456,7 @@ namespace Scryber.PDF.Resources
             {
                 if (context.ShouldLogDebug)
                     context.TraceLog.Add(TraceLevel.Debug, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
-                else //Temporary to check
-                    context.TraceLog.Add(TraceLevel.Message, "Font Definition", "Rendering the CID map stream with encoding " + this.Widths.Encoding.ToString());
-
+                
                 PDFCompositeFontWidths comp = (PDFCompositeFontWidths)widths;
 
                 PDFObjectRef tounicode = writer.BeginObject();

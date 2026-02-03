@@ -898,11 +898,10 @@ namespace Scryber.Components
 
         #endregion
 
-
         //
-        // IXMLParsedDocument interface (explicit implementation)
+        // logging and performance intance management
         //
-
+        
         #region public bool AppendTraceLog {get;set;}
 
         private bool _appendTraceLog = false;
@@ -924,13 +923,13 @@ namespace Scryber.Components
 
         #endregion
 
-        #region Scryber.PDFTraceLog TraceLog {get;set;}
+        #region Scryber.PDFTraceLog TraceLog {get; protected set;} + support methods
 
         private TraceLog _log;
         private Scryber.Logging.CollectorTraceLog _collector;
 
         /// <summary>
-        /// Gets or sets the log  for this document.
+        /// Gets the log  for this document.
         /// </summary>
         public TraceLog TraceLog
         {
@@ -951,12 +950,31 @@ namespace Scryber.Components
         }
 
         /// <summary>
-        /// IParsed Document implementation to set the TraceLog
+        /// IParsed Document implementation to set the TraceLog. This will overwrite any existing trace log instance in this document.
         /// </summary>
-        /// <param name="log"></param>
+        /// <param name="log">The log to set. No checks are made on instance validity.</param>
         void IParsedDocument.SetTraceLog(TraceLog log)
         {
             this.TraceLog = log;
+        }
+
+        /// <summary>
+        /// Add a(nother) trace logging implementation to the document.
+        /// If there is an existing log on the document, then it will be maintained and the new log appended.
+        /// </summary>
+        /// <param name="log">The log to add</param>
+        /// <exception cref="ArgumentNullException">If the log to be added is null.</exception>
+        public void AddTraceLog(TraceLog log)
+        {
+            if(null == log)
+                throw new ArgumentNullException(nameof(log));
+            
+            var orig = this.TraceLog;
+
+            if (null == orig)
+                this._log = log;
+            else
+                this._log = new Logging.CompositeTraceLog(orig, log);
         }
 
         /// <summary>
@@ -984,6 +1002,9 @@ namespace Scryber.Components
             return log;
         }
 
+        /// <summary>
+        /// Makes sure the collector log (for appending the trace log output to the document) is present in the current TraceLog.
+        /// </summary>
         protected void EnsureCollectorLog()
         {
             var currentLog = this.TraceLog;
@@ -1166,7 +1187,7 @@ namespace Scryber.Components
 
         //
         // Component registration
-        // Designed to impove the look up of components
+        // Designed to improve the lookup of components
         // 
 
         #region public void RegisterComponent(Component comp)
@@ -1454,8 +1475,7 @@ namespace Scryber.Components
         }
 
         #endregion
-
-
+        
         #region protected virtual PDFResource CreateAndAddResource(string resourceType, string resourceKey)
 
         /// <summary>

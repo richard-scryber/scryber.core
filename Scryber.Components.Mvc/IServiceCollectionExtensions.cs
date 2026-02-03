@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Scryber.Components.Mvc
 {
-    public static class IServiceCollectionExternsions
+    public static class IServiceCollectionExtensions
     {
         public static IServiceCollection AddScryberServices(this IServiceCollection collection, IConfiguration config)
         {

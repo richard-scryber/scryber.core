@@ -2288,6 +2288,59 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(2, doc.SharedResources.Count); //Font and image
                 
             }
+            
+            Assert.Inconclusive("Need to validate the pattern");
+
+        }
+        
+        [TestMethod]
+        public void PngImageFromPathAsABackgroundWithCover()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            h2 = new Head2();
+            h2.Contents.Add("Appears on the second page");
+            h2.Style.PageStyle.BreakBefore = true;
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.Fill; //Should fill the destination
+            // pg.Style.Background.PatternXSize = 100;
+            // pg.Style.Background.PatternYSize = 150;
+            // pg.Style.Background.PatternXStep = 200;
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_10_ImageAsBackgroundFromAFilePathCover.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(2, doc.SharedResources.Count); //Font and image
+                
+            }
+            
+            Assert.Inconclusive("Need to validate the pattern");
 
         }
         

@@ -14,7 +14,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Options\" />
     <Folder Include="Caching\" />
     <Folder Include="PDF\Resources\" />
     <Folder Include="PDF\Native\" />

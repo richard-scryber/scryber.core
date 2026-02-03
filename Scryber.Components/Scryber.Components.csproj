@@ -6,19 +6,25 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.2.0.1</PackageVersion>
+    <PackageVersion>9.2.0.3</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
-    <Copyright>Richard Hewitson 2025</Copyright>
+    <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.2.0.1
+    <PackageReleaseNotes>9.2.0.3
+Fixed styling issue when components are hidden using css.
+
+9.2.0.2
+Fixed repeating raster background images with cover size
+
+9.2.0.1
 Added support for repeating SVG background images from Data urls
         
 9.2.0.0
-Public release will all added features from the betas. Too many to list, but consult the documentation here https://www.paperworkday.info/learning/ and the refererence section here https://www.paperworkday.info/learning/
+Public release will all added features from the betas. Too many to list, but consult the documentation here https://www.paperworkday.info/learning/ and the refererence section here https://www.paperworkday.info/reference/
         
 9.1.2-rc.5/6
 Couple of fixes for overflowing tables in a kept together parent, and svg font-weight bold and light are now supported and fixed an issue with the reverse function.
@@ -173,7 +179,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>9.2.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/PaperworkLogoTransparent.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/PaperworkLogoTransparent.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
@@ -201,10 +207,10 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <Compile Remove="Web\**" />
     <EmbeddedResource Remove="Web\**" />
     <None Remove="Web\**" />
-    <None Include="..\ScyberLogo2_alpha_small.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+<!--    <None Include="PaperworkLogoTransparent.png">-->
+<!--      <Pack>True</Pack>-->
+<!--      <PackagePath></PackagePath>-->
+<!--    </None>-->
     <None Remove="PDF\" />
     <None Remove="PDF\Layout\" />
     <None Remove="PDF\Secure\" />
@@ -289,7 +295,6 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="PDF\Secure\" />
-    <Folder Include="Options\" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

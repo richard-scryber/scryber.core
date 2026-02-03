@@ -4,22 +4,25 @@
     <TargetFrameworks>net6.0;net8.0;netstandard2.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.2.0.0</PackageVersion>
-    <Version>9.2.0.0</Version>
+    <PackageVersion>9.2.0.3</PackageVersion>
+    <Version>9.2.0.3</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing, or just code it. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 
 This framework is built entirely in .NET6 and Net Standard 2.0 and is released under the LGPL licence so you can use to it in commercial applications.</Description>
-    <Copyright>Richard Hewitson 2025</Copyright>
+    <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
       <PackageReadmeFile>README.md</PackageReadmeFile>
       <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.2.0.0
+    <PackageReleaseNotes>9.2.0.3
+Updated to match the release of the Scryber.Core library
+        
+9.2.0.0
 Public release of the DotNet 9.0 version of the core library with extensive enhancements to HTML components, data binding and css and svg calculations.
         
 9.1.0.7-beta
@@ -114,7 +117,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet_6</PackageTags>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.2.0.0</FileVersion>
+    <FileVersion>9.2.0.3</FileVersion>
       <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <Title>Scryber MVC Extensions</Title>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/PaperworkLogoTransparent.png</PackageIconUrl>
@@ -125,7 +128,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
-    <PackageReference Include="Scryber.Core" Version="9.2.0" />
+    <PackageReference Include="Scryber.Core" Version="9.2.0.3" />
   </ItemGroup>
       
   <ItemGroup>
@@ -138,10 +141,6 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       </None>
       <None Include="readme.txt" pack="true">
       <IncludeInPackage>true</IncludeInPackage>
-    </None>
-    <None Include="..\ScyberLogo2_alpha_small.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
     </None>
       <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
           <IncludeInPackage>true</IncludeInPackage>

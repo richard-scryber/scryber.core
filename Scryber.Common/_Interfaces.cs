@@ -235,18 +235,6 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IOptimizeComponent 
-
-    /// <summary>
-    /// Interface for the compression flag
-    /// </summary>
-    public interface IOptimizeComponent : IComponent
-    {
-        bool Compress { get; set; }
-    }
-
-    #endregion
-
     #region public interface INamingContainer
 
     /// <summary>

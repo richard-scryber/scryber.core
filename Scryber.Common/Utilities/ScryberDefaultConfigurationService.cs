@@ -121,7 +121,7 @@ namespace Scryber.Utilities
             }
         }
 
-        internal bool TryGetConfiguration(out IConfiguration config)
+        internal virtual bool TryGetConfiguration(out IConfiguration config)
         {
             config = ServiceProvider.GetService<IConfiguration>();
             return null != config;
