@@ -80,6 +80,18 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> BorderCornerRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"crad", BorderItemKey
                                                                 , new StyleKeyFlattenHorizontalValue());
 
+        public static readonly StyleKey<Unit> BorderTopLeftRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"tlrd", BorderItemKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> BorderTopRightRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"trrd", BorderItemKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> BorderBottomLeftRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"blrd", BorderItemKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> BorderBottomRightRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"brrd", BorderItemKey
+                                                                , new StyleKeyFlattenHorizontalValue());
+
         public static readonly StyleKey<Dash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemKey);
 
         public static readonly StyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", BorderItemKey);

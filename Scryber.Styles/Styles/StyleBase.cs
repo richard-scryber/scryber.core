@@ -1583,12 +1583,23 @@ namespace Scryber.Styles
                                                               StyleKeys.BorderBottomDashKey,
                                                               baseColor, baseWidth, baseLine, baseDash);
             Unit? corner;
+            Unit? topLeft = null, topRight = null, bottomLeft = null, bottomRight = null;
 
             StyleValue<Unit> cornerValue;
             if (this.TryGetValue(StyleKeys.BorderCornerRadiusKey, out cornerValue))
                 corner = cornerValue.Value(this);
             else
                 corner = null;
+
+            if (this.TryGetValue(StyleKeys.BorderTopLeftRadiusKey, out cornerValue))
+                topLeft = cornerValue.Value(this);
+            if (this.TryGetValue(StyleKeys.BorderTopRightRadiusKey, out cornerValue))
+                topRight = cornerValue.Value(this);
+            if (this.TryGetValue(StyleKeys.BorderBottomLeftRadiusKey, out cornerValue))
+                bottomLeft = cornerValue.Value(this);
+            if (this.TryGetValue(StyleKeys.BorderBottomRightRadiusKey, out cornerValue))
+                bottomRight = cornerValue.Value(this);
+
 
             if (null == left)
                 side |= Sides.Left;
@@ -1607,7 +1618,11 @@ namespace Scryber.Styles
                 RightPen = right,
                 TopPen = top,
                 BottomPen = bottom,
-                CornerRadius = corner
+                CornerRadius = corner,
+                TopLeftRadius = topLeft,
+                TopRightRadius = topRight,
+                BottomLeftRadius = bottomLeft,
+                BottomRightRadius = bottomRight
             };
 
             return full;

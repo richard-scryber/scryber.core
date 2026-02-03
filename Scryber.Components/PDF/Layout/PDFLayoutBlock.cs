@@ -1274,7 +1274,12 @@ namespace Scryber.PDF.Layout
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect);
                     
-                    hasClipping = this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                    Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+                    hasClipping = this.OutputClipping(context, borderRect, tl, tr, bl, br, border.BorderSides, this.Position.ClipInset);
                     
                 }
                 else if(this.Position.ClipInset.IsEmpty == false)
@@ -1282,7 +1287,12 @@ namespace Scryber.PDF.Layout
                     if (logdebug)
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Setting the clipping rectangle " + borderRect + " as we have a non-zero clipping rect");
                     
-                    hasClipping  = this.OutputClipping(context, borderRect, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, border.BorderSides, this.Position.ClipInset);
+                    Unit tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                    Unit br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+
+                    hasClipping  = this.OutputClipping(context, borderRect, tl, tr, bl, br, border.BorderSides, this.Position.ClipInset);
                 }
 
                 var paintOrder = this.FullStyle.GetValue(StyleKeys.SVGGeometryPaintOrderKey, PaintOrder.Default);
@@ -1418,7 +1428,7 @@ namespace Scryber.PDF.Layout
 
                 if (null != background)
                 {
-                    this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0,
+                    this.OutputBackground(background, border,
                         context, borderRect);
                 }
 

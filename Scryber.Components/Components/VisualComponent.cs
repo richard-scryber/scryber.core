@@ -771,6 +771,98 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public PDFUnit BorderTopLeftRadius
+
+        /// <summary>
+        /// Gets or sets the border top left corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-top-left-radius", Const.PDFStylesNamespace)]
+        public Unit BorderTopLeftRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderTopLeftRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderTopLeftRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderTopRightRadius
+
+        /// <summary>
+        /// Gets or sets the border top right corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-top-right-radius", Const.PDFStylesNamespace)]
+        public Unit BorderTopRightRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderTopRightRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderTopRightRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderBottomLeftRadius
+
+        /// <summary>
+        /// Gets or sets the border bottom left corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-bottom-left-radius", Const.PDFStylesNamespace)]
+        public Unit BorderBottomLeftRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderBottomLeftRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderBottomLeftRadiusKey, value);
+            }
+        }
+
+        #endregion
+
+        #region public PDFUnit BorderBottomRightRadius
+
+        /// <summary>
+        /// Gets or sets the border bottom right corner radius of this component
+        /// </summary>
+        [PDFAttribute("border-bottom-right-radius", Const.PDFStylesNamespace)]
+        public Unit BorderBottomRightRadius
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.BorderBottomRightRadiusKey, Unit.Zero);
+                else
+                    return Unit.Zero;
+            }
+            set
+            {
+                this.Style.SetValue(StyleKeys.BorderBottomRightRadiusKey, value);
+            }
+        }
+
+        #endregion
+
         #region public LineStyle BorderStyle
 
         [PDFAttribute("border-style", Const.PDFStylesNamespace)]
