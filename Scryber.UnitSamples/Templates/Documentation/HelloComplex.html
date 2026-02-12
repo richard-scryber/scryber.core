@@ -1,0 +1,16 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <!-- Give it a title -->
+    <title>Hello {{user.firstName ?? "World"}}</title>
+</head>
+<!-- dynamic styling -->
+<body>
+<!-- complex expression with function support -->
+<h1>Hello, {{user.firstName ?? "World"}}</h1>
+
+<!-- custom style support -->
+<p class='intro'>
+    This is {{(user.firstName + "'s") ?? "my"}} first dynamic PDF generated with Scryber.Core.
+</p>
+</body>
+</html>

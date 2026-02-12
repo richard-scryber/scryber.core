@@ -108,6 +108,11 @@ namespace Scryber.Styles.Parsing
 
         protected bool IsExpression(string part)
         {
+            return StartsWithCSSExpression(part);
+        }
+
+        public static bool StartsWithCSSExpression(string part)
+        {
             if (part.StartsWith("var(") || part.StartsWith("calc("))
                 return true;
             else
