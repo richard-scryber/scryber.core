@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0;net9.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
@@ -266,8 +266,8 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Scryber.Core.OpenType" Version="9.2.0.0" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.13" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">

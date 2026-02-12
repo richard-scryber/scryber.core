@@ -63,7 +63,11 @@ namespace Scryber.Styles.Parsing
                     var id = reader.CurrentAttribute;
                     if (reader.ReadNextValue(';', ignoreWhiteSpace: true))
                     {
-                        defn.AddVariable(variable, reader.CurrentTextValue);
+                        if (IsExpression(reader.CurrentTextValue))
+                            AttachVariableBindingExpression(style, variable, reader.CurrentTextValue, context);
+                        else
+                            defn.AddVariable(variable, reader.CurrentTextValue);
+                        
                         return true;
                     }
                 }
@@ -89,11 +93,24 @@ namespace Scryber.Styles.Parsing
         private const string CSSVariableIdentifier = "--";
         private const int CSSVariableIdentifierLength = 2;
 
+        protected bool IsExpression(string value)
+        {
+            return CSSStyleValueParser.StartsWithCSSExpression(value);
+        }
+
+        protected void AttachVariableBindingExpression(Style style, string variable, string value, ContextBase context)
+        {
+            StyleVariableExpression expression = new StyleVariableExpression(variable, value);
+            style.DataBinding += expression.BindValue;
+            
+            style.AddVariable(expression);
+        }
+
         protected bool IsVariableName(CSSStyleItemReader reader, out string name)
         {
             if (reader.CurrentAttribute.StartsWith(CSSVariableIdentifier))
             {
-                var queue = new Queue<string>();
+                //var queue = new Queue<string>();
 
                 name = reader.CurrentAttribute;
                 return true;

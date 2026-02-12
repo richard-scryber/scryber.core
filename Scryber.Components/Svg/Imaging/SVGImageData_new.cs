@@ -90,7 +90,7 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        public SVGPDFImageData_new(string source, SVGCanvas canvas)
+        public SVGPDFImageData(string source, SVGCanvas canvas)
             : base(ObjectTypes.ImageData, source)
         {
             _svgCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
@@ -1102,7 +1102,7 @@ namespace Scryber.Svg.Imaging
             this.Dispose(true);
         }
 
-        ~SVGPDFImageData_new()
+        ~SVGPDFImageData()
         {
             this.Dispose(false);
         }

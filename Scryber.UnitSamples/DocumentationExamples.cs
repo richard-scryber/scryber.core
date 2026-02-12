@@ -10,159 +10,71 @@ namespace Scryber.UnitSamples;
 using Scryber.Html.Components;
 
 [TestClass]
-public class TestCode : SampleBase
+public class DocumentationExamples : SampleBase
 {
     [TestMethod]
-    public void JustATest()
+    public void QuickStartHello()
     {
+        var path = GetTemplatePath("Documentation", "hello.html");
+        using var doc = Document.ParseDocument(path);
         
+        doc.Params["user"] = new
+        {
+            firstName = "John", lastName = "Smith", sightImpared = true
+            
+        };
+        
+        
+        using var ms = DocStreams.GetOutputStream("HelloWorld.pdf");
+        doc.SaveAsPDF(ms);
 
-        //documents can either contain a body **or** a frameset.
-        //Not both.
-        var doc = new HTMLDocument();
-        doc.Body = new HTMLBody();
-        doc.Body.Contents.Add("All the content goes here.");
 
 
     }
     
     [TestMethod]
-    public void LargeSVGImage()
+    public void QuickStartHelloComplex()
     {
+        var path = GetTemplatePath("Documentation", "helloComplex.html");
+        using var doc = Document.ParseDocument(path);
         
-
-        //documents can either contain a body **or** a frameset.
-        //Not both.
-        var doc = new HTMLDocument();
-        doc.Body = new HTMLBody();
-        doc.Body.Contents.Add("All the content goes here.");
-        var img = new Image();
-        var path = GetTemplatePath("images", "tyre.svg", true);
-        img.Source = path;
-        img.Style.Border.Width = 1;
-        //img.Style.Size.Width = 400;
-        //img.Style.Size.Height = 300;
-        doc.Body.Contents.Add(img);
-        
-        
-        
-        using (var ms = DocStreams.GetOutputStream("ComplexSVGTyre.pdf"))
+        doc.Params["user"] = new
         {
-            doc.SaveAsPDF(ms);
-        }
+            firstName = "John", lastName = "Smith", sightImpared = true,
+            friends = new [] {
+                new
+                {
+                    firstName = "Bill", lastName = "Jones", stillFriends = true,
+                    emailAddress = "bill.jones200@nonexistant.com"
+                },
+                new { firstName = "Sarah", lastName = "Jones", stillFriends = true,
+                    emailAddress = "sarah.jones@nonexistant.com" },
+                new { firstName = "James", lastName = "Long", stillFriends = true,
+                    emailAddress = "james.longerthananyone@nonexistant.com" },
+                new { firstName = "Sam", lastName = "Elsewhere", stillFriends = false,
+                    emailAddress = "sam@notyou.co.uk" }
+            }
+            
+        };
         
-        Assert.Inconclusive("Need to validate the size and layout.");
+        doc.Params["brand"] = new
+        {
+            isBranded = true,
+            color = "rgb(0, 168, 161)",
+            logoUrl = "https://www.paperworkday.info/assets/PaperworkLogoOnly.png",
+            strapLine = "<h2>paperwork</h2>" +
+                        "<span>smart document creation and automation!</span>"
+        };
+
+        doc.Params["--brand-color"] = "rgb(0, 161, 116)";
+
+        doc.AppendTraceLog = true;
+        
+        using var ms = DocStreams.GetOutputStream("HelloWorldComplex.pdf");
+        doc.SaveAsPDF(ms);
+
+
+
     }
     
-    
-
-    [TestMethod]
-    public void ProjectStatusReport()
-    {
-
-        var path = GetTemplatePath("ProjectStatusReport", "project-status-report.html", true);
-
-        var doc = Document.ParseDocument(path);
-        var datapath = GetTemplatePath("ProjectStatusReport", "project-status-sample.json");
-        var dataContent = System.IO.File.ReadAllText(datapath);
-        var data = System.Text.Json.JsonDocument.Parse(dataContent);
-        using (var ms = DocStreams.GetOutputStream("ProjectStatusReport.pdf"))
-        {
-            doc.Params["model"] = data.RootElement;
-            doc.SaveAsPDF(ms);
-        }
-    }
-    
-    
-    [TestMethod]
-    public void MonthlySalesReport()
-    {
-
-        var path = GetTemplatePath("MonthlySalesReport", "monthly-sales-report.html", true);
-
-        var doc = Document.ParseDocument(path);
-        var datapath = GetTemplatePath("MonthlySalesReport", "monthly-sales-sample.json");
-        var dataContent = System.IO.File.ReadAllText(datapath);
-        var data = System.Text.Json.JsonDocument.Parse(dataContent);
-        using (var ms = DocStreams.GetOutputStream("MonthlySalesReport.pdf"))
-        {
-            doc.Params["model"] = data.RootElement;
-            doc.SaveAsPDF(ms);
-        }
-    }
-    
-    
-    [TestMethod]
-    public void ExpressionsCribSheet()
-    {
-        var preamble = @"<div xmlns='http://www.w3.org/1999/xhtml' class='content' >
-    <h2 class='sub-title' >
-      <img src='/images/paperworklogoonly.png' style='width: 28pt; height: 25pt;' />
-      <span>About</span></h2>
-    <p contenteditable='true' style='margin-top: 20pt;'>A <span class='pwk-name' >paperwork</span> template is designed to be dynamic, separating the data from the structure and the style.<br/>
-       Databinding is the mechanism used to include that data content into the document layout as part of the generation process.
-    </p>
-    <p>To enable this in <span class='pwk-name' >paperwork</span>, expressions are used to perform multiple calculations and evaluations on the current data 'model'.
-    </p>
-    <h4 class='group-title' style='margin-top: 20pt; width: calc(100% - 40pt);' title='Relevant Concepts'>Relevant Concepts</h4>
-    <p>In order to get the best out of this document, you should be familiar with the following technologies:
-    </p>
-    <ul>
-      <li>HTML (including XHTML and namespaces).</li>
-      <li>Cascading styles sheets.</li>
-      <li>JSON Object notation.</li>
-    </ul>
-</div>";
-        
-        var path = GetTemplatePath("ExpressionsCribSheet", "expressions.html", true);
-
-        var doc = Document.ParseDocument(path);
-        var datapath = GetTemplatePath("ExpressionsCribSheet", "expressions.json", true);
-        var dataContent = System.IO.File.ReadAllText(datapath);
-        var data = System.Text.Json.JsonDocument.Parse(dataContent);
-        var _layouts = new Dictionary<string, string>();
-        _layouts.Add("preamble", preamble);
-        
-        doc.Params["func"] = data.RootElement;
-        doc.Params["_layouts"] = _layouts;
-        
-        
-        
-        datapath = GetTemplatePath("ExpressionsCribSheet", "model.json", true);
-        dataContent = System.IO.File.ReadAllText(datapath);
-        data = System.Text.Json.JsonDocument.Parse(dataContent);
-        doc.Params["model"] = data.RootElement;
-        
-        using (var ms = DocStreams.GetOutputStream("ExpressionsCribSheet.pdf"))
-        {
-            doc.SaveAsPDF(ms);
-        }
-    }
-    
-    
-    [TestMethod]
-    public void Expressions_JustIndex_CribSheet()
-    {
-        
-        var path = GetTemplatePath("ExpressionsCribSheet", "expressions_justindex.html", true);
-
-        var doc = Document.ParseDocument(path);
-        var datapath = GetTemplatePath("ExpressionsCribSheet", "expressions.json", true);
-        var dataContent = System.IO.File.ReadAllText(datapath);
-        var data = System.Text.Json.JsonDocument.Parse(dataContent);
-        
-        doc.Params["func"] = data.RootElement;
-        
-        
-        
-        datapath = GetTemplatePath("ExpressionsCribSheet", "model.json", true);
-        dataContent = System.IO.File.ReadAllText(datapath);
-        data = System.Text.Json.JsonDocument.Parse(dataContent);
-        doc.Params["model"] = data.RootElement;
-        
-        using (var ms = DocStreams.GetOutputStream("Expressions_JustIndexCribSheet.pdf"))
-        {
-            doc.SaveAsPDF(ms);
-        }
-    }
 }

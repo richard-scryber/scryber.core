@@ -164,7 +164,7 @@ namespace Scryber.Imaging
         }
 
 		private bool _logFulfilled = false;
-		private ImageType _imageType;
+		
 
 		private bool EnsureFulfilled(Logging.TraceLog log)
 		{

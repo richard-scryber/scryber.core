@@ -1,16 +1,95 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
-    <!-- Give it a title -->
+    <!-- Bind some meta-data -->
     <title>Hello {{user.firstName ?? "World"}}</title>
-</head>
-<!-- dynamic styling -->
-<body>
-<!-- complex expression with function support -->
-<h1>Hello, {{user.firstName ?? "World"}}</h1>
 
-<!-- custom style support -->
-<p class='intro'>
+    <!-- Add some remote fonts from google -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet" />
+
+    <!-- Some icons from font-awesome -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.css' />
+
+    <!-- Add relative (or remote) CSS for styles -->
+    <link rel="stylesheet" href="hello_styles.css" type="text/css" />
+    
+    <style>
+        /* override the style sheet based on dynamic values */
+        
+        /* custom font loaded */
+        body {
+            font-family: 'Roboto', Arial, Helvetica, sans-serif;
+        }
+        
+        /* dynamic logo colors */
+        header > .logo {
+            color: var(brand.color, --brand-color);
+            border-bottom: solid 1px var(brand.color, --brand-color);
+            
+        }
+        
+        /* for the hello title */
+        body > h1{
+            color: var(brand.color, --brand-color);
+        }
+        
+        /* for the friends */
+        body > h4{
+            color: var(brand.color, --brand-color);
+        }
+    </style>
+
+</head>
+<!-- dynamic styling for accessibility -->
+<body class='{{if(user.sightImpared,"accessible","normal")}}'>
+
+<header >
+    <!-- hide the header content if there is no branding-->
+    <div class="logo" style="display: calc(if(brand.isbranded, 'block', 'none'));">
+        <!-- dynamic remote file loading for the logo -->
+        <img src='{{brand.logoUrl}}'/>
+    
+        <!-- bound complex html content  -->
+        <div class='strapline' data-content-type='text/html' data-content='{{brand.strapLine}}' ></div>
+    </div>
+</header>
+
+<h1>Hello, {{user.firstName ?? "World"}}!</h1>
+
+<!-- custom style support using a variable, but can also be a bound expression -->
+<p class='intro' >
     This is {{(user.firstName + "'s") ?? "my"}} first dynamic PDF generated with Scryber.Core.
 </p>
+
+
+<!--  dynamically store a calculated value of friends who are active in a variable -->
+<var data-id='activeFriends' data-value='{{selectWhere(user.friends, this.stillFriends == true)}}' />
+
+<!-- check if we have any active friends -->
+{{#if count(activeFriends) > 0}}
+    
+    <!-- we do, so store the friends alphabetically last name and first name -->
+    <var data-id='activeFriendsByName' data-value='{{sortBy(activeFriends, this.lastName + " " + this.firstName)}}' />
+    
+    
+    <!-- aggregate functions to count the number of the collection of friends -->
+    <h4>You have {{count(activeFriendsByName)}} good friends, {{user.firstName}}:</h4>
+    
+    <!-- loop through each one, setting the current data -->
+    {{#each activeFriendsByName}}
+        <div class='friend-card'>
+            <div class='details'>
+                <!-- dynamic colored icon -->
+                <i class='far fa-user' style="color: var(brand.color, --brand-color); padding-right:10pt"></i> 
+                <!-- a link to, and full name of the friend -->
+                <a href="{{concat('mailto:', this.emailAddress)}}" ><span class='name' >{{this.lastName + ", " + this.firstName}}</span></a>
+            </div>
+        </div>
+    {{/each}}
+
+{{else}}
+    <!-- finally a fallback if none -->
+    <p class='muted'>You have no friends {{user.firstName}}, please try and get some!</p>
+{{/if}}
+
 </body>
 </html>

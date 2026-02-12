@@ -17,7 +17,7 @@ public class LayoutEngineTemplateFrame : LayoutEngineFrame
     
     protected PDFFile ParentFile { get; set; }
 
-    private PDFFramesetLayoutDocument LayoutDocument { get; set; }
+    //private PDFFramesetLayoutDocument LayoutDocument { get; set; }
 
     public LayoutEngineTemplateFrame(LayoutEngineFrameset parent, HTMLFrame forFrame, PDFFile parentFile, PDFLayoutContext context)
         : base(parent, forFrame, context)
