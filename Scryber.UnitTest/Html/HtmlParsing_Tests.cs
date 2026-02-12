@@ -161,8 +161,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void LoadHtmlFromSource()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HtmlFromSource.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/HtmlFromSource.html");
             using (var doc = Document.ParseDocument(path))
             {
                 var defn = new StyleDefn("h1.border");
@@ -185,8 +184,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void HelloWorld()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
             using (var doc = Document.ParseDocument(path))
             {
                 
@@ -203,8 +201,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void MultipleImageReferences()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/MultipleImageReferences.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/MultipleImageReferences.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -529,8 +526,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyAsASection()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyheadfoot.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodyheadfoot.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -590,8 +586,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithBinding()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithBinding.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodyWithBinding.html");
             
             var model = new
             {
@@ -724,8 +719,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithJsonBinding()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithBinding.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodyWithBinding.html");
             
             var modeljson = "{\r\n" +
                 "\"headerText\" : \"Bound Header\"," +
@@ -825,8 +819,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithExpressionBinding()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithExpressionBinding.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodyWithExpressionBinding.html");
             var model = new
             {
                 headerText = "Bound Header",
@@ -950,8 +943,7 @@ namespace Scryber.Core.UnitTests.Html
             var client = new System.Net.Http.HttpClient();
             var data = client.GetByteArrayAsync(imagepath).Result;
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LocalAndRemoteImages.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LocalAndRemoteImages.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -1000,8 +992,7 @@ namespace Scryber.Core.UnitTests.Html
             var data = client.GetByteArrayAsync(imagepath).Result;
 
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LocalAndRemoteImages.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LocalAndRemoteImages.html");
 
 
             using (var doc = Document.ParseDocument(path))
@@ -1051,8 +1042,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyTemplating()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodytemplating.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodytemplating.html");
             
             dynamic[] all = new dynamic[100];
             int total = 0;
@@ -1101,8 +1091,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyTemplatingWithJson()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodytemplating.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodytemplating.html");
             StringBuilder content = new StringBuilder();
 
             
@@ -1182,8 +1171,7 @@ namespace Scryber.Core.UnitTests.Html
             };
 
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/displaynone.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/displaynone.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -1210,8 +1198,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void TopAndTailed()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/topandtailed.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/topandtailed.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["title"] = "Title in code";
@@ -1237,8 +1224,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void TextDecoration()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/textdecoration.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/textdecoration.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -1723,8 +1709,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void HtmlIFrameFragments()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/BodyFraming.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/BodyFraming.html");
             using (var doc = Document.ParseDocument(path))
             {
                 var model = new
@@ -1776,8 +1761,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void HtmlPlaceholderFragments()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/BodyWithPlaceholder.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/BodyWithPlaceholder.html");
             using (var doc = Document.ParseDocument(path))
             {
                 var model = new
@@ -1821,8 +1805,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void BodyWithPageNumbers()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/bodyWithPageNums.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/bodyWithPageNums.html");
             var model = new
             {
                 headerText = "Bound Header",
@@ -1864,8 +1847,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void Html5Tags()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Html5AllTags.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Html5AllTags.html");
             
             using (var doc = Document.ParseDocument(path))
             {
@@ -1892,8 +1874,7 @@ namespace Scryber.Core.UnitTests.Html
         public void FontFace()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFace.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFace.html");
             
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -1978,8 +1959,7 @@ namespace Scryber.Core.UnitTests.Html
         public void FontFaceAveryLocal()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceAvery.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceAvery.html");
             
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -2035,8 +2015,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void FontFaceBase64()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceBase64.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceBase64.html");
             
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -2122,8 +2101,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public async Task FontFaceAsync()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFace.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFace.html");
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
 
@@ -2207,8 +2185,7 @@ namespace Scryber.Core.UnitTests.Html
         public async Task FontFaceBase64Async()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceBase64.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceBase64.html");
             
             using var doc = Document.ParseDocument(path);
             doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -2298,8 +2275,7 @@ namespace Scryber.Core.UnitTests.Html
         public void FontFaceWeightFallback()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/FontFaceFallback.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceFallback.html");
 
             using var doc = Document.ParseDocument(path);
             //doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -2443,8 +2419,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void ArticlesWithCountersHtml()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/ArticleCounters.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/ArticleCounters.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Params["title"] = "Hello World";
@@ -2597,8 +2572,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RestrictedHtml()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/RestrictedHtml.html");
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -2619,8 +2593,7 @@ namespace Scryber.Core.UnitTests.Html
         public void RestrictedWithoutPasswordHtml()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/RestrictedHtml.html");
             using (var doc = Document.ParseDocument(path))
             {
                 //Need to set this, otherwise the 
@@ -2640,8 +2613,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void RestrictedProtectedHtml()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/RestrictedHtml.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/RestrictedHtml.html");
 
             using (var doc = Document.ParseDocument(path))
             {
@@ -2972,8 +2944,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod]
         public void HTMLOrderItems()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/OrderItems.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/OrderItems.html");
             var doc = Document.ParseDocument(path);
             var service = new OrderMockService();
             var user = new User() { Salutation = "Mr", FirstName = "Richard", LastName = "Smith" };
@@ -3052,8 +3023,7 @@ namespace Scryber.Core.UnitTests.Html
         [TestMethod()]
         public void InvalidBackgroundImage()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/InvalidBackgroundImage.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/InvalidBackgroundImage.html");
             bool error = false;
             try
             {
@@ -3105,8 +3075,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LargeFileTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LargeFile.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LargeFile.html");
             var data = new
             {
                 Items = GetListItems(10000)
@@ -3198,8 +3167,7 @@ namespace Scryber.Core.UnitTests.Html
         public void JeromeTest()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/JeroemTest.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/JeroemTest.html");
             var model = new
             {
                 repeat = true,
@@ -3232,8 +3200,7 @@ namespace Scryber.Core.UnitTests.Html
         public void HahyesTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HahyesTest.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/HahyesTest.html");
             
             using (var sr = new System.IO.StreamReader(path))
             {

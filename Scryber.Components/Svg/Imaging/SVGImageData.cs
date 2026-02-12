@@ -17,7 +17,6 @@ namespace Scryber.Svg.Imaging
     /// <summary>
     /// Represents a single discreet SVG image (canvas), loaded from another source. 
     /// </summary>
-    [Obsolete("Old code for laying out SVG referenced images with various sizes and view-boxes. Using the new SVGImageData class",  true)]
     public class SVGPDFImageData : ImageVectorData, ILayoutComponent
     {
 
@@ -91,7 +90,7 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        public SVGPDFImageData_prev(string source, SVGCanvas canvas)
+        public SVGPDFImageData(string source, SVGCanvas canvas)
             : base(ObjectTypes.ImageData, source)
         {
             _svgCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
@@ -1013,7 +1012,7 @@ namespace Scryber.Svg.Imaging
             this.Dispose(true);
         }
 
-        ~SVGPDFImageData_prev()
+        ~SVGPDFImageData()
         {
             this.Dispose(false);
         }

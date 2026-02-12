@@ -46,8 +46,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_Start()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_Start.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_Start.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -181,8 +180,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_StartFixedAngle()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_StartFixedAngle.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_StartFixedAngle.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -314,8 +312,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_StartReversed()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_StartReversed.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_StartReversed.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -452,8 +449,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_StartReversedAndEnd()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_StartReversedAndEnd.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_StartReversedAndEnd.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -627,8 +623,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_End()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_End.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_End.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -777,8 +772,7 @@ namespace Scryber.Core.UnitTests.Svg
          [TestMethod]
         public void SVGMarkers_EndFixedAngle()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_EndFixedAngle.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_EndFixedAngle.html");
             
             var angle = (Math.PI / 2.0);
             
@@ -927,8 +921,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_Mid()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_Mid.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_Mid.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -1115,8 +1108,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_MidFixedAngle()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_MidFixedAngle.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_MidFixedAngle.html");
             var angle = Math.PI;
             using (var doc = Document.ParseDocument(path))
             {
@@ -1289,8 +1281,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMarkers_VariousTypes()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGMarkers_VariousTypes.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGMarkers_VariousTypes.html");
             var angle = Math.PI;
             using (var doc = Document.ParseDocument(path))
             {

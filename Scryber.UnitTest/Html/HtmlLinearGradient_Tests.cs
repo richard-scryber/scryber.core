@@ -393,8 +393,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradients.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradients.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -439,8 +438,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientTurnsTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsTurns.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradientsTurns.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -485,8 +483,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientDegreesTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsDegree.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradientsDegree.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -531,8 +528,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientRadiansTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientsRadians.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradientsRadians.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -578,8 +574,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientDistanceTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientDistances.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradientDistances.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
@@ -730,8 +725,7 @@ namespace Scryber.Core.UnitTests.Html
         public void LinearGradientRepeatingTest()
         {
             
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/LinearGradientRepeating.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/LinearGradientRepeating.html");
             using (var sr = new System.IO.StreamReader(path))
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))

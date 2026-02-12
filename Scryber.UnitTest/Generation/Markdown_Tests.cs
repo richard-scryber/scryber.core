@@ -32,7 +32,7 @@ namespace Scryber.Core.UnitTests.Generation
         [TestMethod]
         public void MarkdownToHtmlTest()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/Markdown/Markdown.md", this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("Markdown/Markdown.md");
 
             
             var content = System.IO.File.ReadAllText(path);
@@ -51,7 +51,7 @@ namespace Scryber.Core.UnitTests.Generation
         [TestMethod]
         public void MarkdownToPDFTest()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/Markdown/Markdown.md", this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("Markdown/Markdown.md");
 
             var content = System.IO.File.ReadAllText(path);
 

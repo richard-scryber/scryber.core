@@ -49,9 +49,8 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLLocalFile()
         {
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
-                this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
 
             using (Document doc = Document.ParseDocument(fullpath))
@@ -133,14 +132,11 @@ namespace Scryber.Core.UnitTests.Generation
         {
             //should be relative to the bin directory 
  
-            var relative = "../../../Content/HTML/HelloWorld.xhtml";
+            var relative = "HTML/HelloWorld.xhtml";
+            var fullpath = DocStreams.AssertGetTemplatePath(relative);
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
-            var path = System.Environment.CurrentDirectory;
-
-            var fullpath = System.IO.Path.Combine(path, relative);
-            var imgfullSrc = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, "../../../Content/HTML/Images/group.png"));
-
-            if(!System.IO.File.Exists(relative))
+            if(!System.IO.File.Exists(fullpath))
                 Assert.Inconclusive("Test cannot complete as the relative path cannot be resolved: " + fullpath);
 
             
@@ -219,7 +215,7 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLStream()
         {
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
             
 
             
@@ -301,7 +297,7 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLTextReader()
         {
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
 
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
@@ -386,7 +382,7 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXHTMLXmlReader()
         {
             
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
 
 
             
@@ -437,11 +433,11 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLStreamWithRelativePath()
         {
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
 
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
             using (var stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open))
             {
@@ -619,11 +615,11 @@ namespace Scryber.Core.UnitTests.Generation
         [TestCategory("Document")]
         public void ParseXHTMLTextReaderWithRelativePath()
         {
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
 
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
 
             
@@ -716,11 +712,11 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXHTMLXmlReaderWithRelativePath()
         {
 
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xhtml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xhtml");
 
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
 
 
@@ -777,11 +773,11 @@ namespace Scryber.Core.UnitTests.Generation
         public void ParseXMLLocalFile()
         {
 
-            var fullpath = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/HelloWorld.xml", this.TestContext);
+            var fullpath = DocStreams.AssertGetTemplatePath("HTML/HelloWorld.xml");
 
 
             //With path defined on parsing, then the image path will be relative to that file path
-            var imgfullSrc = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", this.TestContext);
+            var imgfullSrc = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
             using (Document doc = Document.ParseDocument(fullpath))
             {

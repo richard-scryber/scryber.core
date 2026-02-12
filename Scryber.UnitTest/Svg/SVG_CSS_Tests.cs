@@ -49,8 +49,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGLineCSS_Test()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLineCSS.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLineCSS.html");
             
             using (var doc = Document.ParseDocument(path))
             {

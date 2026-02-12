@@ -219,8 +219,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
 
 
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsSimple.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsSimple.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsSimple.pdf"))
@@ -386,8 +385,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
 
 
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsOffset.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsOffset.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsOffset.pdf"))
@@ -601,8 +599,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGPreserveAspectRatioWidePatterns_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioWide.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsAspectRatioWide.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioWide.pdf"))
@@ -696,8 +693,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGPreserveAspectRatioHighPatterns_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioHigh.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsAspectRatioHigh.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioHigh.pdf"))
@@ -788,8 +784,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGPreserveAspectRatioHighSlicePatterns_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioHighSlice.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsAspectRatioHighSlice.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioHighSlice.pdf"))
@@ -862,8 +857,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGPreserveAspectRatioWideSlicePatterns_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsAspectRatioWideSlice.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsAspectRatioWideSlice.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsAspectRatioWideSlice.pdf"))
@@ -942,8 +936,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGMixedContentPatterns_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGPatternsMixedContent.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGPatternsMixedContent.html");
             var doc = Document.ParseDocument(path);
 
             using (var stream = DocStreams.GetOutputStream("SVG_PatternsMixedContent.pdf"))

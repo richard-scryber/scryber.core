@@ -52,8 +52,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
@@ -85,8 +84,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryJpeg();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/Group.jpg");
 
             var data = factory.LoadImageData(doc, page, path) as ImageRasterData;
             doc.RemoteRequests.EnsureRequestsFullfilled();
@@ -123,8 +121,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryPng();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
@@ -159,8 +156,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryJpeg();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Group.jpg",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/Group.jpg");
 
             if (!io.File.Exists(path))
                 throw new io.FileNotFoundException(path);
@@ -211,8 +207,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var factory = new Scryber.Imaging.ImageFactoryPng();
             doc.ImageFactories.Add(factory);
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
 
             Image img = new Image();
             img.Source = path;
@@ -263,8 +258,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryTiff();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/groupBasic.tiff");
             
      
             if (!io.File.Exists(path))
@@ -298,8 +292,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var doc = new Document();
             var page = new Page();
             var factory = new Scryber.Imaging.ImageFactoryTiff();
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/groupBasic.tiff",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/groupBasic.tiff");
             
      
             if (!io.File.Exists(path))
@@ -840,8 +833,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 144;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/group.jpg");
 
             
             using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
@@ -958,8 +950,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 72;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.jpg");
             
             using (var stream = new System.IO.FileStream(path, io.FileMode.Open))
             {
@@ -1076,8 +1067,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var bitsPerPixel = 24; //8 x 3
 
            
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.jpg",
-                            this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/group.jpg");
 
             Scryber.Imaging.ImageFactoryJpeg factory = new ImageFactoryJpeg();
 
@@ -1111,8 +1101,7 @@ namespace Scryber.Core.UnitTests.Imaging
             var resolutionY = 72;
             var bitsPerPixel = 24; //8 x 3
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Superwide.jpeg",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/Superwide.jpeg");
             
             
 

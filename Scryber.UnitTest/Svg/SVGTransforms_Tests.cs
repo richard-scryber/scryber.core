@@ -1139,8 +1139,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationRotateDegrees()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateDegrees.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_RotateDegrees.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1287,8 +1286,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationRotateRadians()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateRadians.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_RotateRadians.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1435,8 +1433,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationTranslate()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_Translate.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_Translate.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1553,8 +1550,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationScaleOne()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_ScaleOne.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_ScaleOne.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1672,8 +1668,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationScaleBoth()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_ScaleBoth.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_ScaleBoth.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1790,8 +1785,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationSkewOneX()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewOneX.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_SkewOneX.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -1910,8 +1904,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationSkewOneY()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewOneY.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_SkewOneY.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2031,8 +2024,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationSkewBoth()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_SkewBoth.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_SkewBoth.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2150,8 +2142,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationMatrix()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_Matrix.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_Matrix.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2293,8 +2284,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGTransformOperationMultipleChained()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_MultipleChained.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_MultipleChained.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2558,8 +2548,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGTransformOperationComponents()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_TransformComponents.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_TransformComponents.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
@@ -2693,8 +2682,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGTransformRotateOrigins()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGTransform_RotateOrigins.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGTransform_RotateOrigins.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;

@@ -91,8 +91,7 @@ namespace Scryber.Core.UnitTests.Svg
             var page = new Page() { Margins = 10};
             doc.Pages.Add(page);
             
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/Chart.svg", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/Chart.svg");
 
             var image = new Image() { Source = path, Width = 200, Height = 200 };
             page.Contents.Add(image);
@@ -127,8 +126,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefined_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefined.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImageAllDefined.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -190,8 +188,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedDouble_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefinedDouble.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImageAllDefinedDouble.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -262,8 +259,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedTwice_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefined.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImageAllDefined.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -400,8 +396,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedProportional_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefinedProportional.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImageAllDefinedProportional.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -535,8 +530,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedImageAllDefinedProportionalSlice_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImageAllDefinedProportionalSlice.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImageAllDefinedProportionalSlice.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -671,8 +665,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_01_AllSizesDefined_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_01_AllDefined.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_01_AllDefined.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -717,8 +710,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_02_AllSizesNonProportional_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_02_AllDefinedNonProportional.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_02_AllDefinedNonProportional.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -761,8 +753,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_03_SVGBoth_NoImageSizes_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_03_SVGBoth_NoImageSize.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_03_SVGBoth_NoImageSize.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -806,8 +797,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_04_SVGBoth_ImageWidthOnly_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_04_SVGBoth_ImageWidthOnly.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_04_SVGBoth_ImageWidthOnly.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -862,8 +852,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_05_SVGBoth_ImageHeightOnly_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_05_SVGBoth_ImageHeightOnly.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_05_SVGBoth_ImageHeightOnly.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -907,8 +896,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_06_SVGViewBox_NoImageSize_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_06_SVGViewBox_NoImageSize.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_06_SVGViewBox_NoImageSize.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -963,8 +951,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_07_SVGViewBox_ImageBoth_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_07_SVGViewBox_ImageBoth.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_07_SVGViewBox_ImageBoth.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -1018,8 +1005,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_08_SVGViewBox_ImageHeight_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_08_SVGViewBox_ImageHeight.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_08_SVGViewBox_ImageHeight.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -1073,8 +1059,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_09_SVGViewBox_ImageWidth_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_09_SVGViewBox_ImageWidth.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_09_SVGViewBox_ImageWidth.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -1128,8 +1113,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_10_SVGSize_NoImageSize_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_10_SVGSize_NoImageSize.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_10_SVGSize_NoImageSize.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -1183,8 +1167,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_11_SVGSize_ImageWidth_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_11_SVGSize_ImageWidth.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_11_SVGSize_ImageWidth.html");
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
 
@@ -1238,8 +1221,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_12_SVGSize_ImageHeight_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_12_SVGSize_ImageHeight.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_12_SVGSize_ImageHeight.html");
             
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
@@ -1294,8 +1276,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_13_SVGSize_ImageBoth_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_13_SVGSize_ImageBoth.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_13_SVGSize_ImageBoth.html");
             
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
@@ -1350,8 +1331,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_14_SVGNone_ImageBoth_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_14_SVGNone_ImageBoth.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_14_SVGNone_ImageBoth.html");
             
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
@@ -1406,8 +1386,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_15_SVGViewBoxAndWidth_ImageNone_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_15_SVGViewBoxAndWidth_NoImageSize.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_15_SVGViewBoxAndWidth_NoImageSize.html");
             
             var doc = Document.ParseDocument(path);
             RenderContext context = null;
@@ -1464,8 +1443,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGReferencedSizing_16_SVGViewBoxAndHeight_ImageNone_Test()
         {
-            var path = DocStreams.AssertGetContentPath(
-                "../../Scryber.UnitTest/Content/SVG/SVGReferencedImage_16_SVGViewBoxAndHeight_NoImageSize.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGReferencedImage_16_SVGViewBoxAndHeight_NoImageSize.html");
             
             var doc = Document.ParseDocument(path);
             RenderContext context = null;

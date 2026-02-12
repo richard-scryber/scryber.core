@@ -165,7 +165,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGRadialGradients2Color.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGRadialGradients2Color.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_RadialGradients2Color.pdf"))

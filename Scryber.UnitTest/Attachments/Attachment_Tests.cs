@@ -275,7 +275,7 @@ namespace Scryber.Core.UnitTests.Attachments
             pg.Style.OverlayGrid.GridSpacing = 10;
             pg.Style.OverlayGrid.GridMajorCount = 5;
             
-            var imgFile = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/group.png", TestContext);
+            var imgFile = DocStreams.AssertGetTemplatePath("HTML/Images/group.png");
             var binary = System.IO.File.ReadAllBytes(imgFile);
             var data = new PDFEmbeddedFileData("group.png", binary);
 

@@ -47,8 +47,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGSimple()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGSimple.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGSimple.html");
             using (var doc = Document.ParseDocument(path))
             {
                 using (var stream = DocStreams.GetOutputStream("SVGSimple.pdf"))
@@ -92,8 +91,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestMethod]
         public void SVGComponents()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGComponents.html",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGComponents.html");
             using (var doc = Document.ParseDocument(path))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
@@ -598,8 +596,7 @@ namespace Scryber.Core.UnitTests.Svg
             try
             {
 
-                var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/Chart.svg",
-                    this.TestContext);
+                var path = DocStreams.AssertGetTemplatePath("SVG/Chart.svg");
                 svgString = System.IO.File.ReadAllText(path);
 
                 var component = Document.Parse(new StringReader(svgString), ParseSourceType.DynamicContent);

@@ -223,7 +223,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradients2ColorHorizontal.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLinearGradients2ColorHorizontal.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutput2ColorHorizontal.pdf"))
@@ -561,7 +561,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradients2ColorTurning.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLinearGradients2ColorTurning.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutput2ColorTurning.pdf"))
@@ -796,7 +796,7 @@ namespace Scryber.Core.UnitTests.Svg
         [TestCategory("SVG")]
         public void SVGLinearGradientLookupStyleTest()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradientLookupStyles.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLinearGradientLookupStyles.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutputLookupStyles.pdf"))
@@ -1054,7 +1054,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradients2Color45Degree.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLinearGradients2Color45Degree.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutput2Color45Degrees.pdf"))
@@ -1392,7 +1392,7 @@ namespace Scryber.Core.UnitTests.Svg
         public void SVGLinearGradientWith2Color45DegreeReflect_Test()
         {
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/SVG/SVGLinearGradients2Color45DegreeReflect.html", TestContext);
+            var path = DocStreams.AssertGetTemplatePath("SVG/SVGLinearGradients2Color45DegreeReflect.html");
             var doc = Document.ParseDocument(path);
             
             using(var stream = DocStreams.GetOutputStream("SVG_LinearGradientOutput2Color45DegreesReflect.pdf"))

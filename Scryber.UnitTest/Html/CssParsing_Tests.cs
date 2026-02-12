@@ -461,8 +461,7 @@ body.grey div.reverse{
         {
             //This is a minimised version of the styles above
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/CSS/include.min.css",
-                this.TestContext);
+            var path = DocStreams.AssertGetTemplatePath("HTML/CSS/include.min.css");
             var css = System.IO.File.ReadAllText(path);
 
             var cssparser = new Scryber.Styles.Parsing.CSSStyleParser(css, null);

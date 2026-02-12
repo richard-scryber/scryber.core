@@ -66,7 +66,7 @@ namespace Scryber.Core.UnitTests.Binding
             {
                 var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
 
-                var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/Toroid24.jpg", this.TestContext);
+                var path = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.jpg");
 
                 var imgReader = Scryber.Imaging.ImageReader.Create();
                 ImageData data;
@@ -234,7 +234,7 @@ namespace Scryber.Core.UnitTests.Binding
             var imgReader = Scryber.Imaging.ImageReader.Create();
 
 
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/Content/HTML/Images/LongRedBar.png", this.TestContext); ;
+            var path = DocStreams.AssertGetTemplatePath("HTML/Images/LongRedBar.png"); ;
 
             path = System.IO.Path.GetFullPath(path);
 
