@@ -48,7 +48,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
         public void ConfigClassInitialize()
         {
-            var path = DocStreams.AssertGetContentPath("../../Scryber.UnitTest/scrybersettings.json", this.TestContext);
+            var path = System.IO.Path.Combine(DocStreams.GetTestProjectDirectory(), "scrybersettings.json");
             
             var builder = new ConfigurationBuilder()
                                 .AddJsonFile(path, optional: false, reloadOnChange: false);

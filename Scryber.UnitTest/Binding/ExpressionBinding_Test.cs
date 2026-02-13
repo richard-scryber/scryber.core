@@ -967,15 +967,14 @@ namespace Scryber.Core.UnitTests.Binding
         public void BindCribsheetExpressions_PerformanceTest()
         {
             //var path = "../../../Content/HTML/CribSheet/";
-            var path = DocStreams.AssertGetDirectoryPath("../../Scryber.UnitTest/Content/HTML/CribSheet/",
-                this.TestContext);
-            var content = File.ReadAllText(path + "CribSheet-Expressions.txt");
+            var path = DocStreams.AssertGetTemplateDirectory("HTML/CribSheet");
+            var content = File.ReadAllText(System.IO.Path.Combine(path, "CribSheet-Expressions.txt"));
             Assert.IsNotNull(content);
 
-            var style = File.ReadAllText(path + "Cribsheet-Expressions-CSS.txt");
+            var style = File.ReadAllText(System.IO.Path.Combine(path, "Cribsheet-Expressions-CSS.txt"));
             Assert.IsNotNull(style);
 
-            var json = File.ReadAllText(path + "CribSheet-Expressions-JSON.txt");
+            var json = File.ReadAllText(System.IO.Path.Combine(path, "CribSheet-Expressions-JSON.txt"));
             Assert.IsNotNull(json);
 
             var model = System.Text.Json.JsonDocument.Parse(json);

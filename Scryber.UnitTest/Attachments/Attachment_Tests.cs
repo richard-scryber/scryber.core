@@ -43,8 +43,8 @@ namespace Scryber.Core.UnitTests.Attachments
         [TestMethod]
         public void TestIconAttachment()
         {
-            var path = "../../Scryber.UnitTest/Content/Markdown/Markdown.md";
-            path = DocStreams.AssertGetContentPath(path, TestContext);
+            var path = "Markdown/Markdown.md";
+            path = DocStreams.AssertGetTemplatePath(path);
             var doc = new Document();
             var pg = new Page();
             doc.Pages.Add(pg);
@@ -96,8 +96,8 @@ namespace Scryber.Core.UnitTests.Attachments
         [TestMethod]
         public void AttachmentsWithIcons_Test()
         {
-            var path = "../../Scryber.UnitTest/Content/HTML/AttachmentsWithIcon.html";
-            path = DocStreams.AssertGetContentPath(path, TestContext);
+            var path = "HTML/AttachmentsWithIcon.html";
+            path = DocStreams.AssertGetTemplatePath(path);
             
             var doc = Document.ParseDocument(path);
             var pg = doc.Pages[0];
@@ -264,8 +264,8 @@ namespace Scryber.Core.UnitTests.Attachments
         [TestMethod]
         public void AttachmentBoundToFileData_Test()
         {
-            var path = "../../Scryber.UnitTest/Content/HTML/AttachmentsBoundToFileData.html";
-            path = DocStreams.AssertGetContentPath(path, TestContext);
+            var path = "HTML/AttachmentsBoundToFileData.html";
+            path = DocStreams.AssertGetTemplatePath(path);
             
             var doc = Document.ParseDocument(path);
             var pg = doc.Pages[0];

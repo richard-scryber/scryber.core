@@ -49,16 +49,7 @@ namespace Scryber.Core.UnitTests.Html
         /// <returns>The full path</returns>
         public string GetLocalProjectPath()
         {
-            var dir = new DirectoryInfo(TestContext.TestRunDirectory);
-            while (dir.Name.Equals("Scryber.Core", StringComparison.InvariantCultureIgnoreCase) == false)
-            {
-                dir = dir.Parent;
-                Assert.IsNotNull(dir);
-            }
-
-            dir = new DirectoryInfo(System.IO.Path.Combine(dir.FullName, "Scryber.UnitTest"));
-            Assert.IsTrue(dir.Exists, "The Unit Test project folder could not be found");
-            return dir.FullName + System.IO.Path.DirectorySeparatorChar;
+            return DocStreams.GetTestProjectDirectory();
         }
         
         #endregion

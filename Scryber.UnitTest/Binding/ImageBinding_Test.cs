@@ -97,7 +97,7 @@ namespace Scryber.Core.UnitTests.Binding
         public void ImageDataParameterBinding()
         {
             
-            var path = DocStreams.AssertGetDirectoryPath("../../Scryber.UnitTest/Content/HTML/Images/", this.TestContext);
+            var path = DocStreams.AssertGetTemplateDirectory("HTML/Images");
 
 
 

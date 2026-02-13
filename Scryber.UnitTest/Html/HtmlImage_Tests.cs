@@ -33,28 +33,12 @@ namespace Scryber.Core.UnitTests.Html
 
         public string GetLocalProjectPath()
         {
-            var dir = new DirectoryInfo(TestContext.TestRunDirectory);
-            while (dir.Name.Equals("Scryber.Core",  StringComparison.InvariantCultureIgnoreCase) == false)
-            {
-                dir = dir.Parent;
-                Assert.IsNotNull(dir);
-            }
-
-            dir = new DirectoryInfo(System.IO.Path.Combine(dir.FullName, "Scryber.UnitTest"));
-            Assert.IsTrue(dir.Exists, "The Unit Test project folder could not be found");
-            return dir.FullName + System.IO.Path.DirectorySeparatorChar;
+            return DocStreams.GetTestProjectDirectory();
         }
         
         public string GetLocalImagePath(string nameWithExtension)
         {
-            var dir = GetLocalProjectPath();
-            var path = System.IO.Path.Combine(dir, "Content", "HTML", "Images", nameWithExtension);
-            path = System.IO.Path.GetFullPath(path);
-            
-            //Check to make sure we are looking in the local path
-            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the path to the image file");
-
-            return path;
+            return DocStreams.AssertGetTemplatePath(System.IO.Path.Combine("HTML", "Images", nameWithExtension));
         }
         
         /// <summary>

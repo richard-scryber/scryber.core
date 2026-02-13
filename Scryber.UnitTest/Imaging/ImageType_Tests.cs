@@ -161,7 +161,7 @@ namespace Scryber.Core.UnitTests.Imaging
 
             string url = "https://github.com/richard-scryber/Scryber.Core.Samples/blob/master/Scryber.SampleFiles/HTML/assets/ScyberLogo2_alpha_small.png?raw=true";
 
-            var imagePath = System.IO.Path.GetFullPath(this.TestContext.TestRunDirectory + "/../../Scryber.UnitTest/Content/HTML/Images/ScyberLogo2_alpha_small.png");
+            var imagePath = DocStreams.AssertGetTemplatePath("HTML/Images/ScyberLogo2_alpha_small.png");
             var imagePathExist = System.IO.File.Exists(imagePath);
 
             if (!imagePathExist)

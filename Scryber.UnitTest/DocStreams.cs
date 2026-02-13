@@ -93,6 +93,37 @@ namespace Scryber.Core.UnitTests
             }
         }
 
+        /// <summary>
+        /// Gets the full path to a template directory in the Content directory
+        /// </summary>
+        /// <param name="relativePath">Path relative to the Content directory (e.g., "HTML/Images")</param>
+        public static string GetTemplateDirectory(string relativePath)
+        {
+            var projectDir = GetTestProjectDirectory();
+            var contentPath = Path.Combine(projectDir, "Content", relativePath);
+            
+            if (!Directory.Exists(contentPath))
+                throw new DirectoryNotFoundException($"Template directory not found: {contentPath}");
+            
+            return contentPath;
+        }
+
+        /// <summary>
+        /// Asserts that a template directory exists and returns its full path
+        /// </summary>
+        public static string AssertGetTemplateDirectory(string relativePath)
+        {
+            try
+            {
+                return GetTemplateDirectory(relativePath);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Assert.Fail($"Test cannot run as the template directory cannot be found: {ex.Message}");
+                return null; // Never reached
+            }
+        }
+
         public static System.IO.Stream GetOutputStream(string fileNameWithExtension)
         {
 #if OutPutToFile
