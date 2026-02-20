@@ -16,26 +16,26 @@
         /* override the style sheet based on dynamic values */
         
         /* custom font loaded */
-        body {
+        /* body {
             font-family: 'Roboto', Arial, Helvetica, sans-serif;
-        }
+        } */
         
         /* dynamic logo colors */
-        header > .logo {
+        /* header > .logo {
             color: var(brand.color, --brand-color);
             border-bottom: solid 1px var(brand.color, --brand-color);
             
-        }
+        } */
         
         /* for the hello title */
-        body > h1{
+        /* body > h1{
             color: var(brand.color, --brand-color);
-        }
+        } */
         
         /* for the friends */
-        body > h4{
+        /* body > h4{
             color: var(brand.color, --brand-color);
-        }
+        } */
     </style>
 
 </head>
@@ -43,21 +43,27 @@
 <body class='{{if(user.sightImpared,"accessible","normal")}}'>
 
 <header >
+    <div class="banner">
+        <!-- dynamic content with a default fallback -->
+        <span class="logo" ></span>
+        <span class="title">{{brand.title ?? "Documentation Example"}}</span>
+        <span class="subtitle">{{brand.subtitle}}</span>
+    </div>
     <!-- hide the header content if there is no branding-->
-    <div class="logo" style="display: calc(if(brand.isbranded, 'block', 'none'));">
+    <!-- <div class="logo" style="display: calc(if(brand.isbranded, 'block', 'none'));"> -->
         <!-- dynamic remote file loading for the logo -->
-        <img src='{{brand.logoUrl}}'/>
+        <!-- <img src='{{brand.logoUrl}}'/> -->
     
         <!-- bound complex html content  -->
-        <div class='strapline' data-content-type='text/html' data-content='{{brand.strapLine}}' ></div>
-    </div>
+        <!-- <div class='strapline' data-content-type='text/html' data-content='{{brand.strapLine}}' ></div> -->
+    <!-- </div> -->
 </header>
 
-<h1>Hello, {{user.firstName ?? "World"}}!</h1>
+<h1>Hey {{user.firstName ?? "World"}}!</h1>
 
 <!-- custom style support using a variable, but can also be a bound expression -->
 <p class='intro' >
-    This is {{(user.firstName + "'s") ?? "my"}} first dynamic PDF generated with Scryber.Core.
+    <span id="description">This is {{(user.firstName + "'s") ?? "my"}} first dynamic PDF generated with Scryber.Core.</span>
 </p>
 
 

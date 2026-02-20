@@ -33,7 +33,7 @@ namespace Scryber.Core.UnitTests.Html
 
         public string GetLocalProjectPath()
         {
-            return DocStreams.GetTestProjectDirectory();
+            return DocStreams.GetTestProjectDirectory() + "/";
         }
         
         public string GetLocalImagePath(string nameWithExtension)

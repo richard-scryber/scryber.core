@@ -41,6 +41,8 @@ namespace Scryber.Options
         public int Weight { get; set; }
 
         public string File { get; set; }
+        
+        public string Resource { get; set; }
     }
 
 

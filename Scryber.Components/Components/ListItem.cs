@@ -115,6 +115,11 @@ namespace Scryber.Components
         #endregion
 
 
+        protected override void OnInitialized(InitContext context)
+        {
+            base.OnInitialized(context);
+        }
+
         public ListItem()
             : this(ObjectTypes.ListItem)
         {

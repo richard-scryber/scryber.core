@@ -574,9 +574,9 @@ namespace Scryber.Components
         /// <param name="ele"></param>
         private void InsertComponentInContainer(IContainerComponent container, int index, IComponent ele, InitContext init, LoadContext load)
         {
-            ele.Init(init);
             IComponentList list = container.Content as IComponentList;
             list.Insert(index, ele);
+            ele.Init(init);
             _addedonbind.Add(ele);
             ele.Load(load);
         }

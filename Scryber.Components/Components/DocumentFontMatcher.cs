@@ -95,8 +95,15 @@ namespace Scryber.Components
                             return found;
                         }
                     }
-
-                    this.OwnerDocument.TraceLog.Add(TraceLevel.Error, "Document", "The font '" + font.FullName + "' could not be loaded, falling back to Courier for rendering");
+                    if (this.OwnerDocument.ConformanceMode == ParserConformanceMode.Strict)
+                        throw new PDFFontInitException("The font '" + font.FullName + "' with weight '" +
+                                                       font.FontWeight + " and style " + font.FontStyle +
+                                                       " could not be loaded.");
+                    else
+                        this.OwnerDocument.TraceLog.Add(TraceLevel.Error, "Document", "The font '" + font.FullName + "' with weight '" +
+                            font.FontWeight + "' and style '" + font.FontStyle +"' could not be loaded, falling back to Courier for rendering");
+                    
+                    //this.OwnerDocument.TraceLog.Add(TraceLevel.Error, "Document", "The font '" + font.FullName + "' could not be loaded, falling back to Courier for rendering");
 
                     found = GetCourierSubstitution(font.Selector.FamilyName, font.FontWeight, font.FontStyle);
                     this.RegisterFontMatch(found, font.Selector.FamilyName, font.FontWeight, font.FontStyle, true);

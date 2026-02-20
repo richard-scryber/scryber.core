@@ -9,6 +9,9 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Scryber.Imaging
 {
+    /// <summary>
+    /// Converts binary data for *RASTER* images into a Scryber.Drawing.ImageData instance. Use the factory method ImageReader.Create() to instantiate.
+    /// </summary>
     public class ImageReader
     {
 

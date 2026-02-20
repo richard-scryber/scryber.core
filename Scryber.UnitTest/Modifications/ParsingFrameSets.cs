@@ -711,7 +711,7 @@ public class ParsingFrameSets_Test
             Assert.AreEqual(int.MaxValue, frame.PageInsertCount);
             
 
-            using (var sr = DocStreams.GetOutputStream("Frameset_21_pages_1_inline_template.pdf"))
+            using (var sr = DocStreams.GetOutputStream("Frameset_12_ParseTwoFramesWithFirstPagesAndInlineTemplate.pdf"))
             {
                 doc.Params["title"] = "Document title from the outer frameset.";
                 doc.RenderOptions.Compression = OutputCompressionType.None;

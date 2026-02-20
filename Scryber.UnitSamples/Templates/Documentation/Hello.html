@@ -4,9 +4,9 @@
     <title>Hello {{user.firstName ?? "World"}}</title>
 </head>
 <!-- dynamic styling -->
-<body>
+<body style="margin: 20pt;">
 <!-- complex expression with function support -->
-<h1>Hello, {{user.firstName ?? "World"}}</h1>
+<h1>Hello, {{concat(user.firstName, " ", user.lastName) ?? "World"}}</h1>
 
 <!-- custom style support -->
 <p class='intro'>

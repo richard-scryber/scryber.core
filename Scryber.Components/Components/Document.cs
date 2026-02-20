@@ -55,7 +55,7 @@ namespace Scryber.Components
         /// <summary>
         /// Event that is raised when a component is registered with the document
         /// </summary>
-        public event ComponentRegisteredHandler ComponentRegistered;
+        public event ComponentRegisteredEventHandler ComponentRegistered;
 
         /// <summary>
         /// Raises the ComponentRegistered event if there are receivers.
@@ -65,7 +65,7 @@ namespace Scryber.Components
         {
             if (null != ComponentRegistered)
             {
-                this.ComponentRegistered(this, comp);
+                this.ComponentRegistered(this, new ComponentRegisteredEventArgs(comp));
             }
         }
 

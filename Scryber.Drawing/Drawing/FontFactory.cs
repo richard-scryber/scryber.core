@@ -622,20 +622,60 @@ namespace Scryber.Drawing
         private static FamilyReferenceBag UnsafeLoadCustomFonts(FontOptions options)
         {
             FamilyReferenceBag custom = new FamilyReferenceBag();
-
+            List<string> loadErrors = new List<string>();
+            
             if (options.Register == null || options.Register.Length == 0) return custom;
 
             using (var reader = new TypefaceReader())
             {
                 foreach (var known in options.Register)
                 {
-                    if (string.IsNullOrEmpty(known.File)) continue;
-                    
-                    var file = new FileInfo(GetFullPath(known.File));
-                        
-                    if(!file.Exists) continue;
+                    ITypefaceInfo info = null;
 
-                    var info = reader.ReadTypeface(file);
+                    if (!string.IsNullOrEmpty(known.File))
+                    {
+                        try
+                        {
+                            var file = new FileInfo(GetFullPath(known.File));
+
+                            if (!file.Exists)
+                            {
+                                loadErrors.Add(known.File + " : Was not found");
+                                continue;
+                            }
+
+                            info = reader.ReadTypeface(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            loadErrors.Add(known.File + " : " + ex.Message);
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(known.Resource))
+                    {
+                        var both = known.Resource.Split(',');
+
+                        if (both.Length != 2)
+                        {
+                            loadErrors.Add(known.File + " : Resource is invalid, should be 'DefaultNamespace.FileName.extension, AssemblyName'(no extension)");
+                            continue;
+                        }
+
+                        try
+                        {
+                            var path = both[0].Trim();
+                            var assm = both[1].Trim();
+                            var assembly = Assembly.Load(assm);
+                            using (var stream = assembly.GetManifestResourceStream(path))
+                            {
+                                info = reader.ReadTypeface(stream, known.Resource);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            loadErrors.Add(known.Resource + " : " + ex.Message);
+                        }
+                    }
 
                     if (null != info && string.IsNullOrEmpty(info.ErrorMessage) && info.FontCount > 0)
                     {

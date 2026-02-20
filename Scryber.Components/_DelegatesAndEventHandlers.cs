@@ -104,9 +104,18 @@ namespace Scryber
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="registered"></param>
-    public delegate void ComponentRegisteredHandler(object sender, IComponent registered);
+    public delegate void ComponentRegisteredEventHandler(object sender, ComponentRegisteredEventArgs registered);
 
 
+    public class ComponentRegisteredEventArgs
+    {
+        public IComponent Component { get; internal set; }
+        
+        public ComponentRegisteredEventArgs(IComponent component)
+        {
+            this.Component = component;
+        }
+    }
 
     /// <summary>
     /// Event that is raised when a remote file request is made on the document, with the associated request in the arguments.
