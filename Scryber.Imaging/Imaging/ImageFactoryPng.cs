@@ -93,7 +93,7 @@ namespace Scryber.Imaging
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
             var img = Image.Load(config, stream, out format);
             
-            PDFImageDataBase data = null;
+            ImageData data = null;
 
             if (format.Name == "PNG")
             {

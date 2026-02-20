@@ -74,7 +74,20 @@ namespace Scryber.Imaging
             return this.DoLoadRawImageData(document, owner, rawData, type);
         }
 
-        protected abstract ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type);
+        /// <summary>
+        /// Converts the binary data of the image into a known ImageData instance, e.g. SVGImageData. Base method is not implemented.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="owner"></param>
+        /// <param name="rawData"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException">If this method is not implemented by inheriting instance then an exception will be thrown.</exception>
+        protected virtual ImageData DoLoadRawImageData(IDocument document, IComponent owner, byte[] rawData,
+            MimeType type)
+        {
+            throw new NotImplementedException("Inheritors should override LoadRawImageData to load images from raw data in the format they expect.");
+        }
 
         
         protected virtual async Task<ImageData> DoLoadImageDataAsync(IDocument document, IComponent owner, string path)
@@ -179,24 +192,28 @@ namespace Scryber.Imaging
             Stream stream = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read);
             return Task.FromResult(stream);
         }
-        
+
         /// <summary>
-        /// Method all inheritors should implement to return data 
+        /// Method all inheritors should implement to return data decoded into a known ImageDataInstance. e.g. SVGImageData
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="owner"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        protected abstract ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner, string path);
+        protected virtual ImageData DoDecodeImageData(System.IO.Stream stream, IDocument document, IComponent owner,
+            string path)
+        {
+            throw new NotImplementedException("Inheritors should override DoDecodeImageData to load images from raw data in the format they expect.");
+        }
 
         
 
 
-        protected virtual PDFImageDataBase GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
+        protected static  ImageData GetImageDataForImage(ImageFormat format, Image baseImage, string source, int bitdepth, bool hasAlpha, ColorSpace colorSpace)
         {
             if (null == baseImage)
                 throw new ArgumentNullException(nameof(baseImage));
-
+                
             var data = GetImageDataForImage(baseImage, source);
             data.SetSourceImageFormat(format, bitdepth, hasAlpha, colorSpace);
             return data;
