@@ -45,7 +45,7 @@ namespace Scryber.Drawing
         public string SourcePath
         {
             get { return _path; }
-            protected set { _path = value; }
+            set { _path = value; }
         }
 
         #endregion

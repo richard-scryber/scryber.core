@@ -101,6 +101,9 @@ namespace Scryber
 				return this._type.Equals(other._type, StringComparison.Ordinal);
 		}
 
+		//
+		// operator overrides
+		//
 
 		public static implicit operator MimeType(string value)
 		{

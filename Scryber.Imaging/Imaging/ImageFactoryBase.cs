@@ -66,7 +66,7 @@ namespace Scryber.Imaging
 
         public virtual ImageData LoadImageData(IDocument document, IComponent owner, byte[] rawData, MimeType type)
         {
-            if (type != this.ImageType)
+            if (!this.ImageType.Equals(type))
                 throw new NotSupportedException(
                     "This image factory can only load images of type " + this.ImageType + " The mime-type " + type +
                     "does not match");

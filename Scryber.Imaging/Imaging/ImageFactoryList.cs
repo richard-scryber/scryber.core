@@ -27,7 +27,18 @@ namespace Scryber.Imaging
             }
             else if (Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute))
             {
-                path = new Uri(path).LocalPath;
+                var param = path.IndexOf('?');
+
+                if (param > 0)
+                {
+                    path = path.Substring(0, param);
+                }
+                
+                var hash = path.IndexOf('#');
+                if (hash > 0)
+                {
+                    path = path.Substring(0, hash + 1);
+                }
             }
 
             foreach (var match in this)

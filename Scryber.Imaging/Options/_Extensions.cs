@@ -26,10 +26,18 @@ namespace Scryber.Options
                             "The configured image data factory entry '" + (configFactory.Name ?? "UNNAMED") +
                             "' does not implement the IImageDataFactory interface");
 
-                    var factory = new ImageFactoryCustom(new Regex(configFactory.Match), configFactory.Name,
-                        instance.ShouldCache, instance);
+                    
+                    if(instance is ImageFactoryBase ifb)
+                        list.Add(ifb);
+                    else
+                    {
+                        //Wrap the IPDFImageDataFactory in a custom class that will handle the remote requests.
+                        
+                        var factory = new ImageFactoryCustom(new Regex(configFactory.Match), configFactory.Name,
+                            instance.ShouldCache, instance);
 
-                    list.Add(factory);
+                        list.Add(factory);
+                    }
                 }
             }
             
