@@ -61,6 +61,35 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public int CellRowSpan {get;set;} + RemoveCellRowSpan()
+
+        /// <summary>
+        /// Gets or sets the row span of a cell
+        /// </summary>
+        [PDFAttribute("cell-row-span")]
+        public int CellRowSpan
+        {
+            get
+            {
+                int f;
+                if (this.TryGetValue(StyleKeys.TableCellRowSpanKey, out f))
+                    return f;
+                else
+                    return 1;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.TableCellRowSpanKey, value);
+            }
+        }
+
+        public void RemoveCellRowSpan()
+        {
+            this.RemoveValue(StyleKeys.TableCellRowSpanKey);
+        }
+
+        #endregion
+
         #region public TableRowRepeat RowRepeat {get; set;}
 
         [PDFAttribute("row-repeat")]

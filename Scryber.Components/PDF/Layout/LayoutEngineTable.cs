@@ -42,6 +42,8 @@ namespace Scryber.PDF.Layout
 
         Unit _rowOffset = Unit.Zero;
 
+        private Dictionary<string, RowspanCellMarker> _rowspanMarkers = new Dictionary<string, RowspanCellMarker>();
+
         protected TableGrid Table
         {
             get { return _tbl; }
@@ -1041,6 +1043,9 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Table grid references generated, inc. all styles");
 
             this._tblRef = tbl;
+            
+            // Initialize rowspan markers after all cells have been added
+            this.PopulateRowspanMarkers();
         }
 
         private void BuildReferenceCells(TableReference tbl, RowReference rref, int rowIndex, int columncount)
@@ -1385,6 +1390,59 @@ namespace Scryber.PDF.Layout
         #endregion
 
         //
+        // rowspan support methods
+        //
+
+        /// <summary>
+        /// Initializes and populates the rowspan markers dictionary from the table cells
+        /// Called after TableReference has been populated with all cells
+        /// </summary>
+        private void PopulateRowspanMarkers()
+        {
+            _rowspanMarkers.Clear();
+            
+            CellReference[,] cells = _tblRef.AllCells;
+            int rowCount = cells.GetLength(0);
+            int colCount = cells.GetLength(1);
+
+            for (int r = 0; r < rowCount; r++)
+            {
+                for (int c = 0; c < colCount; c++)
+                {
+                    CellReference cref = cells[r, c];
+                    if (cref != null && !cref.IsEmpty && cref.RowSpan > 1)
+                    {
+                        // Create a marker for this rowspan cell
+                        string key = string.Format("cell_{0}_{1}", r, c);
+                        RowspanCellMarker marker = new RowspanCellMarker(cref, r, c, cref.ColumnSpan);
+                        _rowspanMarkers[key] = marker;
+
+                        if (this.Context.ShouldLogDebug)
+                            this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory,
+                                string.Format("Rowspan marker created: cell at ({0},{1}) spans {2} rows, {3} columns",
+                                    r, c, cref.RowSpan, cref.ColumnSpan));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines if the specified row and column position is occupied by a rowspan cell from a previous row
+        /// </summary>
+        /// <param name="rowIndex">The row index to check</param>
+        /// <param name="colIndex">The column index to check</param>
+        /// <returns>True if the position is occupied by a rowspan cell, false otherwise</returns>
+        private bool IsPositionOccupiedByRowspan(int rowIndex, int colIndex)
+        {
+            foreach (var marker in _rowspanMarkers.Values)
+            {
+                if (marker.OccupiesPosition(rowIndex, colIndex))
+                    return true;
+            }
+            return false;
+        }
+
+        //
         // overflow methods
         //
 
@@ -1669,6 +1727,21 @@ namespace Scryber.PDF.Layout
 
             #endregion
 
+            #region public int RowSpan {get;set;}
+
+            private int _rowspan;
+
+            /// <summary>
+            /// Gets or sets the row span associated with this cell
+            /// </summary>
+            public int RowSpan
+            {
+                get { return _rowspan; }
+                set { _rowspan = value; }
+            }
+
+            #endregion
+
             #region public PDFThickness Margins {get;}
 
             /// <summary>
@@ -1803,6 +1876,116 @@ namespace Scryber.PDF.Layout
                     _colspan = cellspan.Value(fullstyle);
                 else
                     _colspan = 1;
+
+                StyleValue<int> rowspan;
+                if (fullstyle.TryGetValue(StyleKeys.TableCellRowSpanKey, out rowspan))
+                    _rowspan = rowspan.Value(fullstyle);
+                else
+                    _rowspan = 1;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region private class RowspanCellMarker
+
+        /// <summary>
+        /// Tracks a cell that spans multiple rows, storing metadata about the rowspan
+        /// </summary>
+        private class RowspanCellMarker
+        {
+            #region ivars
+
+            private CellReference _cell;
+            private int _startRowIndex;
+            private int _endRowIndex; // inclusive
+            private int _columnIndex;
+            private int _columnSpan;
+
+            #endregion
+
+            #region public properties
+
+            /// <summary>
+            /// Gets the cell that spans multiple rows
+            /// </summary>
+            public CellReference Cell
+            {
+                get { return _cell; }
+            }
+
+            /// <summary>
+            /// Gets the starting row index of this rowspan (first row it occupies)
+            /// </summary>
+            public int StartRowIndex
+            {
+                get { return _startRowIndex; }
+            }
+
+            /// <summary>
+            /// Gets the ending row index of this rowspan (last row it occupies, inclusive)
+            /// </summary>
+            public int EndRowIndex
+            {
+                get { return _endRowIndex; }
+                set { _endRowIndex = value; }
+            }
+
+            /// <summary>
+            /// Gets the column index where this cell starts
+            /// </summary>
+            public int ColumnIndex
+            {
+                get { return _columnIndex; }
+            }
+
+            /// <summary>
+            /// Gets the number of columns this cell spans
+            /// </summary>
+            public int ColumnSpan
+            {
+                get { return _columnSpan; }
+            }
+
+            #endregion
+
+            #region public constructor
+
+            /// <summary>
+            /// Creates a new rowspan cell marker for tracking a cell that spans rows
+            /// </summary>
+            public RowspanCellMarker(CellReference cell, int startRowIndex, int columnIndex, int columnSpan)
+            {
+                this._cell = cell;
+                this._startRowIndex = startRowIndex;
+                this._endRowIndex = startRowIndex + cell.RowSpan - 1;
+                this._columnIndex = columnIndex;
+                this._columnSpan = columnSpan;
+            }
+
+            #endregion
+
+            #region public methods
+
+            /// <summary>
+            /// Determines if the specified row and column position is occupied by this rowspan cell
+            /// </summary>
+            public bool OccupiesPosition(int rowIndex, int colIndex)
+            {
+                return rowIndex >= _startRowIndex && rowIndex <= _endRowIndex &&
+                       colIndex >= _columnIndex && colIndex < _columnIndex + _columnSpan;
+            }
+
+            /// <summary>
+            /// Determines if this rowspan marker's range overlaps with the given row/column range
+            /// </summary>
+            public bool OverlapsWith(int rowIndex, int columnIndex, int columnSpan)
+            {
+                return rowIndex <= _endRowIndex &&
+                       columnIndex < _columnIndex + _columnSpan &&
+                       columnIndex + columnSpan > _columnIndex;
             }
 
             #endregion

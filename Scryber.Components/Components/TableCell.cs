@@ -64,6 +64,35 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public int RowSpan {get;set;}
+
+        /// <summary>
+        /// Gets or sets the row span for this cell.
+        /// Default is 1 (no spanning).
+        /// </summary>
+        [PDFAttribute("row-span")]
+        [PDFJSConvertor("scryber.studio.design.convertors.integer_attr", JSParams = "\"rowspan\"")]
+        [PDFDesignable("Row Span", Category = "General", Priority = 3, Type = "Number")]
+        public virtual int CellRowSpan
+        {
+            get
+            {
+                if (this.HasStyle)
+                    return this.Style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
+                else
+                    return 1;
+            }
+            set
+            {
+                if (value <= 0)
+                    this.Style.Table.RemoveCellRowSpan();
+                else
+                    this.Style.Table.CellRowSpan = value;
+            }
+        }
+
+        #endregion
+
         #region public PDFTableRow ContainingRow
 
         /// <summary>

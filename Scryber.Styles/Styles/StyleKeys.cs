@@ -651,6 +651,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<int> TableCellColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cols", TableItemKey);
 
+        public static readonly StyleKey<int> TableCellRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"rows", TableItemKey);
+
         public static readonly StyleKey<TableRowRepeat> TableRowRepeatKey = StyleKey.InternalCreateStyleValueKey<TableRowRepeat>((ObjectType)"rowr", TableItemKey);
 
         //Badge
