@@ -27,13 +27,7 @@ public class JObjectEnumerator : DictionaryBindingEnumerator
     private class JsonTokenDictionary : IDictionary
     {
         private IDictionary<string, JToken> _dictionary;
-        private int _count;
-        private bool _isSynchronized;
-        private object _syncRoot;
-        private bool _isFixedSize;
-        private bool _isReadOnly;
-        private ICollection _keys;
-        private ICollection _values;
+        
 
         public JsonTokenDictionary(IDictionary<string, JToken> dictionary)
         {
