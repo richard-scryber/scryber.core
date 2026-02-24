@@ -1535,13 +1535,28 @@ namespace Scryber.Styles
 
         internal protected virtual PDFColumnOptions DoCreateColumnOptions()
         {
-            return new PDFColumnOptions()
+            var options = new PDFColumnOptions()
             {
                 AlleyWidth = this.GetValue(StyleKeys.ColumnAlleyKey, ColumnsStyle.DefaultAlleyWidth),
                 ColumnCount = this.GetValue(StyleKeys.ColumnCountKey, 1),
                 ColumnWidths = this.GetValue(StyleKeys.ColumnWidthKey,ColumnWidths.Empty),
-                AutoFlow = this.GetValue(StyleKeys.ColumnFlowKey, ColumnsStyle.DefaultAutoFlow)
+                FillMode = this.GetValue(StyleKeys.ColumnFillKey, ColumnsStyle.DefaultAutoFlow)
             };
+            
+            StyleValue<LineType> baseLine = new StyleValue<LineType>(StyleKeys.ColumnRuleStyleKey, LineType.None);
+            StyleValue<Dash> baseDash = null;
+            StyleValue<Unit> baseWidth =  new StyleValue<Unit>(StyleKeys.ColumnRuleWidthKey, 1);
+            StyleValue<Color> baseColor = new StyleValue<Color>(StyleKeys.ColumnRuleColorKey, StandardColors.Silver);
+
+            var pen = this.DoCreateBorderSidePen(Sides.Right, StyleKeys.ColumnRuleColorKey,
+                StyleKeys.ColumnRuleWidthKey,
+                StyleKeys.ColumnRuleStyleKey,
+                StyleKeys.ColumnRuleDashKey,
+                baseColor, baseWidth, baseLine, baseDash);
+
+            options.ColumnRule = pen;
+            
+            return options;
         }
 
         #endregion

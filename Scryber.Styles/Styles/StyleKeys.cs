@@ -237,17 +237,30 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<int> ColumnCountKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"cont", ColumnItemKey);
 
-        public static readonly StyleKey<Unit> ColumnAlleyKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ally", ColumnItemKey
+        public static readonly StyleKey<Unit> ColumnAlleyKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ally", ColumnItemKey 
                                                                 , new StyleKeyFlattenHorizontalValue());
-
-        public static readonly StyleKey<bool> ColumnFlowKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"flow", ColumnItemKey);
 
         public static readonly StyleKey<ColumnWidths> ColumnWidthKey = StyleKey.InternalCreateStyleValueKey<ColumnWidths>((ObjectType)"cwid", ColumnItemKey);
 
+        public static readonly StyleKey<ColumnFillMode> ColumnFillKey = StyleKey.InternalCreateStyleValueKey<ColumnFillMode>((ObjectType)"flow", ColumnItemKey);
+
+        public static readonly StyleKey<Color> ColumnRuleColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"crco", ColumnItemKey);
+        
+        public static readonly StyleKey<double> ColumnRuleOpacityKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"crop", ColumnItemKey);
+        
+        public static readonly StyleKey<Unit> ColumnRuleWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"crwd", ColumnItemKey
+                                                                , new StyleKeyFlattenUnitValue(PreferredFlattenDimension.Width));
+        
+        public static readonly StyleKey<LineType> ColumnRuleStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"crls", BorderItemBottomKey);
+        
+        public static readonly StyleKey<Dash> ColumnRuleDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"crda", BorderItemBottomKey);
+
+        
         public static readonly StyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brcb", ColumnItemKey);
 
         public static readonly StyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brca", ColumnItemKey);
 
+        
         //Fill
 
         public static readonly StyleKey FillItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleFill, INHERITED);

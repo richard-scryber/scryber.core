@@ -202,11 +202,17 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 
+            all.Add(CSSStyleItems.Columns, new CSSColumnsParser());
             all.Add(CSSStyleItems.ColumnCount, new CSSColumnCountParser());
             all.Add(CSSStyleItems.ColumnWidths, new CSSColumnWidthParser());
             all.Add(CSSStyleItems.ColumnGap, new CSSColumnGapParser());
             all.Add(CSSStyleItems.ColumnSpan, new CSSColumnSpanParser());
-
+            all.Add(CSSStyleItems.ColumnFill, new CSSColumnFillParser());
+            all.Add(CSSStyleItems.ColumnRule, new CSSColumnRuleParser());
+            all.Add(CSSStyleItems.ColumnRuleColor, new CSSColumnRuleColorParser());
+            all.Add(CSSStyleItems.ColumnRuleWidth, new CSSColumnRuleWidthParser());
+            all.Add(CSSStyleItems.ColumnRuleStyle, new CSSColumnRuleLineStyleParser());
+            
             all.Add(CSSStyleItems.Left, new CSSLeftParser());
             all.Add(CSSStyleItems.Top, new CSSTopParser());
             all.Add(CSSStyleItems.Float, new CSSPositionFloatParser());

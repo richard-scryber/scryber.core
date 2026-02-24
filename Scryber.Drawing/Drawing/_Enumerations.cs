@@ -656,4 +656,24 @@ namespace Scryber.Drawing
         Slice
     }
 
+    /// <summary>
+    /// Defines how flowing columns should be filled
+    /// </summary>
+    public enum ColumnFillMode
+    {
+        /// <summary>
+        /// Columns are filled sequentially. Content takes up the room it needs over each column. Some columns may remain empty.
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// Content is equally divided between columns in the last page (or block of content). So it only takes the minimum amount of height within that page.
+        /// </summary>
+        Balance,
+        
+        /// <summary>
+        /// The content is divided equally in all columns on all pages. (not currently supported)
+        /// </summary>
+        Balance_All
+    }
+
 }

@@ -80,10 +80,16 @@ namespace Scryber.Html
         public const string FillOpacity = "fill-opacity";
         public const string Fill = "fill";
 
+        public const string Columns = "columns";
         public const string ColumnCount = "column-count";
         public const string ColumnGap = "column-gap";
         public const string ColumnWidths = "column-width";
         public const string ColumnSpan = "column-span";
+        public const string ColumnFill = "column-fill";
+        public const string ColumnRule = "column-rule";
+        public const string ColumnRuleColor = "column-rule-color";
+        public const string ColumnRuleWidth = "column-rule-width";
+        public const string ColumnRuleStyle = "column-rule-style";
 
         public const string Left = "left";
         public const string Top = "top";

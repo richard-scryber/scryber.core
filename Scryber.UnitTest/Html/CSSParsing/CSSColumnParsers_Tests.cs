@@ -467,5 +467,613 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         }
 
         #endregion
+
+        #region Column Rule Width Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleWidth_ValidUnit_Pt_SetsWidth()
+        {
+            var parser = new CSSColumnRuleWidthParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "2pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(2.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleWidth_ValidUnit_Px_SetsWidth()
+        {
+            var parser = new CSSColumnRuleWidthParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "4px");
+
+            Assert.IsTrue(result);
+            // 4px = 4 * 0.75 = 3pt
+            Assert.AreEqual(3.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleWidth_ZeroValue_SetsZero()
+        {
+            var parser = new CSSColumnRuleWidthParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "0");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleWidth_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnRuleWidthParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "invalid-width");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Column Rule Color Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_HexRed_SetsColor()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "#FF0000");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(255, 0, 0), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_HexBlue_SetsColor()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "#0000FF");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(0, 0, 255), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_ShortHex_SetsColor()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "#333");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(0x33, 0x33, 0x33), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_RgbFunction_SetsColor()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "rgb(0, 128, 0)");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(0, 128, 0), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_RgbaFunction_SetsColorAndOpacity()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "rgba(255, 0, 0, 0.5)");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(255, 0, 0), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+            Assert.AreEqual(0.5, style.GetValue(StyleKeys.ColumnRuleOpacityKey, 1.0), 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleColor_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnRuleColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "not-a-color");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Column Rule Line Style Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_Solid_SetsSolid()
+        {
+            var parser = new CSSColumnRuleLineStyleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "solid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(LineType.Solid, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_Dashed_SetsDashWithPattern()
+        {
+            var parser = new CSSColumnRuleLineStyleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "dashed");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(LineType.Dash, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+            Assert.IsNotNull(style.GetValue(StyleKeys.ColumnRuleDashKey, null));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_Dotted_SetsDashWithPattern()
+        {
+            var parser = new CSSColumnRuleLineStyleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "dotted");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(LineType.Dash, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+            Assert.IsNotNull(style.GetValue(StyleKeys.ColumnRuleDashKey, null));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_DashedAndDottedHaveDifferentPatterns()
+        {
+            var dashedStyle = CreateStyle();
+            var dottedStyle = CreateStyle();
+
+            ParseValue(new CSSColumnRuleLineStyleParser(), dashedStyle, "dashed");
+            ParseValue(new CSSColumnRuleLineStyleParser(), dottedStyle, "dotted");
+
+            var dashedPattern = dashedStyle.GetValue(StyleKeys.ColumnRuleDashKey, null);
+            var dottedPattern = dottedStyle.GetValue(StyleKeys.ColumnRuleDashKey, null);
+
+            Assert.IsNotNull(dashedPattern);
+            Assert.IsNotNull(dottedPattern);
+            Assert.AreNotEqual(dashedPattern, dottedPattern);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_None_SetsNone()
+        {
+            var parser = new CSSColumnRuleLineStyleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "none");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(LineType.None, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.Solid));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRuleStyle_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnRuleLineStyleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "not-a-line-style");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Column Rule Shorthand Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_WidthOnly_SetsWidth()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "2pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(2.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_StyleOnly_SetsStyle()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "solid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(LineType.Solid, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_ColorOnly_SetsColor()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "#FF0000");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(255, 0, 0), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_WidthAndStyle_SetsBoth()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "3pt solid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+            Assert.AreEqual(LineType.Solid, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_AllThreeValues_SetsAll()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "2pt solid #0000FF");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(2.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+            Assert.AreEqual(LineType.Solid, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+            Assert.AreEqual(Color.FromRGB(0, 0, 255), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_DashedWithColor_SetsDashAndColor()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "1pt dashed #CC0000");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1.0, style.GetValue(StyleKeys.ColumnRuleWidthKey, Unit.Zero).PointsValue, 0.001);
+            Assert.AreEqual(LineType.Dash, style.GetValue(StyleKeys.ColumnRuleStyleKey, LineType.None));
+            Assert.IsNotNull(style.GetValue(StyleKeys.ColumnRuleDashKey, null));
+            Assert.AreEqual(Color.FromRGB(0xCC, 0, 0), style.GetValue(StyleKeys.ColumnRuleColorKey, Color.Transparent));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnRule_EmptyValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnRuleParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, " ");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Column Fill Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnFill_Auto_SetsAuto()
+        {
+            var parser = new CSSColumnFillParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(ColumnFillMode.Auto, style.Columns.FillMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnFill_Balance_SetsBalance()
+        {
+            var parser = new CSSColumnFillParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "balance");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(ColumnFillMode.Balance, style.Columns.FillMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnFill_BalanceAll_SetsBalanceAll()
+        {
+            // The CSS spec uses "balance-all" but Enum.TryParse requires the enum member
+            // name, so the parseable value is "balance_all" (underscore).
+            var parser = new CSSColumnFillParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "balance_all");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(ColumnFillMode.Balance_All, style.Columns.FillMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnFill_CssHyphenatedBalanceAll_ReturnsFalse()
+        {
+            // "balance-all" (hyphen) does not map to any ColumnFillMode enum member
+            // and so the parser cannot resolve it.
+            var parser = new CSSColumnFillParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "balance-all");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ColumnFill_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnFillParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "not-a-fill-mode");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
+
+        #region Columns Shorthand Parser Tests
+
+        // Helper to read column width from the style
+        private ColumnWidths GetColumnWidths(Style style)
+            => style.GetValue(StyleKeys.ColumnWidthKey, ColumnWidths.Empty);
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_Auto_SetsCountOneAndEmptyWidths()
+        {
+            // "auto" alone is equivalent to "auto auto"
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, style.Columns.ColumnCount);
+            Assert.IsTrue(GetColumnWidths(style).IsEmpty);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_AutoAuto_SetsCountOneAndEmptyWidths()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, style.Columns.ColumnCount);
+            Assert.IsTrue(GetColumnWidths(style).IsEmpty);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_CountOnly_SetsCountAndAutoWidth()
+        {
+            // A lone integer is treated as count with auto widths
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "3");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3, style.Columns.ColumnCount);
+            Assert.IsTrue(GetColumnWidths(style).IsEmpty);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_WidthOnly_SetsAutoCountAndWidth()
+        {
+            // A lone unit value is treated as column-width with auto count (0)
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "150pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, style.GetValue(StyleKeys.ColumnCountKey, -1));
+            var widths = GetColumnWidths(style);
+            Assert.IsFalse(widths.IsEmpty);
+            Assert.IsTrue(widths.HasExplicitWidth);
+            Assert.AreEqual(150.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_CountThenWidth_SetsBoth()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "3 150pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3, style.Columns.ColumnCount);
+            var widths = GetColumnWidths(style);
+            Assert.IsTrue(widths.HasExplicitWidth);
+            Assert.AreEqual(150.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_WidthThenCount_SetsBothInAnyOrder()
+        {
+            // Width before count should produce the same result as count before width
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "150pt 3");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3, style.Columns.ColumnCount);
+            var widths = GetColumnWidths(style);
+            Assert.IsTrue(widths.HasExplicitWidth);
+            Assert.AreEqual(150.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_AutoThenCount_SetsAutoWidthAndExplicitCount()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto 3");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3, style.Columns.ColumnCount);
+            Assert.IsTrue(GetColumnWidths(style).IsEmpty);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_CountThenAuto_SetsExplicitCountAndAutoWidth()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "3 auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(3, style.Columns.ColumnCount);
+            Assert.IsTrue(GetColumnWidths(style).IsEmpty);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_AutoThenWidth_SetsAutoCountAndExplicitWidth()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto 200pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, style.GetValue(StyleKeys.ColumnCountKey, -1));
+            var widths = GetColumnWidths(style);
+            Assert.IsTrue(widths.HasExplicitWidth);
+            Assert.AreEqual(200.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_WidthThenAuto_SetsExplicitWidthAndAutoCount()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "200pt auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, style.GetValue(StyleKeys.ColumnCountKey, -1));
+            var widths = GetColumnWidths(style);
+            Assert.IsTrue(widths.HasExplicitWidth);
+            Assert.AreEqual(200.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_TwoWidths_SetsCountTwoAndBothWidths()
+        {
+            // Two unit values are treated as two explicit column widths
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "100pt 200pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(2, style.Columns.ColumnCount);
+            var widths = GetColumnWidths(style);
+            Assert.IsNotNull(widths.Widths);
+            Assert.AreEqual(2, widths.Widths.Length);
+            Assert.AreEqual(100.0, widths.Widths[0], 0.001);
+            Assert.AreEqual(200.0, widths.Widths[1], 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_PxWidth_ConvertsToPoints()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "2 200px");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(2, style.Columns.ColumnCount);
+            var widths = GetColumnWidths(style);
+            // 200px = 200 * 0.75 = 150pt
+            Assert.AreEqual(150.0, widths.Explicit.PointsValue, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Columns_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSColumnsParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "not-valid");
+
+            Assert.IsFalse(result);
+        }
+
+        #endregion
     }
 }
