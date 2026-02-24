@@ -43,7 +43,6 @@ namespace Scryber.UnitSamples
             padding: 10px;
             text-align: center;
             width: 100px;
-            height: 40px;
         }
         .blue { background-color: #ADD8E6; }
         .green { background-color: #90EE90; }
@@ -61,7 +60,7 @@ namespace Scryber.UnitSamples
         <tr>
             <td class='blue' rowspan='3'>Cell A<br/>(rowspan=3)</td>
             <td class='green'>Cell B</td>
-            <td class='yellow' colspan='2'>Cell C<br/>(colspan=2)</td>
+            <td class='yellow' colspan='2' style='width: 200px'>Cell C<br/>(colspan=2)</td>
         </tr>
         <tr>
             <td class='cyan'>Cell D</td>
