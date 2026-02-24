@@ -74,6 +74,34 @@ namespace Scryber.Drawing
         [System.Xml.Serialization.XmlAttribute("Yellow")]
         public static readonly Color Yellow = Color.Parse("#FFFF00");
 
+        // Light color variants
+        [System.Xml.Serialization.XmlAttribute("LightBlue")]
+        public static readonly Color LightBlue = Color.Parse("#ADD8E6");
+
+        [System.Xml.Serialization.XmlAttribute("LightGreen")]
+        public static readonly Color LightGreen = Color.Parse("#90EE90");
+
+        [System.Xml.Serialization.XmlAttribute("LightYellow")]
+        public static readonly Color LightYellow = Color.Parse("#FFFFE0");
+
+        [System.Xml.Serialization.XmlAttribute("LightCoral")]
+        public static readonly Color LightCoral = Color.Parse("#F08080");
+
+        [System.Xml.Serialization.XmlAttribute("LightCyan")]
+        public static readonly Color LightCyan = Color.Parse("#E0FFFF");
+
+        [System.Xml.Serialization.XmlAttribute("LightGray")]
+        public static readonly Color LightGray = Color.Parse("#D3D3D3");
+
+        [System.Xml.Serialization.XmlAttribute("LightSalmon")]
+        public static readonly Color LightSalmon = Color.Parse("#FFA07A");
+
+        [System.Xml.Serialization.XmlAttribute("LightSkyBlue")]
+        public static readonly Color LightSkyBlue = Color.Parse("#87CEFA");
+
+        [System.Xml.Serialization.XmlAttribute("LightSteelBlue")]
+        public static readonly Color LightSteelBlue = Color.Parse("#B0C4DE");
+
         [System.Xml.Serialization.XmlAttribute("Transparent")]
         public static readonly Color Transparent = new Color();
 
@@ -186,6 +214,42 @@ namespace Scryber.Drawing
                     break;
                 case ("yellow"):
                     color = StandardColors.Yellow;
+                    known = true;
+                    break;
+                case ("lightblue"):
+                    color = StandardColors.LightBlue;
+                    known = true;
+                    break;
+                case ("lightgreen"):
+                    color = StandardColors.LightGreen;
+                    known = true;
+                    break;
+                case ("lightyellow"):
+                    color = StandardColors.LightYellow;
+                    known = true;
+                    break;
+                case ("lightcoral"):
+                    color = StandardColors.LightCoral;
+                    known = true;
+                    break;
+                case ("lightcyan"):
+                    color = StandardColors.LightCyan;
+                    known = true;
+                    break;
+                case ("lightgray"):
+                    color = StandardColors.LightGray;
+                    known = true;
+                    break;
+                case ("lightsalmon"):
+                    color = StandardColors.LightSalmon;
+                    known = true;
+                    break;
+                case ("lightskyblue"):
+                    color = StandardColors.LightSkyBlue;
+                    known = true;
+                    break;
+                case ("lightsteelblue"):
+                    color = StandardColors.LightSteelBlue;
                     known = true;
                     break;
                 case ("transparent"):

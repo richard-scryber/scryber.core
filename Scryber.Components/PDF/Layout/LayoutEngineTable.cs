@@ -42,8 +42,6 @@ namespace Scryber.PDF.Layout
 
         Unit _rowOffset = Unit.Zero;
 
-        private Dictionary<string, RowspanCellMarker> _rowspanMarkers = new Dictionary<string, RowspanCellMarker>();
-
         protected TableGrid Table
         {
             get { return _tbl; }
@@ -132,6 +130,11 @@ namespace Scryber.PDF.Layout
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Laid out the rows");
 
+                // Adjust rowspan cells to their full height
+                this.AdjustRowspanCellHeights();
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Adjusted rowspan cell heights");
+
                 //TODO: Reassess the required widths of columns in the entire table.
 
                 this.PushConsistentCellWidths();
@@ -188,6 +191,8 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+
 
         #region private PDFUnit DoLayoutTableRow(PDFTableRow row, int index)
 
@@ -536,10 +541,6 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-        //
-        // table calculations
-        //
-
         #region private void BuildStyles(out int rowcount, out int columncount)
 
         /// <summary>
@@ -556,6 +557,7 @@ namespace Scryber.PDF.Layout
             List<Style> rowapplieds = new List<Style>();
             List<List<Style>> cellapplieds = new List<List<Style>>();
             int maxcolcount = 0;
+            List<int> rowspanRemaining = new List<int>();
 
             var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             var tableFont = this.FullStyle.CreateTextOptions();
@@ -612,10 +614,20 @@ namespace Scryber.PDF.Layout
                 List<Style> rowcellapplieds = new List<Style>();
                 cellapplieds.Add(rowcellapplieds);
 
+                int columnIndex = 0;
                 foreach (TableCell cell in row.Cells)
                 {
                     if (cell.Visible == false)
                         continue;
+
+                    // Skip columns occupied by a rowspan from previous rows
+                    while (columnIndex < rowspanRemaining.Count && rowspanRemaining[columnIndex] > 0)
+                    {
+                        rowcellstyles.Add(null);
+                        rowcellapplieds.Add(null);
+                        rowspanRemaining[columnIndex]--;
+                        columnIndex++;
+                    }
 
                     Style cellfull = null;
                     Style cellapplied = null;
@@ -664,18 +676,53 @@ namespace Scryber.PDF.Layout
 
                     if (span == 0)
                         throw new ArgumentOutOfRangeException("span","Cell column count cannot be less than 1. ");
-                    
-                    else
+
+                    // Get the rowspan for this cell (default 1)
+                    StyleValue<int> rowspanVal;
+                    int rowspan = 1;
+                    if (cellfull.TryGetValue(StyleKeys.TableCellRowSpanKey, out rowspanVal))
+                        rowspan = rowspanVal.Value(cellfull);
+
+                    if (rowspan < 1)
+                        rowspan = 1;
+
+                    // Ensure rowspan tracking list has enough columns
+                    for (int i = rowspanRemaining.Count; i < columnIndex + span; i++)
+                        rowspanRemaining.Add(0);
+
+                    // Track rowspan occupancy for subsequent rows
+                    if (rowspan > 1)
                     {
-                        while (span > 1)
+                        for (int i = 0; i < span; i++)
                         {
-                            rowcellstyles.Add(null);
-                            rowcellapplieds.Add(null);
-                            span--;
+                            int idx = columnIndex + i;
+                            rowspanRemaining[idx] = Math.Max(rowspanRemaining[idx], rowspan - 1);
                         }
                     }
 
+                    int remainingSpan = span;
+                    while (remainingSpan > 1)
+                    {
+                        rowcellstyles.Add(null);
+                        rowcellapplieds.Add(null);
+                        remainingSpan--;
+                    }
+
+                    columnIndex += span;
+
                     this.StyleStack.Pop();
+                }
+
+                // Fill remaining rowspan-occupied columns at end of row
+                while (columnIndex < rowspanRemaining.Count)
+                {
+                    if (rowspanRemaining[columnIndex] > 0)
+                    {
+                        rowcellstyles.Add(null);
+                        rowcellapplieds.Add(null);
+                        rowspanRemaining[columnIndex]--;
+                    }
+                    columnIndex++;
                 }
 
                 if (rowcellstyles.Count > maxcolcount)
@@ -713,6 +760,56 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+
+        #region private void AdjustRowspanCellHeights()
+
+        /// <summary>
+        /// After all rows have been laid out, adjusts the height of cells with rowspan > 1
+        /// to span the full height of all rows they cover.
+        /// </summary>
+        private void AdjustRowspanCellHeights()
+        {
+            int rowcount = this._tblRef.AllRows.Length;
+            int colcount = this._tblRef.TotalColumnCount;
+
+            for (int r = 0; r < rowcount; r++)
+            {
+                for (int c = 0; c < colcount; c++)
+                {
+                    CellReference cref = this._tblRef.AllCells[r, c];
+
+                    // Only process actual cells, not null placeholders
+                    if (cref != null && cref.Block != null && !cref.IsEmpty)
+                    {
+                        // Check if this cell has rowspan > 1
+                        int rowspan = cref.RowSpan;
+                        if (rowspan > 1)
+                        {
+                            // Calculate the cumulative height of all spanned rows
+                            Unit totalHeight = Unit.Zero;
+                            for (int spanRow = r; spanRow < r + rowspan && spanRow < rowcount; spanRow++)
+                            {
+                                // Get the height of this row
+                                Unit rowHeight = this._tblRef.GetMaxCellHeightForRow(spanRow);
+                                totalHeight += rowHeight;
+                            }
+
+                            // Set the cell's block height to span all rows
+                            if (totalHeight > Unit.Zero && cref.Block != null)
+                            {
+                                Rect bounds = cref.Block.TotalBounds;
+                                bounds.Height = totalHeight;
+                                cref.Block.TotalBounds = bounds;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
 
         protected Size GetSize(Unit? width, Unit containerWidth, Unit? height, Unit containerHeight)
         {
@@ -1015,7 +1112,6 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private void BuildReferenceGrid(int rowcount, int columncount, PDFPositionOptions tablepos, Rect availableSpace, PDFLayoutBlock tableblock)
         {
-            
             TableReference tbl = new TableReference(rowcount, columncount, this.FullStyle, tablepos);
             GridReference grid = tbl.CurrentGrid;
 
@@ -1043,9 +1139,6 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Table grid references generated, inc. all styles");
 
             this._tblRef = tbl;
-            
-            // Initialize rowspan markers after all cells have been added
-            this.PopulateRowspanMarkers();
         }
 
         private void BuildReferenceCells(TableReference tbl, RowReference rref, int rowIndex, int columncount)
@@ -1388,59 +1481,6 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
-        //
-        // rowspan support methods
-        //
-
-        /// <summary>
-        /// Initializes and populates the rowspan markers dictionary from the table cells
-        /// Called after TableReference has been populated with all cells
-        /// </summary>
-        private void PopulateRowspanMarkers()
-        {
-            _rowspanMarkers.Clear();
-            
-            CellReference[,] cells = _tblRef.AllCells;
-            int rowCount = cells.GetLength(0);
-            int colCount = cells.GetLength(1);
-
-            for (int r = 0; r < rowCount; r++)
-            {
-                for (int c = 0; c < colCount; c++)
-                {
-                    CellReference cref = cells[r, c];
-                    if (cref != null && !cref.IsEmpty && cref.RowSpan > 1)
-                    {
-                        // Create a marker for this rowspan cell
-                        string key = string.Format("cell_{0}_{1}", r, c);
-                        RowspanCellMarker marker = new RowspanCellMarker(cref, r, c, cref.ColumnSpan);
-                        _rowspanMarkers[key] = marker;
-
-                        if (this.Context.ShouldLogDebug)
-                            this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory,
-                                string.Format("Rowspan marker created: cell at ({0},{1}) spans {2} rows, {3} columns",
-                                    r, c, cref.RowSpan, cref.ColumnSpan));
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines if the specified row and column position is occupied by a rowspan cell from a previous row
-        /// </summary>
-        /// <param name="rowIndex">The row index to check</param>
-        /// <param name="colIndex">The column index to check</param>
-        /// <returns>True if the position is occupied by a rowspan cell, false otherwise</returns>
-        private bool IsPositionOccupiedByRowspan(int rowIndex, int colIndex)
-        {
-            foreach (var marker in _rowspanMarkers.Values)
-            {
-                if (marker.OccupiesPosition(rowIndex, colIndex))
-                    return true;
-            }
-            return false;
-        }
 
         //
         // overflow methods
@@ -2668,6 +2708,9 @@ namespace Scryber.PDF.Layout
             {
                 CellReference cref = new CellReference(null, rowRef, null, null, rowRef.RowIndex, colindex);
                 cref.IsEmpty = true;
+                // Empty cells (occupied by rowspan or colspan) need default span values to ensure proper loop iteration
+                cref.ColumnSpan = 1;
+                cref.RowSpan = 1;
                 this._cells[rowRef.RowIndex, cref.ColumnIndex] = cref;
 
                 return cref;
@@ -3044,6 +3087,5 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-
     }
 }

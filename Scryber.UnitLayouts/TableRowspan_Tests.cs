@@ -977,5 +977,162 @@ namespace Scryber.UnitLayouts
         }
 
         #endregion
+
+        #region Visual Test
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_Visual_ColorfulTable()
+        {
+            Document doc = new Document();
+            Section section = new Section();
+            section.Margins = 20;
+            doc.Pages.Add(section);
+
+            // Title
+            Div titleDiv = new Div();
+            titleDiv.Contents.Add("Rowspan Visual Test - Colored Table");
+            titleDiv.Style.Font.FontSize = 20;
+            titleDiv.Style.Font.FontBold = true;
+            titleDiv.Style.Margins.Bottom = 20;
+            section.Contents.Add(titleDiv);
+
+            // Create table with rowspan
+            TableGrid grid = new TableGrid();
+            grid.Width = 400;
+            grid.Style.Border.Width = 1;
+            grid.Style.Border.Color = StandardColors.Black;
+            section.Contents.Add(grid);
+
+            // Row 0: Cell A (rowspan=3), Cell B, Cell C, Cell D
+            TableRow row0 = new TableRow();
+            grid.Rows.Add(row0);
+
+            TableCell cellA = new TableCell();
+            cellA.CellRowSpan = 3;
+            cellA.Width = 80;
+            cellA.Style.Background.Color = StandardColors.LightBlue;
+            cellA.Style.Padding.All = 8;
+            cellA.Contents.Add("A\n(3 rows)");
+            row0.Cells.Add(cellA);
+
+            TableCell cellB = new TableCell();
+            cellB.Width = 80;
+            cellB.Style.Background.Color = StandardColors.LightGreen;
+            cellB.Style.Padding.All = 8;
+            cellB.Contents.Add("B");
+            row0.Cells.Add(cellB);
+
+            TableCell cellC = new TableCell();
+            cellC.Width = 80;
+            cellC.Style.Background.Color = StandardColors.LightYellow;
+            cellC.Style.Padding.All = 8;
+            cellC.Contents.Add("C");
+            row0.Cells.Add(cellC);
+
+            TableCell cellD = new TableCell();
+            cellD.Width = 80;
+            cellD.Style.Background.Color = StandardColors.LightCoral;
+            cellD.Style.Padding.All = 8;
+            cellD.Contents.Add("D");
+            row0.Cells.Add(cellD);
+
+            // Row 1: Cell E, Cell F (colspan=2), Cell G
+            TableRow row1 = new TableRow();
+            grid.Rows.Add(row1);
+
+            TableCell cellE = new TableCell();
+            cellE.Width = 80;
+            cellE.Style.Background.Color = StandardColors.LightCyan;
+            cellE.Style.Padding.All = 8;
+            cellE.Contents.Add("E");
+            row1.Cells.Add(cellE);
+
+            TableCell cellF = new TableCell();
+            cellF.CellColumnSpan = 2;
+            cellF.Width = 160;
+            cellF.Style.Background.Color = StandardColors.LightSalmon;
+            cellF.Style.Padding.All = 8;
+            cellF.Contents.Add("F (2 cols)");
+            row1.Cells.Add(cellF);
+
+            TableCell cellG = new TableCell();
+            cellG.Width = 80;
+            cellG.Style.Background.Color = StandardColors.White;
+            cellG.Style.Padding.All = 8;
+            cellG.Contents.Add("G");
+            row1.Cells.Add(cellG);
+
+            // Row 2: Cell H (rowspan=2), Cell I, Cell J, Cell K
+            TableRow row2 = new TableRow();
+            grid.Rows.Add(row2);
+
+            TableCell cellH = new TableCell();
+            cellH.CellRowSpan = 2;
+            cellH.Width = 80;
+            cellH.Style.Background.Color = StandardColors.LightSkyBlue;
+            cellH.Style.Padding.All = 8;
+            cellH.Contents.Add("H\n(2 rows)");
+            row2.Cells.Add(cellH);
+
+            TableCell cellI = new TableCell();
+            cellI.Width = 80;
+            cellI.Style.Background.Color = StandardColors.Blue;
+            cellI.Style.Padding.All = 8;
+            cellI.Contents.Add("I");
+            row2.Cells.Add(cellI);
+
+            TableCell cellJ = new TableCell();
+            cellJ.Width = 80;
+            cellJ.Style.Background.Color = StandardColors.Yellow;
+            cellJ.Style.Padding.All = 8;
+            cellJ.Contents.Add("J");
+            row2.Cells.Add(cellJ);
+
+            TableCell cellK = new TableCell();
+            cellK.Width = 80;
+            cellK.Style.Background.Color = StandardColors.Green;
+            cellK.Style.Padding.All = 8;
+            cellK.Contents.Add("K");
+            row2.Cells.Add(cellK);
+
+            // Row 3: Cell L, Cell M, Cell N
+            TableRow row3 = new TableRow();
+            grid.Rows.Add(row3);
+
+            TableCell cellL = new TableCell();
+            cellL.Width = 80;
+            cellL.Style.Background.Color = StandardColors.LightSteelBlue;
+            cellL.Style.Padding.All = 8;
+            cellL.Contents.Add("L");
+            row3.Cells.Add(cellL);
+
+            TableCell cellM = new TableCell();
+            cellM.Width = 80;
+            cellM.Style.Background.Color = StandardColors.Blue;
+            cellM.Style.Padding.All = 8;
+            cellM.Contents.Add("M");
+            row3.Cells.Add(cellM);
+
+            TableCell cellN = new TableCell();
+            cellN.Width = 80;
+            cellN.Style.Background.Color = StandardColors.Red;
+            cellN.Style.Padding.All = 8;
+            cellN.Contents.Add("N");
+            row3.Cells.Add(cellN);
+
+            // Generate PDF
+            using (var ms = DocStreams.GetOutputStream("TableRowspan_Visual_ColorfulTable.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutDocumentComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            // Verify document processed
+            Assert.IsNotNull(layoutDoc);
+            Assert.AreEqual(1, layoutDoc.AllPages.Count);
+        }
+
+        #endregion
     }
 }
