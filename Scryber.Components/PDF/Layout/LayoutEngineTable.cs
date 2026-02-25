@@ -309,8 +309,22 @@ namespace Scryber.PDF.Layout
                     Style origRowStlye = this.StyleStack.Pop();
                     _rowOffset = 0;
                     Unit repeath = this.DoLayoutRepeatingRows(index);
+
+                    if(IsRowSpannedFromPreviousRow(index))
+                    {
+                        // Handle rowspan groups when rows overflow
+                        // If a row with rowspan > 1 overflows, ensure all affected rows move together
+                        var oldRegion = origtable.CurrentRegion;
+                        var newRegion = AllCells.CurrentGrid.TableBlock.CurrentRegion;
+                        int startRowspanGroup = GetRowspanGroupStart(index);
+                        Unit movedHeight = this.MovePreviousRows(startRowspanGroup, index, oldRegion, newRegion, repeath);
+                        _rowOffset += movedHeight; // Adjust the offset for the moved rows
+                        repeath += movedHeight; // Add the moved height to the repeating rows offset, so the last row that was moved to the new region is in the correct place.
+                    }
+
                     _rowOffset += origRow.Height;
                     origRow.Offset(0, repeath);
+                    
                     this.StyleStack.Push(origRowStlye);
                 }
                 else
@@ -348,6 +362,174 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Determines if the specified row is part of a rowspan that was initiated
+        /// in a previous row. For example, if row 0 has a cell with rowspan=3,
+        /// then rows 1 and 2 return true for this method.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>True if this row is spanned by cells from previous rows</returns>
+        private bool IsRowSpannedFromPreviousRow(int rowindex)
+        {
+            if (rowindex <= 0)
+                return false;
+
+            // Check if any column in this row is occupied by a rowspan from a previous row
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference currentCell = this.AllCells.AllCells[rowindex, colIndex];
+                if (currentCell != null && currentCell.IsEmpty)
+                {
+                    // This cell position is empty, which means it's spanned by a cell from a previous row
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the starting row index of the rowspan group that includes the specified row.
+        /// If the row is part of a rowspan initiated in a previous row, returns that previous row's index.
+        /// Otherwise returns the current row index.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>The starting row index of the rowspan group</returns>
+        private int GetRowspanGroupStart(int rowindex)
+        {
+            int groupStart = rowindex;
+            
+            // Look backwards to find if this row is part of a rowspan from a previous row
+            for (int prevRowIndex = rowindex - 1; prevRowIndex >= 0; prevRowIndex--)
+            {
+                bool hasRowspanFromThisRow = false;
+                RowReference prevRow = this.AllCells.AllRows[prevRowIndex];
+                
+                for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+                {
+                    CellReference cell = prevRow[colIndex];
+                    if (cell != null && !cell.IsEmpty && cell.RowSpan > 1)
+                    {
+                        int spanEnd = cell.RowIndex + cell.RowSpan - 1;
+                        if (spanEnd >= rowindex)
+                        {
+                            // This row is spanned by a cell from prevRowIndex
+                            hasRowspanFromThisRow = true;
+                            groupStart = prevRowIndex;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!hasRowspanFromThisRow)
+                    break; // No rowspan from this previous row affects our target row
+            }
+            
+            return groupStart;
+        }
+
+        /// <summary>
+        /// Gets the ending row index of the rowspan group that includes the specified row.
+        /// If the row contains cells with rowspan > 1, returns the end of that span.
+        /// </summary>
+        /// <param name="rowindex">The row index to check</param>
+        /// <returns>The ending row index of the rowspan group (inclusive)</returns>
+        private int GetRowspanGroupEnd(int rowindex)
+        {
+            int groupEnd = rowindex;
+            RowReference currentRow = this.AllCells.AllRows[rowindex];
+            
+            // Check all cells in this row to find how far their rowspans extend
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference cell = currentRow[colIndex];
+                if (cell != null && !cell.IsEmpty && cell.RowSpan > 1)
+                {
+                    int spanEnd = cell.RowIndex + cell.RowSpan - 1;
+                    if (spanEnd > groupEnd)
+                        groupEnd = spanEnd;
+                }
+            }
+            
+            return groupEnd;
+        }
+
+        private Unit MovePreviousRows(int startRowIndex, int endRowIndex, PDFLayoutRegion oldRegion, PDFLayoutRegion newParent, Unit headOffset)
+        {
+            Unit offset = 0;
+            for (int i = startRowIndex; i < endRowIndex; i++)
+            {
+                RowReference rowRef = this.AllCells.AllRows[i];
+                if (rowRef.Block != null)
+                {
+                    // Move this row to the new region
+                    oldRegion.RemoveItem(rowRef.Block, updateSize: true);
+                    newParent.AddExistingItem(rowRef.Block);
+
+                    rowRef.Block.Offset(0, offset + headOffset);
+                    offset += rowRef.Block.Height;
+                    //rowRef.OwnerGrid = this.AllCells.CurrentGrid; // Update the owner grid reference for the row
+                }
+            }
+            
+            return offset;
+        }
+
+        /// <summary>
+        /// When a row with rowspan cells overflows to a new region,
+        /// this method ensures all rows affected by that rowspan move together.
+        /// For example, if row 0 has a cell with rowspan=3, and row 0 overflows,
+        /// then rows 1 and 2 are also moved to maintain the rowspan group.
+        /// </summary>
+        /// <param name="rowindex">The index of the row that overflowed</param>
+        /// <param name="pageHeaderHeight">Height of repeating header rows on the new page</param>
+        private void LayoutAdditionalSpannedRows(int rowindex, Unit pageHeaderHeight)
+        {
+            // Find the maximum rowspan extent from the cells in this row
+            RowReference currentRow = this._tblRef.AllRows[rowindex];
+            int maxSpanEnd = rowindex; // At minimum, the current row
+            
+            // Check all cells in this row to find how far their rowspans extend
+            for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
+            {
+                CellReference cref = currentRow[colIndex];
+                if (cref != null && !cref.IsEmpty && cref.RowSpan > 1)
+                {
+                    // This cell spans down, so check where it ends
+                    int spanEnd = cref.RowIndex + cref.RowSpan - 1;
+                    if (spanEnd > maxSpanEnd)
+                        maxSpanEnd = spanEnd;
+                }
+            }
+            
+            // If there are additional rows affected by the rowspan, layout them too
+            if (maxSpanEnd > rowindex)
+            {
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, 
+                        $"Row {rowindex} has rowspan cells extending to row {maxSpanEnd}. Laying out additional spanned rows.");
+                
+                // Layout each additional row affected by the rowspan
+                Unit additionalOffset = Unit.Zero;
+                for (int spanRowIndex = rowindex + 1; spanRowIndex <= maxSpanEnd && spanRowIndex < this.Table.Rows.Count; spanRowIndex++)
+                {
+                    if (this.ContinueLayout)
+                    {
+                        TableRow spanRow = this.Table.Rows[spanRowIndex];
+                        if (spanRow != null && spanRow.Visible)
+                        {
+                            Unit spanRowHeight = this.DoLayoutTableRow(spanRow, spanRowIndex, false);
+                            additionalOffset += spanRowHeight;
+                        }
+                    }
+                }
+                
+                if (this.Context.ShouldLogDebug)
+                    this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory,
+                        $"Completed layout of {maxSpanEnd - rowindex} additional spanned rows with total height {additionalOffset}");
+            }
+        }
 
         #region private PDFUnit DoLayoutRepeatingRows(ref int rowindex)
 
@@ -408,7 +590,7 @@ namespace Scryber.PDF.Layout
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
-                if (_lastRowWasMovedToANewTable)
+                if (_lastRowWasMovedToANewTable) //to remove as not using.
                 {
                     GridReference gref = AllCells.CurrentGrid;
                     RowReference currrow = gref[0];

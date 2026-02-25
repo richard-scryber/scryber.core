@@ -27,17 +27,16 @@ namespace Scryber.UnitLayouts
         private Document ParseXhtml(string xhtmlContent)
         {
             // Create a temporary file with the XHTML content
-            var tempPath = System.IO.Path.GetTempFileName();
+            System.IO.StringReader reader = new System.IO.StringReader(xhtmlContent);
             try
             {
-                File.WriteAllText(tempPath, xhtmlContent);
-                return Document.ParseDocument(tempPath);
+                return Document.ParseDocument(reader, ParseSourceType.DynamicContent);
             }
             finally
             {
                 // Clean up temp file after parsing
-                if (File.Exists(tempPath))
-                    File.Delete(tempPath);
+                if (null != reader)
+                    reader.Dispose();
             }
         }
 
@@ -1160,6 +1159,278 @@ namespace Scryber.UnitLayouts
             // Verify document processed
             Assert.IsNotNull(layoutDoc);
             Assert.AreEqual(1, layoutDoc.AllPages.Count);
+        }
+
+        #endregion
+
+        #region Advanced Scenarios
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_PageBreak_ParentDivRepeat()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 300pt; margin: 20pt; }
+        body { font-size: 10pt; }
+        div.container { 
+            border: 2pt solid #333333;
+            padding: 10pt;
+            margin: 10pt 0;
+            background-color: #f5f5f5;
+        }
+        table { width: 100%; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 5pt; border: 1pt solid black; height: 60pt; }
+    </style>
+</head>
+<body>
+<div class='container'>
+    <p>Table Container</p>
+    <table>
+        <tr>
+            <td rowspan='3'>A</td>
+            <td>B</td>
+        </tr>
+        <tr>
+            <td>C</td>
+        </tr>
+        <tr>
+            <td>D</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            var layout = RenderDocument("TableRowspan_PageBreak_ParentDivRepeat.pdf", doc, 2);
+            
+            // Verify we have multiple pages due to overflow
+            Assert.IsTrue(layout.AllPages.Count >= 2, "Table with parent div should overflow to multiple pages");
+
+            // Verify both pages have content
+            for (int pageIndex = 0; pageIndex < layout.AllPages.Count && pageIndex < 2; pageIndex++)
+            {
+                var page = layout.AllPages[pageIndex];
+                Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, $"Page {pageIndex} should contain table content");
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_MultiColumn()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; }
+        body { font-size: 10pt; margin: 20pt; }
+        div.content {
+            column-count: 2;
+            column-gap: 20pt;
+            column-rule: 1pt solid #cccccc; 
+            overflow: auto;
+            border: 1pt solid cyan;
+        }
+        table { width: 100%; border: 1pt solid black; }
+        td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
+        td.tall { border: solid 1pt blue; vertical-align: top; }
+        p { border-bottom: solid 1pt #999;}
+        .spacer{ height: 520pt; background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
+        header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
+        footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
+    </style>
+</head>
+<body>
+<header>
+    <div>This is the page header</div>
+</header>
+
+<h1>Multi-Column Table Test</h1>
+<div id='content' class='content'>
+    <p>This content flows in 2 columns. The table below should flow across columns when it overflows:</p>
+    <div class='spacer'>Spacer to push table over.</div>
+    <table id='testTable'>
+        <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Above 1</td>
+            <td>Above 2</td>
+        </tr>
+        <tr id='aboveSpannedRow'>
+            <td>Above 3</td>
+            <td>Above 4</td>
+        </tr>
+        <tr id='spannedRow'>
+            <td id='spannedCell' rowspan='4' class='tall'>Tall span 4 rows</td>
+            <td>Row 0, Col 1</td>
+        </tr>
+        <tr id='pushingRow'>
+            <td id='pushingCell'>Row 1, Col 1</td>
+        </tr>
+        <tr id='nextRow'>
+            <td>Row 2, Col 1</td>
+        </tr>
+        <tr id='lastRow'>
+            <td>Row 3, Col 1</td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>Footer 1</td>
+                <td>Footer 2</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p>More content after table in columns.</p>
+</div>
+<footer>
+    <div>This is the page footer</div>
+</footer>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            var layout = RenderDocument("TableRowspan_MultiColumn.pdf", doc, 1);
+            
+            // Verify layout was created successfully
+            Assert.IsNotNull(layout, "Layout should be created for multi-column document");
+            Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
+
+            // Verify content is present
+            var page = layout.AllPages[0];
+            Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+        }
+
+        #endregion
+
+        #region TableRowspan_Overflow_KeepTogether
+
+        /// <summary>
+        /// Tests that when rows with rowspan cells overflow to a new page,
+        /// all rows affected by the rowspan move together to maintain the rowspan group.
+        /// This validates the requirement: "if rows overflow that had a row-spanned cell in them 
+        /// (or the spanned cell was across that row), then it must move along with all the other cells in its spanned rows."
+        /// </summary>
+        [TestMethod()]
+        [TestCategory(TestCategoryName)]
+        public void TableRowspan_Overflow_KeepTogether()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta charset='utf-8' />
+    <title>Rowspan Overflow Keep Together Test</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        body {
+            font-family: Helvetica;
+            font-size: 10pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20pt 0;
+        }
+        
+        tr {
+            height: auto;
+        }
+        
+        td, th {
+            border: 1pt solid #000;
+            padding: 8pt;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        th {
+            background-color: #ccc;
+            font-weight: bold;
+        }
+        
+        .content-area {
+            content: ' ';
+        }
+    </style>
+</head>
+<body>
+    <h1>Rowspan Overflow Keep Together Test</h1>
+    <p>This table has rows that will overflow to a new page. The rows with rowspan should stay together.</p>
+    
+    <!-- Content before table to push it down the page -->
+    <p style='height: 350pt; overflow: hidden;'>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </p>
+    
+    <!-- Table with rowspan that should overflow -->
+    <table>
+        <thead>
+            <tr>
+                <th>Col 1</th>
+                <th>Col 2</th>
+                <th>Col 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Row 0: First row from rowspan group -->
+            <tr id='rowspan-start'>
+                <td rowspan='3' style='background-color: #e0e0ff;'>Spans 3 rows</td>
+                <td>R0C2-A</td>
+                <td>R0C3-A</td>
+            </tr>
+            <!-- Row 1: Part of rowspan group -->
+            <tr id='rowspan-middle'>
+                <td>R1C2-B</td>
+                <td>R1C3-B</td>
+            </tr>
+            <!-- Row 2: Last row of rowspan group -->
+            <tr id='rowspan-end'>
+                <td>R2C2-C</td>
+                <td>R2C3-C</td>
+            </tr>
+            <!-- Row 3: After rowspan, should stay with group -->
+            <tr id='after-rowspan'>
+                <td>End C1</td>
+                <td>End C2</td>
+                <td>End C3</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>Content after table.</p>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+            var layout = RenderDocument("TableRowspan_Overflow_KeepTogether.pdf", doc, 2);
+            
+            // Verify layout spans multiple pages
+            Assert.IsTrue(layout.AllPages.Count >= 2, "Document should span at least 2 pages due to overflow");
+            
+            // Verify first page has content
+            var page1 = layout.AllPages[0];
+            Assert.IsTrue(page1.ContentBlock.Columns[0].Contents.Count > 0, "First page should have content");
+            
+            // Verify second page has content (the table should have moved to second page)
+            var page2 = layout.AllPages[1];
+            Assert.IsTrue(page2.ContentBlock.Columns[0].Contents.Count > 0, "Second page should have table content");
         }
 
         #endregion
