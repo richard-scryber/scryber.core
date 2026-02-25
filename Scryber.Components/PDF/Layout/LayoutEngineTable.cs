@@ -316,7 +316,7 @@ namespace Scryber.PDF.Layout
                         // If a row with rowspan > 1 overflows, ensure all affected rows move together
                         var oldRegion = origtable.CurrentRegion;
                         var newRegion = AllCells.CurrentGrid.TableBlock.CurrentRegion;
-                        int startRowspanGroup = GetRowspanGroupStart(index);
+                        int startRowspanGroup = GetRowspanGroupStart(index - 1); // Get the starting row index of the rowspan group that includes the previous row
                         Unit movedHeight = this.MovePreviousRows(startRowspanGroup, index, oldRegion, newRegion, repeath);
                         _rowOffset += movedHeight; // Adjust the offset for the moved rows
                         repeath += movedHeight; // Add the moved height to the repeating rows offset, so the last row that was moved to the new region is in the correct place.
@@ -382,8 +382,31 @@ namespace Scryber.PDF.Layout
                 CellReference currentCell = this.AllCells.AllCells[rowindex, colIndex];
                 if (currentCell != null && currentCell.IsEmpty)
                 {
-                    // This cell position is empty, which means it's spanned by a cell from a previous row
-                    return true;
+                    if(!IsSpannedFromColumn(rowindex, colIndex))
+                    {
+                        // This cell is empty but not because of a column span, so it must be because of a row span
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        private bool IsSpannedFromColumn(int rowindex, int colindex)
+        {
+            // Check if this empty cell is due to a column span from the left
+            for (int prevColIndex = colindex - 1; prevColIndex >= 0; prevColIndex--)
+            {
+                CellReference leftCell = this.AllCells.AllCells[rowindex, prevColIndex];
+                if (leftCell != null && !leftCell.IsEmpty && leftCell.ColumnSpan > 1)
+                {
+                    int spanEnd = leftCell.ColumnIndex + leftCell.ColumnSpan - 1;
+                    if (spanEnd >= colindex)
+                    {
+                        // This cell is spanned by a cell from the left, so it's not a rowspan issue
+                        return true;
+                    }
                 }
             }
             return false;
@@ -401,7 +424,7 @@ namespace Scryber.PDF.Layout
             int groupStart = rowindex;
             
             // Look backwards to find if this row is part of a rowspan from a previous row
-            for (int prevRowIndex = rowindex - 1; prevRowIndex >= 0; prevRowIndex--)
+            for (int prevRowIndex = rowindex; prevRowIndex >= 0; prevRowIndex--)
             {
                 bool hasRowspanFromThisRow = false;
                 RowReference prevRow = this.AllCells.AllRows[prevRowIndex];
@@ -409,17 +432,13 @@ namespace Scryber.PDF.Layout
                 for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
                 {
                     CellReference cell = prevRow[colIndex];
-                    if (cell != null && !cell.IsEmpty && cell.RowSpan > 1)
+                    if(cell.IsEmpty && !IsSpannedFromColumn(prevRowIndex, colIndex))
                     {
-                        int spanEnd = cell.RowIndex + cell.RowSpan - 1;
-                        if (spanEnd >= rowindex)
-                        {
-                            // This row is spanned by a cell from prevRowIndex
-                            hasRowspanFromThisRow = true;
-                            groupStart = prevRowIndex;
-                            break;
-                        }
+                        int rowStartFromAbove = GetStartingRowForRowSpanFromAbove(prevRowIndex, colIndex);
+                        if(rowStartFromAbove < groupStart)
+                            groupStart = rowStartFromAbove;
                     }
+                    
                 }
                 
                 if (!hasRowspanFromThisRow)
@@ -427,6 +446,20 @@ namespace Scryber.PDF.Layout
             }
             
             return groupStart;
+        }
+
+        private int GetStartingRowForRowSpanFromAbove(int prevRowIndex, int colIndex)
+        {
+            while(prevRowIndex >= 0)
+            {
+                var cellAbove = this.AllCells.AllCells[prevRowIndex, colIndex];
+                if (cellAbove != null && !cellAbove.IsEmpty && cellAbove.RowSpan > 1)
+                {
+                    return prevRowIndex;
+                }
+                prevRowIndex--; // Move up to check for row spans that might be causing this empty cell
+            }
+            return -1; // No spanning cell found above
         }
 
         /// <summary>
@@ -1314,6 +1347,7 @@ namespace Scryber.PDF.Layout
                 RowReference rref = tbl.AddRowReference(row, grid, applied, full, rowIndex);
 
                 this.BuildReferenceCells(tbl, rref, rowIndex, columncount);
+                
                 rowIndex++;
             }
 
@@ -1851,6 +1885,26 @@ namespace Scryber.PDF.Layout
         // inner classes
         //
 
+        private enum CellContentType
+        {
+            /// <summary>
+            /// This is a cell that has no content and is not spanned by another cell.
+            /// </summary>
+            Empty,
+            /// <summary>
+            /// This is a cell that has content and is not spanned by another cell (but can span other cells).
+            /// </summary>
+            Content,
+            /// <summary>
+            /// This is an empty cell that is spanned by another cell in the same row.
+            /// </summary>
+            SpannedRow,
+            /// <summary>
+            /// This is an empty cell that is spanned by another cell in the same column.
+            /// </summary>
+            SpannedColumn
+        }
+
         #region private class CellReference
 
         /// <summary>
@@ -1870,7 +1924,7 @@ namespace Scryber.PDF.Layout
             private Unit _totalHeight;
             private Thickness _margins;
             private RowReference _row;
-            private bool _empty = false;
+            private bool _empty;
 
             #endregion
 
@@ -2232,6 +2286,11 @@ namespace Scryber.PDF.Layout
             private Unit _explicitHeight;
             private Thickness _margins;
             private GridReference _grid;
+
+            /// <summary>
+            /// Tracks the rowspan cell markers for this row, to allow us to know which cells are spanning into this row from previous rows, and to track when they end.
+            /// </summary>
+            private RowspanCellMarker[] _rSpans = null;
 
             #endregion
 
@@ -2647,6 +2706,7 @@ namespace Scryber.PDF.Layout
             private RowReference[] _rows;
             private CellReference[,] _cells;
             private List<GridReference> _grids;
+
             private int _columncount;
             private int _rowcount;
 
@@ -2845,6 +2905,7 @@ namespace Scryber.PDF.Layout
             }
 
             #endregion
+
 
             #region public void AddCellReference(PDFTableCell cell, RowReference rowRef, PDFStyle applied, PDFStyle fullstyle, int column) + 1 overload
 

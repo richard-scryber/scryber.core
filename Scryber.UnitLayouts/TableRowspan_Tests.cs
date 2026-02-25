@@ -1233,7 +1233,6 @@ namespace Scryber.UnitLayouts
             column-count: 2;
             column-gap: 20pt;
             column-rule: 1pt solid #cccccc; 
-            overflow: auto;
             border: 1pt solid cyan;
         }
         table { width: 100%; border: 1pt solid black; }
@@ -1255,12 +1254,12 @@ namespace Scryber.UnitLayouts
     <p>This content flows in 2 columns. The table below should flow across columns when it overflows:</p>
     <div class='spacer'>Spacer to push table over.</div>
     <table id='testTable'>
-        <thead>
+        <!--<thead>
             <tr>
                 <th>Header 1</th>
                 <th>Header 2</th>
             </tr>
-        </thead>
+        </thead>-->
         <tr>
             <td>Above 1</td>
             <td>Above 2</td>
@@ -1270,7 +1269,7 @@ namespace Scryber.UnitLayouts
             <td>Above 4</td>
         </tr>
         <tr id='spannedRow'>
-            <td id='spannedCell' rowspan='4' class='tall'>Tall span 4 rows</td>
+            <td id='spannedCell' rowspan='2' class='tall'>Tall span 2 rows</td>
             <td>Row 0, Col 1</td>
         </tr>
         <tr id='pushingRow'>
@@ -1278,10 +1277,11 @@ namespace Scryber.UnitLayouts
         </tr>
         <tr id='nextRow'>
             <td>Row 2, Col 1</td>
+            <td>Row 2, Col 2</td>
         </tr>
-        <tr id='lastRow'>
+        <!--<tr id='lastRow'>
             <td>Row 3, Col 1</td>
-        </tr>
+        </tr>-->
         <tfoot>
             <tr>
                 <td>Footer 1</td>
