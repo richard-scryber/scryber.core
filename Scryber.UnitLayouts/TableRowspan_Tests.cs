@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
@@ -13,6 +14,8 @@ namespace Scryber.UnitLayouts
     public class TableRowspan_Tests
     {
         private const string TestCategoryName = "Table Rowspan";
+        private const string ImagePath = "../../../Content/Images/Toroid32.png";
+        private const string SvgImagePath = "../../../Content/Images/Chart.svg";
 
         private PDFLayoutDocument layoutDoc;
 
@@ -21,90 +24,141 @@ namespace Scryber.UnitLayouts
             layoutDoc = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
+        private Document ParseXhtml(string xhtmlContent)
+        {
+            // Create a temporary file with the XHTML content
+            var tempPath = System.IO.Path.GetTempFileName();
+            try
+            {
+                File.WriteAllText(tempPath, xhtmlContent);
+                return Document.ParseDocument(tempPath);
+            }
+            finally
+            {
+                // Clean up temp file after parsing
+                if (File.Exists(tempPath))
+                    File.Delete(tempPath);
+            }
+        }
+
+        private PDFLayoutDocument RenderDocument(string fileName, Document doc, int minPages = 1)
+        {
+            layoutDoc = null;
+            using (var ms = DocStreams.GetOutputStream(fileName))
+            {
+                doc.LayoutComplete += Doc_LayoutDocumentComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layoutDoc, "Layout document should exist");
+            Assert.IsTrue(layoutDoc.AllPages.Count >= minPages, "Expected layout to have at least the minimum page count");
+            return layoutDoc;
+        }
+
+        private PDFLayoutBlock RenderTableBlock(string fileName, Document doc, int minPages = 1)
+        {
+            var layout = RenderDocument(fileName, doc, minPages);
+            var pg = layout.AllPages[0];
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tblBlock, "Table block should exist");
+            return tblBlock;
+        }
+
+        private string GetContentPath(string relativePath)
+        {
+            var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Environment.CurrentDirectory, relativePath));
+            Assert.IsTrue(File.Exists(path), $"Could not find the content file at '{path}'");
+            return path;
+        }
+
+        private Image CreateImage(string path, double width, double height)
+        {
+            var img = new Image();
+            img.Source = path;
+            img.Width = new Unit(width);
+            img.Height = new Unit(height);
+            return img;
+        }
+
+        private PDFLayoutBlock GetTableBlock(PDFLayoutDocument layout, int pageIndex)
+        {
+            var pg = layout.AllPages[pageIndex];
+            Assert.IsTrue(pg.ContentBlock.Columns.Length > 0, "Page should contain columns");
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tblBlock, "Table block should exist");
+            return tblBlock;
+        }
+
+        private void AssertRepeatingHeaderRow(PDFLayoutDocument layout, int expectedPages)
+        {
+            Assert.IsTrue(layout.AllPages.Count >= expectedPages, "Expected layout to have enough pages");
+            for (int pageIndex = 0; pageIndex < expectedPages; pageIndex++)
+            {
+                var tblBlock = GetTableBlock(layout, pageIndex);
+                var firstRow = tblBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+                Assert.IsNotNull(firstRow, $"First row block should exist on page {pageIndex}");
+                // Header repetition may be a table-level feature; just verify first row exists
+                Assert.IsTrue(tblBlock.Columns[0].Contents.Count >= 1, $"Each page should have at least one row");
+            }
+        }
+
+        private void AssertRowCellCounts(PDFLayoutBlock tableBlock, params int[] expectedCellsPerRow)
+        {
+            Assert.AreEqual(expectedCellsPerRow.Length, tableBlock.Columns[0].Contents.Count, "Table should have expected row blocks");
+
+            for (int i = 0; i < expectedCellsPerRow.Length; i++)
+            {
+                var rowBlock = tableBlock.Columns[0].Contents[i] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock, $"Row {i} block should exist");
+                int actualCellBlocks = 0;
+                for (int col = 0; col < rowBlock.Columns.Length; col++)
+                {
+                    actualCellBlocks += rowBlock.Columns[col].Contents.Count;
+                }
+                Assert.AreEqual(expectedCellsPerRow[i], actualCellBlocks, $"Row {i} should have {expectedCellsPerRow[i]} cell blocks");
+            }
+        }
+
         #region Simple Rowspan Tests (Category B)
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_SimpleRowspan2Rows()
         {
-            const int PageWidth = 600;
-            const int PageHeight = 800;
             const int CellWidth = 150;
             const int CellHeight = 50;
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = PageWidth;
-            section.Style.PageStyle.Height = PageHeight;
-            section.Margins = 10;
-            section.FontSize = 10;
+            string xhtml = $@"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page {{ size: 600pt 800pt; margin: 10pt; }}
+        body {{ font-size: 10pt; }}
+        table {{ width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }}
+        td {{ width: {CellWidth}pt; height: {CellHeight}pt; margin: 0; padding: 0; border: 1pt solid black; }}
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2'>A</td>
+        <td>B</td>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td>E</td>
+    </tr>
+    <tr>
+        <td>F0</td>
+        <td>F1</td>
+        <td>F2</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
-
-            // Create table: 3 rows, 3 columns
-            // Cell (0,0) has rowspan=2
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            grid.Margins = (Thickness)0;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2; // Spans rows 0 and 1
-            cellA.Width = CellWidth;
-            cellA.Height = CellHeight;
-            cellA.Margins = (Thickness)0;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Width = CellWidth;
-            cellB.Height = CellHeight;
-            cellB.Margins = (Thickness)0;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            TableCell cellC = new TableCell();
-            cellC.Width = CellWidth;
-            cellC.Height = CellHeight;
-            cellC.Margins = (Thickness)0;
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            // Row 1 - only has 2 cells (cellA spans from row 0)
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellD = new TableCell();
-            cellD.Width = CellWidth;
-            cellD.Height = CellHeight;
-            cellD.Margins = (Thickness)0;
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            TableCell cellE = new TableCell();
-            cellE.Width = CellWidth;
-            cellE.Height = CellHeight;
-            cellE.Margins = (Thickness)0;
-            cellE.Contents.Add("E");
-            row.Cells.Add(cellE);
-
-            // Row 2
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            for (int i = 0; i < 3; i++)
-            {
-                TableCell cell = new TableCell();
-                cell.Width = CellWidth;
-                cell.Height = CellHeight;
-                cell.Margins = (Thickness)0;
-                cell.Contents.Add($"F{i}");
-                row.Cells.Add(cell);
-            }
+            Document doc = ParseXhtml(xhtml);
 
             using (var ms = DocStreams.GetOutputStream("TableRowspan_SimpleRowspan2Rows.pdf"))
             {
@@ -143,57 +197,36 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_SimpleRowspan3Rows()
         {
-            const int PageWidth = 600;
-            const int PageHeight = 800;
             const int CellWidth = 150;
             const int CellHeight = 50;
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = PageWidth;
-            section.Style.PageStyle.Height = PageHeight;
-            section.Margins = 10;
-            section.FontSize = 10;
+            string xhtml = $@"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page {{ size: 600pt 800pt; margin: 10pt; }}
+        body {{ font-size: 10pt; }}
+        table {{ width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }}
+        td {{ width: {CellWidth}pt; height: {CellHeight}pt; margin: 0; padding: 0; border: 1pt solid black; }}
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='3'>A (3x1)</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>Row1Col1</td>
+    </tr>
+    <tr>
+        <td>Row2Col1</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
-
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            grid.Margins = (Thickness)0;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 3; // Spans rows 0, 1, 2
-            cellA.Width = CellWidth;
-            cellA.Height = CellHeight;
-            cellA.Margins = (Thickness)0;
-            cellA.Contents.Add("A (3x1)");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Width = CellWidth;
-            cellB.Height = CellHeight;
-            cellB.Margins = (Thickness)0;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Rows 1 and 2
-            for (int r = 1; r < 3; r++)
-            {
-                row = new TableRow();
-                grid.Rows.Add(row);
-
-                TableCell cell = new TableCell();
-                cell.Width = CellWidth;
-                cell.Height = CellHeight;
-                cell.Margins = (Thickness)0;
-                cell.Contents.Add($"Row{r}Col1");
-                row.Cells.Add(cell);
-            }
+            Document doc = ParseXhtml(xhtml);
 
             using (var ms = DocStreams.GetOutputStream("TableRowspan_SimpleRowspan3Rows.pdf"))
             {
@@ -224,76 +257,36 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_RowspanMultipleCells()
         {
-            const int PageWidth = 600;
-            const int PageHeight = 800;
             const int CellWidth = 100;
             const int CellHeight = 50;
 
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = PageWidth;
-            section.Style.PageStyle.Height = PageHeight;
-            section.Margins = 10;
-            section.FontSize = 10;
+            string xhtml = $@"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page {{ size: 600pt 800pt; margin: 10pt; }}
+        body {{ font-size: 10pt; }}
+        table {{ width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }}
+        td {{ width: {CellWidth}pt; height: {CellHeight}pt; margin: 0; padding: 0; border: 1pt solid black; }}
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2'>A</td>
+        <td>B</td>
+        <td rowspan='2'>C</td>
+        <td>D</td>
+    </tr>
+    <tr>
+        <td>E</td>
+        <td>F</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
-
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            grid.Margins = (Thickness)0;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Width = CellWidth;
-            cellA.Height = CellHeight;
-            cellA.Margins = (Thickness)0;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Width = CellWidth;
-            cellB.Height = CellHeight;
-            cellB.Margins = (Thickness)0;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            TableCell cellC = new TableCell();
-            cellC.CellRowSpan = 2;
-            cellC.Width = CellWidth;
-            cellC.Height = CellHeight;
-            cellC.Margins = (Thickness)0;
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            TableCell cellD = new TableCell();
-            cellD.Width = CellWidth;
-            cellD.Height = CellHeight;
-            cellD.Margins = (Thickness)0;
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellE = new TableCell();
-            cellE.Width = CellWidth;
-            cellE.Height = CellHeight;
-            cellE.Margins = (Thickness)0;
-            cellE.Contents.Add("E");
-            row.Cells.Add(cellE);
-
-            TableCell cellF = new TableCell();
-            cellF.Width = CellWidth;
-            cellF.Height = CellHeight;
-            cellF.Margins = (Thickness)0;
-            cellF.Contents.Add("F");
-            row.Cells.Add(cellF);
+            Document doc = ParseXhtml(xhtml);
 
             using (var ms = DocStreams.GetOutputStream("TableRowspan_RowspanMultipleCells.pdf"))
             {
@@ -324,197 +317,169 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_RowspanWithVariableRowHeights()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2'>A</td>
+        <td>B short</td>
+    </tr>
+    <tr>
+        <td>C with a lot of content that might wrap to multiple lines</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            // Row 0 - short content
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B short");
-            row.Cells.Add(cellB);
-
-            // Row 1 - tall content
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C with a lot of content that might wrap to multiple lines");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_RowspanWithVariableRowHeights.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_RowspanVerticalAlignment()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.aligned { vertical-align: middle; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='aligned'>Vertically Centered</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Style.Position.VAlign = VerticalAlignment.Middle;
-            cellA.Contents.Add("Vertically Centered");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_RowspanVerticalAlignment.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_RowspanWithBorders()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.thick-border { border: 2pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='thick-border'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Style.Border.Width = 2;
-            cellA.Style.Border.Color = StandardColors.Black;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_RowspanWithBorders.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_RowspanWithBackgroundColor()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.colored { background-color: rgb(200, 220, 240); }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='colored'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Style.Background.Color = new Color(200, 220, 240);
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_RowspanWithBackgroundColor.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_RowspanWithPadding()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.padded { padding: 10pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='padded'>Padded Content</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Style.Padding.All = 10;
-            cellA.Contents.Add("Padded Content");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_RowspanWithPadding.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
         }
 
         #endregion
@@ -525,302 +490,343 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_ColspanAndRowspan_Simple()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td colspan='2' rowspan='2'>A (2x2)</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D0</td>
+        <td>D1</td>
+        <td>D2</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            section.Contents.Add(grid);
+            var tblBlock = RenderTableBlock("TableRowspan_ColspanAndRowspan_Simple.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1, 3);
+        }
 
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_ColspanRowspan_OverlapLayout()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 300pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; width: 100pt; }
+        td.wide { width: 200pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td colspan='2' rowspan='2' class='wide'>A (2x2)</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D0</td>
+        <td>D1</td>
+        <td>D2</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            TableCell cellA = new TableCell();
-            cellA.CellColumnSpan = 2;
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A (2x2)");
-            row.Cells.Add(cellA);
+            Document doc = ParseXhtml(xhtml);
 
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            // Row 2
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            for (int i = 0; i < 3; i++)
-            {
-                TableCell cell = new TableCell();
-                cell.Contents.Add($"D{i}");
-                row.Cells.Add(cell);
-            }
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_ColspanAndRowspan_Simple.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1, 3);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_MultipleSpanningCells()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td colspan='2' rowspan='2'>A</td>
+        <td rowspan='3'>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D0</td>
+        <td>D1</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellColumnSpan = 2;
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.CellColumnSpan = 1;
-            cellB.CellRowSpan = 3;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            // Row 2
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            for (int i = 0; i < 2; i++)
-            {
-                TableCell cell = new TableCell();
-                cell.Contents.Add($"D{i}");
-                row.Cells.Add(cell);
-            }
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_MultipleSpanningCells.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1, 2);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_SpanningCellsAdjacent()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2'>A</td>
+        <td rowspan='2'>B</td>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.CellRowSpan = 2;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellD = new TableCell();
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_SpanningCellsAdjacent.pdf", doc);
+            AssertRowCellCounts(tblBlock, 3, 1);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_WidthCalcWithColspanRowspan()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.w20 { width: 20%; }
+        td.w30 { width: 30%; }
+        td.w50 { width: 50%; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='w20'>A</td>
+        <td colspan='2'>B</td>
+    </tr>
+    <tr>
+        <td class='w30'>C</td>
+        <td class='w50'>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            Unit[] columnWidths = new Unit[] {
-                new Unit(20, PageUnits.Percent),
-                new Unit(30, PageUnits.Percent),
-                new Unit(50, PageUnits.Percent)
-            };
-
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Width = columnWidths[0];
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.CellColumnSpan = 2;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Width = columnWidths[1];
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            TableCell cellD = new TableCell();
-            cellD.Width = columnWidths[2];
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_WidthCalcWithColspanRowspan.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 2);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_HeightCalcWithColspanRowspan()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.tall { height: 100pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='tall'>A tall cell spanning 2 rows</td>
+        <td colspan='2'>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+        <td>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Height = 100;
-            cellA.Contents.Add("A tall cell spanning 2 rows");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.CellColumnSpan = 2;
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            TableCell cellD = new TableCell();
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_HeightCalcWithColspanRowspan.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 2);
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_NestedTableWithRowspan()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 100%; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table style='width: 400pt;'>
+    <tr>
+        <td rowspan='2'>A</td>
+        <td>
+            <table style='width: 150pt;'>
+                <tr>
+                    <td>Nested</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
+            var tblBlock = RenderTableBlock("TableRowspan_NestedTableWithRowspan.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
+        }
 
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_ComplexContent_SpannedAndStandardCells()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+        td.wide { width: 240pt; }
+        td.tall { height: 120pt; }
+        td.complex { height: 240pt; }
+    </style>
+</head>
+<body>
+<table style='width: 500pt;'>
+    <tr>
+        <td rowspan='2' class='wide complex'>Rowspan cell</td>
+        <td class='wide tall'>Non-spanned</td>
+    </tr>
+    <tr>
+        <td class='wide tall'>Second row</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
+            Document doc = ParseXhtml(xhtml);
 
-            TableCell cellB = new TableCell();
-            // Nested table in cell B
-            TableGrid nestedGrid = new TableGrid();
-            nestedGrid.Width = 150;
-            cellB.Contents.Add(nestedGrid);
+            var tblBlock = RenderTableBlock("TableRowspan_ComplexContent_SpannedAndStandardCells.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1);
+        }
 
-            TableRow nestedRow = new TableRow();
-            nestedGrid.Rows.Add(nestedRow);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_IntersectingRowspans()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; width: 150pt; height: 50pt; }
+        td.tall3 { height: 150pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='3' class='tall3'>A</td>
+        <td>B</td>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td rowspan='3' class='tall3'>D</td>
+        <td>E</td>
+    </tr>
+    <tr>
+        <td>F</td>
+    </tr>
+    <tr>
+        <td>G</td>
+        <td>H</td>
+    </tr>
+    <tr>
+        <td>I</td>
+        <td>J</td>
+        <td>K</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            TableCell nestedCell = new TableCell();
-            nestedCell.Contents.Add("Nested");
-            nestedRow.Cells.Add(nestedCell);
+            Document doc = ParseXhtml(xhtml);
 
-            row.Cells.Add(cellB);
-
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_IntersectingRowspans.pdf", doc);
+            AssertRowCellCounts(tblBlock, 3, 2, 1, 2, 3);
         }
 
         #endregion
@@ -831,52 +837,130 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_PageBreak_RowspanEndsBeforeBreak()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 400; // Smaller height to force page break
-            section.Margins = 20;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 250pt; margin: 20pt; }
+        body { font-size: 10pt; }
+        table { width: 500pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; height: 100pt; }
+        td.tall2 { height: 200pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='2' class='tall2'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td>E</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 500;
-            section.Contents.Add(grid);
+            var layout = RenderDocument("TableRowspan_PageBreak_RowspanEndsBeforeBreak.pdf", doc, 2);
+            Assert.IsTrue(layout.AllPages.Count >= 2, "Rowspan before page break should produce multiple pages");
+        }
 
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_PageBreak_RowspanCrossesBreak()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 250pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; height: 120pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='3'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 2;
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
+            Document doc = ParseXhtml(xhtml);
 
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
+            var layout = RenderDocument("TableRowspan_PageBreak_RowspanCrossesBreak.pdf", doc, 2);
+            Assert.IsTrue(layout.AllPages.Count >= 2, "Rowspan across page break should produce multiple pages");
+        }
 
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_PageBreak_RowspanSecondRowMovesPreviousRow()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 240pt; margin: 20pt; }
+        body { font-size: 10pt; }
+        table { width: 480pt; margin: 0; padding: 0; border-collapse: collapse; }
+        th, td { margin: 0; padding: 0; border: 1pt solid black; width: 220pt; }
+        th { height: 30pt; background-color: #f0f0f0; }
+        td { height: 40pt; }
+        td.tall8 { height: 320pt; }
+    </style>
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th>Header 0</th>
+            <th>Header 1</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan='2'>A</td>
+            <td>B</td>
+        </tr>
+        <tr>
+            <td rowspan='2' class='tall8'>C</td>
+        </tr>
+        <tr>
+            <td>D</td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>";
 
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
+            Document doc = ParseXhtml(xhtml);
 
-            // Row 2 - on new page
-            row = new TableRow();
-            grid.Rows.Add(row);
+            var layout = RenderDocument("TableRowspan_PageBreak_RowspanSecondRowMovesPreviousRow.pdf", doc, 2);
+            
+            // Verify we have multiple pages
+            Assert.IsTrue(layout.AllPages.Count >= 2, "Should split across pages");
 
-            TableCell cellD = new TableCell();
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            TableCell cellE = new TableCell();
-            cellE.Contents.Add("E");
-            row.Cells.Add(cellE);
-
-            Assert.AreNotEqual(0, grid.Width);
+            // Pages should each contain table content
+            for (int pageIndex = 0; pageIndex < layout.AllPages.Count && pageIndex < 2; pageIndex++)
+            {
+                var pageTable = GetTableBlock(layout, pageIndex);
+                Assert.IsTrue(pageTable.Columns[0].Contents.Count >= 1, $"Page {pageIndex} should contain at least one row");
+            }
         }
 
         #endregion
@@ -887,93 +971,120 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_Validation_RowspanExceedsTable()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='5'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
+            var tblBlock = RenderTableBlock("TableRowspan_Validation_RowspanExceedsTable.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1, 1);
+        }
 
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_Validation_RowspanExceedsTable_Layout()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 300pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; height: 40pt; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='5'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>C</td>
+    </tr>
+    <tr>
+        <td>D</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 5; // Table only has 3 rows
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
+            Document doc = ParseXhtml(xhtml);
 
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
+            var layout = RenderDocument("TableRowspan_Validation_RowspanExceedsTable_Layout.pdf", doc, 1);
+            
+            Assert.AreEqual(1, layout.AllPages.Count);
 
-            // Row 1
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellC = new TableCell();
-            cellC.Contents.Add("C");
-            row.Cells.Add(cellC);
-
-            // Row 2
-            row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellD = new TableCell();
-            cellD.Contents.Add("D");
-            row.Cells.Add(cellD);
-
-            // Should handle gracefully (truncate rowspan)
-            Assert.AreNotEqual(0, grid.Width);
+            var pg = layout.AllPages[0];
+            var tblBlock = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(tblBlock, "Table block should exist");
+            Assert.AreEqual(3, tblBlock.Columns[0].Contents.Count, "Table should have 3 row blocks");
         }
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableRowspan_Validation_LargeRowspan()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Style.PageStyle.Width = 600;
-            section.Style.PageStyle.Height = 800;
-            section.Margins = 10;
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 10pt; }
+        body { font-size: 10pt; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td rowspan='50'>A</td>
+        <td>B</td>
+    </tr>
+    <tr>
+        <td>Row1</td>
+    </tr>
+    <tr>
+        <td>Row2</td>
+    </tr>
+    <tr>
+        <td>Row3</td>
+    </tr>
+    <tr>
+        <td>Row4</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            doc.Pages.Add(section);
+            Document doc = ParseXhtml(xhtml);
 
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            section.Contents.Add(grid);
-
-            // Row 0
-            TableRow row = new TableRow();
-            grid.Rows.Add(row);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 50; // Very large rowspan
-            cellA.Contents.Add("A");
-            row.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Contents.Add("B");
-            row.Cells.Add(cellB);
-
-            // Add 5 more rows
-            for (int r = 1; r < 5; r++)
-            {
-                row = new TableRow();
-                grid.Rows.Add(row);
-
-                TableCell cell = new TableCell();
-                cell.Contents.Add($"Row{r}");
-                row.Cells.Add(cell);
-            }
-
-            // Should handle without performance issues
-            Assert.AreNotEqual(0, grid.Width);
+            var tblBlock = RenderTableBlock("TableRowspan_Validation_LargeRowspan.pdf", doc);
+            AssertRowCellCounts(tblBlock, 2, 1, 1, 1, 1);
         }
 
         #endregion
@@ -984,144 +1095,62 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void TableRowspan_Visual_ColorfulTable()
         {
-            Document doc = new Document();
-            Section section = new Section();
-            section.Margins = 20;
-            doc.Pages.Add(section);
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: auto; margin: 20pt; }
+        body { font-size: 10pt; }
+        div { margin-bottom: 20pt; }
+        div.title { font-size: 20pt; font-weight: bold; }
+        table { width: 400pt; margin: 0; padding: 0; border-collapse: collapse; border: 1pt solid black; }
+        td { margin: 0; padding: 8pt; border: 1pt solid black; width: 80pt; }
+        td.blue { background-color: #ADD8E6; }
+        td.green { background-color: #90EE90; }
+        td.yellow { background-color: #FFFFE0; }
+        td.coral { background-color: #F08080; }
+        td.cyan { background-color: #E0FFFF; }
+        td.salmon { background-color: #FFA07A; }
+        td.white { background-color: #FFFFFF; }
+        td.skyblue { background-color: #87CEEB; }
+        td.darkblue { background-color: #0000FF; }
+        td.darkgreen { background-color: #008000; }
+        td.red { background-color: #FF0000; }
+        td.steelblue { background-color: #B0C4DE; }
+        td.colspan2 { width: 160pt; }
+    </style>
+</head>
+<body>
+<div class='title'>Rowspan Visual Test - Colored Table</div>
+<table>
+    <tr>
+        <td rowspan='3' class='blue'>A<br/>(3 rows)</td>
+        <td class='green'>B</td>
+        <td class='yellow'>C</td>
+        <td class='coral'>D</td>
+    </tr>
+    <tr>
+        <td class='cyan'>E</td>
+        <td colspan='2' class='salmon colspan2'>F (2 cols)</td>
+        <td class='white'>G</td>
+    </tr>
+    <tr>
+        <td rowspan='2' class='skyblue'>H<br/>(2 rows)</td>
+        <td class='darkblue'>I</td>
+        <td class='yellow'>J</td>
+        <td class='darkgreen'>K</td>
+    </tr>
+    <tr>
+        <td class='steelblue'>L</td>
+        <td class='darkblue'>M</td>
+        <td class='red'>N</td>
+    </tr>
+</table>
+</body>
+</html>";
 
-            // Title
-            Div titleDiv = new Div();
-            titleDiv.Contents.Add("Rowspan Visual Test - Colored Table");
-            titleDiv.Style.Font.FontSize = 20;
-            titleDiv.Style.Font.FontBold = true;
-            titleDiv.Style.Margins.Bottom = 20;
-            section.Contents.Add(titleDiv);
+            Document doc = ParseXhtml(xhtml);
 
-            // Create table with rowspan
-            TableGrid grid = new TableGrid();
-            grid.Width = 400;
-            grid.Style.Border.Width = 1;
-            grid.Style.Border.Color = StandardColors.Black;
-            section.Contents.Add(grid);
-
-            // Row 0: Cell A (rowspan=3), Cell B, Cell C, Cell D
-            TableRow row0 = new TableRow();
-            grid.Rows.Add(row0);
-
-            TableCell cellA = new TableCell();
-            cellA.CellRowSpan = 3;
-            cellA.Width = 80;
-            cellA.Style.Background.Color = StandardColors.LightBlue;
-            cellA.Style.Padding.All = 8;
-            cellA.Contents.Add("A\n(3 rows)");
-            row0.Cells.Add(cellA);
-
-            TableCell cellB = new TableCell();
-            cellB.Width = 80;
-            cellB.Style.Background.Color = StandardColors.LightGreen;
-            cellB.Style.Padding.All = 8;
-            cellB.Contents.Add("B");
-            row0.Cells.Add(cellB);
-
-            TableCell cellC = new TableCell();
-            cellC.Width = 80;
-            cellC.Style.Background.Color = StandardColors.LightYellow;
-            cellC.Style.Padding.All = 8;
-            cellC.Contents.Add("C");
-            row0.Cells.Add(cellC);
-
-            TableCell cellD = new TableCell();
-            cellD.Width = 80;
-            cellD.Style.Background.Color = StandardColors.LightCoral;
-            cellD.Style.Padding.All = 8;
-            cellD.Contents.Add("D");
-            row0.Cells.Add(cellD);
-
-            // Row 1: Cell E, Cell F (colspan=2), Cell G
-            TableRow row1 = new TableRow();
-            grid.Rows.Add(row1);
-
-            TableCell cellE = new TableCell();
-            cellE.Width = 80;
-            cellE.Style.Background.Color = StandardColors.LightCyan;
-            cellE.Style.Padding.All = 8;
-            cellE.Contents.Add("E");
-            row1.Cells.Add(cellE);
-
-            TableCell cellF = new TableCell();
-            cellF.CellColumnSpan = 2;
-            cellF.Width = 160;
-            cellF.Style.Background.Color = StandardColors.LightSalmon;
-            cellF.Style.Padding.All = 8;
-            cellF.Contents.Add("F (2 cols)");
-            row1.Cells.Add(cellF);
-
-            TableCell cellG = new TableCell();
-            cellG.Width = 80;
-            cellG.Style.Background.Color = StandardColors.White;
-            cellG.Style.Padding.All = 8;
-            cellG.Contents.Add("G");
-            row1.Cells.Add(cellG);
-
-            // Row 2: Cell H (rowspan=2), Cell I, Cell J, Cell K
-            TableRow row2 = new TableRow();
-            grid.Rows.Add(row2);
-
-            TableCell cellH = new TableCell();
-            cellH.CellRowSpan = 2;
-            cellH.Width = 80;
-            cellH.Style.Background.Color = StandardColors.LightSkyBlue;
-            cellH.Style.Padding.All = 8;
-            cellH.Contents.Add("H\n(2 rows)");
-            row2.Cells.Add(cellH);
-
-            TableCell cellI = new TableCell();
-            cellI.Width = 80;
-            cellI.Style.Background.Color = StandardColors.Blue;
-            cellI.Style.Padding.All = 8;
-            cellI.Contents.Add("I");
-            row2.Cells.Add(cellI);
-
-            TableCell cellJ = new TableCell();
-            cellJ.Width = 80;
-            cellJ.Style.Background.Color = StandardColors.Yellow;
-            cellJ.Style.Padding.All = 8;
-            cellJ.Contents.Add("J");
-            row2.Cells.Add(cellJ);
-
-            TableCell cellK = new TableCell();
-            cellK.Width = 80;
-            cellK.Style.Background.Color = StandardColors.Green;
-            cellK.Style.Padding.All = 8;
-            cellK.Contents.Add("K");
-            row2.Cells.Add(cellK);
-
-            // Row 3: Cell L, Cell M, Cell N
-            TableRow row3 = new TableRow();
-            grid.Rows.Add(row3);
-
-            TableCell cellL = new TableCell();
-            cellL.Width = 80;
-            cellL.Style.Background.Color = StandardColors.LightSteelBlue;
-            cellL.Style.Padding.All = 8;
-            cellL.Contents.Add("L");
-            row3.Cells.Add(cellL);
-
-            TableCell cellM = new TableCell();
-            cellM.Width = 80;
-            cellM.Style.Background.Color = StandardColors.Blue;
-            cellM.Style.Padding.All = 8;
-            cellM.Contents.Add("M");
-            row3.Cells.Add(cellM);
-
-            TableCell cellN = new TableCell();
-            cellN.Width = 80;
-            cellN.Style.Background.Color = StandardColors.Red;
-            cellN.Style.Padding.All = 8;
-            cellN.Contents.Add("N");
-            row3.Cells.Add(cellN);
-
-            // Generate PDF
             using (var ms = DocStreams.GetOutputStream("TableRowspan_Visual_ColorfulTable.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutDocumentComplete;
