@@ -35,7 +35,11 @@ namespace Scryber.PDF.Layout
         private CellDimension[] _widths;
         private CellDimension[] _heights;
         private Style[] _rowfullstyles, _rowappliedstyles;
-        private Style[,] _cellfullstyles, _cellappliedstyles;
+
+        /// <summary>
+        /// A grid of cell references that maps to the table structure, including content cells and empty cells that are occupied by rowspans and colspans. This is used to track the layout of cells and ensure proper handling of spanned cells.
+        /// </summary>
+        private CellContentReference[,] _cellContents;
         private TableReference _tblRef;
         private PDFLayoutBlock _rowblock;
         private int _rowIndex = -1;
@@ -380,37 +384,16 @@ namespace Scryber.PDF.Layout
             for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
             {
                 CellReference currentCell = this.AllCells.AllCells[rowindex, colIndex];
-                if (currentCell != null && currentCell.IsEmpty)
+                if (currentCell != null && currentCell.Type == CellContentType.SpannedRow)
                 {
-                    if(!IsSpannedFromColumn(rowindex, colIndex))
-                    {
-                        // This cell is empty but not because of a column span, so it must be because of a row span
-                        return true;
-                    }
+                    // This cell is part of a rowspan
+                    return true;
+                    
                 }
             }
             return false;
         }
 
-
-        private bool IsSpannedFromColumn(int rowindex, int colindex)
-        {
-            // Check if this empty cell is due to a column span from the left
-            for (int prevColIndex = colindex - 1; prevColIndex >= 0; prevColIndex--)
-            {
-                CellReference leftCell = this.AllCells.AllCells[rowindex, prevColIndex];
-                if (leftCell != null && !leftCell.IsEmpty && leftCell.ColumnSpan > 1)
-                {
-                    int spanEnd = leftCell.ColumnIndex + leftCell.ColumnSpan - 1;
-                    if (spanEnd >= colindex)
-                    {
-                        // This cell is spanned by a cell from the left, so it's not a rowspan issue
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Gets the starting row index of the rowspan group that includes the specified row.
@@ -432,8 +415,9 @@ namespace Scryber.PDF.Layout
                 for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
                 {
                     CellReference cell = prevRow[colIndex];
-                    if(cell.IsEmpty && !IsSpannedFromColumn(prevRowIndex, colIndex))
+                    if(cell.Type == CellContentType.SpannedRow)
                     {
+                        hasRowspanFromThisRow = true;
                         int rowStartFromAbove = GetStartingRowForRowSpanFromAbove(prevRowIndex, colIndex);
                         if(rowStartFromAbove < groupStart)
                             groupStart = rowStartFromAbove;
@@ -453,7 +437,7 @@ namespace Scryber.PDF.Layout
             while(prevRowIndex >= 0)
             {
                 var cellAbove = this.AllCells.AllCells[prevRowIndex, colIndex];
-                if (cellAbove != null && !cellAbove.IsEmpty && cellAbove.RowSpan > 1)
+                if (cellAbove != null && cellAbove.Type == CellContentType.Content && cellAbove.RowSpan > 1)
                 {
                     return prevRowIndex;
                 }
@@ -477,7 +461,7 @@ namespace Scryber.PDF.Layout
             for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
             {
                 CellReference cell = currentRow[colIndex];
-                if (cell != null && !cell.IsEmpty && cell.RowSpan > 1)
+                if (cell != null && cell.Type == CellContentType.Content && cell.RowSpan > 1)
                 {
                     int spanEnd = cell.RowIndex + cell.RowSpan - 1;
                     if (spanEnd > groupEnd)
@@ -527,7 +511,7 @@ namespace Scryber.PDF.Layout
             for (int colIndex = 0; colIndex < this.AllCells.TotalColumnCount; colIndex++)
             {
                 CellReference cref = currentRow[colIndex];
-                if (cref != null && !cref.IsEmpty && cref.RowSpan > 1)
+                if (cref != null && cref.Type == CellContentType.Content && cref.RowSpan > 1)
                 {
                     // This cell spans down, so check where it ends
                     int spanEnd = cref.RowIndex + cref.RowSpan - 1;
@@ -619,7 +603,7 @@ namespace Scryber.PDF.Layout
                 cellRegion.TotalBounds = total;
                 this._rowblock.CurrentRegion.SetMaxWidth(_widths[cellindex].Size);
 
-                if (cref.IsEmpty == false && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) != DisplayMode.Invisible)
+                if (cref.Type == CellContentType.Content && cref.Cell.Visible && cref.FullStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) != DisplayMode.Invisible)
                 {
                     this.DoLayoutARowCell(cref, cref.Cell, cellindex, rowindex, repeating);
                 }
@@ -767,10 +751,10 @@ namespace Scryber.PDF.Layout
         private void BuildStyles(out int rowcount, out int columncount)
         {
             List<Style> rowfulls = new List<Style>();
-            List<List<Style>> cellfulls = new List<List<Style>>();
+            List<List<CellContentReference>> cellrefs = new List<List<CellContentReference>>();
 
             List<Style> rowapplieds = new List<Style>();
-            List<List<Style>> cellapplieds = new List<List<Style>>();
+            
             int maxcolcount = 0;
             List<int> rowspanRemaining = new List<int>();
 
@@ -823,11 +807,9 @@ namespace Scryber.PDF.Layout
                 var rowFont = rowfull.CreateTextOptions();
 
                 //For each of the cells in the row
-                List<Style> rowcellstyles = new List<Style>();
-                cellfulls.Add(rowcellstyles);
 
-                List<Style> rowcellapplieds = new List<Style>();
-                cellapplieds.Add(rowcellapplieds);
+                List<CellContentReference> rowcellcontents = new List<CellContentReference>();
+                cellrefs.Add(rowcellcontents);
 
                 int columnIndex = 0;
                 foreach (TableCell cell in row.Cells)
@@ -838,8 +820,7 @@ namespace Scryber.PDF.Layout
                     // Skip columns occupied by a rowspan from previous rows
                     while (columnIndex < rowspanRemaining.Count && rowspanRemaining[columnIndex] > 0)
                     {
-                        rowcellstyles.Add(null);
-                        rowcellapplieds.Add(null);
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedRow));
                         rowspanRemaining[columnIndex]--;
                         columnIndex++;
                     }
@@ -876,8 +857,7 @@ namespace Scryber.PDF.Layout
                         continue;
                     }
 
-                    rowcellapplieds.Add(cellapplied);
-                    rowcellstyles.Add(cellfull);
+                    rowcellcontents.Add(new CellContentReference(cellfull, cellapplied, CellContentType.Content));
 
                     //If this cell spans more than 1 column then add null to the row cell styles for each spanned column
 
@@ -918,8 +898,7 @@ namespace Scryber.PDF.Layout
                     int remainingSpan = span;
                     while (remainingSpan > 1)
                     {
-                        rowcellstyles.Add(null);
-                        rowcellapplieds.Add(null);
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedColumn));
                         remainingSpan--;
                     }
 
@@ -933,15 +912,14 @@ namespace Scryber.PDF.Layout
                 {
                     if (rowspanRemaining[columnIndex] > 0)
                     {
-                        rowcellstyles.Add(null);
-                        rowcellapplieds.Add(null);
+                        rowcellcontents.Add(new CellContentReference(null, null, CellContentType.SpannedRow));
                         rowspanRemaining[columnIndex]--;
                     }
                     columnIndex++;
                 }
 
-                if (rowcellstyles.Count > maxcolcount)
-                    maxcolcount = rowcellstyles.Count;
+                if (rowcellcontents.Count > maxcolcount)
+                    maxcolcount = rowcellcontents.Count;
 
                 this.StyleStack.Pop();
             }
@@ -952,20 +930,17 @@ namespace Scryber.PDF.Layout
             this._rowfullstyles = rowfulls.ToArray();
             this._rowappliedstyles = rowapplieds.ToArray();
 
-            this._cellfullstyles = new Style[rowfulls.Count, maxcolcount];
-            this._cellappliedstyles = new Style[rowfulls.Count, maxcolcount];
+            this._cellContents = new CellContentReference[rowfulls.Count, maxcolcount];
 
             for (int r = 0; r < rowcount; r++)
             {
-                List<Style> rsf = cellfulls[r];
-                List<Style> rsa = cellapplieds[r];
+                List<CellContentReference> rsf = cellrefs[r];
 
                 for (int c = 0; c < maxcolcount; c++)
                 {
                     if (c < rsf.Count)
                     {
-                        this._cellfullstyles[r, c] = rsf[c];
-                        this._cellappliedstyles[r, c] = rsa[c];
+                        this._cellContents[r, c] = rsf[c];
                     }
                 }
             }
@@ -995,7 +970,7 @@ namespace Scryber.PDF.Layout
                     CellReference cref = this._tblRef.AllCells[r, c];
 
                     // Only process actual cells, not null placeholders
-                    if (cref != null && cref.Block != null && !cref.IsEmpty)
+                    if (cref != null && cref.Block != null && cref.Type == CellContentType.Content)
                     {
                         // Check if this cell has rowspan > 1
                         int rowspan = cref.RowSpan;
@@ -1363,11 +1338,11 @@ namespace Scryber.PDF.Layout
 
             for (int column = 0; column < columncount; column++)
             {
-                Style applied = _cellappliedstyles[rowIndex, column];
-                Style full = _cellfullstyles[rowIndex, column];
+                CellContentReference cref = _cellContents[rowIndex, column];
+   
 
                 //Check that we are not an empty or spanned cell
-                if (null != full)
+                if (cref.Type == CellContentType.Content)
                 {
                     if (cellindex >= rref.Row.Cells.Count)
                         throw new ArgumentNullException("No cell exists at column " + column.ToString() + " in row " + rowIndex);
@@ -1380,26 +1355,26 @@ namespace Scryber.PDF.Layout
                     //watching the immutable options
                     if (tbl.CurrentGrid.Position.FillWidth)
                     {
-                        bool appliedImmutable = applied.Immutable;
-                        bool fullImmutable = full.Immutable;
+                        bool appliedImmutable = cref.Applied.Immutable;
+                        bool fullImmutable = cref.Full.Immutable;
 
-                        applied.Immutable = false;
-                        full.Immutable = false;
+                        cref.Applied.Immutable = false;
+                        cref.Full.Immutable = false;
 
-                        applied.Size.FullWidth = true;
-                        full.Size.FullWidth = true;
+                        cref.Applied.Size.FullWidth = true;
+                        cref.Full.Size.FullWidth = true;
 
-                        applied.Immutable = appliedImmutable;
-                        full.Immutable = fullImmutable;
+                        cref.Applied.Immutable = appliedImmutable;
+                        cref.Full.Immutable = fullImmutable;
                     }
 
-                    tbl.AddCellReference(cell, rref, applied, full, column);
+                    tbl.AddCellContentReference(cell, rref, cref.Applied, cref.Full, column);
 
                     cellindex++;
                 }
                 else
                 {
-                    tbl.AddEmptyCellReference(rref, column);
+                    tbl.AddEmptyCellReference(rref, column, cref.Type);
                 }
             }
         }
@@ -1439,7 +1414,7 @@ namespace Scryber.PDF.Layout
                 for (int h = 0; h < columncount; h++)
                 {
                     CellReference cref = _tblRef.AllCells[v, h];
-                    if (null != cref && cref.IsEmpty == false)
+                    if (null != cref && cref.Type == CellContentType.Content)
                     {
                         if (cref.ColumnSpan > 1)
                         {
@@ -1888,7 +1863,7 @@ namespace Scryber.PDF.Layout
         private enum CellContentType
         {
             /// <summary>
-            /// This is a cell that has no content and is not spanned by another cell.
+            /// This is a cell that is not defined in the layout, and has no content and is not spanned by another cell.
             /// </summary>
             Empty,
             /// <summary>
@@ -1903,6 +1878,34 @@ namespace Scryber.PDF.Layout
             /// This is an empty cell that is spanned by another cell in the same column.
             /// </summary>
             SpannedColumn
+        }
+
+        /// <summary>
+        /// A struct to hold references to the content of a cell, including the full and applied styles, and the type of content (empty, content, spanned row, spanned column)
+        /// </summary>
+        private struct CellContentReference
+        {
+            /// <summary>
+            /// A reference to the full style of a content cell. Null if the cell is empty or spanned.
+            /// </summary>
+            public Style Full;
+
+            /// <summary>
+            /// A reference to the applied style of a content cell. Null if the cell is empty or spanned.
+            /// </summary>
+            public Style Applied;
+
+            ///<summary>
+            /// The type of content this cell contains (empty, content, spanned row, spanned column)
+            /// </summary>
+            public CellContentType Type;
+
+            public CellContentReference(Style full, Style applied, CellContentType type)
+            {
+                this.Full = full;
+                this.Applied = applied;
+                this.Type = type;
+            }
         }
 
         #region private class CellReference
@@ -1924,7 +1927,7 @@ namespace Scryber.PDF.Layout
             private Unit _totalHeight;
             private Thickness _margins;
             private RowReference _row;
-            private bool _empty;
+            private CellContentType _type;
 
             #endregion
 
@@ -2033,12 +2036,12 @@ namespace Scryber.PDF.Layout
             #region public bool IsEmpty {get;}
 
             /// <summary>
-            /// Returns true if this is an empty or spanned cell
+            /// Returns the type of content this cell contains (empty, content, spanned row, spanned column)
             /// </summary>
-            public bool IsEmpty
+            public CellContentType Type
             {
-                get { return _empty; }
-                set { _empty = value; }
+                get { return _type; }
+                set { _type = value; }
             }
 
             #endregion
@@ -2917,9 +2920,10 @@ namespace Scryber.PDF.Layout
             /// <param name="applied">The applied style of the cell</param>
             /// <param name="fullstyle">The full style of the cell</param>
             /// <param name="column">The column index of the cell. NOTE: There cannot be an existing cell reference in the rows column</param>
-            public CellReference AddCellReference(TableCell cell, RowReference rowRef, Style applied, Style fullstyle, int column)
+            public CellReference AddCellContentReference(TableCell cell, RowReference rowRef, Style applied, Style fullstyle, int column)
             {
                 CellReference cref = new CellReference(cell, rowRef, applied, fullstyle, rowRef.RowIndex, column);
+                cref.Type = CellContentType.Content;
                 this.AddCellReference(cref);
                 return cref;
             }
@@ -2947,10 +2951,10 @@ namespace Scryber.PDF.Layout
             /// <param name="rowRef"></param>
             /// <param name="colindex"></param>
             /// <returns></returns>
-            public CellReference AddEmptyCellReference(RowReference rowRef, int colindex)
+            public CellReference AddEmptyCellReference(RowReference rowRef, int colindex, CellContentType type)
             {
                 CellReference cref = new CellReference(null, rowRef, null, null, rowRef.RowIndex, colindex);
-                cref.IsEmpty = true;
+                cref.Type = type;
                 // Empty cells (occupied by rowspan or colspan) need default span values to ensure proper loop iteration
                 cref.ColumnSpan = 1;
                 cref.RowSpan = 1;
@@ -3069,7 +3073,7 @@ namespace Scryber.PDF.Layout
                 for (int row = 0; row < _rowcount; row++)
                 {
                     CellReference cref = this._cells[row, colIndex];
-                    if (null != cref && null != cref.Block && cref.IsEmpty == false && cref.ColumnSpan == 1)
+                    if (null != cref && null != cref.Block && cref.Type == CellContentType.Content && cref.ColumnSpan == 1)
                     {
                         Unit w = cref.Block.TotalBounds.Width;
                         maxW = Unit.Max(w, maxW);
@@ -3086,7 +3090,7 @@ namespace Scryber.PDF.Layout
                 for (int row = 0; row < _rowcount; row++)
                 {
                     CellReference cref = this._cells[row, colIndex];
-                    if (cref.IsEmpty)
+                    if (cref.Type== CellContentType.SpannedColumn || cref.Type == CellContentType.SpannedRow)
                     {
                         //We have a spanned cell, so we need to look back for the actual cell
                         //based on this - if the last column it spanns is this colIndex
@@ -3098,7 +3102,7 @@ namespace Scryber.PDF.Layout
                         while (cellCol >= 0)
                         {
                             act = this._cells[row, cellCol];
-                            if (!act.IsEmpty)
+                            if (act.Type == CellContentType.Content)
                                 break; //this is the actual cell that spans the column
                             cellCol--;
                         }
@@ -3163,7 +3167,7 @@ namespace Scryber.PDF.Layout
                     for (int row = 0; row < _rowcount; row++)
                     {
                         CellReference cref = this._cells[row, colIndex];
-                        if (null != cref && null != cref.Block && cref.IsEmpty == false)
+                        if (null != cref && null != cref.Block && cref.Type == CellContentType.Content)
                         {
                             Unit w = Unit.Zero;
                             for (int i = 0; i < cref.ColumnSpan; i++)

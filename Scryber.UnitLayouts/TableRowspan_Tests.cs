@@ -1298,6 +1298,9 @@ namespace Scryber.UnitLayouts
 </html>";
 
             Document doc = ParseXhtml(xhtml);
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = true;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
 
             var layout = RenderDocument("TableRowspan_MultiColumn.pdf", doc, 1);
             
