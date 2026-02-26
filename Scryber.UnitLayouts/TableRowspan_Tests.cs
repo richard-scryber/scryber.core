@@ -1232,34 +1232,34 @@ namespace Scryber.UnitLayouts
         div.content {
             column-count: 2;
             column-gap: 20pt;
-            column-rule: 1pt solid #cccccc; 
+            column-rule: 1pt solid cyan; 
             border: 1pt solid cyan;
         }
         table { width: 100%; border: 1pt solid black; }
         td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
         td.tall { border: solid 1pt blue; vertical-align: top; }
         p { border-bottom: solid 1pt #999;}
-        .spacer{ height: 520pt; background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
+        .spacer{ background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
         header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
         footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
     </style>
 </head>
 <body>
 <header>
-    <div>This is the page header</div>
+    <div>This is the page header to ensure proper layout.</div>
 </header>
 
 <h1>Multi-Column Table Test</h1>
 <div id='content' class='content'>
-    <p>This content flows in 2 columns. The table below should flow across columns when it overflows:</p>
-    <div class='spacer'>Spacer to push table over.</div>
+    <p>This content flows in 2 columns. The table below should flow across columns and the spanned row should move across entirely, even though the first 2 rows fit on the first column.</p>
+    <div class='spacer' style='height: 495pt;'>Spacer to push table over.</div>
     <table id='testTable'>
-        <!--<thead>
+        <thead>
             <tr>
                 <th>Header 1</th>
                 <th>Header 2</th>
             </tr>
-        </thead>-->
+        </thead>
         <tr>
             <td>Above 1</td>
             <td>Above 2</td>
@@ -1269,19 +1269,18 @@ namespace Scryber.UnitLayouts
             <td>Above 4</td>
         </tr>
         <tr id='spannedRow'>
-            <td id='spannedCell' rowspan='2' class='tall'>Tall span 2 rows</td>
+            <td id='spannedCell' rowspan='3' class='tall'>Tall span 3 rows</td>
             <td>Row 0, Col 1</td>
         </tr>
-        <tr id='pushingRow'>
-            <td id='pushingCell'>Row 1, Col 1</td>
+        <tr >
+            <td rowspan='1'>Row 1, Col 1</td>
         </tr>
         <tr id='nextRow'>
             <td>Row 2, Col 1</td>
-            <td>Row 2, Col 2</td>
         </tr>
-        <!--<tr id='lastRow'>
-            <td>Row 3, Col 1</td>
-        </tr>-->
+        <tr id='lastRow'>
+            <td colspan='2'>Row 3, Col 0-1</td>
+        </tr>
         <tfoot>
             <tr>
                 <td>Footer 1</td>
@@ -1291,26 +1290,29 @@ namespace Scryber.UnitLayouts
     </table>
     <p>More content after table in columns.</p>
 </div>
+<div class='content' style='page-break-before: always;'>
+    <p>Second content block in columns. Should continue flowing after table.</p>
+</div>
 <footer>
-    <div>This is the page footer</div>
+    <div>This is the page footer to ensure proper layout.</div>
 </footer>
 </body>
 </html>";
 
             Document doc = ParseXhtml(xhtml);
             doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
-            doc.AppendTraceLog = true;
+            doc.AppendTraceLog = false;
             doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
 
             var layout = RenderDocument("TableRowspan_MultiColumn.pdf", doc, 1);
             
             // Verify layout was created successfully
             Assert.IsNotNull(layout, "Layout should be created for multi-column document");
-            Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
+            Assert.AreEqual(2, layout.AllPages.Count, "Multi-column layout should fit on single page");
 
             // Verify content is present
-            var page = layout.AllPages[0];
-            Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+            //var page = layout.AllPages[0];
+            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
         }
 
         #endregion

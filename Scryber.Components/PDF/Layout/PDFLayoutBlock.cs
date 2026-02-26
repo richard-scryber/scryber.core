@@ -1309,34 +1309,6 @@ namespace Scryber.PDF.Layout
                 else if(paintOrder.Third == PaintOrders.Markers)
                     oref = thirdOref;
                 
-                // if (null != background)
-                // {
-                //     this.OutputBackground(background, border.CornerRadius.HasValue ? border.CornerRadius.Value : 0, context, borderRect);
-                // }
-                //
-                //
-                // context.Offset = contentRect.Location;
-                // context.Space = contentRect.Size;
-                //
-                // //Perform the atual writing of this blocks inner conntent
-                // if (this.ShouldOutputAsXObject(context))
-                // {
-                //     oref = this.DoOutputToXObject(context, writer);
-                // }
-                // else
-                // {
-                //     this.OutputInnerContent(context, writer);
-                // }
-                //
-                //
-                // if (null != border)
-                // {
-                //     if(logdebug)
-                //         context.TraceLog.Add(TraceLevel.Debug, "Layout Block", "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
-                //     
-                //     this.OutputBorder(background, border, context, borderRect);
-                // }
-                
                 if (hasClipping)
                 {
                     if (logdebug)
@@ -1457,6 +1429,32 @@ namespace Scryber.PDF.Layout
                             "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
 
                     this.OutputBorder(background, border, context, borderRect);
+
+                    if(this.ColumnOptions.ColumnCount > 1 && this.ColumnOptions.ColumnRule != null)
+                    {
+                        var pen = this.ColumnOptions.ColumnRule;
+                        pen.SetUpGraphics(context.Graphics,borderRect);
+
+                        try
+                        {
+                        //Draw the column rules
+                            for (int i = 1; i < this.Columns.Length; i++)
+                            {
+                                PDFLayoutRegion col = this.Columns[i];
+                                Unit x = col.TotalBounds.X - this.ColumnOptions.AlleyWidth / 2;
+                                x += borderRect.X; //Need to take into account the border rect location as we are drawing on the main graphics context here.
+                                Point start = new Point(x, borderRect.Y);
+                                Point end = new Point(x, borderRect.Y + borderRect.Height);
+
+                                context.Graphics.DrawLine(start, end);
+                                
+                            }
+                        }
+                        finally
+                        {   
+                            pen.ReleaseGraphics(context.Graphics, borderRect);
+                        }
+                    }
                 }
             }
 
