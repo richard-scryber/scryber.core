@@ -420,7 +420,7 @@ namespace Scryber.PDF.Layout
                         hasRowspanFromThisRow = true;
                         int rowStartFromAbove = GetStartingRowForRowSpanFromAbove(prevRowIndex, colIndex);
                         if(rowStartFromAbove < groupStart)
-                            groupStart = rowStartFromAbove;
+                            groupStart = rowStartFromAbove;  
 
                         //TODO: Check if this row has a row span on it.
                         // If so, we need to check if that row span is from a previous row as well, 
@@ -436,6 +436,9 @@ namespace Scryber.PDF.Layout
                 if (!hasRowspanFromThisRow)
                     break; // No rowspan from this previous row affects our target row
             }
+
+            if(groupStart < rowindex && this.IsRowSpannedFromPreviousRow(groupStart))
+                groupStart = GetRowspanGroupStart(groupStart); // Check if the found group start is itself part of a previous rowspan group
             
             return groupStart;
         }

@@ -1219,101 +1219,7 @@ namespace Scryber.UnitLayouts
             }
         }
 
-        [TestCategory(TestCategoryName)]
-        [TestMethod()]
-        public void TableRowspan_MultiColumn()
-        {
-            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head>
-    <style>
-        @page { size: 600pt 800pt; }
-        body { font-size: 10pt; margin: 20pt; }
-        div.content {
-            column-count: 2;
-            column-gap: 20pt;
-            column-rule: 1pt solid cyan; 
-            border: 1pt solid cyan;
-        }
-        table { width: 100%; border: 1pt solid black; }
-        td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
-        td.tall { border: solid 1pt blue; vertical-align: top; }
-        p { border-bottom: solid 1pt #999;}
-        .spacer{ background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
-        header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
-        footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
-    </style>
-</head>
-<body>
-<header>
-    <div>This is the page header to ensure proper layout.</div>
-</header>
-
-<h1>Multi-Column Table Test</h1>
-<div id='content' class='content'>
-    <p>This content flows in 2 columns. The table below should flow across columns and the spanned row should move across entirely, even though the first 2 rows fit on the first column.</p>
-    <div class='spacer' style='height: 495pt;'>Spacer to push table over.</div>
-    <table id='testTable'>
-        <thead>
-            <tr>
-                <th>Header 1</th>
-                <th>Header 2</th>
-            </tr>
-        </thead>
-        <tr>
-            <td>Above 1</td>
-            <td>Above 2</td>
-        </tr>
-        <tr id='aboveSpannedRow'>
-            <td>Above 3</td>
-            <td>Above 4</td>
-        </tr>
-        <tr id='spannedRow'>
-            <td id='spannedCell' rowspan='3' class='tall'>Tall span 3 rows</td>
-            <td>Row 0, Col 1</td>
-        </tr>
-        <tr >
-            <td rowspan='1'>Row 1, Col 1</td>
-        </tr>
-        <tr id='nextRow'>
-            <td>Row 2, Col 1</td>
-        </tr>
-        <tr id='lastRow'>
-            <td colspan='2'>Row 3, Col 0-1</td>
-        </tr>
-        <tfoot>
-            <tr>
-                <td>Footer 1</td>
-                <td>Footer 2</td>
-            </tr>
-        </tfoot>
-    </table>
-    <p>More content after table in columns.</p>
-</div>
-<div class='content' style='page-break-before: always;'>
-    <p>Second content block in columns. Should continue flowing after table.</p>
-</div>
-<footer>
-    <div>This is the page footer to ensure proper layout.</div>
-</footer>
-</body>
-</html>";
-
-            Document doc = ParseXhtml(xhtml);
-            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
-            doc.AppendTraceLog = false;
-            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
-
-            var layout = RenderDocument("TableRowspan_MultiColumn.pdf", doc, 1);
-            
-            // Verify layout was created successfully
-            Assert.IsNotNull(layout, "Layout should be created for multi-column document");
-            Assert.AreEqual(2, layout.AllPages.Count, "Multi-column layout should fit on single page");
-
-            // Verify content is present
-            //var page = layout.AllPages[0];
-            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
-        }
+        
 
         #endregion
 
@@ -1439,5 +1345,285 @@ namespace Scryber.UnitLayouts
         }
 
         #endregion
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_MultiColumnOverflow()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; }
+        body { font-size: 10pt; margin: 20pt; }
+        div.content {
+            column-count: 2;
+            column-gap: 20pt;
+            column-rule: 1pt solid cyan; 
+            border: 1pt solid cyan;
+        }
+        table { width: 100%; border: 1pt solid black; }
+        td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
+        td.tall { border: solid 1pt blue; vertical-align: top; }
+        p { border-bottom: solid 1pt #999;}
+        .spacer{ background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
+        header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
+        footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
+    </style>
+</head>
+<body>
+<header>
+    <div>This is the page header to ensure proper layout.</div>
+</header>
+
+<h1>Multi-Column Table Test</h1>
+<div id='content' class='content'>
+    <p>This content flows in 2 columns. The table below should flow across columns and the spanned row should move across entirely, even though the first 2 rows fit on the first column.</p>
+    <div class='spacer' style='height: 495pt;'>Spacer to push table over.</div>
+    <table id='testTable'>
+        <tr>
+            <td>Above 1</td>
+            <td>Above 2</td>
+        </tr>
+        <tr id='aboveSpannedRow'>
+            <td>Above 3</td>
+            <td>Above 4</td>
+        </tr>
+        <tr id='spannedRow'>
+            <td id='spannedCell' rowspan='3' class='tall'>Tall span 3 rows</td>
+            <td>Row 0, Col 1</td>
+        </tr>
+        <tr >
+            <td rowspan='1'>Row 1, Col 1</td>
+        </tr>
+        <tr id='nextRow'>
+            <td>Row 2, Col 1</td>
+        </tr>
+        <tr id='lastRow'>
+            <td colspan='2'>Row 3, Col 0-1</td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>Footer 1</td>
+                <td>Footer 2</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p>More content after table in columns.</p>
+</div>
+<footer>
+    <div>This is the page footer to ensure proper layout.</div>
+</footer>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+
+            var layout = RenderDocument("TableRowspan_MultiColumnOverflow.pdf", doc, 1);
+            
+            // Verify layout was created successfully
+            Assert.IsNotNull(layout, "Layout should be created for multi-column document");
+            Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
+
+            // Verify content is present
+            //var page = layout.AllPages[0]
+            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+
+            Assert.Inconclusive("Need to check the cells and headers repeat.");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_MultiColumnOverflow_WithHeaders()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; }
+        body { font-size: 10pt; margin: 20pt; }
+        div.content {
+            column-count: 2;
+            column-gap: 20pt;
+            column-rule: 1pt solid cyan; 
+            border: 1pt solid cyan;
+        }
+        table { width: 100%; border: 1pt solid black; }
+        td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
+        td.tall { border: solid 1pt blue; vertical-align: top; }
+        p { border-bottom: solid 1pt #999;}
+        .spacer{ background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
+        header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
+        footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
+    </style>
+</head>
+<body>
+<header>
+    <div>This is the page header to ensure proper layout.</div>
+</header>
+
+<h1>Multi-Column Table Test</h1>
+<div id='content' class='content'>
+    <p>This content flows in 2 columns. The table below should flow across columns and the spanned row should move across entirely, even though the first 2 rows fit on the first column.</p>
+    <div class='spacer' style='height: 480pt;'>Spacer to push table over.</div>
+    <table id='testTable'>
+        <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Above 1</td>
+            <td>Above 2</td>
+        </tr>
+        <tr id='aboveSpannedRow'>
+            <td>Above 3</td>
+            <td>Above 4</td>
+        </tr>
+        <tr id='spannedRow'>
+            <td id='spannedCell' rowspan='3' class='tall'>Tall span 3 rows</td>
+            <td>Row 0, Col 1</td>
+        </tr>
+        <tr >
+            <td rowspan='1'>Row 1, Col 1</td>
+        </tr>
+        <tr id='nextRow'>
+            <td>Row 2, Col 1</td>
+        </tr>
+        <tr id='lastRow'>
+            <td colspan='2'>Row 3, Col 0-1</td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>Footer 1</td>
+                <td>Footer 2</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p>More content after table in columns.</p>
+</div>
+<footer>
+    <div>This is the page footer to ensure proper layout.</div>
+</footer>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+
+            var layout = RenderDocument("TableRowspan_MultiColumnOverflow_WithHeaders.pdf", doc, 1);
+            
+            // Verify layout was created successfully
+            Assert.IsNotNull(layout, "Layout should be created for multi-column document");
+            Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
+
+            // Verify content is present
+            //var page = layout.AllPages[0];
+            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+
+            Assert.Inconclusive("Need to check the cells and headers repeat.");
+        }
+
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void TableRowspan_MultiColumnOverflow_DoubleSpans()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; }
+        body { font-size: 10pt; margin: 20pt; }
+        div.content {
+            column-count: 2;
+            column-gap: 20pt;
+            column-rule: 1pt solid cyan; 
+            border: 1pt solid cyan;
+        }
+        table { width: 100%; border: 1pt solid black; }
+        td, th { margin: 0; padding: 5pt; border: 1pt solid black; }
+        td.tall { border: solid 1pt blue; vertical-align: top; }
+        p { border-bottom: solid 1pt #999;}
+        .spacer{ background-color: #afafaf; font-style: italic; padding: 5pt; margin-bottom: 10pt; }
+        header { border-bottom: 1pt solid green; padding: 5pt; margin-bottom: 5pt; }
+        footer { border-top: 1pt solid green; padding: 5pt; margin-top: 5pt; }
+    </style>
+</head>
+<body>
+<header>
+    <div>This is the page header to ensure proper layout.</div>
+</header>
+
+<h1>Multi-Column Table Test</h1>
+<div id='content' class='content'>
+    <p>This content flows in 2 columns. The table below should flow across columns and the spanned row should move across entirely, even though the first 2 rows fit on the first column.</p>
+    <div class='spacer' style='height: 480pt;'>Spacer to push table over.</div>
+    <table id='testTable'>
+        <thead>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>Above 1</td>
+            <td>Above 2</td>
+        </tr>
+        <tr id='aboveSpannedRow'>
+            <td>Above 3</td>
+            <td rowspan='2'>Spanned to intersect</td>
+        </tr>
+        <tr id='spannedRow'>
+            <td id='spannedCell' rowspan='3' class='tall'>Tall span 3 rows</td>
+            
+        </tr>
+        <tr >
+            <td rowspan='1'>Row 1, Col 1</td>
+        </tr>
+        <tr id='nextRow'>
+            <td>Row 2, Col 1</td>
+        </tr>
+        <tr id='lastRow'>
+            <td colspan='2'>Row 3, Col 0-1</td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>Footer 1</td>
+                <td>Footer 2</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p>More content after table in columns.</p>
+</div>
+<footer>
+    <div>This is the page footer to ensure proper layout.</div>
+</footer>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+            doc.RenderOptions.ConformanceMode = ParserConformanceMode.Strict;
+            doc.AppendTraceLog = false;
+            doc.TraceLog.SetRecordLevel(TraceRecordLevel.Verbose);
+
+            var layout = RenderDocument("TableRowspan_MultiColumnOverflow_DoubleSpans.pdf", doc, 1);
+            
+            // Verify layout was created successfully
+            Assert.IsNotNull(layout, "Layout should be created for multi-column document");
+            Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
+
+            // Verify content is present
+            //var page = layout.AllPages[0];
+            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+
+            Assert.Inconclusive("Need to check the cells and headers repeat.");
+        }
     }
 }
