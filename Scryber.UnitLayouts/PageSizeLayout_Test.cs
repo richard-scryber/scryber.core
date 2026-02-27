@@ -613,8 +613,9 @@ namespace Scryber.UnitLayouts
             }
             
             var layout = layoutDoc;
-            Assert.AreEqual(4, layout.AllPages.Count);
+            Assert.AreEqual(5, layout.AllPages.Count);
             
+            //check the first page - should be A4 portrait
             var pg = layout.AllPages[0];
             var w = pg.Width;
             var h = pg.Height;
@@ -622,7 +623,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(Unit.Mm(210), w.ToMillimeters());
             Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
             
-            //check the second page
+            //check the second page - A2 landscape
             pg = layout.AllPages[1];
             w = pg.Width;
             h = pg.Height;
@@ -632,18 +633,26 @@ namespace Scryber.UnitLayouts
             
             
             //third page should be the same dimensions
-            pg = layout.AllPages[1];
+            pg = layout.AllPages[2];
             w = pg.Width;
             h = pg.Height;
             
             Assert.AreEqual(Unit.Mm(297 * 2), w.ToMillimeters());
             Assert.AreEqual(Unit.Mm(210 * 2), h.ToMillimeters());
             
-            //fourth page should no longer be in the large page size, so drop back to A4
-            pg = layout.AllPages[1];
+            //fourth page should be A3 portrait
+            pg = layout.AllPages[3];
             w = pg.Width;
             h = pg.Height;
             
+            Assert.AreEqual(Unit.Mm(297), w.ToMillimeters());
+            Assert.AreEqual(Unit.Mm(420), h.ToMillimeters());
+
+            //fifth page should revert back to A4 portrait
+            pg = layout.AllPages[4];
+            w = pg.Width;
+            h = pg.Height;
+
             Assert.AreEqual(Unit.Mm(210), w.ToMillimeters());
             Assert.AreEqual(Unit.Mm(297), h.ToMillimeters());
         }

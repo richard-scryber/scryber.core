@@ -26,7 +26,7 @@ namespace Scryber.Styles.Selectors
                 return false;
             }
 
-            if (null == this.Selectors)
+            if (null == this.Selectors || this.Selectors.Length == 0)
                 return true;
 
             else if (component is IStyledComponent)

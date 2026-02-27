@@ -180,7 +180,65 @@ namespace Scryber.PDF.Layout
 
         private Size GetNextPageSize(IComponent owner, Style full, Size orig)
         {
-            return this.DocumentLayout.CurrentPageSize.Size;
+            var styled = this.DocumentLayout.CurrentPageSize;
+            Size size;
+
+            StyleValue<PaperSize> paper;
+            StyleValue<PaperOrientation> orient;
+            PaperOrientation orientVal= PaperOrientation.Portrait;
+
+            if(full.TryGetValue(StyleKeys.PagePaperSizeKey, out paper))
+            {
+                //we have an explicit size defined on the page, so use this, and check for orientation as well (default is portrait).
+
+                if(paper.Value(full) == PaperSize.Custom)
+                {
+                    //If we have a custom paper size, then we need to get the size from the page size group key.
+                    var pgSize = full.CreatePageSize();
+                    size = pgSize.Size;
+                }
+                else
+                {
+                    //check for orientation as well (default is portrait).
+                    if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
+                    {
+                        orientVal = orient.Value(full);
+                    }
+
+                    
+
+                    size = Papers.GetSizeInMM(paper.Value(full));
+
+                    if(orientVal == PaperOrientation.Landscape)
+                    {
+                        size = new Size(size.Height, size.Width);
+                    }
+                }
+                
+                return size;
+
+            }
+            else if(full.IsValueDefined(StyleKeys.PageWidthKey) || full.IsValueDefined(StyleKeys.PageHeightKey))
+            {
+                var pgSize = full.CreatePageSize();
+                size = pgSize.Size;
+            }
+            else if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
+            {
+                //If we have an orientation but no paper size, then we need to use the current paper size for the page.
+                size = styled.Size;
+                if(orient.Value(full) == PaperOrientation.Landscape && size.Width < size.Height)
+                {
+                    size = new Size(size.Height, size.Width);
+                }
+                styled.Size = size;
+            }
+            else
+            {
+                //No explicit page size or orientation, so just return the current page size.
+                return styled.Size;
+            }
+
 
             //old code to get the page size from the page name group key, but we are now pushing page sizes onto the stack, so this is no longer needed, but we will keep it here for reference for now.    
             var name = full.GetValue(StyleKeys.PageNameGroupKey, string.Empty);

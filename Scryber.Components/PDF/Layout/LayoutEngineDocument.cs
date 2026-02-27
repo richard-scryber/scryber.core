@@ -165,19 +165,17 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected virtual PDFLayoutDocument CreateDocumentLayout()
         {
-            var docStyle = this.Document.GetAppliedStyle();
-            var defaultSize = docStyle.CreatePageSize();
-            
+            var definedStyle = this.Document.GetPageStyle(string.Empty);
+            var size = definedStyle.CreatePageSize();
+
             var layout = new PDFLayoutDocument(this.Document, this);
 
-            layout.PushPageSize(string.Empty, defaultSize);
+            layout.PushPageSize(string.Empty, size);
 
-            var definedStyle = this.Document.GetPageStyle(string.Empty);
-
-            if(null != definedStyle)
-            {
-                layout.PushPageSize(string.Empty, definedStyle.CreatePageSize());
-            }
+            // if(null != definedStyle)
+            // {
+            //     layout.PushPageSize(string.Empty, definedStyle.CreatePageSize());
+            // }
 
             return layout;
         }
