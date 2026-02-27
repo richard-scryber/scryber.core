@@ -324,10 +324,19 @@ namespace Scryber.PDF.Layout
                         Unit movedHeight = this.MovePreviousRows(startRowspanGroup, index, oldRegion, newRegion, repeath);
                         _rowOffset += movedHeight; // Adjust the offset for the moved rows
                         repeath += movedHeight; // Add the moved height to the repeating rows offset, so the last row that was moved to the new region is in the correct place.
+                    
+                        //If after moving the previous rows we find that we have only rows that are part of the repeating header, 
+                        //then we can hide the original rows above to avoid duplicate content.
+                        if(startRowspanGroup > 0 && IsOnlyRepeatingHeadersAbove(startRowspanGroup))
+                        {
+                            HideRowsAbove(startRowspanGroup);
+                        }
                     }
 
                     _rowOffset += origRow.Height;
                     origRow.Offset(0, repeath);
+
+                    
                     
                     this.StyleStack.Push(origRowStlye);
                 }
@@ -367,6 +376,30 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        private bool IsOnlyRepeatingHeadersAbove(int startRowIndex)
+        {
+            if(null == this.AllCells.RepeatRows || this.AllCells.RepeatRows.Count == 0)
+                return false; // No repeating rows at all, so we know rows above are only repeating headers
+
+            for (int i = 0; i < startRowIndex; i++)
+            {
+                if (!this.AllCells.RepeatRows.Any(r => r.RowIndex == i))
+                    return false; // Found a row above that is not a repeating header
+            }
+            return true; // All rows above are repeating headers
+        }
+
+        private void HideRowsAbove(int startRowIndex)
+        {
+            for (int i = 0; i < startRowIndex; i++)
+            {
+                RowReference rowRef = this.AllCells.AllRows[i];
+                if (rowRef.Block != null)
+                {
+                    rowRef.Block.ExcludeFromOutput = true; // Hide the original rows above to avoid duplicate content
+                }
+            }
+        }
 
         /// <summary>
         /// Determines if the specified row is part of a rowspan that was initiated

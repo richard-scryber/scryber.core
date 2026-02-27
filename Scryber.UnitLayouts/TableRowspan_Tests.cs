@@ -1244,12 +1244,12 @@ namespace Scryber.UnitLayouts
     <style>
         @page {
             size: A4;
-            margin: 20mm;
         }
         
         body {
             font-family: Helvetica;
             font-size: 10pt;
+            margin: 20pt;
         }
         
         table {
@@ -1274,9 +1274,6 @@ namespace Scryber.UnitLayouts
             font-weight: bold;
         }
         
-        .content-area {
-            content: ' ';
-        }
     </style>
 </head>
 <body>
@@ -1284,7 +1281,7 @@ namespace Scryber.UnitLayouts
     <p>This table has rows that will overflow to a new page. The rows with rowspan should stay together.</p>
     
     <!-- Content before table to push it down the page -->
-    <p style='height: 350pt; overflow: hidden;'>
+    <p style='height: 530pt; overflow: hidden; border: 1pt solid red;'>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -1293,6 +1290,9 @@ namespace Scryber.UnitLayouts
     <!-- Table with rowspan that should overflow -->
     <table>
         <thead>
+            <tr>
+                <th colspan='3'>Table Header</th>
+            </tr>
             <tr>
                 <th>Col 1</th>
                 <th>Col 2</th>
@@ -1333,7 +1333,7 @@ namespace Scryber.UnitLayouts
             var layout = RenderDocument("TableRowspan_Overflow_KeepTogether.pdf", doc, 2);
             
             // Verify layout spans multiple pages
-            Assert.IsTrue(layout.AllPages.Count >= 2, "Document should span at least 2 pages due to overflow");
+            Assert.IsTrue(layout.AllPages.Count == 2, "Document should span exactly 2 pages due to overflow");
             
             // Verify first page has content
             var page1 = layout.AllPages[0];
@@ -1342,6 +1342,37 @@ namespace Scryber.UnitLayouts
             // Verify second page has content (the table should have moved to second page)
             var page2 = layout.AllPages[1];
             Assert.IsTrue(page2.ContentBlock.Columns[0].Contents.Count > 0, "Second page should have table content");
+
+            //Check first header row is hidden on page 1
+            var content = page1.ContentBlock.Columns[0].Contents;
+            var page1Table = content[content.Count -1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(page1Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.IsTrue(page1Table.Columns[0].Contents.Count == 2, "Table should have only two rows on page 1");
+
+            var headerRow = page1Table.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist on page 1");
+            Assert.IsTrue(headerRow.ExcludeFromOutput, "First row on page 1 should be hidden due to rowspan overflow");
+
+            headerRow = page1Table.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist on page 1");
+            Assert.IsTrue(headerRow.ExcludeFromOutput, "Second row on page 1 should be hidden due to rowspan overflow");
+
+            // Check that the second page contains the spanned rows and the row after the header row
+            content = page2.ContentBlock.Columns[0].Contents;
+            var page2Table = content[0] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(page2Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            headerRow = page2Table.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist on page 2");
+            Assert.IsFalse(headerRow.ExcludeFromOutput, "First row on page 2 should be visible with rowspan overflow");
+
+            headerRow = page2Table.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist on page 2");
+            Assert.IsFalse(headerRow.ExcludeFromOutput, "Second row on page 2 should be visible with rowspan overflow");
+
+            Assert.AreEqual(1, page2Table.Columns.Length);
+            Assert.AreEqual(6, page2Table.Columns[0].Contents.Count, "Second page should contain all rows of the table after overflow");
         }
 
         #endregion
@@ -1432,7 +1463,34 @@ namespace Scryber.UnitLayouts
             //var page = layout.AllPages[0]
             //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
 
-            Assert.Inconclusive("Need to check the cells and headers repeat.");
+            
+            // Verify first page has content
+            var page1 = layout.AllPages[0];
+            var divBlock = page1.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(divBlock.Owner, typeof(Div), "Block owner should be the content div");
+
+
+            Assert.AreEqual(2, divBlock.Columns.Length, "Content div should have 2 columns");
+            Assert.IsTrue(divBlock.Columns[0].Contents.Count > 0, "First column should have content");
+            
+            // Verify second column has content (the table should have moved to second page)
+            Assert.IsTrue(divBlock.Columns[1].Contents.Count > 0, "Second column should have content");
+
+            //Check first header row is hidden on page 1
+            var content = divBlock.Columns[0].Contents;
+            var column1Table = content[content.Count -1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column1Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.IsTrue(column1Table.Columns[0].Contents.Count == 2, "Table should have only two rows on column 1");
+
+            
+            // Check that the second page contains the spanned rows and the row after the header row
+            content = divBlock.Columns[1].Contents;
+            var column2Table = content[0] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column2Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.AreEqual(1, column2Table.Columns.Length);
+            Assert.AreEqual(5, column2Table.Columns[0].Contents.Count, "Second column should contain all remaining rows of the table after overflow");
         }
 
         [TestCategory(TestCategoryName)]
@@ -1523,11 +1581,34 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "Layout should be created for multi-column document");
             Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
 
-            // Verify content is present
-            //var page = layout.AllPages[0];
-            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
 
-            Assert.Inconclusive("Need to check the cells and headers repeat.");
+            // Verify first page has content
+            var page1 = layout.AllPages[0];
+            var divBlock = page1.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(divBlock.Owner, typeof(Div), "Block owner should be the content div");
+
+
+            Assert.AreEqual(2, divBlock.Columns.Length, "Content div should have 2 columns");
+            Assert.IsTrue(divBlock.Columns[0].Contents.Count > 0, "First column should have content");
+            
+            // Verify second column has content (the table should have moved to second page)
+            Assert.IsTrue(divBlock.Columns[1].Contents.Count > 0, "Second column should have content");
+
+            //Check first header row is hidden on page 1
+            var content = divBlock.Columns[0].Contents;
+            var column1Table = content[content.Count -1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column1Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.IsTrue(column1Table.Columns[0].Contents.Count == 3, "Table should have only three rows on column 1 to include header and two rows");
+
+            
+            // Check that the second page contains the spanned rows and the row after the header row
+            content = divBlock.Columns[1].Contents;
+            var column2Table = content[0] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column2Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.AreEqual(1, column2Table.Columns.Length);
+            Assert.AreEqual(6, column2Table.Columns[0].Contents.Count, "Second column should contain all remaining rows of the table after overflow and the header row");
         }
 
 
@@ -1619,11 +1700,33 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout, "Layout should be created for multi-column document");
             Assert.AreEqual(1, layout.AllPages.Count, "Multi-column layout should fit on single page");
 
-            // Verify content is present
-            //var page = layout.AllPages[0];
-            //Assert.IsTrue(page.ContentBlock.Columns[0].Contents.Count > 0, "Page should contain content");
+            // Verify first page has content
+            var page1 = layout.AllPages[0];
+            var divBlock = page1.ContentBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(divBlock.Owner, typeof(Div), "Block owner should be the content div");
 
-            Assert.Inconclusive("Need to check the cells and headers repeat.");
+
+            Assert.AreEqual(2, divBlock.Columns.Length, "Content div should have 2 columns");
+            Assert.IsTrue(divBlock.Columns[0].Contents.Count > 0, "First column should have content");
+            
+            // Verify second column has content (the table should have moved to second page)
+            Assert.IsTrue(divBlock.Columns[1].Contents.Count > 0, "Second column should have content");
+
+            //Check first header row is hidden on page 1
+            var content = divBlock.Columns[0].Contents;
+            var column1Table = content[content.Count -1] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column1Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.IsTrue(column1Table.Columns[0].Contents.Count == 2, "Table should have only two rows on column 1, as the upper spanned cell should also be included in the overflow");
+
+            
+            // Check that the second page contains the spanned rows and the row after the header row
+            content = divBlock.Columns[1].Contents;
+            var column2Table = content[0] as PDFLayoutBlock;
+            Assert.IsInstanceOfType(column2Table.Owner, typeof(TableGrid), "Block owner should be a table");
+
+            Assert.AreEqual(1, column2Table.Columns.Length);
+            Assert.AreEqual(7, column2Table.Columns[0].Contents.Count, "Second column should contain all remaining rows of the table after overflow and the header row and the 2 rowspanned cells that intersected the overflow");
         }
     }
 }
