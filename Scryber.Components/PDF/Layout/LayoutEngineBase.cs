@@ -731,8 +731,19 @@ namespace Scryber.PDF.Layout
 
             CheckForPrecedingInlineWhitespace(comp, full);
 
+            string pageGroupName = null;
+
             if (IsStyled(comp) && !IsText(comp))
             {
+                StyleValue<string> pageGroup;
+                if(full.TryGetValue(StyleKeys.PageNameGroupKey, out pageGroup))
+                {
+                    pageGroupName = pageGroup.Value(full);
+                    var pgStyle = this.Component.Document.GetPageStyle(pageGroupName);
+                    var size = pgStyle.CreatePageSize();
+                    this.DocumentLayout.PushPageSize(pageGroupName, size);
+                }
+
                 StyleValue<bool> br;
                 if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value(full))
                 {
@@ -751,14 +762,27 @@ namespace Scryber.PDF.Layout
 
             if (IsStyled(comp) && !IsText(comp))
             {
+
                 StyleValue<bool> br;
                 if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value(full))
                 {
+                    if(!string.IsNullOrEmpty(pageGroupName))
+                    {
+                        //If we have a page group for this component, then we need to pop this before we do the page break, 
+                        // otherwise the page break will be using the wrong page size.
+                        this.DocumentLayout.PopPageSize(pageGroupName);
+                    }
+
                     this.DoLayoutPageBreak(comp, full);
                 }
                 else if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value(full))
                 {
                     this.DoLayoutColumnBreak(comp, full);
+                }
+
+                else if(!string.IsNullOrEmpty(pageGroupName))
+                {
+                    this.DocumentLayout.PopPageSize(pageGroupName);
                 }
             }
 

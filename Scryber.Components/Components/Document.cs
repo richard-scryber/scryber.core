@@ -37,6 +37,7 @@ using Scryber.PDF.Native;
 using Scryber.Options;
 using Scryber.Logging;
 using System.IO;
+using HtmlAgilityPack;
 
 namespace Scryber.Components
 {
@@ -1110,6 +1111,21 @@ namespace Scryber.Components
         //
         // Style methods
         //
+
+        /// <summary>
+        /// Gets the page style for a given page size name. This is used by pages to get the appropriate styles for their size, and can be overridden to provide custom page styles based on the size name.
+        /// If sizeName is null or empty, then this will return the default page style for the document. Otherwise it will return a style with all the styles merged in that match the size name. The size name is normally set on the page size definition, and can be used to provide different styles for different page sizes.
+        /// </summary>
+        /// <param name="sizeName">Optional size name to get the style for</param>
+        /// <returns></returns>
+        public virtual Style GetPageStyle(string sizeName)
+        {
+            Style style = new Style();
+            PageSizeMatcher matcher = new PageSizeMatcher(sizeName);
+            this.Styles.MergeInto(style, matcher);
+
+            return style;
+        }
 
         #region public override PDFStyle GetAppliedStyle(PDFComponent forComponent)
 
@@ -4050,6 +4066,25 @@ namespace Scryber.Components
         
         #endregion
 
+        #region private class PageSizeMatcher
+
+        /// <summary>
+        /// Internal component class that is used tpo match @page rules in the document styles, optionally with a specific group name.
+        /// </summary>
+        internal class PageSizeMatcher : Component, IStyledComponent
+        {
+            
+            public PageSizeMatcher(string groupName) : base(ObjectTypes.Null)
+            {
+                this.StyleClass = groupName;
+                this.ElementName = "@page";
+            }
+
+            public Style Style => null;
+
+            public bool HasStyle => false;
+        }
+        #endregion
     }
 
 

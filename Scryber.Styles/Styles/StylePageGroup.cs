@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Scryber.Styles.Selectors;
 
 namespace Scryber.Styles
@@ -28,7 +29,7 @@ namespace Scryber.Styles
 
         public StylePageGroup(PageMatcher matcher) : this()
         {
-            this.Matcher = matcher;
+            this.Matcher = matcher ?? throw new ArgumentNullException(nameof(matcher));
         }
 
         public StylePageGroup() : base(ObjectTypes.Style)
@@ -39,7 +40,18 @@ namespace Scryber.Styles
             if (null == this.Matcher)
                 base.MergeInto(style, Component);
             else if(this.Matcher.IsMatchedTo(Component))
-                base.MergeInto(style, Component);
+            {
+                if(this.Matcher.Selectors != null && this.Matcher.Selectors.Length > 0)
+                {
+                   //We matched on a selector name, so increase the priority.
+                   this.MergeInto(style, 10);
+                }
+                else
+                {
+                    //We matched on a page rule with no selectors, so merge with the default priority.
+                    this.MergeInto(style, 0);
+                }
+            }
         }
     }
 }

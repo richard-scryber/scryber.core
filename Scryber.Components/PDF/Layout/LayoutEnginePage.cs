@@ -61,7 +61,6 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
-
         //
         // ctor(s)
         //
@@ -181,6 +180,9 @@ namespace Scryber.PDF.Layout
 
         private Size GetNextPageSize(IComponent owner, Style full, Size orig)
         {
+            return this.DocumentLayout.CurrentPageSize.Size;
+
+            //old code to get the page size from the page name group key, but we are now pushing page sizes onto the stack, so this is no longer needed, but we will keep it here for reference for now.    
             var name = full.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
 
             if(!string.IsNullOrEmpty(name))

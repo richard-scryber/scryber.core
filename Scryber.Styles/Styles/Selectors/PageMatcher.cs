@@ -1,8 +1,13 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Scryber.Styles;
 
 namespace Scryber.Styles.Selectors
 {
+    /// <summary>
+    /// Matches against the (non-parsable and non-structural) AtPage component. 
+    /// This allows for multiple page styles to be defined and applied to different pages in a document, and they will be matched based on their name.
+    /// </summary>
     [PDFParsableValue]
     public class PageMatcher
     {
@@ -16,17 +21,33 @@ namespace Scryber.Styles.Selectors
 
         public bool IsMatchedTo(IComponent component)
         {
+            if(component.ElementName != "@page")
+            {
+                return false;
+            }
+
             if (null == this.Selectors)
                 return true;
 
             else if (component is IStyledComponent)
             {
                 var styled = component as IStyledComponent;
+                if(IsSelectorMatchedTo(styled)) 
+                    return true;
+            }
 
+            return false;
+        }
+
+        private bool IsSelectorMatchedTo(IStyledComponent styled)
+        {
                 
                 var val = styled.StyleClass;
+                
+                if(string.IsNullOrEmpty(val) && null == this.Selectors || this.Selectors.Length == 0)
+                    return true;
 
-                if (string.IsNullOrEmpty(val))
+                else if (string.IsNullOrEmpty(val))
                     return false;
                 else
                 {
@@ -36,9 +57,7 @@ namespace Scryber.Styles.Selectors
                             return true;
                     }
                 }
-            }
-
-            return false;
+                return false;
         }
 
 

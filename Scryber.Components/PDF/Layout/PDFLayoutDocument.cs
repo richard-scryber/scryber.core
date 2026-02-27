@@ -726,6 +726,34 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        //
+        // page sizes
+        //
+
+
+        private Stack<PageSize> _pagesizes = new Stack<PageSize>();
+
+        public PageSize CurrentPageSize
+        {
+            get
+            {
+                if (_pagesizes.Count > 0)
+                    return _pagesizes.Peek();
+                else
+                    return null;
+            }
+        }
+
+        public void PushPageSize(string name, PageSize size)
+        {
+            this._pagesizes.Push(size);
+        }
+
+        public void PopPageSize(string name)
+        {
+            if (_pagesizes.Count > 0)
+                this._pagesizes.Pop();
+        }
 
         //
         // page numbers

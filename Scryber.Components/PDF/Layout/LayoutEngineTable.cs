@@ -518,6 +518,12 @@ namespace Scryber.PDF.Layout
 
         private Unit MovePreviousRows(int startRowIndex, int endRowIndex, PDFLayoutRegion oldRegion, PDFLayoutRegion newParent, Unit headOffset)
         {
+            //TODO: This needs to ExcludeFromOutput the rows from the old region, and layout the rows in the new region, 
+            // and then return the total height of the rows that were moved 
+            // so that we can adjust the offsets of the rows in the new region accordingly.
+            // To take account of varying column widths.
+
+
             Unit offset = 0;
             for (int i = startRowIndex; i < endRowIndex; i++)
             {

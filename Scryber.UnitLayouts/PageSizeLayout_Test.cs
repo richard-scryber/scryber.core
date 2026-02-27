@@ -565,13 +565,20 @@ namespace Scryber.UnitLayouts
             size: A4 portrait;
         }
 
-        @page large {
+        @page x-large {
             size: A2 landscape;
-            margin-left: 100pt;
+        }
+
+        @page medium {
+            size: A3 portrait;
         }
 
         .chart {
-            page: large;
+            page: x-large;
+        }
+
+        .m-large {
+            page: medium;
         }
 
         body{ margin: 10; padding: 10; border: solid 1pt blue; }
@@ -581,11 +588,14 @@ namespace Scryber.UnitLayouts
     <h1>Page in the A4 size</h1>
     <section class='chart'>
         <h1>Second page in the A2 landscape size</h1>
-        <div style='page-break-before: always; page-break-after: always;'>
+        <div style='page-break-before: always;'>
             <h1>Third page, should stay in A2 Landscape size</h1>
         </div>
     </section>
-    <h1>Fourth page, should revert back to A4</h1>
+    <section class='m-large' style='page-break-after: always;'>
+        <h1>Fourth page in A3 Portrait</h1>
+    </section>
+    <h1>Fifth page, should revert back to A4</h1>
 </body>
 </html>";
 
