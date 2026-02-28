@@ -181,6 +181,9 @@ namespace Scryber.PDF.Layout
         private Size GetNextPageSize(IComponent owner, Style full, Size orig)
         {
             var styled = this.DocumentLayout.CurrentPageSize;
+            if(null == styled)
+                throw new InvalidOperationException("Cannot get the current page size from the document layout, this should always be set when we are laying out a page");
+                
             Size size;
 
             StyleValue<PaperSize> paper;

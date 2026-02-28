@@ -33,7 +33,19 @@ namespace Scryber.PDF
 
         protected override PDFLayoutDocument CreateDocumentLayout()
         {
-            return new PDFTraceLogLayoutDocument(this.Document, this, this.OriginalFile);
+            var layoutDoc = new PDFTraceLogLayoutDocument(this.Document, this, this.OriginalFile);
+            var page = this.Document.GetPageStyle(string.Empty);
+        
+
+            if(null == page)
+            {
+                throw new InvalidOperationException("Cannot get the current page style from the document layout, this should always be set when we are laying out a page");
+            }
+
+            var size = page.CreatePageSize();
+            layoutDoc.PushPageSize(string.Empty, size);
+
+            return layoutDoc;
         }
     }
 

@@ -92,5 +92,35 @@ public class DocumentationExamples : SampleBase
 
 
     }
+
+    [TestMethod]
+    public void Configuration_WorkingInCode_1()
+    {
+
+        var doc = new Document();
+        var page = new Page();
+        var section = new Section();
+
+        var title = new Label();
+        title.Text = "Runtime Report";
+        title.Style.Font.FontSize = 24;
+        title.Style.Font.FontBold = true;
+        title.Style.Margins.Bottom = 10;
+
+        var body = new Div();
+        body.Style.Padding.All = 12;
+        body.Style.Border.Width = 1;
+        body.Style.Border.Color = StandardColors.Gray;
+        body.Contents.Add(new TextLiteral("Generated entirely in code."));
+
+        section.Contents.Add(title);
+        section.Contents.Add(body);
+        page.Contents.Add(section);
+        doc.Pages.Add(page);
+
+        using var ms = DocStreams.GetOutputStream("Configuration_WorkingInCode_1.pdf");
+        doc.SaveAsPDF(ms);
+
+    }
     
 }
