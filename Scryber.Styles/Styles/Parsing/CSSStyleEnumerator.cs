@@ -361,7 +361,7 @@ namespace Scryber.Styles.Parsing
 
         private StylePageGroup ReadPageQuery(string selector, int next, int innerEnd)
         {
-            var match = Selectors.PageMatcher.Parse(selector);
+            var match = string.IsNullOrEmpty(selector) ? new Selectors.PageMatcher() : Selectors.PageMatcher.Parse(selector);
             StylePageGroup pg = new StylePageGroup(match);
 
 

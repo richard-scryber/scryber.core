@@ -196,6 +196,18 @@ namespace Scryber.PDF.Layout
                     //If we have a custom paper size, then we need to get the size from the page size group key.
                     var pgSize = full.CreatePageSize();
                     size = pgSize.Size;
+
+
+                    if(full.TryGetValue(StyleKeys.PageWidthKey, out var width))
+                    {
+                        size.Width = width.Value(full);
+                    }
+                    
+                    if(full.TryGetValue(StyleKeys.PageHeightKey, out var height))
+                    {
+                        size.Height = height.Value(full);
+                    }
+            
                 }
                 else
                 {
@@ -206,7 +218,6 @@ namespace Scryber.PDF.Layout
                     }
 
                     
-
                     size = Papers.GetSizeInMM(paper.Value(full));
 
                     if(orientVal == PaperOrientation.Landscape)
@@ -222,6 +233,18 @@ namespace Scryber.PDF.Layout
             {
                 var pgSize = full.CreatePageSize();
                 size = pgSize.Size;
+
+                if(full.TryGetValue(StyleKeys.PageWidthKey, out var width))
+                {
+                    size.Width = width.Value(full);
+                }
+                
+                if(full.TryGetValue(StyleKeys.PageHeightKey, out var height))
+                {
+                    size.Height = height.Value(full);
+                }
+
+                return size;
             }
             else if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
             {
