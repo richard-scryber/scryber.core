@@ -29,26 +29,26 @@ OR for asp.net mvc
 
 Check out the documentation for more information on how to use the library.
 
-[getting started](https://www.paperworkday.info/learning/01-getting-started/)
+[getting started](https://www.paperwor.help/learning/01-getting-started/)
 
-[scryber.core learning guides](https://www.paperworkday.info/learning/)
+[scryber.core learning guides](https://www.paperwork.help/learning/)
 
-[scryber.core reference guides](https://www.paperworkday.info/reference/)
+[scryber.core reference guides](https://www.paperwork.help/reference/)
 
 
 ## scryber supports:
 
-- standard [html body, tables, lists, divs and spans](https://www.paperworkday.info/reference/htmltags/) and many newer html5 [tags](https://www.paperworkday.info/reference/htmltags/)
-- flowing and flexible layout with multiple [pages in css sizes](https://www.paperworkday.info/learning/04-layout/01_page_sizes_orientation.html), along with page [headers, footers and breaks](https://www.paperworkday.info/learning/04-layout/07_headers_footers.html), and [page numbering](https://www.paperworkday.info/reference/htmltags/elements/html_pagenumber_element.html)
-- cascading styles: linked, embedded or inline using [css syntax and priority](https://www.paperworkday.info/learning/03-styling/).
-- databinding for [dynamic content or style](https://www.paperworkday.info/learning/02-data-binding/) on simple and complex object models with [repeating templates](https://www.paperworkday.info/learning/02-data-binding/03_template_iteration.html) and conditional logic with [if else-if else](https://www.paperworkday.info/learning/02-data-binding/04_conditional_rendering.html)
-- [embedding](https://www.paperworkday.info/reference/htmltags/elements/html_iframe_embed_element.html) of external content, and [attaching](https://www.paperworkday.info/reference/htmltags/elements/html_object_element.html) of external files or streams.
-- [sizing](https://www.paperworkday.info/learning/03-styling/04_units_measurements.html) and [positioning](https://scrybercore.readthedocs.io/en/latest/component_positioning.html) of elements inline, block, relative or absolute.
-- [images](https://www.paperworkday.info/learning/06-content/01_images.html) and colours with text and shape [fills, backgrounds](https://www.paperworkday.info/reference/cssproperties/) and borders.
-- [multiple fonts](https://www.paperworkday.info/learning/05-typography/), including google fonts, supporting text [alignment; spacing; leading; decoration](https://www.paperworkday.info/learning/05-typography/05_text_spacing.html).
-- Graphics support with SVG for [drawing and paths](https://www.paperworkday.info/learning/06-content/02_svg_basics.html) and text.
-- Password [security and restrictions](https://www.paperworkday.info/learning/07-configuration/05_security.html) on pdf files.
-- Modifications of existing files using [frames and framesets](https://www.paperworkday.info/reference/htmltags/elements/html_frameset_frame_element.html)
+- standard [html body, tables, lists, divs and spans](https://www.paperwork.help/reference/htmltags/) and many newer html5 [tags](https://www.paperwork.help/reference/htmltags/)
+- flowing and flexible layout with multiple [pages in css sizes](https://www.paperwork.help/learning/04-layout/01_page_sizes_orientation.html), along with page [headers, footers and breaks](https://www.paperwork.help/learning/04-layout/07_headers_footers.html), and [page numbering](https://www.paperwork.help/reference/htmltags/elements/html_pagenumber_element.html)
+- cascading styles: linked, embedded or inline using [css syntax and priority](https://www.paperwork.help/learning/03-styling/).
+- databinding for [dynamic content or style](https://www.paperwork.help/learning/02-data-binding/) on simple and complex object models with [repeating templates](https://www.paperwork.help/learning/02-data-binding/03_template_iteration.html) and conditional logic with [if else-if else](https://www.paperwork.help/learning/02-data-binding/04_conditional_rendering.html)
+- [embedding](https://www.paperwork.help/reference/htmltags/elements/html_iframe_embed_element.html) of external content, and [attaching](https://www.paperwork.help/reference/htmltags/elements/html_object_element.html) of external files or streams.
+- [sizing](https://www.paperwork.help/learning/03-styling/04_units_measurements.html) and [positioning](https://papwerwok.help/learning/04-layout/) of elements inline, block, relative or absolute.
+- [images](https://www.paperwork.help/learning/06-content/01_images.html) and colours with text and shape [fills, backgrounds](https://www.paperwork.help/reference/cssproperties/) and borders.
+- [multiple fonts](https://www.paperwork.help/learning/05-typography/), including google fonts, supporting text [alignment; spacing; leading; decoration](https://www.paperwork.help/learning/05-typography/05_text_spacing.html).
+- Graphics support with SVG for [drawing and paths](https://www.paperwork.help/learning/06-content/02_svg_basics.html) and text.
+- Password [security and restrictions](https://www.paperwork.help/learning/07-configuration/05_security.html) on pdf files.
+- Modifications of existing files using [frames and framesets](https://www.paperwork.help/reference/htmltags/elements/html_frameset_frame_element.html)
 - Full code support either as a whole document, or partial content, and controllers, along with the html/css templates.
 - Document Controllers (https://scrybercore.readthedocs.io/en/latest/document_controllers.html) for complete control of the layout
 
