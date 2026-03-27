@@ -29,7 +29,7 @@ OR for asp.net mvc
 
 Check out the documentation for more information on how to use the library.
 
-[getting started](https://www.paperwor.help/learning/01-getting-started/)
+[getting started](https://www.paperwork.help/learning/01-getting-started/)
 
 [scryber.core learning guides](https://www.paperwork.help/learning/)
 
