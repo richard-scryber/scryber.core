@@ -261,10 +261,11 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                //No explicit page size or orientation, so just return the current page size if we are a continuation, or the document defined size
-                if (isContinuation)
+                //No explicit page size or orientation,
+                // so just return the current page size if we are a continuation and we have no explicit page group
+                if (isContinuation  && !full.IsValueDefined(StyleKeys.PageNameGroupKey))
                     return orig;
-                else
+                else //we are not a continuation, or we do have an explicit size whick will be picked up from the style page: [group name]
                     return styled.Size;
             }
 
