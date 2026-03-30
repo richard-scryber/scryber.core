@@ -32,7 +32,6 @@ namespace Scryber.Components
         private string _text;
 
         [PDFAttribute("text")]
-        [PDFElement("")]
         public string Text
         {
             get { return _text; }

@@ -102,7 +102,7 @@ namespace Scryber.PDF.Layout
 
             //Get the page size and position options
             PageSize pgsize = this.FullStyle.CreatePageSize();
-            pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size);
+            pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size, false);
 
             var style = this.FullStyle;
             var isInPositioned = this.Context.PositionDepth > 0;
@@ -178,14 +178,14 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Un-registered the page numbering");
         }
 
-        private Size GetNextPageSize(IComponent owner, Style full, Size orig)
+        private Size GetNextPageSize(IComponent owner, Style full, Size orig, bool isContinuation)
         {
             var styled = this.DocumentLayout.CurrentPageSize;
             if(null == styled)
                 throw new InvalidOperationException("Cannot get the current page size from the document layout, this should always be set when we are laying out a page");
                 
             Size size;
-
+            
             StyleValue<PaperSize> paper;
             StyleValue<PaperOrientation> orient;
             PaperOrientation orientVal= PaperOrientation.Portrait;
@@ -261,8 +261,11 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                //No explicit page size or orientation, so just return the current page size.
-                return styled.Size;
+                //No explicit page size or orientation, so just return the current page size if we are a continuation, or the document defined size
+                if (isContinuation)
+                    return orig;
+                else
+                    return styled.Size;
             }
 
 
@@ -335,7 +338,7 @@ namespace Scryber.PDF.Layout
                     //open = parent;
                 }
                 lastpage.Close();
-                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size);
+                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size, true);
                 PDFLayoutPage page = BuildContinuationPage(lastpage, pgSize);
 
                 block = page.CurrentBlock;

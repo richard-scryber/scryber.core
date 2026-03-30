@@ -2975,7 +2975,7 @@ namespace Scryber.Components
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
 
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             return Parse(fullpath, resolver, settings);
         }
 
@@ -3023,7 +3023,7 @@ namespace Scryber.Components
         public static IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             return Parse(source, stream, type, resolver, settings);
         }
 
@@ -3038,7 +3038,7 @@ namespace Scryber.Components
         public static IComponent Parse(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             return Parse(source, textreader, type, resolver, settings);
         }
 
@@ -3053,7 +3053,7 @@ namespace Scryber.Components
         public static IComponent Parse(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             
             return Parse(source, xmlreader, type, resolver, settings);
         }
@@ -3101,7 +3101,7 @@ namespace Scryber.Components
         public static IComponent ParseHtml(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             return ParseHtml(source, stream, type, resolver, settings);
         }
 
@@ -3128,7 +3128,7 @@ namespace Scryber.Components
         public static IComponent ParseHtml(string source, System.IO.TextReader reader, ParseSourceType type, PDFReferenceResolver resolver)
         {
             ParserConformanceMode mode = ParserConformanceMode.Lax;
-            ParserSettings settings = Document.CreateGeneratorSettings(resolver, mode, null);
+            ParserSettings settings = Document.CreateParserSettings(resolver, mode, null);
             return ParseHtml(source, reader, type, resolver, settings);
         }
 
@@ -3205,7 +3205,8 @@ namespace Scryber.Components
         }
 
         #endregion
-
+        
+        
         #region protected virtual ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver)
 
         /// <summary>
@@ -3221,11 +3222,17 @@ namespace Scryber.Components
             ParserLoadType loadtype = this.LoadType;
             object controller = this.Controller;
 
-            return CreateGeneratorSettings(resolver, mode, 
+            return CreateParserSettings(resolver, mode, 
                 loadtype, log, monitor, controller);
         }
 
-        private static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, ParserConformanceMode mode, object controller)
+        public static ParserSettings CreateParserSettings(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Strict, object controller = null)
+        {
+            ReferenceChecker checker = new ReferenceChecker(templatePath);
+            return CreateParserSettings(checker.Resolver, mode, controller);
+        }
+
+        private static ParserSettings CreateParserSettings(PDFReferenceResolver resolver, ParserConformanceMode mode, object controller)
         {
             ParserConformanceMode conformance = mode;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
@@ -3234,10 +3241,10 @@ namespace Scryber.Components
             TraceLog log = config.TracingOptions.GetTraceLog();
             PerformanceMonitor perfmon = new PerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
 
-            return CreateGeneratorSettings(resolver, conformance, loadtype, log, perfmon, controller);
+            return CreateParserSettings(resolver, conformance, loadtype, log, perfmon, controller);
         }
 
-        protected static ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver, 
+        protected static ParserSettings CreateParserSettings(PDFReferenceResolver resolver, 
             ParserConformanceMode conformance, ParserLoadType loadtype, TraceLog log, PerformanceMonitor perfmon, object controller)
         {
             ParserSettings settings = new ParserSettings(typeof(TextLiteral), typeof(Whitespace)

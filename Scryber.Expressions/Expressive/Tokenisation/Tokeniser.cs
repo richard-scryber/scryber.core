@@ -302,6 +302,10 @@ namespace Scryber.Expressive.Tokenisation
                 {
                     index++;
                 }
+                else if (index == start && expression[index] == '$')
+                {
+                    index++; //we allow '$' on the first character
+                }
                 else if (index > start && char.IsDigit(expression, index))
                 {
                     index++;

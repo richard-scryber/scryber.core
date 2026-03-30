@@ -18,6 +18,7 @@ using System.Xml;
 using Scryber.Html;
 using Scryber.PDF.Layout;
 using System.IO;
+using Scryber.Html.Components;
 
 namespace Scryber.Core.UnitTests.Binding
 {
@@ -2198,6 +2199,72 @@ namespace Scryber.Core.UnitTests.Binding
 
 
         }
+
+
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void ExpressionWithDollar()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <span>A simple string {{$value}}</span>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            Dictionary<string,string> values = new Dictionary<string, string>();
+            doc.Params["$value"] = "World";
+
+            using (var stream = DocStreams.GetOutputStream("ExpressionWithDollar.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+                
+                var body = doc.Pages[0] as HTMLBody;
+                Assert.IsNotNull(body);
+                var span = body.Contents[1] as Span;
+                Assert.IsNotNull(span);
+                var literal = span.Contents[1] as TextLiteral;
+                Assert.IsNotNull(literal);
+                Assert.AreEqual("World", literal.Text);
+            }
+        }
+        
+        [TestMethod]
+        [TestCategory("Binding")]
+        public void ExpressionWithCalcAndDollarProperty()
+        {
+            var withEscapes = @"<html>
+  <body>
+    <span>A simple string {{concat('with ', $fields['value'])}}</span>
+  </body>
+</html>";
+
+            using var reader = new StringReader(withEscapes);
+            var doc = Document.ParseHtmlDocument(reader, ParseSourceType.DynamicContent);
+            doc.AppendTraceLog = true;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            Dictionary<string,string> fields = new Dictionary<string, string>();
+            doc.Params["$fields"] = fields;
+            fields["value"] = "a value";
+
+            using (var stream = DocStreams.GetOutputStream("ExpressionWithCalcAndDollar.pdf"))
+            {
+                doc.SaveAsPDF(stream);
+
+                var body = doc.Pages[0] as HTMLBody;
+                Assert.IsNotNull(body);
+                var span = body.Contents[1] as Span;
+                Assert.IsNotNull(span);
+                var literal = span.Contents[1] as TextLiteral;
+                Assert.IsNotNull(literal);
+                Assert.AreEqual("with a value", literal.Text);
+
+            }
+        }
+
     }
 
 

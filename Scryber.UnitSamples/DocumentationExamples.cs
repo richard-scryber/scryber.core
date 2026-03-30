@@ -99,7 +99,7 @@ public class DocumentationExamples : SampleBase
 
         var doc = new Document();
         var page = new Page();
-        var section = new Section();
+        var div = new Div();
 
         var title = new Label();
         title.Text = "Runtime Report";
@@ -113,14 +113,56 @@ public class DocumentationExamples : SampleBase
         body.Style.Border.Color = StandardColors.Gray;
         body.Contents.Add(new TextLiteral("Generated entirely in code."));
 
-        section.Contents.Add(title);
-        section.Contents.Add(body);
-        page.Contents.Add(section);
+        div.Contents.Add(title);
+        div.Contents.Add(body);
+        page.Contents.Add(div);
         doc.Pages.Add(page);
 
         using var ms = DocStreams.GetOutputStream("Configuration_WorkingInCode_1.pdf");
         doc.SaveAsPDF(ms);
 
     }
+
+    [TestMethod]
+    public void Configuration_WorkingInCode_2()
+    {
+
+        var doc = new Document();
+        var page = new Page();
+        var div = new Div();
+
+        var styleDef = new StyleDefn("body");
+        styleDef.Background.ImageSource = "./Asssets/DraftUnderlay.png";
+        styleDef.Background.Opacity = 0.5f;
+        styleDef.Background.PatternRepeat = PatternRepeat.None;
+        styleDef.Background.PatternXSize = (Unit)200;
+        styleDef.Background.PatternYSize = (Unit)200;
+        styleDef.Background.PatternXPosition = (Unit)100;
+        styleDef.Background.PatternYPosition = (Unit)150;
+        doc.Styles.Add(styleDef);
+
+        var title = new Label();
+        title.Text = "Runtime Report";
+        title.Style.Font.FontSize = 24;
+        title.Style.Font.FontBold = true;
+        title.Style.Margins.Bottom = 10;
+
+        var body = new Div();
+        body.Style.Padding.All = 12;
+        body.Style.Border.Width = 1;
+        body.Style.Border.Color = StandardColors.Gray;
+        body.Contents.Add(new TextLiteral("Generated entirely in code."));
+
+        div.Contents.Add(title);
+        div.Contents.Add(body);
+        page.Contents.Add(div);
+        doc.Pages.Add(page);
+
+        using var ms = DocStreams.GetOutputStream("Configuration_WorkingInCode_1.pdf");
+        doc.SaveAsPDF(ms);
+
+    }
+
+
     
 }

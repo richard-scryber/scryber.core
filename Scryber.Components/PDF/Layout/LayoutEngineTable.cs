@@ -1856,7 +1856,7 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutRegion origTblRegion = origTblblock.CurrentRegion;
             PDFLayoutRegion tblparent = (origTblblock.Parent as PDFLayoutBlock).CurrentRegion;
-            tblparent.AddToSize(origTblblock);
+            //tblparent.AddToSize(origTblblock);
             this._rowIndex = rowindex;
             PDFLayoutRegion region = row.CurrentRegion;
             bool newpage;
@@ -1866,7 +1866,7 @@ namespace Scryber.PDF.Layout
             {
                 if (this.Context.ShouldLogVerbose)
                     this.Context.TraceLog.Add(TraceLevel.Verbose, TableEngineLogCategory, "Started table '" + this.Table.ID + "' in a new " + (newpage ? "Page" : "Region") + " and table row block is now '" + row.ToString() + "'");
-
+                
                 PDFLayoutBlock newTableBlock = this.AllCells.CurrentGrid.TableBlock;
                 PDFLayoutRegion newTableRegion = newTableBlock.CurrentRegion;
                 newTableRegion.UsedSize = Size.Empty;

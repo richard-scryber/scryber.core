@@ -1173,12 +1173,11 @@ namespace Scryber.UnitLayouts
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <style>
-        @page { size: 600pt 300pt; margin: 20pt; }
-        body { font-size: 10pt; }
+        @page { size: 600pt 300pt;}
+        body { font-size: 10pt; margin: 20pt; }
         div.container { 
             border: 2pt solid #333333;
             padding: 10pt;
-            margin: 10pt 0;
             background-color: #f5f5f5;
         }
         table { width: 100%; margin: 0; padding: 0; border-collapse: collapse; }
@@ -1187,8 +1186,19 @@ namespace Scryber.UnitLayouts
 </head>
 <body>
 <div class='container'>
-    <p>Table Container</p>
+    <p style='height: 20pt; border: solid 1px blue; margin: 0'>Table Container</p>
     <table>
+        <tr>
+            <td rowspan='3'>A</td>
+            <td>B</td>
+        </tr>
+        <tr>
+            <td>C</td>
+        </tr>
+        <tr>
+            <td>D</td>
+        </tr>
+        <!-- repeated for the second page -->
         <tr>
             <td rowspan='3'>A</td>
             <td>B</td>

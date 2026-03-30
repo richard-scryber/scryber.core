@@ -1,11 +1,11 @@
 ﻿using System;
 using Scryber.Styles;
-using Scryber.PDF;
+using Scryber.Components;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("label")]
-    public class HTMLLabel : Scryber.Components.Span
+    public class HTMLLabel : Scryber.Components.Label
     {
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
@@ -56,6 +56,16 @@ namespace Scryber.Html.Components
         {
             get;
             set;
+        }
+        
+        [PDFElement()]
+        [PDFArray(typeof(Component))]
+        public override ComponentList Contents
+        {
+            get
+            {
+                return base.Contents;
+            }
         }
 
         public HTMLLabel() : this(HTMLObjectTypes.Label)

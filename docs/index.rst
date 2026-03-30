@@ -6,6 +6,13 @@ Scryber 6
     :alt: Simple data driven documents.
     :width: 600px
 
+The documentation for Scryber is now located with the paperwork documents...0
+
+`<https://www.paperworkday.info>`_
+
+The following documentation is only for historical reference.
+
+---
 
 Simple, data driven, good looking, documents from templates
 -----------------------------------------------------------
