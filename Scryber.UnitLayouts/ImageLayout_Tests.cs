@@ -24,9 +24,9 @@ namespace Scryber.UnitLayouts
         const double ImageWidth = 682.0;
         const double ImageHeight = 452.0;
 
-        //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-        Unit ImageNaturalWidth = new Unit((ImageWidth / 96.0) * 72);
-        Unit ImageNaturalHeight = new Unit((ImageHeight / 96.0) * 72.0);
+        //Toroid32.png - 682 × 452 pixels natural size @144 ppi
+        Unit ImageNaturalWidth = new Unit((ImageWidth / 144.0) * 72);
+        Unit ImageNaturalHeight = new Unit((ImageHeight / 144.0) * 72.0);
 
         PDFLayoutDocument layout;
 
@@ -395,9 +395,9 @@ namespace Scryber.UnitLayouts
         [TestMethod]
         public void MinimumSizes()
         {
-            //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
+            //Toroid32.png - 682 × 452 pixels natural size @144 ppi
+            var naturalWidth = new Unit((ImageWidth / 144.0) * 72); //341pt
+            var naturalHeight = new Unit((ImageHeight / 144.0) * 72.0); //226pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, ImagePath);
@@ -418,18 +418,18 @@ namespace Scryber.UnitLayouts
             var img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumWidth = new Unit(400); // bigger than the image so no change
+            img.MinimumWidth = new Unit(300); // smaller than the image so no change
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral("Natural Size - min width 400pt"));
+            pg.Contents.Add(new TextLiteral("Natural Size - min width 300pt"));
 
             pg.Contents.Add(new PageBreak());
 
             img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
-            img.MinimumHeight = new Unit(300); // bigger than the image so no change
+            img.MinimumHeight = new Unit(200); // smaller than the image so no change
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral("Natural Size - min height 300"));
+            pg.Contents.Add(new TextLiteral("Natural Size - min height 200"));
 
             pg.Contents.Add(new PageBreak());
 
@@ -484,7 +484,7 @@ namespace Scryber.UnitLayouts
             var height = naturalHeight.PointsValue;
 
             var page = layout.AllPages[0];
-            Assert.AreEqual(615, (int)page.Width.PointsValue, "Width does not match for min width 300");
+            Assert.AreEqual(595, (int)page.Width.PointsValue, "Width does not match for min width 300");
 
             AssertAreApproxEqual(width, lrun.Width.PointsValue, "Width does not match for min width 400");
             AssertAreApproxEqual(height, lrun.Height.PointsValue, "Height does not match for min width 400");
@@ -750,9 +750,9 @@ namespace Scryber.UnitLayouts
         [TestMethod]
         public void FitContainerSizes()
         {
-            //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
+            //Toroid32.png - 682 × 452 pixels natural size @144 ppi
+            var naturalWidth = new Unit((ImageWidth / 144.0) * 72); //341pt
+            var naturalHeight = new Unit((ImageHeight / 144.0) * 72.0); //226pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, ImagePath);
@@ -771,6 +771,7 @@ namespace Scryber.UnitLayouts
             var img = new Image();
             img.Source = path;
             img.BorderColor = StandardColors.Black;
+            
             //1. No Explicit sizes so natural
             pg.Contents.Add(img);
             pg.Contents.Add(new TextLiteral("1. No Explicit sizes"));
@@ -1043,8 +1044,8 @@ namespace Scryber.UnitLayouts
         {
 
             //Toroid32.png - 682 × 452 pixels natural size @96 ppi
-            var naturalWidth = new Unit((ImageWidth / 96.0) * 72); //551.5pt
-            var naturalHeight = new Unit((ImageHeight / 96.0) * 72.0); //339pt
+            var naturalWidth = new Unit((ImageWidth / 144.0) * 72); //341pt
+            var naturalHeight = new Unit((ImageHeight / 144.0) * 72.0); //226pt
 
             var path = System.Environment.CurrentDirectory;
             path = System.IO.Path.Combine(path, ImagePath);
@@ -1060,7 +1061,7 @@ namespace Scryber.UnitLayouts
             doc.Pages.Add(pg);
 
             var div = new Div();
-            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 250;
+            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 200;
             div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
@@ -1170,7 +1171,7 @@ namespace Scryber.UnitLayouts
             doc.Pages.Add(pg);
 
             div = new Div();
-            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 150;
+            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 120;
             div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
@@ -1211,7 +1212,7 @@ namespace Scryber.UnitLayouts
             doc.Pages.Add(pg);
 
             div = new Div();
-            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 150;
+            div.Height = Papers.GetSizeInDeviceIndependentUnits(PaperSize.A4).Height - 120;
             div.BorderColor = StandardColors.Aqua;
             pg.Contents.Add(div);
 
@@ -1220,7 +1221,7 @@ namespace Scryber.UnitLayouts
             img.BorderColor = StandardColors.Black;
             img.MinimumScaleReduction = 0.5;
             pg.Contents.Add(img);
-            pg.Contents.Add(new TextLiteral("9. No Size, but explicit cannot go below 50% shrink so new column at natural size"));
+            pg.Contents.Add(new TextLiteral("9. No Size, but explicit cannot go below 50% shrink so new column at size to fit container"));
 
             using (var stream = DocStreams.GetOutputStream("Images_Overlowing.pdf"))
             {
@@ -1237,9 +1238,9 @@ namespace Scryber.UnitLayouts
             //bottom of first page
             lrun = GetBlockImageRunForPage(0, 0, 1);
 
-            //1. Natural size in container
-            var width = naturalWidth.PointsValue * (230.0 / naturalHeight.PointsValue);
-            var height = 230.0; //available space (250 - margins)
+            //1. Natural size in container - 180 space, so shinks proportionally
+            var width = naturalWidth.PointsValue * (180.0 / naturalHeight.PointsValue);
+            var height = 180.0; //available space (250 - margins)
 
             AssertAreApproxEqual(width, lrun.Width.PointsValue, "Width does not match for squeezing in the space");
             AssertAreApproxEqual(height, lrun.Height.PointsValue, "Height does not match for squeezing in the space");
@@ -1247,7 +1248,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(3, 0, 0);
 
-            //2. Explicit height overflows
+            //2. Explicit height of 200 overflows
             width = naturalWidth.PointsValue * (200.0 / naturalHeight.PointsValue);
             height = 200.0; 
 
@@ -1256,7 +1257,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(5, 0, 0);
 
-            //3. Explicit width overflows
+            //3. Explicit width of 200 overflows
             width = 200.0;  
             height = naturalHeight.PointsValue * (200.0 / naturalWidth.PointsValue);
 
@@ -1265,7 +1266,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(7, 0, 0);
 
-            //3. minimum height overflows
+            //4. minimum height 200 overflows natural size
             width = naturalWidth.PointsValue;
             height = naturalHeight.PointsValue;
 
@@ -1274,7 +1275,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(9, 0, 0);
 
-            //3. minimum height overflows
+            //5. minimum width 200, overflows natural size
             width = naturalWidth.PointsValue;
             height = naturalHeight.PointsValue;
 
@@ -1283,7 +1284,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(11, 0, 0);
 
-            //9. below min scale threshold
+            //6. below min scale threshold
             width = naturalWidth.PointsValue;
             height = naturalHeight.PointsValue;
 
@@ -1293,7 +1294,7 @@ namespace Scryber.UnitLayouts
 
             lrun = GetBlockImageRunForPage(13, 0, 0);
 
-            //9. below explicit min scale threshold
+            //7. below explicit min scale threshold
             width = naturalWidth.PointsValue;
             height = naturalHeight.PointsValue;
 
@@ -1302,7 +1303,7 @@ namespace Scryber.UnitLayouts
 
 
 
-            //Same page, onto new column
+            //8, Same page, onto new column with explicit size
             lrun = GetBlockImageRunForPage(14, 1, 0);
 
             width = naturalWidth.PointsValue * (180.0 / naturalHeight.PointsValue);
@@ -1404,7 +1405,7 @@ namespace Scryber.UnitLayouts
             var txtChars = line.Runs[2] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
             //Important to keep the space 
-            Assert.AreEqual(" 1. An", txtChars.Characters);
+            Assert.AreEqual(" 1. An inline image at", txtChars.Characters);
 
             var txtBr = line.Runs[3] as PDFTextRunNewLine;
             Assert.AreEqual(24.0, txtBr.NewLineOffset.Height.PointsValue);
@@ -1417,7 +1418,7 @@ namespace Scryber.UnitLayouts
 
             txtChars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
-            Assert.AreEqual("inline image at natural size, new line at text size that will flow", txtChars.Characters);
+            Assert.AreEqual("natural size, new line at text size that will flow onto multiple lines", txtChars.Characters);
 
             txtBr = line.Runs[2] as PDFTextRunNewLine;
             Assert.AreEqual(24.0, txtBr.NewLineOffset.Height.PointsValue);
@@ -1431,7 +1432,7 @@ namespace Scryber.UnitLayouts
 
             txtChars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
-            Assert.AreEqual("onto multiple lines afterwards", txtChars.Characters);
+            Assert.AreEqual("afterwards", txtChars.Characters);
 
             var txtEnd = line.Runs[2] as PDFTextRunEnd;
             Assert.AreEqual(0, txtEnd.Width);
@@ -1506,7 +1507,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(txtChars);
 
             //Only room for the number
-            Assert.AreEqual("2.", txtChars.Characters);
+            Assert.AreEqual("2. Inline", txtChars.Characters);
 
             var txtBr = line.Runs[3] as PDFTextRunNewLine;
             Assert.AreEqual(72.0, txtBr.NewLineOffset.Height.PointsValue);
@@ -1519,7 +1520,7 @@ namespace Scryber.UnitLayouts
 
             txtChars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
-            Assert.AreEqual("Inline and text size of", txtChars.Characters);
+            Assert.AreEqual("and text size of 60pt", txtChars.Characters);
 
             txtBr = line.Runs[2] as PDFTextRunNewLine;
             Assert.AreEqual(72.0, txtBr.NewLineOffset.Height.PointsValue);
@@ -1533,7 +1534,7 @@ namespace Scryber.UnitLayouts
 
             txtChars = line.Runs[1] as PDFTextRunCharacter;
             Assert.IsNotNull(txtChars);
-            Assert.AreEqual("60pt with overflowing", txtChars.Characters);
+            Assert.AreEqual("with overflowing", txtChars.Characters);
 
             txtBr = line.Runs[2] as PDFTextRunNewLine;
             Assert.AreEqual(0, txtBr.Width);
