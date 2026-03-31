@@ -17,7 +17,7 @@ namespace Scryber.Svg.Imaging
     /// <summary>
     /// Represents a single discreet SVG image (canvas), loaded from another source. 
     /// </summary>
-    public class SVGPDFImageData : ImageVectorData, ILayoutComponent
+    public class SVGPDFImageData_old : ImageVectorData, ILayoutComponent
     {
 
         private PDFObjectRef _renderRef = null;
@@ -90,7 +90,7 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        public SVGPDFImageData(string source, SVGCanvas canvas)
+        public SVGPDFImageData_old(string source, SVGCanvas canvas)
             : base(ObjectTypes.ImageData, source)
         {
             _svgCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
@@ -1012,7 +1012,7 @@ namespace Scryber.Svg.Imaging
             this.Dispose(true);
         }
 
-        ~SVGPDFImageData()
+        ~SVGPDFImageData_old()
         {
             this.Dispose(false);
         }

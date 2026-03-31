@@ -17,7 +17,7 @@ namespace Scryber.Svg.Imaging
     /// <summary>
     /// Represents a single discreet SVG image (canvas), loaded from another source. 
     /// </summary>
-    public class SVGPDFImageData_new : ImageVectorData, ILayoutComponent
+    public class SVGPDFImageData : ImageVectorData, ILayoutComponent
     {
 
         private PDFObjectRef _renderRef = null;
@@ -90,35 +90,11 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        public SVGPDFImageData_new(string source, SVGCanvas canvas)
+        public SVGPDFImageData(string source, SVGCanvas canvas)
             : base(ObjectTypes.ImageData, source)
         {
             _svgCanvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
             _svgCanvas.IsDiscreetSVG = true;
-        }
-
-
-
-
-        /// <summary>
-        /// Returns the defined image size on the referenced canvas
-        /// </summary>
-        /// <returns></returns>
-        public override Size GetSize()
-        {
-            if (null != this.Canvas)
-            {
-                if (this.ImgXObjectBBox.HasValue)
-                {
-                    var sz = this.ImgXObjectBBox.Value.Size;
-                    return sz;
-                }
-                else if(this.Canvas.Width != Unit.Empty && this.Canvas.Height != Unit.Empty)
-                    return new Size(this.Canvas.Width, this.Canvas.Height);
-                else if (this.Canvas.ViewBox != Rect.Empty)
-                    return this.Canvas.ViewBox.Size;
-            }
-            return Size.Empty;
         }
 
         public override void ResetFilterCache()
@@ -195,6 +171,53 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
+        /// <summary>
+        /// Once we have calculated the size, don't need to do it again.
+        /// </summary>
+        private Size? _calculatedSize = null;
+        
+        /// <summary>
+        /// Returns the defined image size on the referenced canvas
+        /// </summary>
+        /// <returns></returns>
+        public override Size GetSize()
+        {
+            if (this._calculatedSize.HasValue)
+                return this._calculatedSize.Value;
+            
+            if (null != this.Canvas)
+            {
+                if (this.ImgXObjectBBox.HasValue)
+                {
+                    this._calculatedSize = this.ImgXObjectBBox.Value.Size;
+                }
+                else if (this.Canvas.Width != Unit.Empty && this.Canvas.Height != Unit.Empty)
+                {
+                    this._calculatedSize = new Size(this.Canvas.Width, this.Canvas.Height);
+                }
+                else if (this.Canvas.Width != Unit.Empty)
+                {
+                    this._calculatedSize = new Size(this.Canvas.Width, SVGCanvas.DefaultHeight);
+                }
+                else if (this.Canvas.Height != Unit.Empty)
+                {
+                    this._calculatedSize = new Size(SVGCanvas.DefaultWidth, this.Canvas.Height);
+                }
+                else if (this.Canvas.ViewBox != Rect.Empty)
+                {
+                    this._calculatedSize = this.Canvas.ViewBox.Size;
+                }
+                else
+                {
+                    this._calculatedSize = new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+                }
+                return this._calculatedSize.Value;
+            }
+
+            return Size.Empty;
+           
+        }
+
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
             
@@ -216,148 +239,18 @@ namespace Scryber.Svg.Imaging
                 {
                     newSize.Height = height.Value(canvasStyle);
                 }
-                // else
-                // {
-                //     //Scale height Proportionally if we can
-                //     if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) && canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
-                //     {
-                //         var canvasWidth = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Empty).PointsValue;
-                //         var canvasHeight = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Empty).PointsValue;
-                //         var scale = newSize.Width.PointsValue / canvasWidth;
-                //         
-                //         newSize.Height = canvasHeight * scale;
-                //     }
-                //     else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
-                //     {
-                //         var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
-                //         var scale = newSize.Width.PointsValue / canvasViewPort.Width.PointsValue;
-                //         
-                //         newSize.Height = canvasViewPort.Height.PointsValue * scale;
-                //     }
-                // }
+                
             }
             else if (appliedstyle.TryGetValue(StyleKeys.SizeHeightKey, out var height))
             {
                  newSize.Height = height.Value(appliedstyle);
-                //
-                // if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) && canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
-                // {
-                //     var canvasWidth = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Empty).PointsValue;
-                //     var canvasHeight = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Empty).PointsValue;
-                //     var scale = newSize.Height.PointsValue / canvasHeight;
-                //     
-                //     newSize.Width = canvasWidth * scale;
-                // }
-                // else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
-                // {
-                //     var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
-                //     var scale = newSize.Height.PointsValue / canvasViewPort.Height.PointsValue;
-                //     
-                //     newSize.Width = canvasViewPort.Width.PointsValue * scale;
-                // }
             }
             else if (null != this.Canvas)
             {
                 
-                // var config = ServiceProvider.GetService<IScryberConfigurationService>();
-                // var minimumScaleReduction = config.ImagingOptions.MinimumScaleReduction;
-                //
-                // hasCanvasSize = false;
-                 
-                 //
-                 // if (canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey))
-                 // {
-                 //     newSize.Width = canvasStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
-                 //     hasCanvasSize = true;
-                 //     if (canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
-                 //     {
-                 //         newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
-                 //     }
-                 //     else if(canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
-                 //     {
-                 //         var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
-                 //         if (canvasViewPort != Rect.Empty)
-                 //         {
-                 //             var scale = canvasViewPort.Height.PointsValue / canvasViewPort.Width.PointsValue;
-                 //             newSize.Height = newSize.Width * scale;
-                 //             _svgCanvas.Style.SetValue(StyleKeys.SizeHeightKey, newSize.Height);
-                 //             //clearWidthAfterLayout = true;
-                 //         }
-                 //     }
-                 //   }
-                //else if (canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
-                //{
-                    // hasCanvasSize = true;
-                    // newSize.Height = canvasStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
-                    // //Should width be calculated as proportional
-                    //
-                    // var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
-                    // if (canvasViewPort != Rect.Empty)
-                    // {
-                    //     var scale = canvasViewPort.Width.PointsValue / canvasViewPort.Height.PointsValue;
-                    //     newSize.Width = newSize.Height * scale;
-                    //     _svgCanvas.Style.SetValue(StyleKeys.SizeWidthKey, newSize.Width);
-                    //     //clearWidthAfterLayout = true;
-                    // }
-                //}
-                //else if (canvasStyle.IsValueDefined(StyleKeys.PositionViewPort))
-                //{
-                    // var canvasViewPort = canvasStyle.GetValue(StyleKeys.PositionViewPort, Rect.Empty);
-                    //
-                    // if(canvasViewPort.IsEmpty)
-                    //     canvasViewPort = new Rect(0, 0, SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
-                    //
-                    // hasCanvasSize = true;
-                    //
-                    // var scaleW = available.Width.PointsValue / canvasViewPort.Width.PointsValue;
-                    // //var scaleH = available.Height.PointsValue / canvasViewPort.Height.PointsValue;
-                    // //var minScale = Math.Min(scaleH, scaleW);
-                    //
-                    // newSize.Width = canvasViewPort.Width.PointsValue * scaleW;
-                    // newSize.Height = canvasViewPort.Height.PointsValue * scaleW;
-                //}
-
-                //if (hasCanvasSize) //we can scale based on size
-                //{
-                    // Unit absH, absW;
-                    //
-                    // if (newSize.Height.IsRelative)
-                    //     absH = newSize.Height.ToAbsolute(available.Height);
-                    // else
-                    //     absH = newSize.Height;
-                    //
-                    // if (newSize.Width.IsRelative)
-                    //     absW = newSize.Width.ToAbsolute(available.Width);
-                    // else
-                    //     absW = newSize.Width;
-                    //
-                    // newSize =new Size(absW, absH);
-                    //
-                    //
-                    // if (newSize.Height > available.Height)
-                    // {
-                    //     var scale = available.Height.PointsValue / newSize.Height.PointsValue;
-                    //
-                    //     if (scale > minimumScaleReduction)
-                    //     {
-                    //         newSize.Height = available.Height;
-                    //         newSize.Width = newSize.Width * scale;
-                    //     }
-                    // }
-                //}
+                
                 
             }
-
-            
-            // if (!canvasStyle.IsValueDefined(StyleKeys.PositionViewPort) &&
-            //     !canvasStyle.IsValueDefined(StyleKeys.SizeWidthKey) &&
-            //     !canvasStyle.IsValueDefined(StyleKeys.SizeHeightKey))
-            // {
-            //     _svgCanvas.Style.SetValue(StyleKeys.SizeWidthKey, newSize.Width);
-            //     _svgCanvas.Style.SetValue(StyleKeys.SizeHeightKey, newSize.Height);
-            //     clearWidthAfterLayout = true;
-            //     clearHeightAfterLayout = true;
-            // }
 
             if (null == this._layout)
             {
@@ -1102,7 +995,7 @@ namespace Scryber.Svg.Imaging
             this.Dispose(true);
         }
 
-        ~SVGPDFImageData_new()
+        ~SVGPDFImageData()
         {
             this.Dispose(false);
         }
