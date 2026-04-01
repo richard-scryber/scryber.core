@@ -20,7 +20,7 @@ namespace Scryber.Expressive.Functions.Coalesce
 		{
 		}
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
@@ -61,10 +61,10 @@ namespace Scryber.Expressive.Functions.Coalesce
 
         private class SortByComparer : IComparer
         {
-            private Context _context;
+            private ExpressionContext _context;
             private bool _ascending;
 
-            public SortByComparer(Context context, bool ascending)
+            public SortByComparer(ExpressionContext context, bool ascending)
             {
                 _context = context;
                 _ascending = ascending;

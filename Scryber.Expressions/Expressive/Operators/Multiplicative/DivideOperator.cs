@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Operators.Multiplicative
 
         public override IEnumerable<string> Tags => new[] { "/", "\u00f7" };
 
-        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             return new DivideExpression(expressions[0], expressions[1], context);
         }

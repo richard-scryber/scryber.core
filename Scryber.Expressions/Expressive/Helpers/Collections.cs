@@ -52,7 +52,7 @@ namespace Scryber.Expressive.Helpers
 			}
 		}
 
-		public static int DoForEach(IEnumerable parameters, IDictionary<string, object> variables, Context context, Func<object, IDictionary<string, object>, Context, int> callback)
+		public static int DoForEach(IEnumerable parameters, IDictionary<string, object> variables, ExpressionContext context, Func<object, IDictionary<string, object>, ExpressionContext, int> callback)
 		{
 			int count = 0;
 
@@ -119,7 +119,7 @@ namespace Scryber.Expressive.Helpers
 
 		}
 
-		private static int InnerDoForEach(object item, IDictionary<string, object> variables, Context context, Func<object, IDictionary<string,object>, Context, int> callback)
+		private static int InnerDoForEach(object item, IDictionary<string, object> variables, ExpressionContext context, Func<object, IDictionary<string,object>, ExpressionContext, int> callback)
 		{
 			int count = 0;
 

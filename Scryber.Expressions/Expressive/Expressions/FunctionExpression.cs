@@ -8,9 +8,9 @@ namespace Scryber.Expressive.Expressions
         private readonly ExecFunction function;
         private readonly string name;
         private readonly IExpression[] parameters;
-        private readonly Context context;
+        private readonly ExpressionContext context;
 
-        internal FunctionExpression(string name, ExecFunction function, Context context, IExpression[] parameters)
+        internal FunctionExpression(string name, ExecFunction function, ExpressionContext context, IExpression[] parameters)
         {
             this.name = name;
             this.function = function;

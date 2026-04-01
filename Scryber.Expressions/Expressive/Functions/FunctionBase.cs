@@ -17,7 +17,7 @@ namespace Scryber.Expressive.Functions
         public abstract string Name { get; }
 
         /// <inheritdoc />
-        public abstract object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context);
+        public abstract object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context);
 
         #endregion
 

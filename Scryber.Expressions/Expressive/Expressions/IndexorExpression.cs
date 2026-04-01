@@ -9,7 +9,7 @@ namespace Scryber.Expressive.Expressions
     public class IndexorExpression : BinaryExpressionBase
     {
         
-        internal IndexorExpression(IExpression leftHandSide, IExpression indexExpression, Context context)
+        internal IndexorExpression(IExpression leftHandSide, IExpression indexExpression, ExpressionContext context)
             : base(leftHandSide, indexExpression, context)
         {
             

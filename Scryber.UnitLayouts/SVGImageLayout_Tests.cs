@@ -86,7 +86,8 @@ namespace Scryber.UnitLayouts
             {
                 using (var stream = DocStreams.GetOutputStream("SVGImageContainer_NoImgSizes.pdf"))
                 {
-                    doc.AppendTraceLog = true;
+                    //doc.AppendTraceLog = true;
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
                     doc.LayoutComplete += Doc_LayoutComplete;
                     doc.SaveAsPDF(stream);
                 }

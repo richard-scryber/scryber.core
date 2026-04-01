@@ -13,7 +13,7 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name => "Min";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -84,7 +84,7 @@ namespace Scryber.Expressive.Functions.Relational
 
         #endregion
 
-        private static object Min(IEnumerable enumerable, Context context)
+        private static object Min(IEnumerable enumerable, ExpressionContext context)
         {
             object enumerableResult = null;
 

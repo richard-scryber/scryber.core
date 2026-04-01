@@ -39,7 +39,7 @@ namespace Scryber.Expressive
         #region Fields
 
         private IExpression compiledExpression;
-        private readonly Context context;
+        private readonly ExpressionContext context;
         private readonly string originalExpression;
         private readonly ExpressionParser parser;
         private string[] referencedVariables;
@@ -64,7 +64,7 @@ namespace Scryber.Expressive
         /// <summary>
         /// Gets the current context for the expression evaluation
         /// </summary>
-        public Context ExpressionContext
+        public ExpressionContext ExpressionContext
         {
             get { return this.context; }
         }
@@ -77,15 +77,15 @@ namespace Scryber.Expressive
         /// Initializes a new instance of the <see cref="Expression"/> class with the specified <paramref name="context"/>.
         /// </summary>
         /// <param name="expression">The expression to be evaluated.</param>
-        /// <param name="context">The <see cref="Context"/> to use when evaluating.</param>
-        public Expression(string expression, Context context)
+        /// <param name="context">The <see cref="Expressive.ExpressionContext"/> to use when evaluating.</param>
+        public Expression(string expression, ExpressionContext context)
             : this(expression, new ExpressionParser(context, new Tokeniser(context)), context)
         {
 
         }
 
 
-        public Expression(string expression, ExpressionParser parser, Context context)
+        public Expression(string expression, ExpressionParser parser, ExpressionContext context)
         {
             this.originalExpression = expression;
             this.context = context ?? throw new ArgumentNullException(nameof(context));

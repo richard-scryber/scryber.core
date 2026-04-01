@@ -32,7 +32,7 @@ namespace Scryber.Expressive.Functions.CSS
         /// <param name="parameters">The expression parameters</param>
         /// <param name="context">The current expression context</param>
         /// <returns>The value of the parameter, or the default (second parameter) or null</returns>
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 3);
             object r = parameters[0].Evaluate(variables);

@@ -54,9 +54,10 @@ public class SVGImagingFactory : ImageFactoryBase
         {
             doc.LayoutComplete += (sender, args) =>
             {
-                if (null == data.Layout) //the image has not been laid out as part of the general execution - so it's a background image.
-                    data.GetRequiredSizeForLayout(Size.Empty, args.Context, new Style());
+                //We need to make sure that we have completed the layout
+                //(background images are not part of the hierarchy, so need explicitly invoking)
                 
+                data.EnsureLaidOut(Size.Empty, args.Context, new Style());
             };
         }
 

@@ -9,7 +9,7 @@ namespace Scryber.Binding
     /// </summary>
     public class BindingCalcTokeniser : Tokeniser
     {
-        public BindingCalcTokeniser(Context context)
+        public BindingCalcTokeniser(ExpressionContext context)
             : base(context)
         {
         }

@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Expressions.Binary.Relational
     {
         #region Constructors
 
-        public GreaterThanOrEqualExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public GreaterThanOrEqualExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

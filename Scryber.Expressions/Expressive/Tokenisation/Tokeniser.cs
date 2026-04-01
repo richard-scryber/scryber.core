@@ -21,7 +21,7 @@ namespace Scryber.Expressive.Tokenisation
         /// <summary>
         /// Gets the current context to tokenise an expression with
         /// </summary>
-        public Context Context
+        public ExpressionContext Context
         {
             get;
             private set;
@@ -77,7 +77,7 @@ namespace Scryber.Expressive.Tokenisation
         /// Creates a new instance of teh 
         /// </summary>
         /// <param name="context"></param>
-        public Tokeniser(Context context)
+        public Tokeniser(ExpressionContext context)
         {
             this.Context = context ?? throw new ArgumentNullException(nameof(context));
             this.CurrentIndex = 0;
@@ -620,7 +620,7 @@ namespace Scryber.Expressive.Tokenisation
         /// <returns>True if a date was found</returns>
         protected virtual bool IsDate(string expression, int index, out int length)
         {
-            if (expression[index] == Context.DateSeparator)
+            if (expression[index] == ExpressionContext.DateSeparator)
             {
                 int start = index;
                 index++;
@@ -628,7 +628,7 @@ namespace Scryber.Expressive.Tokenisation
 
                 while (index < expression.Length)
                 {
-                    if (expression[index] == Context.DateSeparator)
+                    if (expression[index] == ExpressionContext.DateSeparator)
                     {
                         index++;
                         foundEnd = true;

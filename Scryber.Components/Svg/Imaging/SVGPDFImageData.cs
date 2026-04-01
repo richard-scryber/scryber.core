@@ -43,7 +43,7 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        #region public SVGCanvas Canvas {get; private set;}
+        #region SVGCanvas Canvas {get; private set;}
 
         private SVGCanvas _svgCanvas = null;
 
@@ -58,7 +58,7 @@ namespace Scryber.Svg.Imaging
 
         #endregion
 
-        #region public SVGImage Image {get; private set;}
+        #region PDFLayoutBlock Layout + IsLaidOut
 
         private PDFLayoutBlock _layout = null;
 
@@ -69,6 +69,11 @@ namespace Scryber.Svg.Imaging
         {
             get { return _layout; }
             private set { _layout = value; }
+        }
+
+        public bool IsLaidOut
+        {
+            get{return null != this.Layout; }
         }
 
         #endregion
@@ -177,7 +182,7 @@ namespace Scryber.Svg.Imaging
         private Size? _calculatedSize = null;
         
         /// <summary>
-        /// Returns the defined image size on the referenced canvas
+        /// Returns the defined image size as it should be on the page without any style or transform applied.
         /// </summary>
         /// <returns></returns>
         public override Size GetSize()
@@ -218,16 +223,36 @@ namespace Scryber.Svg.Imaging
            
         }
 
+        public bool EnsureLaidOut(Size available, LayoutContext context, Style appliedstyle)
+        {
+            if(!this.IsLaidOut)
+                this.GetRequiredSizeForLayout(available, context, appliedstyle);
+
+            if (!this.IsLaidOut)
+                throw new InvalidOperationException("Could not layout the SVG Image data");
+            
+            return this.IsLaidOut;
+        }
+
+        /// <summary>
+        /// Returns the size for layout. This can be based on the viewport if defined, otherwise
+        /// </summary>
+        /// <param name="available"></param>
+        /// <param name="context"></param>
+        /// <param name="appliedstyle"></param>
+        /// <returns></returns>
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
         {
             
-            //Does not affect inline or embedded SVG images - only referenced within an img (or other) tag.
             
             bool clearWidthAfterLayout = false;
             bool clearHeightAfterLayout = false;
             
-            var newSize = new Size(SVGCanvas.DefaultWidth,  SVGCanvas.DefaultHeight);
+            var newSize = this.GetSize();
             var viewBox = Rect.Empty;
+            
+            if(viewBox.IsEmpty)
+                viewBox = new Rect(Point.Empty, newSize);
             
             var canvasStyle = this.Canvas.GetAppliedStyle();
             bool hasCanvasSize = false;
@@ -278,6 +303,7 @@ namespace Scryber.Svg.Imaging
         public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
         {
             var orig = this.GetSize();
+            
 
             //We are rendering 1: 1 from the Image to the Canvas, so we now scale by the ratio.
             var scaleX = available.Width.PointsValue / orig.Width.PointsValue;
@@ -587,7 +613,7 @@ namespace Scryber.Svg.Imaging
                     height = viewbox.Height;
                 }
                 
-                if (applied.IsValueDefined(StyleKeys.SizeWidthKey) && false)
+                if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
                 {
                     width = applied.GetValue(StyleKeys.SizeWidthKey, Unit.Auto);
 
@@ -646,7 +672,7 @@ namespace Scryber.Svg.Imaging
                     }
                 }
 
-                else if (height.IsRelative && false)
+                else if (height.IsRelative)
                 {
                     if (height.Units == PageUnits.Percent)
                     {
@@ -661,11 +687,20 @@ namespace Scryber.Svg.Imaging
                 }
 
                 //The width or height attributes on a remote SVG image svg tag are not bound to css - the can be controlled by the out image omponent.
-                if (applied.IsValueDefined(StyleKeys.SizeHeightKey))
+                //if (applied.IsValueDefined(StyleKeys.SizeHeightKey))
                     applied.SetValue(StyleKeys.SizeWidthKey, width);
-                if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
-                    applied.SetValue(StyleKeys.SizeWidthKey, width);
-                
+                //if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
+                    applied.SetValue(StyleKeys.SizeHeightKey, height);
+
+                    if (!applied.IsValueDefined(StyleKeys.PositionViewPort))
+                    {
+                        viewbox.Width = width;
+                        viewbox.Height = height;
+                        applied.SetValue(StyleKeys.PositionViewPort, viewbox);
+                        _svgCanvas.ViewBox = viewbox;
+                    }
+                    //this._svgCanvas.Width = width;
+                //this._svgCanvas.Height = height;
 
                 //Push the style and then manually get the full style for layout.
 
@@ -689,8 +724,8 @@ namespace Scryber.Svg.Imaging
                 }
 
                 container = open;
-
-                var posRegion = open.BeginNewPositionedRegion(full.CreatePostionOptions(false), pg, this._svgCanvas,
+                var options = full.CreatePostionOptions(false);
+                var posRegion = open.BeginNewPositionedRegion(options, pg, this._svgCanvas,
                     full, false, false);
 
                 //Then we can use the default SVG engine and layout the content.

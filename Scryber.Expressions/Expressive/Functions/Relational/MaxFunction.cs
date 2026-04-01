@@ -13,7 +13,7 @@ namespace Scryber.Expressive.Functions.Relational
 
         public override string Name => "Max";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 
@@ -86,7 +86,7 @@ namespace Scryber.Expressive.Functions.Relational
 
         #region Private Methods
 
-        private static object Max(IEnumerable enumerable, Context context)
+        private static object Max(IEnumerable enumerable, ExpressionContext context)
         {
             object enumerableResult = null;
 

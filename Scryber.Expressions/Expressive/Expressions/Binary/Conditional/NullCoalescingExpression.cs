@@ -8,7 +8,7 @@ namespace Scryber.Expressive.Expressions.Binary.Conditional
     {
         #region Constructors
 
-        public NullCoalescingExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public NullCoalescingExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

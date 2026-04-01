@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Functions.Logical
 
         public override string Name { get { return "In"; } }
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 2);
 
@@ -35,7 +35,7 @@ namespace Scryber.Expressive.Functions.Logical
 
         #endregion
 
-        private bool Compare(object result, object compareto, Context context)
+        private bool Compare(object result, object compareto, ExpressionContext context)
         {
 
             if (result is string str)

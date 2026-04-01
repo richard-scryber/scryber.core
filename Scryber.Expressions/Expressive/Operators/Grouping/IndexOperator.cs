@@ -11,7 +11,7 @@ namespace Scryber.Expressive.Operators.Grouping
 
         public IEnumerable<string> Tags => new[] { "[" };
 
-        public IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             if (null == expressions)
                 throw new ArgumentNullException(nameof(expressions));
@@ -91,7 +91,7 @@ namespace Scryber.Expressive.Operators.Grouping
 
         public override IEnumerable<string> Tags => new[] { "]" };
 
-        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             if (null == expressions)
                 throw new ArgumentNullException(nameof(expressions));

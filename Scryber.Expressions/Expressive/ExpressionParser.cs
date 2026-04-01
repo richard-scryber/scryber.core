@@ -18,7 +18,7 @@ namespace Scryber.Expressive
     {
         #region Fields
 
-        private readonly Context context;
+        private readonly ExpressionContext context;
         private readonly ITokeniser tokeniser;
 
         #endregion
@@ -30,7 +30,7 @@ namespace Scryber.Expressive
         /// </summary>
         /// <param name="context"></param>
         /// <param name="tokeniser"></param>
-        public ExpressionParser(Context context, ITokeniser tokeniser)
+        public ExpressionParser(ExpressionContext context, ITokeniser tokeniser)
         {
             this.context = context;
             this.tokeniser = tokeniser;
@@ -183,7 +183,7 @@ namespace Scryber.Expressive
                             expressions.Add(this.CompileExpression(captiveTokens, minimumPrecedence: OperatorPrecedence.Minimum, variables: variables, isWithinFunction: true));
                             captiveTokens.Clear();
                         }
-                        else if (string.Equals(nextToken.CurrentToken, Context.ParameterSeparator.ToString(), StringComparison.Ordinal) && parenCount == 1)
+                        else if (string.Equals(nextToken.CurrentToken, ExpressionContext.ParameterSeparator.ToString(), StringComparison.Ordinal) && parenCount == 1)
                         {
                             // TODO: Should we expect expressions to be null???
                             expressions.Add(this.CompileExpression(captiveTokens, minimumPrecedence: 0, variables: variables, isWithinFunction: true));
@@ -288,13 +288,13 @@ namespace Scryber.Expressive
                     else
                         leftHandSide = new ConstantValueExpression(unit);
                 }
-                else if (currentToken.CurrentToken.StartsWith(Context.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(Context.DateSeparator.ToString())) // or a date?
+                else if (currentToken.CurrentToken.StartsWith(ExpressionContext.DateSeparator.ToString()) && currentToken.CurrentToken.EndsWith(ExpressionContext.DateSeparator.ToString())) // or a date?
                 {
                     CheckForExistingParticipant(leftHandSide, currentToken, isWithinFunction);
 
                     tokens.Dequeue();
 
-                    var dateToken = currentToken.CurrentToken.Replace(Context.DateSeparator.ToString(), "");
+                    var dateToken = currentToken.CurrentToken.Replace(ExpressionContext.DateSeparator.ToString(), "");
 
                     // If we can't parse the date let's check for some known tags.
                     if (!DateTime.TryParse(dateToken, out var date))
@@ -323,11 +323,11 @@ namespace Scryber.Expressive
                     tokens.Dequeue();
                     leftHandSide = new ConstantValueExpression(CleanString(currentToken.CurrentToken.Substring(1, currentToken.Length - 2)));
                 }
-                else if (string.Equals(currentToken.CurrentToken, Context.ParameterSeparator.ToString(), StringComparison.Ordinal)) // Make sure we ignore the parameter separator
+                else if (string.Equals(currentToken.CurrentToken, ExpressionContext.ParameterSeparator.ToString(), StringComparison.Ordinal)) // Make sure we ignore the parameter separator
                 {
                     if (!isWithinFunction)
                     {
-                        throw new ExpressiveException("Unexpected parameter separator token '" + Context.ParameterSeparator + "' or unnrecognised outer function.");
+                        throw new ExpressiveException("Unexpected parameter separator token '" + ExpressionContext.ParameterSeparator + "' or unnrecognised outer function.");
                     }
                     tokens.Dequeue();
                 }
@@ -442,7 +442,7 @@ namespace Scryber.Expressive
         private const string SelfExpression = "this";
         private const string ParentExpression = "_ParentData_";
 
-        protected virtual IExpression CreateVariableExpression(string token, Context context)
+        protected virtual IExpression CreateVariableExpression(string token, ExpressionContext context)
         {
             if (token.Equals(SelfExpression, context.IsCaseInsensitiveParsingEnabled ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                 return new SelfVariableExpression();

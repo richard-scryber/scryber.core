@@ -18,7 +18,6 @@
     <None Remove="Expressive\Functions\Coalesce\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Expressive\" />
     <Folder Include="Expressive\Exceptions\" />
   </ItemGroup>
 

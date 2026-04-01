@@ -14,7 +14,7 @@ namespace Scryber.Expressive.Functions.Conversion
 
         public override string Name => "Date";
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             if (parameters.Length == 0)
                 return DateTime.Now;

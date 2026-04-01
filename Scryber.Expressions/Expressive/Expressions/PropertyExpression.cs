@@ -18,12 +18,12 @@ namespace Scryber.Expressive.Expressions
 {
     public class PropertyExpression : BinaryExpressionBase
     {
-        public PropertyExpression(IExpression left, IExpression right, Context context)
+        public PropertyExpression(IExpression left, IExpression right, ExpressionContext context)
             : base(EnsureLeftExpression(left, context), right, context)
         {
         }
 
-        private static IExpression EnsureLeftExpression(IExpression left, Context context)
+        private static IExpression EnsureLeftExpression(IExpression left, ExpressionContext context)
         {
             if(null == left)
             {
@@ -75,7 +75,7 @@ namespace Scryber.Expressive.Expressions
         }
 
 
-        private object DoGetMyValue(object parent, string name, Context context)
+        private object DoGetMyValue(object parent, string name, ExpressionContext context)
         {
             return GetPropertyValue(parent, name, context.IsCaseInsensitiveParsingEnabled);
         }

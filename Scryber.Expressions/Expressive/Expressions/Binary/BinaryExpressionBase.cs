@@ -21,7 +21,7 @@ namespace Scryber.Expressive.Expressions.Binary
         /// <summary>
         /// Gets the underlying <see cref="Context"/>.
         /// </summary>
-        protected Context Context { get; }
+        protected ExpressionContext Context { get; }
 
         #region Constructors
 
@@ -31,7 +31,7 @@ namespace Scryber.Expressive.Expressions.Binary
         /// <param name="lhs">The left hand <see cref="IExpression"/>.</param>
         /// <param name="rhs">The right hand <see cref="IExpression"/>.</param>
         /// <param name="context">The <see cref="Context"/> used during the evaluation.</param>
-        protected BinaryExpressionBase(IExpression lhs, IExpression rhs, Context context)
+        protected BinaryExpressionBase(IExpression lhs, IExpression rhs, ExpressionContext context)
         {
             this.leftHandSide = lhs;
             this.Context = context;

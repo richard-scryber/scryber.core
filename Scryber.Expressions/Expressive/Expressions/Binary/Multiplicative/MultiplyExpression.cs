@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
     {
         #region Constructors
 
-        public MultiplyExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public MultiplyExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

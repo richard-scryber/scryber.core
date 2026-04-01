@@ -78,7 +78,7 @@ namespace Scryber.Expressive.Helpers
             return value;
         }
 
-        internal static int CompareUsingMostPreciseType(object a, object b, Context context)
+        internal static int CompareUsingMostPreciseType(object a, object b, ExpressionContext context)
         {
             a = ExtractAnyJsonValue(a);
             b = ExtractAnyJsonValue(b);
@@ -139,7 +139,7 @@ namespace Scryber.Expressive.Helpers
             return a;
         }
 
-        private static int Compare(object lhs, object rhs, Type mostPreciseType, Context context)
+        private static int Compare(object lhs, object rhs, Type mostPreciseType, ExpressionContext context)
         {
             // If at least one is null then the check is simple.
             if (lhs is null && rhs is null)

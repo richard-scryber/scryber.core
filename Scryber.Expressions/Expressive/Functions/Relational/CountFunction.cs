@@ -13,7 +13,7 @@ namespace Scryber.Expressive.Functions.Relational
         public override string Name => "Count";
 
         /// <inheritdoc />
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
 

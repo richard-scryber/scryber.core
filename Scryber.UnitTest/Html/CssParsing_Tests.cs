@@ -2132,7 +2132,7 @@ body.grey div.reverse{
 
             var funcs = new Expressive.Functions.FunctionSet();
 
-            var context = new Expressive.Context(new Expressive.ExpressiveOptions(), new Expressive.Functions.FunctionSet(), new Expressive.Operators.OperatorSet());
+            var context = new Expressive.ExpressionContext(new Expressive.ExpressiveOptions(), new Expressive.Functions.FunctionSet(), new Expressive.Operators.OperatorSet());
 
             var tokeniser = new Scryber.Expressive.Tokenisation.Tokeniser(context);
             //var parser = new Scryber.Expressive.ExpressionParser(context, tokeniser);

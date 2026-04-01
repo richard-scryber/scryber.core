@@ -26,12 +26,11 @@ using Scryber.Expressive.Operators.Relational;
 namespace Scryber.Expressive
 {
 
-    public delegate object ExecFunction(IExpression[] parameters, IDictionary<string, object> variables, Context context);
-
+    
     /// <summary>
     /// Represents context related details about compiling and evaluating an <see cref="IExpression"/>.
     /// </summary>
-    public class Context
+    public class ExpressionContext
     {
         internal const char DateSeparator = '#';
         internal const char ParameterSeparator = ',';
@@ -87,23 +86,23 @@ namespace Scryber.Expressive
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class with the specified <paramref name="options"/>.
+        /// Initializes a new instance of the <see cref="ExpressionContext"/> class with the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="options">The <see cref="ScryberOptions"/> to use when evaluating.</param>
         /// <param name="functions">All the standard functions</param>
         /// <param name="operators">All The standard Operators</param>
-        public Context(ExpressiveOptions options, FunctionSet functions, OperatorSet operators)
+        public ExpressionContext(ExpressiveOptions options, FunctionSet functions, OperatorSet operators)
             : this(options, CultureInfo.CurrentCulture, CultureInfo.InvariantCulture, functions, operators)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class with the specified <paramref name="options"/>.
+        /// Initializes a new instance of the <see cref="ExpressionContext"/> class with the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="options">The <see cref="ExpressiveOptions"/> to use when evaluating.</param>
         /// <param name="mainCurrentCulture">The <see cref="CultureInfo"/> for use in general parsing/conversions.</param>
         /// <param name="decimalCurrentCulture">The <see cref="CultureInfo"/> for use in decimal parsing/conversions.</param>
-        public Context(ExpressiveOptions options, CultureInfo mainCurrentCulture, CultureInfo decimalCurrentCulture, FunctionSet functions, OperatorSet operators)
+        public ExpressionContext(ExpressiveOptions options, CultureInfo mainCurrentCulture, CultureInfo decimalCurrentCulture, FunctionSet functions, OperatorSet operators)
         {
             Options = options;
             

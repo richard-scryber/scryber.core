@@ -18,9 +18,9 @@ namespace Scryber.Expressive.Operators
         /// </summary>
         /// <param name="previousToken">The previous <see cref="Token"/>.</param>
         /// <param name="expressions">The <see cref="IExpression"/>s to use within the operation (e.g. left hand side and right hand side).</param>
-        /// <param name="context">The <see cref="Context"/> to use within the operation.</param>
+        /// <param name="context">The <see cref="ExpressionContext"/> to use within the operation.</param>
         /// <returns>An <see cref="IExpression"/> that can be evaluated.</returns>
-        IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context);
+        IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context);
 
         /// <summary>
         /// Determines whether this implementation can consume the supplied <see cref="Token"/>s.

@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Expressions.Binary.Bitwise
     {
         #region Constructors
 
-        public LeftShiftExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public LeftShiftExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

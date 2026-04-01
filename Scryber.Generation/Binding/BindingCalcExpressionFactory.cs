@@ -167,9 +167,9 @@ namespace Scryber.Binding
 
         
 
-        public Expressive.Context GetContext(ExpressiveOptions options)
+        public Expressive.ExpressionContext GetContext(ExpressiveOptions options)
         {
-            return new Context(options, this._stdFunctions, this._stdOperators);
+            return new ExpressionContext(options, this._stdFunctions, this._stdOperators);
         }
 
         public virtual Expression CreateExpression(string value)

@@ -10,7 +10,7 @@ namespace Scryber.Expressive.Operators.Logical
 
         public override IEnumerable<string> Tags => new[] { "||", "or" };
 
-        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, Context context)
+        public override IExpression BuildExpression(Token previousToken, IExpression[] expressions, ExpressionContext context)
         {
             return new OrExpression(expressions[0], expressions[1], context);
         }

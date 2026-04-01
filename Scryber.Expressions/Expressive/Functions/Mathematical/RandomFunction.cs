@@ -13,7 +13,7 @@ namespace Scryber.Expressive.Functions.Mathematical
         
         private static readonly Random _random = new Random();
 
-        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, Context context)
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, -1);
 

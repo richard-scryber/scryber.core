@@ -197,8 +197,8 @@ namespace Scryber.Svg.Layout
 				vp = pos.ViewPort.Value;
 			else
 			{
-				var w = pos.Width.HasValue ? pos.Width.Value : Unit.Pt(300);
-				var h = pos.Height.HasValue ? pos.Height.Value : Unit.Pt(150);
+				var w = pos.Width.HasValue ? pos.Width.Value : SVGCanvas.DefaultWidth;
+				var h = pos.Height.HasValue ? pos.Height.Value : SVGCanvas.DefaultHeight;
 				vp = new Rect(0, 0, w, h);
 			}
 

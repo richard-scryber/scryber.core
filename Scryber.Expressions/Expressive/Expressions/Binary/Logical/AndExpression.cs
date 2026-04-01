@@ -7,7 +7,7 @@ namespace Scryber.Expressive.Expressions.Binary.Logical
     {
         #region Constructors
 
-        public AndExpression(IExpression lhs, IExpression rhs, Context context) : base(lhs, rhs, context)
+        public AndExpression(IExpression lhs, IExpression rhs, ExpressionContext context) : base(lhs, rhs, context)
         {
         }
 

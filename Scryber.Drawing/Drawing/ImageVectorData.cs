@@ -1,5 +1,8 @@
 namespace Scryber.Drawing
 {
+    /// <summary>
+    /// Defines an image that contains vector graphics, rather than raster (pixel based).
+    /// </summary>
     public abstract class ImageVectorData : ImageData
     {
         

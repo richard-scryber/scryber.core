@@ -8,9 +8,9 @@ namespace Scryber.Expressive.Expressions
 
         public const string ParentDataVariableName = "[_ParentData_]";
 
-        private Context context;
+        private ExpressionContext context;
 
-        public ParentDataExpression(Context context)
+        public ParentDataExpression(ExpressionContext context)
         {
             this.context = context;
         }
