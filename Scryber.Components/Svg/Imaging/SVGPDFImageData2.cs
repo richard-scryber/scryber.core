@@ -1,5 +1,7 @@
+using System;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 using Scryber.PDF.Native;
 using Scryber.Styles;
 using Scryber.Svg.Components;
@@ -71,9 +73,17 @@ public class SVGPDFImageData2 : ImageVectorData, ILayoutComponent
     /// </summary>
     public SVGCanvas Canvas { get; protected set; }
 
+    public PDFLayoutBlock LayoutBlock { get; private set; }
+
     public bool IsLaidOut
     {
         get;
+        private set;
+    }
+
+    public SVGImageDataSizer Sizer
+    {
+        get; 
         private set;
     }
 
@@ -97,7 +107,7 @@ public class SVGPDFImageData2 : ImageVectorData, ILayoutComponent
     {
         if (!IsLaidOut)
         {
-            this.IsLaidOut = this.DoLayoutCanvas(available, context, appliedstyle);
+            this.IsLaidOut = this.DoLayoutCanvas(available, context);
         }
 
         return IsLaidOut;
@@ -105,7 +115,13 @@ public class SVGPDFImageData2 : ImageVectorData, ILayoutComponent
     
     public override Size GetSize()
     {
-        throw new System.NotImplementedException();
+        //TODO: Check if this is for the actual size of the SVGCanvas
+        if(null == this.Sizer)
+            return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+        else
+        {
+            return this.Sizer.GetLayoutSize();
+        }
     }
 
     
@@ -116,11 +132,14 @@ public class SVGPDFImageData2 : ImageVectorData, ILayoutComponent
     }
 
 
-    protected virtual bool DoLayoutCanvas(Size available, LayoutContext context, Style appliedstyle)
+    protected virtual bool DoLayoutCanvas(Size available, LayoutContext context)
     {
         var result = false;
 
         var engine = new SVGPDFImageDataLayoutEngine();
+
+        //always start with a clean applied style, as we are going to render the SVG any outer document styles are applied to the actual image container.
+        var appliedstyle = this.Canvas.GetAppliedStyle();
         
         var sizer = new SVGImageDataSizer(this.Canvas, available, appliedstyle, context);
         
@@ -129,25 +148,67 @@ public class SVGPDFImageData2 : ImageVectorData, ILayoutComponent
         if (block != null)
             result = true;
 
-
+        this.LayoutBlock = block;
+        this.Sizer = sizer;
+        
         return result;
     }
     
 
     public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
     {
-        throw new System.NotImplementedException();
+        if (!this.IsLaidOut)
+        {
+            this.IsLaidOut = this.DoLayoutCanvas(available, context);
+        }
+        return this.Sizer.GetLayoutSize();
+    }
+
+    public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
+    {
+        return this.Sizer.GetRenderScaleForContent(offset, available, context);
+    }
+
+    public override Point GetRequiredOffsetForRender(Point offset, Size available, ContextBase context)
+    {
+        return this.Sizer.GetRenderOffsetForContent(offset, available, context);
     }
 
     public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
     {
-        throw new System.NotImplementedException();
+        this.Sizer.SetRenderSize(new Size(content.Width, content.Height));
     }
     
     
     public override PDFObjectRef Render(PDFName name, IStreamFilter[] filters, ContextBase context, PDFWriter writer)
     {
-        throw new System.NotImplementedException();
+        SVGPDFImageDataRenderer renderer = null;
+        PDFObjectRef rendererRef = null;
+        
+        try
+        {
+            PDFRenderContext renderContext = (PDFRenderContext)context;
+            renderer = new SVGPDFImageDataRenderer(this.Canvas, this.LayoutBlock, this.Sizer);
+            
+            rendererRef = renderer.SetUpImage(name, filters, writer, renderContext);
+            
+            renderer.OutputToPDF(renderContext);
+
+            renderer.ReleaseImage(name);
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+        finally
+        {
+            if (null != renderer)
+            {
+                renderer.Dispose();
+            }
+        }
+
+        return rendererRef;
     }
     
     #region ILayoutComponent Map Path Implementation

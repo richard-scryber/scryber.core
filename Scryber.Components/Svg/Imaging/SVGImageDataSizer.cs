@@ -1,6 +1,7 @@
 using System;
 using Scryber.Drawing;
 using Scryber.Expressive;
+using Scryber.PDF.Graphics;
 using Scryber.Styles;
 using Scryber.Svg.Components;
 
@@ -35,6 +36,12 @@ public class SVGImageDataSizer
     /// </summary>
     public Size AvailableSpace { get; set; }
     
+    
+    /// <summary>
+    /// Gets the size the canvas should be rendered
+    /// </summary>
+    public Size RenderSize { get; private set; }
+    
     //
     // .ctor
     //
@@ -59,8 +66,6 @@ public class SVGImageDataSizer
     /// Returns the size that should be used to lay out the SVG in
     /// </summary>
     /// <returns></returns>
-
-
     public Size GetLayoutSize()
     {
         return this.DoGetLayoutSize();
@@ -78,7 +83,7 @@ public class SVGImageDataSizer
             var rect = vp.Value(this.AppliedStyle);
             return rect.Size;
         }
-        
+
         // no viewport, so we start with the default size and apply any specific width or height.
 
         Unit width = SVGCanvas.DefaultWidth;
@@ -98,7 +103,49 @@ public class SVGImageDataSizer
 
     }
 
+    /// <summary>
+    /// Updates the size of the canvas render size.
+    /// </summary>
+    /// <param name="size"></param>
+    public void SetRenderSize(Size size)
+    {
+        this.RenderSize = size;
+    }
 
 
+    /// <summary>
+    /// Calculate the unit scale for rendering laid out image into the required box. 1,1 will be natural size,
+    /// altering this will scale the image as required in the horizontal and vertical (up) axes.
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <param name="available"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public Size GetRenderScaleForContent(Point offset, Size available, ContextBase context)
+    {
+        return new Size(1, 1);
+    }
+
+    public Point GetRenderOffsetForContent(Point offset, Size available, ContextBase context)
+    {
+        //Are we always render at 0,0 (bottom left) we offset to the position.
+        var size = this.GetLayoutSize();
+        offset.Y += size.Height;
+        return offset;
+    }
+
+
+
+    public PDFTransformationMatrix GetCanvasToImageMatrix(ContextBase context)
+    {
+        return PDFTransformationMatrix.Identity();
+    }
+    
+
+    public Rect GetImageToCanvasBBox(ContextBase context)
+    {
+        var size = this.GetLayoutSize();
+        return new Rect(Point.Empty, size);
+    }
 
 }
