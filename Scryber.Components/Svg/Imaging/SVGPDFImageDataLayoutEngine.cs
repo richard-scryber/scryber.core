@@ -26,6 +26,20 @@ public class SVGPDFImageDataLayoutEngine
             return null;
         }
 
+        var size = sizer.GetLayoutSize();
+
+        if (!canvas.Style.IsValueDefined(StyleKeys.SizeWidthKey))
+        {
+            canvas.Width = size.Width;
+            appliedstyle.SetValue(StyleKeys.SizeWidthKey, canvas.Width);
+        }
+
+        if (!canvas.Style.IsValueDefined(StyleKeys.SizeHeightKey))
+        {
+            canvas.Height = size.Height;
+            appliedstyle.SetValue(StyleKeys.SizeHeightKey, size.Height);
+        }
+
         var prevStyleStack = context.StyleStack;
         var prevItems = context.Items;
         

@@ -36,12 +36,6 @@ public class SVGImageDataSizer
     /// </summary>
     public Size AvailableSpace { get; set; }
     
-    
-    /// <summary>
-    /// Gets the size the canvas should be rendered
-    /// </summary>
-    public Size RenderSize { get; private set; }
-    
     //
     // .ctor
     //
@@ -78,16 +72,16 @@ public class SVGImageDataSizer
     protected virtual Size DoGetLayoutSize()
     {
         //For layout - viewport (viewBox) overrides all
-        if (this.AppliedStyle.TryGetValue(StyleKeys.PositionViewPort, out var vp))
-        {
-            var rect = vp.Value(this.AppliedStyle);
-            return rect.Size;
-        }
+        // if (this.AppliedStyle.TryGetValue(StyleKeys.PositionViewPort, out var vp))
+        // {
+        //     var rect = vp.Value(this.AppliedStyle);
+        //     return rect.Size;
+        // }
 
         // no viewport, so we start with the default size and apply any specific width or height.
 
         Unit width = SVGCanvas.DefaultWidth;
-        Unit height = SVGCanvas.DefaultWidth;
+        Unit height = SVGCanvas.DefaultHeight;
 
         if (this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey, out var widthValue))
         {
@@ -104,12 +98,12 @@ public class SVGImageDataSizer
     }
 
     /// <summary>
-    /// Updates the size of the canvas render size.
+    /// Updates the size of the canvas render size - In a remove referenced image this does nothing.
     /// </summary>
     /// <param name="size"></param>
     public void SetRenderSize(Size size)
     {
-        this.RenderSize = size;
+        //this.RenderSize = size;
     }
 
 

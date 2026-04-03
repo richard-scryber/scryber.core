@@ -10,6 +10,9 @@ using Scryber.PDF.Layout;
 using Scryber.Html.Components;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Imaging;
+using Scryber.PDF.Resources;
+using Scryber.Svg.Imaging;
 
 namespace Scryber.UnitLayouts
 {
@@ -48,29 +51,7 @@ namespace Scryber.UnitLayouts
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
-        private PDFLayoutComponentRun GetBlockImageRunForPage(int pg, int column = 0, int contentIndex = 0, int runIndex = 0)
-        {
-            var lpg = layout.AllPages[pg];
-            var l1 = lpg.ContentBlock.Columns[column].Contents[contentIndex] as PDFLayoutLine;
-            var lrun = l1.Runs[runIndex] as Scryber.PDF.Layout.PDFLayoutComponentRun;
-            return lrun;
-        }
-
-        private PDFLayoutComponentRun GetInlineImageRunForPage(int pg, int column = 0, int contentIndex = 0, int runIndex = 0)
-        {
-            var lpg = layout.AllPages[pg];
-            var l1 = lpg.ContentBlock.Columns[column].Contents[contentIndex] as PDFLayoutLine;
-            var lrun = l1.Runs[runIndex] as Scryber.PDF.Layout.PDFLayoutComponentRun;
-            return lrun;
-        }
-
-        private void AssertAreApproxEqual(double one, double two, string message = null)
-        {
-            int precision = 5;
-            one = Math.Round(one, precision);
-            two = Math.Round(two, precision);
-            Assert.AreEqual(one, two, message);
-        }
+        
 
         
         
@@ -92,6 +73,115 @@ namespace Scryber.UnitLayouts
                     doc.SaveAsPDF(stream);
                 }
             }
+            
+            Assert.IsNotNull(this.layout, "SVG Image layout not found");
+            var rsrc = this.layout.DocumentComponent.SharedResources;
+
+            var expectedCount = (5 * 2) + 1; //5 svg images and 1 font
+            
+            Assert.AreEqual(11, rsrc.Count, "Expected 11 resources");
+            
+            // default image (200 x 150, vp: 0 0 200 150)
+            Unit expectedWidth = 200;
+            Unit expectedHeight = 150;
+            
+            var imgXObject= rsrc.ElementAt(0) as PDFImageXObject;
+            var layout =  rsrc.ElementAt(6) as PDFLayoutXObjectResource;
+
+            Assert.IsNotNull(imgXObject, "1. SVG Image xObject not found");
+            Assert.IsNotNull(layout, "1. SVG Image layout not found");
+
+            var proxy = imgXObject.ImageData as ImageDataProxy;
+            Assert.IsNotNull(proxy,  "1. SVG Image proxy not found");
+
+            var svgData = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svgData,  "1. SVG Image data not found");
+            
+            Assert.IsNotNull(svgData.Canvas);
+            Assert.AreEqual(expectedWidth, svgData.Canvas.Width, "1. Expected Width doesn't match");
+            Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "1. Expected Height doesn't match");
+            
+            //Second image - square 150, 150 with width only
+            expectedWidth = 150;
+            expectedHeight = 150;
+            
+            imgXObject= rsrc.ElementAt(1) as PDFImageXObject;
+            layout =  rsrc.ElementAt(7) as PDFLayoutXObjectResource;
+
+            Assert.IsNotNull(imgXObject, "2. SVG Image xObject not found");
+            Assert.IsNotNull(layout, "2. SVG Image layout not found");
+
+            proxy = imgXObject.ImageData as ImageDataProxy;
+            Assert.IsNotNull(proxy,  "2. SVG Image proxy not found");
+
+            svgData = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svgData,  "2. SVG Image data not found");
+            
+            Assert.IsNotNull(svgData.Canvas);
+            Assert.AreEqual(expectedWidth, svgData.Canvas.Width, "2 Expected Width doesn't match");
+            Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "2. Expected Height doesn't match");
+
+            //Third image explicit 100 high
+            expectedWidth = 300;
+            expectedHeight = 100;
+            
+            imgXObject= rsrc.ElementAt(2) as PDFImageXObject;
+            layout =  rsrc.ElementAt(8) as PDFLayoutXObjectResource;
+
+            Assert.IsNotNull(imgXObject, "3. SVG Image xObject not found");
+            Assert.IsNotNull(layout, "3. SVG Image layout not found");
+
+            proxy = imgXObject.ImageData as ImageDataProxy;
+            Assert.IsNotNull(proxy,  "3. SVG Image proxy not found");
+
+            svgData = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svgData,  "3. SVG Image data not found");
+            
+            Assert.IsNotNull(svgData.Canvas);
+            Assert.AreEqual(expectedWidth, svgData.Canvas.Width, "3. Expected Width doesn't match");
+            Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "3. Expected Height doesn't match");
+
+            //Fourth image explicit 100 high and 150 wide
+            expectedWidth = 150;
+            expectedHeight = 100;
+            
+            imgXObject= rsrc.ElementAt(3) as PDFImageXObject;
+            layout =  rsrc.ElementAt(9) as PDFLayoutXObjectResource;
+
+            Assert.IsNotNull(imgXObject, "4. SVG Image xObject not found");
+            Assert.IsNotNull(layout, "4. SVG Image layout not found");
+
+            proxy = imgXObject.ImageData as ImageDataProxy;
+            Assert.IsNotNull(proxy,  "4. SVG Image proxy not found");
+
+            svgData = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svgData,  "4. SVG Image data not found");
+            
+            Assert.IsNotNull(svgData.Canvas);
+            Assert.AreEqual(expectedWidth, svgData.Canvas.Width, "4. Expected Width doesn't match");
+            Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "4. Expected Height doesn't match");
+
+            
+            //Fifth image explicit no dimensions (default 300 x 150)
+            expectedWidth = 300;
+            expectedHeight = 150;
+            
+            imgXObject= rsrc.ElementAt(4) as PDFImageXObject;
+            layout =  rsrc.ElementAt(10) as PDFLayoutXObjectResource;
+
+            Assert.IsNotNull(imgXObject, "5. SVG Image xObject not found");
+            Assert.IsNotNull(layout, "5. SVG Image layout not found");
+
+            proxy = imgXObject.ImageData as ImageDataProxy;
+            Assert.IsNotNull(proxy,  "5. SVG Image proxy not found");
+
+            svgData = proxy.ImageData as SVGPDFImageData;
+            Assert.IsNotNull(svgData,  "5. SVG Image data not found");
+            
+            Assert.IsNotNull(svgData.Canvas);
+            Assert.AreEqual(expectedWidth, svgData.Canvas.Width, "5. Expected Width doesn't match");
+            Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "5. Expected Height doesn't match");
+
         }
         
 
@@ -99,12 +189,6 @@ namespace Scryber.UnitLayouts
 
 
         //no image sizes - inner viewbox
-        
-        //no image sizes - inner width
-        
-        //no image sizes - inner height
-        
-        //no image sizes - inner width and height
         
         //no image sizes - inner relative width
         
