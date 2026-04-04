@@ -107,9 +107,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "table");
 
-            Assert.IsFalse(result);
-            Assert.Inconclusive("Should implement the table, table row and table cell layout.");
-            // Table display mode
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
         }
 
         [TestMethod()]
@@ -121,9 +120,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "table-row");
 
-            Assert.IsFalse(result);
-            Assert.Inconclusive("Should implement the table, table row and table cell layout.");
-            // Table row display mode
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.TableRow, style.Position.DisplayMode);
         }
 
         [TestMethod()]
@@ -136,8 +134,33 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var result = ParseValue(parser, style, "table-cell");
 
             Assert.IsTrue(result);
-            Assert.Inconclusive("Should implement the table, table row and table cell layout.");
-            // Table cell display mode
+            Assert.AreEqual(DisplayMode.TableCell, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Flex_SetsFlexBox()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_Grid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
         }
 
         [TestMethod()]
