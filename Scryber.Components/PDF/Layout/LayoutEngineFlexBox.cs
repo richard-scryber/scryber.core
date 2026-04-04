@@ -8,6 +8,9 @@ namespace Scryber.PDF.Layout
 {
     public class LayoutEngineFlexBox : LayoutEnginePanel
     {
+        // True while we are in row layout mode — used to gate the column-break injection.
+        private bool _isRowMode;
+
         public LayoutEngineFlexBox(ContainerComponent container, IPDFLayoutEngine parent)
             : base(container, parent)
         {
@@ -15,59 +18,102 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
-            var flex = this.FullStyle.Flex;
+            var flex      = this.FullStyle.Flex;
             var direction = flex.Direction;
-            var gap = flex.Gap;
-            var rowGap = this.FullStyle.IsValueDefined(StyleKeys.FlexRowGapKey) ? flex.RowGap : gap;
-            var colGap = this.FullStyle.IsValueDefined(StyleKeys.FlexColumnGapKey) ? flex.ColumnGap : gap;
 
             if (direction == FlexDirection.Column || direction == FlexDirection.ColumnReverse)
             {
-                // Column layout: standard block stacking with optional row gap as alley
+                // Column layout: standard block stacking with optional row gap as alley.
+                var gap    = flex.Gap;
+                var rowGap = this.FullStyle.IsValueDefined(StyleKeys.FlexRowGapKey) ? flex.RowGap : gap;
                 if (rowGap.PointsValue > 0)
                     columnOptions = new PDFColumnOptions() { AlleyWidth = rowGap };
+
+                _isRowMode = false;
                 base.DoLayoutBlockComponent(position, columnOptions);
             }
             else
             {
-                // Row layout: use multi-column layout to place children side by side
+                // Row layout: N columns (one per visible child), with forced column breaks between them.
                 int childCount = CountVisibleChildren();
                 if (childCount <= 0)
                 {
+                    _isRowMode = false;
                     base.DoLayoutBlockComponent(position, columnOptions);
                     return;
                 }
 
+                var gap    = flex.Gap;
+                var colGap = this.FullStyle.IsValueDefined(StyleKeys.FlexColumnGapKey) ? flex.ColumnGap : gap;
                 var widths = ComputeColumnWidths(childCount);
+
                 var rowCols = new PDFColumnOptions()
                 {
-                    ColumnCount = childCount,
-                    AlleyWidth = colGap,
-                    ColumnWidths = widths
+                    ColumnCount   = childCount,
+                    AlleyWidth    = colGap,
+                    ColumnWidths  = widths
                 };
 
+                _isRowMode = true;
                 base.DoLayoutBlockComponent(position, rowCols);
+                _isRowMode = false;
             }
         }
+
+        /// <summary>
+        /// Override DoLayoutChildren: in row mode, force a column break after each flex item
+        /// so that each child occupies exactly one column region.
+        /// </summary>
+        protected override void DoLayoutChildren(ComponentList children)
+        {
+            if (!_isRowMode)
+            {
+                base.DoLayoutChildren(children);
+                return;
+            }
+
+            bool first = true;
+            foreach (Component comp in children)
+            {
+                if (!comp.Visible) continue;
+
+                bool isItem = IsFlexItem(comp);
+
+                // Force-advance to next column before every flex item except the first.
+                if (isItem && !first)
+                {
+                    PDFLayoutBlock block  = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                    PDFLayoutRegion reg   = block.CurrentRegion;
+                    bool newPage;
+                    this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
+                }
+
+                this.DoLayoutAChild(comp);
+                if (isItem) first = false;
+
+                if (!this.ContinueLayout
+                    || this.DocumentLayout.CurrentPage.IsClosed
+                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                    break;
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Helpers
+        // -----------------------------------------------------------------------
+
+        // Only block-level containers are flex items; inline/text nodes are not.
+        private static bool IsFlexItem(IComponent child)
+            => child is IContainerComponent && child is Component c && c.Visible;
 
         private int CountVisibleChildren()
         {
             var container = this.Component as IContainerComponent;
-            if (container == null) return 0;
+            if (container == null || !container.HasContent) return 0;
             int count = 0;
             foreach (var child in container.Content)
             {
-                if (child is IStyledComponent sc)
-                {
-                    var s = sc.Style;
-                    if (s != null && s.IsValueDefined(StyleKeys.PositionDisplayKey))
-                    {
-                        if (s.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block) == DisplayMode.Invisible)
-                            continue;
-                    }
-                }
-                if (child is Component)
-                    count++;
+                if (IsFlexItem(child)) count++;
             }
             return count;
         }
@@ -75,23 +121,24 @@ namespace Scryber.PDF.Layout
         private ColumnWidths ComputeColumnWidths(int count)
         {
             var container = this.Component as IContainerComponent;
-            if (container == null) return ColumnWidths.Empty;
+            if (container == null || !container.HasContent) return ColumnWidths.Empty;
 
             double[] grows = new double[count];
-            double total = 0.0;
-            int i = 0;
+            double   total = 0.0;
+            int      i     = 0;
 
             foreach (var child in container.Content)
             {
-                if (!(child is Component)) continue;
+                if (!IsFlexItem(child)) continue;
                 if (i >= count) break;
 
                 double grow = 1.0;
-                if (child is IStyledComponent sc && sc.Style != null && sc.Style.IsValueDefined(StyleKeys.FlexGrowKey))
+                if (child is IStyledComponent sc && sc.Style != null
+                    && sc.Style.IsValueDefined(StyleKeys.FlexGrowKey))
                     grow = sc.Style.GetValue(StyleKeys.FlexGrowKey, 1.0);
 
                 grows[i] = grow;
-                total += grow;
+                total   += grow;
                 i++;
             }
 
