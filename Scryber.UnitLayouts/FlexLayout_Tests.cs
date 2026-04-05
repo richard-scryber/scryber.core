@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -28,6 +29,49 @@ namespace Scryber.UnitLayouts
         // Helpers
         // -----------------------------------------------------------------------
 
+        private static Document CreateDoc(out Page pg)
+        {
+            var doc = new Document();
+            pg = new Page();
+            pg.Style.PageStyle.Width  = PageW;
+            pg.Style.PageStyle.Height = PageH;
+            pg.Style.Padding.All = 0;
+            doc.Pages.Add(pg);
+            return doc;
+        }
+
+        private static Panel CreateFlexContainer(Page pg, FlexDirection dir = FlexDirection.Row, double width = PageW)
+        {
+            var panel = new Panel();
+            panel.Style.Position.DisplayMode = DisplayMode.FlexBox;
+            panel.Style.Flex.Direction       = dir;
+            panel.Width = width;
+            // Visible outer border so the container boundary is clear in the PDF.
+            panel.Style.Border.LineStyle = LineType.Solid;
+            panel.Style.Border.Width     = 1;
+            panel.Style.Border.Color     = new Color(0, 0, 0);
+            pg.Contents.Add(panel);
+            return panel;
+        }
+
+        /// <summary>Adds a flex child Panel with an optional text label and border.</summary>
+        private static Panel AddChild(Panel parent, double? height = null, double grow = 1.0,
+                                      string label = null, Color? borderColor = null)
+        {
+            var child = new Panel();
+            child.Style.Flex.Grow = grow;
+            child.Style.Padding.All = 4;
+            child.Style.Border.LineStyle = LineType.Solid;
+            child.Style.Border.Width     = 1;
+            child.Style.Border.Color     = borderColor ?? new Color(100, 100, 100);
+            if (height.HasValue)
+                child.Height = height.Value;
+            if (!string.IsNullOrEmpty(label))
+                child.Contents.Add(new Label { Text = label });
+            parent.Contents.Add(child);
+            return child;
+        }
+
         private static PDFLayoutBlock FindBlockOwner(PDFLayoutRegion region, Component owner)
         {
             foreach (var item in region.Contents)
@@ -56,35 +100,33 @@ namespace Scryber.UnitLayouts
             return null;
         }
 
-        private static Document CreateDoc(out Page pg)
+        /// <summary>
+        /// Recursively collects all text characters from a layout region,
+        /// searching into nested blocks and lines.
+        /// </summary>
+        private static string CollectText(PDFLayoutRegion region)
         {
-            var doc = new Document();
-            pg = new Page();
-            pg.Style.PageStyle.Width  = PageW;
-            pg.Style.PageStyle.Height = PageH;
-            pg.Style.Padding.All = 0;
-            doc.Pages.Add(pg);
-            return doc;
+            var sb = new StringBuilder();
+            AppendText(region, sb);
+            return sb.ToString();
         }
 
-        private static Panel CreateFlexContainer(Page pg, FlexDirection dir = FlexDirection.Row, double width = PageW)
+        private static void AppendText(PDFLayoutRegion region, StringBuilder sb)
         {
-            var panel = new Panel();
-            panel.Style.Position.DisplayMode = DisplayMode.FlexBox;
-            panel.Style.Flex.Direction       = dir;
-            panel.Width  = width;
-            pg.Contents.Add(panel);
-            return panel;
-        }
-
-        private static Panel AddChild(Panel parent, double? height = null, double grow = 1.0)
-        {
-            var child = new Panel();
-            child.Style.Flex.Grow = grow;
-            if (height.HasValue)
-                child.Height = height.Value;
-            parent.Contents.Add(child);
-            return child;
+            foreach (var item in region.Contents)
+            {
+                if (item is PDFLayoutLine line)
+                {
+                    foreach (var run in line.Runs)
+                        if (run is PDFTextRunCharacter tc)
+                            sb.Append(tc.Characters);
+                }
+                else if (item is PDFLayoutBlock block)
+                {
+                    foreach (var col in block.Columns)
+                        AppendText(col, sb);
+                }
+            }
         }
 
         // -----------------------------------------------------------------------
@@ -95,10 +137,10 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void FlexRow_TwoChildren_SideBySide()
         {
-            var doc = CreateDoc(out var pg);
-            var panel = CreateFlexContainer(pg);
-            var child0 = AddChild(panel, height: 50, grow: 1);
-            var child1 = AddChild(panel, height: 50, grow: 1);
+            var doc    = CreateDoc(out var pg);
+            var panel  = CreateFlexContainer(pg);
+            var child0 = AddChild(panel, height: 50, grow: 1, label: "Col 0");
+            var child1 = AddChild(panel, height: 50, grow: 1, label: "Col 1");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_TwoChildren_Equal.pdf"))
             {
@@ -109,7 +151,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(_layout, "Layout should not be null");
             Assert.AreEqual(1, _layout.AllPages.Count);
 
-            var lpg       = _layout.AllPages[0];
+            var lpg        = _layout.AllPages[0];
             var pageRegion = lpg.ContentBlock.Columns[0];
             var panelBlock = pageRegion.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(panelBlock, "Panel layout block should not be null");
@@ -126,14 +168,16 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expected, col1.TotalBounds.Width.PointsValue, 0.5, "Column 1 width should be half the container");
 
             // Column 0 starts at X=0; column 1 starts immediately after.
-            Assert.AreEqual(0.0, col0.TotalBounds.X.PointsValue, 0.5, "Column 0 should start at X=0");
+            Assert.AreEqual(0.0,      col0.TotalBounds.X.PointsValue, 0.5, "Column 0 should start at X=0");
             Assert.AreEqual(expected, col1.TotalBounds.X.PointsValue, 0.5, "Column 1 should start at X=half-width");
 
-            // Each column contains the child block (there may also be trailing lines — find by owner).
-            var childBlock0 = FindBlockOwner(col0, child0);
-            var childBlock1 = FindBlockOwner(col1, child1);
-            Assert.IsNotNull(childBlock0, "Column 0 should contain child0's layout block");
-            Assert.IsNotNull(childBlock1, "Column 1 should contain child1's layout block");
+            // Each column should contain the matching child's layout block.
+            Assert.IsNotNull(FindBlockOwner(col0, child0), "Column 0 should contain child0's layout block");
+            Assert.IsNotNull(FindBlockOwner(col1, child1), "Column 1 should contain child1's layout block");
+
+            // Each column should contain its label text.
+            StringAssert.Contains(CollectText(col0), "Col 0", "Column 0 should contain label text");
+            StringAssert.Contains(CollectText(col1), "Col 1", "Column 1 should contain label text");
         }
 
         // -----------------------------------------------------------------------
@@ -149,8 +193,8 @@ namespace Scryber.UnitLayouts
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg);
             panel.Style.Flex.Gap = new Unit(gap, PageUnits.Points);
-            var child0 = AddChild(panel, height: 50, grow: 1);
-            var child1 = AddChild(panel, height: 50, grow: 1);
+            AddChild(panel, height: 50, grow: 1, label: "A");
+            AddChild(panel, height: 50, grow: 1, label: "B");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_Gap.pdf"))
             {
@@ -166,6 +210,10 @@ namespace Scryber.UnitLayouts
             double expected = (PageW - gap) / 2.0;
             Assert.AreEqual(expected, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 width with gap");
             Assert.AreEqual(expected, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 width with gap");
+
+            // Text still present on each side of the gap.
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "A", "Column 0 text");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "B", "Column 1 text");
         }
 
         // -----------------------------------------------------------------------
@@ -178,8 +226,8 @@ namespace Scryber.UnitLayouts
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg);
-            var child0 = AddChild(panel, height: 50, grow: 1);
-            var child1 = AddChild(panel, height: 50, grow: 2);
+            AddChild(panel, height: 50, grow: 1, label: "Narrow");
+            AddChild(panel, height: 50, grow: 2, label: "Wide");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_GrowRatio.pdf"))
             {
@@ -194,6 +242,9 @@ namespace Scryber.UnitLayouts
             // grow=1 → 1/3 of 600 = 200; grow=2 → 2/3 of 600 = 400.
             Assert.AreEqual(200.0, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 (grow=1) should be 200pt");
             Assert.AreEqual(400.0, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 (grow=2) should be 400pt");
+
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Narrow", "Narrow column text");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "Wide",   "Wide column text");
         }
 
         // -----------------------------------------------------------------------
@@ -206,9 +257,9 @@ namespace Scryber.UnitLayouts
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg);
-            AddChild(panel, height: 50);
-            AddChild(panel, height: 50);
-            AddChild(panel, height: 50);
+            AddChild(panel, height: 50, label: "One");
+            AddChild(panel, height: 50, label: "Two");
+            AddChild(panel, height: 50, label: "Three");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_ThreeChildren.pdf"))
             {
@@ -222,9 +273,14 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(3, panelBlock.Columns.Length, "Three children should produce three columns");
 
             double expected = PageW / 3.0;
+            string[] labels = { "One", "Two", "Three" };
             for (int i = 0; i < 3; i++)
+            {
                 Assert.AreEqual(expected, panelBlock.Columns[i].TotalBounds.Width.PointsValue, 0.5,
                     $"Column {i} should be 200pt");
+                StringAssert.Contains(CollectText(panelBlock.Columns[i]), labels[i],
+                    $"Column {i} should contain its label");
+            }
         }
 
         // -----------------------------------------------------------------------
@@ -237,8 +293,8 @@ namespace Scryber.UnitLayouts
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg, FlexDirection.Column);
-            AddChild(panel, height: 50);
-            AddChild(panel, height: 80);
+            AddChild(panel, height: 50, label: "Row A");
+            AddChild(panel, height: 80, label: "Row B");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Column_TwoChildren.pdf"))
             {
@@ -253,9 +309,6 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, panelBlock.Columns.Length, "Flex column direction should have a single region");
 
             var region = panelBlock.Columns[0];
-            // Two child blocks stacked.
-            Assert.AreEqual(2, region.Contents.Count, "Column region should contain two child blocks");
-
             var block0 = region.Contents[0] as PDFLayoutBlock;
             var block1 = region.Contents[1] as PDFLayoutBlock;
             Assert.IsNotNull(block0, "First child block should not be null");
@@ -264,6 +317,14 @@ namespace Scryber.UnitLayouts
             // Second child should start below the first.
             Assert.IsTrue(block1.TotalBounds.Y > block0.TotalBounds.Y,
                 "Second child Y should be greater than first child Y");
+
+            // First child is 50pt tall (explicit height).
+            Assert.AreEqual(50.0, block0.TotalBounds.Height.PointsValue, 0.5,
+                "First child height should be 50pt");
+
+            // Text content present in each stacked child.
+            StringAssert.Contains(CollectText(block0.Columns[0]), "Row A", "First child text");
+            StringAssert.Contains(CollectText(block1.Columns[0]), "Row B", "Second child text");
         }
 
         // -----------------------------------------------------------------------
@@ -276,8 +337,8 @@ namespace Scryber.UnitLayouts
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg, FlexDirection.Column);
-            AddChild(panel, height: 50);
-            AddChild(panel, height: 50);
+            AddChild(panel, height: 50, label: "Full A");
+            AddChild(panel, height: 50, label: "Full B");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Column_FullWidth.pdf"))
             {
@@ -294,6 +355,11 @@ namespace Scryber.UnitLayouts
             var colRegion = panelBlock.Columns[0];
             Assert.AreEqual(PageW, colRegion.TotalBounds.Width.PointsValue, 0.5,
                 "Flex-column region should span the full container width");
+
+            // Both labels present.
+            var allText = CollectText(colRegion);
+            StringAssert.Contains(allText, "Full A", "First child label");
+            StringAssert.Contains(allText, "Full B", "Second child label");
         }
 
         // -----------------------------------------------------------------------
@@ -310,10 +376,20 @@ namespace Scryber.UnitLayouts
             // Add children without explicitly setting grow (default = 1)
             var child0 = new Panel();
             child0.Height = 50;
+            child0.Style.Padding.All = 4;
+            child0.Style.Border.LineStyle = LineType.Solid;
+            child0.Style.Border.Width     = 1;
+            child0.Style.Border.Color     = new Color(100, 100, 100);
+            child0.Contents.Add(new Label { Text = "Default A" });
             panel.Contents.Add(child0);
 
             var child1 = new Panel();
             child1.Height = 50;
+            child1.Style.Padding.All = 4;
+            child1.Style.Border.LineStyle = LineType.Solid;
+            child1.Style.Border.Width     = 1;
+            child1.Style.Border.Color     = new Color(100, 100, 100);
+            child1.Contents.Add(new Label { Text = "Default B" });
             panel.Contents.Add(child1);
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_DefaultGrow.pdf"))
@@ -329,6 +405,9 @@ namespace Scryber.UnitLayouts
             double expected = PageW / 2.0;
             Assert.AreEqual(expected, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 equal width");
             Assert.AreEqual(expected, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 equal width");
+
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Default A", "Column 0 text");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "Default B", "Column 1 text");
         }
 
         // -----------------------------------------------------------------------
@@ -343,9 +422,9 @@ namespace Scryber.UnitLayouts
             var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <body style=""margin:0; padding:0;"">
-  <div style=""display:flex; flex-direction:row; width:600pt;"">
-    <div style=""flex-grow:1; height:50pt;"" />
-    <div style=""flex-grow:1; height:50pt;"" />
+  <div style=""display:flex; flex-direction:row; width:600pt; border:1pt solid #000;"">
+    <div style=""flex-grow:1; height:50pt; border:1pt solid #888; padding:4pt;"">CSS Left</div>
+    <div style=""flex-grow:1; height:50pt; border:1pt solid #888; padding:4pt;"">CSS Right</div>
   </div>
 </body>
 </html>";
@@ -370,6 +449,10 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(flexBlock, "Should find a block with 2 columns (flex row) in the layout tree");
             Assert.AreEqual(2, flexBlock.Columns.Length, "CSS flex-direction:row should produce 2 columns");
+
+            // Both text strings present in their respective columns.
+            StringAssert.Contains(CollectText(flexBlock.Columns[0]), "CSS Left",  "Left column text");
+            StringAssert.Contains(CollectText(flexBlock.Columns[1]), "CSS Right", "Right column text");
         }
 
         // -----------------------------------------------------------------------
@@ -385,6 +468,9 @@ namespace Scryber.UnitLayouts
             panel.Style.Position.DisplayMode = DisplayMode.FlexBox;
             panel.Width  = PageW;
             panel.Height = 50;
+            panel.Style.Border.LineStyle = LineType.Solid;
+            panel.Style.Border.Width     = 1;
+            panel.Style.Border.Color     = new Color(0, 0, 0);
             pg.Contents.Add(panel);
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_Empty.pdf"))
@@ -408,7 +494,7 @@ namespace Scryber.UnitLayouts
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg);
-            AddChild(panel, height: 50, grow: 1);
+            AddChild(panel, height: 50, grow: 1, label: "Only Child");
 
             using (var ms = DocStreams.GetOutputStream("Flex_Row_SingleChild.pdf"))
             {
@@ -421,6 +507,8 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, panelBlock.Columns.Length, "Single child should produce one column");
             Assert.AreEqual(PageW, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5,
                 "Single-child flex row column should span the full container width");
+
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Only Child", "Single child text");
         }
     }
 }

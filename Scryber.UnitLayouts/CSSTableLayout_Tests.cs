@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -43,6 +44,10 @@ namespace Scryber.UnitLayouts
             var panel = new Panel();
             panel.Style.Position.DisplayMode = DisplayMode.Table;
             panel.Width = width;
+            // Outer border so the table boundary is visible in the PDF.
+            panel.Style.Border.LineStyle = LineType.Solid;
+            panel.Style.Border.Width     = 2;
+            panel.Style.Border.Color     = new Color(0, 0, 0);
             pg.Contents.Add(panel);
             return panel;
         }
@@ -55,37 +60,53 @@ namespace Scryber.UnitLayouts
             return row;
         }
 
-        private static Panel AddCell(Panel row, double? height = null)
+        /// <summary>Adds a display:table-cell Panel with optional explicit height and label text.</summary>
+        private static Panel AddCell(Panel row, double? height = null, string label = null)
         {
             var cell = new Panel();
             cell.Style.Position.DisplayMode = DisplayMode.TableCell;
+            cell.Style.Padding.All = 4;
             if (height.HasValue)
                 cell.Height = height.Value;
+            if (!string.IsNullOrEmpty(label))
+                cell.Contents.Add(new Label { Text = label });
             row.Contents.Add(cell);
             return cell;
-        }
-
-        private static PDFLayoutBlock FindTableBlock(PDFLayoutRegion region)
-        {
-            foreach (var item in region.Contents)
-            {
-                if (item is PDFLayoutBlock b && b.Columns.Length == 1)
-                {
-                    // Look for a block whose columns contain multiple side-by-side child blocks
-                    // (characteristic of a table row).
-                    var col = b.Columns[0];
-                    if (col.Contents.Count >= 1 && col.Contents[0] is PDFLayoutBlock row
-                        && row.Columns.Length > 1)
-                        return b;
-                }
-            }
-            return null;
         }
 
         private static PDFLayoutBlock GetTableBlock(PDFLayoutRegion pageRegion)
         {
             // The display:table panel becomes the first item in the page region.
             return pageRegion.Contents[0] as PDFLayoutBlock;
+        }
+
+        /// <summary>
+        /// Recursively collects all text characters from a layout region,
+        /// searching into nested blocks and lines.
+        /// </summary>
+        private static string CollectText(PDFLayoutRegion region)
+        {
+            var sb = new StringBuilder();
+            AppendText(region, sb);
+            return sb.ToString();
+        }
+
+        private static void AppendText(PDFLayoutRegion region, StringBuilder sb)
+        {
+            foreach (var item in region.Contents)
+            {
+                if (item is PDFLayoutLine line)
+                {
+                    foreach (var run in line.Runs)
+                        if (run is PDFTextRunCharacter tc)
+                            sb.Append(tc.Characters);
+                }
+                else if (item is PDFLayoutBlock block)
+                {
+                    foreach (var col in block.Columns)
+                        AppendText(col, sb);
+                }
+            }
         }
 
         // -----------------------------------------------------------------------
@@ -96,11 +117,11 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void CSSTable_TwoColumns_SideBySide()
         {
-            var doc = CreateDoc(out var pg);
+            var doc   = CreateDoc(out var pg);
             var table = CreateCSSTable(pg);
             var row   = AddRow(table);
-            AddCell(row, height: 50);
-            AddCell(row, height: 50);
+            AddCell(row, height: 50, label: "Cell A");
+            AddCell(row, height: 50, label: "Cell B");
 
             using (var ms = DocStreams.GetOutputStream("CSSTable_TwoColumns.pdf"))
             {
@@ -121,12 +142,16 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(rowBlock, "Row block should exist");
             Assert.AreEqual(2, rowBlock.Columns.Length, "Two cells should produce 2 columns in the row block");
 
-            // Each column should be half the table width.
+            // Each column should be half the table width (TableCell base has 2pt padding + 1pt border on each side).
             double expected = PageW / 2.0;
             Assert.AreEqual(expected, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
                 "Column 0 should be half the table width");
             Assert.AreEqual(expected, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
                 "Column 1 should be half the table width");
+
+            // Text content present in each cell.
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Cell A", "Cell 0 text");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Cell B", "Cell 1 text");
         }
 
         // -----------------------------------------------------------------------
@@ -140,9 +165,9 @@ namespace Scryber.UnitLayouts
             var doc   = CreateDoc(out var pg);
             var table = CreateCSSTable(pg);
             var row   = AddRow(table);
-            AddCell(row, height: 50);
-            AddCell(row, height: 50);
-            AddCell(row, height: 50);
+            AddCell(row, height: 50, label: "Col 1");
+            AddCell(row, height: 50, label: "Col 2");
+            AddCell(row, height: 50, label: "Col 3");
 
             using (var ms = DocStreams.GetOutputStream("CSSTable_ThreeColumns.pdf"))
             {
@@ -160,9 +185,14 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(3, rowBlock.Columns.Length, "Three cells should produce 3 columns");
 
             double expected = PageW / 3.0;
+            string[] labels = { "Col 1", "Col 2", "Col 3" };
             for (int i = 0; i < 3; i++)
+            {
                 Assert.AreEqual(expected, rowBlock.Columns[i].TotalBounds.Width.PointsValue, 1.0,
                     $"Column {i} should be one-third of table width");
+                StringAssert.Contains(CollectText(rowBlock.Columns[i]), labels[i],
+                    $"Column {i} should contain its label");
+            }
         }
 
         // -----------------------------------------------------------------------
@@ -177,12 +207,12 @@ namespace Scryber.UnitLayouts
             var table = CreateCSSTable(pg);
 
             var row0 = AddRow(table);
-            AddCell(row0, height: 40);
-            AddCell(row0, height: 40);
+            AddCell(row0, height: 40, label: "R0 C0");
+            AddCell(row0, height: 40, label: "R0 C1");
 
             var row1 = AddRow(table);
-            AddCell(row1, height: 60);
-            AddCell(row1, height: 60);
+            AddCell(row1, height: 60, label: "R1 C0");
+            AddCell(row1, height: 60, label: "R1 C1");
 
             using (var ms = DocStreams.GetOutputStream("CSSTable_TwoRows.pdf"))
             {
@@ -206,6 +236,18 @@ namespace Scryber.UnitLayouts
             // Row 1 should be positioned below row 0.
             Assert.IsTrue(rowBlock1.TotalBounds.Y > rowBlock0.TotalBounds.Y,
                 "Row 1 Y should be greater than row 0 Y");
+
+            // Row 0 and row 1 each have content so they should both have a positive height.
+            Assert.IsTrue(rowBlock0.TotalBounds.Height.PointsValue > 0, "Row 0 should have positive height");
+            Assert.IsTrue(rowBlock1.TotalBounds.Height.PointsValue > 0, "Row 1 should have positive height");
+
+            // Text present in each row.
+            var row0Text = CollectText(rowBlock0.Columns[0]) + CollectText(rowBlock0.Columns[1]);
+            var row1Text = CollectText(rowBlock1.Columns[0]) + CollectText(rowBlock1.Columns[1]);
+            StringAssert.Contains(row0Text, "R0 C0", "Row 0 cell 0 text");
+            StringAssert.Contains(row0Text, "R0 C1", "Row 0 cell 1 text");
+            StringAssert.Contains(row1Text, "R1 C0", "Row 1 cell 0 text");
+            StringAssert.Contains(row1Text, "R1 C1", "Row 1 cell 1 text");
         }
 
         // -----------------------------------------------------------------------
@@ -221,9 +263,9 @@ namespace Scryber.UnitLayouts
             var row   = AddRow(table);
 
             // First cell spans 2 columns, second is a normal cell.
-            var cell0 = AddCell(row, height: 50);
+            var cell0 = AddCell(row, height: 50, label: "Spanning");
             cell0.Style.Table.CellColumnSpan = 2;
-            AddCell(row, height: 50);
+            AddCell(row, height: 50, label: "Normal");
 
             using (var ms = DocStreams.GetOutputStream("CSSTable_ColSpan.pdf"))
             {
@@ -243,9 +285,15 @@ namespace Scryber.UnitLayouts
 
             // The spanning cell occupies 2/3 of the width.
             double expected = PageW * 2.0 / 3.0;
-            Assert.AreEqual(expected, rowBlock.Columns[0].TotalBounds.Width.PointsValue +
-                                       rowBlock.Columns[1].TotalBounds.Width.PointsValue,
+            Assert.AreEqual(expected,
+                rowBlock.Columns[0].TotalBounds.Width.PointsValue + rowBlock.Columns[1].TotalBounds.Width.PointsValue,
                 2.0, "First two columns combined should equal 2/3 of total width");
+
+            // Text in spanning cell and normal cell.
+            var spanText   = CollectText(rowBlock.Columns[0]) + CollectText(rowBlock.Columns[1]);
+            var normalText = CollectText(rowBlock.Columns[2]);
+            StringAssert.Contains(spanText,   "Spanning", "Spanning cell text");
+            StringAssert.Contains(normalText, "Normal",   "Normal cell text");
         }
 
         // -----------------------------------------------------------------------
@@ -259,10 +307,10 @@ namespace Scryber.UnitLayouts
             var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <body style=""margin:0; padding:0;"">
-  <div style=""display:table; width:600pt;"">
+  <div style=""display:table; width:600pt; border:2pt solid #000;"">
     <div style=""display:table-row;"">
-      <div style=""display:table-cell; height:50pt;"" />
-      <div style=""display:table-cell; height:50pt;"" />
+      <div style=""display:table-cell; height:50pt; padding:4pt;"">Alpha</div>
+      <div style=""display:table-cell; height:50pt; padding:4pt;"">Beta</div>
     </div>
   </div>
 </body>
@@ -282,11 +330,15 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(layout);
             Assert.AreEqual(1, layout.AllPages.Count);
 
-            // Find the row block: first block in the page that has a child block with 2 columns.
+            // Find the row block: first block with exactly 2 columns.
             var contentBlock = layout.AllPages[0].ContentBlock;
-            PDFLayoutBlock tableBlock = FindRowWithCols(contentBlock.Columns[0], 2);
-            Assert.IsNotNull(tableBlock, "Should find a row block with 2 column cells in the layout tree");
-            Assert.AreEqual(2, tableBlock.Columns.Length, "CSS display:table-row should produce 2 column cells");
+            PDFLayoutBlock rowBlock = FindRowWithCols(contentBlock.Columns[0], 2);
+            Assert.IsNotNull(rowBlock, "Should find a row block with 2 column cells in the layout tree");
+            Assert.AreEqual(2, rowBlock.Columns.Length, "CSS display:table-row should produce 2 column cells");
+
+            // Text present in each cell.
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Alpha", "Left cell text");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Beta",  "Right cell text");
         }
 
         // Recursively find the first layout block that has exactly `colCount` columns.
@@ -321,6 +373,9 @@ namespace Scryber.UnitLayouts
             table.Style.Position.DisplayMode = DisplayMode.Table;
             table.Width  = PageW;
             table.Height = 50;
+            table.Style.Border.LineStyle = LineType.Solid;
+            table.Style.Border.Width     = 2;
+            table.Style.Border.Color     = new Color(0, 0, 0);
             pg.Contents.Add(table);
 
             using (var ms = DocStreams.GetOutputStream("CSSTable_Empty.pdf"))
