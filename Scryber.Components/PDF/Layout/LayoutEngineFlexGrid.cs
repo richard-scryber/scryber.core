@@ -266,29 +266,31 @@ namespace Scryber.PDF.Layout
         }
 
         // -----------------------------------------------------------------------
-        // Proxy cell — wraps a display:grid child without moving its children
+        // Proxy cell — transparent table cell containing the grid item as a child
         // -----------------------------------------------------------------------
 
-        internal sealed class GridCell : TableCell, IContainerComponent
+        internal sealed class GridCell : TableCell
         {
-            private readonly ContainerComponent _source;
-
-            public GridCell(Component source)
+            /// <summary>
+            /// Creates a cell that contains <paramref name="source"/> as its direct child.
+            /// The source Panel is laid out with its own border, padding, and explicit height.
+            /// </summary>
+            public GridCell(Component source) : base()
             {
-                _source = source as ContainerComponent;
+                if (source != null)
+                    this.Contents.Add(source);
             }
 
-            bool IContainerComponent.HasContent
-                => _source?.HasContent ?? false;
-
-            ComponentList IContainerComponent.Content
-                => _source != null ? ((IContainerComponent)_source).Content : base.InnerContent;
-
-            public override ComponentList Contents
-                => _source != null ? ((IContainerComponent)_source).Content : base.Contents;
-
-            protected override ComponentList InnerContent
-                => _source != null ? ((IContainerComponent)_source).Content : base.InnerContent;
+            // GridCell has no visual styling of its own — the item Panel handles that.
+            protected override Styles.Style GetBaseStyle()
+            {
+                var style = base.GetBaseStyle();
+                style.Border.LineStyle = Drawing.LineType.None;
+                style.Border.Width = Drawing.Unit.Zero;
+                style.Padding.All = Drawing.Unit.Zero;
+                style.Margins.All = Drawing.Unit.Zero;
+                return style;
+            }
         }
     }
 }
