@@ -205,8 +205,311 @@ namespace Scryber.UnitLayouts
         //no image sizes - inner INVALID sizes
         
         //no image sizes - inner REVERSED sizes
-        
-        
+
+
+        // -----------------------------------------------------------------------
+        // Helpers
+        // -----------------------------------------------------------------------
+
+        /// <summary>
+        /// Returns all SVGPDFImageData instances from the document shared resources, in resource order.
+        /// </summary>
+        private List<SVGPDFImageData> GetSVGImageData(PDFLayoutDocument layout)
+        {
+            return layout.DocumentComponent.SharedResources
+                .OfType<PDFImageXObject>()
+                .Select(x => (x.ImageData as ImageDataProxy)?.ImageData as SVGPDFImageData)
+                .Where(d => d != null)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Finds the Nth PDFLayoutComponentRun that owns an image by recursively walking
+        /// the full layout tree of the first page. Independent of the exact block nesting.
+        /// </summary>
+        private PDFLayoutComponentRun GetImageRunFromBody(int imageIndex)
+        {
+            var all = new List<PDFLayoutComponentRun>();
+            foreach (var pg in this.layout.AllPages)
+                CollectImageRuns(pg.ContentBlock, all);
+            Assert.IsTrue(imageIndex < all.Count,
+                $"Image run at index {imageIndex} not found — only {all.Count} image runs in layout");
+            return all[imageIndex];
+        }
+
+        private static void CollectImageRuns(PDFLayoutBlock block, List<PDFLayoutComponentRun> results)
+        {
+            foreach (var col in block.Columns)
+            {
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutLine line)
+                    {
+                        foreach (var run in line.Runs.OfType<PDFLayoutComponentRun>())
+                            results.Add(run);
+                    }
+                    else if (item is PDFLayoutBlock child)
+                    {
+                        CollectImageRuns(child, results);
+                    }
+                }
+            }
+        }
+
+        private static double RunScaleX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[0];
+        private static double RunScaleY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[3];
+        private static double RunTranslateX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[4];
+        private static double RunTranslateY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[5];
+
+        // -----------------------------------------------------------------------
+        // Group: No img size, viewBox-only SVGs
+        // -----------------------------------------------------------------------
+
+        [TestMethod()]
+        public void SVGImageContainer_NoImgSize_ViewboxVariants()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_NoImgSize_ViewboxVariants.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_NoImgSize_ViewboxVariants.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(3, svgs.Count, "Expected 3 SVG images");
+
+            // 1. viewBox 200×150 — canvas and run both 200×150
+            Assert.AreEqual((Unit)200, svgs[0].Canvas.Width,  "1. Canvas width from viewBox");
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height from viewBox");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(200.0, run0.Width.PointsValue,  1.0, "1. Run width");
+            Assert.AreEqual(150.0, run0.Height.PointsValue, 1.0, "1. Run height");
+
+            // 2. viewBox 400×150 — canvas and run both 400×150
+            Assert.AreEqual((Unit)400, svgs[1].Canvas.Width,  "2. Canvas width from viewBox");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height from viewBox");
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(400.0, run1.Width.PointsValue,  1.0, "2. Run width");
+            Assert.AreEqual(150.0, run1.Height.PointsValue, 1.0, "2. Run height");
+
+            // 3. viewBox 150×400 — canvas and run both 150×400
+            Assert.AreEqual((Unit)150, svgs[2].Canvas.Width,  "3. Canvas width from viewBox");
+            Assert.AreEqual((Unit)400, svgs[2].Canvas.Height, "3. Canvas height from viewBox");
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(150.0, run2.Width.PointsValue,  1.0, "3. Run width");
+            Assert.AreEqual(400.0, run2.Height.PointsValue, 1.0, "3. Run height");
+        }
+
+        // -----------------------------------------------------------------------
+        // Group: img width override only — height scales proportionally
+        // -----------------------------------------------------------------------
+
+        [TestMethod()]
+        public void SVGImageContainer_ImgWidthOnly()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_ImgWidthOnly.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_ImgWidthOnly.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(3, svgs.Count, "Expected 3 SVG images");
+
+            // 1. SVG 150×100, img width=300 → canvas 150×100, run 300×200
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(300.0, run0.Width.PointsValue,  1.0, "1. Run width overridden");
+            Assert.AreEqual(200.0, run0.Height.PointsValue, 1.0, "1. Run height proportional (300 * 100/150)");
+
+            // 2. SVG 200×150 (viewBox), img width=400 → canvas 200×150, run 400×300
+            Assert.AreEqual((Unit)200, svgs[1].Canvas.Width,  "2. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height stays intrinsic");
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(400.0, run1.Width.PointsValue,  1.0, "2. Run width overridden");
+            Assert.AreEqual(300.0, run1.Height.PointsValue, 1.0, "2. Run height proportional (400 * 150/200)");
+
+            // 3. SVG 300×150 (default), img width=150 → canvas 300×150, run 150×75
+            Assert.AreEqual((Unit)300, svgs[2].Canvas.Width,  "3. Canvas width stays at default");
+            Assert.AreEqual((Unit)150, svgs[2].Canvas.Height, "3. Canvas height stays at default");
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(150.0, run2.Width.PointsValue,  1.0, "3. Run width overridden");
+            Assert.AreEqual(75.0,  run2.Height.PointsValue, 1.0, "3. Run height proportional (150 * 150/300)");
+        }
+
+        // -----------------------------------------------------------------------
+        // Group: img height override only — width scales proportionally
+        // -----------------------------------------------------------------------
+
+        [TestMethod()]
+        public void SVGImageContainer_ImgHeightOnly()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_ImgHeightOnly.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_ImgHeightOnly.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(3, svgs.Count, "Expected 3 SVG images");
+
+            // 1. SVG 150×100, img height=200 → canvas 150×100, run 300×200
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(300.0, run0.Width.PointsValue,  1.0, "1. Run width proportional (200 * 150/100)");
+            Assert.AreEqual(200.0, run0.Height.PointsValue, 1.0, "1. Run height overridden");
+
+            // 2. SVG 200×150 (viewBox), img height=100 → canvas 200×150, run ~133.3×100
+            Assert.AreEqual((Unit)200, svgs[1].Canvas.Width,  "2. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height stays intrinsic");
+            var run1 = GetImageRunFromBody(1);
+            var expectedW1 = 100.0 * (200.0 / 150.0); // ≈ 133.33
+            Assert.AreEqual(expectedW1, run1.Width.PointsValue,  1.0, "2. Run width proportional (100 * 200/150)");
+            Assert.AreEqual(100.0,     run1.Height.PointsValue,  1.0, "2. Run height overridden");
+
+            // 3. SVG 300×150 (default), img height=75 → canvas 300×150, run 150×75
+            Assert.AreEqual((Unit)300, svgs[2].Canvas.Width,  "3. Canvas width stays at default");
+            Assert.AreEqual((Unit)150, svgs[2].Canvas.Height, "3. Canvas height stays at default");
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(150.0, run2.Width.PointsValue,  1.0, "3. Run width proportional (75 * 300/150)");
+            Assert.AreEqual(75.0,  run2.Height.PointsValue, 1.0, "3. Run height overridden");
+        }
+
+        // -----------------------------------------------------------------------
+        // Group: img width and height both overridden
+        // -----------------------------------------------------------------------
+
+        [TestMethod()]
+        public void SVGImageContainer_ImgBothDims()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_ImgBothDims.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_ImgBothDims.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(2, svgs.Count, "Expected 2 SVG images");
+
+            // 1. SVG 200×150 (viewBox), img 400×300 — canvas stays intrinsic, run matches override
+            Assert.AreEqual((Unit)200, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(400.0, run0.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(300.0, run0.Height.PointsValue, 1.0, "1. Run height from img override");
+
+            // 2. SVG 300×150 (default), img 100×100 — canvas stays intrinsic, run matches override
+            Assert.AreEqual((Unit)300, svgs[1].Canvas.Width,  "2. Canvas width stays at default");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height stays at default");
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+        }
+
+        // -----------------------------------------------------------------------
+        // Group: preserveAspectRatio variants — dest 300×200 via img CSS, viewBox 0 0 200 150
+        // -----------------------------------------------------------------------
+
+        [TestMethod()]
+        public void SVGImageContainer_PAR_Variants()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_PAR_Variants.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_PAR_Variants.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(5, svgs.Count, "Expected 5 SVG images");
+
+            // dest=300×200, viewBox=0 0 200 150
+            // scalex=300/200=1.5, scaley=200/150=1.333
+            const double Delta = 0.5;
+            double minScale = Math.Min(300.0 / 200.0, 200.0 / 150.0); // 1.333
+            double maxScale = Math.Max(300.0 / 200.0, 200.0 / 150.0); // 1.5
+
+            // All canvases: intrinsic 200×150 from viewBox (no explicit dims in SVG)
+            foreach (var svg in svgs)
+            {
+                Assert.AreEqual((Unit)200, svg.Canvas.Width,  "Canvas width from viewBox");
+                Assert.AreEqual((Unit)150, svg.Canvas.Height, "Canvas height from viewBox");
+            }
+
+            // All runs: 300×200 from img CSS
+            for (int i = 0; i < 5; i++)
+            {
+                var run = GetImageRunFromBody(i);
+                Assert.AreEqual(300.0, run.Width.PointsValue,  1.0, $"{i+1}. Run width from img CSS");
+                Assert.AreEqual(200.0, run.Height.PointsValue, 1.0, $"{i+1}. Run height from img CSS");
+            }
+
+            // 1. xMidYMid meet: scale=1.333, scaledW=266.67 → TX=(300-266.67)/2=16.67, TY=0
+            var m0 = svgs[0].Sizer.GetCanvasToImageMatrix(null);
+            double scaledW_meet = 200 * minScale;
+            double spareX_meet  = 300 - scaledW_meet;
+            Assert.AreEqual(minScale,        RunScaleX(m0), 0.01, "1. xMidYMid meet scaleX");
+            Assert.AreEqual(minScale,        RunScaleY(m0), 0.01, "1. xMidYMid meet scaleY");
+            Assert.AreEqual(spareX_meet / 2, RunTranslateX(m0), Delta, "1. xMidYMid meet TX");
+            Assert.AreEqual(0.0,             RunTranslateY(m0), Delta, "1. xMidYMid meet TY");
+
+            // 2. xMinYMin meet: scale=1.333, TX=0, TY=spareY(=0)
+            var m1 = svgs[1].Sizer.GetCanvasToImageMatrix(null);
+            double scaledH_meet = 150 * minScale;
+            double spareY_meet  = 200 - scaledH_meet;
+            Assert.AreEqual(minScale, RunScaleX(m1), 0.01, "2. xMinYMin meet scaleX");
+            Assert.AreEqual(0.0,      RunTranslateX(m1), Delta, "2. xMinYMin meet TX");
+            Assert.AreEqual(spareY_meet, RunTranslateY(m1), Delta, "2. xMinYMin meet TY");
+
+            // 3. xMaxYMax meet: scale=1.333, TX=spareX, TY=0
+            var m2 = svgs[2].Sizer.GetCanvasToImageMatrix(null);
+            Assert.AreEqual(minScale,       RunScaleX(m2), 0.01, "3. xMaxYMax meet scaleX");
+            Assert.AreEqual(spareX_meet,    RunTranslateX(m2), Delta, "3. xMaxYMax meet TX");
+            Assert.AreEqual(0.0,            RunTranslateY(m2), Delta, "3. xMaxYMax meet TY");
+
+            // 4. none: scaleX=1.5, scaleY=1.333, TX=0, TY=0
+            var m3 = svgs[3].Sizer.GetCanvasToImageMatrix(null);
+            Assert.AreEqual(300.0 / 200.0, RunScaleX(m3), 0.01, "4. none scaleX");
+            Assert.AreEqual(200.0 / 150.0, RunScaleY(m3), 0.01, "4. none scaleY");
+            Assert.AreEqual(0.0,           RunTranslateX(m3), Delta, "4. none TX");
+            Assert.AreEqual(0.0,           RunTranslateY(m3), Delta, "4. none TY");
+
+            // 5. xMidYMid slice: scale=1.5, scaledH=225, TY=(200-225)/2=-12.5, TX=0
+            var m4 = svgs[4].Sizer.GetCanvasToImageMatrix(null);
+            double scaledH_slice = 150 * maxScale;
+            double spareY_slice  = 200 - scaledH_slice; // -25
+            Assert.AreEqual(maxScale,        RunScaleX(m4), 0.01, "5. xMidYMid slice scaleX");
+            Assert.AreEqual(maxScale,        RunScaleY(m4), 0.01, "5. xMidYMid slice scaleY");
+            Assert.AreEqual(0.0,             RunTranslateX(m4), Delta, "5. xMidYMid slice TX");
+            Assert.AreEqual(spareY_slice / 2, RunTranslateY(m4), Delta, "5. xMidYMid slice TY");
+        }
+
+
         //image width and height - no inner
         
         //image width and height - inner viewbox

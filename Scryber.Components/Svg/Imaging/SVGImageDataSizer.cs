@@ -131,12 +131,18 @@ public class SVGImageDataSizer
     }
 
     /// <summary>
-    /// Updates the size of the canvas render size - In a remove referenced image this does nothing.
+    /// Gets the actual rendered size of the image in the page (set by SetRenderSize after layout).
+    /// Used as the dest for the canvas-to-image matrix so the transform matches the placed dimensions.
+    /// </summary>
+    public Size? RenderSize { get; private set; }
+
+    /// <summary>
+    /// Records the rendered size of the image once the layout engine has determined the final placement.
     /// </summary>
     /// <param name="size"></param>
     public void SetRenderSize(Size size)
     {
-        //this.RenderSize = size;
+        this.RenderSize = size;
     }
 
 
@@ -173,7 +179,9 @@ public class SVGImageDataSizer
         if (viewBox.Width <= Unit.Zero || viewBox.Height <= Unit.Zero)
             return PDFTransformationMatrix.Identity();
 
-        var dest = this.GetLayoutSize();
+        // Use the actual rendered size as the dest if the layout engine has set it;
+        // otherwise fall back to the intrinsic layout size.
+        var dest = this.RenderSize ?? this.GetLayoutSize();
 
         // Resolve preserveAspectRatio from the canvas (default: xMidYMid meet).
         ViewPortAspectRatio par;
