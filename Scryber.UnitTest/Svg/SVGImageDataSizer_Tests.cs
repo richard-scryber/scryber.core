@@ -387,10 +387,11 @@ namespace Scryber.Core.UnitTests.Svg
         }
 
         [TestMethod]
-        [Description("Wider dest with meet — content is narrower than dest, centred")]
-        public void BBox_HasVB_WiderDest_Meet_ContentCentred()
+        [Description("Wider dest with meet — BBox is the full dest rectangle; the matrix handles centring")]
+        public void BBox_HasVB_WiderDest_Meet_IsFullDest()
         {
-            // viewBox: 0 0 400 150, dest: 600×150, scale=1.0, spareX=200 → content at X=100
+            // viewBox: 0 0 400 150, dest: 600×150
+            // The matrix centres the content, but the BBox of the XObject is always the full dest.
             var canvas = MakeCanvas(viewBox: new Rect(0, 0, 400, 150),
                 par: new ViewPortAspectRatio(AspectRatioAlign.xMidYMid, AspectRatioMeet.Meet));
             var style = new Style();
@@ -399,20 +400,17 @@ namespace Scryber.Core.UnitTests.Svg
             var sizer = MakeSizer(canvas, appliedStyle: style);
             var bbox = sizer.GetImageToCanvasBBox(null);
 
-            double scale = Math.Min(600.0 / 400.0, 150.0 / 150.0); // 1.0
-            double scaledW = 400 * scale;
-            double spareX = 600 - scaledW;
-
-            Assert.AreEqual(spareX / 2, bbox.X.PointsValue, Delta, "Content starts at centred offset");
-            Assert.AreEqual(scaledW, bbox.Width.PointsValue, Delta, "Content width = scaledW");
-            Assert.AreEqual(150.0, bbox.Height.PointsValue, Delta, "Content fills height");
+            Assert.AreEqual(0.0, bbox.X.PointsValue, Delta);
+            Assert.AreEqual(0.0, bbox.Y.PointsValue, Delta);
+            Assert.AreEqual(600.0, bbox.Width.PointsValue, Delta, "BBox width = full dest width");
+            Assert.AreEqual(150.0, bbox.Height.PointsValue, Delta, "BBox height = full dest height");
         }
 
         [TestMethod]
-        [Description("Taller dest with meet — content is shorter than dest, centred vertically")]
-        public void BBox_HasVB_TallerDest_Meet_ContentCentred()
+        [Description("Taller dest with meet — BBox is the full dest rectangle; the matrix handles centring")]
+        public void BBox_HasVB_TallerDest_Meet_IsFullDest()
         {
-            // viewBox: 0 0 150 400, dest: 150×600, scale=1.0, spareY=200 → content at Y=100
+            // viewBox: 0 0 150 400, dest: 150×600
             var canvas = MakeCanvas(viewBox: new Rect(0, 0, 150, 400),
                 par: new ViewPortAspectRatio(AspectRatioAlign.xMidYMid, AspectRatioMeet.Meet));
             var style = new Style();
@@ -421,14 +419,10 @@ namespace Scryber.Core.UnitTests.Svg
             var sizer = MakeSizer(canvas, appliedStyle: style);
             var bbox = sizer.GetImageToCanvasBBox(null);
 
-            double scale = Math.Min(150.0 / 150.0, 600.0 / 400.0); // 1.0
-            double scaledH = 400 * scale;
-            double spareY = 600 - scaledH;
-
-            Assert.AreEqual(0.0, bbox.X.PointsValue, Delta, "Content fills width");
-            Assert.AreEqual(spareY / 2, bbox.Y.PointsValue, Delta, "Content starts at centred Y offset");
-            Assert.AreEqual(150.0, bbox.Width.PointsValue, Delta);
-            Assert.AreEqual(scaledH, bbox.Height.PointsValue, Delta, "Content height = scaledH");
+            Assert.AreEqual(0.0, bbox.X.PointsValue, Delta);
+            Assert.AreEqual(0.0, bbox.Y.PointsValue, Delta);
+            Assert.AreEqual(150.0, bbox.Width.PointsValue, Delta, "BBox width = full dest width");
+            Assert.AreEqual(600.0, bbox.Height.PointsValue, Delta, "BBox height = full dest height");
         }
 
         [TestMethod]

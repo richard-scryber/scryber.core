@@ -67,34 +67,67 @@ public class SVGImageDataSizer
 
     /// <summary>
     /// Calculates and returns the size of the layout that should be used for this instances canvas.
+    /// Intrinsic size is resolved from Canvas.Style (viewBox → explicit SVG dims → defaults).
+    /// If the outer img element has overridden one or both dimensions via AppliedStyle those are
+    /// respected, with proportional scaling applied when only one dimension is specified.
     /// </summary>
     /// <returns>The appropriate size</returns>
     protected virtual Size DoGetLayoutSize()
     {
-        //For layout - viewport (viewBox) overrides all
-        // if (this.AppliedStyle.TryGetValue(StyleKeys.PositionViewPort, out var vp))
-        // {
-        //     var rect = vp.Value(this.AppliedStyle);
-        //     return rect.Size;
-        // }
+        var intrinsic = this.GetIntrinsicSize();
 
-        // no viewport, so we start with the default size and apply any specific width or height.
+        bool hasWidth  = this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey,  out var widthValue);
+        bool hasHeight = this.AppliedStyle.TryGetValue(StyleKeys.SizeHeightKey, out var heightValue);
 
-        Unit width = SVGCanvas.DefaultWidth;
+        if (hasWidth && hasHeight)
+        {
+            // Both dimensions explicitly set — use them as-is.
+            return new Size(widthValue.Value(this.AppliedStyle), heightValue.Value(this.AppliedStyle));
+        }
+        else if (hasWidth)
+        {
+            // Width only — scale height proportionally from the intrinsic aspect ratio.
+            var w = widthValue.Value(this.AppliedStyle);
+            var h = w * (intrinsic.Height.PointsValue / intrinsic.Width.PointsValue);
+            return new Size(w, h);
+        }
+        else if (hasHeight)
+        {
+            // Height only — scale width proportionally from the intrinsic aspect ratio.
+            var h = heightValue.Value(this.AppliedStyle);
+            var w = h * (intrinsic.Width.PointsValue / intrinsic.Height.PointsValue);
+            return new Size(w, h);
+        }
+        else
+        {
+            return intrinsic;
+        }
+    }
+
+    /// <summary>
+    /// Returns the intrinsic (natural) size of the SVG by inspecting Canvas.Style.
+    /// Priority: viewBox dimensions → explicit SVG width/height → SVGCanvas defaults (300×150).
+    /// </summary>
+    private Size GetIntrinsicSize()
+    {
+        // viewBox drives intrinsic size when present.
+        if (this.Canvas.Style.TryGetValue(StyleKeys.PositionViewPort, out var vp))
+        {
+            var rect = vp.Value(this.Canvas.Style);
+            if (rect.Width > Unit.Zero && rect.Height > Unit.Zero)
+                return rect.Size;
+        }
+
+        Unit width  = SVGCanvas.DefaultWidth;
         Unit height = SVGCanvas.DefaultHeight;
 
-        if (this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey, out var widthValue))
-        {
-            width = widthValue.Value(this.AppliedStyle);
-        }
+        if (this.Canvas.Style.TryGetValue(StyleKeys.SizeWidthKey, out var w))
+            width = w.Value(this.Canvas.Style);
 
-        if (this.AppliedStyle.TryGetValue(StyleKeys.SizeHeightKey, out var heightValue))
-        {
-            height = heightValue.Value(this.AppliedStyle);
-        }
+        if (this.Canvas.Style.TryGetValue(StyleKeys.SizeHeightKey, out var h))
+            height = h.Value(this.Canvas.Style);
 
         return new Size(width, height);
-
     }
 
     /// <summary>
@@ -132,7 +165,43 @@ public class SVGImageDataSizer
 
     public PDFTransformationMatrix GetCanvasToImageMatrix(ContextBase context)
     {
-        return PDFTransformationMatrix.Identity();
+        // No viewBox → content maps 1:1, no transform needed.
+        if (!this.Canvas.Style.TryGetValue(StyleKeys.PositionViewPort, out var vpValue))
+            return PDFTransformationMatrix.Identity();
+
+        var viewBox = vpValue.Value(this.Canvas.Style);
+        if (viewBox.Width <= Unit.Zero || viewBox.Height <= Unit.Zero)
+            return PDFTransformationMatrix.Identity();
+
+        var dest = this.GetLayoutSize();
+
+        // Resolve preserveAspectRatio from the canvas (default: xMidYMid meet).
+        ViewPortAspectRatio par;
+        if (this.Canvas.Style.TryGetValue(StyleKeys.ViewPortAspectRatioStyleKey, out var parValue))
+            par = parValue.Value(this.Canvas.Style);
+        else
+            par = ViewPortAspectRatio.Default;
+
+        var matrix = new PDFTransformationMatrix();
+
+        if (par.Align == AspectRatioAlign.None)
+            ViewPortAspectRatio.ApplyMaxNonUniformScaling(matrix, dest, viewBox);
+        else if (par.Meet == AspectRatioMeet.Slice)
+            ViewPortAspectRatio.ApplyUniformStretching(matrix, dest, viewBox, par.Align);
+        else
+            ViewPortAspectRatio.ApplyUniformScaling(matrix, dest, viewBox, par.Align);
+
+        // Shift for non-zero viewBox origin: content starting at (minX, minY) must map to (0,0).
+        if (viewBox.X != Unit.Zero || viewBox.Y != Unit.Zero)
+        {
+            double scaleX = matrix.Components[0];
+            double scaleY = matrix.Components[3];
+            matrix.SetTranslation(
+                -viewBox.X.PointsValue * scaleX,
+                -viewBox.Y.PointsValue * scaleY);
+        }
+
+        return matrix;
     }
     
 
