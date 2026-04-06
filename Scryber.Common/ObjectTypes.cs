@@ -179,6 +179,7 @@ namespace Scryber
         public static readonly ObjectType Style = (ObjectType)"styl";
         public static readonly ObjectType StyleColumns = (ObjectType)"scol";
         public static readonly ObjectType StyleFlex = (ObjectType)"sflx";
+        public static readonly ObjectType StyleGrid = (ObjectType)"sgrd";
         public static readonly ObjectType StylePadding = (ObjectType)"spad";
         public static readonly ObjectType StyleGroup = (ObjectType)"sgrp";
         public static readonly ObjectType StyleRef = (ObjectType)"sref";

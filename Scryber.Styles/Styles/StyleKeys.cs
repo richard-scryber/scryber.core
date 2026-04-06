@@ -734,6 +734,14 @@ namespace Scryber.Styles
         public static readonly StyleKey<Drawing.FlexAlignMode> FlexAlignSelfKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexAlignMode>((ObjectType)"fxas", FlexItemKey);
         public static readonly StyleKey<int> FlexOrderKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"fxor", FlexItemKey);
 
+        //Grid
+
+        public static readonly StyleKey GridItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleGrid, NOT_INHERITED);
+        public static readonly StyleKey<string> GridTemplateColumnsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtc", GridItemKey);
+        public static readonly StyleKey<string> GridTemplateRowsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtr", GridItemKey);
+        public static readonly StyleKey<int> GridColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcs", GridItemKey);
+        public static readonly StyleKey<int> GridRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrs", GridItemKey);
+
         //Attachments
 
         public static readonly StyleKey AttachentItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"atch", INHERITED);

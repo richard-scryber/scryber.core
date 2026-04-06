@@ -194,6 +194,9 @@ namespace Scryber.Html
         public const string FlexShrink = "flex-shrink";
         public const string FlexBasis = "flex-basis";
         public const string Order = "order";
+
+        public const string GridTemplateColumns = "grid-template-columns";
+        public const string GridTemplateRows = "grid-template-rows";
     }
 }
 

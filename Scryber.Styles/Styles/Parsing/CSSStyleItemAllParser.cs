@@ -317,6 +317,9 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.FlexBasis, new Typed.CSSFlexBasisParser());
             all.Add(CSSStyleItems.Order, new Typed.CSSFlexOrderParser());
 
+            all.Add(CSSStyleItems.GridTemplateColumns, new Typed.CSSGridTemplateColumnsParser());
+            all.Add(CSSStyleItems.GridTemplateRows, new Typed.CSSGridTemplateRowsParser());
+
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }
     }

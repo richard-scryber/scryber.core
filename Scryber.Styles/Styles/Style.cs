@@ -474,6 +474,15 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public GridStyle Grid {get;}
+
+        public GridStyle Grid
+        {
+            get { return this.GetOrCreateItem<GridStyle>(StyleKeys.GridItemKey); }
+        }
+
+        #endregion
+
         #region public PDFOverflowStyle Overflow {get;}
 
 #if LOCALSTYLEITEMS
