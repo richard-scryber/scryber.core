@@ -442,5 +442,82 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(400.0, bbox.Width.PointsValue, Delta, "Content fills full dest width");
             Assert.AreEqual(300.0, bbox.Height.PointsValue, Delta, "Content fills full dest height");
         }
+
+        // ---------------------------------------------------------------
+        // 2.4  Percentage width / height on the SVG element itself
+        // ---------------------------------------------------------------
+
+        [TestMethod]
+        [Description("width='50%' with viewBox 200x150 → intrinsic width=100, height proportional from viewBox AR")]
+        public void Size_PercentWidth_WithViewBox_ResolvesAndProportional()
+        {
+            // viewBox: 0 0 200 150, width=50% → width=100pt, height=100*(150/200)=75pt
+            var canvas = MakeCanvas(width: Unit.Percent(50), viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "50% of viewBox width 200");
+            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "Height proportional: 100*(150/200)");
+        }
+
+        [TestMethod]
+        [Description("height='50%' with viewBox 200x150 → intrinsic height=75, width proportional from viewBox AR")]
+        public void Size_PercentHeight_WithViewBox_ResolvesAndProportional()
+        {
+            // viewBox: 0 0 200 150, height=50% → height=75pt, width=75*(200/150)=100pt
+            var canvas = MakeCanvas(height: Unit.Percent(50), viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "Width proportional: 75*(200/150)");
+            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "50% of viewBox height 150");
+        }
+
+        [TestMethod]
+        [Description("width='50%' + height='50%' with viewBox 200x150 → intrinsic 100x75")]
+        public void Size_PercentBothDims_WithViewBox_BothResolved()
+        {
+            var canvas = MakeCanvas(width: Unit.Percent(50), height: Unit.Percent(50),
+                viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(100.0, size.Width.PointsValue, Delta, "50% of viewBox width 200");
+            Assert.AreEqual(75.0,  size.Height.PointsValue, Delta, "50% of viewBox height 150");
+        }
+
+        [TestMethod]
+        [Description("width='75%' + height='100%' with viewBox 200x150 → non-square result")]
+        public void Size_PercentDims_NonSquare_WithViewBox()
+        {
+            // width=75% of 200=150, height=100% of 150=150
+            var canvas = MakeCanvas(width: Unit.Percent(75), height: Unit.Percent(100),
+                viewBox: new Rect(0, 0, 200, 150));
+            var sizer = MakeSizer(canvas);
+            var size = sizer.GetLayoutSize();
+
+            Assert.AreEqual(150.0, size.Width.PointsValue, Delta, "75% of viewBox width 200");
+            Assert.AreEqual(150.0, size.Height.PointsValue, Delta, "100% of viewBox height 150");
+        }
+
+        [TestMethod]
+        [Description("width='50%' without viewBox → throws InvalidOperationException")]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Size_PercentWidth_NoViewBox_Throws()
+        {
+            var canvas = MakeCanvas(width: Unit.Percent(50));
+            var sizer = MakeSizer(canvas);
+            _ = sizer.GetLayoutSize(); // must throw
+        }
+
+        [TestMethod]
+        [Description("height='50%' without viewBox → throws InvalidOperationException")]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Size_PercentHeight_NoViewBox_Throws()
+        {
+            var canvas = MakeCanvas(height: Unit.Percent(50));
+            var sizer = MakeSizer(canvas);
+            _ = sizer.GetLayoutSize(); // must throw
+        }
     }
 }

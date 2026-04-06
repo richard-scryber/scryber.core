@@ -79,9 +79,14 @@ public class SVGImageDataSizer
         bool hasWidth  = this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey,  out var widthValue);
         bool hasHeight = this.AppliedStyle.TryGetValue(StyleKeys.SizeHeightKey, out var heightValue);
 
+        // Relative (percentage) values belong to the SVG element's own attributes and have already
+        // been resolved to absolute units in GetIntrinsicSize(). Don't treat them as img overrides.
+        if (hasWidth  && widthValue.Value(this.AppliedStyle).IsRelative)  hasWidth  = false;
+        if (hasHeight && heightValue.Value(this.AppliedStyle).IsRelative) hasHeight = false;
+
         if (hasWidth && hasHeight)
         {
-            // Both dimensions explicitly set — use them as-is.
+            // Both dimensions explicitly set by the outer img element — use them as-is.
             return new Size(widthValue.Value(this.AppliedStyle), heightValue.Value(this.AppliedStyle));
         }
         else if (hasWidth)
@@ -106,26 +111,72 @@ public class SVGImageDataSizer
 
     /// <summary>
     /// Returns the intrinsic (natural) size of the SVG by inspecting Canvas.Style.
-    /// Priority: viewBox dimensions → explicit SVG width/height → SVGCanvas defaults (300×150).
+    /// Explicit SVG width/height take priority over the viewBox dimensions; percentage values
+    /// are resolved against the viewBox (a viewBox is required when percentages are used).
+    /// When only one explicit dimension is given and a viewBox is present the other is derived
+    /// proportionally. Falls back to viewBox size when no explicit dims are set, or to the
+    /// SVGCanvas defaults (300×150) when neither viewBox nor explicit dims exist.
     /// </summary>
     private Size GetIntrinsicSize()
     {
-        // viewBox drives intrinsic size when present.
+        // Read viewBox first — needed for percent resolution and as the no-explicit-dims fallback.
+        Rect? viewBox = null;
         if (this.Canvas.Style.TryGetValue(StyleKeys.PositionViewPort, out var vp))
         {
             var rect = vp.Value(this.Canvas.Style);
             if (rect.Width > Unit.Zero && rect.Height > Unit.Zero)
-                return rect.Size;
+                viewBox = rect;
         }
+
+        bool hasWidth  = this.Canvas.Style.TryGetValue(StyleKeys.SizeWidthKey,  out var wValue);
+        bool hasHeight = this.Canvas.Style.TryGetValue(StyleKeys.SizeHeightKey, out var hValue);
 
         Unit width  = SVGCanvas.DefaultWidth;
         Unit height = SVGCanvas.DefaultHeight;
 
-        if (this.Canvas.Style.TryGetValue(StyleKeys.SizeWidthKey, out var w))
-            width = w.Value(this.Canvas.Style);
+        if (hasWidth)
+        {
+            var w = wValue.Value(this.Canvas.Style);
+            if (w.IsRelative)
+            {
+                if (w.Units != PageUnits.Percent)
+                    throw new NotSupportedException(
+                        $"SVG width unit '{w.Units}' is not supported as a relative dimension on a discreet SVG image.");
+                if (viewBox == null)
+                    throw new InvalidOperationException(
+                        "SVG width is expressed as a percentage but the SVG has no viewBox to resolve it against.");
+                width = w.ToAbsolute(viewBox.Value.Width);
+            }
+            else
+                width = w;
+        }
 
-        if (this.Canvas.Style.TryGetValue(StyleKeys.SizeHeightKey, out var h))
-            height = h.Value(this.Canvas.Style);
+        if (hasHeight)
+        {
+            var h = hValue.Value(this.Canvas.Style);
+            if (h.IsRelative)
+            {
+                if (h.Units != PageUnits.Percent)
+                    throw new NotSupportedException(
+                        $"SVG height unit '{h.Units}' is not supported as a relative dimension on a discreet SVG image.");
+                if (viewBox == null)
+                    throw new InvalidOperationException(
+                        "SVG height is expressed as a percentage but the SVG has no viewBox to resolve it against.");
+                height = h.ToAbsolute(viewBox.Value.Height);
+            }
+            else
+                height = h;
+        }
+
+        // No explicit dims at all → viewBox size is the intrinsic size (existing behaviour).
+        if (!hasWidth && !hasHeight)
+            return viewBox.HasValue ? viewBox.Value.Size : new Size(width, height);
+
+        // One dimension only → derive the other proportionally from the viewBox aspect ratio.
+        if (hasWidth && !hasHeight && viewBox.HasValue)
+            height = width * (viewBox.Value.Height.PointsValue / viewBox.Value.Width.PointsValue);
+        else if (!hasWidth && hasHeight && viewBox.HasValue)
+            width = height * (viewBox.Value.Width.PointsValue / viewBox.Value.Height.PointsValue);
 
         return new Size(width, height);
     }
