@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG images with percentage width and/or height on the SVG element</title>
+        <style>
+            body { padding: 5pt; }
+            img { border: 1px solid black; background-color: lightyellow; }
+            p { margin: 0; margin-bottom: 5pt; }
+        </style>
+    </head>
+    <body>
+        <!-- vb 0 0 200 150, width=50% → intrinsic 100×75 (height proportional from vb AR) -->
+        <img id="pct_width_only" src="Sample_PercentWidth_ViewBox200x150.svg" />
+        <p>width=50% of vb(200) → 100pt, height proportional → 75pt</p>
+
+        <!-- vb 0 0 200 150, height=50% → intrinsic 100×75 (width proportional from vb AR) -->
+        <img id="pct_height_only" src="Sample_PercentHeight_ViewBox200x150.svg" />
+        <p>height=50% of vb(150) → 75pt, width proportional → 100pt</p>
+
+        <!-- vb 0 0 200 150, width=75% height=100% → intrinsic 150×150 -->
+        <img id="pct_both_nonsquare" src="Sample_PercentBoth_ViewBox200x150.svg" />
+        <p>width=75% of vb(200)=150pt, height=100% of vb(150)=150pt</p>
+
+        <!-- vb 0 0 200 150, width=50% → intrinsic 100×75; img override width=200pt → run 200×150 -->
+        <img id="pct_width_img_override" src="Sample_PercentWidth_ImgOverride_ViewBox200x150.svg" style="width:200pt" />
+        <p>SVG width=50%→intrinsic 100×75; img width=200pt → run 200×150 (proportional)</p>
+    </body>
+</html>
