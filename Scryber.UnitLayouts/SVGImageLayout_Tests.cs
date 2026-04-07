@@ -17,15 +17,15 @@ using Scryber.Svg.Imaging;
 namespace Scryber.UnitLayouts
 {
     /// <summary>
-    /// Tests the layout of SVG Images based on image sizes and inner svg dimesions
+    /// Tests the layout of SVG Images based on image sizes and inner svg dimensions and view-box
     /// </summary>
     [TestClass()]
     public class SVGImageLayout_Tests
     {
         
-
-        //Samle.svg - 200 x 150 natural size
-        
+        // -----------------------------------------------------------------------
+        // Helpers
+        // -----------------------------------------------------------------------
 
         PDFLayoutDocument layout;
 
@@ -50,14 +50,70 @@ namespace Scryber.UnitLayouts
         {
             this.layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
+        
+
 
         
 
-        
-        
-        
-        //no image sizes - no inner
+        /// <summary>
+        /// Returns all SVGPDFImageData instances from the document shared resources, in resource order.
+        /// </summary>
+        private List<SVGPDFImageData> GetSVGImageData(PDFLayoutDocument layout)
+        {
+            return layout.DocumentComponent.SharedResources
+                .OfType<PDFImageXObject>()
+                .Select(x => (x.ImageData as ImageDataProxy)?.ImageData as SVGPDFImageData)
+                .Where(d => d != null)
+                .ToList();
+        }
 
+        /// <summary>
+        /// Finds the Nth PDFLayoutComponentRun that owns an image by recursively walking
+        /// the full layout tree of the first page. Independent of the exact block nesting.
+        /// </summary>
+        private PDFLayoutComponentRun GetImageRunFromBody(int imageIndex)
+        {
+            var all = new List<PDFLayoutComponentRun>();
+            foreach (var pg in this.layout.AllPages)
+                CollectImageRuns(pg.ContentBlock, all);
+            Assert.IsTrue(imageIndex < all.Count,
+                $"Image run at index {imageIndex} not found — only {all.Count} image runs in layout");
+            return all[imageIndex];
+        }
+
+        private static void CollectImageRuns(PDFLayoutBlock block, List<PDFLayoutComponentRun> results)
+        {
+            foreach (var col in block.Columns)
+            {
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutLine line)
+                    {
+                        foreach (var run in line.Runs.OfType<PDFLayoutComponentRun>())
+                            results.Add(run);
+                    }
+                    else if (item is PDFLayoutBlock child)
+                    {
+                        CollectImageRuns(child, results);
+                    }
+                }
+            }
+        }
+
+        private static double RunScaleX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[0];
+        private static double RunScaleY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[3];
+        private static double RunTranslateX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[4];
+        private static double RunTranslateY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[5];
+
+        /// ----------------------------------
+        /// Test methods
+        /// ----------------------------------
+        
+        /// <summary>
+        /// These test for the size of the svg itself, there is no viewbox defined so scale should be 1:1.
+        /// The width and the height will simply clip or extend beyond the drawing space.
+        /// Default width and height of 300x150.
+        /// </summary>
         [TestMethod()]
         public void SVGImageContainer_NoImgSize_VariousSVGDimensions()
         {
@@ -183,66 +239,12 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedHeight, svgData.Canvas.Height, "5. Expected Height doesn't match");
 
         }
-
-
-        // -----------------------------------------------------------------------
-        // Helpers
-        // -----------------------------------------------------------------------
+        
 
         /// <summary>
-        /// Returns all SVGPDFImageData instances from the document shared resources, in resource order.
+        /// Various viewbox sizes with contents appropriately sized for the viewbox. No other dimensions specified, so the viewbox width and
+        /// height are used as the size of the canvas.
         /// </summary>
-        private List<SVGPDFImageData> GetSVGImageData(PDFLayoutDocument layout)
-        {
-            return layout.DocumentComponent.SharedResources
-                .OfType<PDFImageXObject>()
-                .Select(x => (x.ImageData as ImageDataProxy)?.ImageData as SVGPDFImageData)
-                .Where(d => d != null)
-                .ToList();
-        }
-
-        /// <summary>
-        /// Finds the Nth PDFLayoutComponentRun that owns an image by recursively walking
-        /// the full layout tree of the first page. Independent of the exact block nesting.
-        /// </summary>
-        private PDFLayoutComponentRun GetImageRunFromBody(int imageIndex)
-        {
-            var all = new List<PDFLayoutComponentRun>();
-            foreach (var pg in this.layout.AllPages)
-                CollectImageRuns(pg.ContentBlock, all);
-            Assert.IsTrue(imageIndex < all.Count,
-                $"Image run at index {imageIndex} not found — only {all.Count} image runs in layout");
-            return all[imageIndex];
-        }
-
-        private static void CollectImageRuns(PDFLayoutBlock block, List<PDFLayoutComponentRun> results)
-        {
-            foreach (var col in block.Columns)
-            {
-                foreach (var item in col.Contents)
-                {
-                    if (item is PDFLayoutLine line)
-                    {
-                        foreach (var run in line.Runs.OfType<PDFLayoutComponentRun>())
-                            results.Add(run);
-                    }
-                    else if (item is PDFLayoutBlock child)
-                    {
-                        CollectImageRuns(child, results);
-                    }
-                }
-            }
-        }
-
-        private static double RunScaleX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[0];
-        private static double RunScaleY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[3];
-        private static double RunTranslateX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[4];
-        private static double RunTranslateY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[5];
-
-        // -----------------------------------------------------------------------
-        // Group: No img size, viewBox-only SVGs
-        // -----------------------------------------------------------------------
-
         [TestMethod()]
         public void SVGImageContainer_NoImgSize_ViewboxVariants()
         {
@@ -323,6 +325,8 @@ namespace Scryber.UnitLayouts
             var run2 = GetImageRunFromBody(2);
             Assert.AreEqual(150.0, run2.Width.PointsValue,  1.0, "3. Run width overridden");
             Assert.AreEqual(75.0,  run2.Height.PointsValue, 1.0, "3. Run height proportional (150 * 150/300)");
+            
+            //Assert.Inconclusive();
         }
 
         // -----------------------------------------------------------------------
@@ -367,6 +371,8 @@ namespace Scryber.UnitLayouts
             var run2 = GetImageRunFromBody(2);
             Assert.AreEqual(150.0, run2.Width.PointsValue,  1.0, "3. Run width proportional (75 * 300/150)");
             Assert.AreEqual(75.0,  run2.Height.PointsValue, 1.0, "3. Run height overridden");
+            
+            Assert.Inconclusive();
         }
 
         // -----------------------------------------------------------------------
@@ -403,6 +409,8 @@ namespace Scryber.UnitLayouts
             var run1 = GetImageRunFromBody(1);
             Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
             Assert.AreEqual(100.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            Assert.Inconclusive();
         }
 
         // -----------------------------------------------------------------------
@@ -485,6 +493,8 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(maxScale,        RunScaleY(m4), 0.01, "5. xMidYMid slice scaleY");
             Assert.AreEqual(0.0,             RunTranslateX(m4), Delta, "5. xMidYMid slice TX");
             Assert.AreEqual(spareY_slice / 2, RunTranslateY(m4), Delta, "5. xMidYMid slice TY");
+            
+            Assert.Inconclusive();
         }
 
 
@@ -546,6 +556,8 @@ namespace Scryber.UnitLayouts
             var run3 = GetImageRunFromBody(3);
             Assert.AreEqual(200.0, run3.Width.PointsValue,  Delta, "4. Run width from img override");
             Assert.AreEqual(150.0, run3.Height.PointsValue, Delta, "4. Run height proportional from intrinsic: 200*(75/100)");
+            
+            Assert.Inconclusive();
         }
 
         //image width and height - no inner

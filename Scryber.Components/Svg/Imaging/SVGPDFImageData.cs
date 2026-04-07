@@ -218,6 +218,11 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
         return rendered;
     }
 
+    public override Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+    {
+        return this.Sizer.GetClippingRect(offset, available, context);
+    }
+
     public override Size GetRequiredSizeForRender(Point offset, Size available, ContextBase context)
     {
         return this.Sizer.GetRenderScaleForContent(offset, available, context);

@@ -36,6 +36,12 @@ public class SVGImageDataSizer
     /// </summary>
     public Size AvailableSpace { get; set; }
     
+    /// <summary>
+    /// Gets or sets the flag that identifies if the canvas does not have any explicit dimensions or viewbox
+    /// This should always use a 1:1 ratio scaling with the default sizes (300x150)
+    /// </summary>
+    public bool IsNotDimensioned { get; set; }
+    
     //
     // .ctor
     //
@@ -43,7 +49,9 @@ public class SVGImageDataSizer
     public SVGImageDataSizer(SVGCanvas canvas, Size available, Style appliedStyle, LayoutContext context)
     {
         this.Canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
-        
+        this.IsNotDimensioned = (!appliedStyle.IsValueDefined(StyleKeys.SizeWidthKey) &&
+                                 !appliedStyle.IsValueDefined(StyleKeys.SizeHeightKey) &&
+                                 !appliedStyle.IsValueDefined(StyleKeys.PositionViewPort));
         if(!this.Canvas.IsDiscreetSVG)
             throw new ArgumentException("SVG canvas must be a discreet SVG Image for this sizer");
         
@@ -196,6 +204,11 @@ public class SVGImageDataSizer
         this.RenderSize = size;
     }
 
+    public Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+    {
+        return new Rect(offset, available);
+    }
+
 
     /// <summary>
     /// Calculate the unit scale for rendering laid out image into the required box. 1,1 will be natural size,
@@ -207,14 +220,27 @@ public class SVGImageDataSizer
     /// <returns></returns>
     public Size GetRenderScaleForContent(Point offset, Size available, ContextBase context)
     {
-        return new Size(1, 1);
+        var layout = this.GetLayoutSize();
+        
+        double scaleX = available.Width.PointsValue / layout.Width.PointsValue;
+        double scaleY = available.Height.PointsValue / layout.Height.PointsValue;
+        
+        if (IsNotDimensioned)
+        {
+            double scaleMax = Math.Max(scaleX, scaleY);
+            return new Size(scaleMax, scaleMax);
+        }
+        
+        return new Size(scaleX, scaleY);
     }
 
     public Point GetRenderOffsetForContent(Point offset, Size available, ContextBase context)
     {
         //Are we always render at 0,0 (bottom left) we offset to the position.
         var size = this.GetLayoutSize();
-        offset.Y += size.Height;
+        var scale = this.GetRenderScaleForContent(offset, available, context);
+        var y = size.Height * scale.Height.PointsValue;
+        offset.Y += y;
         return offset;
     }
 
@@ -232,7 +258,7 @@ public class SVGImageDataSizer
 
         // Use the actual rendered size as the dest if the layout engine has set it;
         // otherwise fall back to the intrinsic layout size.
-        var dest = this.RenderSize ?? this.GetLayoutSize();
+        var dest = this.GetLayoutSize();
 
         // Resolve preserveAspectRatio from the canvas (default: xMidYMid meet).
         ViewPortAspectRatio par;
