@@ -29,8 +29,6 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
         
     }
 
-    
-
     /// <summary>
     /// Overrides the base implementation to return the Default Canvas Size. THis is always used for img tags that reference an image that does not have any internal dimensions.
     /// </summary>
@@ -68,7 +66,9 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
 
     protected override Point DoGetRenderOffsetForContent(Point offset, Size available, ContextBase context)
     {
-        var pt = new Point(offset.X, offset.Y + available.Height);
+        var layout = GetLayoutSize();
+        var diffh = layout.Height - available.Height;
+        var pt = new Point(offset.X, offset.Y + available.Height + diffh);
         return pt;
     }
 }
