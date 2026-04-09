@@ -8,6 +8,9 @@ using Scryber.Svg.Components;
 
 namespace Scryber.Svg.Imaging;
 
+/// <summary>
+/// Implements the ImageData class for a referenced SVG Image tag.
+/// </summary>
 public class SVGPDFImageData : ImageVectorData, ILayoutComponent
 {
     
@@ -128,6 +131,10 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
         this.Canvas.IsDiscreetSVG = true;
     }
 
+    //
+    // implementation
+    //
+    
     public bool EnsureLaidOut(Size available, LayoutContext context, Style appliedstyle)
     {
         if (!IsLaidOut)
@@ -140,7 +147,6 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
     
     public override Size GetSize()
     {
-        //TODO: Check if this is for the actual size of the SVGCanvas
         if(null == this.Sizer)
             return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
         else
@@ -166,7 +172,7 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
         //always start with a clean applied style, as we are going to render the SVG any outer document styles are applied to the actual image container.
         var appliedstyle = this.Canvas.GetAppliedStyle();
         
-        var sizer = new SVGImageDataSizer(this.Canvas, available, appliedstyle, context);
+        var sizer =  SVGImageDataSizer.CreateSizingStrategy(this.Canvas, appliedstyle, context);
         
         var block = engine.TryLayoutCanvas(this.Canvas, sizer, context, appliedstyle);
 

@@ -109,6 +109,40 @@ namespace Scryber.UnitLayouts
         /// Test methods
         /// ----------------------------------
         
+        [TestMethod()]
+        public void SVGImageContainer_NoSVGSizes()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_NoSVGSizes.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_NoSVGSizes.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            Assert.AreEqual(2, svgs.Count, "Expected 2 SVG images");
+
+            // 1. SVG 200×150 (viewBox), img 400×300 — canvas stays intrinsic, run matches override
+            Assert.AreEqual((Unit)200, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(400.0, run0.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(300.0, run0.Height.PointsValue, 1.0, "1. Run height from img override");
+
+            // 2. SVG 300×150 (default), img 100×100 — canvas stays intrinsic, run matches override
+            Assert.AreEqual((Unit)300, svgs[1].Canvas.Width,  "2. Canvas width stays at default");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height stays at default");
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            Assert.Inconclusive();
+        }
+        
         /// <summary>
         /// These test for the size of the svg itself, there is no viewbox defined so scale should be 1:1.
         /// The width and the height will simply clip or extend beyond the drawing space.

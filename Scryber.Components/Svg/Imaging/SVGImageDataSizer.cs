@@ -8,7 +8,8 @@ using Scryber.Svg.Components;
 namespace Scryber.Svg.Imaging;
 
 /// <summary>
-/// Manages the sizing of a single SVG Disceet Image.
+/// Manages the sizing of a single SVG Discreet Image. The SVG itself should handle all the internal sizing.
+/// This class is concerned with sizing appropriate to it's img tag, and any width of height associated with that.
 /// </summary>
 public class SVGImageDataSizer
 {
@@ -32,21 +33,29 @@ public class SVGImageDataSizer
     public LayoutContext Context { get; set; }
     
     /// <summary>
-    /// Gets the size available to place any SVG Image.
-    /// </summary>
-    public Size AvailableSpace { get; set; }
-    
-    /// <summary>
     /// Gets or sets the flag that identifies if the canvas does not have any explicit dimensions or viewbox
     /// This should always use a 1:1 ratio scaling with the default sizes (300x150)
     /// </summary>
     public bool IsNotDimensioned { get; set; }
     
+    
+    /// <summary>
+    /// cached nullable layout size value.
+    /// If not set then DoGetLayoutSize will be called to (re-)calculate.
+    /// </summary>
+    protected Size? LayoutSize { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the actual rendered size of the image in the page (set by SetRenderSize after layout).
+    /// Used as the dest for the canvas-to-image matrix so the transform matches the placed dimensions.
+    /// </summary>
+    protected Size? RenderSize { get; set; }
+    
     //
     // .ctor
     //
 
-    public SVGImageDataSizer(SVGCanvas canvas, Size available, Style appliedStyle, LayoutContext context)
+    public SVGImageDataSizer(SVGCanvas canvas, Style appliedStyle, LayoutContext context)
     {
         this.Canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
         this.IsNotDimensioned = (!appliedStyle.IsValueDefined(StyleKeys.SizeWidthKey) &&
@@ -56,8 +65,41 @@ public class SVGImageDataSizer
             throw new ArgumentException("SVG canvas must be a discreet SVG Image for this sizer");
         
         this.AppliedStyle = appliedStyle ?? throw new ArgumentNullException(nameof(appliedStyle));
-        this.AvailableSpace = available;
         this.Context = context;
+
+        
+    }
+    
+    //
+    // Static factory for concrete instances
+    //
+
+    public static SVGImageDataSizer CreateSizingStrategy(SVGCanvas forCanvas, Style appliedStyle, LayoutContext context)
+    {
+        //return new SVGImageDataSizer(forCanvas, appliedStyle, context);
+        var w = appliedStyle.GetValue(StyleKeys.SizeWidthKey, Unit.AutoValue);
+        var h = appliedStyle.GetValue(StyleKeys.SizeHeightKey, Unit.AutoValue);
+        var vp = appliedStyle.IsValueDefined(StyleKeys.PositionViewPort);
+
+        if (w != Unit.AutoValue || h != Unit.AutoValue)
+        {
+            //we have an SVG size
+            if(vp)
+                return new SVGImageDataVPAndWHSizer(forCanvas, appliedStyle, context);
+            else
+            {
+                return new SVGImageDataOnlyWHSizer(forCanvas, appliedStyle, context);
+            }
+        }
+        else if (vp)
+        {
+            //we have just a viewport
+            return new SVGImageDataViewBoxSizer(forCanvas, appliedStyle, context);
+        }
+        else
+        {
+            return new SVGImageDataEmptySizer(forCanvas, appliedStyle, context);
+        }
     }
     
     //
@@ -70,7 +112,148 @@ public class SVGImageDataSizer
     /// <returns></returns>
     public Size GetLayoutSize()
     {
-        return this.DoGetLayoutSize();
+        if (!this.LayoutSize.HasValue)
+            this.LayoutSize = this.DoGetLayoutSize();
+        
+        return this.LayoutSize.Value;
+    }
+    
+    
+
+    /// <summary>
+    /// Records the rendered size of the image once the layout engine has determined the final placement.
+    /// </summary>
+    /// <param name="size"></param>
+    public void SetRenderSize(Size size)
+    {
+        this.RenderSize = size;
+    }
+
+    public Rect? GetClippingRect(Point offset, Size available, ContextBase context)
+    {
+        return this.DoGetClippingRect(offset, available, context);
+    }
+
+    /// <summary>
+    /// Calculates and returns the unit scale for rendering laid out image into the required box. 1,1 will be natural size,
+    /// altering this will scale the image as required in the horizontal and vertical (up) axes.
+    /// </summary>
+    /// <param name="offset">The current offset on the page</param>
+    /// <param name="available">The space available to layout teh SVG Image in</param>
+    /// <param name="context">The current context</param>
+    /// <returns>The scale that should be used to render the image</returns>
+    public Size GetRenderScaleForContent(Point offset, Size available, ContextBase context)
+    {
+        return this.DoGetRenderScaleForContent(offset, available, context);
+    }
+
+    /// <summary>
+    /// Calculates and returns the required offset (from top left) on the page for the SVGCanvas this sizer references.
+    /// </summary>
+    /// <param name="offset">The current offset on the page</param>
+    /// <param name="available">The available space this image will be rendered in.</param>
+    /// <param name="context">The current context</param>
+    /// <returns>The actual offset position </returns>
+    public Point GetRenderOffsetForContent(Point offset, Size available, ContextBase context)
+    {
+        return this.DoGetRenderOffsetForContent(offset, available, context);
+    }
+
+    /// <summary>
+    /// Calculates and returns the transformation matrix that should be used when invoking the rendering of the Do img render.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public PDFTransformationMatrix GetCanvasToImageMatrix(ContextBase context)
+    {
+        return this.DoGetCanvasToImageMatrix(context);
+    }
+    
+    public Rect GetImageToCanvasBBox(ContextBase context)
+    {
+        return this.DoGetImageToCanvasBBox(context);
+    }
+    
+    protected virtual Size DoGetRenderScaleForContent(Point offset, Size available, ContextBase context)
+    {
+        var layout = this.GetLayoutSize();
+        
+        double scaleX = available.Width.PointsValue / layout.Width.PointsValue;
+        double scaleY = available.Height.PointsValue / layout.Height.PointsValue;
+        
+        if (IsNotDimensioned)
+        {
+            double scaleMax = Math.Max(scaleX, scaleY);
+            return new Size(scaleMax, scaleMax);
+        }
+        
+        return new Size(scaleX, scaleY);
+    }
+
+    protected virtual Size DoGetLayoutSize2()
+    {
+        Unit width = SVGCanvas.DefaultWidth;
+        Unit height = SVGCanvas.DefaultHeight;
+
+        if (this.AppliedStyle.TryGetValue(StyleKeys.PositionViewPort, out var vp))
+        {
+            var rect = vp.Value(this.Canvas.Style);
+            width = rect.Width;
+            height = rect.Height;
+
+            if (this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey, out var w))
+                width = w.Value(this.Canvas.Style);
+            if (this.AppliedStyle.TryGetValue(StyleKeys.SizeHeightKey, out var h))
+                height = h.Value(this.Canvas.Style);
+
+            if (width.IsRelative)
+            {
+                if (width.Units != PageUnits.Percent)
+                    throw new NotSupportedException(
+                        "A width can only be a relative percentage dimension on a discreet SVG image without a viewBox.");
+                
+                width = rect.Width * (width.Value / 100.0);
+            }
+
+            if (height.IsRelative)
+            {
+                if (height.Units != PageUnits.Percent)
+                    throw new NotSupportedException(
+                    "A height can only be a relative percentage dimension on a discreet SVG image without a viewBox.");
+                
+                height = rect.Height * (height.Value / 100.0);
+            }
+        }
+        else
+        {
+            if(this.AppliedStyle.TryGetValue(StyleKeys.SizeWidthKey, out var w))
+                width = w.Value(this.Canvas.Style);
+            if (this.AppliedStyle.TryGetValue(StyleKeys.SizeHeightKey, out var h))
+                height = h.Value(this.Canvas.Style);
+            
+            if(width.IsRelative)
+                throw new NotSupportedException("A width can only be a relative percentage dimension on a discreet SVG image without a viewBox.");
+            if(height.IsRelative)
+                throw new NotSupportedException("A height can only be a relative percentage dimension on a discreet SVG image without a viewBox.");
+
+        }
+        return new Size(width, height);
+    }
+    
+    protected virtual Point DoGetRenderOffsetForContent(Point offset, Size available, ContextBase context)
+    {
+        //Are we always render at 0,0 (bottom left) we offset to the position.
+        var size = this.GetLayoutSize();
+        var scale = this.GetRenderScaleForContent(offset, available, context);
+        var y = size.Height * scale.Height.PointsValue;
+        offset.Y += y;
+        return offset;
+    }
+
+
+    protected virtual Rect? DoGetClippingRect(Point offset, Size available, ContextBase context)
+    {
+        return new Rect(offset, available);
     }
 
     /// <summary>
@@ -189,65 +372,16 @@ public class SVGImageDataSizer
         return new Size(width, height);
     }
 
-    /// <summary>
-    /// Gets the actual rendered size of the image in the page (set by SetRenderSize after layout).
-    /// Used as the dest for the canvas-to-image matrix so the transform matches the placed dimensions.
-    /// </summary>
-    public Size? RenderSize { get; private set; }
+    
 
-    /// <summary>
-    /// Records the rendered size of the image once the layout engine has determined the final placement.
-    /// </summary>
-    /// <param name="size"></param>
-    public void SetRenderSize(Size size)
+
+    
+
+
+
+    protected virtual PDFTransformationMatrix DoGetCanvasToImageMatrix(ContextBase context)
     {
-        this.RenderSize = size;
-    }
-
-    public Rect? GetClippingRect(Point offset, Size available, ContextBase context)
-    {
-        return new Rect(offset, available);
-    }
-
-
-    /// <summary>
-    /// Calculate the unit scale for rendering laid out image into the required box. 1,1 will be natural size,
-    /// altering this will scale the image as required in the horizontal and vertical (up) axes.
-    /// </summary>
-    /// <param name="offset"></param>
-    /// <param name="available"></param>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    public Size GetRenderScaleForContent(Point offset, Size available, ContextBase context)
-    {
-        var layout = this.GetLayoutSize();
         
-        double scaleX = available.Width.PointsValue / layout.Width.PointsValue;
-        double scaleY = available.Height.PointsValue / layout.Height.PointsValue;
-        
-        if (IsNotDimensioned)
-        {
-            double scaleMax = Math.Max(scaleX, scaleY);
-            return new Size(scaleMax, scaleMax);
-        }
-        
-        return new Size(scaleX, scaleY);
-    }
-
-    public Point GetRenderOffsetForContent(Point offset, Size available, ContextBase context)
-    {
-        //Are we always render at 0,0 (bottom left) we offset to the position.
-        var size = this.GetLayoutSize();
-        var scale = this.GetRenderScaleForContent(offset, available, context);
-        var y = size.Height * scale.Height.PointsValue;
-        offset.Y += y;
-        return offset;
-    }
-
-
-
-    public PDFTransformationMatrix GetCanvasToImageMatrix(ContextBase context)
-    {
         // No viewBox → content maps 1:1, no transform needed.
         if (!this.Canvas.Style.TryGetValue(StyleKeys.PositionViewPort, out var vpValue))
             return PDFTransformationMatrix.Identity();
@@ -290,7 +424,7 @@ public class SVGImageDataSizer
     }
     
 
-    public Rect GetImageToCanvasBBox(ContextBase context)
+    protected Rect DoGetImageToCanvasBBox(ContextBase context)
     {
         var size = this.GetLayoutSize();
         return new Rect(Point.Empty, size);

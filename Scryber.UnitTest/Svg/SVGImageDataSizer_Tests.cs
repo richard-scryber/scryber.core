@@ -40,7 +40,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             var style = appliedStyle ?? canvas.Style;
             var space = available ?? new Size(new Unit(800), new Unit(600));
-            return new SVGImageDataSizer(canvas, space, style, null);
+            return SVGImageDataSizer.CreateSizingStrategy(canvas, style, null);
         }
 
         private static double ScaleX(PDFTransformationMatrix m) => m.Components[0];
