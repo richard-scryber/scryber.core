@@ -124,27 +124,135 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(this.layout);
             var svgs = GetSVGImageData(this.layout);
-            Assert.AreEqual(2, svgs.Count, "Expected 2 SVG images");
+            
+            Assert.AreEqual(4, svgs.Count, "Expected 4 SVG images");
 
-            // 1. SVG 200×150 (viewBox), img 400×300 — canvas stays intrinsic, run matches override
+            // 1. SVG 300×150 (viewBox), img 300×150 — canvas stays intrinsic, run matches override
+            Assert.AreEqual((Unit)300, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(300.0, run0.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150.0, run0.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+
+            // 2. img 100×50 — canvas stays intrinsic, run matches override (same image data).
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(50.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            // 3. img 200×100 — canvas stays intrinsic
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(200.0, run2.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run2.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            // 4. img 100×100 explicit — canvas stays intrinsic
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(100.0, run3.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run3.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            // 5. img 100×300 explicit — canvas stays intrinsic
+            var run4 = GetImageRunFromBody(4);
+            Assert.AreEqual(100.0, run4.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(300.0, run4.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            
+            
+            //second page
+            
+            // 6. img 200x200 explicit — canvas is new for aspect ratio
+            Assert.AreEqual((Unit)300, svgs[1].Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            var run5 = GetImageRunFromBody(5);
+            Assert.AreEqual(200.0, run5.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(200.0, run5.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            var run6 = GetImageRunFromBody(6);
+            Assert.AreEqual(200.0, run6.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(200.0, run6.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            var run7 = GetImageRunFromBody(7);
+            Assert.AreEqual(200.0, run7.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(200.0, run7.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+        }
+        
+         [TestMethod()]
+        public void SVGImageContainer_SVGWithViewbox()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_SVGWithViewbox.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_SVGWithViewbox.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            
+            Assert.AreEqual(4, svgs.Count, "Expected 4 SVG images");
+
+            // 1. SVG 300×150 (viewBox), img 300×150 — canvas stays intrinsic, run matches override
             Assert.AreEqual((Unit)200, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
             Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
             var run0 = GetImageRunFromBody(0);
-            Assert.AreEqual(400.0, run0.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(300.0, run0.Height.PointsValue, 1.0, "1. Run height from img override");
-
-            // 2. SVG 300×150 (default), img 100×100 — canvas stays intrinsic, run matches override
-            Assert.AreEqual((Unit)300, svgs[1].Canvas.Width,  "2. Canvas width stays at default");
-            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "2. Canvas height stays at default");
+            var dynamicWidth = (run0.GetLayoutPage().Width.PointsValue) - 10.0;
+            var dynamicHeight = (dynamicWidth / 200.0) * 150.0;
+            Assert.AreEqual(dynamicWidth, run0.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(dynamicHeight, run0.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            
+            // 2. img 100×50 — canvas stays intrinsic, run matches override (same image data).
             var run1 = GetImageRunFromBody(1);
             Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
-            Assert.AreEqual(100.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+            Assert.AreEqual(75.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
             
-            Assert.Inconclusive();
+            // 3. img 133.3×100 — canvas stays intrinsic
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(133.3, run2.Width.PointsValue,  1.0, "3. Run width from img override");
+            Assert.AreEqual(100.0, run2.Height.PointsValue, 1.0, "3. Run height from img override");
+            
+            // 4. img 100×100 explicit — canvas stays intrinsic
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(100.0, run3.Width.PointsValue,  1.0, "4. Run width from img override");
+            Assert.AreEqual(100.0, run3.Height.PointsValue, 1.0, "4. Run height from img override");
+            
+            //Second page
+            
+            // 5. img 100×300 explicit — canvas stays intrinsic
+            var run4 = GetImageRunFromBody(4);
+            Assert.AreEqual(100.0, run4.Width.PointsValue,  1.0, "5. Run width from img override");
+            Assert.AreEqual(300.0, run4.Height.PointsValue, 1.0, "5. Run height from img override");
+            
+            // 6. img 400×100 explicit — canvas stays intrinsic
+            var run5 = GetImageRunFromBody(5);
+            Assert.AreEqual(400.0, run5.Width.PointsValue,  1.0, "6. Run width from img override");
+            Assert.AreEqual(100.0, run5.Height.PointsValue, 1.0, "6. Run height from img override");
+            
+            //Third Page
+            
+            // 7. img 200 x 200 - No aspect (not checked here)
+            var run6 = GetImageRunFromBody(6);
+            Assert.AreEqual(200.0, run6.Width.PointsValue,  1.0, "7. Run width from img override");
+            Assert.AreEqual(200.0, run6.Height.PointsValue, 1.0, "7. Run height from img override");
+            
+            // 8. img 200 x 200 - No aspect (not checked here)
+            var run7 = GetImageRunFromBody(7);
+            Assert.AreEqual(200.0, run7.Width.PointsValue,  1.0, "8. Run width from img override");
+            Assert.AreEqual(200.0, run7.Height.PointsValue, 1.0, "8. Run height from img override");
+            
+            // 9. img 200 x 200 - No aspect (not checked here)
+            var run8 = GetImageRunFromBody(8);
+            Assert.AreEqual(200.0, run8.Width.PointsValue,  1.0, "9. Run width from img override");
+            Assert.AreEqual(200.0, run8.Height.PointsValue, 1.0, "9. Run height from img override");
+            
         }
         
         /// <summary>
-        /// These test for the size of the svg itself, there is no viewbox defined so scale should be 1:1.
+        /// These test for the size of the svg itself, there is no view box defined so scale should be 1:1.
         /// The width and the height will simply clip or extend beyond the drawing space.
         /// Default width and height of 300x150.
         /// </summary>

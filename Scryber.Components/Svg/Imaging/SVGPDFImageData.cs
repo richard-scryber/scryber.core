@@ -216,10 +216,9 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
             rendered = new Size(w, h);
         }
         else
-            rendered = naturalSize;
+            rendered = this.Sizer.GetOutputSizeForLayout(naturalSize, available, appliedstyle, context);
 
-        // Tell the sizer the final rendered size so GetCanvasToImageMatrix uses the correct dest.
-        this.Sizer.SetRenderSize(rendered);
+        
 
         return rendered;
     }
@@ -241,7 +240,7 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
 
     public void SetRenderSizes(Rect content, Rect border, Rect total, Style style)
     {
-        this.Sizer.SetRenderSize(new Size(content.Width, content.Height));
+        
     }
     
     

@@ -8,21 +8,30 @@
         </style>
     </head>
     <body>
-        <!-- SVG intrinsic 150x100 (no viewBox), img width=300 → rendered 300x200 -->
         <img id="svg_nothing" src="Sample_NoViewbox_NoWidth_NoHeight.svg" />
-        <p>SVG Default 300x150 expects run 300x150</p>
+        <p>1. SVG Default 300x150 expects run 300x150</p>
 
         <img id="svg_onlyWidth" src="Sample_NoViewbox_NoWidth_NoHeight.svg" style="width:100pt;" />
-        <p>SVG Default 300x150 expects run 300x150</p>
+        <p>2. SVG Default 300x150 expects run 100x50</p>
 
         <img id="svg_onlyHeight" src="Sample_NoViewbox_NoWidth_NoHeight.svg" style="height:100pt;" />
-        <p>SVG Default 300x150 expects run 300x150</p>
+        <p>3. SVG Default 300x150 expects run 200x100</p>
 
         <img id="svg_WidthAndHeight" src="Sample_NoViewbox_NoWidth_NoHeight.svg" style="width: 100pt; height:100pt;" />
-        <p>SVG Default 300x150 expects run 300x150</p>
+        <p>4. SVG Default 300x150 expects run 100x100</p>
 
         <img id="svg_WidthAndHeightBig" src="Sample_NoViewbox_NoWidth_NoHeight.svg" style="width: 100pt; height:300pt;" />
-        <p>SVG Default 300x150 expects run 300x150</p>
+        <p>5. SVG Default 300x150 expects run 100x300</p>
     
+        <div style="page-break-after: always;" ></div>
+
+        <img id="svg_bothWidth_AspectNone" src="Sample_NoViewbox_NoWidth_NoHeight_None.svg" style="width:200pt; height: 200pt;" />
+        <p>6. SVG Default 300x150 expects run 300x150</p>
+
+        <img id="svg_bothWidth_AspectMeet" src="Sample_NoViewbox_NoWidth_NoHeight_Meet.svg" style="width:200pt; height: 200pt;" />
+        <p>SVG Default 300x150 expects run 300x150</p>
+
+        <img id="svg_bothWidth_AspectSlice" src="Sample_NoViewbox_NoWidth_NoHeight_Slice.svg" style="width:200pt; height: 200pt;" />
+        <p>SVG Default 300x150 expects run 300x150</p>
     </body>
 </html>

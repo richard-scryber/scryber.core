@@ -107,7 +107,7 @@ public class SVGImageDataSizer
     //
 
     /// <summary>
-    /// Returns the size that should be used to lay out the SVG in
+    /// Returns the size that should be used internally to lay out the SVG in the Canvas (not the output size)
     /// </summary>
     /// <returns></returns>
     public Size GetLayoutSize()
@@ -117,17 +117,13 @@ public class SVGImageDataSizer
         
         return this.LayoutSize.Value;
     }
-    
-    
 
-    /// <summary>
-    /// Records the rendered size of the image once the layout engine has determined the final placement.
-    /// </summary>
-    /// <param name="size"></param>
-    public void SetRenderSize(Size size)
+
+    public Size GetOutputSizeForLayout(Size layout, Size available, Style applied, ContextBase context)
     {
-        this.RenderSize = size;
+        return this.DoGetOutputSizeForLayout(layout, available, applied, context);
     }
+    
 
     public Rect? GetClippingRect(Point offset, Size available, ContextBase context)
     {
@@ -188,6 +184,11 @@ public class SVGImageDataSizer
         }
         
         return new Size(scaleX, scaleY);
+    }
+    
+    protected virtual Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, ContextBase context)
+    {
+        return layout;
     }
 
     protected virtual Size DoGetLayoutSize2()
