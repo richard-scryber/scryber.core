@@ -119,7 +119,7 @@ public class SVGImageDataSizer
     }
 
 
-    public Size GetOutputSizeForLayout(Size layout, Size available, Style applied, ContextBase context)
+    public Size GetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
         return this.DoGetOutputSizeForLayout(layout, available, applied, context);
     }
@@ -186,9 +186,30 @@ public class SVGImageDataSizer
         return new Size(scaleX, scaleY);
     }
     
-    protected virtual Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, ContextBase context)
+    protected virtual Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
-        return layout;
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+
+        Size output;
+
+        if (pos.Width.HasValue && pos.Height.HasValue)
+            output = new Size(pos.Width.Value, pos.Height.Value);
+        else if (pos.Width.HasValue)
+        {
+            var w = pos.Width.Value;
+            var h = layout.Height * (w.PointsValue / layout.Width.PointsValue);
+            output = new Size(w, h);
+        }
+        else if (pos.Height.HasValue)
+        {
+            var h = pos.Height.Value;
+            var w = layout.Width * (h.PointsValue / layout.Height.PointsValue);
+            output = new Size(w, h);
+        }
+        else
+            output = layout;
+        
+        return output;
     }
 
     protected virtual Size DoGetLayoutSize2()

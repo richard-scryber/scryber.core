@@ -12,6 +12,7 @@ using Scryber.PDF;
 using Scryber.Drawing;
 using Scryber.Imaging;
 using Scryber.PDF.Resources;
+using Scryber.Svg.Components;
 using Scryber.Svg.Imaging;
 
 namespace Scryber.UnitLayouts
@@ -23,11 +24,14 @@ namespace Scryber.UnitLayouts
     public class SVGImageLayout_Tests
     {
         
+        #region Test Helper methods
+        
         // -----------------------------------------------------------------------
         // Helpers
         // -----------------------------------------------------------------------
 
         PDFLayoutDocument layout;
+        PDFLayoutContext context;
 
         
         private string GetResourcePath(string category, string filename, bool assertExists = true)
@@ -105,17 +109,19 @@ namespace Scryber.UnitLayouts
         private static double RunTranslateX(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[4];
         private static double RunTranslateY(Scryber.PDF.Graphics.PDFTransformationMatrix m) => m.Components[5];
 
+        #endregion
+        
         /// ----------------------------------
         /// Test methods
         /// ----------------------------------
         
         [TestMethod()]
-        public void SVGImageContainer_NoSVGSizes()
+        public void SVGImageContainer_01_NoSVGSizes()
         {
-            var path = GetResourcePath("SVGImages", "SVGImageContainer_NoSVGSizes.html");
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_01_NoSVGSizes.html");
 
             using (var doc = Document.ParseDocument(path))
-            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_NoSVGSizes.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_01_NoSVGSizes.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.LayoutComplete += Doc_LayoutComplete;
@@ -138,11 +144,11 @@ namespace Scryber.UnitLayouts
             // 2. img 100×50 — canvas stays intrinsic, run matches override (same image data).
             var run1 = GetImageRunFromBody(1);
             Assert.AreEqual(100.0, run1.Width.PointsValue,  1.0, "2. Run width from img override");
-            Assert.AreEqual(50.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
+            Assert.AreEqual(150.0, run1.Height.PointsValue, 1.0, "2. Run height from img override");
             
             // 3. img 200×100 — canvas stays intrinsic
             var run2 = GetImageRunFromBody(2);
-            Assert.AreEqual(200.0, run2.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(300.0, run2.Width.PointsValue,  1.0, "2. Run width from img override");
             Assert.AreEqual(100.0, run2.Height.PointsValue, 1.0, "2. Run height from img override");
             
             // 4. img 100×100 explicit — canvas stays intrinsic
@@ -178,12 +184,12 @@ namespace Scryber.UnitLayouts
         }
         
          [TestMethod()]
-        public void SVGImageContainer_SVGWithViewbox()
+        public void SVGImageContainer_02_SVGWithViewbox()
         {
-            var path = GetResourcePath("SVGImages", "SVGImageContainer_SVGWithViewbox.html");
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_02_SVGWithViewbox.html");
 
             using (var doc = Document.ParseDocument(path))
-            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_SVGWithViewbox.pdf"))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_02_SVGWithViewbox.pdf"))
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.LayoutComplete += Doc_LayoutComplete;
@@ -248,6 +254,467 @@ namespace Scryber.UnitLayouts
             var run8 = GetImageRunFromBody(8);
             Assert.AreEqual(200.0, run8.Width.PointsValue,  1.0, "9. Run width from img override");
             Assert.AreEqual(200.0, run8.Height.PointsValue, 1.0, "9. Run height from img override");
+            
+        }
+        
+         [TestMethod()]
+        public void SVGImageContainer_03_SVGWithOnlySizes()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_03_SVGWithOnlySizes.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_03_SVGWithOnlySizes.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            
+            Assert.AreEqual(12, svgs.Count, "Expected 12 SVG images");
+
+            // 1. Sample_NoViewbox_HasWidth_NoHeight.svg
+            // SVG 150×150 (size), img 150×150 — canvas stays 1:1, clipped
+            
+            var svg = svgs[0];
+            var run = GetImageRunFromBody(0);
+            
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            
+            Assert.AreEqual(150, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 150), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            // 2. Sample_NoViewbox_NoWidth_HasHeight.svg
+            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
+            svg = svgs[1];
+            run = GetImageRunFromBody(1);
+            
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            // 3. Sample_NoViewbox_HasWidth_HasHeight.svg
+            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
+            svg = svgs[2];
+            run = GetImageRunFromBody(2);
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            run = GetImageRunFromBody(2);
+            Assert.AreEqual(150.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
+
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 100), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            //Second page - widths with aspect ratio
+            
+            // 4. Sample_NoViewbox_HasWidth_NoHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[3];
+            run = GetImageRunFromBody(3);
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(2.0, 1.0), scale);
+            
+            // 5. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[4];
+            run = GetImageRunFromBody(4);
+            Assert.AreEqual((Unit)100, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(100, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(100, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 6. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[5];
+            run = GetImageRunFromBody(5);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            //page 3 - heights
+            
+            // 7. Sample_NoViewbox_HasWidth_NoHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[6];
+            run = GetImageRunFromBody(6);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.5), scale);
+            
+            // 8. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[7];
+            run = GetImageRunFromBody(7);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(100, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 9. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[8];
+            run = GetImageRunFromBody(8);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)300, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(300, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 300), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            
+            //page 4 both
+            
+            // 10. Sample_NoViewbox_HasWidth_HasHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[9];
+            run = GetImageRunFromBody(9);
+            
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)250, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(250, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 250), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 11. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[10];
+            run = GetImageRunFromBody(10);
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 12. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[11];
+            run = GetImageRunFromBody(11);
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            
+            
+        }
+        
+        
+         [TestMethod()]
+        public void SVGImageContainer_04_SVGWithSizesAndImgSizes()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_04_SVGWithSizesAndImgSizes.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_04_SVGWithSizesAndImgSizes.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 25;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 4;
+                
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+            
+            Assert.AreEqual(1, svgs.Count, "Expected 12 SVG images");
+
+            return;
+            
+            // 1. Sample_NoViewbox_HasWidth_NoHeight.svg
+            // SVG 150×150 (size), img 150×150 — canvas stays 1:1, clipped
+            
+            var svg = svgs[0];
+            var run = GetImageRunFromBody(0);
+            
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            
+            Assert.AreEqual(150, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 150), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            // 2. Sample_NoViewbox_NoWidth_HasHeight.svg
+            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
+            svg = svgs[1];
+            run = GetImageRunFromBody(1);
+            
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            // 3. Sample_NoViewbox_HasWidth_HasHeight.svg
+            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
+            svg = svgs[2];
+            run = GetImageRunFromBody(2);
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            run = GetImageRunFromBody(2);
+            Assert.AreEqual(150.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
+            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
+
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 100), context);
+            Assert.AreEqual(new Size(1, 1), scale);
+            
+            //Second page - widths with aspect ratio
+            
+            // 4. Sample_NoViewbox_HasWidth_NoHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[3];
+            run = GetImageRunFromBody(3);
+            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(2.0, 1.0), scale);
+            
+            // 5. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[4];
+            run = GetImageRunFromBody(4);
+            Assert.AreEqual((Unit)100, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(100, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(100, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 6. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[5];
+            run = GetImageRunFromBody(5);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            //page 3 - heights
+            
+            // 7. Sample_NoViewbox_HasWidth_NoHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[6];
+            run = GetImageRunFromBody(6);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
+            Assert.AreEqual(new Size(1.0, 1.5), scale);
+            
+            // 8. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[7];
+            run = GetImageRunFromBody(7);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(100, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 9. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[8];
+            run = GetImageRunFromBody(8);
+            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)300, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(300, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 300), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            
+            //page 4 both
+            
+            // 10. Sample_NoViewbox_HasWidth_HasHeight_None.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[9];
+            run = GetImageRunFromBody(9);
+            
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)250, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(250, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 250), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 11. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[10];
+            run = GetImageRunFromBody(10);
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            // 12. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg
+            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
+            svg = svgs[11];
+            run = GetImageRunFromBody(11);
+            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
+            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            
+            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity);
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
+            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            
+            
             
         }
         

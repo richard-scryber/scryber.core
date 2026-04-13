@@ -66,8 +66,13 @@ public class SVGImageDataViewBoxSizer : SVGImageDataSizer
         return proportional;
     }
 
-    protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, ContextBase context)
+    protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+        
+        if(pos.Width.HasValue || pos.Height.HasValue)
+            return base.DoGetOutputSizeForLayout(layout, available, applied, context);
+        
         //scale proportionally to the available size
         if(layout == available)
             return layout;

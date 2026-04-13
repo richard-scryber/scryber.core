@@ -194,32 +194,9 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
         }
 
         // The sizer gives us the SVG's intrinsic size (from viewBox / explicit SVG dims / defaults).
-        // If the outer <img> element has an explicit width and/or height in its style, apply those
-        // on top, scaling proportionally when only one dimension is specified.
-        var naturalSize = this.Sizer.GetLayoutSize();
-        var pos = appliedstyle.CreatePostionOptions(context.PositionDepth > 0);
-
-        Size rendered;
-
-        if (pos.Width.HasValue && pos.Height.HasValue)
-            rendered = new Size(pos.Width.Value, pos.Height.Value);
-        else if (pos.Width.HasValue)
-        {
-            var w = pos.Width.Value;
-            var h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
-            rendered = new Size(w, h);
-        }
-        else if (pos.Height.HasValue)
-        {
-            var h = pos.Height.Value;
-            var w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
-            rendered = new Size(w, h);
-        }
-        else
-            rendered = this.Sizer.GetOutputSizeForLayout(naturalSize, available, appliedstyle, context);
-
         
-
+        var naturalSize = this.Sizer.GetLayoutSize();
+        Size rendered = this.Sizer.GetOutputSizeForLayout(naturalSize, available, appliedstyle, context);
         return rendered;
     }
 

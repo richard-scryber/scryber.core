@@ -57,6 +57,20 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
         return rect;
     }
 
+    protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
+    {
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+        if (pos.Height.HasValue || pos.Width.HasValue)
+        {
+            var width = pos.Width ?? SVGCanvas.DefaultWidth;
+            var height = pos.Height ?? SVGCanvas.DefaultHeight;
+            
+            return new Size(width, height);
+            
+        }
+        return base.DoGetOutputSizeForLayout(layout, available, applied, context);
+    }
+
     protected override Size DoGetRenderScaleForContent(Point offset, Size available, ContextBase context)
     {
         //var scale = base.DoGetRenderScaleForContent(offset, available, context);
