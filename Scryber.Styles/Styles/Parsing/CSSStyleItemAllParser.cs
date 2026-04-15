@@ -303,6 +303,23 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Y2Position, new CSSSVGy2Position());
             all.Add(CSSStyleItems.GradientSpreadMode, new CSSSVGLinearGradientSpreadMode());
 
+            all.Add(CSSStyleItems.FlexDirection, new Typed.CSSFlexDirectionParser());
+            all.Add(CSSStyleItems.FlexWrap, new Typed.CSSFlexWrapParser());
+            all.Add(CSSStyleItems.JustifyContent, new Typed.CSSJustifyContentParser());
+            all.Add(CSSStyleItems.AlignItems, new Typed.CSSAlignItemsParser());
+            all.Add(CSSStyleItems.AlignContent, new Typed.CSSAlignContentParser());
+            all.Add(CSSStyleItems.AlignSelf, new Typed.CSSAlignSelfParser());
+            all.Add(CSSStyleItems.Gap, new Typed.CSSGapParser());
+            all.Add(CSSStyleItems.RowGap, new Typed.CSSRowGapParser());
+            all.Add(CSSStyleItems.Flex, new Typed.CSSFlexShorthandParser());
+            all.Add(CSSStyleItems.FlexGrow, new Typed.CSSFlexGrowParser());
+            all.Add(CSSStyleItems.FlexShrink, new Typed.CSSFlexShrinkParser());
+            all.Add(CSSStyleItems.FlexBasis, new Typed.CSSFlexBasisParser());
+            all.Add(CSSStyleItems.Order, new Typed.CSSFlexOrderParser());
+
+            all.Add(CSSStyleItems.GridTemplateColumns, new Typed.CSSGridTemplateColumnsParser());
+            all.Add(CSSStyleItems.GridTemplateRows, new Typed.CSSGridTemplateRowsParser());
+
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }
     }

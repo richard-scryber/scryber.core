@@ -45,7 +45,7 @@ namespace Scryber.Drawing
 
         public static ViewPortAspectRatio None
         {
-            get { return new ViewPortAspectRatio(AspectRatioAlign.None); }
+            get { return new ViewPortAspectRatio(AspectRatioAlign.None, AspectRatioMeet.None); }
         }
 
         private static char[] _whitespaceSplitter = new char[] {' '};
@@ -79,7 +79,10 @@ namespace Scryber.Drawing
                 }
                 else if(Enum.TryParse(value, true, out align))
                 {
-                    return new ViewPortAspectRatio(align, AspectRatioMeet.Meet);
+                    if (align == AspectRatioAlign.None)
+                        return ViewPortAspectRatio.None;
+                    else
+                        return new ViewPortAspectRatio(align, AspectRatioMeet.Meet);
                 }
                 else
                     return ViewPortAspectRatio.Default;

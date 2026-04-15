@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>SVG No Inner Sizes</title>
+        <style>
+            body { padding: 5pt; }
+            img { border: 1px solid black; background-color: lightyellow; }
+            p { margin: 0; margin-bottom: 5pt; }
+        </style>
+    </head>
+    <body>
+        <img id="svg_nothing" src="Sample_HasViewbox_NoWidth_NoHeight.svg" />
+        <p>1. SVG Default 300x150 expects run 300x150</p>
+
+        <img id="svg_onlyWidth" src="Sample_HasViewbox_NoWidth_NoHeight.svg" style="width:100pt;" />
+        <p>2. SVG Default 300x150 expects run 100x50</p>
+
+        <img id="svg_onlyHeight" src="Sample_HasViewbox_NoWidth_NoHeight.svg" style="height:100pt;" />
+        <p>3. SVG Default 300x150 expects run 200x100</p>
+
+        <img id="svg_WidthAndHeight" src="Sample_HasViewbox_NoWidth_NoHeight.svg" style="width: 100pt; height:100pt;" />
+        <p>4. SVG Default 300x150 expects run 100x100</p>
+
+        <img id="svg_WidthAndHeightBig" src="Sample_HasViewbox_NoWidth_NoHeight.svg" style="width: 100pt; height:300pt;" />
+        <p>5. SVG Default 300x150 expects run 100x300</p>
+
+        <img id="svg_WidthBigAndHeight" src="Sample_HasViewbox_NoWidth_NoHeight.svg" style="width: 400pt; height:100pt;" />
+        <p>6. SVG Default 300x150 expects run 100x300</p>
+    
+        <div style="page-break-after: always;" ></div>
+
+        <img id="svg_bothWidth_AspectNone" src="Sample_HasViewbox_NoWidth_NoHeight_None.svg" style="width:200pt; height: 200pt;" />
+        <p>7. SVG Default 300x150 expects run 300x150</p>
+
+        <img id="svg_bothWidth_AspectMeet" src="Sample_HasViewbox_NoWidth_NoHeight_Meet.svg" style="width:200pt; height: 200pt;" />
+        <p>8. SVG Default 300x150 expects run 300x150</p>
+
+        <img id="svg_bothWidth_AspectSlice" src="Sample_HasViewbox_NoWidth_NoHeight_Slice.svg" style="width:200pt; height: 200pt;" />
+        <p>9. SVG Default 300x150 expects run 300x150</p>
+    </body>
+</html>

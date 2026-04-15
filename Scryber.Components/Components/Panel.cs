@@ -144,7 +144,14 @@ namespace Scryber.Components
 
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            return new LayoutEnginePanel(this, parent);
+            var display = style.GetValue(StyleKeys.PositionDisplayKey, Drawing.DisplayMode.Block);
+            return display switch
+            {
+                Drawing.DisplayMode.FlexBox  => new PDF.Layout.LayoutEngineFlexBox(this, parent),
+                Drawing.DisplayMode.FlexGrid => new PDF.Layout.LayoutEngineFlexGrid(this, parent),
+                Drawing.DisplayMode.Table    => new PDF.Layout.LayoutEngineCSSTable(this, parent),
+                _ => new PDF.Layout.LayoutEnginePanel(this, parent),
+            };
         }
 
         #endregion

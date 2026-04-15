@@ -84,6 +84,18 @@ namespace Scryber.Styles.Parsing.Typed
                 case ("none"):
                     display = DisplayMode.Invisible;
                     return true;
+                case ("flex"):
+                    display = DisplayMode.FlexBox;
+                    return true;
+                case ("grid"):
+                    display = DisplayMode.FlexGrid;
+                    return true;
+                case ("table"):
+                    display = DisplayMode.Table;
+                    return true;
+                case ("table-row"):
+                    display = DisplayMode.TableRow;
+                    return true;
                 default:
                     display = DisplayMode.Block;
                     return false;

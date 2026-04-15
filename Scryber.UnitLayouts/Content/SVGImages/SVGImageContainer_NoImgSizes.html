@@ -1,3 +1,4 @@
+
 <html xmlns="http://www.w3.org/1999/xhtml" >
     <head>
         <title>Image Wrapper for svg images with no img dimensions</title>
@@ -8,28 +9,26 @@
                 border: 1px solid black;
                 background-color: red;
             }
-            p { margin: 0; }
+            p { margin: 0;
+                margin-bottom: 5pt;
+            }
         </style>
     </head>
     <body>
-        <!--        <p>Above the image - inner width</p>-->
-<!--        <img id="dynamicSVG_Width" src="Sample_NoViewbox_HasWidth_NoHeight.svg"/>-->
-<!--        <p>Below the image - inner width</p>-->
-
-        <p>Above the image - Baseline image</p>
         <img id="dynamicSVG_VBWidthHeight" src="Sample_HasViewbox_HasWidth_HasHeight.svg" />
-        <p >Below the image - Baseline Image</p>
+        <p >Baseline Image</p>
         
-<!--        <p>Above the image - inner width and height</p>-->
-<!--        <img id="dynamicSVG_WidthHeight" src="Sample_NoViewbox_HasWidth_HasHeight.svg" />-->
-<!--        <p >Below the image - inner width and height</p>-->
-<!--        -->
-<!--        <p>Above the image - inner height</p>-->
-<!--        <img id="dynamicSVG_Height" src="Sample_NoViewbox_NoWidth_HasHeight.svg" />-->
-<!--        <p >Below the image - inner height</p>-->
+        <img id="dynamicSVG_Width" src="Sample_NoViewbox_HasWidth_NoHeight.svg"/>
+        <p>Inner width</p>
+        
+        <img id="dynamicSVG_Height" src="Sample_NoViewbox_NoWidth_HasHeight.svg" />
+        <p >Inner height</p>
+        
+        <img id="dynamicSVG_WidthHeight" src="Sample_NoViewbox_HasWidth_HasHeight.svg" />
+        <p >Inner width and height</p>
+        
 
-<!--        <p>Above the image - no dimensions</p>-->
-<!--        <img id="dynamicSVG_None" src="Sample_NoViewbox_NoWidth_NoHeight.svg"/>-->
-<!--        <p>Below the image - no dimensions</p>-->
+        <img id="dynamicSVG_None" src="Sample_NoViewbox_NoWidth_NoHeight.svg"/>
+        <p>No dimensions</p>
     </body>
 </html>

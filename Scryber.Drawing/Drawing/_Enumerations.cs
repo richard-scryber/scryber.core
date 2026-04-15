@@ -306,16 +306,66 @@ namespace Scryber.Drawing
         /// A block element breaks any current line is rendered on it's own, with any positioning
         /// </summary>
         Block = 2,
-        
+
+        /// <summary>Flex container — lays out children in a row or column with flex alignment.</summary>
+        FlexBox = 3,
+
         /// <summary>
         /// Specific dispaly mode that will vertically align content within a cell.
         /// </summary>
         TableCell = 4,
-        
+
+        /// <summary>Grid container — lays out children in a defined column/row grid.</summary>
+        FlexGrid = 5,
+
+        /// <summary>Acts as a table container — children are transposed into table rows/cells.</summary>
+        Table = 6,
+
+        /// <summary>Acts as a table row — children with display:table-cell become cells.</summary>
+        TableRow = 7,
+
         /// <summary>
         /// If invisible, then it takes up no room, and does not impact the layout
         /// </summary>
         Invisible = 10
+    }
+
+    public enum FlexDirection
+    {
+        Row = 0,
+        RowReverse = 1,
+        Column = 2,
+        ColumnReverse = 3
+    }
+
+    public enum FlexWrap
+    {
+        Nowrap = 0,
+        Wrap = 1,
+        WrapReverse = 2
+    }
+
+    public enum FlexJustify
+    {
+        FlexStart = 0,
+        FlexEnd = 1,
+        Center = 2,
+        SpaceBetween = 3,
+        SpaceAround = 4,
+        SpaceEvenly = 5
+    }
+
+    public enum FlexAlignMode
+    {
+        Stretch = 0,
+        FlexStart = 1,
+        FlexEnd = 2,
+        Center = 3,
+        Baseline = 4,
+        Auto = 5,
+        SpaceBetween = 6,
+        SpaceAround = 7,
+        SpaceEvenly = 8
     }
 
     public enum FloatMode

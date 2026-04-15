@@ -454,6 +454,35 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public FlexStyle Flex {get;}
+
+#if LOCALSTYLEITEMS
+
+        private FlexStyle _flex;
+
+        public FlexStyle Flex
+        {
+            get { if (null == _flex) _flex = this.GetOrCreateItem<FlexStyle>(StyleKeys.FlexItemKey); return _flex; }
+        }
+
+#else
+        public FlexStyle Flex
+        {
+            get { return this.GetOrCreateItem<FlexStyle>(StyleKeys.FlexItemKey); }
+        }
+#endif
+
+        #endregion
+
+        #region public GridStyle Grid {get;}
+
+        public GridStyle Grid
+        {
+            get { return this.GetOrCreateItem<GridStyle>(StyleKeys.GridItemKey); }
+        }
+
+        #endregion
+
         #region public PDFOverflowStyle Overflow {get;}
 
 #if LOCALSTYLEITEMS

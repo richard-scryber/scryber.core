@@ -180,6 +180,23 @@ namespace Scryber.Html
         public const string CounterIncrement = "counter-increment";
 
         public const string PaintOrder = "paint-order";
+
+        public const string FlexDirection = "flex-direction";
+        public const string FlexWrap = "flex-wrap";
+        public const string JustifyContent = "justify-content";
+        public const string AlignItems = "align-items";
+        public const string AlignContent = "align-content";
+        public const string AlignSelf = "align-self";
+        public const string Gap = "gap";
+        public const string RowGap = "row-gap";
+        public const string Flex = "flex";
+        public const string FlexGrow = "flex-grow";
+        public const string FlexShrink = "flex-shrink";
+        public const string FlexBasis = "flex-basis";
+        public const string Order = "order";
+
+        public const string GridTemplateColumns = "grid-template-columns";
+        public const string GridTemplateRows = "grid-template-rows";
     }
 }
 
