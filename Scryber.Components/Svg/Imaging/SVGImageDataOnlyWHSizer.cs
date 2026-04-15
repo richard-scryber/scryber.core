@@ -62,16 +62,16 @@ public class SVGImageDataOnlyWHSizer : SVGImageDataSizer
             hasHeight = true;
         }
         
-        if (this.AspectRatio.Align == AspectRatioAlign.None)
-        {
-            //Not sure - but matches chrome.
-            if(SVGWidth.HasValue && SVGHeight.HasValue)
-                return new Size(SVGWidth.Value, SVGHeight.Value);
-            
-
-            return new Size(width, height);
-            
-        }
+        // if (this.AspectRatio.Align == AspectRatioAlign.None)
+        // {
+        //     //Not sure - but matches chrome.
+        //     if(SVGWidth.HasValue && SVGHeight.HasValue)
+        //         return new Size(SVGWidth.Value, SVGHeight.Value);
+        //     
+        //
+        //     return new Size(width, height);
+        //     
+        // }
 
         if (hasWidth || hasHeight)
         {
@@ -93,7 +93,7 @@ public class SVGImageDataOnlyWHSizer : SVGImageDataSizer
     protected override Size DoGetRenderScaleForContent(Point offset, Size available, ContextBase context)
     {
         var scale = base.DoGetRenderScaleForContent(offset, available, context);
-
+        
         return scale;
     }
 

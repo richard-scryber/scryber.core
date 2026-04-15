@@ -2,61 +2,75 @@
     <head>
         <title>SVG 04 - Inner and img Inner Sizes</title>
         <style>
-            body { padding: 5pt; }
+            body { padding: 10pt; }
             img { border: 1px solid black; background-color: lightyellow; }
             p { margin: 0; margin-bottom: 5pt; }
         </style>
     </head>
     <body>
-<!--        <img src="Sample_NoViewbox_HasWidth_NoHeight.svg" style="width: 25pt;" />-->
-<!--        <p>1. Sample_NoViewbox_HasWidth_NoHeight.svg; width: 25pt;</p>-->
+        <h4>Width and Height - various img sizes</h4>
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" />
+        <p>1. Sample_NoViewbox_HasWidth_HasHeight.svg; default </p>
 
-<!--        <img src="Sample_NoViewbox_HasWidth_NoHeight.svg" style="height: 25pt;" />-->
-<!--        <p>2. Sample_NoViewbox_HasWidth_NoHeight.svg; height: 25pt;</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="width: 75pt; height: 50pt;" />
+        <p>2. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 75pt; height: 50pt;</p>
 
-<!--        <img src="Sample_NoViewbox_NoWidth_HasHeight.svg" style="height: 25pt;" />-->
-<!--        <p>3. Sample_NoViewbox_NoWidth_HasHeight.svg; height: 25pt;</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="width: 75pt; height: 150pt;" />
+        <p>3. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 75pt; height: 150pt;</p>
 
-<!--        <img src="Sample_NoViewbox_NoWidth_HasHeight.svg" style="width: 100pt;" />-->
-<!--        <p>4. Sample_NoViewbox_NoWidth_HasHeight.svg; width: 100pt; </p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="width: 300pt; height: 100pt;" />
+        <p>4. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 300pt; height: 100pt;</p>
 
-<!--        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="width: 75pt; height: 75pt;" />-->
-<!--        <p>5. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 75pt; height: 75pt; </p>-->
-<!--    -->
-<!--        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight.svg" style="width: 300pt; height: 200pt;" />
+        <p>5. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 300pt; height: 200pt;; </p>
 
-        <img src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" style="width: 75pt; height: 75pt;" />
-        <p>5. Sample_NoViewbox_HasWidth_HasHeight.svg; width: 75pt; height: 75pt; </p>
+        
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+        <h4>Width and Height, aspect none - various img sizes</h4>
+        
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" />
+        <p>6. Sample_NoViewbox_HasWidth_HasHeight_None.svg; default </p>
 
-<!--        <img id="svg_Width_AspectNone" src="Sample_NoViewbox_HasWidth_NoHeight_None.svg" />-->
-<!--        <p>4. SVG Default 150x150 expects run 300x150 stretched and clipped</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" style="width: 50pt; height: 50pt;" />
+        <p>7. Sample_NoViewbox_HasWidth_HasHeight_None.svg; width: 50pt; height: 50pt; </p>
 
-        <img id="svg_Width_AspectMeet" src="Sample_NoViewbox_HasWidth_NoHeight_Meet.svg" style="width: 300pt; height: 150pt;" />
-        <p>5. SVG Default 100x150 expects run 100x150 (clipped)</p>
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" style="width: 500pt; height: 125pt;" />
+        <p>8. Sample_NoViewbox_HasWidth_HasHeight_None.svg; width: 500pt; height: 125pt; </p>
 
-<!--        <img id="svg_Width_AspectSlice" src="Sample_NoViewbox_HasWidth_NoHeight_Slice.svg" />-->
-<!--        <p>6. SVG Default 200x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" style="width: 50pt; height: 125pt;" />
+        <p>9. Sample_NoViewbox_HasWidth_HasHeight_None.svg; width: 500pt; height: 125pt; </p>
 
-<!--        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>-->
+        
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+        <h4>Width and Height, aspect xMinYMax Meet - various img sizes</h4>
+        
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Meet.svg" />
+        <p>10. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg; default </p>
 
-<!--        <img id="svg_Height_AspectNone" src="Sample_NoViewbox_NoWidth_HasHeight_None.svg" />-->
-<!--        <p>7. SVG Default 300x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Meet.svg" style="width: 50pt; height: 50pt;" />
+        <p>11. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg; width: 50pt; height: 50pt; </p>
 
-<!--        <img id="svg_Height_AspectMeet" src="Sample_NoViewbox_NoWidth_HasHeight_Meet.svg" />-->
-<!--        <p>8. SVG Default 300x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Meet.svg" style="width: 500pt; height: 125pt;" />
+        <p>12. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg; width: 500pt; height: 125pt; </p>
 
-<!--        <img id="svg_Height_AspectSlice" src="Sample_NoViewbox_NoWidth_HasHeight_Slice.svg" />-->
-<!--        <p>9. SVG Default 300x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Meet.svg" style="width: 50pt; height: 125pt;" />
+        <p>13. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg; width: 500pt; height: 125pt; </p>
 
-<!--        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>-->
+        <div style="page-break-after: always; border: solid 1pt silver; margin: 10pt" ></div>
+        <h4>Width and Height, aspect xMaxYMin Slice - various img sizes</h4>
 
-<!--        <img id="svg_WidthHeight_AspectNone" src="Sample_NoViewbox_HasWidth_HasHeight_None.svg" />-->
-<!--        <p>10. SVG Default 300x150 expects run 300x150</p>-->
+        
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Slice.svg" />
+        <p>14. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg; default </p>
 
-<!--        <img id="svg_WidthHeight_AspectMeet" src="Sample_NoViewbox_HasWidth_HasHeight_Meet.svg" />-->
-<!--        <p>11. SVG Default 300x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Slice.svg" style="width: 50pt; height: 50pt;" />
+        <p>15. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg; width: 50pt; height: 50pt; </p>
 
-<!--        <img id="svg_WidthHeight_AspectSlice" src="Sample_NoViewbox_HasWidth_HasHeight_Slice.svg" />-->
-<!--        <p>12. SVG Default 300x150 expects run 300x150</p>-->
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Slice.svg" style="width: 500pt; height: 125pt;" />
+        <p>16. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg; width: 500pt; height: 125pt; </p>
+
+        <img src="Sample_NoViewbox_HasWidth_HasHeight_Slice.svg" style="width: 50pt; height: 125pt;" />
+        <p>17. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg; width: 500pt; height: 125pt; </p>
+    
     </body>
 </html>

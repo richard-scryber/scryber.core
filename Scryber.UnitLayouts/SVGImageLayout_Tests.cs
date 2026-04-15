@@ -328,7 +328,7 @@ namespace Scryber.UnitLayouts
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 100), context);
             Assert.AreEqual(new Size(1, 1), scale);
             
-            //Second page - widths with aspect ratio
+            //Second page - widths with aspect ratio none
             
             // 4. Sample_NoViewbox_HasWidth_NoHeight_None.svg
             // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
@@ -495,8 +495,8 @@ namespace Scryber.UnitLayouts
             {
                 doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
-                doc.Pages[0].Style.OverlayGrid.GridSpacing = 25;
-                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 4;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
                 
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(stream);
@@ -505,216 +505,394 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(this.layout);
             var svgs = GetSVGImageData(this.layout);
             
-            Assert.AreEqual(1, svgs.Count, "Expected 12 SVG images");
+            Assert.AreEqual(4, svgs.Count, "Expected 4 SVG images - default, none, meet, slice");
 
-            return;
+            //page 1 - Width and Height on SVG and various sizes.
             
-            // 1. Sample_NoViewbox_HasWidth_NoHeight.svg
-            // SVG 150×150 (size), img 150×150 — canvas stays 1:1, clipped
+            //1 Default
+            var runIndex = 0;
+            var expectedCanvas = new Size(150, 100);
+            var expectedSize = new Size(150, 100);
+            var expectedScale = new Size(1.0, 1.0);
             
             var svg = svgs[0];
-            var run = GetImageRunFromBody(0);
-            
-            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            var run = GetImageRunFromBody(runIndex);
             
             
-            Assert.AreEqual(150, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, "1. Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
             var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
             Assert.IsTrue(matrix.IsIdentity);
             
-            var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 150), context);
-            Assert.AreEqual(new Size(1, 1), scale);
-            
-            // 2. Sample_NoViewbox_NoWidth_HasHeight.svg
-            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
-            svg = svgs[1];
-            run = GetImageRunFromBody(1);
-            
-            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
-            
-            Assert.AreEqual(300.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
-            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
-            
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
-            
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
-            Assert.AreEqual(new Size(1, 1), scale);
-            
-            // 3. Sample_NoViewbox_HasWidth_HasHeight.svg
-            // SVG 300×100 — canvas stays intrinsic scale, run matches (same image data).
-            svg = svgs[2];
-            run = GetImageRunFromBody(2);
-            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
-            
-            run = GetImageRunFromBody(2);
-            Assert.AreEqual(150.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
-            Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
+            var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale);
 
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+
+            //2: Half sized image
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 100), context);
-            Assert.AreEqual(new Size(1, 1), scale);
+            runIndex = 1;
             
-            //Second page - widths with aspect ratio
+            expectedSize = new Size(75, 50);
+            expectedScale = new Size(0.5, 0.5);
             
-            // 4. Sample_NoViewbox_HasWidth_NoHeight_None.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[3];
-            run = GetImageRunFromBody(3);
-            Assert.AreEqual((Unit)150, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            svg = svg = svgs[0];
+            run = GetImageRunFromBody(runIndex);
             
-            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
-            
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
-            Assert.AreEqual(new Size(2.0, 1.0), scale);
-            
-            // 5. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[4];
-            run = GetImageRunFromBody(4);
-            Assert.AreEqual((Unit)100, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
-            
-            Assert.AreEqual(100, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
             matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(100, 150), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
             
-            // 6. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[5];
-            run = GetImageRunFromBody(5);
-            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svg.Canvas.Height, "1. Canvas height stays intrinsic");
             
-            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            //3: Half width, 1.5 height image
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            runIndex = 2;
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            expectedSize = new Size(75, 150);
+            expectedScale = new Size(0.5, 1.5);
             
-            //page 3 - heights
+            svg = svg = svgs[0];
+            run = GetImageRunFromBody(runIndex);
             
-            // 7. Sample_NoViewbox_HasWidth_NoHeight_None.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[6];
-            run = GetImageRunFromBody(6);
-            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
             
-            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
             matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
-            Assert.AreEqual(new Size(1.0, 1.5), scale);
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+
+            //4: Double width image
             
-            // 8. Sample_NoViewbox_HasWidth_NoHeight_Meet.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[7];
-            run = GetImageRunFromBody(7);
-            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)100, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            runIndex = 3;
             
-            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(100, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            expectedSize = new Size(300, 100);
+            expectedScale = new Size(2.0, 1.0);
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            svg = svg = svgs[0];
+            run = GetImageRunFromBody(runIndex);
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
             
-            // 9. Sample_NoViewbox_HasWidth_NoHeight_Slice.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[8];
-            run = GetImageRunFromBody(8);
-            Assert.AreEqual((Unit)300, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)300, svg.Canvas.Height, "1. Canvas height stays intrinsic");
-            
-            Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(300, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
             matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 300), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+
+            //5: Double both image
             
+            runIndex = 4;
             
-            //page 4 both
+            expectedSize = new Size(300, 200);
+            expectedScale = new Size(2.0, 2.0);
             
-            // 10. Sample_NoViewbox_HasWidth_HasHeight_None.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[9];
-            run = GetImageRunFromBody(9);
+            svg = svg = svgs[0];
+            run = GetImageRunFromBody(runIndex);
             
-            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)250, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
             
-            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(250, run.Height.PointsValue, 1.0, "1. Run height from img override");
-            
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
-            
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 250), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
-            
-            // 11. Sample_NoViewbox_HasWidth_HasHeight_Meet.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[10];
-            run = GetImageRunFromBody(10);
-            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
-            
-            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
             matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+
             
-            // 12. Sample_NoViewbox_HasWidth_HasHeight_Slice.svg
-            // SVG 150×150 (size), img 300×150 — canvas stretched horizontally 1.5:1, clipped
-            svg = svgs[11];
-            run = GetImageRunFromBody(11);
-            Assert.AreEqual((Unit)250, svg.Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)200, svg.Canvas.Height, "1. Canvas height stays intrinsic");
+            //page 2 image sizes with aspect ratio NONE
             
-            Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
-            Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
+            //6: Default 250x250 with ratio none
+            runIndex = 5;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(250, 250);
+            expectedScale = new Size(1.0, 1.0);
+            
+            svg = svg = svgs[1];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
             matrix = svg.Sizer.GetCanvasToImageMatrix(context);
-            Assert.IsTrue(matrix.IsIdentity);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
-            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
-            Assert.AreEqual(new Size(1.0, 1.0), scale);
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
             
             
+            //7: Default 250x250 with 1/5th scale with ratio none
+            runIndex = 6;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(50, 50);
+            expectedScale = new Size(0.2, 0.2);
+            
+            svg = svg = svgs[1];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //8: Default 250x250 with 2x width and 1/2 height scale with ratio none
+            runIndex = 7;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(500, 125);
+            expectedScale = new Size(2, 0.5);
+            
+            svg = svg = svgs[1];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //9: Default 250x250 with 1/5th width and 1/2 height scale with ratio none
+            runIndex = 8;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(50, 125);
+            expectedScale = new Size(0.2, 0.5);
+            
+            svg = svg = svgs[1];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //page 3 ratio Meet
+            
+            //10: Default 250x250 with no img sizes, 1:1 scale with ratio xMinYMax meet
+            runIndex = 9;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(250, 250);
+            expectedScale = new Size(1, 1);
+            
+            svg = svg = svgs[2];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //11: Default 250x250 with 1/5th width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 10;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(50, 50);
+            expectedScale = new Size(0.2, 0.2);
+            
+            svg = svg = svgs[2];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //12: Default 250x250 with 2x width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 11;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(500, 125);
+            expectedScale = new Size(2, 0.5);
+            
+            svg = svg = svgs[2];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //13: Default 250x250 with 2x width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 12;
+            
+            expectedCanvas = new Size(250, 250);
+            expectedSize = new Size(50, 125);
+            expectedScale = new Size(0.2, 0.5);
+            
+            svg = svg = svgs[2];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            
+            //page 4 ratio Slice
+            
+            //14: Default 250x200 with no img sizes, 1:1 scale with ratio xMinYMax meet
+            runIndex = 13;
+            
+            expectedCanvas = new Size(250, 200);
+            expectedSize = new Size(250, 200);
+            expectedScale = new Size(1, 1);
+            
+            svg = svg = svgs[3];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //15: Default 250x250 with 1/5th width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 14;
+            
+            expectedCanvas = new Size(250, 200);
+            expectedSize = new Size(50, 50);
+            expectedScale = new Size(0.2, 0.25);
+            
+            svg = svg = svgs[3];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //16: Default 250x250 with 2x width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 15;
+            
+            expectedCanvas = new Size(250, 200);
+            expectedSize = new Size(500, 125);
+            expectedScale = new Size(2, 125.0/200.0);
+            
+            svg = svg = svgs[3];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+            
+            //17: Default 250x250 with 2x width and 1/2 height scale with ratio xMinYMax meet
+            runIndex = 16;
+            
+            expectedCanvas = new Size(250, 200);
+            expectedSize = new Size(50, 125);
+            expectedScale = new Size(0.2, 125.0/200.0);
+            
+            svg = svg = svgs[3];
+            run = GetImageRunFromBody(runIndex);
+            
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,  runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height should be " +  expectedCanvas.Height);
+            
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
+            
+            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+            
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
             
         }
         
