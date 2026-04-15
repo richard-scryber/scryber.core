@@ -75,12 +75,34 @@ public class SVGImageDataOnlyWHSizer : SVGImageDataSizer
 
         if (hasWidth || hasHeight)
         {
-            if(!hasWidth && SVGWidth.HasValue)
-                width = SVGWidth.Value;
+            if(hasWidth &&  hasHeight)
+                return new Size(width, height);
             
-            if(!hasHeight && SVGHeight.HasValue)
-                height = SVGHeight.Value;
-            
+            if (SVGWidth.HasValue && SVGHeight.HasValue)
+            {
+                //We have both the SVG Sizes, but only 1 img size so calculate the correct ratio and apply
+
+                if (hasHeight)
+                {
+                    var ratio = height.PointsValue / SVGHeight.Value.PointsValue;
+                    width = SVGWidth.Value * ratio;
+                }
+                else
+                {
+                    var ratio = width.PointsValue / SVGWidth.Value.PointsValue;
+                    height = SVGHeight.Value * ratio;
+                }
+            }
+            else
+            {
+
+                if (!hasWidth && SVGWidth.HasValue)
+                    width = SVGWidth.Value;
+
+                if (!hasHeight && SVGHeight.HasValue)
+                    height = SVGHeight.Value;
+            }
+
             return new Size(width, height);
         }
         
