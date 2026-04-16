@@ -288,7 +288,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(150, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 150), context);
@@ -305,7 +305,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
             Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
@@ -322,7 +322,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(150.0, run.Width.PointsValue,  1.0, "2. Run width from img override");
             Assert.AreEqual(100.0, run.Height.PointsValue, 1.0, "2. Run height from img override");
 
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(150, 100), context);
@@ -340,7 +340,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(150, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
@@ -356,7 +356,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(100, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(100, 150), context);
@@ -372,7 +372,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(150, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
@@ -390,7 +390,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(100, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 150), context);
@@ -406,7 +406,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(100, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 100), context);
@@ -422,7 +422,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(300, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(300, 100), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(300, 300), context);
@@ -442,7 +442,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(250, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 250), context);
@@ -458,7 +458,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(250, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(250, 250), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 250), context);
@@ -474,7 +474,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(250, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(200, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(new Size(svg.Canvas.Width, svg.Canvas.Height), Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, new Size(250, 200), context);
@@ -525,7 +525,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, "1. Run height from img override");
             
-            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
             
             var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -548,7 +548,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -571,7 +571,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -593,7 +593,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -615,7 +615,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -640,7 +640,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -663,7 +663,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -685,7 +685,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -707,7 +707,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -731,7 +731,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -753,7 +753,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -775,7 +775,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -797,7 +797,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -822,7 +822,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -844,7 +844,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -866,7 +866,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -888,7 +888,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -938,7 +938,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0,
                 "1. Run height from img override");
 
-            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
 
             var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -960,7 +960,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -981,7 +981,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1003,7 +1003,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1025,7 +1025,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1047,7 +1047,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1097,7 +1097,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0,
                 "1. Run height from img override");
 
-            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
 
             var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1119,7 +1119,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1140,7 +1140,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1162,7 +1162,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1184,7 +1184,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1206,7 +1206,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1256,7 +1256,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0,
                 "1. Run height from img override");
 
-            var matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity);
 
             var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1278,7 +1278,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1300,7 +1300,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1322,7 +1322,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1346,7 +1346,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1368,7 +1368,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1390,7 +1390,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1412,7 +1412,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1435,7 +1435,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue,  1.0, runIndex + ". Run width from img override");
             Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0, runIndex + ". Run height from img override");
             
-            matrix = svg.Sizer.GetCanvasToImageMatrix(context);
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
             Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
             
             scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
@@ -1443,6 +1443,82 @@ namespace Scryber.UnitLayouts
 
         }
 
+        [TestMethod()]
+        public void SVGImageContainer_08_SVGWithViewboxAndSizes()
+        {
+            var path = GetResourcePath("SVGImages", "SVGImageContainer_08_SVGWithViewboxAndSizes.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImageContainer_08_SVGWithViewboxAndSizes.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.Pages[0].Style.OverlayGrid.ShowGrid = true;
+                doc.Pages[0].Style.OverlayGrid.GridSpacing = 10;
+                doc.Pages[0].Style.OverlayGrid.GridMajorCount = 5;
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            var svgs = GetSVGImageData(this.layout);
+
+            Assert.AreEqual(2, svgs.Count, "Expected 4 SVG images - width, width_none, height, height_none");
+
+            //page 1 - Width on SVG and various img widths.
+
+            //1 img width 150
+            var runIndex = 0;
+            var expectedCanvas = new Size(200, 150);
+            var expectedSize = new Size(200, 150);
+            var expectedScale = new Size(1.0, 1.0);
+
+            var svg = svgs[0];
+            var run = GetImageRunFromBody(runIndex);
+
+
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width, runIndex + ". Canvas width stays intrinsic");
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height, runIndex + ". Canvas height stays intrinsic");
+
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue, 1.0,
+                "1. Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0,
+                "1. Run height from img override");
+
+            var matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
+            Assert.IsTrue(matrix.IsIdentity);
+
+            var scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale);
+
+            //2: img width 75 (x0.2)
+            runIndex = 1;
+
+            expectedCanvas = new Size(150, 150);
+            expectedSize = new Size(75, 150);
+            expectedScale = new Size(0.5, 1.0);
+
+            svg = svgs[0]; //new svg for Meet
+            run = GetImageRunFromBody(runIndex);
+
+            Assert.AreEqual(expectedCanvas.Width, svg.Canvas.Width,
+                runIndex + ". Canvas width should be " + expectedCanvas.Width);
+            Assert.AreEqual(expectedCanvas.Height, svg.Canvas.Height,
+                runIndex + ". Canvas height should be " + expectedCanvas.Height);
+
+            Assert.AreEqual(expectedSize.Width.PointsValue, run.Width.PointsValue, 1.0,
+                runIndex + ". Run width from img override");
+            Assert.AreEqual(expectedSize.Height.PointsValue, run.Height.PointsValue, 1.0,
+                runIndex + ". Run height from img override");
+
+            matrix = svg.Sizer.GetCanvasToImageMatrix(expectedSize, Point.Empty, context);
+            Assert.IsTrue(matrix.IsIdentity, runIndex + ". Canvas to Image matrix should be identity");
+
+            scale = svg.Sizer.GetRenderScaleForContent(Point.Empty, expectedSize, context);
+            Assert.AreEqual(expectedScale, scale, runIndex + ". Image scale should match " + expectedScale);
+
+        }
+        
 
 
         /// <summary>
@@ -1792,7 +1868,7 @@ namespace Scryber.UnitLayouts
             }
 
             // 1. xMidYMid meet: scale=1.333, scaledW=266.67 → TX=(300-266.67)/2=16.67, TY=0
-            var m0 = svgs[0].Sizer.GetCanvasToImageMatrix(null);
+            var m0 = svgs[0].Sizer.GetCanvasToImageMatrix(new Size(300, 200), Point.Empty, context);
             double scaledW_meet = 200 * minScale;
             double spareX_meet  = 300 - scaledW_meet;
             Assert.AreEqual(minScale,        RunScaleX(m0), 0.01, "1. xMidYMid meet scaleX");
@@ -1801,7 +1877,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0.0,             RunTranslateY(m0), Delta, "1. xMidYMid meet TY");
 
             // 2. xMinYMin meet: scale=1.333, TX=0, TY=spareY(=0)
-            var m1 = svgs[1].Sizer.GetCanvasToImageMatrix(null);
+            var m1 = svgs[1].Sizer.GetCanvasToImageMatrix(new Size(150, 200), Point.Empty, context);
             double scaledH_meet = 150 * minScale;
             double spareY_meet  = 200 - scaledH_meet;
             Assert.AreEqual(minScale, RunScaleX(m1), 0.01, "2. xMinYMin meet scaleX");
@@ -1809,20 +1885,20 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(spareY_meet, RunTranslateY(m1), Delta, "2. xMinYMin meet TY");
 
             // 3. xMaxYMax meet: scale=1.333, TX=spareX, TY=0
-            var m2 = svgs[2].Sizer.GetCanvasToImageMatrix(null);
+            var m2 = svgs[2].Sizer.GetCanvasToImageMatrix(new Size(150, 200), Point.Empty, context);
             Assert.AreEqual(minScale,       RunScaleX(m2), 0.01, "3. xMaxYMax meet scaleX");
             Assert.AreEqual(spareX_meet,    RunTranslateX(m2), Delta, "3. xMaxYMax meet TX");
             Assert.AreEqual(0.0,            RunTranslateY(m2), Delta, "3. xMaxYMax meet TY");
 
             // 4. none: scaleX=1.5, scaleY=1.333, TX=0, TY=0
-            var m3 = svgs[3].Sizer.GetCanvasToImageMatrix(null);
+            var m3 = svgs[3].Sizer.GetCanvasToImageMatrix(new Size(150, 200), Point.Empty, context);
             Assert.AreEqual(300.0 / 200.0, RunScaleX(m3), 0.01, "4. none scaleX");
             Assert.AreEqual(200.0 / 150.0, RunScaleY(m3), 0.01, "4. none scaleY");
             Assert.AreEqual(0.0,           RunTranslateX(m3), Delta, "4. none TX");
             Assert.AreEqual(0.0,           RunTranslateY(m3), Delta, "4. none TY");
 
             // 5. xMidYMid slice: scale=1.5, scaledH=225, TY=(200-225)/2=-12.5, TX=0
-            var m4 = svgs[4].Sizer.GetCanvasToImageMatrix(null);
+            var m4 = svgs[4].Sizer.GetCanvasToImageMatrix(new Size(150, 200), Point.Empty, context);
             double scaledH_slice = 150 * maxScale;
             double spareY_slice  = 200 - scaledH_slice; // -25
             Assert.AreEqual(maxScale,        RunScaleX(m4), 0.01, "5. xMidYMid slice scaleX");

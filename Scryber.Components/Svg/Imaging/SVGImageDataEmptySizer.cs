@@ -43,7 +43,7 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    protected override PDFTransformationMatrix DoGetCanvasToImageMatrix(ContextBase context)
+    protected override PDFTransformationMatrix DoGetCanvasToImageMatrix(Size layoutSize, Point layoutLocation, ContextBase context)
     {
         //var matrix = base.DoGetCanvasToImageMatrix(context);
         var matrix =  PDFTransformationMatrix.Identity();

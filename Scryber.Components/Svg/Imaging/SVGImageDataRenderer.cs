@@ -217,7 +217,7 @@ public class SVGPDFImageDataRenderer : IDisposable
             if (this.LayoutBlockRef == null)
             {
                 this.DoOutputLayoutToPDF(this.LayoutBlock, context, this.Writer);
-                this.DoOutputImageDraw(this.ImageName, this.LayoutRenderName, context, this.Writer);
+                this.DoOutputImageDraw(this.LayoutBlock, this.ImageName, this.LayoutRenderName, context, this.Writer);
             }
             var len = this.Writer.EndStream();
             startedStream = false;
@@ -296,13 +296,13 @@ public class SVGPDFImageDataRenderer : IDisposable
     /// <param name="context"></param>
     /// <param name="writer"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    protected virtual void DoOutputImageDraw(PDFName imageName, PDFName layoutName,
+    protected virtual void DoOutputImageDraw(PDFLayoutBlock imgBlock, PDFName imageName, PDFName layoutName,
         PDFRenderContext context, PDFWriter writer)
     {
         if(null == layoutName)
             throw new ArgumentNullException(nameof(layoutName));
         
-        var matrix = this.Sizer.GetCanvasToImageMatrix(context);
+        var matrix = this.Sizer.GetCanvasToImageMatrix(imgBlock.Size, imgBlock.PagePosition, context);
         if (null != matrix && !matrix.IsIdentity)
         {
             var components = matrix.Components;

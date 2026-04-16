@@ -160,9 +160,9 @@ public class SVGImageDataSizer
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public PDFTransformationMatrix GetCanvasToImageMatrix(ContextBase context)
+    public PDFTransformationMatrix GetCanvasToImageMatrix(Size layoutSize, Point layoutLocation, ContextBase context)
     {
-        return this.DoGetCanvasToImageMatrix(context);
+        return this.DoGetCanvasToImageMatrix(layoutSize, layoutLocation, context);
     }
     
     public Rect GetImageToCanvasBBox(ContextBase context)
@@ -401,7 +401,7 @@ public class SVGImageDataSizer
 
 
 
-    protected virtual PDFTransformationMatrix DoGetCanvasToImageMatrix(ContextBase context)
+    protected virtual PDFTransformationMatrix DoGetCanvasToImageMatrix(Size layoutSize, Point layoutLocation, ContextBase context)
     {
         
         // No viewBox → content maps 1:1, no transform needed.
