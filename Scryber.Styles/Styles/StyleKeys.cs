@@ -716,6 +716,32 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<CounterStyleValue> CounterResetKey = StyleKey.InternalCreateStyleValueKey<CounterStyleValue>((ObjectType)"cnre", CounterItemKey);
 
+        //Flex
+
+        public static readonly StyleKey FlexItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleFlex, NOT_INHERITED);
+        public static readonly StyleKey<Drawing.FlexDirection> FlexDirectionKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexDirection>((ObjectType)"fxdr", FlexItemKey);
+        public static readonly StyleKey<Drawing.FlexWrap> FlexWrapKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexWrap>((ObjectType)"fxwp", FlexItemKey);
+        public static readonly StyleKey<Drawing.FlexJustify> FlexJustifyKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexJustify>((ObjectType)"fxjc", FlexItemKey);
+        public static readonly StyleKey<Drawing.FlexAlignMode> FlexAlignItemsKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexAlignMode>((ObjectType)"fxai", FlexItemKey);
+        public static readonly StyleKey<Drawing.FlexAlignMode> FlexAlignContentKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexAlignMode>((ObjectType)"fxac", FlexItemKey);
+        public static readonly StyleKey<Unit> FlexGapKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"fxgp", FlexItemKey);
+        public static readonly StyleKey<Unit> FlexRowGapKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"fxrg", FlexItemKey);
+        public static readonly StyleKey<Unit> FlexColumnGapKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"fxcg", FlexItemKey);
+        public static readonly StyleKey<double> FlexGrowKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"fxgw", FlexItemKey);
+        public static readonly StyleKey<double> FlexShrinkKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"fxsk", FlexItemKey);
+        public static readonly StyleKey<Unit> FlexBasisKey = StyleKey.InternalCreateStyleValueKey<Unit>((ObjectType)"fxbs", FlexItemKey);
+        public static readonly StyleKey<bool> FlexBasisAutoKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"fxba", FlexItemKey);
+        public static readonly StyleKey<Drawing.FlexAlignMode> FlexAlignSelfKey = StyleKey.InternalCreateStyleValueKey<Drawing.FlexAlignMode>((ObjectType)"fxas", FlexItemKey);
+        public static readonly StyleKey<int> FlexOrderKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"fxor", FlexItemKey);
+
+        //Grid
+
+        public static readonly StyleKey GridItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleGrid, NOT_INHERITED);
+        public static readonly StyleKey<string> GridTemplateColumnsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtc", GridItemKey);
+        public static readonly StyleKey<string> GridTemplateRowsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtr", GridItemKey);
+        public static readonly StyleKey<int> GridColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcs", GridItemKey);
+        public static readonly StyleKey<int> GridRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrs", GridItemKey);
+
         //Attachments
 
         public static readonly StyleKey AttachentItemKey = StyleKey.InternalCreateStyleItemKey((ObjectType)"atch", INHERITED);
