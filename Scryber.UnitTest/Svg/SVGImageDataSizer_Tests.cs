@@ -182,7 +182,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             var canvas = MakeCanvas(width: 150, height: 100);
             var sizer = MakeSizer(canvas);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(150, 200), Point.Empty, null);
 
             Assert.IsTrue(m.IsIdentity, "No viewBox should produce identity matrix");
         }
@@ -193,7 +193,7 @@ namespace Scryber.Core.UnitTests.Svg
         {
             var canvas = MakeCanvas(width: 200, height: 150, viewBox: new Rect(0, 0, 200, 150));
             var sizer = MakeSizer(canvas);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(200, 150), Point.Empty, null);
 
             Assert.IsTrue(m.IsIdentity, "viewBox matching dims should produce identity matrix");
         }
@@ -211,7 +211,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(600));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(150));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(600, 150), Point.Empty, null);
 
             double scale = Math.Min(600.0 / 400.0, 150.0 / 150.0); // 1.0
             double scaledW = 400 * scale;
@@ -236,7 +236,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(150));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(600));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(150, 600), Point.Empty, null);
 
             double scale = Math.Min(150.0 / 150.0, 600.0 / 400.0); // 1.0
             double scaledH = 400 * scale;
@@ -258,7 +258,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(400));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(300));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(400, 300), Point.Empty, null);
 
             Assert.AreEqual(2.0, ScaleX(m), 0.01, "ScaleX = dest.W / vb.W");
             Assert.AreEqual(2.0, ScaleY(m), 0.01, "ScaleY = dest.H / vb.H");
@@ -278,7 +278,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(300));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(200));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(300, 200), Point.Empty, null);
 
             double scale = Math.Min(300.0 / 200.0, 200.0 / 150.0);
             double scaledH = 150 * scale;
@@ -300,7 +300,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(300));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(200));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(300, 200), Point.Empty, null);
 
             double scale = Math.Min(300.0 / 200.0, 200.0 / 150.0);
             double scaledW = 200 * scale;
@@ -323,7 +323,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(300));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(200));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(300, 200), Point.Empty, null);
 
             double scale = Math.Max(300.0 / 200.0, 200.0 / 150.0); // 1.5
             double scaledW = 200 * scale;
@@ -348,7 +348,7 @@ namespace Scryber.Core.UnitTests.Svg
             style.SetValue(StyleKeys.SizeWidthKey, new Unit(200));
             style.SetValue(StyleKeys.SizeHeightKey, new Unit(150));
             var sizer = MakeSizer(canvas, appliedStyle: style);
-            var m = sizer.GetCanvasToImageMatrix(null);
+            var m = sizer.GetCanvasToImageMatrix(new Size(200, 200), Point.Empty, null);
 
             // scale=1.0, spareX=0, spareY=0, plus origin shift: TX=-50, TY=-50
             Assert.AreEqual(1.0, ScaleX(m), 0.01, "Scale should be 1.0");

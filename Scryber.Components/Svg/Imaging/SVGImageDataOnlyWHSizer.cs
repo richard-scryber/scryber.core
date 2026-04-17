@@ -119,9 +119,9 @@ public class SVGImageDataOnlyWHSizer : SVGImageDataSizer
         return scale;
     }
 
-    protected override PDFTransformationMatrix DoGetCanvasToImageMatrix(ContextBase context)
+    protected override PDFTransformationMatrix DoGetCanvasToImageMatrix(Size layoutSize, Point layoutOffset, ContextBase context)
     {
-        var matrix = base.DoGetCanvasToImageMatrix(context);
+        var matrix = base.DoGetCanvasToImageMatrix(layoutSize, layoutOffset, context);
         return matrix;
     }
 }
