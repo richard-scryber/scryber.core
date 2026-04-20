@@ -245,10 +245,6 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
 
             renderer.ReleaseImage(name);
         }
-        catch (Exception e)
-        {
-            throw;
-        }
         finally
         {
             if (null != renderer)

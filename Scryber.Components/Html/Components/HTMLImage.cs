@@ -197,6 +197,7 @@ namespace Scryber.Html.Components
                 {
                     this.Data = null;
                     this.Source = null;
+                    context.TraceLog.Add(TraceLevel.Warning, "Image", "Unable to load image data for " + this.ID + ": " + e.Message);   
                 }
                 
                 success = null != this.Data;

@@ -703,7 +703,7 @@ namespace Scryber.PDF.Layout
                 for (var l = 1; l < this.Lines.Count; l++)
                 {
                     var isLastRunOnLine = false;
-                    var lastLine = false;
+                    //var lastLine = false;
                     var line = this.Lines[l];
                     var lineRect = rect.Clone();
 
@@ -713,7 +713,7 @@ namespace Scryber.PDF.Layout
 
                     if (l == this.Lines.Count - 1) // we are the last line in this inline block so calculate the width
                     {
-                        lastLine = true;
+                        //lastLine = true;
                         lineRect.Width = 0;
                         for (var r = 0; r < line.Runs.Count; r++)
                         {

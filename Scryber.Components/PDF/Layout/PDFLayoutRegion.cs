@@ -694,10 +694,6 @@ namespace Scryber.PDF.Layout
                         
                         return avail;
                         
-                        var parentAvail = parent.CurrentRegion.GetAvailableLineWidth(yoffset, height, regionInset, out leftInset); 
-                        parentAvail -= block.Position.Margins.Left + block.Position.Margins.Right;
-                        parentAvail -= block.Position.Padding.Left + block.Position.Padding.Right;
-                        
                     }
                     else
                     {

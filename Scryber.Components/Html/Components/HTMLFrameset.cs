@@ -91,7 +91,7 @@ public class HTMLFrameset : ContainerComponent
                 "There was no root document found to begin creating the frameset from.");
         
         
-        this.EnsureRemoteContent(root, dependants, context);
+        _ = this.EnsureRemoteContent(root, dependants, context);
 
         this.RootReference = root;
         this.DependantReferences = dependants;
@@ -221,7 +221,7 @@ public class HTMLFrameset : ContainerComponent
                 continue;
             
             FrameFileReference fref;
-            FrameFileType fileType;
+            
             
             if (!string.IsNullOrEmpty(frame.RemoteSource))
             {

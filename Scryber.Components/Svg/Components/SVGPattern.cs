@@ -254,13 +254,6 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
         this._svgCanvas.IsDiscreetSVG = false;
         this._svgCanvas.ContainedInParentSVG = true;
     }
-
-    
-
-    private PDFGraphicTilingPattern _tilingPattern = null;
-    private Style _fullStyle = null;
-    private int tileIndex = 1;
-
     
 
     
@@ -314,10 +307,7 @@ public class SVGPattern : SVGFillBase, IStyledComponent, IPDFViewPortComponent
 
     public IPDFLayoutEngine GetEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style fullstyle)
     {
-        this._fullStyle = fullstyle;
         this._svgCanvas.ID = this.ID;
-        
-        
         return new LayoutEngineSVGPattern(parent, this, this._svgCanvas, context);
     }
 }

@@ -11,7 +11,6 @@ namespace Scryber.Svg.Imaging;
 /// </summary>
 public class SVGImageDataVPAndWHSizer : SVGImageDataSizer
 {
-    private bool _allowLayoutOverflow;
     protected Unit SVGWidth { get; set; }
     protected Unit SVGHeight { get; set; }
     
@@ -164,7 +163,7 @@ public class SVGImageDataVPAndWHSizer : SVGImageDataSizer
         }
         
         return new Size(scaleH, scaleV);
-        return base.DoGetRenderScaleForContent(offset, available, context);
+        
     }
 
     protected override Point DoGetRenderOffsetForContent(Point offset, Size available, ContextBase context)
