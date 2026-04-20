@@ -650,7 +650,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new { key = prefix + "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Meet },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Meet },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Meet },
-                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.None},
             };
             
             var calcs = new []
@@ -744,7 +744,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new { key = prefix + "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Meet },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Meet },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Meet },
-                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.None},
             };
             
             var calcs = new []
@@ -835,7 +835,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new { key = prefix + "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Slice },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Slice },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Slice },
-                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.None},
             };
             
             for (var i = 0; i < patterns; i++)
@@ -908,7 +908,7 @@ namespace Scryber.Core.UnitTests.Svg
                 new { key = prefix + "hBdy1_Patterns_xMaxYMin_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMin, meet = AspectRatioMeet.Slice },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMid_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMid, meet = AspectRatioMeet.Slice },
                 new { key = prefix + "hBdy1_Patterns_xMaxYMax_descriptor" , type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.xMaxYMax, meet = AspectRatioMeet.Slice },
-                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.Meet},
+                new { key = prefix + "hBdy1_Patterns_apNone_descriptor", type = PDFResource.PatternResourceType, size = size, viewBox = viewBox, offset = offset, aspect = AspectRatioAlign.None , meet = AspectRatioMeet.None},
             };
             
             for (var i = 0; i < patterns; i++)

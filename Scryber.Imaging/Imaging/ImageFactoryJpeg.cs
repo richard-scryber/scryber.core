@@ -229,10 +229,16 @@ namespace Scryber.Imaging
                     unit = SixLabors.ImageSharp.Metadata.PixelResolutionUnit.PixelsPerCentimeter;
                 else if(density == 0)
                 {
-                    if (densityX == densityY && densityY <= 1)
+                    
+                    if (densityX == densityY)
                     {
                         densityX = 72;
                         densityY = 72;
+                    }
+                    else
+                    {
+                        densityX = (ushort) (72 * densityX);
+                        densityY = (ushort) (72 * densityY);
                     }
                 }
 

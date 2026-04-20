@@ -49,6 +49,14 @@ public class SVGImageDataViewBoxSizer : SVGImageDataSizer
     {
         var scale = this.GetRenderScaleForContent(Point.Empty, available, context);
         
+        var min = DoGetMinimumnImageScale();
+        if (scale.Width.PointsValue < min || scale.Height.PointsValue < min)
+        {
+            scale.Width = available.Width.PointsValue / this.ViewBox.Width.PointsValue;
+            scale.Height = scale.Width;
+            //scale = new Size(1, 1);
+        }
+
         var proportional = Size.Empty;
         
         //Use the minimum scale to fit
@@ -64,6 +72,19 @@ public class SVGImageDataViewBoxSizer : SVGImageDataSizer
             proportional.Height = this.ViewBox.Height * scale.Width.PointsValue;
         }
         return proportional;
+    }
+
+    protected virtual double DoGetMinimumnImageScale()
+    {
+        var services = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
+        if (null != services)
+        {
+            return services.ImagingOptions.MinimumScaleReduction;
+        }
+        else
+        {
+            return 0.249;
+        }
     }
 
     protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
