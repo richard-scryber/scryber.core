@@ -2292,7 +2292,27 @@ namespace Scryber.UnitLayouts
                 
             }
             
-            Assert.Inconclusive("Need to validate the pattern");
+            
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", path);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+            
+            //Assert.Inconclusive("Need to validate the pattern");
+
+            Assert.AreEqual(100, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(150, pattern.ImageSize.Height.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(path, pattern.Image.ResourceKey);
+
+            Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(200, pattern.Step.Width);
+            Assert.AreEqual(150, pattern.Step.Height);
 
         }
         
@@ -2325,9 +2345,6 @@ namespace Scryber.UnitLayouts
 
             pg.BackgroundImage = path;
             pg.BackgroundRepeat = PatternRepeat.Fill; //Should fill the destination
-            // pg.Style.Background.PatternXSize = 100;
-            // pg.Style.Background.PatternYSize = 150;
-            // pg.Style.Background.PatternXStep = 200;
             pg.Style.Background.Opacity = 0.5;
             
             
@@ -2343,7 +2360,32 @@ namespace Scryber.UnitLayouts
                 
             }
             
-            Assert.Inconclusive("Need to validate the pattern");
+            
+            
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", path);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+            
+            
+
+            //Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 20.0, pattern.ImageSize.Height.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(path, pattern.Image.ResourceKey);
+
+            var ratio = ImageWidth / ImageHeight;
+            var width = (layout.AllPages[0].Height.PointsValue - 20) * ratio;
+            var diff = width - layout.AllPages[0].Width.PointsValue;
+            var x = -(diff / 2.0);
+            Assert.AreEqual(x, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
+            Assert.AreEqual(width, pattern.Step.Width);
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 20.0, pattern.Step.Height);
 
         }
         
