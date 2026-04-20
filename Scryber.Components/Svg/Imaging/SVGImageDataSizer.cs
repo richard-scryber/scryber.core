@@ -50,6 +50,11 @@ public class SVGImageDataSizer
     /// Used as the dest for the canvas-to-image matrix so the transform matches the placed dimensions.
     /// </summary>
     protected Size? RenderSize { get; set; }
+
+    public virtual bool AllowLayoutOverflow
+    {
+        get{ return false; }
+    }
     
     //
     // .ctor

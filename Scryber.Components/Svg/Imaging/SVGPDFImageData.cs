@@ -114,6 +114,14 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
             }
         }
     }
+    
+    /// <summary>
+    /// Overrides the base method, to check with the sizer (Or false if no sizer is set)
+    /// </summary>
+    public override bool AllowLayoutOverflow
+    {
+        get { return this.Sizer != null ? this.Sizer.AllowLayoutOverflow : false; }
+    }
 
     //
     // .ctor

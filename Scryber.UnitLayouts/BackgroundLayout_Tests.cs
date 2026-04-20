@@ -114,16 +114,16 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(pattern);
 
            
-            Assert.AreEqual(ImageWidth, pattern.ImageSize.Width.ToPoints());
-            Assert.AreEqual(ImageHeight, pattern.ImageSize.Height.ToPoints());
+            Assert.AreEqual(ImageWidth / 2.0, pattern.ImageSize.Width.ToPoints()); // 144ppi
+            Assert.AreEqual(ImageHeight / 2.0, pattern.ImageSize.Height.ToPoints());
             Assert.IsTrue(pattern.Registered);
             Assert.IsNotNull(pattern.Image);
             Assert.AreEqual(path, pattern.Image.ResourceKey);
 
             Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
             Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
-            Assert.AreEqual(ImageWidth, pattern.Step.Width);
-            Assert.AreEqual(ImageHeight, pattern.Step.Height);
+            Assert.AreEqual(ImageWidth / 2.0, pattern.Step.Width.ToPoints());
+            Assert.AreEqual(ImageHeight / 2.0, pattern.Step.Height);
 
             var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(divBlock);
@@ -176,18 +176,18 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(pattern);
             
             var w = pattern.ImageSize.Width.PointsValue;
-            Assert.AreEqual(ImageWidth,  w);
+            Assert.AreEqual(ImageWidth / 2.0,  w); //144ppi
             
             var h = pattern.ImageSize.Height.PointsValue;
-            Assert.AreEqual(ImageHeight, h);
+            Assert.AreEqual(ImageHeight / 2.0, h);
             Assert.IsTrue(pattern.Registered);
             Assert.IsNotNull(pattern.Image);
             Assert.AreEqual(path, pattern.Image.ResourceKey);
 
             Assert.AreEqual(10.0, pattern.Start.X.PointsValue);
             Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 10.0, pattern.Start.Y.PointsValue); //PDF is from the bottom up so take off the margins from the height
-            Assert.AreEqual(ImageWidth, pattern.Step.Width);
-            Assert.AreEqual(ImageHeight, pattern.Step.Height);
+            Assert.AreEqual(ImageWidth / 2.0, pattern.Step.Width);
+            Assert.AreEqual(ImageHeight / 2.0, pattern.Step.Height);
 
             var divBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(divBlock);

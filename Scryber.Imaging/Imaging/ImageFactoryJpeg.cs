@@ -230,15 +230,13 @@ namespace Scryber.Imaging
                 else if(density == 0)
                 {
                     
-                    if (densityX == densityY)
+                    if (densityX == 1 )
                     {
                         densityX = 72;
-                        densityY = 72;
                     }
-                    else
+                    if(densityY == 1)
                     {
-                        densityX = (ushort) (72 * densityX);
-                        densityY = (ushort) (72 * densityY);
+                        densityY = 72;
                     }
                 }
 

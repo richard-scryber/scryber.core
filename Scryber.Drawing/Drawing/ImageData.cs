@@ -123,6 +123,14 @@ namespace Scryber.Drawing
         }
         
         #endregion
+
+        /// <summary>
+        /// Gets the flag that allows the image to overflow the bounds of any container.
+        /// </summary>
+        public virtual bool AllowLayoutOverflow
+        {
+            get{return false;}
+        }
         
         //
         // ctor(s)

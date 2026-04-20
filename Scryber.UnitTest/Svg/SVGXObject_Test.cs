@@ -774,7 +774,7 @@ namespace Scryber.Core.UnitTests.Svg
             var arrange = reference.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             
-            var expected = new Rect(20, 140, 200, 200);
+            var expected = new Rect(20, 140, 300, 150);
             Assert.AreEqual(expected, arrange.RenderBounds);
             
             var reference2 = doc.FindAComponentById("referenced2");
@@ -784,7 +784,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
             
             //We fit the available space
-            expected = new Rect(60, 390, 50, 50);
+            expected = new Rect(60, 340, 50, 50);
             Assert.AreEqual(expected, arrange.RenderBounds);
 
         }
@@ -820,7 +820,7 @@ namespace Scryber.Core.UnitTests.Svg
 
             var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
             var half = (contentWidth / 2.0).ToPoints();
-            var expected = new Rect(20, 140, half, half);
+            var expected = new Rect(20, 140, half, half /2.0);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -836,7 +836,7 @@ namespace Scryber.Core.UnitTests.Svg
             var twentyPcent = ((contentWidth - 40) / 5.0).ToPoints();
             
             //20% is over the available height, but as it's explicit and overflow is set to clip - we use it.
-            expected = new Rect(60, 140 + half + 50, twentyPcent, twentyPcent);
+            expected = new Rect(60, 140 + (half / 2.0) + 50, twentyPcent, twentyPcent);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1151,7 +1151,7 @@ namespace Scryber.Core.UnitTests.Svg
             
             
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 200 + 50, 50, 50);
+            expected = new Rect(60, 140 + 200 + 50, 200, 200);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1410,7 +1410,7 @@ namespace Scryber.Core.UnitTests.Svg
 
            // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
            // var forty = (contentWidth * 0.4).ToPoints();
-            var expected = new Rect(20, 140, 200, 200);
+            var expected = new Rect(20, 140, 300, 150);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1425,7 +1425,7 @@ namespace Scryber.Core.UnitTests.Svg
             
             
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 200 + 50, 50, 50);
+            expected = new Rect(60, 140 + 150 + 50, 50, 50);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1467,7 +1467,7 @@ namespace Scryber.Core.UnitTests.Svg
 
             // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
             // var forty = (contentWidth * 0.4).ToPoints();
-            var expected = new Rect(20, 140, 200, 200);
+            var expected = new Rect(20, 140, 300, 150);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1482,7 +1482,7 @@ namespace Scryber.Core.UnitTests.Svg
             
             
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 200 + 50, 50, 50);
+            expected = new Rect(60, 140 + 150 + 50, 50, 50);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));

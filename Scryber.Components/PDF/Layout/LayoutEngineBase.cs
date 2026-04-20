@@ -2394,7 +2394,17 @@ namespace Scryber.PDF.Layout
                     if(this.Context.ShouldLogVerbose)
                         this.Context.TraceLog.Add(TraceLevel.Verbose, "Layout", "Laying out the image content for '" + data.SourcePath + " as it is implemenbting the ILayoutComponent interface");
                     
-                    sz = tolayout.GetRequiredSizeForLayout(avail, this.Context, style);
+                    var imgSz = tolayout.GetRequiredSizeForLayout(avail, this.Context, style);
+
+                    if (imgSz.Width > sz.Width || imgSz.Height > sz.Height)
+                    {
+                        if (data.AllowLayoutOverflow)
+                        {
+                            imgSz = sz;
+                        }
+                    }
+                    
+                    sz = imgSz;
                 }
                     
             }

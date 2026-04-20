@@ -11,13 +11,19 @@ namespace Scryber.Svg.Imaging;
 /// </summary>
 public class SVGImageDataVPAndWHSizer : SVGImageDataSizer
 {
+    private bool _allowLayoutOverflow;
     protected Unit SVGWidth { get; set; }
     protected Unit SVGHeight { get; set; }
     
     protected Rect ViewBox { get; set; }
     
     protected ViewPortAspectRatio AspectRatio {get; set;}
-    
+
+    public override bool AllowLayoutOverflow
+    {
+        get { return true; }
+    }
+
 
     public SVGImageDataVPAndWHSizer(SVGCanvas forCanvas, Style appliedStyle, LayoutContext context)
         : base(forCanvas, appliedStyle, context)
