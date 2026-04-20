@@ -227,6 +227,14 @@ namespace Scryber.Imaging
                     unit = SixLabors.ImageSharp.Metadata.PixelResolutionUnit.PixelsPerInch;
                 else if (density == 2)
                     unit = SixLabors.ImageSharp.Metadata.PixelResolutionUnit.PixelsPerCentimeter;
+                else if(density == 0)
+                {
+                    if (densityX == densityY && densityY <= 1)
+                    {
+                        densityX = 72;
+                        densityY = 72;
+                    }
+                }
 
                 return new Formatted.PDFImageJpegData.PDFImageJpegMetadata()
                 {

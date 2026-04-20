@@ -10,6 +10,8 @@ using Scryber.PDF.Layout;
 using Scryber.Html.Components;
 using Scryber.PDF;
 using Scryber.Drawing;
+using Scryber.Imaging;
+using Scryber.PDF.Resources;
 
 namespace Scryber.UnitLayouts
 {
@@ -2668,6 +2670,51 @@ namespace Scryber.UnitLayouts
                 Assert.AreEqual(17, doc.SharedResources.Count);
                 
             }
+        }
+
+        protected string AssertGetContentFile(string name)
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, "../../../Content/HTML/" + name + ".html");
+            path = System.IO.Path.GetFullPath(path);
+
+            if (!System.IO.File.Exists(path))
+                Assert.Inconclusive("The path the file " + name + " was not found at " + path);
+
+            return path;
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void gdube_CustomData_Tests()
+        {
+            var path = AssertGetContentFile("gdube_CatalogSingle");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("gdube_CatalogSingle.pdf"))
+            {
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.Params["model"] = ImageLayout_CustomData_Tests.GetGDubeData();
+                doc.AppendTraceLog = true;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(3, doc.SharedResources.Count);
+            var imgDadta = doc.SharedResources[0] as PDFImageXObject;
+            Assert.IsNotNull(imgDadta);
+            var data = imgDadta.ImageData;
+            if(data is ImageDataProxy proxy)
+                data = proxy.ImageData;
+            
+            Assert.IsNotNull(data);
+            Assert.IsTrue(data.SourcePath.EndsWith("assembly.jpg"));
+            Assert.AreEqual(new Size(1600, 1280), data.GetSize());
+            var pixel = data as ImageRasterData;
+            Assert.IsNotNull(pixel);
+            Assert.AreEqual(72, pixel.HorizontalResolution);
+            Assert.AreEqual(72, pixel.VerticalResolution);
         }
     }
 }
