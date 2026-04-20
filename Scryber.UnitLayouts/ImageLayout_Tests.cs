@@ -2390,6 +2390,81 @@ namespace Scryber.UnitLayouts
         }
         
         [TestMethod]
+        public void PngImageFromPathAsABackgroundWithContain()
+        {
+            var path = System.Environment.CurrentDirectory;
+            path = System.IO.Path.Combine(path, ImagePath);
+            path = System.IO.Path.GetFullPath(path);
+            
+            Assert.IsTrue(System.IO.File.Exists(path), "Could not find the base path to the image to use for the tests");
+            
+            var doc = new Document();
+
+            var pg = new Page();
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            pg.FontSize = 12;
+            doc.Pages.Add(pg);
+
+            var h2 = new Head2();
+            h2.Contents.Add("Setting an Image as Background from a file path");
+            pg.Contents.Add(h2);
+
+            h2 = new Head2();
+            h2.Contents.Add("Appears on the second page");
+            h2.Style.PageStyle.BreakBefore = true;
+            pg.Contents.Add(h2);
+
+            pg.BackgroundImage = path;
+            pg.BackgroundRepeat = PatternRepeat.Contain; //Should max scale inside the destination
+            pg.Style.Background.Opacity = 0.5;
+            
+            
+            using (var stream = DocStreams.GetOutputStream("Images_10_ImageAsBackgroundFromAFilePathContain.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.AppendTraceLog = false;
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.SaveAsPDF(stream);
+                
+                Assert.AreEqual(2, doc.SharedResources.Count); //Font and image
+                
+            }
+            
+            
+            
+            Assert.IsNotNull(layout);
+            var rsrc = layout.DocumentComponent.SharedResources.GetResource("XObject", path);
+            Assert.IsNotNull(rsrc);
+            Assert.IsInstanceOfType(rsrc, typeof(PDF.Resources.PDFImageXObject));
+            var xobj = rsrc as PDF.Resources.PDFImageXObject;
+            var pattern = xobj.Container as PDF.Resources.PDFImageTilingPattern;
+            Assert.IsNotNull(pattern);
+            
+            
+
+            //Assert.AreEqual(ImageNaturalWidth / 5.0, pattern.ImageSize.Width.ToPoints());
+            Assert.AreEqual(layout.AllPages[0].Width.PointsValue - 20.0, pattern.ImageSize.Width.ToPoints());
+            Assert.IsTrue(pattern.Registered);
+            Assert.IsNotNull(pattern.Image);
+            Assert.AreEqual(path, pattern.Image.ResourceKey);
+
+            
+            Assert.AreEqual(10, pattern.Start.X.PointsValue);
+            Assert.AreEqual(layout.AllPages[0].Width.PointsValue - 20.0, pattern.Step.Width); //PDF is from the bottom up so take off the margins from the height
+            
+            // var ratio = ImageHeight / ImageWidth;
+            // var height = (layout.AllPages[0].Width.PointsValue - 20) * ratio;
+            // var diff = (layout.AllPages[0].Height.PointsValue - 20) - height;
+            // var y = -(diff / 2.0);
+            
+            Assert.AreEqual(layout.AllPages[0].Height.PointsValue - 20.0, pattern.Step.Height);
+
+        }
+        
+        [TestMethod]
         public void SvgImageFromPathAsABackground()
         {
             var path = System.Environment.CurrentDirectory;

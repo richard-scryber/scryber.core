@@ -100,7 +100,8 @@ namespace Scryber
         RepeatX,
         RepeatY,
         RepeatBoth,
-        Fill
+        Fill,
+        Contain
     }
 
     public enum PageNumberDisplay

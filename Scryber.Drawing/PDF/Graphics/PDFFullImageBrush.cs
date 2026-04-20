@@ -24,6 +24,7 @@ using Scryber.PDF;
 using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using System.ComponentModel;
+using System.Net.Mime;
 using Scryber.Drawing;
 
 namespace Scryber.PDF.Graphics
@@ -159,17 +160,12 @@ namespace Scryber.PDF.Graphics
                 tile.ImageSize = imgsize;
 
                 //Make the step the maximum of either the bounds or the image size - so no visible repeat.
-                Size step = new Size(Unit.Max(bounds.Width, imgsize.Width), Unit.Max(bounds.Height, imgsize.Height));
+                Size step = CalculateAppropriateImageStep(bounds, imgsize);
                 
                 tile.Step = step;
 
-                Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
                 
-                if (g.Origin == DrawingOrigin.TopLeft)
-                {
-                    start.Y = g.ContainerSize.Height - start.Y;
-                }
-                tile.Start = start;
+                tile.Start = CalculateAppropriateImageStart(bounds, imgsize, g.Origin, g.ContainerSize);
 
                 string name = g.Container.Register(tile);
 
@@ -180,7 +176,25 @@ namespace Scryber.PDF.Graphics
                 return false;
         }
 
-        private Size CalculateAppropriateImageSize(ImageData imgdata, Rect bounds)
+        protected virtual Size CalculateAppropriateImageStep(Rect bounds, Size size)
+        {
+            return new Size(Unit.Max(bounds.Width, size.Width), Unit.Max(bounds.Height, size.Height));
+        }
+
+        protected virtual Point CalculateAppropriateImageStart(Rect bounds, Size size, DrawingOrigin origin, Size container)
+        {
+            Point start = new Point(bounds.X + this.XPostion, bounds.Y + this.YPostion);
+                
+            if (origin == DrawingOrigin.TopLeft)
+            {
+                start.Y = container.Height - start.Y;
+            }
+            
+            return start;
+        }
+
+        
+        protected virtual Size CalculateAppropriateImageSize(ImageData imgdata, Rect bounds)
         {
             //Find the dimension that makes sure the bounds are fully covered
             var size = imgdata.GetSize();

@@ -2214,6 +2214,17 @@ namespace Scryber.Styles
                         brush = full;
 
                     }
+                    else if (repeat == PatternRepeat.Contain)
+                    {
+                        PDFContainImageBrush contain = new PDFContainImageBrush(imgsrc.Value(this));
+                        if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
+                            contain.Opacity = opacity.Value(this);
+
+                        if (null != brush)
+                            contain.UnderBrush = brush;
+
+                        brush = contain;
+                    }
                     else
                     {
                         PDFImageBrush img = new PDFImageBrush(imgsrc.Value(this));
@@ -2323,14 +2334,28 @@ namespace Scryber.Styles
                 if ((this).TryGetValue(StyleKeys.FillRepeatKey, out repeatValue))
                     repeat = repeatValue.Value(this);
 
-                PDFBrush brush;
+                PDFBrush brush = null;
                 if (repeat == PatternRepeat.Fill)
                 {
                     PDFFullImageBrush full = new PDFFullImageBrush(imgsrc.Value(this));
                     if ((this).TryGetValue(StyleKeys.FillOpacityKey, out opacity))
                         full.Opacity = opacity.Value(this);
 
+                    if (null != brush)
+                        full.UnderBrush = brush;
+
                     brush = full;
+                }
+                else if (repeat == PatternRepeat.Contain)
+                {
+                    PDFContainImageBrush contain = new PDFContainImageBrush(imgsrc.Value(this));
+                    if ((this).TryGetValue(StyleKeys.BgOpacityKey, out opacity))
+                        contain.Opacity = opacity.Value(this);
+
+                    if (null != brush)
+                        contain.UnderBrush = brush;
+
+                    brush = contain;
                 }
                 else
                 {
@@ -2359,6 +2384,9 @@ namespace Scryber.Styles
                     if ((this).TryGetValue(StyleKeys.FillOpacityKey, out opacity))
                         img.Opacity = opacity.Value(this);
 
+                    if (null != brush)
+                        img.UnderBrush = brush;
+                    
                     brush = img;
                 }
                 return brush;
