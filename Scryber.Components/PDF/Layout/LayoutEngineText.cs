@@ -782,6 +782,9 @@ namespace Scryber.PDF.Layout
                     this.AddSoftReturn(0);
                     if (!zeros.AssertIncrement(this.Context))
                         return Unit.Zero;
+                    
+                    if(char.IsWhiteSpace(chars, 0))
+                        chars = chars.TrimStart();
                 }
                 else //partial fit
                 {

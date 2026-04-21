@@ -754,6 +754,88 @@ namespace Scryber.UnitLayouts
         }
 
 
+        [TestMethod()] 
+        public void Whitespace_9_WithOverflowBinding()
+        {
+            var src = LoadLayoutSample("9_WhitespaceWithOverflowBinding.html");
+
+            using (var reader = new System.IO.StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader, ParseSourceType.DynamicContent);
+
+                using (var stream = DocStreams.GetOutputStream("Whitespace_9_WithOverflowBinding.pdf"))
+                {
+                    doc.LayoutComplete += Doc_LayoutComplete;
+                    doc.SaveAsPDF(stream);
+
+                    var pg = doc.Pages[0] as Page;
+                    Assert.IsNotNull(pg);
+
+                }
+            }
+
+            var doclayout = this.layout;
+            Assert.AreEqual(1, doclayout.AllPages.Count);
+            var pglayout = doclayout.AllPages[0];
+            Assert.IsNotNull(pglayout);
+            var content = pglayout.ContentBlock;
+            Assert.AreEqual(1, content.Columns.Length);
+            Assert.AreEqual(1, content.Columns[0].Contents.Count);
+
+            var section = content.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(section);
+            
+            Assert.AreEqual(1, section.Columns.Length);
+            
+            Assert.AreEqual(2, section.Columns[0].Contents.Count);
+            
+            //First paragraph - should trim the start of the second line
+            
+            var p = section.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(p);
+            Assert.AreEqual(2, p.Columns[0].Contents.Count);
+            var line1 = p.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line1);
+            Assert.AreEqual(8, line1.Runs.Count);
+
+            var chars = line1.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et et dolore ", chars.Characters);
+            chars = line1.Runs[4] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("magna", chars.Characters);
+            
+            var line2 = p.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line2);
+            Assert.AreEqual(3, line2.Runs.Count);
+
+            chars = line2.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("labore aliquyam", chars.Characters);
+            
+            // second paragraph, just for confirmation
+
+
+            p = section.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(p);
+            Assert.AreEqual(2, p.Columns[0].Contents.Count);
+            line1 = p.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line1);
+            Assert.AreEqual(3, line1.Runs.Count);
+            
+            chars = line1.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et et dolore magna", chars.Characters);
+            
+            
+            line2 = p.Columns[0].Contents[1] as PDFLayoutLine;
+            Assert.IsNotNull(line2);
+            Assert.AreEqual(3, line2.Runs.Count);
+            
+            chars = line2.Runs[1] as PDFTextRunCharacter;
+            Assert.IsNotNull(chars);
+            Assert.AreEqual("labore aliquyam", chars.Characters);
+        }
 
     }
 }
