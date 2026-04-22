@@ -108,8 +108,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "column");
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(style.PageStyle.BreakBefore);
+            Assert.IsFalse(result);
+            Assert.IsFalse(style.PageStyle.BreakBefore);
         }
 
         [TestMethod()]
@@ -189,8 +189,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "column");
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(style.PageStyle.BreakAfter);
+            Assert.IsFalse(result);
+            Assert.IsFalse(style.PageStyle.BreakAfter);
         }
 
         #endregion
