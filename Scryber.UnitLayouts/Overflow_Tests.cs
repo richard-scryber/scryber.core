@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -2751,9 +2752,50 @@ namespace Scryber.UnitLayouts
             //Check that we have shrunk the block to the correct height
         }
 
-        public void ContentBlockOverflow()
+        [TestMethod]
+        public void SectionColumn_BlockOverflow_HTML()
         {
-            //When the overflow action is none, then the content should continue to be shown.
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+    </style>
+</head>
+<body style='column-count: 2'>
+    <h1>Page in the A4 size</h1>
+    <section style='break-before: column;' >
+        <h1>Second page</h1>
+    </section>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionColumn_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            Assert.IsNotNull(_doc_layout);
+            Assert.AreEqual(1, _doc_layout.AllPages.Count);
+        }
+
+        private PDFLayoutDocument _doc_layout;
+        
+        private void Doc_LayoutDocument(object sender, LayoutEventArgs args)
+        {
+            this._doc_layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
     }
 }

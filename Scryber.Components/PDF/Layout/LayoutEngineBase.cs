@@ -745,14 +745,15 @@ namespace Scryber.PDF.Layout
                 }
 
                 StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value(full))
-                {
-                    this.DoLayoutPageBreak(comp, full);
-                }
-                else if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value(full))
+                if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value(full))
                 {
                     this.DoLayoutColumnBreak(comp, full);
                 }
+                else if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value(full))
+                {
+                    this.DoLayoutPageBreak(comp, full);
+                }
+                
             }
 
             PDFArtefactRegistrationSet artefacts = comp.RegisterLayoutArtefacts(this.Context, full);
@@ -764,7 +765,11 @@ namespace Scryber.PDF.Layout
             {
 
                 StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value(full))
+                if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value(full))
+                {
+                    this.DoLayoutColumnBreak(comp, full);
+                }
+                else if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value(full))
                 {
                     if(!string.IsNullOrEmpty(pageGroupName))
                     {
@@ -775,11 +780,6 @@ namespace Scryber.PDF.Layout
 
                     this.DoLayoutPageBreak(comp, full);
                 }
-                else if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value(full))
-                {
-                    this.DoLayoutColumnBreak(comp, full);
-                }
-
                 else if(!string.IsNullOrEmpty(pageGroupName))
                 {
                     this.DocumentLayout.PopPageSize(pageGroupName);
