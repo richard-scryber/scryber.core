@@ -3043,5 +3043,143 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
         }
         
+        [TestMethod]
+        public void SectionPageAvoid_BlockOverflow_HTML()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        body{ 
+              margin: 10; 
+              padding: 10; 
+              border: solid 1pt blue;
+              column-count: 2; 
+              column-rule: silver;
+        }
+
+        footer{
+            text-align: center;
+        }
+
+        section {
+            break-before: avoid;
+        }
+    </style>
+</head>
+<body>
+    <h1>First column of page in the A4 portrait size</h1>
+    <section>
+        <h1>Should still be on the FIRST page, as we are break avoid</h1>
+    </section>
+    <section >
+        <h1>Should still be on the FIRST page, as we are break right avoid</h1>
+    </section>
+    <footer><page /></footer>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionPageAvoid_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+            }
+            
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(1, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+        }
+        
+        
+        [TestMethod]
+        public void SectionInsideAvoid_BlockOverflow_HTML()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        body{ 
+              margin: 10; 
+              padding: 10; 
+              border: solid 1pt blue;
+              column-count: 2; 
+              column-rule: silver;
+        }
+
+        footer{
+            border-top: 1px solid black;
+            text-align: center;
+        }
+
+        section {
+            break-before: auto;
+            break-inside: avoid;
+        }
+
+        div{
+            border: solid 1pt silver;
+            color: silver;
+            text-align: center;
+            height: 400pt;
+        }
+
+        h1{ break-inside: auto; }
+    
+    </style>
+</head>
+<body>
+    <div>spacer</div>
+    <h1>First column of page in the A4 portrait size</h1>
+    <section>
+        <h1>Should still be on the FIRST page, as we are break avoid</h1>
+    </section>
+    <section >
+        <h1>Should still be on the FIRST page, as we are break right avoid</h1>
+    </section>
+    <footer><page /></footer>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionInsideAvoid_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+            }
+            
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(1, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(3, pg.ContentBlock.Columns[0].Contents.Count);
+            
+            //Last section should overflow as a block
+            Assert.AreEqual(1, pg.ContentBlock.Columns[1].Contents.Count);
+        }
+        
     }
 }
