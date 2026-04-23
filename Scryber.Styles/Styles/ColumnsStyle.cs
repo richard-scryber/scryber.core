@@ -133,15 +133,15 @@ namespace Scryber.Styles
         #region public bool BreakBefore {get;set;} + RemoveBreakBefore()
 
         [PDFAttribute("break-before")]
-        public bool BreakBefore
+        public BreakContentType BreakBefore
         {
             get
             {
-                bool value;
+                BreakContentType value;
                 if (this.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out value))
-                    return value;
+                    return value ;
                 else
-                    return false;
+                    return BreakContentType.Auto;
             }
             set
             {
@@ -160,15 +160,15 @@ namespace Scryber.Styles
         #region public bool BreakAfter {get;set;} + RemoveBreakAfter()
 
         [PDFAttribute("break-after")]
-        public bool BreakAfter
+        public BreakContentType BreakAfter
         {
             get
             {
-                bool value;
+                BreakContentType value;
                 if (this.TryGetValue(StyleKeys.ColumnBreakAfterKey, out value))
                     return value;
                 else
-                    return false;
+                    return  BreakContentType.Auto;
             }
             set
             {

@@ -2751,6 +2751,13 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(wrapperblock.Height.PointsValue, lastblock.Height.PointsValue + 20.0);
             //Check that we have shrunk the block to the correct height
         }
+        
+        private PDFLayoutDocument _docLayout;
+        
+        private void Doc_LayoutDocument(object sender, LayoutEventArgs args)
+        {
+            this._docLayout = args.Context.GetLayout<PDFLayoutDocument>();
+        }
 
         [TestMethod]
         public void SectionColumn_BlockOverflow_HTML()
@@ -2763,14 +2770,25 @@ namespace Scryber.UnitLayouts
             size: A4 portrait;
         }
 
-        body{ margin: 10; padding: 10; border: solid 1pt blue; }
+        body{ margin: 10; padding: 10; border: solid 1pt blue;
+              column-count: 2; column-rule: silver; }
+
+        footer{
+            text-align: center;
+        }
+    
+        section {
+            break-before: column;
+        }
+
     </style>
 </head>
-<body style='column-count: 2'>
-    <h1>Page in the A4 size</h1>
-    <section style='break-before: column;' >
-        <h1>Second page</h1>
+<body>
+    <h1>First column of page in the A4 portrait size</h1>
+    <section>
+        <h1>Should be on the second column, rather than new page</h1>
     </section>
+    <footer><page /></footer>
 </body>
 </html>";
 
@@ -2787,15 +2805,243 @@ namespace Scryber.UnitLayouts
 
             }
             
-            Assert.IsNotNull(_doc_layout);
-            Assert.AreEqual(1, _doc_layout.AllPages.Count);
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(1, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[1].Contents.Count);
+            
+        }
+        
+        [TestMethod]
+        public void SectionPage_BlockOverflow_HTML()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
         }
 
-        private PDFLayoutDocument _doc_layout;
-        
-        private void Doc_LayoutDocument(object sender, LayoutEventArgs args)
-        {
-            this._doc_layout = args.Context.GetLayout<PDFLayoutDocument>();
+        body{ 
+              margin: 10; 
+              padding: 10; 
+              border: solid 1pt blue;
+              column-count: 2; 
+              column-rule: silver;
         }
+
+        footer{
+            text-align: center;
+        }
+
+        section {
+            break-before: page;
+        }
+    </style>
+</head>
+<body>
+    <h1>First column of page in the A4 portrait size</h1>
+    <section >
+        <h1>Should be on the second page, despite 2 columns</h1>
+    </section>
+    <footer><page /></footer>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionPage_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(2, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            pg = _docLayout.AllPages[1];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+        }
+        
+        [TestMethod]
+        public void SectionPageLeft_BlockOverflow_HTML()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        body{ 
+              margin: 10; 
+              padding: 10; 
+              border: solid 1pt blue;
+              column-count: 2; 
+              column-rule: silver;
+        }
+
+        footer{
+            text-align: center;
+        }
+
+        section {
+            break-before: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>First column of page in the A4 portrait size</h1>
+    <section>
+        <h1>Should be on the second page, despite 2 columns</h1>
+    </section>
+    <!-- Blank page inserted -->
+    <section >
+        <h1>Should be on the FOURTH page, as we are break left</h1>
+    </section>
+    <footer><page /></footer>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionPageLeft_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+
+            }
+            
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(4, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            pg = _docLayout.AllPages[1];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            //Blank page
+            pg = _docLayout.AllPages[2];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            pg = _docLayout.AllPages[3];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+        }
+
+        [TestMethod]
+        public void SectionPageRight_BlockOverflow_HTML()
+        {
+            var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <title>Page Sizes</title>
+    <style>
+        @page { 
+            size: A4 portrait;
+        }
+
+        body{ 
+              margin: 10; 
+              padding: 10; 
+              border: solid 1pt blue;
+              column-count: 2; 
+              column-rule: silver;
+        }
+
+        footer{
+            text-align: center;
+        }
+
+        section {
+            break-before: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>First column of page in the A4 portrait size</h1>
+    <!-- Blank page inserted -->
+    <section>
+        <h1>Should be on the THIRD page, as we are break right</h1>
+    </section>
+    <!-- Blank page inserted -->
+    <section >
+        <h1>Should be on the FIFTH page, as we are break right again</h1>
+    </section>
+    <footer><page /></footer>
+</body>
+</html>";
+
+            using (var reader = new StringReader(src))
+            {
+                var doc = Document.ParseDocument(reader);
+                
+                using (var stream = DocStreams.GetOutputStream("SectionPageRight_BlockOverflow_HTML.pdf"))
+                {
+                    doc.RenderOptions.Compression = OutputCompressionType.None;
+                    doc.LayoutComplete += Doc_LayoutDocument;
+                    doc.SaveAsPDF(stream);
+                }
+            }
+            
+            Assert.IsNotNull(_docLayout);
+            Assert.AreEqual(5, _docLayout.AllPages.Count);
+            
+            var pg = _docLayout.AllPages[0];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            //Blank Page
+            pg = _docLayout.AllPages[1];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            pg = _docLayout.AllPages[2];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            //Blank page
+            pg = _docLayout.AllPages[3];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+            
+            pg = _docLayout.AllPages[4];
+            Assert.AreEqual(2, pg.ContentBlock.Columns.Length);
+            Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
+            Assert.AreEqual(0, pg.ContentBlock.Columns[1].Contents.Count);
+        }
+        
     }
 }

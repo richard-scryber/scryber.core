@@ -510,6 +510,21 @@ namespace Scryber.Drawing
         Never
     }
 
+    public enum BreakContentType
+    {
+        Auto = 0,
+        Avoid = 1,
+        Region = 5,
+        Column = 6,
+        Page = 7,
+        All = 8,
+        Left = 9,
+        Right = 10,
+        Recto = 11,
+        Verso = 12
+        
+    }
+
     public enum Visibility
     {
         /// <summary>

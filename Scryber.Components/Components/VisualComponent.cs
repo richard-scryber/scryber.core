@@ -1765,14 +1765,27 @@ namespace Scryber.Components
         {
             get
             {
+                BreakContentType type;
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.ColumnBreakBeforeKey, false);
-                else
-                    return false;
+                {
+                    type = this.Style.GetValue(StyleKeys.ColumnBreakBeforeKey, BreakContentType.Auto);
+                    if (type == BreakContentType.Column)
+                        return true;
+                } 
+                return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ColumnBreakBeforeKey, value);
+                if (value)
+                {
+                    BreakContentType type = BreakContentType.Column;
+                    this.Style.SetValue(StyleKeys.ColumnBreakBeforeKey, type);
+                }
+                else
+                {
+                    if (this.ColumnBreakBefore)
+                        this.Style.RemoveValue(StyleKeys.ColumnBreakBeforeKey);
+                }
             }
         }
 
@@ -1789,14 +1802,19 @@ namespace Scryber.Components
         {
             get
             {
+                BreakContentType type;
                 if (this.HasStyle)
-                    return this.Style.GetValue(StyleKeys.ColumnBreakAfterKey, false);
-                else
-                    return false;
+                {
+                    type = this.Style.GetValue(StyleKeys.ColumnBreakAfterKey, BreakContentType.Auto);
+                    if (type == BreakContentType.Column)
+                        return true;
+                } 
+                return false;
             }
             set
             {
-                this.Style.SetValue(StyleKeys.ColumnBreakAfterKey, value);
+                if (this.ColumnBreakAfter)
+                    this.Style.RemoveValue(StyleKeys.ColumnBreakAfterKey);
             }
         }
 

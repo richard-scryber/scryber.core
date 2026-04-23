@@ -744,12 +744,22 @@ namespace Scryber.PDF.Layout
                     this.DocumentLayout.PushPageSize(pageGroupName, size);
                 }
 
-                StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out br) && br.Value(full))
+                StyleValue<BreakContentType> cbr;
+                StyleValue<bool> pbr;
+                if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out cbr))
                 {
-                    this.DoLayoutColumnBreak(comp, full);
+                    var value = cbr.Value(full);
+                    
+                    if (value == BreakContentType.Column)
+                    {
+                        this.DoLayoutColumnBreak(comp, full);
+                    }
+                    else if (value >= BreakContentType.Page)
+                    {
+                        this.DoLayoutPageBreak(comp, full, value);
+                    }
                 }
-                else if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out br) && br.Value(full))
+                else if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out pbr) && pbr.Value(full))
                 {
                     this.DoLayoutPageBreak(comp, full);
                 }
@@ -764,12 +774,23 @@ namespace Scryber.PDF.Layout
             if (IsStyled(comp) && !IsText(comp))
             {
 
-                StyleValue<bool> br;
-                if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out br) && br.Value(full))
+                StyleValue<BreakContentType> cbr;
+                StyleValue<bool> pbr;
+                
+                if (full.TryGetValue(StyleKeys.ColumnBreakAfterKey, out cbr))
                 {
-                    this.DoLayoutColumnBreak(comp, full);
+                    var value = cbr.Value(full);
+                    
+                    if (value == BreakContentType.Column)
+                    {
+                        this.DoLayoutColumnBreak(comp, full);
+                    }
+                    else if (value >= BreakContentType.Page)
+                    {
+                        this.DoLayoutPageBreak(comp, full, value);
+                    }
                 }
-                else if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out br) && br.Value(full))
+                else if (full.TryGetValue(StyleKeys.PageBreakAfterKey, out pbr) && pbr.Value(full))
                 {
                     if(!string.IsNullOrEmpty(pageGroupName))
                     {
@@ -2123,6 +2144,34 @@ namespace Scryber.PDF.Layout
 
         #region protected virtual void DoLayoutPageBreak(IPDFLayoutBreak pgbreak, PDFStyle style)
 
+        protected virtual void DoLayoutPageBreak(Component pgbreak, Style style, BreakContentType type)
+        {
+            if(pgbreak == null || pgbreak.Visible == false)
+                return;
+
+            switch (type)
+            {
+                case BreakContentType.Page:
+                case BreakContentType.All :
+                    this.DoLayoutPageBreak(pgbreak, style);
+                    break;
+                case BreakContentType.Left:
+                case BreakContentType.Verso:
+                    if(this.DocumentLayout.AllPages.Count % 2 == 0) //we are olready on a left page, so add an extra blank
+                        this.DoLayoutPageBreak(pgbreak, style);
+                    //Now add the left page
+                    this.DoLayoutPageBreak(pgbreak, style);
+                    break;
+                case BreakContentType.Right:
+                case BreakContentType.Recto:
+                    if(this.DocumentLayout.AllPages.Count % 2 == 1) //we are olready on a right page, so add an extra blank
+                        this.DoLayoutPageBreak(pgbreak, style);
+                    //Now add the right page
+                    this.DoLayoutPageBreak(pgbreak, style);
+                    break;
+                
+            }
+        }
         /// <summary>
         /// Breaks the current page layout and attempts to create a new page.
         /// </summary>

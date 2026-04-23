@@ -256,9 +256,9 @@ namespace Scryber.Styles
         public static readonly StyleKey<Dash> ColumnRuleDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"crda", BorderItemBottomKey);
 
         
-        public static readonly StyleKey<bool> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brcb", ColumnItemKey);
+        public static readonly StyleKey<BreakContentType> ColumnBreakBeforeKey = StyleKey.InternalCreateStyleValueKey<BreakContentType>((ObjectType)"brcb", ColumnItemKey);
 
-        public static readonly StyleKey<bool> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"brca", ColumnItemKey);
+        public static readonly StyleKey<BreakContentType> ColumnBreakAfterKey = StyleKey.InternalCreateStyleValueKey<BreakContentType>((ObjectType)"brca", ColumnItemKey);
 
         
         //Fill

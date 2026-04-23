@@ -2603,9 +2603,9 @@ body.grey div.reverse{
             Assert.AreEqual("[2] 0", applied.Border.Dash.ToString(), "Border dash not set");
             Assert.AreEqual("1.2pt", applied.Border.Width.ToString(), "Border width not set");
 
-            Assert.IsTrue(applied.Columns.BreakBefore, "Column break before not set");
+            Assert.IsTrue(applied.Columns.BreakBefore == BreakContentType.All, "Column break before not set");
             Assert.IsTrue(applied.IsValueDefined(StyleKeys.ColumnBreakAfterKey), "Column break after not set");
-            Assert.IsFalse(applied.Columns.BreakAfter, "Column break after not set correctly");
+            Assert.IsFalse(applied.Columns.BreakAfter == BreakContentType.Auto, "Column break after not set correctly");
 
             Assert.IsTrue(applied.PageStyle.BreakBefore, "Column break before not set");
             Assert.IsTrue(applied.IsValueDefined(StyleKeys.PageBreakAfterKey), "Page break after not set");

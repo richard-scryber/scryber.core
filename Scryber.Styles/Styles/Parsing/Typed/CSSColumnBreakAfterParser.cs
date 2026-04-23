@@ -3,7 +3,7 @@ using Scryber.Html;
 
 namespace Scryber.Styles.Parsing.Typed
 {
-    public class CSSColumnBreakAfterParser : CSSBreakBeforeAfterParser
+    public class CSSColumnBreakAfterParser : CSSColumnBreakBeforeAfterParser
     {
 
         public CSSColumnBreakAfterParser()
