@@ -1072,7 +1072,7 @@ namespace Scryber.PDF.Layout
         {
             var page = this.DocumentLayout.CurrentPage;
             
-            Size pageSize = page.Size;
+            Size pageSize = page.Size.Size;
 
             Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
 
@@ -1099,7 +1099,7 @@ namespace Scryber.PDF.Layout
         {
             var page = this.DocumentLayout.CurrentPage;
 
-            Size pageSize = page.Size;
+            Size pageSize = page.Size.Size;
 
             Size fontSize = new Size(rowfont.GetZeroCharWidth(), rowfont.GetSize());
 

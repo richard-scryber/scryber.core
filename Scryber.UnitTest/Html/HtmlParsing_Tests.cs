@@ -315,6 +315,7 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void RemoteCssFileLoadingCustomHandlerAsync()
         {
             var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
@@ -405,6 +406,7 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void RemoteCssFileLoadingCustomImageHandlerAsync()
         {
             var path = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitTest/Content/HTML/CSS/Include.css";
@@ -985,6 +987,7 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void LocalAndRemoteImagesAsync()
         {
             var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
@@ -1707,6 +1710,7 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void HtmlIFrameFragments()
         {
             var path = DocStreams.AssertGetTemplatePath("HTML/BodyFraming.html");

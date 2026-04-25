@@ -80,7 +80,7 @@ public class SVGPDFImageDataLayoutEngine
             //Apply specific styling for the XObject rendering and then pull a full style.
             this.PushXObjectStyle(appliedstyle, sizer);
             context.StyleStack.Push(appliedstyle);
-            var full = GetFullStyle(canvas, pg.Size, open.AvailableBounds.Size, pdfContext, appliedstyle);
+            var full = GetFullStyle(canvas, pg.Size.Size, open.AvailableBounds.Size, pdfContext, appliedstyle);
 
 
             //We can now safely perform the sizing and layout.

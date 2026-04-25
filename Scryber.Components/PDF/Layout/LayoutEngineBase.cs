@@ -949,7 +949,7 @@ namespace Scryber.PDF.Layout
 
             var fontSize = new Size(font.GetZeroCharWidth(), font.GetSize());
 
-            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize, new ParentComponentSizer(this.GetParentComponentSize), fontSize, Font.DefaultFontSize);
+            var full = this.Context.StyleStack.GetFullStyle(forComponent, pgSize.Size, new ParentComponentSizer(this.GetParentComponentSize), fontSize, Font.DefaultFontSize);
             return full;
         }
 
@@ -1000,12 +1000,12 @@ namespace Scryber.PDF.Layout
 
                 if (!foundRelative)
                 {
-                    sz = pg.Size;
+                    sz = pg.Size.Size;
                 }
             }
             else if(withMode ==  PositionMode.Fixed)
             {
-                sz = pg.Size;
+                sz = pg.Size.Size;
             }
             else
             {
@@ -1016,7 +1016,7 @@ namespace Scryber.PDF.Layout
                 else if (null != pg.CurrentBlock)
                     sz = pg.CurrentBlock.CurrentRegion.TotalBounds.Size;
                 else
-                    sz = pg.Size;
+                    sz = pg.Size.Size;
 
             }
             return sz;

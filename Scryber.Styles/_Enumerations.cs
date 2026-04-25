@@ -31,6 +31,9 @@ namespace Scryber
         Root,
         Before,
         After,
+        First,
+        Left,
+        Right,
         Unknown
     }
 

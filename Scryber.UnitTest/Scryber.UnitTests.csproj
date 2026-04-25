@@ -46,7 +46,6 @@
     <Folder Include="Mocks\" />
     <Folder Include="Mocks\Fonts\" />
     <Folder Include="Mocks\Fonts\Avenir\" />
-    <Folder Include="Content\HTML\" />
     <Folder Include="Content\HTML\Images\" />
     <Folder Include="Content\HTML\CSS\" />
     <Folder Include="Content\Markdown\" />
@@ -79,6 +78,7 @@
     <None Update="Content\HTML\Images\ScyberLogo2_alpha_small.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Remove="TestResults\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scrybersettings.json" />
@@ -143,10 +143,12 @@
     <Compile Remove="Content\HTML\Images\AllFormats\**" />
     <Compile Remove="Content\HTML\Samples\**" />
     <Compile Remove="Secure\**" />
+    <Compile Remove="TestResults\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Content\HTML\Images\AllFormats\**" />
     <EmbeddedResource Remove="Content\HTML\Samples\**" />
     <EmbeddedResource Remove="Secure\**" />
+    <EmbeddedResource Remove="TestResults\**" />
   </ItemGroup>
 </Project>

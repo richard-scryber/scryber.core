@@ -59,7 +59,7 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Gets the actual size of the content on the page
         /// </summary>
-        public Size Size { get; private set; }
+        public PageSize Size { get; private set; }
 
         #endregion
 
@@ -244,7 +244,7 @@ namespace Scryber.PDF.Layout
         /// <param name="cansplit"></param>
         /// <param name="colcount"></param>
         /// <param name="alley"></param>
-        public virtual void InitPage(Size size, PDFPositionOptions options, PDFColumnOptions columns, PDFLayoutContext context)
+        public virtual void InitPage(PageSize size, PDFPositionOptions options, PDFColumnOptions columns, PDFLayoutContext context)
         {
             this.Size = size;
             this.PositionOptions = options;
@@ -253,7 +253,7 @@ namespace Scryber.PDF.Layout
             var pageBlock = new PDFLayoutBlock(this, this.Owner, this.Engine, this.FullStyle, split);
             this.PageBlock = pageBlock;
 
-            Rect totalbounds = new Rect(Point.Empty, this.Size);
+            Rect totalbounds = new Rect(Point.Empty, this.Size.Size);
             //Always 1 column on the page block
             pageBlock.InitRegions(totalbounds, options, new PDFColumnOptions() { ColumnCount = 1 }, context);
 
@@ -264,7 +264,7 @@ namespace Scryber.PDF.Layout
 
             PDFLayoutBlock block = new PDFLayoutBlock(this, this.Owner, this.Engine, blockStyle, split); //this.FullStyle;
 
-            totalbounds = new Rect(Point.Empty, this.Size);
+            totalbounds = new Rect(Point.Empty, this.Size.Size);
 
             if (this.PositionOptions.Margins.IsEmpty == false)
             {
@@ -688,7 +688,7 @@ namespace Scryber.PDF.Layout
                 writer.WriteDictionaryNumberEntry("Rotate", value);
             }
 
-            context.PageSize = this.Size;
+            context.PageSize = this.Size.Size;
             context.Offset = new Point();
             context.Space = context.PageSize;
 
@@ -812,7 +812,7 @@ namespace Scryber.PDF.Layout
 
         public virtual PDFGraphics CreateGraphics(PDFWriter writer, StyleStack styles, ContextBase context)
         {
-           return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, this.Size, context);
+           return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, this.Size.Size, context);
         }
 
 

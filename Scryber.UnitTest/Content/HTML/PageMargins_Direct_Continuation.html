@@ -1,0 +1,48 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'
+      xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
+      title="Root">
+<head>
+    <meta charset='utf-8' name='author' content='Richard Hewitson' />
+
+    <title>This is a body with headers and footers</title>
+    <style type="text/css" >
+        header, footer{
+            background-color: #333;
+            color: #EEE;
+            font-size:12pt;
+        }
+
+        p{
+            margin-top:0px;
+        }
+        body{
+            margin: 10pt;
+        }
+
+        @page {
+            size:A4;
+            margin-top: 0pt;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <p>In the header</p>
+</header>
+<footer>
+    <p>In the footer</p>
+</footer>
+<p>
+    Page has outer margins
+</p>
+<p style="break-before: page;">
+    On the second continuation page
+</p>
+</body>
+</html>

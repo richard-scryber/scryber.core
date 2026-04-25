@@ -182,7 +182,7 @@ namespace Scryber.PDF.Layout
             if (!pg.IsClosed)
                 pg.Close();
 
-            Size size = pg.Size;
+            Size size = pg.Size.Size;
             Style style = pg.FullStyle;
             Page owner = pg.Owner as Page;
             OverflowAction overflow = pg.OverflowAction;

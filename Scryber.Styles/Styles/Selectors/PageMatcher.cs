@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Scryber.Styles;
 
@@ -13,10 +14,18 @@ namespace Scryber.Styles.Selectors
     {
 
         public string[] Selectors { get; set; }
+        
+        public ComponentState PageState { get; set; }
+
+        public bool HasState()
+        {
+            return this.PageState != ComponentState.Normal;
+        }
 
 
         public PageMatcher()
         {
+            ComponentState state = ComponentState.Normal;
         }
 
         public bool IsMatchedTo(IComponent component)
@@ -69,6 +78,29 @@ namespace Scryber.Styles.Selectors
             else
                 selector = selector.Trim();
 
+            ComponentState state = ComponentState.Normal;
+            if (selector.EndsWith(":first"))
+            {
+                state = ComponentState.First;
+                selector = selector.Substring(0, selector.Length - ":first".Length);
+            }
+            else if (selector.EndsWith(":right"))
+            {
+                state = ComponentState.Right;
+                selector = selector.Substring(0, selector.Length - ":right".Length);
+            }
+            else if (selector.EndsWith(":left"))
+            {
+                state = ComponentState.Left;
+                selector = selector.Substring(0, selector.Length - ":left".Length).Trim();
+            }
+
+            if (selector.Length == 0)
+            {
+                return new PageMatcher() { PageState = state };
+            }
+
+
             PageMatcher pgm = new PageMatcher();
             string[] all;
             
@@ -83,7 +115,10 @@ namespace Scryber.Styles.Selectors
             else
                 all = new string[] { selector };
 
+            
+            
             pgm.Selectors = all;
+            pgm.PageState = state;
 
             return pgm;
         }

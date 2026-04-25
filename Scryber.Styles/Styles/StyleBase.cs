@@ -848,6 +848,10 @@ namespace Scryber.Styles
             StyleValue<Unit> w;
             StyleValue<Unit> h;
 
+            PageMarginHandedSize pageMargins = new PageMarginHandedSize();
+            ExtractPageMargins(pageMargins, this);
+
+
             //We use the explicit Position width and height
             bool hasw = this.TryGetValue(StyleKeys.SizeWidthKey, out w);
             bool hash = this.TryGetValue(StyleKeys.SizeHeightKey, out h);
@@ -859,7 +863,7 @@ namespace Scryber.Styles
                 hash = this.TryGetValue(StyleKeys.PageHeightKey, out h);
 
             if (hasw && hash)
-                return new PageSize(new Size(w.Value(this), h.Value(this)));
+                return new PageSize(new Size(w.Value(this), h.Value(this)), pageMargins);
             else
             {
                 //if we don't have any explicit sizes - and we need both we use the paper size
@@ -877,8 +881,32 @@ namespace Scryber.Styles
                 else
                     orient = Scryber.Const.DefaultPaperOrientation;
 
-                return new PageSize(sz, orient);
+                return new PageSize(sz, orient, pageMargins);
             }
+        }
+
+        private static void ExtractPageMargins(PageMarginSize pageMargins, StyleBase inStyle)
+        {
+            StyleValue<Unit> marginOne;
+            StyleValue<Unit> marginAll;
+
+            if (inStyle.TryGetValue(StyleKeys.MarginsAllKey, out marginAll))
+            {
+                var value = marginAll.Value(inStyle);
+                pageMargins.Left = value;
+                pageMargins.Top = value;
+                pageMargins.Right = value;
+                pageMargins.Bottom = value;
+            }
+            
+            if(inStyle.TryGetValue(StyleKeys.MarginsLeftKey, out marginOne))
+                pageMargins.Left = marginOne.Value(inStyle);
+            if(inStyle.TryGetValue(StyleKeys.MarginsRightKey, out marginOne))
+                pageMargins.Right = marginOne.Value(inStyle);
+            if(inStyle.TryGetValue(StyleKeys.MarginsTopKey, out marginOne))
+                pageMargins.Top = marginOne.Value(inStyle);
+            if (inStyle.TryGetValue(StyleKeys.MarginsBottomKey, out marginOne))
+                pageMargins.Bottom = marginOne.Value(inStyle);
         }
 
         #endregion

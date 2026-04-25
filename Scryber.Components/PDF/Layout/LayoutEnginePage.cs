@@ -102,7 +102,7 @@ namespace Scryber.PDF.Layout
 
             //Get the page size and position options
             PageSize pgsize = this.FullStyle.CreatePageSize();
-            pgsize.Size = this.GetNextPageSize(this.Component, this.FullStyle, pgsize.Size, false);
+            pgsize = this.GetNextPageSize(this.Component, this.FullStyle, pgsize, false);
 
             var style = this.FullStyle;
             var isInPositioned = this.Context.PositionDepth > 0;
@@ -110,6 +110,20 @@ namespace Scryber.PDF.Layout
             PDFPositionOptions options = style.CreatePostionOptions(isInPositioned);
 
 
+            if (pgsize.Margins != null)
+            {
+                var updated = options.Margins;
+                if(pgsize.Margins.Left.HasValue)
+                    updated.Left = pgsize.Margins.Left.Value;
+                if(pgsize.Margins.Top.HasValue)
+                    updated.Top = pgsize.Margins.Top.Value;
+                if(pgsize.Margins.Right.HasValue)
+                    updated.Right = pgsize.Margins.Right.Value;
+                if(pgsize.Margins.Bottom.HasValue)
+                    updated.Bottom = pgsize.Margins.Bottom.Value;
+                
+                options.Margins = updated;
+            }
             
             
 
@@ -127,7 +141,7 @@ namespace Scryber.PDF.Layout
             
             
 
-            PDFLayoutPage pg = BuildNewPage(pgsize.Size, options, colOpts, action);
+            PDFLayoutPage pg = BuildNewPage(pgsize, options, colOpts, action);
 
             //Graphics
             PDFGraphics g = pg.CreateGraphics(null, this.StyleStack, this.Context);
@@ -178,10 +192,11 @@ namespace Scryber.PDF.Layout
                 this.Context.TraceLog.Add(TraceLevel.Debug, LayoutEnginePage.LOG_CATEGORY, "Un-registered the page numbering");
         }
 
-        private Size GetNextPageSize(IComponent owner, Style full, Size orig, bool isContinuation)
+        private PageSize GetNextPageSize(IComponent owner, Style full, PageSize orig, bool isContinuation)
         {
-            var styled = this.DocumentLayout.CurrentPageSize;
-            if(null == styled)
+            var curr = this.DocumentLayout.CurrentPageSize.Clone();
+            
+            if(null == curr)
                 throw new InvalidOperationException("Cannot get the current page size from the document layout, this should always be set when we are laying out a page");
                 
             Size size;
@@ -228,8 +243,8 @@ namespace Scryber.PDF.Layout
                         size = new Size(size.Height, size.Width);
                     }
                 }
-                
-                return size;
+                curr.Size = size;
+                return curr;
 
             }
             else if(full.IsValueDefined(StyleKeys.PageWidthKey) || full.IsValueDefined(StyleKeys.PageHeightKey))
@@ -246,18 +261,18 @@ namespace Scryber.PDF.Layout
                 {
                     size.Height = height.Value(full);
                 }
-
-                return size;
+                curr.Size = size;
+                return curr;
             }
             else if(full.TryGetValue(StyleKeys.PageOrientationKey, out orient))
             {
                 //If we have an orientation but no paper size, then we need to use the current paper size for the page.
-                size = styled.Size;
+                size = curr.Size;
                 if(orient.Value(full) == PaperOrientation.Landscape && size.Width < size.Height)
                 {
                     size = new Size(size.Height, size.Width);
                 }
-                styled.Size = size;
+                curr.Size = size;
             }
             else
             {
@@ -265,8 +280,8 @@ namespace Scryber.PDF.Layout
                 // so just return the current page size if we are a continuation and we have no explicit page group
                 if (isContinuation  && !full.IsValueDefined(StyleKeys.PageNameGroupKey))
                     return orig;
-                else //we are not a continuation, or we do have an explicit size whick will be picked up from the style page: [group name]
-                    return styled.Size;
+                else //we are not a continuation, or we do have an explicit size which will be picked up from the style page: [group name]
+                    return curr;
             }
 
 
@@ -284,7 +299,7 @@ namespace Scryber.PDF.Layout
                 style = this.DocumentLayout.DocumentComponent.GetAppliedStyle(this.Page, style);
 
                 var pgSize = style.CreatePageSize();
-                orig = pgSize.Size;
+                orig = pgSize;
 
                 this.Page.StyleClass = prev;
             }
@@ -366,7 +381,7 @@ namespace Scryber.PDF.Layout
         /// </summary>
         /// <param name="copyfrom"></param>
         /// <returns></returns>
-        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, Size size)
+        protected virtual PDFLayoutPage BuildContinuationPage(PDFLayoutPage copyfrom, PageSize size)
         {
             //Take a reference of the current stack and replace with the page stack from first page
             StyleStack orig = this.Context.StyleStack;
@@ -403,7 +418,7 @@ namespace Scryber.PDF.Layout
         /// <param name="alley"></param>
         /// <param name="colcount"></param>
         /// <param name="action"></param>
-        protected virtual PDFLayoutPage BuildNewPage(Size pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
+        protected virtual PDFLayoutPage BuildNewPage(PageSize pgsize, PDFPositionOptions options, PDFColumnOptions colOpts, OverflowAction action)
         {
             PDFLayoutDocument doclayout = this.DocumentLayout;
             PDFLayoutPage pg = doclayout.BeginNewPage(this.Page, this, this.FullStyle, action);

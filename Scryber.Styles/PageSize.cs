@@ -116,13 +116,24 @@ namespace Scryber
 
         #endregion
 
+        
+        private PageMarginSize _margins;
+        /// <summary>
+        /// Gets or sets any explicit margins on the page.
+        /// </summary>
+        public PageMarginSize Margins
+        {
+            get { return _margins; }
+            set { _margins = value; }
+        }
+
         #region Constructors
 
         /// <summary>
         /// Creates a new PageSize using the default PaperSize and Orientation
         /// </summary>
         public PageSize()
-            : this(Const.DefaultPaperSize, Const.DefaultPaperOrientation)
+            : this(Const.DefaultPaperSize, Const.DefaultPaperOrientation, null)
         {
         }
 
@@ -131,11 +142,12 @@ namespace Scryber
         /// </summary>
         /// <param name="paper">The specified paper size</param>
         /// <param name="orientation">The paper orientation</param>
-        public PageSize(PaperSize paper, PaperOrientation orientation) 
+        public PageSize(PaperSize paper, PaperOrientation orientation, PageMarginSize margins) 
             : base(ObjectTypes.PageSize)
         {
             this._paper = paper;
             this._orientation = orientation;
+            this._margins = margins;
             this.UpdateSizes();
         }
         
@@ -143,10 +155,11 @@ namespace Scryber
         /// Creates an new custom page size
         /// </summary>
         /// <param name="size">The width and height of the page</param>
-        public PageSize(Drawing.Size size)
+        public PageSize(Drawing.Size size, PageMarginSize margins)
             : base(ObjectTypes.PageSize)
         {
             this._size = size;
+            this._margins = margins;
             this.UpdatePage();
         }
 
@@ -191,7 +204,7 @@ namespace Scryber
         /// </summary>
         public static PageSize A4
         {
-            get { return new PageSize(Papers.ISO.A4, PaperOrientation.Portrait); }
+            get { return new PageSize(Papers.ISO.A4, PaperOrientation.Portrait, null); }
         }
 
         /// <summary>
@@ -199,7 +212,7 @@ namespace Scryber
         /// </summary>
         public static PageSize A5
         {
-            get { return new PageSize(Papers.ISO.A5, PaperOrientation.Portrait); }
+            get { return new PageSize(Papers.ISO.A5, PaperOrientation.Portrait, null); }
         }
 
         /// <summary>
@@ -207,7 +220,7 @@ namespace Scryber
         /// </summary>
         public static PageSize A3
         {
-            get { return new PageSize(Papers.ISO.A3, PaperOrientation.Portrait); }
+            get { return new PageSize(Papers.ISO.A3, PaperOrientation.Portrait, null); }
         }
 
         /// <summary>
@@ -215,9 +228,15 @@ namespace Scryber
         /// </summary>
         public static PageSize Letter
         {
-            get { return new PageSize(Papers.US.Letter, PaperOrientation.Portrait); }
+            get { return new PageSize(Papers.US.Letter, PaperOrientation.Portrait, null); }
         }
 
         #endregion
+
+        public PageSize Clone()
+        {
+            var one = this.MemberwiseClone();
+            return one as PageSize;
+        }
     }
 }
