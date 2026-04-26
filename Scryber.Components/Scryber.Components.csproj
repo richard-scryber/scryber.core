@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.3.0.0</PackageVersion>
+    <PackageVersion>9.3.1.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.3.0.0
+    <PackageReleaseNotes>9.3.1.0
+Fixes for break-before/after to take proiority over page-break-before
+Fixes for @page to support margins, along with :first, :left and :right pseudo classes
+
+9.3.0.0
 CSS updates for rowspan on table cells, column-rules, contain on background images, border-radius on individual corners and CSS variables can now be modified in document properties.
 Fixed page sizing in groups with fallback on following pages, whitespace hadling in soft returns, and SVG img placement and sizing.
 Added *initial* implementation for flex-box, flex-grid, and table-xxx display
@@ -178,12 +182,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.3.0.0</Version>
+    <Version>9.3.1.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.3.0.0</FileVersion>
+    <FileVersion>9.3.1.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/PaperworkLogoTransparent.png</PackageIconUrl>
     <Configurations>Release;Debug</Configurations>
