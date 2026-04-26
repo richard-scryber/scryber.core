@@ -112,7 +112,12 @@ namespace Scryber.PDF.Layout
             PDFPositionOptions options = effectiveStyle.CreatePostionOptions(isInPositioned);
 
 
-            if (pgsize.Margins != null)
+            // When effectiveStyle == FullStyle, no @page pseudo-class rules matched, so
+            // options.Margins has no page margins. Fall back to CurrentPageSize margins (pgsize.Margins)
+            // which were populated from GetPageStyle("", -1) during document layout creation.
+            // When effectiveStyle != FullStyle, options.Margins was already populated by
+            // effectiveStyle.CreatePostionOptions() with the correct merged (base + pseudo-class) margins.
+            if (ReferenceEquals(effectiveStyle, this.FullStyle) && pgsize.Margins != null)
             {
                 var updated = options.Margins;
                 if(pgsize.Margins.Left.HasValue)
@@ -123,7 +128,7 @@ namespace Scryber.PDF.Layout
                     updated.Right = pgsize.Margins.Right.Value;
                 if(pgsize.Margins.Bottom.HasValue)
                     updated.Bottom = pgsize.Margins.Bottom.Value;
-                
+
                 options.Margins = updated;
             }
             
@@ -361,7 +366,7 @@ namespace Scryber.PDF.Layout
                     //open = parent;
                 }
                 lastpage.Close();
-                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, new PageSize(lastpage.Size, null), true);
+                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size, true);
                 PDFLayoutPage page = BuildContinuationPage(lastpage, pgSize);
 
                 block = page.CurrentBlock;
