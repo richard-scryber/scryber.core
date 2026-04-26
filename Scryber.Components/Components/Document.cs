@@ -1120,8 +1120,14 @@ namespace Scryber.Components
         /// <returns></returns>
         public virtual Style GetPageStyle(string sizeName)
         {
+            return GetPageStyle(sizeName, -1);
+        }
+
+        public virtual Style GetPageStyle(string sizeName, int pageIndex)
+        {
             Style style = new Style();
             PageSizeMatcher matcher = new PageSizeMatcher(sizeName);
+            matcher.LayoutPageIndex = pageIndex;
             this.Styles.MergeInto(style, matcher);
 
             return style;
@@ -4078,9 +4084,10 @@ namespace Scryber.Components
         /// <summary>
         /// Internal component class that is used tpo match @page rules in the document styles, optionally with a specific group name.
         /// </summary>
-        internal class PageSizeMatcher : Component, IStyledComponent
+        internal class PageSizeMatcher : Component, IStyledComponent, Scryber.Styles.Selectors.IPageIndexProvider
         {
-            
+            public int LayoutPageIndex { get; set; } = -1;
+
             public PageSizeMatcher(string groupName) : base(ObjectTypes.Null)
             {
                 this.StyleClass = groupName;

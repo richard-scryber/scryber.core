@@ -742,6 +742,7 @@ namespace Scryber.PDF.Layout
                     var pgStyle = this.Component.Document.GetPageStyle(pageGroupName);
                     var size = pgStyle.CreatePageSize();
                     this.DocumentLayout.PushPageSize(pageGroupName, size);
+                    this.NotifyPageLayoutEngineOfName(pageGroupName);
                 }
 
                 StyleValue<BreakContentType> cbr;
@@ -794,9 +795,10 @@ namespace Scryber.PDF.Layout
                 {
                     if(!string.IsNullOrEmpty(pageGroupName))
                     {
-                        //If we have a page group for this component, then we need to pop this before we do the page break, 
+                        //If we have a page group for this component, then we need to pop this before we do the page break,
                         // otherwise the page break will be using the wrong page size.
                         this.DocumentLayout.PopPageSize(pageGroupName);
+                        this.NotifyPageLayoutEnginePopName(pageGroupName);
                     }
 
                     this.DoLayoutPageBreak(comp, full);
@@ -804,6 +806,7 @@ namespace Scryber.PDF.Layout
                 else if(!string.IsNullOrEmpty(pageGroupName))
                 {
                     this.DocumentLayout.PopPageSize(pageGroupName);
+                    this.NotifyPageLayoutEnginePopName(pageGroupName);
                 }
             }
 
@@ -819,6 +822,31 @@ namespace Scryber.PDF.Layout
             if(null != artefacts)
                 comp.CloseLayoutArtefacts(this.Context, artefacts, full);
 
+        }
+
+        private void NotifyPageLayoutEngineOfName(string pageName)
+        {
+            FindPageEngine()?.OnPageNamePushed(pageName);
+        }
+
+        private void NotifyPageLayoutEnginePopName(string pageName)
+        {
+            FindPageEngine()?.OnPageNamePopped(pageName);
+        }
+
+        private LayoutEnginePage FindPageEngine()
+        {
+            if (this is LayoutEnginePage pge)
+                return pge;
+
+            IPDFLayoutEngine engine = this.ParentEngine;
+            while (engine != null)
+            {
+                if (engine is LayoutEnginePage pgeParent)
+                    return pgeParent;
+                engine = engine.ParentEngine;
+            }
+            return null;
         }
 
         protected virtual bool ShouldLayoutComponent(Component comp, Style full)

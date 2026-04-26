@@ -41,16 +41,18 @@ namespace Scryber.Styles
                 base.MergeInto(style, Component);
             else if(this.Matcher.IsMatchedTo(Component))
             {
-                if(this.Matcher.Selectors != null && this.Matcher.Selectors.Length > 0)
-                {
-                   //We matched on a selector name, so increase the priority.
-                   this.MergeInto(style, 10);
-                }
-                else
-                {
-                    //We matched on a page rule with no selectors, so merge with the default priority.
-                    this.MergeInto(style, 0);
-                }
+                bool hasName   = this.Matcher.Selectors != null && this.Matcher.Selectors.Length > 0;
+                bool hasPseudo = this.Matcher.PseudoClass != ComponentState.Normal;
+
+                // Specificity mirrors CSS Paged Media spec:
+                // @page name:pseudo = 30, @page :pseudo = 20, @page name = 10, @page = 0
+                int priority;
+                if      (hasName && hasPseudo) priority = 30;
+                else if (hasPseudo)            priority = 20;
+                else if (hasName)              priority = 10;
+                else                           priority = 0;
+
+                this.MergeInto(style, priority);
             }
         }
     }

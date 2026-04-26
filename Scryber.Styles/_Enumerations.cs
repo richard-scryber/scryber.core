@@ -31,10 +31,10 @@ namespace Scryber
         Root,
         Before,
         After,
+        Unknown,
         First,
         Left,
-        Right,
-        Unknown
+        Right
     }
 
     public enum PaperOrientation

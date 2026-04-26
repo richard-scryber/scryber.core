@@ -99,15 +99,17 @@ namespace Scryber.PDF.Layout
             //Take a copy of the style stack for the header and footer
             this.PageStyleStack = this.Context.StyleStack.Clone();
 
+            // Build an effective style that merges @page pseudo-class overrides for this page index
+            // without permanently mutating this.FullStyle (which is reused for continuation pages).
+            var firstPageIndex = this.DocumentLayout.AllPages.Count;
+            var effectiveStyle = this.GetEffectiveStyleForPage(firstPageIndex);
 
             //Get the page size and position options
-            PageSize pgsize = this.FullStyle.CreatePageSize();
-            pgsize = this.GetNextPageSize(this.Component, this.FullStyle, pgsize, false);
+            PageSize pgsize = effectiveStyle.CreatePageSize();
+            pgsize = this.GetNextPageSize(this.Component, effectiveStyle, pgsize, false);
 
-            var style = this.FullStyle;
             var isInPositioned = this.Context.PositionDepth > 0;
-            
-            PDFPositionOptions options = style.CreatePostionOptions(isInPositioned);
+            PDFPositionOptions options = effectiveStyle.CreatePostionOptions(isInPositioned);
 
 
             if (pgsize.Margins != null)
@@ -171,6 +173,11 @@ namespace Scryber.PDF.Layout
             record.Dispose();
 
         }
+
+        // Tracks the most recently encountered named @page group, updated when content sections
+        // with a page: CSS property are encountered. Used so that BuildContinuationPage and
+        // GetEffectiveStyleForPage can apply pseudo-class styles for named @page rules.
+        private string _currentPageName = string.Empty;
 
         private PageNumberGroup _numbergroup;
         private int _firstpageIndex;
@@ -354,7 +361,7 @@ namespace Scryber.PDF.Layout
                     //open = parent;
                 }
                 lastpage.Close();
-                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, lastpage.Size, true);
+                var pgSize = this.GetNextPageSize(initiator, initiatorStyle, new PageSize(lastpage.Size, null), true);
                 PDFLayoutPage page = BuildContinuationPage(lastpage, pgSize);
 
                 block = page.CurrentBlock;
@@ -387,9 +394,17 @@ namespace Scryber.PDF.Layout
             StyleStack orig = this.Context.StyleStack;
             this.Context.StyleStack = this.PageStyleStack;
 
-            
+            // Compute effective style for this continuation page index, applying @page pseudo-class
+            // overrides (:first, :left, :right) without mutating this.FullStyle.
+            var continuationIndex = this.DocumentLayout.AllPages.Count;
+            var effectiveStyle = GetEffectiveStyleForPage(continuationIndex);
 
-            PDFLayoutPage page = this.BuildNewPage(size, copyfrom.PositionOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
+            // Recompute the page size from the effective style so that :first size override
+            // does not bleed into continuation pages.
+            PageSize continuationSize = GetNextPageSize(this.Component, effectiveStyle, size, true);
+            PDFPositionOptions continuationOptions = effectiveStyle.CreatePostionOptions(false);
+
+            PDFLayoutPage page = this.BuildNewPage(continuationSize, continuationOptions, copyfrom.ContentBlock.ColumnOptions, copyfrom.OverflowAction);
 
             //becasue we are a continuation page, we have the same number style, so let's just register it with null
             this.DocumentLayout.RegisterPageNumbering(page, null);
@@ -403,7 +418,90 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
-        
+
+        /// <summary>
+        /// Called by LayoutEngineBase when a content component with a named page group is encountered.
+        /// Updates _currentPageName so that continuation pages use the correct named @page pseudo-class,
+        /// and retroactively patches the current (first) page's PositionOptions if it has no content yet.
+        /// </summary>
+        public virtual void OnPageNamePushed(string pageName)
+        {
+            if (string.IsNullOrEmpty(pageName)) return;
+
+            bool isFirstPush = string.IsNullOrEmpty(_currentPageName);
+            _currentPageName = pageName;
+
+            if (isFirstPush)
+            {
+                // Retroactively apply the named @page pseudo-class style to the current (first) page.
+                // This is safe here because PushPageSize fires before any child content is placed.
+                var currentPage = this.DocumentLayout.CurrentPage;
+                if (currentPage != null && !currentPage.IsClosed)
+                {
+                    var pageIndex = this.DocumentLayout.AllPages.Count - 1;
+                    var effectiveStyle = GetEffectiveStyleForPage(pageName, pageIndex);
+                    if (!ReferenceEquals(effectiveStyle, this.FullStyle))
+                        currentPage.PositionOptions = effectiveStyle.CreatePostionOptions(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by LayoutEngineBase when a content component's named page group ends (PopPageSize).
+        /// Resets _currentPageName so subsequent continuation pages revert to the unnamed @page style.
+        /// </summary>
+        public virtual void OnPageNamePopped(string pageName)
+        {
+            if (_currentPageName == pageName)
+                _currentPageName = string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a style that applies @page pseudo-class overrides (:first, :left, :right) for the
+        /// given page index on top of this.FullStyle, without mutating this.FullStyle.
+        /// Uses _currentPageName (set by OnPageNamePushed) if this.FullStyle has no page name.
+        /// Returns this.FullStyle directly when there are no applicable overrides.
+        /// </summary>
+        protected virtual Style GetEffectiveStyleForPage(int pageIndex)
+        {
+            var pageName = !string.IsNullOrEmpty(_currentPageName)
+                ? _currentPageName
+                : this.FullStyle.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
+            return GetEffectiveStyleForPage(pageName, pageIndex);
+        }
+
+        protected virtual Style GetEffectiveStyleForPage(string pageName, int pageIndex)
+        {
+            var pageStyle = this.DocumentLayout.DocumentComponent.GetPageStyle(pageName, pageIndex);
+            if (!pageStyle.HasValues)
+                return this.FullStyle;
+
+            var effectiveStyle = new StyleFull();
+            this.FullStyle.MergeInto(effectiveStyle);
+            pageStyle.MergeInto(effectiveStyle);
+            return effectiveStyle;
+        }
+
+        /// <summary>
+        /// Returns position options for a continuation page, re-evaluating :left/:right pseudo-class margins
+        /// for the specific document-absolute page index.
+        /// </summary>
+        protected virtual PDFPositionOptions GetContinuationPositionOptions(PDFLayoutPage copyfrom, int pageIndex)
+        {
+            var pageName = this.FullStyle.GetValue(StyleKeys.PageNameGroupKey, string.Empty);
+            var pageStyle = this.DocumentLayout.DocumentComponent.GetPageStyle(pageName, pageIndex);
+
+            if (!pageStyle.HasValues)
+                return copyfrom.PositionOptions;
+
+            // Clone the unmodified base style and merge the pseudo-class override on top.
+            var contStyle = new StyleFull();
+            this.FullStyle.MergeInto(contStyle);
+            pageStyle.MergeInto(contStyle);
+
+            return contStyle.CreatePostionOptions(false);
+        }
+
         //
         // support methods
         //
