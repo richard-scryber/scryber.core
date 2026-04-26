@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;netstandard2.0;net10.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.2.0.3</PackageVersion>
-    <Version>9.2.0.3</Version>
+    <PackageVersion>9.3.1.0</PackageVersion>
+    <Version>9.3.1.0</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents.
 
@@ -19,7 +19,13 @@ This framework is built entirely in .NET6 and Net Standard 2.0 and is released u
       <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.2.0.3
+    <PackageReleaseNotes>9.3.1.0
+Updated to the latest version of the Core Library
+New features include @page with :first, :left and :right, cell rowSpan support, column-rule and column-fill
+Initial support for display:flex, flex-grid and table(-xxx)
+Fixed SVG image alignment, SVG image sizing, page sizing within a document, loading configuraion options in Web and exe improved.
+
+9.2.0.3
 Updated to match the release of the Scryber.Core library
         
 9.2.0.0
@@ -117,7 +123,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <Summary>The MVC extensions for the Scryber PDF creation engine - easy, dynamic, flowing PDF document creation using html templates, css support and model injection in dotnet 6</Summary>
     <PackageTags>Scryber; PDF; dotnet core; MVC; HTML2PDF; dotnet_6</PackageTags>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.2.0.3</FileVersion>
+    <FileVersion>9.3.1.0</FileVersion>
       <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <Title>Scryber MVC Extensions</Title>
     <PackageIconUrl>https://raw.githubusercontent.com/richard-scryber/scryber.core/master/PaperworkLogoTransparent.png</PackageIconUrl>
@@ -128,7 +134,7 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.13" />
-    <PackageReference Include="Scryber.Core" Version="9.2.0.3" />
+    <PackageReference Include="Scryber.Core" Version="9.3.1" />
   </ItemGroup>
       
   <ItemGroup>
