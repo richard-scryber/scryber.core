@@ -47,7 +47,8 @@ namespace Scryber.UnitLayouts
         public void Parse_PageFirst()
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-<head><style>@page :first { margin: 20mm; }</style></head>
+<head><style>@page :first { margin: 20mm; } 
+body { border: solid 1pt black;}</style></head>
 <body><p>Content</p></body></html>";
 
             using var reader = new StringReader(src);
@@ -67,7 +68,7 @@ namespace Scryber.UnitLayouts
         public void Parse_PageLeft()
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-<head><style>@page :left { margin-left: 30mm; }</style></head>
+<head><style>@page :left { margin-left: 30mm; } body { border: solid 1pt black;}</style></head>
 <body><p>Content</p></body></html>";
 
             using var reader = new StringReader(src);
@@ -85,7 +86,7 @@ namespace Scryber.UnitLayouts
         public void Parse_PageRight()
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-<head><style>@page :right { margin-right: 25mm; }</style></head>
+<head><style>@page :right { margin-right: 25mm; } body { border: solid 1pt black;}</style></head>
 <body><p>Content</p></body></html>";
 
             using var reader = new StringReader(src);
@@ -103,7 +104,7 @@ namespace Scryber.UnitLayouts
         public void Parse_NamedPageFirst()
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-<head><style>@page cover:first { margin: 5mm; }</style></head>
+<head><style>@page cover:first { margin: 5mm; } body { border: solid 1pt black;}</style></head>
 <body><p>Content</p></body></html>";
 
             using var reader = new StringReader(src);
@@ -209,6 +210,7 @@ namespace Scryber.UnitLayouts
 <head><style>
     @page { margin: 10mm; }
     @page :first { margin: 30mm; }
+    body { border: solid 1pt black; }
 </style></head>
 <body>
     <p>Page 1</p>
@@ -241,6 +243,7 @@ namespace Scryber.UnitLayouts
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
     @page :first { margin-top: 50mm; }
+    body { border: solid 1pt black;}
 </style></head>
 <body>
     <p>Page 1</p>
@@ -276,6 +279,7 @@ namespace Scryber.UnitLayouts
 <head><style>
     @page { margin: 10mm; }
     @page :right { margin-right: 40mm; }
+    body { border: solid 1pt black;}
 </style></head>
 <body>
     <p>Page 1</p>
@@ -309,6 +313,7 @@ namespace Scryber.UnitLayouts
 <head><style>
     @page { margin: 10mm; }
     @page :left { margin-left: 40mm; }
+    body { border: solid 1pt black;}
 </style></head>
 <body>
     <p>Page 1</p>
@@ -343,6 +348,7 @@ namespace Scryber.UnitLayouts
     @page { margin: 10mm; }
     @page :left  { margin-left: 40mm; margin-right: 20mm; }
     @page :right { margin-left: 20mm; margin-right: 40mm; }
+    body { border: solid 1pt black;}
 </style></head>
 <body>
     <p>Page 1</p>
@@ -384,16 +390,15 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body { border: solid 1pt black; }
     @page large { size: A3 portrait; margin: 10mm; }
     @page large:first { margin: 40mm; }
     .chart { page: large; }
 </style></head>
-<body>
-    <section class='chart'>
-        <p>Named page 1</p>
-        <div style='page-break-before:always'><p>Named page 2</p></div>
-        <div style='page-break-before:always'><p>Named page 3</p></div>
-    </section>
+<body class='chart'>
+    <p>Named page 1</p>
+    <div style='page-break-before:always'><p>Named page 2</p></div>
+    <div style='page-break-before:always'><p>Named page 3</p></div>
 </body></html>";
 
             using var reader = new StringReader(src);
@@ -405,7 +410,7 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.IsTrue(layoutDoc.AllPages.Count >= 3, "Expected at least 3 pages");
+            Assert.IsTrue(layoutDoc.AllPages.Count == 3, "Expected 3 pages");
 
             // First page (index 0) should have 40mm margins from large:first
             Assert.AreEqual(Unit.Mm(40), layoutDoc.AllPages[0].PositionOptions.Margins.Top.ToMillimeters(), "First large page should have 40mm top margin");
@@ -420,17 +425,17 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body { border: solid 1px black; }
+   
     @page wide { size: A3 landscape; margin: 10mm; }
     @page wide:right { margin-right: 30mm; }
     .wide { page: wide; }
 </style></head>
-<body>
-    <section class='wide'>
+<body class='wide'>
         <p>Wide page 1</p>
         <div style='page-break-before:always'><p>Wide page 2</p></div>
         <div style='page-break-before:always'><p>Wide page 3</p></div>
         <div style='page-break-before:always'><p>Wide page 4</p></div>
-    </section>
 </body></html>";
 
             using var reader = new StringReader(src);
@@ -442,8 +447,9 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.IsTrue(layoutDoc.AllPages.Count >= 4, "Expected at least 4 pages");
+            Assert.IsTrue(layoutDoc.AllPages.Count == 4, "Expected 4 pages");
 
+            Assert.AreEqual(Unit.Mm(10), layoutDoc.AllPages[0].PositionOptions.Margins.Left.ToMillimeters(), "Page 0  should have 0mm left margin");
             Assert.AreEqual(Unit.Mm(30), layoutDoc.AllPages[0].PositionOptions.Margins.Right.ToMillimeters(), "Page 0 (:right) should have 30mm right margin");
             Assert.AreEqual(Unit.Mm(10), layoutDoc.AllPages[1].PositionOptions.Margins.Right.ToMillimeters(), "Page 1 (:left)  should have 10mm right margin");
             Assert.AreEqual(Unit.Mm(30), layoutDoc.AllPages[2].PositionOptions.Margins.Right.ToMillimeters(), "Page 2 (:right) should have 30mm right margin");
@@ -459,6 +465,7 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body { border: solid 1px black; }
     @page :first { margin: 40mm; }
     @page { margin: 10mm; }
 </style></head>
@@ -486,6 +493,7 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body { border: solid 1px black; }
     @page { margin: 10mm; }
     @page :first { margin: 40mm; }
 </style></head>
@@ -513,6 +521,7 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body { border: solid 1px black; }
     @page { margin: 5mm; }
     @page cover { margin: 15mm; }
     @page :first { margin: 25mm; }
@@ -556,6 +565,7 @@ namespace Scryber.UnitLayouts
         {
             var src = @"<html xmlns='http://www.w3.org/1999/xhtml'>
 <head><style>
+    body {border: solid 1pt black}
     @page { margin: 10mm; }
     @page :right { margin-right: 30mm; }
 </style></head>

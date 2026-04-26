@@ -56,10 +56,10 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.IsNotNull(pg, "Page should be laid-out successfully");
                 
                 var margins = pg.PositionOptions.Margins;
-                Assert.AreEqual(0, margins.Top, "Top should be 0");
-                Assert.AreEqual(10, margins.Left, "Top should be 0");
-                Assert.AreEqual(10, margins.Bottom, "Top should be 0");
-                Assert.AreEqual(10, margins.Right, "Top should be 0");
+                Assert.AreEqual(10, margins.Top, "Top should be 0");
+                Assert.AreEqual(0, margins.Left, "Top should be 0");
+                Assert.AreEqual(0, margins.Bottom, "Top should be 0");
+                Assert.AreEqual(0, margins.Right, "Top should be 0");
             }
         }
         
@@ -89,19 +89,19 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.IsNotNull(pg, "Page should be laid-out successfully");
                 
                 var margins = pg.PositionOptions.Margins;
-                Assert.AreEqual(0, margins.Top, "Top should be 0");
-                Assert.AreEqual(10, margins.Left, "Top should be 10");
-                Assert.AreEqual(10, margins.Bottom, "Top should be 10");
-                Assert.AreEqual(10, margins.Right, "Top should be 10");
+                Assert.AreEqual(10, margins.Top, "Top should be 0");
+                Assert.AreEqual(0, margins.Left, "Top should be 10");
+                Assert.AreEqual(0, margins.Bottom, "Top should be 10");
+                Assert.AreEqual(0, margins.Right, "Top should be 10");
                 
                 pg = layout.AllPages[1];
                 Assert.IsNotNull(pg, "Page should be laid-out successfully");
                 
                 margins = pg.PositionOptions.Margins;
-                Assert.AreEqual(0, margins.Top, "Top should be 0");
-                Assert.AreEqual(10, margins.Left, "Top should be 10");
-                Assert.AreEqual(10, margins.Bottom, "Top should be 10");
-                Assert.AreEqual(10, margins.Right, "Top should be 10");
+                Assert.AreEqual(10, margins.Top, "Top should be 0");
+                Assert.AreEqual(0, margins.Left, "Top should be 10");
+                Assert.AreEqual(0, margins.Bottom, "Top should be 10");
+                Assert.AreEqual(0, margins.Right, "Top should be 10");
             }
         }
         
@@ -131,18 +131,18 @@ namespace Scryber.Core.UnitTests.Styles
                 Assert.IsNotNull(pg, "Page should be laid-out successfully");
                 
                 var margins = pg.PositionOptions.Margins;
-                Assert.AreEqual(0, margins.Top, "Top should be 0");
+                Assert.AreEqual(10, margins.Top, "Top should be 0");
                 Assert.AreEqual(20, margins.Left, "Top should be 10");
-                Assert.AreEqual(10, margins.Bottom, "Top should be 10");
-                Assert.AreEqual(10, margins.Right, "Top should be 10");
+                Assert.AreEqual(0, margins.Bottom, "Top should be 10");
+                Assert.AreEqual(0, margins.Right, "Top should be 10");
                 
                 pg = layout.AllPages[1];
                 Assert.IsNotNull(pg, "Page should be laid-out successfully");
                 
                 margins = pg.PositionOptions.Margins;
-                Assert.AreEqual(0, margins.Top, "Top should be 0");
-                Assert.AreEqual(10, margins.Left, "Top should be 10");
-                Assert.AreEqual(10, margins.Bottom, "Top should be 10");
+                Assert.AreEqual(10, margins.Top, "Top should be 0");
+                Assert.AreEqual(0, margins.Left, "Top should be 10");
+                Assert.AreEqual(0, margins.Bottom, "Top should be 10");
                 Assert.AreEqual(20, margins.Right, "Top should be 10");
             }
         }

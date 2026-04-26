@@ -2,7 +2,6 @@
         "http://www.w3.org/TR/html4/strict.dtd">
 
 <html lang='en' xmlns='http://www.w3.org/1999/xhtml'
-      xmlns:data='http://www.scryber.co.uk/schemas/core/release/v1/Scryber.Data.xsd'
       title="Root">
 <head>
     <meta charset='utf-8' name='author' content='Richard Hewitson' />
@@ -18,14 +17,18 @@
         p{
             margin-top:0px;
         }
+        html {
+            margin:15pt;
+            background-color: aquamarine;
+            font-family: serif;
+        }
         body{
-            margin: 10pt;
             border: solid 1pt #EEE;
         }
 
         @page {
             size:A4;
-            margin-top: 0pt;
+            margin-top: 10pt;
         }
         
         @page :left{
@@ -33,7 +36,7 @@
         }
 
         @page:right{
-            left:20pt;
+            margin-left:20pt;
         }
         
         p span::before{

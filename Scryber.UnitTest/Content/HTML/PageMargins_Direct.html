@@ -9,6 +9,9 @@
 
     <title>This is a body with headers and footers</title>
     <style type="text/css" >
+        :root {
+            --margin-config: 10pt;
+        }
         header, footer{
             background-color: #333;
             color: #EEE;
@@ -16,15 +19,13 @@
         }
 
         p{
-            margin-top:0px;
+            margin-top:0;
         }
-        body{
-            margin: 10pt;
-        }
+        
 
         @page {
             size:A4;
-            margin-top: 0pt;
+            margin-top: var(--margin-config);
         }
 
     </style>

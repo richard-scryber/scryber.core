@@ -847,9 +847,9 @@ namespace Scryber.Styles
         {
             StyleValue<Unit> w;
             StyleValue<Unit> h;
-
+            PageSize pageSize;
             PageMarginHandedSize pageMargins = new PageMarginHandedSize();
-            ExtractPageMargins(pageMargins, this);
+            
 
 
             //We use the explicit Position width and height
@@ -863,7 +863,7 @@ namespace Scryber.Styles
                 hash = this.TryGetValue(StyleKeys.PageHeightKey, out h);
 
             if (hasw && hash)
-                return new PageSize(new Size(w.Value(this), h.Value(this)), pageMargins);
+                pageSize = new PageSize(new Size(w.Value(this), h.Value(this)), pageMargins);
             else
             {
                 //if we don't have any explicit sizes - and we need both we use the paper size
@@ -881,8 +881,17 @@ namespace Scryber.Styles
                 else
                     orient = Scryber.Const.DefaultPaperOrientation;
 
-                return new PageSize(sz, orient, pageMargins);
+                pageSize = new PageSize(sz, orient, pageMargins);
             }
+            
+            if(this is Style style)
+                style.Flatten(pageSize.Size, pageSize.Size, new Size(Font.DefaultFontSize * 0.6, Font.DefaultFontSize), Font.DefaultFontSize, new List<StyleKey>());
+            
+            ExtractPageMargins(pageMargins, this);
+            
+            pageSize.Margins =  pageMargins;
+            
+            return pageSize;
         }
 
         private static void ExtractPageMargins(PageMarginSize pageMargins, StyleBase inStyle)
