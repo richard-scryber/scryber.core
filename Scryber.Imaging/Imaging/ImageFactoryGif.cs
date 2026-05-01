@@ -33,13 +33,13 @@ namespace Scryber.Imaging
             IImageFormat format;
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
             var span = new ReadOnlySpan<byte>(rawData);
-            var img = Image.Load(config, span, out format);
+            var img = Image.Load(span);
+            var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
 
             ImageData data = null;
 
-            if (format.Name == "GIF")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
                 
                 const bool hasAlpha = true;
                 const ColorSpace colorSpace = ColorSpace.RGB;
@@ -52,11 +52,9 @@ namespace Scryber.Imaging
             {
                 if (document.ConformanceMode == ParserConformanceMode.Strict)
                     throw new PDFDataException(
-                        "The format of the raw image data was expected to be GIF, actual format for the data was returned as " +
-                        format.Name);
+                        "The format of the raw image data was expected to be GIF@");
                 
-                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be GIF, actual format for the data was returned as " +
-                                                                format.Name);
+                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be GIF");
             }
 
             return data;
@@ -66,13 +64,13 @@ namespace Scryber.Imaging
         {
             IImageFormat format;
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
-            var img = Image.Load(config, stream, out format);
+            var img = Image.Load(stream);
+            var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
 
             ImageData data = null;
 
-            if (format.Name == "GIF")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(GifFormat.Instance);
                 
                 const bool hasAlpha = true;
                 const ColorSpace colorSpace = ColorSpace.RGB;

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Scryber.Drawing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace Scryber.Imaging
 {
@@ -37,11 +38,11 @@ namespace Scryber.Imaging
                 var headerInfo = ReadJpegHeader(binary);
                 if (null == headerInfo)
                 {
-                    var img = Image.Load(config, binary, out var format);
+                    var img = Image.Load(binary);
+                    var meta = img.Metadata.GetFormatMetadata(JpegFormat.Instance);
 
-                    if (null != format && format.Name == "JPEG")
+                    if (meta != null)
                     {
-
                         data = GetImageDataForImage(img, name, rawData);
                     }
 
@@ -75,9 +76,10 @@ namespace Scryber.Imaging
                     //var bmp = System.Drawing.Bitmap.FromStream(binary) as System.Drawing.Bitmap;
                     //return GetImageDataForBitmap(bmp, path, binary.ToArray());
 
-                    var img = Image.Load(config, binary, out var format);
+                    var img = Image.Load(binary);
+                    var meta = img.Metadata.GetFormatMetadata(JpegFormat.Instance);
 
-                    if (null != format && format.Name == "JPEG")
+                    if (null != meta)
                     {
                         data = GetImageDataForImage(img, path, binary.ToArray());
                     }

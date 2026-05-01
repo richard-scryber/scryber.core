@@ -33,16 +33,13 @@ namespace Scryber.Imaging
             IImageFormat format;
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
             var span = new ReadOnlySpan<byte>(rawData);
-            var img = Image.Load(config, span, out format);
-
+            var img = Image.Load(span);
+            var meta =  img.Metadata.GetFormatMetadata(PngFormat.Instance);
+            
             ImageData data = null;
             
-            if (format.Name == "PNG")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(PngFormat.Instance);
-
-                
-                
                 ColorSpace colorSpace = meta.ColorType == PngColorType.Grayscale ? ColorSpace.G : ColorSpace.RGB;
                 int depth;
 
@@ -67,7 +64,9 @@ namespace Scryber.Imaging
                         throw new IndexOutOfRangeException("The bit depth for the raw Png image was out of range : " + meta.BitDepth.ToString());
                 }
                 
-                var alpha = meta.HasTransparency || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
+                var alpha = (meta.ColorType.HasValue && meta.ColorType.Value == PngColorType.RgbWithAlpha) 
+                            || (meta.ColorType.HasValue && meta.ColorType == PngColorType.GrayscaleWithAlpha);
+                
                 var name = document.GetIncrementID(ObjectTypes.ImageData) + ".png";
                 
                 data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, name, depth, alpha, colorSpace);
@@ -76,11 +75,9 @@ namespace Scryber.Imaging
             {
                 if (document.ConformanceMode == ParserConformanceMode.Strict)
                     throw new PDFDataException(
-                        "The format of the raw image data was expected to be PNG, actual format for the data was returned as " +
-                        format.Name);
+                        "The format of the raw image data was expected to be PNG");
                 
-                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be PNG, actual format for the data was returned as " +
-                                                                format.Name);
+                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be PNG");
             }
 
             return data;
@@ -91,16 +88,12 @@ namespace Scryber.Imaging
         {
             IImageFormat format;
             SixLabors.ImageSharp.Configuration config = SixLabors.ImageSharp.Configuration.Default;
-            var img = Image.Load(config, stream, out format);
-            
+            var img = Image.Load(stream);
+            var  meta = img.Metadata.GetFormatMetadata(PngFormat.Instance);
             ImageData data = null;
 
-            if (format.Name == "PNG")
+            if (null != meta)
             {
-                var meta = img.Metadata.GetFormatMetadata(PngFormat.Instance);
-
-                
-                
                 ColorSpace colorSpace = meta.ColorType == PngColorType.Grayscale ? ColorSpace.G : ColorSpace.RGB;
                 int depth;
 
@@ -126,7 +119,8 @@ namespace Scryber.Imaging
                                                            " was out of range : " + meta.BitDepth.ToString());
                 }
                 
-                var alpha = meta.HasTransparency || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
+                var alpha = (meta.ColorType.HasValue && meta.ColorType.Value == PngColorType.GrayscaleWithAlpha) 
+                            || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
                 
                 
                 data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, path, depth, alpha, colorSpace);
