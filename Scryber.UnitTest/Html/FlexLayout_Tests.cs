@@ -3124,6 +3124,350 @@ namespace Scryber.Core.UnitTests.Html
         }
 
         // -----------------------------------------------------------------------
+        // flex-direction: row-reverse
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_TwoChildren_OrderReversed()
+        {
+            // Items A and B should appear right-to-left: B in column 1 (left), A in column 2 (right).
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg, FlexDirection.RowReverse);
+            var childA = AddChild(panel, height: 50, grow: 1, label: "A");
+            var childB = AddChild(panel, height: 50, grow: 1, label: "B");
+
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_TwoChildren.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, _layout.AllPages.Count);
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            Assert.AreEqual(2, panelBlock.Columns.Length, "row-reverse should still produce 2 columns");
+
+            // Widths still equal — reverse doesn't change sizes.
+            double expected = PageW / 2.0;
+            Assert.AreEqual(expected, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 width");
+            Assert.AreEqual(expected, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 width");
+
+            // Column 0 (left) should contain B; column 1 (right) should contain A.
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "B", "Column 0 (left) should hold B");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "A", "Column 1 (right) should hold A");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_ThreeChildren_OrderReversed()
+        {
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg, FlexDirection.RowReverse);
+            AddChild(panel, height: 50, grow: 1, label: "First");
+            AddChild(panel, height: 50, grow: 1, label: "Second");
+            AddChild(panel, height: 50, grow: 1, label: "Third");
+
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_ThreeChildren.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            Assert.AreEqual(3, panelBlock.Columns.Length);
+
+            // Source order: First, Second, Third → reversed render: Third, Second, First.
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Third",  "Column 0 should hold Third");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "Second", "Column 1 should hold Second");
+            StringAssert.Contains(CollectText(panelBlock.Columns[2]), "First",  "Column 2 should hold First");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_GrowRatio_WidthsPreserved()
+        {
+            // grow=1 / grow=2 widths should be the same as row, items just swapped positions.
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg, FlexDirection.RowReverse);
+            AddChild(panel, height: 50, grow: 1, label: "Narrow");  // source index 0
+            AddChild(panel, height: 50, grow: 2, label: "Wide");    // source index 1
+
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_GrowRatio.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            Assert.AreEqual(2, panelBlock.Columns.Length);
+
+            // Wide (grow=2) is reversed to column 0; Narrow (grow=1) to column 1.
+            // Fractions reversed: col0=2/3, col1=1/3.
+            Assert.AreEqual(400.0, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 should be 400pt (Wide)");
+            Assert.AreEqual(200.0, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 should be 200pt (Narrow)");
+
+            StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Wide",   "Column 0 should hold Wide");
+            StringAssert.Contains(CollectText(panelBlock.Columns[1]), "Narrow", "Column 1 should hold Narrow");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_JustifyFlexEnd_PushesItemsLeft()
+        {
+            // flex-end in row-reverse means items pack to the left edge (visual start of reversed axis).
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style=""margin:0; padding:0;"">
+  <div style=""display:flex; flex-direction:row-reverse; justify-content:flex-end;
+               width:600pt; height:80pt;"">
+    <div style=""width:100pt; flex-grow:0; height:60pt;"">A</div>
+    <div style=""width:100pt; flex-grow:0; height:60pt;"">B</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_JustifyFlexEnd.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var bodyRegion = layout.AllPages[0].ContentBlock.Columns[0];
+            var flexBlock  = FindFlexBlock(bodyRegion);
+            Assert.IsNotNull(flexBlock, "Flex block should be found");
+
+            // flex-end in row-reverse = pack to left → both columns start at X=0.
+            double x0 = flexBlock.Columns[0].TotalBounds.X.PointsValue;
+            Assert.IsTrue(x0 < 5.0, $"flex-end on row-reverse: col[0] should start near X=0, was {x0}");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_JustifyFlexStart_PushesItemsRight()
+        {
+            // flex-start in row-reverse means items pack to the right edge.
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style=""margin:0; padding:0;"">
+  <div style=""display:flex; flex-direction:row-reverse; justify-content:flex-start;
+               width:600pt; height:80pt;"">
+    <div style=""width:100pt; flex-grow:0; height:60pt;"">A</div>
+    <div style=""width:100pt; flex-grow:0; height:60pt;"">B</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_JustifyFlexStart.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var bodyRegion = layout.AllPages[0].ContentBlock.Columns[0];
+            var flexBlock  = FindFlexBlock(bodyRegion);
+            Assert.IsNotNull(flexBlock, "Flex block should be found");
+
+            // flex-start on row-reverse = pack to right → col[1] ends near X=600.
+            double x1    = flexBlock.Columns[1].TotalBounds.X.PointsValue;
+            double width1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            double rightEdge = x1 + width1;
+            Assert.IsTrue(rightEdge > 595.0, $"flex-start on row-reverse: right edge should be near 600pt, was {rightEdge}");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRowReverse_CSSParsed_OrderReversed()
+        {
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head><style>
+  .rev  { display: flex; flex-direction: row-reverse; width: 600pt; }
+  .item { flex-grow: 1; height: 50pt; }
+</style></head>
+<body style=""margin:0; padding:0;"">
+  <div class=""rev"">
+    <div class=""item"">Alpha</div>
+    <div class=""item"">Beta</div>
+    <div class=""item"">Gamma</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_RowReverse_CSS.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var bodyRegion = layout.AllPages[0].ContentBlock.Columns[0];
+            var flexBlock  = FindFlexBlock(bodyRegion);
+            Assert.IsNotNull(flexBlock, "Flex block should be found");
+            Assert.AreEqual(3, flexBlock.Columns.Length);
+
+            // Source: Alpha, Beta, Gamma → reversed: Gamma, Beta, Alpha.
+            StringAssert.Contains(CollectText(flexBlock.Columns[0]), "Gamma", "Column 0 should hold Gamma");
+            StringAssert.Contains(CollectText(flexBlock.Columns[1]), "Beta",  "Column 1 should hold Beta");
+            StringAssert.Contains(CollectText(flexBlock.Columns[2]), "Alpha", "Column 2 should hold Alpha");
+        }
+
+        // -----------------------------------------------------------------------
+        // flex-direction: column-reverse
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexColumnReverse_TwoChildren_OrderReversed()
+        {
+            // Items A (source first) and B (source second) — column-reverse renders B on top, A below.
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg, FlexDirection.ColumnReverse);
+            var childA = AddChild(panel, height: 50, label: "A");
+            var childB = AddChild(panel, height: 80, label: "B");
+
+            using (var ms = DocStreams.GetOutputStream("Flex_ColumnReverse_TwoChildren.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            Assert.AreEqual(1, panelBlock.Columns.Length, "column-reverse still uses single-column layout");
+
+            var region = panelBlock.Columns[0];
+            var block0 = region.Contents[0] as PDFLayoutBlock;
+            var block1 = region.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(block0, "First rendered block");
+            Assert.IsNotNull(block1, "Second rendered block");
+
+            // block0 should be B (source second, reversed to first), block1 should be A.
+            StringAssert.Contains(CollectText(block0.Columns[0]), "B", "First rendered block should be B");
+            StringAssert.Contains(CollectText(block1.Columns[0]), "A", "Second rendered block should be A");
+
+            // Second rendered block (A) starts below first (B).
+            Assert.IsTrue(block1.TotalBounds.Y > block0.TotalBounds.Y,
+                "Second rendered block (A) should be below first rendered block (B)");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexColumnReverse_ThreeChildren_OrderReversed()
+        {
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg, FlexDirection.ColumnReverse);
+            AddChild(panel, height: 40, label: "Top");
+            AddChild(panel, height: 50, label: "Middle");
+            AddChild(panel, height: 60, label: "Bottom");
+
+            using (var ms = DocStreams.GetOutputStream("Flex_ColumnReverse_ThreeChildren.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            Assert.AreEqual(1, panelBlock.Columns.Length);
+
+            var region = panelBlock.Columns[0];
+            var b0 = region.Contents[0] as PDFLayoutBlock;
+            var b1 = region.Contents[1] as PDFLayoutBlock;
+            var b2 = region.Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(b0);
+            Assert.IsNotNull(b1);
+            Assert.IsNotNull(b2);
+
+            // Source: Top, Middle, Bottom → reversed: Bottom, Middle, Top.
+            StringAssert.Contains(CollectText(b0.Columns[0]), "Bottom", "First rendered block should be Bottom");
+            StringAssert.Contains(CollectText(b1.Columns[0]), "Middle", "Second rendered block should be Middle");
+            StringAssert.Contains(CollectText(b2.Columns[0]), "Top",    "Third rendered block should be Top");
+
+            // Blocks are still stacked top-to-bottom in layout Y order.
+            Assert.IsTrue(b1.TotalBounds.Y > b0.TotalBounds.Y, "b1.Y > b0.Y");
+            Assert.IsTrue(b2.TotalBounds.Y > b1.TotalBounds.Y, "b2.Y > b1.Y");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexColumnReverse_CSSParsed_OrderReversed()
+        {
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head><style>
+  .col-rev { display: flex; flex-direction: column-reverse; width: 600pt; }
+  .item    { height: 50pt; }
+</style></head>
+<body style=""margin:0; padding:0;"">
+  <div class=""col-rev"">
+    <div class=""item"">One</div>
+    <div class=""item"">Two</div>
+    <div class=""item"">Three</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_ColumnReverse_CSS.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var bodyRegion = layout.AllPages[0].ContentBlock.Columns[0];
+
+            // Locate the flex container block — it's a single-column block containing children.
+            PDFLayoutBlock panelBlock = null;
+            foreach (var item in bodyRegion.Contents)
+            {
+                if (item is PDFLayoutBlock b && b.Columns.Length == 1)
+                {
+                    panelBlock = b;
+                    break;
+                }
+            }
+            Assert.IsNotNull(panelBlock, "Flex panel block not found");
+
+            var region = panelBlock.Columns[0];
+
+            // Walk through child blocks and collect their text.
+            var texts = new List<string>();
+            foreach (var item in region.Contents)
+            {
+                if (item is PDFLayoutBlock b)
+                    texts.Add(CollectText(b.Columns[0]));
+            }
+
+            Assert.IsTrue(texts.Count >= 3, $"Expected at least 3 child blocks, got {texts.Count}");
+
+            // Source: One, Two, Three → reversed: Three, Two, One.
+            StringAssert.Contains(texts[0], "Three", "First rendered block should be Three");
+            StringAssert.Contains(texts[1], "Two",   "Second rendered block should be Two");
+            StringAssert.Contains(texts[2], "One",   "Third rendered block should be One");
+        }
+
+        // -----------------------------------------------------------------------
         // Helper: get first child block width from a region
         // -----------------------------------------------------------------------
 
