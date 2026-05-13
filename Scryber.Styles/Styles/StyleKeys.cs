@@ -341,6 +341,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<bool> PositionXObjectKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"xobj", PositionItemKey);
 
+        public static readonly StyleKey<int> PositionZIndexKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"zidx", PositionItemKey);
+
         public static readonly StyleKey<DisplayMode> PositionDisplayKey = StyleKey.InternalCreateStyleValueKey<DisplayMode>((ObjectType)"disp", PositionItemKey);
 
         //SVG - specific x, y, r, rx, ry, cx, cy.

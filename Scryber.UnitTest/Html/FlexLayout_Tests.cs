@@ -3222,9 +3222,9 @@ namespace Scryber.Core.UnitTests.Html
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <body style=""margin:0; padding:0;"">
   <div style=""display:flex; flex-direction:row-reverse; justify-content:flex-end;
-               width:600pt; height:80pt;"">
-    <div style=""width:100pt; flex-grow:0; height:60pt;"">A</div>
-    <div style=""width:100pt; flex-grow:0; height:60pt;"">B</div>
+               width:600pt; height:80pt; border:1pt solid #000000;"">
+    <div style=""width:100pt; flex-grow:0; height:60pt; border:1pt solid #ff0000; padding:4pt;"">A</div>
+    <div style=""width:100pt; flex-grow:0; height:60pt; border:1pt solid #0000ff; padding:4pt;"">B</div>
   </div>
 </body>
 </html>";
@@ -3258,9 +3258,9 @@ namespace Scryber.Core.UnitTests.Html
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <body style=""margin:0; padding:0;"">
   <div style=""display:flex; flex-direction:row-reverse; justify-content:flex-start;
-               width:600pt; height:80pt;"">
-    <div style=""width:100pt; flex-grow:0; height:60pt;"">A</div>
-    <div style=""width:100pt; flex-grow:0; height:60pt;"">B</div>
+               width:600pt; height:80pt; border:1pt solid #000000;"">
+    <div style=""width:100pt; flex-grow:0; height:60pt; border:1pt solid #ff0000; padding:4pt;"">A</div>
+    <div style=""width:100pt; flex-grow:0; height:60pt; border:1pt solid #0000ff; padding:4pt;"">B</div>
   </div>
 </body>
 </html>";
@@ -3294,8 +3294,8 @@ namespace Scryber.Core.UnitTests.Html
             var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <head><style>
-  .rev  { display: flex; flex-direction: row-reverse; width: 600pt; }
-  .item { flex-grow: 1; height: 50pt; }
+  .rev  { display: flex; flex-direction: row-reverse; width: 600pt; border: 1pt solid #000000; }
+  .item { flex-grow: 1; height: 50pt; border: 1pt solid #008800; padding: 4pt; }
 </style></head>
 <body style=""margin:0; padding:0;"">
   <div class=""rev"">
@@ -3412,8 +3412,8 @@ namespace Scryber.Core.UnitTests.Html
             var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <head><style>
-  .col-rev { display: flex; flex-direction: column-reverse; width: 600pt; }
-  .item    { height: 50pt; }
+  .col-rev { display: flex; flex-direction: column-reverse; width: 600pt; border: 1pt solid #000000; }
+  .item    { height: 50pt; border: 1pt solid #008800; padding: 4pt; }
 </style></head>
 <body style=""margin:0; padding:0;"">
   <div class=""col-rev"">

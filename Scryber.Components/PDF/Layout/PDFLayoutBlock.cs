@@ -1078,7 +1078,7 @@ namespace Scryber.PDF.Layout
 
             if (addAssociatedRun)
             {
-                PDFLayoutPositionedRegionRun run; 
+                PDFLayoutPositionedRegionRun run;
                 if ((pos.PositionMode == PositionMode.Static || pos.PositionMode == PositionMode.Relative) && pos.DisplayMode == DisplayMode.InlineBlock)
                     run = beforeline.AddInlineBlockRun(created, comp);
                 else
@@ -1086,7 +1086,9 @@ namespace Scryber.PDF.Layout
                     run = beforeline.AddPositionedRun(created, comp);
                     run.IsFloating = isfloating;
                 }
-               
+
+                created.AssociatedRun = run;
+
                 if (pos.XObjectRender)
                 {
                     run.RenderAsXObject = true;
@@ -1465,25 +1467,67 @@ namespace Scryber.PDF.Layout
         #region protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
 
         /// <summary>
-        /// Renders the inner content regions in this block
+        /// Renders the inner content regions in this block, respecting z-index ordering for positioned children.
+        /// Negative z-index regions are rendered before the column content; positive z-index regions after.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="writer"></param>
         protected virtual void OutputInnerContent(PDFRenderContext context, PDFWriter writer)
         {
-            
-            Point prev = context.Offset;
+            List<PDFLayoutPositionedRegion> negativeZ = null;
+            List<PDFLayoutPositionedRegion> positiveZ = null;
+
+            if (this.HasPositionedRegions)
+            {
+                foreach (PDFLayoutPositionedRegion reg in this.PositionedRegions)
+                {
+                    int z = reg.PositionOptions.ZIndex;
+                    if (z == 0 || reg.AssociatedRun == null)
+                        continue;
+
+                    reg.AssociatedRun.SkipRender = true;
+
+                    if (z < 0)
+                    {
+                        if (negativeZ == null) negativeZ = new List<PDFLayoutPositionedRegion>();
+                        negativeZ.Add(reg);
+                    }
+                    else
+                    {
+                        if (positiveZ == null) positiveZ = new List<PDFLayoutPositionedRegion>();
+                        positiveZ.Add(reg);
+                    }
+                }
+            }
+
+            if (negativeZ != null)
+            {
+                negativeZ.Sort((a, b) => a.PositionOptions.ZIndex.CompareTo(b.PositionOptions.ZIndex));
+                foreach (var reg in negativeZ)
+                {
+                    reg.AssociatedRun.SkipRender = false;
+                    reg.AssociatedRun.OutputToPDF(context, writer);
+                    reg.AssociatedRun.SkipRender = true;
+                }
+            }
 
             if (this.Columns.Length > 1)
             {
                 foreach (PDFLayoutRegion region in this.Columns)
-                {
                     region.OutputToPDF(context, writer);
-                }
             }
             else
             {
                 this.Columns[0].OutputToPDF(context, writer);
+            }
+
+            if (positiveZ != null)
+            {
+                positiveZ.Sort((a, b) => a.PositionOptions.ZIndex.CompareTo(b.PositionOptions.ZIndex));
+                foreach (var reg in positiveZ)
+                {
+                    reg.AssociatedRun.SkipRender = false;
+                    reg.AssociatedRun.OutputToPDF(context, writer);
+                    reg.AssociatedRun.SkipRender = true;
+                }
             }
         }
 

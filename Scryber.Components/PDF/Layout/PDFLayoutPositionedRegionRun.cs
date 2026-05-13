@@ -50,6 +50,11 @@ namespace Scryber.PDF.Layout
             get { return false;}
             set { }
         }
+
+        /// <summary>
+        /// When true the block's z-index output loop handles this run; inline rendering is skipped.
+        /// </summary>
+        public bool SkipRender { get; set; }
         
         
 
@@ -161,6 +166,9 @@ namespace Scryber.PDF.Layout
 
         protected override Native.PDFObjectRef DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
+            if (this.SkipRender)
+                return null;
+
             Scryber.Drawing.Point oldOffset = context.Offset;
 
             if (this.Region.PositionMode == PositionMode.Fixed)
