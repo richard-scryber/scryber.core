@@ -936,6 +936,7 @@ namespace Scryber.PDF.Layout
                             if(line.Runs[0] != run)
                                 offset.Y += line.Height;
 
+                            offset.X = posRegion.RelativeOffset.X + col.OffsetX;
                             posRegion.RelativeOffset = offset;
                         }
                     }
@@ -1039,10 +1040,14 @@ namespace Scryber.PDF.Layout
                     // Create a new PDFTextRunBegin for this column's segment
                     var newBegin = new PDFTextRunBegin(prevBegin.TextRenderOptions, firstLineThisCol, prevBegin.Owner);
 
-                    // Remove the newline spacer that was placed at the start of continuation lines
+                    // Remove the zero-width newline spacer placed at the start of column-continuation
+                    // lines. A non-zero spacer is a float-indent spacer — it must remain so that
+                    // PDFTextRunNewLine.NextLineSpacer is still pushed during rendering and its width
+                    // cancels the xoffset added to NewLineOffset, keeping text aligned to the float.
                     if (firstLineThisCol.Runs.Count > 0
                         && firstLineThisCol.Runs[0] is PDFTextRunSpacer spacer
-                        && spacer.IsNewLineSpacer)
+                        && spacer.IsNewLineSpacer
+                        && spacer.Width == Unit.Zero)
                         firstLineThisCol.Runs.RemoveAt(0);
 
                     firstLineThisCol.Runs.Insert(0, newBegin);
