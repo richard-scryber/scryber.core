@@ -932,6 +932,11 @@ namespace Scryber.PDF.Layout
                             // float renders at its new position in the redistributed column.
                             var offset = posRegion.RelativeOffset;
                             offset.Y = line.OffsetY;
+                            
+                            if(line.Runs[0] != run)
+                                offset.Y += line.Height;
+                            
+                            offset.X = posRegion.RelativeOffset.X + col.OffsetX;
                             posRegion.RelativeOffset = offset;
                         }
                     }
@@ -1022,7 +1027,7 @@ namespace Scryber.PDF.Layout
 
                 // Add a PDFTextRunEnd to the last line of the first column
                 var lastLineFirstCol = linesByColIndex[firstCi].Last();
-                lastLineFirstCol.Runs.Add(new PDFTextRunEnd(originalBegin, lastLineFirstCol, originalBegin.Owner));
+                AddTextRunEndBeforeNextBegins(lastLineFirstCol, new PDFTextRunEnd(originalBegin, lastLineFirstCol, originalBegin.Owner));
 
                 // Create new begins and ends for each subsequent column
                 PDFTextRunBegin prevBegin = originalBegin;
@@ -1067,11 +1072,24 @@ namespace Scryber.PDF.Layout
 
                     // Add a PDFTextRunEnd to the last line of this column's segment
                     var lastLineThisCol = colLines.Last();
-                    lastLineThisCol.Runs.Add(new PDFTextRunEnd(newBegin, lastLineThisCol, newBegin.Owner));
+                    AddTextRunEndBeforeNextBegins(lastLineThisCol, new PDFTextRunEnd(newBegin, lastLineThisCol, newBegin.Owner));
 
                     prevBegin = newBegin;
                 }
             }
+        }
+
+        private static void AddTextRunEndBeforeNextBegins(PDFLayoutLine line, PDFTextRunEnd end)
+        {
+            for (int i = 0; i < line.Runs.Count; i++)
+            {
+                if (line.Runs[i] is PDFTextRunBegin b && b != end.Start)
+                {
+                    line.Runs.Insert(i, end);
+                    return;
+                }
+            }
+            line.Runs.Add(end);
         }
 
         #endregion

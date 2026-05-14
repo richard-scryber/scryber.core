@@ -1556,6 +1556,8 @@ namespace Scryber.UnitLayouts
             heading.BorderWidth = 1;
             heading.Contents.Add(new TextLiteral("Section heading"));
             outer.Contents.Add(heading);
+            
+            
 
             outer.Contents.Add(new TextLiteral(repeatText + repeatText));
 
@@ -1572,6 +1574,8 @@ namespace Scryber.UnitLayouts
 
             using (var ms = DocStreams.GetOutputStream("ColumnBalance_22_FloatLeft.pdf"))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.RenderOptions.StringOutput = OutputStringType.Text;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
