@@ -1240,6 +1240,122 @@ namespace Scryber.UnitLayouts
                     Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
             }
         }
+        
+        /// <summary>
+        /// Tests a long string literal that flows over 2 columns. Explicit font size, default leading.
+        /// </summary>
+        [TestMethod]
+        public void ALongTextBlockMultiColumnExtraReturns()
+        {
+            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \r\n\r\n" + longText + "\r\n\r\n" + longText;
+
+
+            var doc = new Document();
+            var pg = new Section();
+
+            pg.Margins = new Thickness(10);
+            pg.BackgroundColor = new Color(240, 240, 240);
+            pg.OverflowAction = OverflowAction.NewPage;
+            
+            pg.ColumnCount = 2;
+            pg.AlleyWidth = 10;
+            pg.FontSize = 16;
+
+            doc.Pages.Add(pg);
+            pg.Contents.Add(new TextLiteral(text));
+            //pg.TextDecoration = Text.TextDecoration.Underline;
+
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            SaveAsPDF(doc, "Text_LongLiteralMultiColumnExtraReturns");
+
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+            Assert.AreEqual(1, layout.AllPages.Count);
+
+            var lp = layout.AllPages[0];
+            var content = lp.ContentBlock;
+            Assert.AreEqual(lp.Width - 20, content.Width); //page width - 10pt margins
+            Assert.AreEqual(2, content.Columns.Length);
+
+            //First Column
+
+            var region = content.Columns[0] as PDFLayoutRegion;
+
+
+            var colW = (content.AvailableBounds.Width - 10);
+            colW = colW / 2.0;
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+            var lineH = 16 * 1.2;
+            var pgH = lp.Height.PointsValue - 20.0;
+            var lineCount = Math.Floor(pgH / lineH);
+
+            Assert.AreEqual(lineCount + 1, region.Contents.Count);//all available plus an empty line at the end.
+
+
+            PDFLayoutLine line;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                if (i == 2 || i == 24) // empty lines
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunSpacer));
+                else
+                    Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+                Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+
+            line = region.Contents[(int)lineCount] as PDFLayoutLine; //last line is empty
+            Assert.AreEqual(2, line.Runs.Count);
+            Assert.AreEqual(0.0, line.Height);
+
+            Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+            Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunEnd));
+
+
+            //Second Column
+
+            region = content.Columns[1] as PDFLayoutRegion;
+
+            Assert.AreEqual(colW, region.TotalBounds.Width);
+
+
+            Assert.IsTrue(region.Contents.Count > 0);//all available plus an empty line at the end.
+            lineCount = region.Contents.Count;
+
+            for (var i = 0; i < lineCount; i++)
+            {
+                line = region.Contents[i] as PDFLayoutLine;
+                Assert.IsTrue(line.Width < colW);
+                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(lineH, line.Height.PointsValue);
+
+                if (i == 0)
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunBegin));
+                else
+                    Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
+
+                Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
+                Assert.AreEqual(line.Width, line.Runs[1].Width);
+
+                if (i == lineCount - 1)
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunEnd));
+                else
+                    Assert.IsInstanceOfType(line.Runs[2], typeof(PDFTextRunNewLine));
+            }
+        }
 
         /// <summary>
         /// Tests a long string literal that flows over 2 pages. Explicit font size, default leading.
@@ -2441,12 +2557,12 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(20.0, begin.TextRenderOptions.WordSpacing.Value.PointsValue);
 
             //Lines 9 to 20 inc. are normal flowing lines
-            for (var i = 9; i < 21; i++)
+            for (var i = 9; i < 20; i++)
             {
                 line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.IsTrue(line.Width < contentW);
 
-                Assert.AreEqual(3, line.Runs.Count);
+                Assert.AreEqual(3, line.Runs.Count, "Expected 3 runs on line '" + i + ", actual " + line.Runs.Count);
                 Assert.IsInstanceOfType(line.Runs[0], typeof(PDFTextRunSpacer));
 
                 Assert.IsInstanceOfType(line.Runs[1], typeof(PDFTextRunCharacter));
@@ -2454,13 +2570,14 @@ namespace Scryber.UnitLayouts
 
             }
 
-            //Line 21 is a split, and reverts back to original spacing
+            //Line 20 is a split, and reverts back to original spacing
 
-            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[21] as PDFLayoutLine;
+            line = layout.AllPages[0].ContentBlock.Columns[0].Contents[20] as PDFLayoutLine;
             Assert.AreEqual(6, line.Runs.Count);
-            //Spacer, End, InlineEnd, TextBegin, Chars, NewLine
+            //Spacer, Chars, RunEnd, InlineEnd, RunBegin, NewLine
 
-            begin = line.Runs[3] as PDFTextRunBegin;
+            begin = line.Runs[4] as PDFTextRunBegin;
+            Assert.IsNotNull(begin);
             Assert.IsNotNull(begin.TextRenderOptions);
             Assert.IsTrue(begin.TextRenderOptions.CharacterSpacing.HasValue);
             Assert.AreEqual(3.0, begin.TextRenderOptions.CharacterSpacing.Value.PointsValue);
@@ -2470,7 +2587,7 @@ namespace Scryber.UnitLayouts
 
 
             //Lines 9 to 20 inc. are normal flowing lines
-            for (var i = 22; i < 25; i++)
+            for (var i = 21; i < 25; i++)
             {
                 line = layout.AllPages[0].ContentBlock.Columns[0].Contents[i] as PDFLayoutLine;
                 Assert.IsTrue(line.Width < contentW);

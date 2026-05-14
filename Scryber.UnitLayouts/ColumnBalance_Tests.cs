@@ -1545,28 +1545,32 @@ namespace Scryber.UnitLayouts
             outer.BorderColor = StandardColors.Black;
             outer.BorderWidth = 2;
             outer.Padding     = new Thickness(2);
+            outer.Height = 250;
             section.Contents.Add(outer);
 
             // A small heading block + text together reach just under the balance target,
             // so the float (whose line is only 12pt tall) is the item that tips col0 over
             // and gets redistributed to col1 — exposing any position-update bug.
             var heading = new Div();
-            heading.Height      = 20;
+            //heading.Height      = 20;
             heading.BorderColor = StandardColors.Black;
             heading.BorderWidth = 1;
-            heading.Contents.Add(new TextLiteral("Section heading"));
+            heading.Contents.Add(new TextLiteral("Section heading stretching across more than one line."));
+            heading.Margins = new Thickness(10);
             outer.Contents.Add(heading);
             
             
 
             outer.Contents.Add(new TextLiteral(repeatText + repeatText));
 
+            
             // Float:left div — sits mid-content so after balancing it lands in col1
             var floatDiv = new Div();
             floatDiv.Style.Position.Float = FloatMode.Left;
             floatDiv.Width       = 60;
             floatDiv.Height      = 50;
-            floatDiv.BorderColor = StandardColors.Aqua;
+            floatDiv.BorderColor = StandardColors.Red;
+            floatDiv.Margins     = new Thickness(0, 5, 0, 5);
             floatDiv.BorderWidth = 1;
             outer.Contents.Add(floatDiv);
 

@@ -851,6 +851,7 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        
         #region private void BalanceColumns()
 
         /// <summary>
@@ -864,6 +865,9 @@ namespace Scryber.PDF.Layout
 
             // Collect all top-level items from all columns in order, clearing as we go
             var allItems = new List<PDFLayoutItem>();
+            var allFloats = new List<PDFFloatAddition>();
+            var allFLoatColumns = new List<int>();
+            
             foreach (var col in this.Columns)
             {
                 if (col.Contents != null && col.Contents.Count > 0)
@@ -871,6 +875,18 @@ namespace Scryber.PDF.Layout
                     allItems.AddRange(col.Contents);
                     col.Contents.Clear();
                     col.UsedSize = Size.Empty;
+                }
+
+                if (col.Floats != null)
+                {
+                    var f = col.Floats;
+                    while (null != f)
+                    {
+                        allFloats.Add(f);
+                        allFLoatColumns.Add(col.ColumnIndex);
+                        f = f.Next;
+                    }
+                    col.Floats = null;
                 }
             }
 
@@ -934,10 +950,30 @@ namespace Scryber.PDF.Layout
                             offset.Y = line.OffsetY;
 
                             if(line.Runs[0] != run)
-                                offset.Y += line.Height;
+                                offset.Y += (line.Height + 1);
+                            
+                            
 
-                            offset.X = posRegion.RelativeOffset.X + col.OffsetX;
+                            
+                            
+                            var floater = allFloats.First((f) => f.AssociatedRegion == posRegion);
+                            var index = allFloats.IndexOf(floater);
+                            index = allFLoatColumns[index]; // Get the original column index of the float
+                            Unit w = Unit.Zero;
+                            
+                            while (index < colIndex)
+                            {
+                                w += this.Columns[index].Width + this.Position.AlleyWidth; //TODO account for gap
+                                index++;
+                            }
+                            
+                            offset.X = posRegion.RelativeOffset.X + w;
                             posRegion.RelativeOffset = offset;
+                            
+                            //Re-add a new floatAddition to the current column at the offset.
+                            if (null != floater)
+                                col.AddFloatingInset(floater.Mode, floater.FloatWidth, floater.FloatInset, offset.Y,
+                                    floater.FloatHeight, posRegion);
                         }
                     }
                 }
