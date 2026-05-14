@@ -906,9 +906,10 @@ namespace Scryber.PDF.Layout
             // then spill to the next — never split a single item across columns.
             int colIndex = 0;
             Unit currentColHeight = Unit.Zero;
-
-            foreach (var item in allItems)
+            
+            for(var l = 0; l < allItems.Count; l++)
             {
+                var item = allItems[l];
                 bool isLastCol = colIndex == colCount - 1;
 
                 // Spill to next column if target exceeded and column has content
@@ -917,6 +918,8 @@ namespace Scryber.PDF.Layout
                 {
                     colIndex++;
                     currentColHeight = Unit.Zero;
+                    //we update this for floats so make sure it is reset now.
+                    targetHeight = new Unit(totalHeight.PointsValue / colCount);
                 }
 
                 var col = this.Columns[colIndex];
@@ -952,28 +955,47 @@ namespace Scryber.PDF.Layout
                             if(line.Runs[0] != run)
                                 offset.Y += (line.Height + 1);
                             
-                            
-
-                            
-                            
                             var floater = allFloats.First((f) => f.AssociatedRegion == posRegion);
-                            var index = allFloats.IndexOf(floater);
-                            index = allFLoatColumns[index]; // Get the original column index of the float
-                            Unit w = Unit.Zero;
-                            
-                            while (index < colIndex)
+                            if (null == floater)
                             {
-                                w += this.Columns[index].Width + this.Position.AlleyWidth; //TODO account for gap
-                                index++;
+                                //cannot find the float, so ignore
                             }
-                            
-                            offset.X = posRegion.RelativeOffset.X + w;
-                            posRegion.RelativeOffset = offset;
-                            
-                            //Re-add a new floatAddition to the current column at the offset.
-                            if (null != floater)
-                                col.AddFloatingInset(floater.Mode, floater.FloatWidth, floater.FloatInset, offset.Y,
+                            else
+                            {
+                                var index = allFloats.IndexOf(floater);
+                                index = allFLoatColumns[index]; // Get the original column index of the float
+                                Unit w = Unit.Zero;
+
+                                if (offset.Y + floater.FloatHeight > targetHeight && !isLastCol && l > 0)
+                                {
+                                    //We have a float that pushes beyond the target height
+                                    //logic is we increase the target height to fit the entire float
+                                    //and this is reset when we move to the next column.
+                                    targetHeight = offset.Y + floater.FloatHeight;
+                                    
+                                    if(line.Runs[0] != run)
+                                        targetHeight += (line.Height + 1);
+                                }
+
+
+
+
+                                while (index < colIndex)
+                                {
+                                    w += this.Columns[index].Width +
+                                         this.Position.AlleyWidth; //TODO account for gap
+                                    index++;
+                                }
+
+                                offset.X = posRegion.RelativeOffset.X + w;
+                                posRegion.RelativeOffset = offset;
+
+                                //Re-add a new floatAddition to the current column at the offset.
+                                col.AddFloatingInset(floater.Mode, floater.FloatWidth, floater.FloatInset,
+                                    offset.Y,
                                     floater.FloatHeight, posRegion);
+
+                            }
                         }
                     }
                 }
