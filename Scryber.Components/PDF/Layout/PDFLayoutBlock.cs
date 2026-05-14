@@ -932,11 +932,10 @@ namespace Scryber.PDF.Layout
                             // float renders at its new position in the redistributed column.
                             var offset = posRegion.RelativeOffset;
                             offset.Y = line.OffsetY;
-                            
+
                             if(line.Runs[0] != run)
                                 offset.Y += line.Height;
-                            
-                            offset.X = posRegion.RelativeOffset.X + col.OffsetX;
+
                             posRegion.RelativeOffset = offset;
                         }
                     }
