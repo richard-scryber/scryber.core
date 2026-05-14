@@ -1187,6 +1187,62 @@ namespace Scryber.UnitLayouts
             Assert.IsTrue(h1 > 0, "Col1 height should be positive");
             Assert.IsTrue(Math.Abs(h0 - h1) < 60.0,
                 $"Column heights should be roughly balanced. col0={h0:F1}pt col1={h1:F1}pt diff={Math.Abs(h0-h1):F1}pt");
+
+            // Dump col0 and col1 contents to show types and positions
+            static string DescribeItem(PDFLayoutItem item)
+            {
+                if (item is PDFLayoutBlock b)
+                    return $"Block({b.Owner?.GetType().Name},Y={b.TotalBounds.Y:F1},H={b.Height:F1}) ";
+                if (item is PDFLayoutLine ln)
+                {
+                    bool hasImage = ln.Runs.OfType<PDFLayoutComponentRun>().Any();
+                    return $"Line(Y={ln.OffsetY:F1},H={ln.Height:F1}{(hasImage ? ",IMAGE" : "")}) ";
+                }
+                return $"Unknown(Y={item.OffsetY:F1},H={item.Height:F1}) ";
+            }
+
+            var col0Desc = new System.Text.StringBuilder();
+            foreach (var item in col0.Contents)
+                col0Desc.Append(DescribeItem(item));
+
+            var col1Desc = new System.Text.StringBuilder();
+            foreach (var item in col1.Contents)
+                col1Desc.Append(DescribeItem(item));
+
+            // A block image in text flow is laid out as a PDFLayoutLine containing a
+            // PDFLayoutComponentRun (not a standalone PDFLayoutBlock). Find it.
+            PDFLayoutLine imageLine = null;
+            PDFLayoutRegion imageCol = null;
+            double imageOffsetY = -1;
+
+            foreach (var col in new[] { col0, col1 })
+            {
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutLine ln &&
+                        ln.Runs.OfType<PDFLayoutComponentRun>().Any())
+                    {
+                        imageLine    = ln;
+                        imageCol     = col;
+                        imageOffsetY = ln.OffsetY.PointsValue;
+                        break;
+                    }
+                }
+                if (imageLine != null) break;
+            }
+
+            Assert.IsNotNull(imageLine,
+                $"Image line should exist in one of the columns. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            // Image must be in col1 after balancing
+            Assert.AreSame(col1, imageCol,
+                $"Image line should be in col1, not col0. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            // Image offset within col1 should be near the top (preceded only by any
+            // text lines that the balance algorithm placed before it in col1)
+            Assert.IsTrue(imageOffsetY < h1 * 0.6,
+                $"Image should be in the upper 60%% of col1 (not at the bottom). " +
+                $"imageOffsetY={imageOffsetY:F1}pt col1Height={h1:F1}pt. col1=[{col1Desc}]");
         }
 
         // =====================================================================
