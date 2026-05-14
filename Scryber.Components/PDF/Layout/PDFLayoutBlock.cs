@@ -765,9 +765,10 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private void ShrinkToFit()
         {
-            if(this.ColumnOptions.ColumnCount > 0 && this.ColumnOptions.AutoFlow == true)
+            if(this.ColumnOptions.ColumnCount > 1 && this.ColumnOptions.AutoFlow == true
+               && this.ColumnOptions.FillMode == ColumnFillMode.Balance)
             {
-                //TODO:Try and balance the columns.
+                this.BalanceColumns();
             }
 
             bool explicitWidth, explicitHeight;
@@ -846,6 +847,214 @@ namespace Scryber.PDF.Layout
             }
             this.TotalBounds = full;
             this.Size = full.Size;
+        }
+
+        #endregion
+
+        #region private void BalanceColumns()
+
+        /// <summary>
+        /// Redistributes items across columns so each column has approximately equal height.
+        /// Called from ShrinkToFit when FillMode == Balance.
+        /// </summary>
+        private void BalanceColumns()
+        {
+            int colCount = this.Columns.Length;
+            if (colCount <= 1) return;
+
+            // Collect all top-level items from all columns in order, clearing as we go
+            var allItems = new List<PDFLayoutItem>();
+            foreach (var col in this.Columns)
+            {
+                if (col.Contents != null && col.Contents.Count > 0)
+                {
+                    allItems.AddRange(col.Contents);
+                    col.Contents.Clear();
+                    col.UsedSize = Size.Empty;
+                }
+            }
+
+            if (allItems.Count == 0) return;
+
+            // Calculate total height across all items
+            Unit totalHeight = Unit.Zero;
+            foreach (var item in allItems)
+                totalHeight += item.Height;
+
+            if (totalHeight <= Unit.Zero) return;
+
+            // Target height per column
+            Unit targetHeight = new Unit(totalHeight.PointsValue / colCount);
+
+            // Redistribute items greedily: fill each column up to targetHeight,
+            // then spill to the next — never split a single item across columns.
+            int colIndex = 0;
+            Unit currentColHeight = Unit.Zero;
+
+            foreach (var item in allItems)
+            {
+                bool isLastCol = colIndex == colCount - 1;
+
+                // Spill to next column if target exceeded and column has content
+                if (!isLastCol && currentColHeight > Unit.Zero
+                    && currentColHeight + item.Height > targetHeight)
+                {
+                    colIndex++;
+                    currentColHeight = Unit.Zero;
+                }
+
+                var col = this.Columns[colIndex];
+                if (item is PDFLayoutBlock block)
+                    col.AddExistingItem(block);
+                else if (item is PDFLayoutLine line)
+                {
+                    col.AddExistingItem(line);
+                    // After AddExistingItem updates line.OffsetY, sync any PDFTextRunBegin on this line
+                    foreach (var run in line.Runs)
+                    {
+                        if (run is PDFTextRunBegin begin)
+                        {
+                            begin.SetOffsetY(line.OffsetY);
+                            break;
+                        }
+                    }
+                }
+
+                currentColHeight += item.Height;
+            }
+
+            // Fix text blocks that were split across column boundaries
+            RepairSplitTextBlocks();
+        }
+
+        /// <summary>
+        /// After balancing, repairs text blocks whose lines were split across column boundaries.
+        /// For each PDFTextRunBegin whose lines are now in more than one column:
+        ///   - Adds a PDFTextRunEnd at the end of each non-final column's last line
+        ///   - Inserts a new PDFTextRunBegin at the start of each subsequent column's first line
+        ///   - Updates each begin's Lines list to reflect only its own column's lines
+        /// </summary>
+        private void RepairSplitTextBlocks()
+        {
+            int colCount = this.Columns.Length;
+
+            // Gather all PDFTextRunBegin instances across all columns
+            var allBegins = new List<PDFTextRunBegin>();
+            for (int ci = 0; ci < colCount; ci++)
+            {
+                foreach (var item in this.Columns[ci].Contents)
+                {
+                    if (item is PDFLayoutLine l)
+                    {
+                        foreach (var run in l.Runs)
+                        {
+                            if (run is PDFTextRunBegin b && !allBegins.Contains(b))
+                                allBegins.Add(b);
+                        }
+                    }
+                }
+            }
+
+            foreach (var originalBegin in allBegins)
+            {
+                // Map each line to its current column index
+                var linesByColIndex = new Dictionary<int, List<PDFLayoutLine>>();
+                foreach (var line in originalBegin.Lines)
+                {
+                    for (int ci = 0; ci < colCount; ci++)
+                    {
+                        if (line.Region == this.Columns[ci])
+                        {
+                            if (!linesByColIndex.ContainsKey(ci))
+                                linesByColIndex[ci] = new List<PDFLayoutLine>();
+                            linesByColIndex[ci].Add(line);
+                            break;
+                        }
+                    }
+                }
+
+                if (linesByColIndex.Count <= 1) continue; // all in one column — nothing to do
+
+                var sortedCols = linesByColIndex.Keys.OrderBy(k => k).ToList();
+
+                // Restrict originalBegin.Lines to only the first column's lines
+                int firstCi = sortedCols[0];
+                originalBegin.Lines.Clear();
+                originalBegin.Lines.AddRange(linesByColIndex[firstCi]);
+
+                // Find and remove the original PDFTextRunEnd (it is on the last line of the full block,
+                // which after balancing is in the last column)
+                int lastCi = sortedCols[sortedCols.Count - 1];
+                PDFLayoutLine originalEndLine = null;
+                int originalEndRunIndex = -1;
+                foreach (var line in linesByColIndex[lastCi])
+                {
+                    for (int r = 0; r < line.Runs.Count; r++)
+                    {
+                        if (line.Runs[r] is PDFTextRunEnd e && e.Start == originalBegin)
+                        {
+                            originalEndLine = line;
+                            originalEndRunIndex = r;
+                            break;
+                        }
+                    }
+                    if (originalEndLine != null) break;
+                }
+                if (originalEndLine != null)
+                    originalEndLine.Runs.RemoveAt(originalEndRunIndex);
+
+                // Add a PDFTextRunEnd to the last line of the first column
+                var lastLineFirstCol = linesByColIndex[firstCi].Last();
+                lastLineFirstCol.Runs.Add(new PDFTextRunEnd(originalBegin, lastLineFirstCol, originalBegin.Owner));
+
+                // Create new begins and ends for each subsequent column
+                PDFTextRunBegin prevBegin = originalBegin;
+                for (int si = 1; si < sortedCols.Count; si++)
+                {
+                    int colIdx = sortedCols[si];
+                    var colLines = linesByColIndex[colIdx];
+                    var firstLineThisCol = colLines[0];
+
+                    // Create a new PDFTextRunBegin for this column's segment
+                    var newBegin = new PDFTextRunBegin(prevBegin.TextRenderOptions, firstLineThisCol, prevBegin.Owner);
+
+                    // Remove the newline spacer that was placed at the start of continuation lines
+                    if (firstLineThisCol.Runs.Count > 0
+                        && firstLineThisCol.Runs[0] is PDFTextRunSpacer spacer
+                        && spacer.IsNewLineSpacer)
+                        firstLineThisCol.Runs.RemoveAt(0);
+
+                    firstLineThisCol.Runs.Insert(0, newBegin);
+
+                    // Runs.Insert bypasses AddRun, so BaseLineOffset is not updated.
+                    // Without this the text cursor is placed at the line top instead of the baseline.
+                    {
+                        var beginAscent = newBegin.TextRenderOptions.GetAscent();
+                        var beginDescent = newBegin.TextRenderOptions.GetDescender();
+                        var beginLineH = newBegin.TextRenderOptions.GetLineHeight();
+                        var beginLead = beginLineH - (beginAscent + beginDescent);
+                        var halfLead = beginLead / 2;
+                        var baselineOff = halfLead + beginAscent;
+                        if (baselineOff > firstLineThisCol.BaseLineOffset)
+                        {
+                            firstLineThisCol.BaseLineOffset = baselineOff;
+                            firstLineThisCol.BaseLineToBottom = halfLead + beginDescent;
+                        }
+                    }
+
+                    newBegin.SetOffsetY(firstLineThisCol.OffsetY);
+
+                    // Set the Lines list: constructor already added firstLineThisCol, add the rest
+                    newBegin.Lines.Clear();
+                    newBegin.Lines.AddRange(colLines);
+
+                    // Add a PDFTextRunEnd to the last line of this column's segment
+                    var lastLineThisCol = colLines.Last();
+                    lastLineThisCol.Runs.Add(new PDFTextRunEnd(newBegin, lastLineThisCol, newBegin.Owner));
+
+                    prevBegin = newBegin;
+                }
+            }
         }
 
         #endregion
