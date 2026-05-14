@@ -917,6 +917,13 @@ namespace Scryber.PDF.Layout
                             begin.SetOffsetY(line.OffsetY);
                             break;
                         }
+                        else if (run is PDFLayoutComponentRun componentRun)
+                        {
+                            var bounds = componentRun.TotalBounds;
+                            bounds.Y = line.OffsetY;
+                            componentRun.TotalBounds = bounds;
+                            //componentRun.SetOffsetY(line.OffsetY);
+                        }
                     }
                 }
 

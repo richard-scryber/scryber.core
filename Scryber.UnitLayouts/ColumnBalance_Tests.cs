@@ -1213,6 +1213,7 @@ namespace Scryber.UnitLayouts
             // PDFLayoutComponentRun (not a standalone PDFLayoutBlock). Find it.
             PDFLayoutLine imageLine = null;
             PDFLayoutRegion imageCol = null;
+            PDFLayoutComponentRun imageRun = null;
             double imageOffsetY = -1;
 
             foreach (var col in new[] { col0, col1 })
@@ -1225,6 +1226,7 @@ namespace Scryber.UnitLayouts
                         imageLine    = ln;
                         imageCol     = col;
                         imageOffsetY = ln.OffsetY.PointsValue;
+                        imageRun = ln.Runs.OfType<PDFLayoutComponentRun>().First();
                         break;
                     }
                 }
@@ -1243,6 +1245,10 @@ namespace Scryber.UnitLayouts
             Assert.IsTrue(imageOffsetY < h1 * 0.6,
                 $"Image should be in the upper 60%% of col1 (not at the bottom). " +
                 $"imageOffsetY={imageOffsetY:F1}pt col1Height={h1:F1}pt. col1=[{col1Desc}]");
+            
+            Assert.IsNotNull(imageRun, "ImageRun should exist in the second columns. col1=[{col1Desc}]");
+            Assert.AreEqual(imageRun.TotalBounds.Y, 0.0, "Imahge run should be at offset 0");
+            
         }
 
         // =====================================================================

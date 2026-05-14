@@ -739,13 +739,14 @@ namespace Scryber.Drawing
         Auto,
         /// <summary>
         /// Content is equally divided between columns in the last page (or block of content). So it only takes the minimum amount of height within that page.
+        /// We make no distinction and balance all columns on all the pages
         /// </summary>
-        Balance,
+        Balance = 1,
         
         /// <summary>
-        /// The content is divided equally in all columns on all pages. (not currently supported)
+        /// The content is divided equally in all columns on all pages. (not currently supported and equates to Balance so equivalent value)
         /// </summary>
-        Balance_All
+        Balance_All = 1
     }
 
 }
