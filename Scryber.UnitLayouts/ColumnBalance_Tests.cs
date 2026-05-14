@@ -1513,5 +1513,292 @@ namespace Scryber.UnitLayouts
             Assert.IsTrue(Math.Abs(h0 - h1) <= 36.0, $"Col0 vs Col1 diff should be ≤36pt (was {Math.Abs(h0-h1):F1}pt)");
             Assert.IsTrue(Math.Abs(h1 - h2) <= 36.0, $"Col1 vs Col2 diff should be ≤36pt (was {Math.Abs(h1-h2):F1}pt)");
         }
+
+        // =====================================================================
+        // 22. Float:left within balanced 2-column text layout.
+        //     Text fills col0; the float and remaining text land in col1.
+        //     Verifies BalanceColumns correctly redistributes the float-containing
+        //     line and that the float region renders at the top of col1.
+        // =====================================================================
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void ColumnBalance_22_FloatLeft_BalancedAcrossColumns()
+        {
+            string repeatText =
+                "Quisque gravida elementum nisl at ultrices odio suscipit interdum. " +
+                "Sed sed diam non sem fringilla varius lorem ipsum dolor sit amet. " +
+                "Curabitur viverra ligula ut tellus feugiat mattis curabitur urna. " +
+                "Duis molestie mi id tincidunt mattis maecenas consectetur lectus. ";
+
+            var doc = new Document();
+            var section = new Section();
+            section.Style.PageStyle.Width  = 400;
+            section.Style.PageStyle.Height = 700;
+            section.FontSize = 10;
+            doc.Pages.Add(section);
+
+            var outer = new Div();
+            outer.ColumnCount = 2;
+            outer.Style.Columns.FillMode = ColumnFillMode.Balance;
+            outer.AlleyWidth  = 5;
+            outer.BorderColor = StandardColors.Black;
+            outer.BorderWidth = 2;
+            outer.Padding     = new Thickness(2);
+            section.Contents.Add(outer);
+
+            // A small heading block + text together reach just under the balance target,
+            // so the float (whose line is only 12pt tall) is the item that tips col0 over
+            // and gets redistributed to col1 — exposing any position-update bug.
+            var heading = new Div();
+            heading.Height      = 20;
+            heading.BorderColor = StandardColors.Black;
+            heading.BorderWidth = 1;
+            heading.Contents.Add(new TextLiteral("Section heading"));
+            outer.Contents.Add(heading);
+
+            outer.Contents.Add(new TextLiteral(repeatText + repeatText));
+
+            // Float:left div — sits mid-content so after balancing it lands in col1
+            var floatDiv = new Div();
+            floatDiv.Style.Position.Float = FloatMode.Left;
+            floatDiv.Width       = 60;
+            floatDiv.Height      = 50;
+            floatDiv.BorderColor = StandardColors.Aqua;
+            floatDiv.BorderWidth = 1;
+            outer.Contents.Add(floatDiv);
+
+            outer.Contents.Add(new TextLiteral(repeatText + repeatText));
+
+            using (var ms = DocStreams.GetOutputStream("ColumnBalance_22_FloatLeft.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var body      = layout.AllPages[0].ContentBlock;
+            var container = body.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(container, "Container block should exist");
+            Assert.AreEqual(2, container.Columns.Length, "Should have 2 columns");
+
+            var col0 = container.Columns[0];
+            var col1 = container.Columns[1];
+
+            Assert.IsTrue(col0.Contents.Count > 0, "Col0 should have content after balance");
+            Assert.IsTrue(col1.Contents.Count > 0, "Col1 should have content after balance");
+
+            var h0 = col0.UsedSize.Height.PointsValue;
+            var h1 = col1.UsedSize.Height.PointsValue;
+            Assert.IsTrue(h0 > 0, "Col0 height should be positive");
+            Assert.IsTrue(h1 > 0, "Col1 height should be positive");
+            Assert.IsTrue(Math.Abs(h0 - h1) < 60.0,
+                $"Column heights should be roughly balanced. col0={h0:F1}pt col1={h1:F1}pt diff={Math.Abs(h0-h1):F1}pt");
+
+            static string DescribeFloatItem(PDFLayoutItem item)
+            {
+                if (item is PDFLayoutBlock b)
+                    return $"Block({b.Owner?.GetType().Name},Y={b.TotalBounds.Y:F1},H={b.Height:F1}) ";
+                if (item is PDFLayoutLine ln)
+                {
+                    bool hasFloat = ln.Runs.OfType<PDFLayoutPositionedRegionRun>().Any(r => r.IsFloating);
+                    return $"Line(Y={ln.OffsetY:F1},H={ln.Height:F1}{(hasFloat ? ",FLOAT" : "")}) ";
+                }
+                return $"Unknown(Y={item.OffsetY:F1},H={item.Height:F1}) ";
+            }
+
+            var col0Desc = new System.Text.StringBuilder();
+            foreach (var item in col0.Contents) col0Desc.Append(DescribeFloatItem(item));
+
+            var col1Desc = new System.Text.StringBuilder();
+            foreach (var item in col1.Contents) col1Desc.Append(DescribeFloatItem(item));
+
+            // Find the line containing the float:left positioned run
+            PDFLayoutLine floatLine = null;
+            PDFLayoutRegion floatCol = null;
+            PDFLayoutPositionedRegionRun floatRun = null;
+            double floatOffsetY = -1;
+
+            foreach (var col in new[] { col0, col1 })
+            {
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutLine ln)
+                    {
+                        var run = ln.Runs.OfType<PDFLayoutPositionedRegionRun>()
+                                    .FirstOrDefault(r => r.IsFloating);
+                        if (run != null)
+                        {
+                            floatLine    = ln;
+                            floatCol     = col;
+                            floatOffsetY = ln.OffsetY.PointsValue;
+                            floatRun     = run;
+                            break;
+                        }
+                    }
+                }
+                if (floatLine != null) break;
+            }
+
+            Assert.IsNotNull(floatLine,
+                $"Float line should exist in one of the columns. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            Assert.AreSame(col1, floatCol,
+                $"Float:left line should be in col1 after balancing. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            Assert.IsTrue(floatOffsetY < h1 * 0.6,
+                $"Float should be in the upper 60%% of col1. " +
+                $"floatOffsetY={floatOffsetY:F1}pt col1Height={h1:F1}pt. col1=[{col1Desc}]");
+
+            // The float region's TotalBounds.Y should be near zero (top of col1)
+            var floatRegionY = floatRun.Region.TotalBounds.Y.PointsValue;
+            Assert.IsTrue(floatRegionY < h1 * 0.6,
+                $"Float region TotalBounds.Y should be near the top of col1 after balancing. " +
+                $"floatRegionY={floatRegionY:F1}pt col1Height={h1:F1}pt");
+        }
+
+        // =====================================================================
+        // 23. Float:right within balanced 2-column text layout.
+        //     Same as test 22 but the float appears on the right side.
+        //     The float div is placed before its surrounding text in source order
+        //     (required for float:right in Scryber so it appears at the correct
+        //     horizontal position rather than wrapping to a new line).
+        // =====================================================================
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void ColumnBalance_23_FloatRight_BalancedAcrossColumns()
+        {
+            string repeatText =
+                "Quisque gravida elementum nisl at ultrices odio suscipit interdum. " +
+                "Sed sed diam non sem fringilla varius lorem ipsum dolor sit amet. " +
+                "Curabitur viverra ligula ut tellus feugiat mattis curabitur urna. " +
+                "Duis molestie mi id tincidunt mattis maecenas consectetur lectus. ";
+
+            var doc = new Document();
+            var section = new Section();
+            section.Style.PageStyle.Width  = 400;
+            section.Style.PageStyle.Height = 700;
+            section.FontSize = 10;
+            doc.Pages.Add(section);
+
+            var outer = new Div();
+            outer.ColumnCount = 2;
+            outer.Style.Columns.FillMode = ColumnFillMode.Balance;
+            outer.AlleyWidth  = 5;
+            outer.BorderColor = StandardColors.Black;
+            outer.BorderWidth = 2;
+            outer.Padding     = new Thickness(2);
+            section.Contents.Add(outer);
+
+            // Same heading + text structure as test 22 — pushes the float to col1.
+            var heading = new Div();
+            heading.Height      = 20;
+            heading.BorderColor = StandardColors.Black;
+            heading.BorderWidth = 1;
+            heading.Contents.Add(new TextLiteral("Section heading"));
+            outer.Contents.Add(heading);
+
+            outer.Contents.Add(new TextLiteral(repeatText + repeatText));
+
+            // Float:right div — must appear in source before the inline text it floats
+            // alongside (Scryber requirement for float:right), so it is added before
+            // the second block of text.
+            var floatDiv = new Div();
+            floatDiv.Style.Position.Float = FloatMode.Right;
+            floatDiv.Width       = 60;
+            floatDiv.Height      = 50;
+            floatDiv.BorderColor = StandardColors.Lime;
+            floatDiv.BorderWidth = 1;
+            outer.Contents.Add(floatDiv);
+
+            outer.Contents.Add(new TextLiteral(repeatText + repeatText));
+
+            using (var ms = DocStreams.GetOutputStream("ColumnBalance_23_FloatRight.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout);
+            var body      = layout.AllPages[0].ContentBlock;
+            var container = body.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(container, "Container block should exist");
+            Assert.AreEqual(2, container.Columns.Length, "Should have 2 columns");
+
+            var col0 = container.Columns[0];
+            var col1 = container.Columns[1];
+
+            Assert.IsTrue(col0.Contents.Count > 0, "Col0 should have content after balance");
+            Assert.IsTrue(col1.Contents.Count > 0, "Col1 should have content after balance");
+
+            var h0 = col0.UsedSize.Height.PointsValue;
+            var h1 = col1.UsedSize.Height.PointsValue;
+            Assert.IsTrue(h0 > 0, "Col0 height should be positive");
+            Assert.IsTrue(h1 > 0, "Col1 height should be positive");
+            Assert.IsTrue(Math.Abs(h0 - h1) < 60.0,
+                $"Column heights should be roughly balanced. col0={h0:F1}pt col1={h1:F1}pt diff={Math.Abs(h0-h1):F1}pt");
+
+            static string DescribeRightFloatItem(PDFLayoutItem item)
+            {
+                if (item is PDFLayoutBlock b)
+                    return $"Block({b.Owner?.GetType().Name},Y={b.TotalBounds.Y:F1},H={b.Height:F1}) ";
+                if (item is PDFLayoutLine ln)
+                {
+                    bool hasFloat = ln.Runs.OfType<PDFLayoutPositionedRegionRun>().Any(r => r.IsFloating);
+                    return $"Line(Y={ln.OffsetY:F1},H={ln.Height:F1}{(hasFloat ? ",FLOAT" : "")}) ";
+                }
+                return $"Unknown(Y={item.OffsetY:F1},H={item.Height:F1}) ";
+            }
+
+            var col0Desc = new System.Text.StringBuilder();
+            foreach (var item in col0.Contents) col0Desc.Append(DescribeRightFloatItem(item));
+
+            var col1Desc = new System.Text.StringBuilder();
+            foreach (var item in col1.Contents) col1Desc.Append(DescribeRightFloatItem(item));
+
+            // Find the line containing the float:right positioned run
+            PDFLayoutLine floatLine = null;
+            PDFLayoutRegion floatCol = null;
+            PDFLayoutPositionedRegionRun floatRun = null;
+            double floatOffsetY = -1;
+
+            foreach (var col in new[] { col0, col1 })
+            {
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutLine ln)
+                    {
+                        var run = ln.Runs.OfType<PDFLayoutPositionedRegionRun>()
+                                    .FirstOrDefault(r => r.IsFloating);
+                        if (run != null)
+                        {
+                            floatLine    = ln;
+                            floatCol     = col;
+                            floatOffsetY = ln.OffsetY.PointsValue;
+                            floatRun     = run;
+                            break;
+                        }
+                    }
+                }
+                if (floatLine != null) break;
+            }
+
+            Assert.IsNotNull(floatLine,
+                $"Float line should exist in one of the columns. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            Assert.AreSame(col1, floatCol,
+                $"Float:right line should be in col1 after balancing. col0=[{col0Desc}] col1=[{col1Desc}]");
+
+            Assert.IsTrue(floatOffsetY < h1 * 0.6,
+                $"Float should be in the upper 60%% of col1. " +
+                $"floatOffsetY={floatOffsetY:F1}pt col1Height={h1:F1}pt. col1=[{col1Desc}]");
+
+            // The float region's TotalBounds.Y should be near zero (top of col1)
+            var floatRegionY = floatRun.Region.TotalBounds.Y.PointsValue;
+            Assert.IsTrue(floatRegionY < h1 * 0.6,
+                $"Float region TotalBounds.Y should be near the top of col1 after balancing. " +
+                $"floatRegionY={floatRegionY:F1}pt col1Height={h1:F1}pt");
+        }
     }
 }

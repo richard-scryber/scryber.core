@@ -909,7 +909,8 @@ namespace Scryber.PDF.Layout
                 else if (item is PDFLayoutLine line)
                 {
                     col.AddExistingItem(line);
-                    // After AddExistingItem updates line.OffsetY, sync any PDFTextRunBegin on this line
+                    // After AddExistingItem updates line.OffsetY, sync runs whose render
+                    // position is derived from their own stored Y rather than the line offset.
                     foreach (var run in line.Runs)
                     {
                         if (run is PDFTextRunBegin begin)
@@ -922,7 +923,16 @@ namespace Scryber.PDF.Layout
                             var bounds = componentRun.TotalBounds;
                             bounds.Y = line.OffsetY;
                             componentRun.TotalBounds = bounds;
-                            //componentRun.SetOffsetY(line.OffsetY);
+                        }
+                        else if (run is PDFLayoutPositionedRegionRun posRun && posRun.IsFloating
+                                 && posRun.Region is PDFLayoutPositionedRegion posRegion)
+                        {
+                            // PushComponentLayout (which runs after BalanceColumns) recalculates
+                            // TotalBounds.Y from RelativeOffset.Y. Update RelativeOffset.Y so the
+                            // float renders at its new position in the redistributed column.
+                            var offset = posRegion.RelativeOffset;
+                            offset.Y = line.OffsetY;
+                            posRegion.RelativeOffset = offset;
                         }
                     }
                 }
