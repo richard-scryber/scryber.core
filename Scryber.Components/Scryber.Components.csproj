@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.5.0.1</PackageVersion>
+    <PackageVersion>9.6.0.0-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -15,8 +15,14 @@
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
     <PackageReleaseNotes>9.6.0.0-beta
-        Support for 
-        9.5.0.1
+NEW: Added support for display flex layout.
+NEW: Added support for display grid layout
+NEW: Added support for table-x layout
+NEW: Added support for z-index rendering
+NEW: Added support for column balancing
+Fixed an issue with with multiple returns
+        
+9.5.0.1
 BREAKING RELEASE
 Removed support for Net Standard 2.0, and Image Sharp updated to 3.1.2
 All libraries updated to include dotnet 8/9/10
@@ -70,117 +76,6 @@ Fixed a minor layout issue with multiple footer elementnamed components being ap
 9.0.0.0-beta
 Completely updated version for .NET 9.0 with support for html, css, svg and binding in a WASM compatible package with remote asset and content requests.
 NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
-        
-8.0.0.2-beta
-Added a fix for the rounding of expression results on decimal and double values when the results are very small.
-
-8.0.0.1-beta
-Updated to net8.0 sdk and dependancies updated to the latest stable versions.
-        
-6.0.5.0-beta
-Updated to net8.0 sdk and dependencies updated to latest version.
-
-6.0.4.0-beta
-Big updates to whitespace handling, support for &amp;nbsp; and hyphens in line breaks.
-
-6.0.3.2-beta
-Fix for prioritising parsing unit values in invariant culture on OS's set to non-invariant culture.
-
-6.0.3.1-beta
-Minor fix for transforming svg components (that do not have explict position values).
-
-6.0.3.0-beta
-Added fixes for parsing (x)html content on systems not running the english culture. All numeric values are expected to be in english decimal notation - e.g. 1,0234.56 for values in CSS, styles, svg etc.
-Unit testing works for non-english. May be a couple of values / options missed but hoping not.
-Added the AddRange option to top level component wrapping lists - (Rows, Cells, Items, etc.) that accepts an IEnumerable&lt;InnerType&gt; instance.
-
-6.0.2.1-beta
-Added fix for large inline images. Tested SaveAsPDFAsync.
-
-6.0.1.1-alfa
-Support for SaveAsPDFTimer, to check for asyncronous execution in a single threaded
-application - blazor (or windows forms?), using asyncronous loading of http requests for css images, fonts etc).
-
-6.0.1.0-beta
-
-We now support html - in many of its flavours, through the HTMLAgilityPack
-
-Added parsing non-formal html documents and components from local and remote files (using the ParseHtml and ParseHtmlDocument on the Document class)
-Added the data-content and data-content-type attributes to visual components so that html and xhtml content can be data bound into pages.
-Added support for the hyphens css property and it's use in hypenating long text.
-
-6.0.0.16-beta
-
-Some Big additions and fixes
-
-Added support for the css counters (reset, increment and the counter(s) functions)
-Added support for css content properties
-Added support for css ::before and ::after selectors
-Added support for relative units in styles e.g. 30% and 0.5em - not supported in calc() with multiple units e.g calc(50% - 5px) will not work.
-
-A lot of layout tests to get everything working - precisely.
-
-
-6.0.0.14-beta
-
-Added support for transformations including css transform property.
-
-6.0.0.12-beta
-
-Changed the reference for ImageSharp to the 2.1.3 Nuget package, rather than the dll.
-Checks added for support on thread culture in dates and numbers.
-
-6.0.0.10-beta
-
-Added support for Netwtonsoft.Json and the System.Text.Json objects in binding expressions and templates too.
-Along with adding SoryBy, MaxOf, EachOf, SelectWhere collection functions.
-
-6.0.0.5-beta
-
-Updated to the .net 6.0 sdk, now with support for running as a web assembly with asyncronous loads of stylesheets, images and fonts.
-Some TTC and TTF font files do not render glyfs correctly, but working for many fonts.
-
-5.1.0.2-beta
-
-A major update that now fully supports expressions in attributes, css var and clac along with text, using the handlebars notation - {{...}}
-This includes support for simple mathematical expressions from the document variables as welll as functions such as 'concat', 'if(value, 'true', 'false')' or 'index() + model.property'
-
-5.0.7
-
-Adding support for the float left and right within blocks along with css linear and radial gradients
-
-5.0.6.3
-
-Fixes an issue with some TTF fonts on Windows (specifically azure) to look for the best character mapping table, and multi-span text not flowing well due to some changes to try and get float working.
-
-5.0.6
-
-The April release is a bit of a catch up and fix with updates for:
-
-Supporting parsed JSON objects in binding - along with std types and dynamic objects.
-margin:value is applied to all margins even if explicit left, right etc. has been previously applied.
-Conformance is now carried through to templates, so errors are not indavertantly raised inside the template.
-Missing background images will not raise an error.
-Support for data images (src='data:image/..') within content - thanks Dan Rusu!
-Images are not duplicated within the output for the same source.
-
-
-5.0.5
-
-Multiple enhancements including
-
-Embed and iFrame support.
-Binding speed improvements for longer documents.
-Support for border-left, border-right, etc
-Support for encryption and restrictions
-Support for base href in template files.
-Classes and styles on templates are supported.
-Added em, strong, strike, del, ins elements
-Html column width and break inside
-CSS and HTML Logging
-Fixed application of multiple styles with the same word inside
-Allow missing images on the document is now supported.
-Contain fill style for background images.
 
 See: https://paperwork.help/changelog/scryber_core.html for a full break down.</PackageReleaseNotes>
     <Summary>The scryber core engine for easy creation of beautiful, dynamic, PDF documents using html templates, css support and model injection in dotnet 10, 9, and 8</Summary>
@@ -192,12 +87,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.5.0.1</Version>
+    <Version>9.6.0.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.5.0.1</FileVersion>
+    <FileVersion>9.6.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>

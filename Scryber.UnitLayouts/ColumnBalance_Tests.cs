@@ -2065,8 +2065,9 @@ namespace Scryber.UnitLayouts
             
             using (var ms = DocStreams.GetOutputStream("ColumnBalance_25_MultipleFloatMixed.pdf"))
             {
-                doc.RenderOptions.Compression = OutputCompressionType.None;
-                doc.RenderOptions.StringOutput = OutputStringType.Text;
+                //doc.RenderOptions.Compression = OutputCompressionType.None;
+                //doc.RenderOptions.StringOutput = OutputStringType.Text;
+                doc.AppendTraceLog = true;
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
