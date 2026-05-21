@@ -1809,6 +1809,29 @@ namespace Scryber.Components
         }
 
         /// <summary>
+        /// Performs a complete initialization, load and optional data binding of the document,
+        /// then delegates output generation to a custom layout renderer.
+        /// </summary>
+        /// <param name="stream">The destination stream for renderer output.</param>
+        /// <param name="bind">True to run data binding before layout.</param>
+        /// <param name="renderer">The custom renderer that consumes the computed layout tree.</param>
+        public void SaveAs(System.IO.Stream stream, bool bind, IDocumentLayoutRenderer renderer)
+        {
+            if (null == stream)
+                throw new ArgumentNullException("stream");
+            if (null == renderer)
+                throw new ArgumentNullException("renderer");
+
+            // The layout model is PDF-based, so we use PDF lifecycle contexts for init/load/bind.
+            this.InitializeAndLoad(OutputFormat.PDF);
+
+            if (bind)
+                this.DataBind(OutputFormat.PDF);
+
+            this.RenderWithLayoutRenderer(stream, renderer);
+        }
+
+        /// <summary>
         /// Performs a complete initialization, load and then renders the document to the output stream
         /// </summary>
         /// <param name="stream"></param>
@@ -2322,6 +2345,79 @@ namespace Scryber.Components
             {
                 this.RenderToPDF(context, writer);
             }
+        }
+
+        /// <summary>
+        /// Performs layout and delegates final output generation to a custom layout renderer.
+        /// </summary>
+        /// <param name="toStream">The output stream passed to the custom renderer.</param>
+        /// <param name="renderer">The custom renderer implementation.</param>
+        public virtual void RenderWithLayoutRenderer(System.IO.Stream toStream, IDocumentLayoutRenderer renderer)
+        {
+            if (null == toStream)
+                throw new ArgumentNullException("toStream");
+            if (null == renderer)
+                throw new ArgumentNullException("renderer");
+
+            PDFRenderContext context = this.CreateRenderContext();
+            this.RenderWithLayoutRenderer(context, toStream, renderer);
+        }
+
+        /// <summary>
+        /// Performs layout with the provided render context and delegates output generation
+        /// to a custom layout renderer.
+        /// </summary>
+        /// <param name="context">The render context to use.</param>
+        /// <param name="toStream">The output stream passed to the custom renderer.</param>
+        /// <param name="renderer">The custom renderer implementation.</param>
+        public virtual void RenderWithLayoutRenderer(PDFRenderContext context, System.IO.Stream toStream, IDocumentLayoutRenderer renderer)
+        {
+            if (null == context)
+                throw new ArgumentNullException("context");
+            if (null == toStream)
+                throw new ArgumentNullException("toStream");
+            if (null == renderer)
+                throw new ArgumentNullException("renderer");
+
+            Style style = this.GetAppliedStyle();
+
+            // Layout components before rendering.
+            PDFLayoutContext layoutcontext = CreateLayoutContext(style, context.Items, context.TraceLog, context.PerformanceMonitor);
+            this.RegisterPreLayout(layoutcontext);
+
+            context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning Document layout");
+            IPDFLayoutEngine engine = null;
+
+            context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Layout_Stage);
+            using (engine = this.GetEngine(null, layoutcontext))
+            {
+                engine.Layout(layoutcontext, style);
+            }
+            context.PerformanceMonitor.End(PerformanceMonitorType.Document_Layout_Stage);
+
+            this.GenerationStage = DocumentGenerationStage.Laidout;
+            context.TraceLog.End(TraceLevel.Message, "Document", "Completed Document layout");
+            PDFLayoutDocument doc = layoutcontext.DocumentLayout;
+
+            this.RegisterLayoutComplete(layoutcontext);
+
+            context.TraceLog.Begin(TraceLevel.Message, "Document", "Beginning custom layout renderer output");
+            context.PerformanceMonitor.Begin(PerformanceMonitorType.Document_Render_Stage);
+
+            this.RegisterPreRender(context);
+
+            // Reset page counters to match document layout for backend renderers.
+            context.PageIndex = 0;
+            context.PageCount = doc.TotalPageCount;
+
+            renderer.Render(this, doc, layoutcontext, toStream);
+
+            this.RegisterPostRender(context);
+
+            context.PerformanceMonitor.End(PerformanceMonitorType.Document_Render_Stage);
+            context.TraceLog.End(TraceLevel.Message, "Document", "Completed custom layout renderer output");
+
+            this.GenerationStage = DocumentGenerationStage.Written;
         }
 
         

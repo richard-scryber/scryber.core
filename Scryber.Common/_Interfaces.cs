@@ -119,6 +119,24 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IMetadataContainer
+
+    /// <summary>
+    /// Interface for components that can accept parser-level custom metadata
+    /// (for example attributes such as data-foo="bar").
+    /// </summary>
+    public interface IMetadataContainer
+    {
+        /// <summary>
+        /// Stores metadata under the specified key.
+        /// </summary>
+        /// <param name="key">Metadata key.</param>
+        /// <param name="value">Metadata value.</param>
+        void SetMetadata(string key, string value);
+    }
+
+    #endregion
+
     #region public interface IComponentWrappingList
 
     /// <summary>
