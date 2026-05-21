@@ -801,7 +801,7 @@ namespace Scryber.UnitLayouts
 
             var span = new Span();
             span.ID = "InnerContent";
-            span.Contents.Add("This is a very long string that will flow across more than two lines in the page, ");
+            span.Contents.Add("This is a very long string that will flow across more than two lines in the page layout, going on and one in the layout to more than three lines just to check. ");
             span.BackgroundColor = StandardColors.Blue;
             span.FillColor = StandardColors.White;
             span.Padding = 4;
@@ -809,12 +809,12 @@ namespace Scryber.UnitLayouts
             span.BorderColor = StandardColors.White;
 
             var spanNest = new Span();
-            spanNest.Contents.Add("and will show the background across all the");
-            spanNest.FontSize = 40;
-            spanNest.BackgroundColor = StandardColors.Blue;
+            spanNest.Contents.Add(" and will show the background across all the ");
+            //spanNest.FontSize = 40;
+            //spanNest.BackgroundColor = StandardColors.Fuchsia;
             span.Contents.Add(spanNest);
 
-            span.Contents.Add(" lines ending with the padding.");
+            span.Contents.Add("lines ending with the padding.");
 
             div.Contents.Add(span);
 
@@ -1186,7 +1186,7 @@ namespace Scryber.UnitLayouts
             div.ID = "WithContent";
             div.BackgroundColor = StandardColors.Aqua;
             div.Height = 300;
-            div.HorizontalAlignment = HorizontalAlignment.Justified;
+            div.HorizontalAlignment = HorizontalAlignment.Left;
             div.VerticalAlignment = VerticalAlignment.Middle;
             div.TextDecoration = Text.TextDecoration.Underline;
             div.TextLeading = 40;

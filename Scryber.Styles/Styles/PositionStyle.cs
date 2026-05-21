@@ -329,6 +329,27 @@ namespace Scryber.Styles
         {
             this.RemoveValue(StyleKeys.PositionXObjectKey);
         }
+
+        public int ZIndex
+        {
+            get
+            {
+                int z;
+                if (this.TryGetValue(StyleKeys.PositionZIndexKey, out z))
+                    return z;
+                else
+                    return 0;
+            }
+            set
+            {
+                this.SetValue(StyleKeys.PositionZIndexKey, value);
+            }
+        }
+
+        public void RemoveZIndex()
+        {
+            this.RemoveValue(StyleKeys.PositionZIndexKey);
+        }
         
         // obselete legacy properties - moved to Size
 

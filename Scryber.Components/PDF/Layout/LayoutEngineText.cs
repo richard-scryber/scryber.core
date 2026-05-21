@@ -318,6 +318,7 @@ namespace Scryber.PDF.Layout
 
                     case PDFTextOpType.LineBreak:
                         this.AddHardReturn(lastwidth);
+                        lastwidth = Unit.Zero;
                         break;
 
                     case PDFTextOpType.TextContent:
@@ -796,13 +797,17 @@ namespace Scryber.PDF.Layout
 
                     this.AddCharactersToCurrentLine(required, partial);
                     //this.AddCharactersToCurrentLine(required, chars, offset, fitted);
-                    this.AddSoftReturn(measured.Width);
+                    
                     offset += fitted;
 
                     //Consume any white space as we are now on a new line.
                     //We should never get here for NoWrap as it will alywys fit all characters one one line.
                     while (offset < chars.Length && char.IsWhiteSpace(chars, offset))
                         offset++;
+
+                    if (offset < chars.Length)
+                        this.AddSoftReturn(measured.Width);
+
                 }
             }
             return required.Width;

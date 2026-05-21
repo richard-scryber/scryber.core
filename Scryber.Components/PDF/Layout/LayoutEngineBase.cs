@@ -1640,7 +1640,7 @@ namespace Scryber.PDF.Layout
                     positioned.TotalBounds = bounds;
                 }
 
-                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                if (positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
                     if (!this.MoveFloatToNextRegion(FloatMode.Left, positioned.TotalBounds.X, positioned, relativeTo))
                     {
@@ -1653,7 +1653,7 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
-                        positioned.TotalBounds.X, offsetY, positioned.Height);
+                        positioned.TotalBounds.X, offsetY, positioned.Height, positioned);
                 }
             }
             else //float right
@@ -1681,7 +1681,7 @@ namespace Scryber.PDF.Layout
                 
                 positioned.PositionOptions.Right = rightOffset;
                 
-                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                if (positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
                     if (!this.MoveFloatToNextRegion(FloatMode.Right, rightOffset, positioned, relativeTo))
                     {
@@ -1694,7 +1694,7 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     relativeTo.CurrentRegion.AddFloatingInset(options.FloatMode, positioned.TotalBounds.Width,
-                        rightOffset, offsetY, positioned.Height);
+                        rightOffset, offsetY, positioned.Height, positioned);
                 }
             }
         }
@@ -1708,7 +1708,7 @@ namespace Scryber.PDF.Layout
             if (this.MoveToNextRegion(positioned.Height, ref newRegion, ref newBlock, out newPage))
             {
                 newRegion.AddFloatingInset(floatMode, positioned.TotalBounds.Width,
-                    floatInset, 0, positioned.Height);
+                    floatInset, 0, positioned.Height, positioned);
                 
                 //swap the positioned region
                 
@@ -1723,6 +1723,7 @@ namespace Scryber.PDF.Layout
                 //To do - update the current position.
                 positioned.RelativeTo = newBlock;
                 var offset = positioned.RelativeOffset;
+                offset.X += newRegion.OffsetX;
                 offset.Y = newRegion.UsedSize.Height;
                 
                 positioned.RelativeOffset = offset;

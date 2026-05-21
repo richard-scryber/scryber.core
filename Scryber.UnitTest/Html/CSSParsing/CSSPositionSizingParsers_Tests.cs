@@ -548,5 +548,150 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         }
 
         #endregion
+
+        #region Z-Index Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_PositiveInteger_SetsZIndex()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "5");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(5, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_NegativeInteger_SetsZIndex()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "-1");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(-1, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_Zero_SetsZero()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "0");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_Auto_SetsZero()
+        {
+            // 'auto' is equivalent to z-index: 0 in our implementation
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "auto");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_LargePositive_SetsZIndex()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "999");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(999, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_LargeNegative_SetsZIndex()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "-100");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(-100, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "abc");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_WhitespaceOnly_ReturnsFalse()
+        {
+            // The reader requires at least one non-empty value token; whitespace yields no token.
+            var parser = new CSSZIndexParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "   ");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_DefaultStyle_ReturnsZero()
+        {
+            // Without setting z-index, the default should be 0
+            var style = CreateStyle();
+            Assert.AreEqual(0, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_SetViaStyleItem_CanBeRead()
+        {
+            // Set via style item property, confirm round-trip
+            var style = CreateStyle();
+            style.Position.ZIndex = 10;
+            Assert.AreEqual(10, style.Position.ZIndex);
+
+            style.Position.ZIndex = -5;
+            Assert.AreEqual(-5, style.Position.ZIndex);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void ZIndex_RemoveZIndex_ReturnsDefault()
+        {
+            var style = CreateStyle();
+            style.Position.ZIndex = 7;
+            Assert.AreEqual(7, style.Position.ZIndex);
+
+            style.Position.RemoveZIndex();
+            Assert.AreEqual(0, style.Position.ZIndex);
+        }
+
+        #endregion
     }
 }

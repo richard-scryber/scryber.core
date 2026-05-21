@@ -166,7 +166,7 @@ namespace Scryber.PDF.Layout
             if (null != this.NextLineSpacer)
             {
                 Unit nextoffset = NextLineSpacer.Width;
-                offset.Width = nextoffset - offset.Width;
+                offset.Width = nextoffset - offset.Width; //offset.Width - nextoffset; 
             }
             
 

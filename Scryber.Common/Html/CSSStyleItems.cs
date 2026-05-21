@@ -152,6 +152,8 @@ namespace Scryber.Html
 
         public const string PositionModeType = "position";
 
+        public const string ZIndex = "z-index";
+
         public const string StrokeColor = "stroke";
         public const string StrokeOpacity = "stroke-opacity";
         public const string StrokeWidth = "stroke-width";

@@ -16,6 +16,8 @@ namespace Scryber.PDF.Layout
         public Unit FloatWidth, FloatHeight, FloatInset, YOffset;
         
         public PDFFloatAddition Next { get; set; }
+        
+        public PDFLayoutPositionedRegion AssociatedRegion { get; set; }
 
 
         public int Count
@@ -29,13 +31,14 @@ namespace Scryber.PDF.Layout
             }
         }
 
-        public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset)
+        public PDFFloatAddition(FloatMode mode, Unit floatWidth, Unit floatheight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
         {
             this.Mode = mode;
             this.FloatWidth = floatWidth;
             this.FloatHeight = floatheight;
             this.FloatInset = floatInset;
             this.YOffset = yoffset;
+            this.AssociatedRegion = associatedRegion;
         }
 
         public void AppendFloat(PDFFloatAddition floating)
@@ -109,8 +112,8 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatLeftAddition : PDFFloatAddition
     {
-        public PDFFloatLeftAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset)
-            : base(FloatMode.Left, floatWidth, floatHeight, floatInset, yoffset)
+        public PDFFloatLeftAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
+            : base(FloatMode.Left, floatWidth, floatHeight, floatInset, yoffset, associatedRegion)
         {
         }
 
@@ -127,8 +130,8 @@ namespace Scryber.PDF.Layout
 
     public class PDFFloatRightAddition : PDFFloatAddition
     {
-        public PDFFloatRightAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset)
-            : base(FloatMode.Right, floatWidth, floatHeight, floatInset, yoffset)
+        public PDFFloatRightAddition(Unit floatWidth, Unit floatHeight, Unit floatInset, Unit yoffset, PDFLayoutPositionedRegion associatedRegion)
+            : base(FloatMode.Right, floatWidth, floatHeight, floatInset, yoffset, associatedRegion)
         {
         }
 

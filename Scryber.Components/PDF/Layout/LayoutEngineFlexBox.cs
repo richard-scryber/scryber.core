@@ -11,6 +11,9 @@ namespace Scryber.PDF.Layout
         // True while we are in row layout mode — gates the column-break injection.
         private bool _isRowMode;
 
+        // True when flex-direction is row-reverse or column-reverse.
+        private bool _reverseItems;
+
         // Wrap mode row range: which visible flex items belong to the current row.
         // -1 = not in wrap mode.
         private int _wrapRowStart = -1;
@@ -33,8 +36,10 @@ namespace Scryber.PDF.Layout
                 if (rowGap.PointsValue > 0)
                     columnOptions = new PDFColumnOptions() { AlleyWidth = rowGap };
 
-                _isRowMode = false;
+                _isRowMode     = false;
+                _reverseItems  = (direction == FlexDirection.ColumnReverse);
                 base.DoLayoutBlockComponent(position, columnOptions);
+                _reverseItems  = false;
             }
             else
             {
@@ -72,7 +77,9 @@ namespace Scryber.PDF.Layout
                     return;
                 }
 
+                bool reverse = (direction == FlexDirection.RowReverse);
                 var widths = ComputeColumnWidths(childCount, containerW, colGap.PointsValue);
+                if (reverse) widths = ReverseWidths(widths);
 
                 var rowCols = new PDFColumnOptions()
                 {
@@ -86,9 +93,11 @@ namespace Scryber.PDF.Layout
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
 
-                _isRowMode = true;
+                _isRowMode    = true;
+                _reverseItems = reverse;
                 base.DoLayoutBlockComponent(position, rowCols);
-                _isRowMode = false;
+                _isRowMode    = false;
+                _reverseItems = false;
 
                 // Post-layout: apply align-items and justify-content.
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -97,7 +106,7 @@ namespace Scryber.PDF.Layout
                     if (flexBlock != null && flexBlock.Columns.Length > 0)
                     {
                         var align   = flex.AlignItems;
-                        var justify = flex.JustifyContent;
+                        var justify = NormaliseJustify(flex.JustifyContent, reverse);
 
                         if (align != FlexAlignMode.Stretch && align != FlexAlignMode.FlexStart)
                             ApplyAlignItems(flexBlock, align);
@@ -121,6 +130,7 @@ namespace Scryber.PDF.Layout
         {
             var rows = ComputeWrapRows(containerW, colGap.PointsValue);
             double prevRowH = 0;
+            bool   reverse  = (flex.Direction == FlexDirection.RowReverse);
 
             foreach (var (rowStart, rowEnd) in rows)
             {
@@ -149,6 +159,8 @@ namespace Scryber.PDF.Layout
                 _wrapRowEnd   = rowEnd;
 
                 var widths  = ComputeColumnWidths(rowItemCount, containerW, colGap.PointsValue, rowStart);
+                if (reverse) widths = ReverseWidths(widths);
+
                 var rowCols = new PDFColumnOptions()
                 {
                     ColumnCount  = rowItemCount,
@@ -161,9 +173,11 @@ namespace Scryber.PDF.Layout
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
 
-                _isRowMode = true;
+                _isRowMode    = true;
+                _reverseItems = reverse;
                 base.DoLayoutBlockComponent(position, rowCols);
-                _isRowMode = false;
+                _isRowMode    = false;
+                _reverseItems = false;
 
                 PDFLayoutBlock flexBlock = null;
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -173,8 +187,9 @@ namespace Scryber.PDF.Layout
                     {
                         if (align != FlexAlignMode.Stretch && align != FlexAlignMode.FlexStart)
                             ApplyAlignItems(flexBlock, align);
-                        if (justify != FlexJustify.FlexStart)
-                            ApplyJustifyContent(flexBlock, justify);
+                        var rowJustify = NormaliseJustify(justify, reverse);
+                        if (rowJustify != FlexJustify.FlexStart)
+                            ApplyJustifyContent(flexBlock, rowJustify);
                     }
                 }
 
@@ -253,27 +268,89 @@ namespace Scryber.PDF.Layout
         {
             if (!_isRowMode)
             {
-                base.DoLayoutChildren(children);
+                if (!_reverseItems)
+                {
+                    base.DoLayoutChildren(children);
+                    return;
+                }
+
+                // column-reverse: render children in reverse source order.
+                var all = new List<Component>();
+                foreach (Component c in children)
+                    if (c.Visible) all.Add(c);
+
+                for (int k = all.Count - 1; k >= 0; k--)
+                {
+                    this.DoLayoutAChild(all[k]);
+                    if (!this.ContinueLayout
+                        || this.DocumentLayout.CurrentPage.IsClosed
+                        || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                        break;
+                }
                 return;
             }
 
-            int  visIdx = -1;
-            bool first  = true;
-
-            foreach (Component comp in children)
+            if (!_reverseItems)
             {
-                if (!comp.Visible) continue;
+                // Original forward row logic.
+                int  visIdx = -1;
+                bool first  = true;
 
-                bool isItem = IsFlexItem(comp);
-
-                if (isItem)
+                foreach (Component comp in children)
                 {
-                    visIdx++;
+                    if (!comp.Visible) continue;
 
-                    // In wrap mode: skip items outside [_wrapRowStart, _wrapRowEnd)
-                    if (_wrapRowStart >= 0 && (visIdx < _wrapRowStart || visIdx >= _wrapRowEnd))
+                    bool isItem = IsFlexItem(comp);
+
+                    if (isItem)
+                    {
+                        visIdx++;
+
+                        if (_wrapRowStart >= 0 && (visIdx < _wrapRowStart || visIdx >= _wrapRowEnd))
+                            continue;
+
+                        if (!first)
+                        {
+                            PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                            PDFLayoutRegion reg  = block.CurrentRegion;
+                            bool newPage;
+                            this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
+                        }
+                        first = false;
+                    }
+                    else if (_wrapRowStart > 0)
+                    {
                         continue;
+                    }
 
+                    this.DoLayoutAChild(comp);
+
+                    if (!this.ContinueLayout
+                        || this.DocumentLayout.CurrentPage.IsClosed
+                        || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                        break;
+                }
+                return;
+            }
+
+            // row-reverse: collect flex items in [_wrapRowStart, _wrapRowEnd), reverse, then layout.
+            var flexItems = new List<Component>();
+            {
+                int vi = -1;
+                foreach (Component comp in children)
+                {
+                    if (!comp.Visible || !IsFlexItem(comp)) continue;
+                    vi++;
+                    if (_wrapRowStart >= 0 && (vi < _wrapRowStart || vi >= _wrapRowEnd)) continue;
+                    flexItems.Add(comp);
+                }
+            }
+            flexItems.Reverse();
+
+            {
+                bool first = true;
+                foreach (var comp in flexItems)
+                {
                     if (!first)
                     {
                         PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -282,19 +359,14 @@ namespace Scryber.PDF.Layout
                         this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
                     }
                     first = false;
-                }
-                else if (_wrapRowStart > 0)
-                {
-                    // Non-flex content only goes in the first wrap row
-                    continue;
-                }
 
-                this.DoLayoutAChild(comp);
+                    this.DoLayoutAChild(comp);
 
-                if (!this.ContinueLayout
-                    || this.DocumentLayout.CurrentPage.IsClosed
-                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
-                    break;
+                    if (!this.ContinueLayout
+                        || this.DocumentLayout.CurrentPage.IsClosed
+                        || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                        break;
+                }
             }
         }
 
@@ -439,6 +511,31 @@ namespace Scryber.PDF.Layout
         // -----------------------------------------------------------------------
         // Helpers
         // -----------------------------------------------------------------------
+
+        // Reverses the column-width fractions array so that row-reverse renders
+        // item N into column 1 (leftmost) and item 0 into column N (rightmost).
+        private static ColumnWidths ReverseWidths(ColumnWidths widths)
+        {
+            double[] arr = widths.Widths;
+            if (arr == null || arr.Length < 2) return widths;
+            var rev = new double[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+                rev[i] = arr[arr.Length - 1 - i];
+            return new ColumnWidths(rev);
+        }
+
+        // For row-reverse the logical "start" is the right edge, so flex-start and
+        // flex-end have opposite visual meanings compared to row.
+        private static FlexJustify NormaliseJustify(FlexJustify justify, bool reverse)
+        {
+            if (!reverse) return justify;
+            return justify switch
+            {
+                FlexJustify.FlexStart => FlexJustify.FlexEnd,
+                FlexJustify.FlexEnd   => FlexJustify.FlexStart,
+                _                     => justify
+            };
+        }
 
         private static bool IsFlexItem(IComponent child)
             => child is IContainerComponent && child is Component c && c.Visible;

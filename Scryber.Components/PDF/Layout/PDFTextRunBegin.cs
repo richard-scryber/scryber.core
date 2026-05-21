@@ -769,6 +769,7 @@ namespace Scryber.PDF.Layout
 
                         padRect.Y -= pad.Top;
                         padRect.Height += pad.Top + pad.Bottom;
+                        padRect.X += pad.Left;
 
                         if (null != toArrange)
                         {
@@ -1111,7 +1112,7 @@ namespace Scryber.PDF.Layout
             var border = this.TextRenderOptions.Border;
             Rect rect;
 
-            if (null == border && this._fallbackBorder != null)
+            if ((null == border || border.HasBorders == false) && (this._fallbackBorder != null &&  this._fallbackBorder.HasBorders))
             {
                 border = this._fallbackBorder;
                 

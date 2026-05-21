@@ -720,13 +720,13 @@ namespace Scryber.PDF.Layout
                     return x;
                 else
                 {
-                    var parent = block.GetParentBlock();
+                    var parent = this.GetContainedRegion();
 
                     if (null != parent)
                     {
                         yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
                         
-                        x = parent.CurrentRegion.GetLeftInset(yoffset, height);
+                        x = parent.GetLeftInset(yoffset, height);
                     }
                     else
                     {
@@ -735,6 +735,15 @@ namespace Scryber.PDF.Layout
                 }
             }
             return x;
+        }
+
+        private PDFLayoutRegion GetContainedRegion()
+        {
+            var block = this.GetParentBlock();
+            var parent = block.Parent;
+            while(null != parent && !(parent is PDFLayoutRegion))
+                parent = parent.Parent;
+            return parent as PDFLayoutRegion;
         }
 
         public virtual Unit GetRightInset(Unit yoffset, Unit height)
@@ -752,12 +761,12 @@ namespace Scryber.PDF.Layout
                     return x;
                 else
                 {
-                    var parent = block.GetParentBlock();
+                    var parent = this.GetContainedRegion();
 
                     if (null != parent)
                     {
                         yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
-                        x = parent.CurrentRegion.GetRightInset(yoffset, height);
+                        x = parent.GetRightInset(yoffset, height);
                     }
                     else
                     {
@@ -807,7 +816,7 @@ namespace Scryber.PDF.Layout
 
         }
 
-        public virtual void AddFloatingInset(FloatMode mode, Unit floatWidth, Unit floatInset, Unit offsetY, Unit floatHeight)
+        public virtual void AddFloatingInset(FloatMode mode, Unit floatWidth, Unit floatInset, Unit offsetY, Unit floatHeight, PDFLayoutPositionedRegion associatedRegion)
         {
             var line = this.CurrentItem as PDFLayoutLine;
 
@@ -817,7 +826,7 @@ namespace Scryber.PDF.Layout
             
             if (mode == FloatMode.Left)
             {
-                var floating = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY);
+                var floating = new PDFFloatLeftAddition(floatWidth, floatHeight, floatInset, offsetY, associatedRegion);
                 if (null == this.Floats)
                     this.Floats = floating;
                 else
@@ -825,7 +834,7 @@ namespace Scryber.PDF.Layout
             }
             else if(mode == FloatMode.Right)
             {
-                var floating = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY);
+                var floating = new PDFFloatRightAddition(floatWidth, floatHeight, floatInset, offsetY, associatedRegion);
                 if (null == this.Floats)
                     this.Floats = floating;
                 else

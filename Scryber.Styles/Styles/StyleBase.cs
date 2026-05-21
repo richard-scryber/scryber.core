@@ -970,7 +970,7 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.PositionXObjectKey, out xobj))
             {
                 options.XObjectRender = xobj.Value(this);
-                
+
                 if (options.DisplayMode == DisplayMode.Inline)
                     options.DisplayMode = DisplayMode.InlineBlock; //XObjects should always be either as a block, or as an inline-block.
             }
@@ -978,6 +978,12 @@ namespace Scryber.Styles
             {
                 options.XObjectRender = false;
             }
+
+            StyleValue<int> zidx;
+            if (this.TryGetValue(StyleKeys.PositionZIndexKey, out zidx))
+                options.ZIndex = zidx.Value(this);
+            else
+                options.ZIndex = 0;
 
             StyleValue<Unit> unit;
 

@@ -832,7 +832,7 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             // name, so the parseable value is "balance_all" (underscore).
             var parser = new CSSColumnFillParser();
             var style = CreateStyle();
-            var result = ParseValue(parser, style, "balance_all");
+            var result = ParseValue(parser, style, "balance-all");
 
             Assert.IsTrue(result);
             Assert.AreEqual(ColumnFillMode.Balance_All, style.Columns.FillMode);
@@ -849,7 +849,8 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             var result = ParseValue(parser, style, "balance-all");
 
-            Assert.IsFalse(result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(ColumnFillMode.Balance, style.Columns.FillMode);
         }
 
         [TestMethod()]
