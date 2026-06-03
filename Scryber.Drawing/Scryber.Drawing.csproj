@@ -30,8 +30,8 @@
         <DebugType>portable</DebugType>
     </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Scryber.Core.OpenType" Version="9.2.0" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Scryber.Core.OpenType" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Errors1.Designer.cs" />

@@ -175,13 +175,13 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Scryber.Core.OpenType" Version="9.2.0.0" />
-    <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Scryber.Core.OpenType" />
+    <PackageReference Include="System.Resources.Extensions" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="HtmlAgilityPack" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\scryber_generatedby_bow.png">

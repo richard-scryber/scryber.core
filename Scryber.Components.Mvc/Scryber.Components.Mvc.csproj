@@ -137,12 +137,20 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.3.9" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="Scryber.Core" Version="9.5.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
+    <PackageReference Include="HtmlAgilityPack" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="Scryber.Core" />
+    <PackageReference Include="System.Security.Cryptography.Xml" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseScryberProjRef)' == 'False'">
+    <PackageReference Include="Scryber.Core" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(UseScryberProjRef)' == 'True'">
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <ProjectReference Include="..\Scryber.Components\Scryber.Components.csproj" />
   </ItemGroup>
       
   <ItemGroup>

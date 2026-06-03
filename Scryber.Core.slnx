@@ -1,0 +1,45 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Default" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="LICENSE.md" />
+    <File Path="PaperworkLogoTransparent.png" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Scryber.Common/Scryber.Common.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Components.Mvc/Scryber.Components.Mvc.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Components/Scryber.Components.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Drawing/Scryber.Drawing.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Expressions/Scryber.Expressive.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Generation/Scryber.Generation.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Imaging/Scryber.Imaging.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.Styles/Scryber.Styles.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.UnitLayouts/Scryber.UnitLayouts.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.UnitSamples/Scryber.UnitSamples.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+  <Project Path="Scryber.UnitTest/Scryber.UnitTests.csproj">
+    <BuildType Solution="Default|*" Project="Debug" />
+  </Project>
+</Solution>

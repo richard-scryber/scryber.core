@@ -67,15 +67,12 @@ namespace Scryber.Imaging
                 
                 var name = document.GetIncrementID(ObjectTypes.ImageData) + ".png";
                 
-                data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, name, depth, alpha, colorSpace);
+                data = CreatePngImageDataWithFallback(img, name, depth, alpha, colorSpace);
             }
             else
             {
-                if (document.ConformanceMode == ParserConformanceMode.Strict)
-                    throw new PDFDataException(
-                        "The format of the raw image data was expected to be PNG");
-                
-                document.TraceLog.Add(TraceLevel.Error,"Image", "The format of the raw image data was expected to be PNG");
+                var name = document.GetIncrementID(ObjectTypes.ImageData) + ".png";
+                data = CreatePngImageDataWithFallback(img, name, 8, true, ColorSpace.RGB);
             }
 
             return data;
@@ -119,13 +116,30 @@ namespace Scryber.Imaging
                             || (meta.ColorType.HasValue && meta.ColorType == PngColorType.RgbWithAlpha);
                 
                 
-                data = GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, img, path, depth, alpha, colorSpace);
+                data = CreatePngImageDataWithFallback(img, path, depth, alpha, colorSpace);
                 
+            }
+            else
+            {
+                data = CreatePngImageDataWithFallback(img, path, 8, true, ColorSpace.RGB);
             }
 
 
 
             return data;
+        }
+
+        private ImageData CreatePngImageDataWithFallback(Image image, string source, int depth, bool hasAlpha, ColorSpace colorSpace)
+        {
+            try
+            {
+                return GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, image, source, depth, hasAlpha, colorSpace);
+            }
+            catch (NotSupportedException)
+            {
+                var converted = image.CloneAs<Rgba32>();
+                return GetImageDataForImage(Scryber.Drawing.ImageFormat.Png, converted, source, 8, true, ColorSpace.RGB);
+            }
         }
 
 

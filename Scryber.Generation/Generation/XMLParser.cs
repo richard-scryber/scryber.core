@@ -700,6 +700,10 @@ namespace Scryber.Generation
                         TryAttachEventHandlerToController(reader, container, reader.Value, evt, cdef);
                     
                 }
+                else if (TryCaptureMetadataAttribute(container, name, reader.Value))
+                {
+                    LogAdd(reader, TraceLevel.Verbose, "Captured custom metadata attribute '{0}' on type {1}", name, cdef.ClassType);
+                }
                 else if(skipUnknown)
                 {
                     LogAdd(reader, TraceLevel.Verbose, "Unknown attribute " + name + " is being explicitly skipped on " + cdef.ClassType);
@@ -710,6 +714,34 @@ namespace Scryber.Generation
                     LogAdd(reader, TraceLevel.Error, "Skipping unknown attribute '{0}' on type {1}", name, cdef.ClassType);
 
             } while (reader.MoveToNextAttribute());
+        }
+
+        #endregion
+
+        #region private bool TryCaptureMetadataAttribute(object container, string name, string value)
+
+        private bool TryCaptureMetadataAttribute(object container, string name, string value)
+        {
+            if (container == null || string.IsNullOrWhiteSpace(name))
+                return false;
+
+            IMetadataContainer metadataContainer = container as IMetadataContainer;
+            if (metadataContainer == null)
+                return false;
+
+            string key;
+            if (name.StartsWith("data-", StringComparison.OrdinalIgnoreCase))
+                key = name.Substring(5);
+            else if (name.StartsWith("meta-", StringComparison.OrdinalIgnoreCase))
+                key = name.Substring(5);
+            else
+                return false;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            metadataContainer.SetMetadata(key, value);
+            return true;
         }
 
         #endregion
