@@ -1640,7 +1640,7 @@ namespace Scryber.PDF.Layout
                     positioned.TotalBounds = bounds;
                 }
 
-                if (positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
                     if (!this.MoveFloatToNextRegion(FloatMode.Left, positioned.TotalBounds.X, positioned, relativeTo))
                     {
@@ -1681,7 +1681,7 @@ namespace Scryber.PDF.Layout
                 
                 positioned.PositionOptions.Right = rightOffset;
                 
-                if (positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
+                if (offsetY + positioned.Height > relativeTo.CurrentRegion.AvailableHeight)
                 {
                     if (!this.MoveFloatToNextRegion(FloatMode.Right, rightOffset, positioned, relativeTo))
                     {

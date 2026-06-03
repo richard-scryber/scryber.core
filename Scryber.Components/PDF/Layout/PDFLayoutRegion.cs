@@ -720,13 +720,13 @@ namespace Scryber.PDF.Layout
                     return x;
                 else
                 {
-                    var parent = this.GetContainedRegion();
+                    var parent = block.GetParentBlock();
 
-                    if (null != parent)
+                    if (null != parent && null != parent.CurrentRegion)
                     {
                         yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
                         
-                        x = parent.GetLeftInset(yoffset, height);
+                        x = parent.CurrentRegion.GetLeftInset(yoffset, height);
                     }
                     else
                     {
@@ -761,12 +761,12 @@ namespace Scryber.PDF.Layout
                     return x;
                 else
                 {
-                    var parent = this.GetContainedRegion();
+                    var parent = block.GetParentBlock();
 
-                    if (null != parent)
+                    if (null != parent && null != parent.CurrentRegion)
                     {
                         yoffset += block.TotalBounds.Y + block.Position.Margins.Top + block.Position.Padding.Top;
-                        x = parent.GetRightInset(yoffset, height);
+                        x = parent.CurrentRegion.GetRightInset(yoffset, height);
                     }
                     else
                     {
