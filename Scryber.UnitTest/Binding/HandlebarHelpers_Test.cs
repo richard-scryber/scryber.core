@@ -637,7 +637,7 @@ namespace Scryber.Core.UnitTests.Binding
                     
                     created = doc.FindAComponentById("inside_user_status") as HTMLParagraph;
                     Assert.IsNotNull(created);
-                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    Assert.AreEqual("delivered", ((TextLiteral)created.Contents[1]).Text); //falls back to model.status
                     
                     created = doc.FindAComponentById("inside_user_model_status") as HTMLParagraph;
                     Assert.IsNotNull(created);
@@ -697,7 +697,7 @@ namespace Scryber.Core.UnitTests.Binding
                     
                     created = doc.FindAComponentById("outside_user_status") as HTMLParagraph;
                     Assert.IsNotNull(created);
-                    Assert.AreEqual("NOT FOUND", ((TextLiteral)created.Contents[1]).Text);
+                    Assert.AreEqual("delivered", ((TextLiteral)created.Contents[1]).Text);
                     
                     created = doc.FindAComponentById("outside_user_model_status") as HTMLParagraph;
                     Assert.IsNotNull(created);
