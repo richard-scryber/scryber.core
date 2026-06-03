@@ -134,9 +134,6 @@
     <None Update="Resources\OpenSans-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\HTML\Archive.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Content\HTML\Images\AllFormats\**" />
@@ -149,5 +146,7 @@
     <EmbeddedResource Remove="Content\HTML\Samples\**" />
     <EmbeddedResource Remove="Secure\**" />
     <EmbeddedResource Remove="TestResults\**" />
+    <None Remove="Resources\Archive.otf" />
+    <EmbeddedResource Include="Resources\Archive.otf" />
   </ItemGroup>
 </Project>

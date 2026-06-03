@@ -941,5 +941,25 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(_layout, "Layout should complete without throwing");
             Assert.AreEqual(1, _layout.AllPages.Count, "Should still produce one page");
         }
+
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void MMckinstry_Issue()
+        {
+            var source = DocStreams.AssertGetTemplatePath("Content/HTML/Mmcinstry_issue.html");
+            
+            using var doc = Document.ParseDocument(source);
+
+            //giving it a higher priority than the contained .padding-top-large
+            var fix = new StyleDefn("div.padded-top-large"); 
+            fix.Position.DisplayMode = DisplayMode.Block;
+            doc.Styles.Add(fix);
+            
+            using (var ms = DocStreams.GetOutputStream("Grid_Mmcinstry_issue.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
     }
 }

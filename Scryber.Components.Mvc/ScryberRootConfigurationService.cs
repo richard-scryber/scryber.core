@@ -128,6 +128,7 @@ namespace Scryber.Components.Mvc
         {
             var section = _config.GetSection(path);
             var value = new T();
+            section.Bind(value);
             return value;
         }
 

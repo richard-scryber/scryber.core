@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.IO;
+using System.Reflection;
 using Scryber.Components;
 using Scryber.Logging;
 
@@ -168,6 +169,10 @@ namespace Scryber
                     {
                         this.FullfillDataRequest(request);
                     }
+                    else if (request.FilePath.StartsWith(Const.ResourcePathTransport))
+                    {
+                        this.FullfillResourceRequest(request);
+                    }
                     else if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
                     {
                         this.FullfillUriRequest(request);
@@ -236,6 +241,45 @@ namespace Scryber
                     this.AddDebugLog( "Completed the request for url '" + urlRequest.StubFilePathForLog + "' with result" + (urlRequest.Result == null ? "NO RESULT SET" : urlRequest.Result.ToString()));
 
                 return success;
+            }
+        }
+
+        protected virtual void FullfillResourceRequest(RemoteFileRequest rsrcRequest)
+        {
+            var rsrc = rsrcRequest.FilePath.Substring(Const.ResourcePathTransport.Length).Trim();
+
+            Assembly assm = null;
+            var index = rsrc.IndexOf(',');
+
+            if (index > 1)
+            {
+                var assmName = rsrc.Substring(index + 1).Trim();
+                rsrc = rsrc.Substring(0, index).Trim();
+                assm = Assembly.Load(assmName);
+            }
+            else
+                assm = Assembly.GetEntryAssembly();
+            
+            Stream rsrcStream = null;
+
+            bool success = false;
+            try
+            {
+                rsrcStream = assm.GetManifestResourceStream(rsrc);
+                
+                if (null != rsrcStream)
+                    success = rsrcRequest.Callback(this._owner, rsrcRequest, rsrcStream);
+
+                rsrcRequest.CompleteRequest(rsrcStream, success, null);
+            }
+            catch (Exception e)
+            {
+                rsrcRequest.CompleteRequest(null, false, e);
+            }
+            finally
+            {
+                if(null != rsrcStream)
+                    rsrcStream.Dispose();
             }
         }
 

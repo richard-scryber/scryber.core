@@ -2272,6 +2272,34 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(rsrc1, "The open sans font was not found");
         }
 
+        [TestMethod]
+        public void FontFaceResource()
+        {
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceResource.html");
+            
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+            using var stream = DocStreams.GetOutputStream("FontFace_Resource.pdf");
+            doc.SaveAsPDF(stream);
+            
+            Assert.AreEqual(1, doc.SharedResources.Count);
+            var one = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(one);
+            
+            Assert.AreEqual("Archive", one.FontName);
+            Assert.AreEqual(PDFResource.FontDefnResourceType, one.ResourceType);
+            Assert.IsNotNull(one.Definition);
+            Assert.AreEqual("Archive", one.Definition.FullName);
+            
+        }
+
         /// <summary>
         /// Tests that the font face will fallback to the closest weight / style and none
         /// </summary>

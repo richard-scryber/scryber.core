@@ -1298,7 +1298,9 @@ namespace Scryber.Components
         {
             if (System.Uri.IsWellFormedUriString(path, UriKind.Absolute))
                 return path;
-            
+             
+            if(path.StartsWith(Scryber.Const.ResourcePathTransport))
+                return path;
 
             if (path.IndexOf('\\') > -1 && System.IO.Path.IsPathRooted(path))
                 return path;

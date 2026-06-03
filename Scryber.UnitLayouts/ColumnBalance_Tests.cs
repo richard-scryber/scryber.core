@@ -1949,7 +1949,6 @@ namespace Scryber.UnitLayouts
             foreach (var item in col1.Contents) col1Desc.Append(DescribeFloatItem(item));
 
             // Find the line containing the float:left positioned run
-            double floatOffsetY = -1;
 
             List<PDFLayoutPositionedRegionRun> floatRuns = new List<PDFLayoutPositionedRegionRun>();
             
@@ -2111,8 +2110,7 @@ namespace Scryber.UnitLayouts
             foreach (var item in col1.Contents) col1Desc.Append(DescribeFloatItem(item));
 
             // Find the line containing the float:left positioned run
-            double floatOffsetY = -1;
-
+            
             List<PDFLayoutPositionedRegionRun> floatRuns = new List<PDFLayoutPositionedRegionRun>();
             
             foreach (var col in container.Columns)
