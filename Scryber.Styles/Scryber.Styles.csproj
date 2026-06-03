@@ -16,7 +16,7 @@
     <Compile Remove="Errors1.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
+    <PackageReference Include="NuGet.Build.Packaging">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

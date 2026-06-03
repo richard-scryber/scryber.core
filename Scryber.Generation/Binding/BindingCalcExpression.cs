@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -191,7 +192,91 @@ namespace Scryber.Binding
                 return null != value;
             }
             else
-                return Items.TryGetValue(variableName, out value);
+            {
+                if (Items.TryGetValue(variableName, out value))
+                    return true;
+
+                // Legacy fallback: unresolved names should resolve from model properties.
+                if (TryResolveFromNamedRoot("model", variableName, out value))
+                    return true;
+
+                // Additional fallback: if values contains root objects (e.g. BSOPartslist),
+                // search their properties for the requested name.
+                if (TryResolveFromValuesObjectGraph(variableName, out value))
+                    return true;
+
+                value = null;
+                return false;
+            }
+        }
+
+        private bool TryResolveFromNamedRoot(string rootName, string propertyName, out object value)
+        {
+            value = null;
+
+            if (String.IsNullOrWhiteSpace(rootName) || String.IsNullOrWhiteSpace(propertyName))
+                return false;
+
+            if (!Items.TryGetValue(rootName, out object root) || root == null)
+                return false;
+
+            value = PropertyExpression.GetPropertyValue(root, propertyName, true);
+            return value != null;
+        }
+
+        private bool TryResolveFromValuesObjectGraph(string propertyName, out object value)
+        {
+            value = null;
+
+            if (String.IsNullOrWhiteSpace(propertyName))
+                return false;
+
+            if (!Items.TryGetValue("values", out object valuesObj) || valuesObj == null)
+                return false;
+
+            if (valuesObj is IDictionary<string, object> generic)
+            {
+                if (generic.TryGetValue(propertyName, out value) && value != null)
+                    return true;
+
+                foreach (KeyValuePair<string, object> entry in generic)
+                {
+                    if (entry.Value == null)
+                        continue;
+
+                    value = PropertyExpression.GetPropertyValue(entry.Value, propertyName, true);
+                    if (value != null)
+                        return true;
+                }
+
+                value = null;
+                return false;
+            }
+
+            if (valuesObj is IDictionary nongeneric)
+            {
+                foreach (DictionaryEntry entry in nongeneric)
+                {
+                    if (entry.Key != null && String.Equals(entry.Key.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        value = entry.Value;
+                        return value != null;
+                    }
+                }
+
+                foreach (DictionaryEntry entry in nongeneric)
+                {
+                    if (entry.Value == null)
+                        continue;
+
+                    value = PropertyExpression.GetPropertyValue(entry.Value, propertyName, true);
+                    if (value != null)
+                        return true;
+                }
+            }
+
+            value = null;
+            return false;
         }
 
         protected class RelativeDimensions

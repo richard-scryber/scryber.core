@@ -35,7 +35,7 @@ namespace Scryber.Components
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent
+    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent, IMetadataContainer
     {
         // static event keys for the PDFEventList
 
@@ -856,6 +856,89 @@ namespace Scryber.Components
         public bool HasOutline
         {
             get { return null != this._outline && !string.IsNullOrEmpty(this._outline.Title); }
+        }
+
+        #endregion
+
+        #region public metadata helpers
+
+        private static readonly IReadOnlyDictionary<string, string> EmptyMetadata =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        private Dictionary<string, string> _metadata;
+
+        /// <summary>
+        /// Gets all custom metadata assigned to this component.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> Metadata
+        {
+            get { return _metadata ?? EmptyMetadata; }
+        }
+
+        /// <summary>
+        /// Stores metadata under the specified key.
+        /// </summary>
+        public void SetMetadata(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return;
+
+            if (_metadata == null)
+                _metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            _metadata[key.Trim()] = value;
+        }
+
+        /// <summary>
+        /// Tries to get metadata by key. Falls back to parsing key/value pairs from Tag.
+        /// </summary>
+        public bool TryGetMetadata(string key, out string value)
+        {
+            value = null;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            if (_metadata != null && _metadata.TryGetValue(key, out value))
+                return true;
+
+            return TryGetMetadataFromTag(key, out value);
+        }
+
+        /// <summary>
+        /// Gets metadata by key, or defaultValue when not found.
+        /// </summary>
+        public string GetMetadata(string key, string defaultValue = null)
+        {
+            string value;
+            if (TryGetMetadata(key, out value))
+                return value;
+            return defaultValue;
+        }
+
+        private bool TryGetMetadataFromTag(string key, out string value)
+        {
+            value = null;
+
+            if (string.IsNullOrWhiteSpace(_tag) || string.IsNullOrWhiteSpace(key))
+                return false;
+
+            string[] parts = _tag.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string pair in parts)
+            {
+                int eq = pair.IndexOf('=');
+                if (eq <= 0)
+                    continue;
+
+                string pairKey = pair.Substring(0, eq).Trim();
+                if (!pairKey.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                value = pair.Substring(eq + 1).Trim();
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
