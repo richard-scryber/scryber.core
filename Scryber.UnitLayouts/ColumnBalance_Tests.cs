@@ -1300,6 +1300,13 @@ namespace Scryber.UnitLayouts
                 repeatText + repeatText + repeatText +
                 repeatText + repeatText + repeatText));
 
+            var after = new Div();
+            after.Contents.Add(new TextLiteral("This is after the balanced text across a full page width"));
+            after.BorderColor = StandardColors.Blue;
+            after.BorderWidth = 1;
+            after.Padding     = new Thickness(2);
+            section.Contents.Add(after);
+            
             using (var ms = DocStreams.GetOutputStream("ColumnBalance_19_TextLines_PageOverflow.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
@@ -1336,6 +1343,9 @@ namespace Scryber.UnitLayouts
 
             // ── Page 2: continuation of the div (BlockRepeatIndex == 1) ──
             var page2Body  = layout.AllPages[1].ContentBlock;
+            Assert.AreEqual(1, page2Body.Columns.Length, "Page-2 col0 should have 1 columns");
+            Assert.AreEqual(2, page2Body.Columns[0].Contents.Count, "Page-2 col1 should have 2 items");
+            
             var divPage2   = page2Body.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(divPage2, "Div continuation should be first item on page 2");
             Assert.AreEqual(1, divPage2.BlockRepeatIndex, "Page-2 block should have BlockRepeatIndex 1");
@@ -1350,6 +1360,17 @@ namespace Scryber.UnitLayouts
                 "Page-2 col0 should contain PDFLayoutLine items");
             Assert.IsTrue(p2col1.Contents.Any(i => i is PDFLayoutLine),
                 "Page-2 col1 should contain PDFLayoutLine items");
+            
+            var afterDiv = page2Body.Columns[0].Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(afterDiv, "After div should be second item on page 2");
+            Assert.AreEqual(page2Body.Width, afterDiv.Width, "After div width should have width of content block");
+            var owner = afterDiv.Owner as Div;
+            Assert.AreEqual(owner, after);
+            
+            var bounds = owner.GetFirstArrangement().RenderBounds;
+            var offsetY = 10 + 2 + 12 + 12 + 2; //margins, padding and 2 lines of 12pt height.
+            Assert.AreEqual(offsetY, bounds.Y, "The after div should be 38 offset" );
+
         }
 
         // =====================================================================
