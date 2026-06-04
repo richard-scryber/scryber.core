@@ -939,6 +939,7 @@ namespace Scryber.Core.UnitTests.Html
 
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void LocalAndRemoteImages()
         {
             var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";

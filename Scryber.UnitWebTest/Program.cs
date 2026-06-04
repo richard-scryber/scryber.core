@@ -20,9 +20,9 @@ var fontRegistration = new FontRegistrationOption()
     Resource = "Scryber.UnitWebTest.Fonts.OpenSans-Light.ttf, Scryber.UnitWebTest"
 };
 
-var all = new List<FontRegistrationOption>(scryberConfig.FontOptions.Register ?? new FontRegistrationOption[] {});
+var all = new List<FontRegistrationOption>(scryberConfig.FontOptions.Register ?? new List<FontRegistrationOption>());
 all.Add(fontRegistration);
-scryberConfig.FontOptions.Register = all.ToArray();
+scryberConfig.FontOptions.Register = all;
 
 
 var app = builder.Build();

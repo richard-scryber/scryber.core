@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Scryber.Options
 {
@@ -19,7 +20,7 @@ namespace Scryber.Options
 
         public string DefaultFont { get; set; }
 
-        public FontRegistrationOption[] Register { get; set; }
+        public List<FontRegistrationOption> Register { get; set; }
 
         public FontOptions()
         {

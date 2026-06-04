@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Scryber.Styles
 {
     public class StyleRemoteGroup : StyleGroup, IComponent, ILoadableComponent
@@ -86,6 +88,16 @@ namespace Scryber.Styles
             {
                 return service.MapPath(this.LoadType, path, string.Empty, out isfile);
             }
+        }
+
+        /// <summary>
+        /// Explicit interface declaration - always returns an empty array.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        IEnumerable<IComponent> IComponent.FindMatches(string selector)
+        {
+            return new IComponent[] { };
         }
 
         /// <summary>

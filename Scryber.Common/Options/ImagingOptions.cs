@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace Scryber.Options
 {
     public class ImagingOptions
@@ -12,7 +13,7 @@ namespace Scryber.Options
 
         public int ImageCacheDuration { get; set; }
 
-        public ImageDataFactoryOption[] Factories { get; set; }
+        public List<ImageDataFactoryOption> Factories { get; set; }
 
         public ImagingOptions()
         {

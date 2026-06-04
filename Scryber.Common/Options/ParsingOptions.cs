@@ -22,7 +22,7 @@ namespace Scryber.Options
         public List<BindingPrefixOption> Bindings { get; set; }
 
 
-        public ParserFactoryOption[] Parsers { get; set; }
+        public List<ParserFactoryOption> Parsers { get; set; }
         
 
         public ParsingOptions()
@@ -68,7 +68,7 @@ namespace Scryber.Options
                                                     FactoryAssembly = "Scryber.Generation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=872cbeb81db952fe"
             });
 
-            Parsers = new ParserFactoryOption[] { };
+            Parsers = new List<ParserFactoryOption>();
 
             //Parsers.Add(new ParserFactoryOption()
             //{

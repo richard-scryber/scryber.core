@@ -29,6 +29,7 @@ using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Graphics;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.Components
 {
@@ -1229,21 +1230,38 @@ namespace Scryber.Components
 
         #endregion
 
+        /// <summary>
+        /// Returns all the components that are in this components hierarchy (including itself) that match the specified pattern (e.g. 'div.boxed > .known')
+        /// </summary>
+        /// <param name="cssPattern">The css selector pattern to match against.</param>
+        /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
+        public IEnumerable<IComponent> FindMatches(string cssPattern)
+        {
+            var matcher = (StyleMatcher)cssPattern;
+            return FindMatches(matcher);
+        }
 
-
-        //
-        // private and protected methods
-        //
-
-        
-
-        #region protected virtual PDFStyle GetAppliedStyle() + public virtual PDFStyle GetAppliedStyle(PDFComponent forComponent)
-
+        /// <summary>
+        /// Returns all the components that are in this components hierarchy (including itself) that the provided matcher returns true for.
+        /// </summary>
+        /// <param name="matcher">The StyleMatcher to use. A StyleMatcher will always return true if the component it is checking should match</param>
+        /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
+        public IEnumerable<Component> FindMatches(StyleMatcher matcher)
+        {
+            if(matcher ==  null)
+                throw new ArgumentNullException(nameof(matcher));
+            var all = new  List<Component>();
+            this.DoFindMatches(all, matcher);
+            
+            return all;
+        }
         
         /// <summary>
-        /// Gets the Defined Style for this Component (Style Items that are to be applied directly)
+        /// Gets the Defined Style for this Component. The base (default) style, any style values that are to be applied directly
+        /// and any styles defined within the parent hierarchy. e.g. at the document level).
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>NOTE: This does not take into account the cascading styles that would be applied based on inheritance in the style stack at layout time.</remarks>
+        /// <returns>A full style description for the component.</returns>
         public virtual Style GetAppliedStyle()
         {
             if (null == _appliedStyle)
@@ -1255,6 +1273,29 @@ namespace Scryber.Components
             }
             return _appliedStyle;
         }
+        
+        /// <summary>
+        /// Traverses the hierarchy up to the top level to retrieve the defined style for the Component provided
+        /// </summary>
+        /// <param name="forComponent">The Component to get the style for</param>
+        /// <param name="baseStyle"></param>
+        /// <returns>The merged style</returns>
+        public virtual Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            if (this.Parent != null)
+                return this.Parent.GetAppliedStyle(forComponent, baseStyle);
+            else
+                return baseStyle;
+        }
+        
+        //
+        // private and protected methods
+        //
+
+        
+
+        #region protected virtual PDFStyle GetAppliedStyle() + public virtual PDFStyle GetAppliedStyle(PDFComponent forComponent)
+        
 
         /// <summary>
         /// Merges any explictly declared styles on this component, onto the cacluated applied style
@@ -1277,20 +1318,7 @@ namespace Scryber.Components
         {
             return new Style();
         }
-
-        /// <summary>
-        /// Traverses the hierarchy of Components to retrieve the defined style for the Component provided
-        /// </summary>
-        /// <param name="forComponent">The Component to get the style for</param>
-        /// <param name="baseStyle"></param>
-        /// <returns>The merged style</returns>
-        public virtual Style GetAppliedStyle(Component forComponent, Style baseStyle)
-        {
-            if (this.Parent != null)
-                return this.Parent.GetAppliedStyle(forComponent, baseStyle);
-            else
-                return baseStyle;
-        }
+        
 
         #endregion
 
@@ -1490,6 +1518,16 @@ namespace Scryber.Components
             //Do Nothing
         }
 
+        #endregion
+
+        #region internal protected virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        
+        internal protected virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        {
+            if(matcher.IsMatchedTo(this, ComponentState.Normal, out int priority))
+                found.Add(this);
+        }
+        
         #endregion
 
         #region public void SetArrangement(PDFComponentArrangement arrange) + GetArrangement() + ClearArrangement()

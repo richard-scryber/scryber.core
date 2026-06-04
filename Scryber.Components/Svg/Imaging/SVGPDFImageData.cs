@@ -260,6 +260,16 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
         return rendererRef;
     }
     
+    /// <summary>
+    /// Explicit interface declaration, always returns an empty array
+    /// </summary>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    System.Collections.Generic.IEnumerable<IComponent> IComponent.FindMatches(string selector)
+    {
+        return new IComponent[] { };
+    }
+    
     #region ILayoutComponent Map Path Implementation
 
     /// <summary>

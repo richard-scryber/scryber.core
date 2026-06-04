@@ -115,6 +115,13 @@ namespace Scryber
         /// <returns></returns>
         string MapPath(string source);
 
+        /// <summary>
+        /// Finds any components in this components contents (including itself), that matches the css style selector.
+        /// </summary>
+        /// <param name="selector">A css selector string (e.g 'body div.class')</param>
+        /// <returns></returns>
+        IEnumerable<IComponent> FindMatches(string selector);
+
     }
 
     #endregion
@@ -288,6 +295,8 @@ namespace Scryber
         Options.OutputOptions OutputOptions { get; }
 
         Options.TracingOptions TracingOptions { get; }
+        
+        Options.ExpressionOptions ExpressionOptions { get; }
 
         object GetScryberSection(Type ofType, string name);
 

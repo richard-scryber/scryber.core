@@ -149,6 +149,7 @@ namespace Scryber.Binding
         {
             var set = new FunctionSet(this.Options);
             set.AddDefaultFunctions();
+            set.AddConfiguredFunctions();
             return set;
         }
 
@@ -156,6 +157,7 @@ namespace Scryber.Binding
         {
             var set = new OperatorSet(this.Options);
             set.AddDefaultOperators();
+            set.AddConfiguredOperators();
             return set;
             
         }

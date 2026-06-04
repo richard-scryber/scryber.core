@@ -624,7 +624,7 @@ namespace Scryber.Drawing
             FamilyReferenceBag custom = new FamilyReferenceBag();
             List<string> loadErrors = new List<string>();
             
-            if (options.Register == null || options.Register.Length == 0) return custom;
+            if (options.Register == null || options.Register.Count == 0) return custom;
 
             using (var reader = new TypefaceReader())
             {
