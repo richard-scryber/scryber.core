@@ -44,6 +44,40 @@ namespace Scryber.Options
         
         public bool Enabled { get; set; } = true;
 
+        public CustomFunctionOption()
+        {}
+
+        public CustomFunctionOption(string name, CustomFunctionType type, string typeName, string assemblyName,
+            bool forceOverride = false, bool enabled = true)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Type = type;
+            
+            FunctionType = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            FunctionAssembly = assemblyName ?? throw new ArgumentNullException(nameof(assemblyName));
+            
+            Override = forceOverride;
+            Enabled = enabled;
+        }
+        
+        public CustomFunctionOption(string name, CustomFunctionType type, object functionInstance,
+            bool forceOverride = false, bool enabled = true)
+        {
+            if (null == functionInstance)
+                throw new ArgumentNullException(nameof(functionInstance));
+
+            _instance = functionInstance;
+            
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Type = type;
+            
+            FunctionType = functionInstance.GetType().FullName;
+            FunctionAssembly = functionInstance.GetType().Assembly.FullName;
+            
+            Override = forceOverride;
+            Enabled = enabled;
+        }
+
         private object _instance;
         
         public object GetInstance()
@@ -54,6 +88,7 @@ namespace Scryber.Options
             
             return this._instance;
         }
+        
 
     }
 

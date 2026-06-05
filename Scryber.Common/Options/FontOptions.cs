@@ -44,6 +44,29 @@ namespace Scryber.Options
         public string File { get; set; }
         
         public string Resource { get; set; }
+        
+        public  FontRegistrationOption()
+        {}
+
+        public FontRegistrationOption(string family, string style, int weight, string file, string resource)
+        {
+            if(string.IsNullOrWhiteSpace(family))
+                throw new ArgumentNullException(nameof(family));
+            if(string.IsNullOrWhiteSpace(style))
+                throw new ArgumentNullException(nameof(style));
+            if(weight < 100 || weight > 900)
+                throw new ArgumentOutOfRangeException(nameof(weight));
+
+            Family = family;
+            Style = style;
+            Weight = weight;
+            
+            if(string.IsNullOrEmpty(file) && string.IsNullOrEmpty(resource))
+                throw new ArgumentException($"At least one of {nameof(file)} or {nameof(resource)} is required. Both cannot be null or empty");
+            
+            File = file;
+            Resource = resource;
+        }
     }
 
 

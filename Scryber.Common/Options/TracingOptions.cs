@@ -55,6 +55,40 @@ namespace Scryber.Options
 
         private IPDFTraceLogFactory _factory = null;
         
+        public TraceLogOption()
+        {}
+
+        public TraceLogOption(string name, string factoryType, string factoryAssembly, bool enabled = true)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (string.IsNullOrWhiteSpace(factoryType))
+                throw new ArgumentNullException(nameof(factoryType));
+            if (string.IsNullOrWhiteSpace(factoryAssembly))
+                throw new ArgumentNullException(nameof(factoryAssembly));
+            
+            this.Name = name;
+            this.FactoryType = factoryType;
+            this.FactoryAssembly = factoryAssembly;
+            this.Enabled = enabled;
+        }
+
+        public TraceLogOption(string name, IPDFTraceLogFactory factory, bool enabled = true)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+            
+            this.Name = name;
+            this.FactoryType = factory.GetType().AssemblyQualifiedName;
+            this.FactoryAssembly = factory.GetType().Assembly.FullName;
+            this.Enabled = enabled;
+            
+            _factory = factory;
+        }
+        
         internal IPDFTraceLogFactory GetFactory()
         {
             if(null == _factory)

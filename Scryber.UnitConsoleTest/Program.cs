@@ -56,7 +56,7 @@ class Program
         
         output = System.IO.Path.Combine(output, "./HelloOpenSans.pdf");
 
-        Scryber.PDF.Layout.PDFLayoutDocument layout = null;
+        PDFLayoutDocument? layout = null;
         
         using (var stream = new FileStream(output, FileMode.Create))
         {
