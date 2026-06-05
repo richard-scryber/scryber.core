@@ -3884,7 +3884,7 @@ namespace Scryber.Components
 
                 if (_hasroot)
                 {
-                    _route.Push(NormalizePath(fullPath));
+                    _route.Push(NormalizePath(fullPath, false));
                 }
 
                 _resolver = this.Resolve;
@@ -3920,7 +3920,7 @@ namespace Scryber.Components
                         string directory = System.Environment.CurrentDirectory;
                         filepath = filepath.Substring(1);
                         fullpath = System.IO.Path.Combine(directory, filepath);
-                        fullpath = NormalizePath(fullpath);
+                        fullpath = NormalizePath(fullpath,  false);
                     //}
                     type = ParseSourceType.LocalFile;
                 }
@@ -3937,14 +3937,14 @@ namespace Scryber.Components
                     string current = _route.Peek();
                     current = System.IO.Path.GetDirectoryName(current);
                     fullpath = System.IO.Path.Combine(current, filepath);
-                    fullpath = NormalizePath(fullpath);
+                    fullpath = NormalizePath(fullpath, false);
                 }
                 else if (!_hasroot)
                     throw new NotSupportedException(Errors.CannotReferenceExternalFilesFromSourcesWithoutARoot);
                 else
                     throw new ArgumentOutOfRangeException("Unbalanced stack");
 
-                if (_route.Contains(fullpath))
+                if (IsInRoute(_route,fullpath))
                     throw RecordAndRaise.ParserException(Errors.CircularReferenceToPath, filepath);
 
                 _route.Push(fullpath);
@@ -3985,6 +3985,17 @@ namespace Scryber.Components
                 }
 
                 return comp;
+            }
+
+            private bool IsInRoute(Stack<string> route, string path)
+            {
+                foreach (string s in _route)
+                {
+                    if(s.Equals(path, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                
+                return false;
             }
 
             /// <summary>
@@ -4150,9 +4161,14 @@ namespace Scryber.Components
                 }
             }
 
-            private string NormalizePath(string fullpath)
+            private string NormalizePath(string fullpath, bool asLower = true)
             {
-                return System.IO.Path.GetFullPath(fullpath).ToLower();
+                var path = System.IO.Path.GetFullPath(fullpath);
+                
+                if(asLower)
+                    path = path.ToLower();
+
+                return path;
             }
 
             public PDFReferenceResolver Resolver
