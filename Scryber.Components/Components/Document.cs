@@ -2556,7 +2556,7 @@ namespace Scryber.Components
             data.DocumentID = this.DocumentID;
             System.Reflection.Assembly assm = typeof(Document).Assembly;
             data.ScryberVersion = assm.GetName().Version;
-            data.ScryberFileVersion = Scryber.Utilities.FrameworkHelper.CurrentVersion;
+            data.ScryberFileVersion = Scryber.Utilities.FrameworkHelper.GetAssmblyFileVersion(typeof(Document));
             data.TemplatePath = this.LoadedSource;
             data.TraceLevel = context.TraceLog.RecordLevel;
             data.DocumentInfo = this.Info;

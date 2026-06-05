@@ -20,7 +20,7 @@ namespace Scryber.Options
         public OutputOptions()
         {
             Compression = OutputCompressionType.FlateDecode;
-            PDFVersion = "1.5";
+            PDFVersion = "1.7";
             Compliance = OutputCompliance.None;
             StringType = OutputStringType.Hex;
             NameOutput = ComponentNameOutput.ExplicitOnly;

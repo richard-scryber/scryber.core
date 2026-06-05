@@ -64,7 +64,7 @@ class Program
             {
                 layout = eventArgs.Context.GetLayout<PDF.Layout.PDFLayoutDocument>();
             };
-            
+            doc.AppendTraceLog = true;
             doc.SaveAsPDF(stream);
         }
 

@@ -708,7 +708,7 @@ namespace Scryber
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="source"></param>
-        /// <param name="istemplate">If the source to be parsed is a template (not a physical file) set this to true</param>
+        /// <param name="type"></param>
         /// <returns></returns>
         IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type);
 
