@@ -1235,9 +1235,13 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="cssPattern">The css selector pattern to match against.</param>
         /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
-        public IEnumerable<IComponent> FindMatches(string cssPattern)
+        public IMatchedEnumerable FindMatches(string cssPattern)
         {
+            if (string.IsNullOrEmpty(cssPattern))
+                return new MatchedComponentList();
+            
             var matcher = (StyleMatcher)cssPattern;
+            
             return FindMatches(matcher);
         }
 
@@ -1246,11 +1250,11 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="matcher">The StyleMatcher to use. A StyleMatcher will always return true if the component it is checking should match</param>
         /// <returns>An enumerable set of matches or an empty set if nothing matched</returns>
-        public IEnumerable<Component> FindMatches(StyleMatcher matcher)
+        public MatchedComponentList FindMatches(StyleMatcher matcher)
         {
             if(matcher ==  null)
                 throw new ArgumentNullException(nameof(matcher));
-            var all = new  List<Component>();
+            var all = new  MatchedComponentList();
             this.DoFindMatches(all, matcher);
             
             return all;
@@ -1520,9 +1524,9 @@ namespace Scryber.Components
 
         #endregion
 
-        #region internal protected virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        #region protected internal virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
         
-        internal protected virtual void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        protected internal virtual void DoFindMatches(MatchedComponentList found, StyleMatcher matcher)
         {
             if(matcher.IsMatchedTo(this, ComponentState.Normal, out int priority))
                 found.Add(this);

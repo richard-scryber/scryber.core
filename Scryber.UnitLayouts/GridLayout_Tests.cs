@@ -970,8 +970,26 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(2, _layout.AllPages.Count, "Should be 2 Pages");
             var page = _layout.AllPages[0];
 
-            var rows = doc.FindMatches("div.row").ToList();
-            Assert.AreEqual(14, rows.Count, "Should be 14 Rows");
+            var grids = doc.FindMatches(".padded-top-large");
+            Assert.AreEqual(5, grids.Count(), "Should be 5 grids with class .padded-top-large");
+            
+            var rows = grids.Find("div.row");
+            Assert.AreEqual(14, rows.Count(), "Should be 14 Rows with class .row");
+
+            var offset = Unit.Zero;
+            
+            foreach (Component row in rows)
+            {
+                var arrange = row.GetFirstArrangement();
+                Assert.IsNotNull(arrange, "Row arrange must exist");
+                
+                if(offset != Unit.Zero) //should follow straight down after the first one.
+                    Assert.AreEqual(offset, arrange.RenderBounds.Y, "Render offset Y should follow after previous offset with height");
+                
+                offset = arrange.RenderBounds.Y + arrange.RenderBounds.Height;
+                
+                
+            }
         }
     }
 }

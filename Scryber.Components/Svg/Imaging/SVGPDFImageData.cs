@@ -265,9 +265,9 @@ public class SVGPDFImageData : ImageVectorData, ILayoutComponent
     /// </summary>
     /// <param name="selector"></param>
     /// <returns></returns>
-    System.Collections.Generic.IEnumerable<IComponent> IComponent.FindMatches(string selector)
+    IMatchedEnumerable IComponent.FindMatches(string selector)
     {
-        return new IComponent[] { };
+        return null;
     }
     
     #region ILayoutComponent Map Path Implementation

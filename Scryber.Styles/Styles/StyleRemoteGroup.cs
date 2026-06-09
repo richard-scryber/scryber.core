@@ -95,9 +95,9 @@ namespace Scryber.Styles
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
-        IEnumerable<IComponent> IComponent.FindMatches(string selector)
+        IMatchedEnumerable IComponent.FindMatches(string selector)
         {
-            return new IComponent[] { };
+            return null;
         }
 
         /// <summary>

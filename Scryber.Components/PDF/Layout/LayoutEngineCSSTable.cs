@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -91,10 +92,11 @@ namespace Scryber.PDF.Layout
 
             public CSSTableCell(Component source, Style style)
             {
-                _source = source as ContainerComponent;
-
-                var cs = style.GetValue(StyleKeys.TableCellColumnSpanKey, 1);
-                var rs = style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
+                _source = (source as ContainerComponent) ?? throw new ArgumentNullException(nameof(source));
+                _style = style ?? throw new ArgumentNullException(nameof(style));
+                
+                var cs = _style.GetValue(StyleKeys.TableCellColumnSpanKey, 1);
+                var rs = _style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
                 
                 if (cs > 1) this.CellColumnSpan = cs;
                 if (rs > 1) this.CellRowSpan = rs;

@@ -324,7 +324,7 @@ namespace Scryber.Components
         #endregion
 
 
-        internal protected override void DoFindMatches(List<Component> found, StyleMatcher matcher)
+        internal protected override void DoFindMatches(MatchedComponentList found, StyleMatcher matcher)
         {
             base.DoFindMatches(found, matcher);
 

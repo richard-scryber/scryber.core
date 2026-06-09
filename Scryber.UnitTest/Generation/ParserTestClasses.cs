@@ -106,9 +106,9 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             return source;
         }
         
-        public IEnumerable<IComponent> FindMatches(string selector)
+        public IMatchedEnumerable FindMatches(string selector)
         {
-            return new IComponent[] { };
+            return null;
         }
 
         ObjectType ITypedObject.Type
@@ -246,9 +246,9 @@ namespace Scryber.Core.UnitTests.Generation.Fakes
             return source;
         }
         
-        public IEnumerable<IComponent> FindMatches(string selector)
+        public IMatchedEnumerable FindMatches(string selector)
         {
-            return new IComponent[] { };
+            return null;
         }
 
         ObjectType ITypedObject.Type

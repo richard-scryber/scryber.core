@@ -120,12 +120,17 @@ namespace Scryber
         /// </summary>
         /// <param name="selector">A css selector string (e.g 'body div.class')</param>
         /// <returns></returns>
-        IEnumerable<IComponent> FindMatches(string selector);
+        IMatchedEnumerable FindMatches(string selector);
 
     }
 
     #endregion
 
+    public interface IMatchedEnumerable : IEnumerable<IComponent>
+    {
+        IMatchedEnumerable Find(string selector);
+    }
+    
     #region public interface IMetadataContainer
 
     /// <summary>
