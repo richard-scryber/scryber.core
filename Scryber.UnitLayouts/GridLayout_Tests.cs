@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
@@ -950,16 +952,26 @@ namespace Scryber.UnitLayouts
             
             using var doc = Document.ParseDocument(source);
 
-            //giving it a higher priority than the contained .padding-top-large
-            var fix = new StyleDefn("div.padded-top-large"); 
-            fix.Position.DisplayMode = DisplayMode.Block;
-            doc.Styles.Add(fix);
+            for (var i = 0; i < 17; i++)
+            {
+                var value = "field value " + i;
+                var key = "field_" + i;
+                doc.Params[key] = value;
+            }
+            
+            
             
             using (var ms = DocStreams.GetOutputStream("Grid_Mmcinstry_issue.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
+            
+            Assert.AreEqual(2, _layout.AllPages.Count, "Should be 2 Pages");
+            var page = _layout.AllPages[0];
+
+            var rows = doc.FindMatches("div.row").ToList();
+            Assert.AreEqual(14, rows.Count, "Should be 14 Rows");
         }
     }
 }

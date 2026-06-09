@@ -18,10 +18,13 @@ namespace Scryber.PDF.Layout
         // -1 = not in wrap mode.
         private int _wrapRowStart = -1;
         private int _wrapRowEnd   = -1;
+        
+        protected Style ContainerStyle { get; set; }
 
-        public LayoutEngineFlexBox(ContainerComponent container, IPDFLayoutEngine parent)
+        public LayoutEngineFlexBox(ContainerComponent container, IPDFLayoutEngine parent, Style containerStyle)
             : base(container, parent)
         {
+            ContainerStyle = containerStyle;
         }
 
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
