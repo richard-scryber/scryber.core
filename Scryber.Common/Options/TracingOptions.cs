@@ -53,7 +53,7 @@ namespace Scryber.Options
 
         public bool Enabled { get; set; } = true;
 
-        private IPDFTraceLogFactory _factory = null;
+        private ITraceLogFactory _factory = null;
         
         public TraceLogOption()
         {}
@@ -73,7 +73,7 @@ namespace Scryber.Options
             this.Enabled = enabled;
         }
 
-        public TraceLogOption(string name, IPDFTraceLogFactory factory, bool enabled = true)
+        public TraceLogOption(string name, ITraceLogFactory factory, bool enabled = true)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
@@ -89,10 +89,10 @@ namespace Scryber.Options
             _factory = factory;
         }
         
-        internal IPDFTraceLogFactory GetFactory()
+        internal ITraceLogFactory GetFactory()
         {
             if(null == _factory)
-                _factory = Utilities.TypeHelper.GetInstance<IPDFTraceLogFactory>(FactoryType, FactoryAssembly, false);
+                _factory = Utilities.TypeHelper.GetInstance<ITraceLogFactory>(FactoryType, FactoryAssembly, false);
             if(null == _factory)
                 throw new InvalidCastException("Could not create a TraceLogFactory for the configured type '" +  FactoryType + "' in the assembly '" + FactoryAssembly + "'. Either the type could not be found, or it does not support the IPDFTraceLogFactory interface.");
             return _factory;

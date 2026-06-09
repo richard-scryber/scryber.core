@@ -6,10 +6,18 @@ namespace Scryber;
 
 public class MatchedComponentList : List<Component>, IMatchedEnumerable
 {
-    public IMatchedEnumerable Find(string selector)
+    
+    public StyleMatcher MatchedTo { get; private set; }
+
+    public MatchedComponentList(StyleMatcher matchedTo)
+    {
+        MatchedTo = matchedTo;
+    }
+    
+    public MatchedComponentList Find(string selector)
     {
         if (string.IsNullOrEmpty(selector))
-            return new MatchedComponentList();
+            return new MatchedComponentList(null);
         else
         {
             var matcher = StyleMatcher.Parse(selector);
@@ -25,19 +33,26 @@ public class MatchedComponentList : List<Component>, IMatchedEnumerable
 
     protected virtual MatchedComponentList DoFindMatches(StyleMatcher matcher)
     {
-        MatchedComponentList all = new MatchedComponentList();
+        MatchedComponentList all = new MatchedComponentList(matcher);
         foreach (var item in this)
         {
-            if (item is Component component)
-            {
-                component.DoFindMatches(all, matcher);
-            }
+            item.DoFindMatches(all, matcher);
         }
         return all;
+    }
+    
+    //
+    // explicit IMatchedEnumerable implementation
+    //
+    
+    IMatchedEnumerable IMatchedEnumerable.Find(string selector)
+    {
+        return this.Find(selector);
     }
 
     IEnumerator<IComponent> IEnumerable<IComponent>.GetEnumerator()
     {
         return base.GetEnumerator();
     }
+    
 }

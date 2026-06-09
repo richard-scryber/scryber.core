@@ -27,7 +27,7 @@ namespace Scryber.Components
 {
     [PDFParsableComponent("Text")]
     [PDFJSConvertor("scryber.studio.design.convertors.text")]
-    public class TextLiteral : Component, IPDFTextLiteral, ITextComponent
+    public class TextLiteral : Component, ITextLiteral, ITextComponent
     {
 
         private string _text;

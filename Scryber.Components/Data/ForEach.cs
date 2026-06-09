@@ -160,10 +160,10 @@ namespace Scryber.Data
 
         protected override ITemplate GetTemplateForBinding(DataContext context, int index, int count)
         {
-            if(this.Template is IPDFDataTemplateGenerator)
+            if(this.Template is IDataTemplateGenerator)
             {
-                ((IPDFDataTemplateGenerator)this.Template).DataStyleStem = this.DataStyleIdentifier;
-                ((IPDFDataTemplateGenerator)this.Template).UseDataStyleIdentifier = this.CacheStyles;
+                ((IDataTemplateGenerator)this.Template).DataStyleStem = this.DataStyleIdentifier;
+                ((IDataTemplateGenerator)this.Template).UseDataStyleIdentifier = this.CacheStyles;
             }
             return this.Template;
         }

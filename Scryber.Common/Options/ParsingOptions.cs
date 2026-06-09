@@ -131,7 +131,7 @@ namespace Scryber.Options
         }
 
 
-        public IPDFBindingExpressionFactory GetBindingFactoryForPrefix(string prefix)
+        public IBindingExpressionFactory GetBindingFactoryForPrefix(string prefix)
         {
             if (string.IsNullOrEmpty(prefix) || this.Bindings == null || this.Bindings.Count == 0)
                 return null;
@@ -218,7 +218,7 @@ namespace Scryber.Options
             this.FactoryAssembly = factoryAssembly ?? throw new ArgumentNullException(nameof(factoryAssembly));
         }
 
-        public BindingPrefixOption(string prefix, IPDFBindingExpressionFactory factory)
+        public BindingPrefixOption(string prefix, IBindingExpressionFactory factory)
         {
             this.Prefix = string.IsNullOrEmpty(prefix) ? throw new ArgumentNullException(nameof(prefix)) : prefix;
             this.FactoryType = factory?.GetType().FullName ?? throw new ArgumentNullException(nameof(factory));
@@ -229,16 +229,16 @@ namespace Scryber.Options
         /// <summary>
         /// We store a local cached version of the factory.
         /// </summary>
-        private IPDFBindingExpressionFactory _factory;
+        private IBindingExpressionFactory _factory;
 
         /// <summary>
         /// Gets the factory instance that is specified by this options FactoryType and FactoryAssembly
         /// </summary>
         /// <returns></returns>
-        public IPDFBindingExpressionFactory GetFactory()
+        public IBindingExpressionFactory GetFactory()
         {
             if(null == _factory)
-                _factory = Utilities.TypeHelper.GetInstance<IPDFBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
+                _factory = Utilities.TypeHelper.GetInstance<IBindingExpressionFactory>(this.FactoryType, this.FactoryAssembly, true);
 
             return _factory;
         }

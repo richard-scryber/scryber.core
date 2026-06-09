@@ -24,7 +24,7 @@ using Scryber.Generation;
 
 namespace Scryber.Binding
 {
-    public class BindingItemExpressionFactory : IPDFBindingExpressionFactory
+    public class BindingItemExpressionFactory : IBindingExpressionFactory
     {
         public string BindingKey { get { return "item"; } }
 

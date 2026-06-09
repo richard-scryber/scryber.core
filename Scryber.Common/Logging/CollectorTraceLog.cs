@@ -193,7 +193,7 @@ namespace Scryber.Logging
     /// </summary>
     #region public class CollectorTraceLogFactory : IPDFTraceLogFactory
 
-    public class CollectorTraceLogFactory : IPDFTraceLogFactory
+    public class CollectorTraceLogFactory : ITraceLogFactory
     {
 
         public CollectorTraceLogFactory()

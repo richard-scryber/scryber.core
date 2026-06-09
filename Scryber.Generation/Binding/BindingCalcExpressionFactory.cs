@@ -13,7 +13,7 @@ using Scryber.Expressive.Operators;
 
 namespace Scryber.Binding
 {
-    public class BindingCalcExpressionFactory : IPDFBindingExpressionFactory, IExpressionFactory
+    public class BindingCalcExpressionFactory : IBindingExpressionFactory, IExpressionFactory
     {
 
         public string BindingKey { get { return "{"; } }

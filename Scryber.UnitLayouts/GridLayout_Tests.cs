@@ -7,6 +7,7 @@ using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.UnitLayouts
 {

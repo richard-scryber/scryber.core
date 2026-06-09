@@ -1737,7 +1737,7 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual(2, para.Contents.Count);
 
                 //Check that the inner text of the para matches the bound value.
-                var span = para.Contents[1] as IPDFTextLiteral;
+                var span = para.Contents[1] as ITextLiteral;
                 Assert.AreEqual(model.fragmentContent, span.Text);
             }
 
