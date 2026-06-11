@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Drawing;
 using Scryber.Text;
@@ -192,6 +193,29 @@ public class TestCode : SampleBase
         using (var ms = DocStreams.GetOutputStream("Expressions_JustIndexCribSheet.pdf"))
         {
             doc.SaveAsPDF(ms);
+        }
+    }
+    
+    [TestMethod]
+    public async Task Styles_BindBreak_Test()
+    {
+        //This sample is giving an error in the editor for a style value not being bound so can't be flattened
+        
+        var path = GetTemplatePath("Samples", "StyleBindBreakTest.html", true);
+
+        var doc = Document.ParseDocument(path);
+        
+        
+        
+        var datapath = GetTemplatePath("Samples", "StyleBreakTestModel.json", true);
+        var dataContent = System.IO.File.ReadAllText(datapath);
+        var data = System.Text.Json.JsonDocument.Parse(dataContent);
+        doc.Params["model"] = data.RootElement;
+        
+        using (var ms = DocStreams.GetOutputStream("Samples_StyleBreakTestModel.pdf"))
+        {
+            doc.AppendTraceLog = true;
+            await doc.SaveAsPDFAsync(ms);
         }
     }
 }

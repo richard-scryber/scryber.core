@@ -1219,7 +1219,15 @@ namespace Scryber.PDF.Layout
                 context.TraceLog.Begin(TraceLevel.Debug, "Text Decoration", "Starting to render text decorations");
 
             //set up the graphics context
-            PDFPen pen = PDFPen.Create(this.TextRenderOptions.FillBrush, linethickness);
+            var brush = this.TextRenderOptions.FillBrush;
+            if (null == brush)
+            {
+                if (context.ShouldLogDebug)
+                    context.TraceLog.Begin(TraceLevel.Debug, "Text Decoration", "Skipping text decoration as no fill brush is defined");
+                return;
+            }
+            
+            PDFPen pen = PDFPen.Create(brush, linethickness);
 
             context.Graphics.SaveGraphicsState();
             pen.SetUpGraphics(context.Graphics, this.TotalBounds);
