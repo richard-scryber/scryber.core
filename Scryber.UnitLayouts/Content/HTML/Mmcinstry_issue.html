@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Trade Confirmation</title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <style type="text/css">
+        body {
+            font-family: "Times New Roman", Helvetica, Arial, sans-serif;
+            line-height: 1.4;
+            margin: 2rem;
+            font-size: 11px;
+        }
+
+        header, footer { margin-bottom: 1.25rem; }
+        .page { page-break-after: always; }
+        a.black-link { color: black; }
+        a.black-link:hover { color: gray; }
+        .muted { color: #555; margin: 0.25em 0; }
+        .smallmargin { margin: 0; font-weight: normal; }
+        .small { font-size: 0.925em; margin: 0.25em 0; font-weight: normal; }
+        .page:last-child { page-break-after: auto; }
+
+        .acknowledge {
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-top: 0.35rem;
+            padding-bottom: 0.25rem;
+            margin: 0.25em 0;
+        }
+
+        .empty { height: 15px; margin: 0; }
+        .padded { padding-left: 1rem; }
+        .padded-top-large { display: grid; }
+        .headerfont { font-size: 1em; font-weight: bold; }
+        .transaction { padding-top: 1.5rem; }
+
+        .row {
+            padding-top: 0;
+            padding-bottom: 0.25rem;
+        }
+
+        .header-left {
+            float: left;
+            width: 45%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .header-centre {
+            float: left;
+            height: 48px;
+            position: relative;
+        }
+
+        .amendment {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .header-right {
+            float: right;
+            width: 45%;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: right;
+        }
+
+        .traderef-left {
+            float: left;
+            width: 50%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .traderef-right {
+            float: right;
+            width: 50%;
+            padding-top: 0;
+            padding-bottom: 0;
+            text-align: right;
+        }
+
+        .col-left {
+            float: left;
+            margin-left: 5%;
+            width: 30%;
+            margin-right: 3%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .col-right {
+            float: left;
+            width: 62%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .signatures { padding-left: 2rem; }
+
+        .signature-left {
+            float: left;
+            width: 45%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .signature-right {
+            float: right;
+            width: 50%;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .signature { height: 100px; }
+
+        .company-logo {
+            height: 48px;
+            margin: 0;
+            line-height: 0;
+        }
+
+        .traderef { clear: both; }
+        .hide { display: none; }
+        body p.break { page-break-before: always; }
+
+        .no-top-padding {
+            padding-top: 0;
+            margin-block-start: 0;
+        }
+
+        @page { size: A4 portrait; }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="header-left"></div>
+    <div class="header-centre">
+        <div class="amendment">
+            <span class="variable"><span class="hide">-</span>{{amendment}}</span>
+        </div>
+    </div>
+    <div class="header-right">Derivative Products Inc.</div>
+</header>
+
+<main>
+    <div class="traderef">
+        <div class="traderef-left">Date: <span class="variable"><span class="hide">1</span>{{field_1}}</span></div>
+        <div class="traderef-right">Trade Reference Number: <span class="variable"><span class="hide">2</span>{{field_2}}</span></div>
+    </div>
+
+    <div>To: <span class="variable"><span class="hide">3</span>{{field_3}}</span></div>
+    <div>From: Derivative Products Inc.</div>
+
+    <div class="transaction">
+        <p>Transaction Type: Over-the-counter Commodity Forward - Cash Settled</p>
+        <p>Dear <span class="variable"><span class="hide">3</span>{{field_3}}</span>:</p>
+        <p>
+            The purpose of this letter agreement is to confirm the terms and conditions of the transaction (“<b>Transaction</b>”)
+            entered into between <span class="variable"><span class="hide">3</span>{{field_3}}</span> (“<b>Counterparty</b>”)
+            and Derivative Products Inc. (“<b>Calculation Party</b>”) (collectively, “<b>Parties</b>”) on the Trade Date specified below.
+            This letter agreement constitutes a “Confirmation” between Counterparty and Calculation Party as referred to in the ISDA
+            Master Agreement, as specified below. This Confirmation supplements, forms part of, and is subject to, the ISDA Master
+            Agreement as entered into between Counterparty and Calculation Party, as amended and supplemented from time to time
+            (“<b>Agreement</b>”). All provisions contained in the Agreement govern this Confirmation except as expressly modified below.
+            The definitions and provisions contained in the 2005 ISDA Commodity Definitions as published by the International Swaps
+            and Derivatives Association, Inc., are incorporated into this Confirmation.
+        </p>
+    </div>
+
+    <div class="padded-top-large">
+        <p class="headerfont">GENERAL ITEMS:</p>
+
+        <div class="row"><div class="col-left">Trade Date:</div><div class="col-right"><span class="variable"><span class="hide">4</span>{{field_4}}</span></div></div>
+        <div class="row"><div class="col-left">Effective Date:</div><div class="col-right"><span class="variable"><span class="hide">5</span>{{field_5}}</span></div></div>
+        <div class="row"><div class="col-left">Termination Date:</div><div class="col-right"><span class="variable"><span class="hide">6</span>{{field_6}}</span>, unless Exchange is listed as LME, in which case the Termination Date shall be two business days prior to such date.</div></div>
+        <div class="row"><div class="col-left">Contract Buyer:</div><div class="col-right"><span class="variable"><span class="hide">7</span>{{field_7}}</span></div></div>
+        <div class="row"><div class="col-left">Contract Seller:</div><div class="col-right"><span class="variable"><span class="hide">8</span>{{field_8}}</span></div></div>
+        <div class="row"><div class="col-left">Commodity Reference Price:</div><div class="col-right"><span class="variable"><span class="hide">9</span>{{field_9}}</span></div></div>
+        <div class="row"><div class="col-left">Exchange:</div><div class="col-right"><span class="variable"><span class="hide">10</span>{{field_10}}</span></div></div>
+        <div class="row"><div class="col-left">Specified Price:</div><div class="col-right">{{enrich_1}} official settlement price displayed by the Price Source in relation to that Commodity Reference Price on each business day</div></div>
+        <div class="row"><div class="col-left">Unit:</div><div class="col-right"><span class="variable"><span class="hide">11</span>{{field_11}}</span> <span class="variable"><span class="hide">12</span>{{field_12}}</span></div></div>
+        <div class="row"><div class="col-left">Notional Quantity:</div><div class="col-right"><span class="variable"><span class="hide">13</span>{{field_13}}</span> <span class="variable"><span class="hide">12</span>{{field_12}}</span></div></div>
+        <div class="row"><div class="col-left">Contract Price:</div><div class="col-right"><span class="variable"><span class="hide">14</span>{{field_14}}</span></div></div>
+        <div class="row"><div class="col-left">Payment Date:</div><div class="col-right">No later than two (2) business days immediately following the Termination Date.</div></div>
+        <div class="row"><div class="col-left">Currency of payment:</div><div class="col-right">USD</div></div>
+        <div class="row"><div class="col-left">Commission:</div><div class="col-right"><span class="variable"><span class="hide">15</span>{{field_15}}</span></div></div>
+    </div>
+
+    <div class="padded-top-large">
+        <p class="headerfont">SETTLEMENT CALCULATION:</p>
+        <div class="padded">
+            <p class="no-top-padding">
+                A. If the Commodity Reference Price is below the Contract Price, on the Termination Date or other date of termination as agreed by the Parties,
+                the Contract Buyer will make a cash payment to the Contract Seller according to the following formula:
+            </p>
+            <p>[Notional Quantity] × [Contract Price – Commodity Reference Price on date of termination] = cash payment</p>
+            <p>
+                B. If the Commodity Reference Price is above the Contract Price, on the Termination Date or other date of termination as agreed by the Parties,
+                the Contract Seller will make a cash payment to the Contract Buyer according to the following formula:
+            </p>
+            <p>[Notional Quantity] × [Commodity Reference Price on date of termination – Contract Price] = cash payment</p>
+        </div>
+    </div>
+
+    <div class="padded-top-large">
+        <p class="headerfont">CALCULATION AGENT:</p>
+        <div class="padded">
+            <p class="no-top-padding">Calculation Party, unless otherwise agreed between the Parties in the Agreement.</p>
+        </div>
+    </div>
+
+    <div class="padded-top-large">
+        <p class="headerfont">REGULATORY DISCLOSURE:</p>
+        <div class="padded">
+            <p class="no-top-padding">Identifier (UTI): <span class="variable"><span class="hide">16</span>{{field_16}}</span></p>
+        </div>
+    </div>
+
+    <p class="break" />
+
+    <div class="padded-top-large">
+        <div class="transaction">
+            <i>TRANSACTION AMENDMENT OR TERMINATION OCCURRING PRIOR TO TERMINATION DATE</i>
+            <p class="acknowledge">
+                You acknowledge that the Calculation Party is not obligated, upon your request, to amend or terminate this Transaction prior to the Termination Date.
+                Furthermore, you acknowledge and agree that, in the event the Calculation Party agrees to terminate or amend the Transaction prior to the Termination Date:
+                (A) such Transaction may be treated as a Terminated Transaction under the Agreement; (B) the Calculation Party will be the Determining Party in the event
+                it elects to treat the Transaction as a Terminated Transaction under the Agreement, acting in its commercially reasonable discretion; and (C) the amount
+                owing to the Determining Party may be calculated and determined as if such amount owing, loss, or cost incurred to the Determining Party is a Close-Out Amount.
+            </p>
+
+            <p>
+                Please have an authorized signatory sign below and promptly return this Confirmation.
+                In the event you have objection to any material term(s) contained in this agreement, you must notify us no later than two (2) business days after Trade Date
+                or one (1) business day if you are a Financial Entity under CFTC regulation.
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <div class="signatures">
+            <p>Sincerely,</p>
+
+            <div class="signature-left">
+                <p class="empty">&#160;</p>
+                <p class="headerfont">Derivative Products Inc.</p>
+                <p class="smallmargin">By:</p>
+                <p class="signature"></p>
+                <p class="small">Name:</p>
+                <p class="small">Title:</p>
+            </div>
+
+            <div class="signature-right">
+                <p class="smallmargin">Accepted and Confirmed,</p>
+                <p class="headerfont">
+                    <span class="variable"><span class="hide">3</span>{{field_3}}</span>
+                </p>
+                <p class="smallmargin">By:</p>
+                <p class="signature"></p>
+                <p class="small">Name:</p>
+                <p class="small">Title:</p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

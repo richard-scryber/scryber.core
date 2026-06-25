@@ -3,7 +3,7 @@ using Scryber.Logging;
 
 namespace Scryber.UnitTests.Mocks
 {
-    public class MockTraceLog : IPDFTraceLogFactory
+    public class MockTraceLog : ITraceLogFactory
     {
         public MockTraceLog()
         {
@@ -15,7 +15,7 @@ namespace Scryber.UnitTests.Mocks
         }
     }
 
-    public class MockTraceLog2 : IPDFTraceLogFactory
+    public class MockTraceLog2 : ITraceLogFactory
     {
         public MockTraceLog2()
         {

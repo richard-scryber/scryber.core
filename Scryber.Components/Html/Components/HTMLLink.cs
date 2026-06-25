@@ -12,7 +12,7 @@ using Scryber.Styles;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("link")]
-    public class HTMLLink : Scryber.Components.Component, ITemplate, ILoadableComponent
+    public class HTMLLink : Scryber.Components.Component, ITemplate, ILoadableComponent, IStyledComponent
     {
         internal enum HTMLLinkType
         {
@@ -244,6 +244,7 @@ namespace Scryber.Html.Components
         public bool IsContentAdded { get; protected set; } = false;
 
         public bool IsContentBound { get; protected set; } = false;
+        
 
         public HTMLLink()
             : this(HTMLObjectTypes.Link)
@@ -545,5 +546,33 @@ namespace Scryber.Html.Components
             else
                 return null;
         }
+        
+        #region IStyledComponent Members
+        
+        string IStyledComponent.StyleClass { get; set; }
+        
+        private Style _style;
+
+        Style IStyledComponent.Style
+        {
+            get
+            {
+                if(null == _style)
+                    _style = new Style();
+                return _style;
+            }
+        }
+
+        bool IStyledComponent.HasStyle
+        {
+            get { return null != this._style; }
+        }
+        
+        Style IStyledComponent.GetAppliedStyle()
+        {
+            return _style;
+        }
+        
+        #endregion
     }
 }

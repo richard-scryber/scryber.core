@@ -24,7 +24,7 @@ using Scryber.Components;
 
 namespace Scryber.Data
 {
-    public class ParsableTemplateGenerator : ITemplate, IPDFTemplateGenerator, IPDFDataTemplateGenerator
+    public class ParsableTemplateGenerator : ITemplate, ITemplateGenerator, IDataTemplateGenerator
     {
         
         private string _toparse;
@@ -342,9 +342,9 @@ namespace Scryber.Data
                 if (component is IDataStyledComponent)
                     (component as IDataStyledComponent).DataStyleIdentifier = next;
 
-                if(component is IPDFDataTemplateGenerator)
+                if(component is IDataTemplateGenerator)
                 {
-                    var dt = component as IPDFDataTemplateGenerator;
+                    var dt = component as IDataTemplateGenerator;
                     if (string.IsNullOrEmpty(dt.DataStyleStem))
                         dt.DataStyleStem = next;
                 }

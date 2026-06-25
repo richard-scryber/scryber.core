@@ -115,6 +115,36 @@ namespace Scryber
         /// <returns></returns>
         string MapPath(string source);
 
+        /// <summary>
+        /// Finds any components in this components contents (including itself), that matches the css style selector.
+        /// </summary>
+        /// <param name="selector">A css selector string (e.g 'body div.class')</param>
+        /// <returns></returns>
+        IMatchedEnumerable FindMatches(string selector);
+
+    }
+
+    #endregion
+
+    public interface IMatchedEnumerable: IEnumerable<IComponent>
+    {
+        IMatchedEnumerable Find(string selector);
+    }
+    
+    #region public interface IMetadataContainer
+
+    /// <summary>
+    /// Interface for components that can accept parser-level custom metadata
+    /// (for example attributes such as data-foo="bar").
+    /// </summary>
+    public interface IMetadataContainer
+    {
+        /// <summary>
+        /// Stores metadata under the specified key.
+        /// </summary>
+        /// <param name="key">Metadata key.</param>
+        /// <param name="value">Metadata value.</param>
+        void SetMetadata(string key, string value);
     }
 
     #endregion
@@ -288,6 +318,8 @@ namespace Scryber
         Options.OutputOptions OutputOptions { get; }
 
         Options.TracingOptions TracingOptions { get; }
+        
+        Options.ExpressionOptions ExpressionOptions { get; }
 
         object GetScryberSection(Type ofType, string name);
 
@@ -616,25 +648,29 @@ namespace Scryber
 
     #endregion
 
-    #region public interface IPDFTraceLogFactory
+    #region public interface ITraceLogFactory
 
     /// <summary>
     /// Contract that the trace log factories, defined in the configuration file must support to create new loggers
     /// </summary>
-    public interface IPDFTraceLogFactory
+    public interface ITraceLogFactory
     {
         TraceLog CreateLog(TraceRecordLevel level, string name);
     }
+    
+    [Obsolete("Please use ITraceLogFactory instead", true)]
+    public interface IPDFTraceLogFactory
+    {}
 
     #endregion
 
-    #region public interface IPDFBindingExpressionFactory
+    #region public interface IBindingExpressionFactory
 
     /// <summary>
     /// Interface that all binding expression builders must conform to so they can be used by the parser to 
     /// be attached to components for binding values to properties at the point of DataBinding.
     /// </summary>
-    public interface IPDFBindingExpressionFactory
+    public interface IBindingExpressionFactory
     {
         /// <summary>
         /// Gets the stage in the document lifcycle delegate from this expression factory should be invoked.
@@ -677,12 +713,11 @@ namespace Scryber
     }
 
     #endregion
-
-
-    #region public interface IPDFParser
+    
+    #region public interface IComponentParser
 
     /// <summary>
-    /// A parser that can read a stream to generate a PDFComponent
+    /// A parser that can read a stream to generate a Component
     /// </summary>
     public interface IComponentParser
     {
@@ -699,7 +734,7 @@ namespace Scryber
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="source"></param>
-        /// <param name="istemplate">If the source to be parsed is a template (not a physical file) set this to true</param>
+        /// <param name="type"></param>
         /// <returns></returns>
         IComponent Parse(string source, System.IO.Stream stream, ParseSourceType type);
 
@@ -724,6 +759,8 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IParserFactory
+    
     /// <summary>
     /// Interface for the parser factory
     /// </summary>
@@ -733,11 +770,14 @@ namespace Scryber
 
         IComponentParser CreateParser(MimeType forType, Generation.ParserSettings settings);
     }
+    
+    #endregion
 
+    #region public interface ITemplateGenerator
     /// <summary>
     /// Interface all template generators should implement
     /// </summary>
-    public interface IPDFTemplateGenerator
+    public interface ITemplateGenerator
     {
         /// <summary>
         /// Gets the full name of the elememnt that the 
@@ -751,30 +791,46 @@ namespace Scryber
 
         void InitTemplate(string xmlContent, System.Xml.XmlNamespaceManager namespaces);
     }
+    
+    [Obsolete("Please use ITemplateGenerator instead", true)]
+    public interface IPDFTemplateGenerator : ITemplateGenerator
+    {}
+    
+    #endregion
 
 
-    #region public interface IPDFDataTemplate
+    #region public interface IDataTemplate
 
     /// <summary>
     /// Interface for a class that is a template generator with a prefix
     /// data style identifier that will be applied to each item in the template.
     /// </summary>
-    public interface IPDFDataTemplateGenerator : IPDFTemplateGenerator
+    public interface IDataTemplateGenerator : ITemplateGenerator
     {
         string DataStyleStem { get; set; }
 
         bool UseDataStyleIdentifier { get; set; }
     }
+    
+    
+    [Obsolete("Please use IDataTemplateGenerator instead", true)]
+    public interface IPDFDataTemplateGenerator : IDataTemplateGenerator
+    {}
 
     #endregion
 
     /// <summary>
     /// Interface for a text literal component that will be used by the parse when it encounters general textual content
     /// </summary>
-    public interface IPDFTextLiteral : IComponent
+    public interface ITextLiteral : IComponent
     {
         string Text { get; set; }
         TextFormat ReaderFormat { get; set; }
+    }
+
+    [Obsolete("Please use ITextLiteral instead", true)]
+    public interface IPDFTextLiteral : ITextLiteral
+    {
     }
 
     /// <summary>

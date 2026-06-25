@@ -11,44 +11,31 @@ namespace Scryber.Options
 
         public TraceRecordLevel TraceLevel { get; set; }
 
-        public TraceLogOption[] Loggers { get; set; }
+        public List<TraceLogOption> Loggers { get; set; }
 
         public TracingOptions()
         {
             this.TraceLevel = _defaultTraceLevel;
         }
 
-        private Scryber.IPDFTraceLogFactory[] _factories;
+        
 
         public TraceLog GetTraceLog()
         {
-            if(null == _factories)
-            {
-                List<IPDFTraceLogFactory> all = new List<IPDFTraceLogFactory>();
-                if(null != Loggers)
-                {
-                    foreach (var one in Loggers)
-                    {
-                        if(one.Enabled)
-                        {
-                            var instance = Utilities.TypeHelper.GetInstance<IPDFTraceLogFactory>(one.FactoryType, one.FactoryAssembly, true);
-                            all.Add(instance);
-                        }
-                    }
-                }
-                _factories = all.ToArray();
-            }
+            List<TraceLog> instances = new List<TraceLog>();
             
-            if (_factories.Length == 0)
+            
+            if (null == Loggers || this.Loggers.Count == 0)
                 return new Scryber.Logging.DoNothingTraceLog(this.TraceLevel);
-            else if (_factories.Length == 1)
-                return _factories[0].CreateLog(this.TraceLevel, Loggers[0].Name);
+            else if (this.Loggers.Count == 1)
+                return this.Loggers[0].GetFactory().CreateLog(this.TraceLevel, Loggers[0].Name);
             else
             {
-                List<TraceLog> instances = new List<TraceLog>();
-                for(var i = 0; i < _factories.Length; i++)
+                
+                for(var i = 0; i < this.Loggers.Count; i++)
                 {
-                    instances.Add(_factories[i].CreateLog(this.TraceLevel, Loggers[i].Name));
+                    var log = this.Loggers[i].GetFactory().CreateLog(this.TraceLevel, Loggers[i].Name);
+                    instances.Add(log);
                 }
                 return new Logging.CompositeTraceLog(instances, "Composite");
             }
@@ -66,6 +53,49 @@ namespace Scryber.Options
 
         public bool Enabled { get; set; } = true;
 
+        private ITraceLogFactory _factory = null;
         
+        public TraceLogOption()
+        {}
+
+        public TraceLogOption(string name, string factoryType, string factoryAssembly, bool enabled = true)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (string.IsNullOrWhiteSpace(factoryType))
+                throw new ArgumentNullException(nameof(factoryType));
+            if (string.IsNullOrWhiteSpace(factoryAssembly))
+                throw new ArgumentNullException(nameof(factoryAssembly));
+            
+            this.Name = name;
+            this.FactoryType = factoryType;
+            this.FactoryAssembly = factoryAssembly;
+            this.Enabled = enabled;
+        }
+
+        public TraceLogOption(string name, ITraceLogFactory factory, bool enabled = true)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+            
+            this.Name = name;
+            this.FactoryType = factory.GetType().AssemblyQualifiedName;
+            this.FactoryAssembly = factory.GetType().Assembly.FullName;
+            this.Enabled = enabled;
+            
+            _factory = factory;
+        }
+        
+        internal ITraceLogFactory GetFactory()
+        {
+            if(null == _factory)
+                _factory = Utilities.TypeHelper.GetInstance<ITraceLogFactory>(FactoryType, FactoryAssembly, false);
+            if(null == _factory)
+                throw new InvalidCastException("Could not create a TraceLogFactory for the configured type '" +  FactoryType + "' in the assembly '" + FactoryAssembly + "'. Either the type could not be found, or it does not support the IPDFTraceLogFactory interface.");
+            return _factory;
+        }
     }
 }

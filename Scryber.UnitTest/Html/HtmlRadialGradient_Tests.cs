@@ -640,6 +640,8 @@ namespace Scryber.Core.UnitTests.Html
             {
                 using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
                 {
+                    doc.AppendTraceLog = true;
+                    doc.TraceLog.SetRecordLevel(TraceRecordLevel.Diagnostic);
                     using (var stream = DocStreams.GetOutputStream("RadialGradients.pdf"))
                     {
                         doc.Params["value1"] = 2.056023E-11d;

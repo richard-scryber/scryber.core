@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace Scryber.Options
 {
     public class ImagingOptions
@@ -12,7 +13,7 @@ namespace Scryber.Options
 
         public int ImageCacheDuration { get; set; }
 
-        public ImageDataFactoryOption[] Factories { get; set; }
+        public List<ImageDataFactoryOption> Factories { get; set; }
 
         public ImagingOptions()
         {
@@ -35,7 +36,51 @@ namespace Scryber.Options
 
         private object _factory;
         
-        public object GetInstance()
+        public ImageDataFactoryOption(){}
+
+        public ImageDataFactoryOption(string name, string match, string factoryType, string factoryAssembly)
+        {
+            if(string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+            if(string.IsNullOrEmpty(match))
+                throw new ArgumentNullException(nameof(match));
+            if(string.IsNullOrEmpty(factoryType))
+                throw new ArgumentNullException(nameof(factoryType));
+            if(string.IsNullOrEmpty(factoryAssembly))
+                throw new ArgumentNullException(nameof(factoryAssembly));
+            
+            Name = name;
+            Match = match;
+            FactoryType = factoryType;
+            FactoryAssembly = factoryAssembly;
+        }
+
+        public ImageDataFactoryOption(string name, string match, Type factoryType)
+        {
+            if(string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+            if(string.IsNullOrEmpty(match))
+                throw new ArgumentNullException(nameof(match));
+            if(null == factoryType)
+                throw new ArgumentNullException(nameof(factoryType));
+            
+            Name = name;
+            Match = match;
+            FactoryType = factoryType.FullName;
+            FactoryAssembly = factoryType.Assembly.FullName;
+            
+            try
+            {
+                _factory = Utilities.TypeHelper.GetInstance<object>(factoryType);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("Could not create an image factory instance from the type " + factoryType.FullName + ". The type should have a parameterless constructor, and implement the IPDFImageDataFactory interface.", ex);
+            }
+        }
+        
+        
+        public virtual object GetInstance()
         {
             if (null == _factory)
             {

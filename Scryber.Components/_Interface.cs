@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using Scryber.PDF.Native;
@@ -62,6 +63,8 @@ namespace Scryber
 
     #endregion
 
+    #region public interface IDocumentLayout
+    
     /// <summary>
     /// Base interface that all document layouts should implement if they are passed as an layout.
     /// </summary>
@@ -71,6 +74,8 @@ namespace Scryber
 
         OutputFormat Format { get; }
     }
+    
+    #endregion
 
     #region public interface ITextComponent : IComponent
 
@@ -139,6 +144,8 @@ namespace Scryber
 
     #endregion
 
+    #region public interface ITopAndTailedContinuationComponent : ITopAndTailedComponent
+    
     public interface ITopAndTailedContinuationComponent : ITopAndTailedComponent
     {
         /// <summary>
@@ -154,7 +161,7 @@ namespace Scryber
         ITemplate ContinuationFooter { get; set; }
     }
     
-    
+    #endregion
     
     #region public interface IPDFRenderable
     
@@ -335,6 +342,7 @@ namespace Scryber
     //Support interfaces
     //
 
+    
     
 
     //

@@ -303,6 +303,15 @@ namespace Scryber.Styles
         }
 
 
+        /// <summary>
+        /// Explicit interface declaration, always returns an empty array
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        IMatchedEnumerable IComponent.FindMatches(string selector)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Merges all the appropriate style item values in this document into the provided style based on the component and it's class.

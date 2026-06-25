@@ -24,7 +24,7 @@ using Scryber.Generation;
 
 namespace Scryber.Binding
 {
-    public class BindingXPathExpressionFactory : IPDFBindingExpressionFactory
+    public class BindingXPathExpressionFactory : IBindingExpressionFactory
     {
         public string BindingKey { get { return "xpath"; } }
 

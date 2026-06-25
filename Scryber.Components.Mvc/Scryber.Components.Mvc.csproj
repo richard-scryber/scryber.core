@@ -4,8 +4,8 @@
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.5.0.0</PackageVersion>
-    <Version>9.5.0.0</Version>
+    <PackageVersion>9.6.0.1-beta</PackageVersion>
+    <Version>9.6.0.1</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents. 
 Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts.
@@ -19,7 +19,10 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
       <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.5.0.0
+    <PackageReleaseNotes>9.6.0.1
+Updates as per 9.6.0.1-beta for scryber.core
+        
+9.5.0.0
 BREAKING RELEASE
 Removed support for Net Standard 2.0, and Image Sharp updated to 3.1.2
 All libraries updated to include dotnet 8/9/10

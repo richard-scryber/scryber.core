@@ -81,7 +81,7 @@ namespace Scryber.Generation
 
 
         private static object _configlock = new object();
-        private static Dictionary<string, IPDFBindingExpressionFactory> _configFactories = null;
+        private static Dictionary<string, IBindingExpressionFactory> _configFactories = null;
 
         #region private static Dictionary<string, IPDFBindingExpressionFactory> InitFactories()
 
@@ -90,9 +90,9 @@ namespace Scryber.Generation
         /// configured binding expression factories based on the prefix
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, IPDFBindingExpressionFactory> InitFactories()
+        private static Dictionary<string, IBindingExpressionFactory> InitFactories()
         {
-            Dictionary<string, IPDFBindingExpressionFactory> factories = new Dictionary<string, IPDFBindingExpressionFactory>();
+            Dictionary<string, IBindingExpressionFactory> factories = new Dictionary<string, IBindingExpressionFactory>();
 
             //let's be thread safe here just so we can be sure 
             lock (_configlock)
@@ -110,7 +110,7 @@ namespace Scryber.Generation
                     {
                         foreach (var ele in config)
                         {
-                            IPDFBindingExpressionFactory factory = ele.GetFactory();
+                            IBindingExpressionFactory factory = ele.GetFactory();
                             string key = ele.Prefix;
 
                             //By using the set accessor this will overwrite any of the standard factories previously added.
@@ -129,7 +129,7 @@ namespace Scryber.Generation
 
         #endregion
 
-        public static bool ContainsBindingExpressions(string value, out string[] parts, out IPDFBindingExpressionFactory[] factories)
+        public static bool ContainsBindingExpressions(string value, out string[] parts, out IBindingExpressionFactory[] factories)
         {
 
             if (value.IndexOf(BindingStartChar) < 0)
@@ -149,7 +149,7 @@ namespace Scryber.Generation
             }
 
             List<string> partColl = new List<string>();
-            List<IPDFBindingExpressionFactory> factColl = new List<IPDFBindingExpressionFactory>();
+            List<IBindingExpressionFactory> factColl = new List<IBindingExpressionFactory>();
 
             var pos = 0;
             bool found = false;
@@ -157,7 +157,7 @@ namespace Scryber.Generation
             while (match != null && match.Success)
             {
                 string sub;
-                IPDFBindingExpressionFactory fact;
+                IBindingExpressionFactory fact;
 
                 if (match.Index > pos)
                 {
@@ -264,7 +264,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool IsBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        public static bool IsBindingExpression(ref string value, out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
 
@@ -344,7 +344,7 @@ namespace Scryber.Generation
         }
 
         internal static bool IsCSSVariableOrCalcExpression(ref string value,
-            out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+            out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             if (value.StartsWith(CSSVariableExpressionStart) && value.EndsWith(CSSVariableExpressionEnd))
             {
@@ -390,7 +390,7 @@ namespace Scryber.Generation
         /// <param name="bindingfactory"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static bool TryGetBindingExpression(ref string value, out IPDFBindingExpressionFactory bindingfactory, ParserSettings settings = null)
+        public static bool TryGetBindingExpression(ref string value, out IBindingExpressionFactory bindingfactory, ParserSettings settings = null)
         {
             bindingfactory = null;
             if (string.IsNullOrEmpty(value) || value.Length < 4)

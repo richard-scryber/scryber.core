@@ -9,6 +9,23 @@
     <File Path="PaperworkLogoTransparent.png" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Testing/">
+    <Project Path="Scryber.UnitConsoleTest/Scryber.UnitConsoleTest.csproj">
+      <BuildType Solution="Default|*" Project="Debug" />
+    </Project>
+    <Project Path="Scryber.UnitLayouts/Scryber.UnitLayouts.csproj">
+      <BuildType Solution="Default|*" Project="Debug" />
+    </Project>
+    <Project Path="Scryber.UnitSamples/Scryber.UnitSamples.csproj">
+      <BuildType Solution="Default|*" Project="Debug" />
+    </Project>
+    <Project Path="Scryber.UnitTest/Scryber.UnitTests.csproj">
+      <BuildType Solution="Default|*" Project="Debug" />
+    </Project>
+    <Project Path="Scryber.UnitWebTest/Scryber.UnitWebTest.csproj">
+      <BuildType Solution="Default|*" Project="Debug" />
+    </Project>
+  </Folder>
   <Project Path="Scryber.Common/Scryber.Common.csproj">
     <BuildType Solution="Default|*" Project="Debug" />
   </Project>
@@ -31,15 +48,6 @@
     <BuildType Solution="Default|*" Project="Debug" />
   </Project>
   <Project Path="Scryber.Styles/Scryber.Styles.csproj">
-    <BuildType Solution="Default|*" Project="Debug" />
-  </Project>
-  <Project Path="Scryber.UnitLayouts/Scryber.UnitLayouts.csproj">
-    <BuildType Solution="Default|*" Project="Debug" />
-  </Project>
-  <Project Path="Scryber.UnitSamples/Scryber.UnitSamples.csproj">
-    <BuildType Solution="Default|*" Project="Debug" />
-  </Project>
-  <Project Path="Scryber.UnitTest/Scryber.UnitTests.csproj">
     <BuildType Solution="Default|*" Project="Debug" />
   </Project>
 </Solution>

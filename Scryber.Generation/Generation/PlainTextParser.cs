@@ -23,7 +23,7 @@ namespace Scryber.Generation
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
             var content = reader.ReadToEnd();
-            var literal = Activator.CreateInstance(this.Settings.TextLiteralType) as IPDFTextLiteral;
+            var literal = Activator.CreateInstance(this.Settings.TextLiteralType) as ITextLiteral;
 
             literal.Text = content;
             literal.ReaderFormat = TextFormat.Plain;

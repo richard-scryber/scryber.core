@@ -939,6 +939,7 @@ namespace Scryber.Core.UnitTests.Html
 
 
         [TestMethod()]
+        [TestCategory("Multithreading")]
         public void LocalAndRemoteImages()
         {
             var imagepath = "https://raw.githubusercontent.com/richard-scryber/scryber.core/master/docs/images/ScyberLogo2_alpha_small.png";
@@ -1736,7 +1737,7 @@ namespace Scryber.Core.UnitTests.Html
                 Assert.AreEqual(2, para.Contents.Count);
 
                 //Check that the inner text of the para matches the bound value.
-                var span = para.Contents[1] as IPDFTextLiteral;
+                var span = para.Contents[1] as ITextLiteral;
                 Assert.AreEqual(model.fragmentContent, span.Text);
             }
 
@@ -2270,6 +2271,34 @@ namespace Scryber.Core.UnitTests.Html
             name = Font.GetFullName(fftwo.FontFamily.FamilyName, fftwo.FontWeight, fftwo.FontStyle);
             rsrc1 = doc.SharedResources.GetResource(PDFResource.FontDefnResourceType, name);
             Assert.IsNotNull(rsrc1, "The open sans font was not found");
+        }
+
+        [TestMethod]
+        public void FontFaceResource()
+        {
+            var path = DocStreams.AssertGetTemplatePath("HTML/FontFaceResource.html");
+            
+            using var doc = Document.ParseDocument(path);
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+
+            var model = new
+            {
+                fragmentContent = "Content for the fragment"
+            };
+            doc.Params["model"] = model;
+
+            using var stream = DocStreams.GetOutputStream("FontFace_Resource.pdf");
+            doc.SaveAsPDF(stream);
+            
+            Assert.AreEqual(1, doc.SharedResources.Count);
+            var one = doc.SharedResources[0] as PDFFontResource;
+            Assert.IsNotNull(one);
+            
+            Assert.AreEqual("Archive", one.FontName);
+            Assert.AreEqual(PDFResource.FontDefnResourceType, one.ResourceType);
+            Assert.IsNotNull(one.Definition);
+            Assert.AreEqual("Archive", one.Definition.FullName);
+            
         }
 
         /// <summary>

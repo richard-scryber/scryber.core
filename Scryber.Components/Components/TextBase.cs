@@ -62,8 +62,8 @@ namespace Scryber.Components
             bool preserveWhitespace = fullstyle.GetValue(StyleKeys.TextWhitespaceKey, false);
 
 
-            if (this is IPDFTextLiteral)
-                format = ((IPDFTextLiteral)this).ReaderFormat;
+            if (this is ITextLiteral)
+                format = ((ITextLiteral)this).ReaderFormat;
             
             return PDFTextReader.Create(this.BaseText, format, preserveWhitespace, context.TraceLog);
         }

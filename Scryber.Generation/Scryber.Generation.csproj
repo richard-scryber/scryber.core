@@ -14,7 +14,4 @@
   <ItemGroup>
     <Compile Remove="Generation\Errors1.Designer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Binding\" />
-  </ItemGroup>
 </Project>

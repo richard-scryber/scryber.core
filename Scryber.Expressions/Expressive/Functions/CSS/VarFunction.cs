@@ -39,7 +39,12 @@ namespace Scryber.Expressive.Functions.CSS
             //Allow the pass through of an optional second parameter with a fallback value
 
             if (null == value && parameters.Length > 1)
+            {
                 value = parameters[1].Evaluate(variables);
+
+                if (value == null && parameters[1] is VariableExpression variable)
+                    value = variable.variableName;
+            }
 
             return value;
         }

@@ -89,7 +89,7 @@ namespace Scryber.Logging
         }
     }
 
-    public class DiagnoticsTraceLogFactory : IPDFTraceLogFactory
+    public class DiagnoticsTraceLogFactory : ITraceLogFactory
     {
         public TraceLog CreateLog(TraceRecordLevel level, string name)
         {

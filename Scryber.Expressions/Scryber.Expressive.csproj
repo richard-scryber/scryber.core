@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Expressive\Exceptions\" />
+    <Folder Include="Expressive\Functions\Structural\" />
   </ItemGroup>
 
   <ItemGroup>

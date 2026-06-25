@@ -6,7 +6,7 @@ using Scryber.Text;
 namespace Scryber.Components
 {
     [PDFParsableComponent("Whitespace")]
-	public class Whitespace : Component, IPDFTextLiteral, ITextComponent
+	public class Whitespace : Component, ITextLiteral, ITextComponent
 	{
         private string _text;
 

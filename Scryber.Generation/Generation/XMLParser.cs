@@ -632,7 +632,7 @@ namespace Scryber.Generation
                 
                 ParserPropertyDefinition attr;
                 ParserEventDefinition evt;
-                IPDFBindingExpressionFactory factory;
+                IBindingExpressionFactory factory;
                 if (IsSpecialAttribute(reader, isremotecomponent, cdef))
                 {
                     if ((reader.Name.ToLower() == "xmlns" || reader.Name.ToLower().StartsWith("xmlns:")))
@@ -972,7 +972,7 @@ namespace Scryber.Generation
                 reader.Read();
                 string value = reader.Value;
                 
-                IPDFBindingExpressionFactory factory;
+                IBindingExpressionFactory factory;
                 if(ParserHelper.IsEscapedBindingExpression(ref value))
                 {
                     object converted = prop.GetValue(reader, this.Settings);
@@ -1184,10 +1184,10 @@ namespace Scryber.Generation
             object gen = CreateInstance(this.Settings.TempateGeneratorType);
             var defn = ParserDefintionFactory.GetClassDefinition(this.Settings.TempateGeneratorType);
 
-            if ((gen is IPDFTemplateGenerator) == false)
+            if ((gen is ITemplateGenerator) == false)
                 throw new InvalidCastException("The returned type for the Settings.TemplateGeneratorType does not implement the IPDFTemplateGenerator interface");
 
-            IPDFTemplateGenerator tempgen = (IPDFTemplateGenerator)gen;
+            ITemplateGenerator tempgen = (ITemplateGenerator)gen;
             tempgen.ElementName = reader.Name;
             tempgen.IsBlock = temp.RenderAsBlock;
 
@@ -1601,7 +1601,7 @@ namespace Scryber.Generation
 
         #region private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, BindingType bindingtype)
 
-        private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IPDFBindingExpressionFactory factory)
+        private void GenerateBindingExpression(XmlReader reader, object container, ParserClassDefinition cdef, ParserPropertyDefinition prop, string expression, IBindingExpressionFactory factory)
         {
             using (var recorder = this.Settings.PerformanceMonitor.Record(PerformanceMonitorType.Expression_Build, expression))
             {
@@ -1742,7 +1742,7 @@ namespace Scryber.Generation
             string textSubString = textString.ToString();
 
             string[] splits;
-            IPDFBindingExpressionFactory[] factories;
+            IBindingExpressionFactory[] factories;
 
             if(ParserHelper.ContainsBindingExpressions(textSubString, out splits, out factories))
             {
@@ -1767,11 +1767,11 @@ namespace Scryber.Generation
             
         }
 
-        private void AddTextBindingExpression(string expr, ParserArrayDefinition arraydefn, object collection, IPDFBindingExpressionFactory factory, TextFormat format)
+        private void AddTextBindingExpression(string expr, ParserArrayDefinition arraydefn, object collection, IBindingExpressionFactory factory, TextFormat format)
         {
             Type literaltype = this.Settings.TextLiteralType;
 
-            IPDFTextLiteral lit = (IPDFTextLiteral)CreateInstance(literaltype);
+            ITextLiteral lit = (ITextLiteral)CreateInstance(literaltype);
 
             IBindableComponent bindable = (IBindableComponent)lit;
 
@@ -1809,7 +1809,7 @@ namespace Scryber.Generation
         private void AddTextString(string text, ParserArrayDefinition arraydefn, object collection, TextFormat format)
         {
             Type literaltype = this.Settings.TextLiteralType;
-            IPDFTextLiteral literal = (IPDFTextLiteral)CreateInstance(literaltype);
+            ITextLiteral literal = (ITextLiteral)CreateInstance(literaltype);
             
             literal.Text = text;
             literal.ReaderFormat = format;
@@ -1839,7 +1839,7 @@ namespace Scryber.Generation
             if (isComponentCollection)
             {
                 Type whitespaceType = this.Settings.WhitespaceType;
-                IPDFTextLiteral whitespace = (IPDFTextLiteral)CreateInstance(whitespaceType);
+                ITextLiteral whitespace = (ITextLiteral)CreateInstance(whitespaceType);
                 whitespace.Text = spacer;
                 whitespace.ReaderFormat = format;
 

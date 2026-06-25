@@ -18,6 +18,7 @@ namespace Scryber.Components.Mvc
         private ImagingOptions _imaging;
         private OutputOptions _output;
         private TracingOptions _tracelog;
+        private ExpressionOptions _expression;
 
         public ParsingOptions ParsingOptions
         {
@@ -111,6 +112,23 @@ namespace Scryber.Components.Mvc
             }
         }
 
+        public ExpressionOptions ExpressionOptions
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (null == _expression)
+                    {
+                        _expression = this.GetOptions<ExpressionOptions>(Options.ExpressionOptions.ExpressionsSection);
+                        if (null == _expression)
+                            _expression = new ExpressionOptions();
+                    }
+                }
+                return _expression;
+            }
+        }
+
         //
         // .ctor
         //
@@ -128,6 +146,7 @@ namespace Scryber.Components.Mvc
         {
             var section = _config.GetSection(path);
             var value = new T();
+            section.Bind(value);
             return value;
         }
 

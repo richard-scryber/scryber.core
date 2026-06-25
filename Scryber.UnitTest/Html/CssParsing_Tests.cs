@@ -2894,6 +2894,51 @@ body.grey div.reverse{
             }
 
         }
+        
+        [TestMethod()]
+        public void FindMatches()
+        {
+
+            var src = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+
+                        <head>
+                          <title>Font Awesome document</title>
+                          <link href='https://use.fontawesome.com/releases/v5.15.4/css/all.css' rel='stylesheet' />
+                          <style>
+    
+                            body {
+                              padding: 20px;
+                            }
+
+                            i.fa.fa-pen, i.fa.fa-palette{
+                                font-weight:400;
+                            }
+                          </style>
+                        </head>
+
+                        <body>
+                          <i class='fa fa-pen'></i><i class='fa fa-palette' ></i>
+                        </body>
+
+                        </html>
+";
+            var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent);
+
+            var found = doc.FindMatches("link").ToList();
+            Assert.AreEqual(1, found.Count);
+            
+            found = doc.FindMatches("body i").ToList();
+            Assert.AreEqual(2, found.Count);
+            
+            found = doc.FindMatches("body > i").ToList();
+            Assert.AreEqual(2, found.Count);
+            
+            found = doc.FindMatches("body > i.fa").ToList();
+            Assert.AreEqual(2, found.Count);
+            
+            found = doc.FindMatches("body > i.fa-palette").ToList();
+            Assert.AreEqual(1, found.Count);
+        }
 
 
         private void ParseCSSWithMultipleSelectors_LayoutComplete(object sender, LayoutEventArgs args)

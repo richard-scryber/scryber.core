@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Scryber.Components;
 using Scryber.Drawing;
@@ -12,9 +13,13 @@ namespace Scryber.PDF.Layout
     /// </summary>
     public class LayoutEngineCSSTable : LayoutEngineTable
     {
-        public LayoutEngineCSSTable(ContainerComponent container, IPDFLayoutEngine parent)
+        
+        protected Style ContainerStyle { get; set; }
+        
+        public LayoutEngineCSSTable(ContainerComponent container, IPDFLayoutEngine parent, Style style)
             : base(BuildSyntheticTable(container), parent)
         {
+            ContainerStyle = style;
         }
 
         // -----------------------------------------------------------------------
@@ -32,10 +37,10 @@ namespace Scryber.PDF.Layout
             {
                 if (!(item is Component rowComp) || !rowComp.Visible)
                     continue;
-                if (!(item is IStyledComponent rowStyled) || !rowStyled.HasStyle)
-                    continue;
-
-                var display = rowStyled.Style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                var fullRowStyle = rowComp.GetAppliedStyle();
+                
+                var display = fullRowStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                
                 if (display != DisplayMode.TableRow)
                     continue;
 
@@ -57,14 +62,15 @@ namespace Scryber.PDF.Layout
             {
                 if (!(item is Component cellComp) || !cellComp.Visible)
                     continue;
-                if (!(item is IStyledComponent cellStyled) || !cellStyled.HasStyle)
-                    continue;
+                
+                var fullCellStyle = cellComp.GetAppliedStyle();
 
-                var display = cellStyled.Style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                var display =fullCellStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                
                 if (display != DisplayMode.TableCell)
                     continue;
 
-                row.Cells.Add(new CSSTableCell(cellComp));
+                row.Cells.Add(new CSSTableCell(cellComp, fullCellStyle));
             }
 
             return row;
@@ -82,18 +88,19 @@ namespace Scryber.PDF.Layout
         private sealed class CSSTableCell : TableCell, IContainerComponent
         {
             private readonly ContainerComponent _source;
+            private readonly Style _style;
 
-            public CSSTableCell(Component source)
+            public CSSTableCell(Component source, Style style)
             {
-                _source = source as ContainerComponent;
-
-                if (source is IStyledComponent sc && sc.HasStyle)
-                {
-                    var cs = sc.Style.GetValue(StyleKeys.TableCellColumnSpanKey, 1);
-                    var rs = sc.Style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
-                    if (cs > 1) this.CellColumnSpan = cs;
-                    if (rs > 1) this.CellRowSpan = rs;
-                }
+                _source = (source as ContainerComponent) ?? throw new ArgumentNullException(nameof(source));
+                _style = style ?? throw new ArgumentNullException(nameof(style));
+                
+                var cs = _style.GetValue(StyleKeys.TableCellColumnSpanKey, 1);
+                var rs = _style.GetValue(StyleKeys.TableCellRowSpanKey, 1);
+                
+                if (cs > 1) this.CellColumnSpan = cs;
+                if (rs > 1) this.CellRowSpan = rs;
+                
             }
 
             // Re-implement IContainerComponent so LayoutEngineBase.GetComponentChildren uses source's list.

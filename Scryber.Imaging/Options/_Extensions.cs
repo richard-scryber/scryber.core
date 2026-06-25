@@ -10,12 +10,12 @@ namespace Scryber.Options
 
         public static ImageFactoryList GetConfiguredFactories(this ImagingOptions options)
         {
-            ImageDataFactoryOption[] configured = null;
+            List<ImageDataFactoryOption> configured = null;
 
 
             var standard = GetStandardFactories();
             var list = new ImageFactoryList();
-            if (null != options && null != options.Factories && options.Factories.Length > 0)
+            if (null != options && null != options.Factories && options.Factories.Count > 0)
             {
                 configured = options.Factories;
                 foreach (var configFactory in configured)

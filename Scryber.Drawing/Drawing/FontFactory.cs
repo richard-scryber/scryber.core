@@ -624,7 +624,7 @@ namespace Scryber.Drawing
             FamilyReferenceBag custom = new FamilyReferenceBag();
             List<string> loadErrors = new List<string>();
             
-            if (options.Register == null || options.Register.Length == 0) return custom;
+            if (options.Register == null || options.Register.Count == 0) return custom;
 
             using (var reader = new TypefaceReader())
             {
@@ -668,7 +668,16 @@ namespace Scryber.Drawing
                             var assembly = Assembly.Load(assm);
                             using (var stream = assembly.GetManifestResourceStream(path))
                             {
-                                info = reader.ReadTypeface(stream, known.Resource);
+                                info = reader.ReadTypeface(stream, "rsrc://" + known.Resource);
+                                
+                                for (var i = 0; i < info.FontCount; i++)
+                                {
+                                    if (info.Fonts[i] is Scryber.OpenType.Utility.SingleTypefaceInfo sti)
+                                        stream.Position = sti.OffsetInFile;
+                    
+                                    ITypefaceFont one = reader.GetFont(stream, "rsrc://" + known.Resource  , info.Fonts[i]);
+                                    info.Fonts[i] = one;
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -683,6 +692,7 @@ namespace Scryber.Drawing
                         {
                             var family = known.Family ?? font.FamilyName;
                             
+                                
                             custom.AddFont(info, font, family);
 
 

@@ -130,6 +130,10 @@ namespace Scryber
                     {
                         this.FullfillDataRequest(request);
                     }
+                    else if (request.FilePath.StartsWith(Const.ResourcePathTransport))
+                    {
+                        this.FullfillResourceRequest(request);
+                    }
                     else if (Uri.IsWellFormedUriString(request.FilePath, UriKind.Absolute))
                     {
                         await this.FullfillUriRequestAsync(request);

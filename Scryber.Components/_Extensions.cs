@@ -42,7 +42,7 @@ namespace Scryber
             var all = new ParserFactoryDictionary();
             var standard = GetStandardFactories();
 
-            if (null != options && null != options.Parsers && options.Parsers.Length > 0)
+            if (null != options && null != options.Parsers && options.Parsers.Count > 0)
             {
                 foreach (var configFactory in options.Parsers)
                 {

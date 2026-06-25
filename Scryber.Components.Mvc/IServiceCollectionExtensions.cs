@@ -8,10 +8,10 @@ namespace Scryber.Components.Mvc
     {
         public static IServiceCollection AddScryberServices(this IServiceCollection collection, IConfiguration config)
         {
-
+            Scryber.ServiceProvider.Init(config);
             collection.AddSingleton<IScryberConfigurationService>(new ScryberRootConfigurationService(config));
-            var provider = collection.BuildServiceProvider();
-            ServiceProvider.SetProvider(provider);
+            //var provider = collection.BuildServiceProvider();
+            //ServiceProvider.SetProvider(provider);
             return collection;
         }
     }

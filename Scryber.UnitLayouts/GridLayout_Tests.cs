@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
@@ -5,6 +7,7 @@ using Scryber.Drawing;
 using Scryber.PDF;
 using Scryber.PDF.Layout;
 using Scryber.Styles;
+using Scryber.Styles.Selectors;
 
 namespace Scryber.UnitLayouts
 {
@@ -940,6 +943,54 @@ namespace Scryber.UnitLayouts
 
             Assert.IsNotNull(_layout, "Layout should complete without throwing");
             Assert.AreEqual(1, _layout.AllPages.Count, "Should still produce one page");
+        }
+
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void MMckinstry_Issue()
+        {
+            var source = DocStreams.AssertGetTemplatePath("Content/HTML/Mmcinstry_issue.html");
+            
+            using var doc = Document.ParseDocument(source);
+
+            for (var i = 0; i < 17; i++)
+            {
+                var value = "field value " + i;
+                var key = "field_" + i;
+                doc.Params[key] = value;
+            }
+            
+            
+            
+            using (var ms = DocStreams.GetOutputStream("Grid_Mmcinstry_issue.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.AreEqual(2, _layout.AllPages.Count, "Should be 2 Pages");
+            var page = _layout.AllPages[0];
+
+            var grids = doc.FindMatches(".padded-top-large");
+            Assert.AreEqual(5, grids.Count(), "Should be 5 grids with class .padded-top-large");
+            
+            var rows = grids.Find("div.row");
+            Assert.AreEqual(14, rows.Count(), "Should be 14 Rows with class .row");
+
+            var offset = Unit.Zero;
+            
+            foreach (Component row in rows)
+            {
+                var arrange = row.GetFirstArrangement();
+                Assert.IsNotNull(arrange, "Row arrange must exist");
+                
+                if(offset != Unit.Zero) //should follow straight down after the first one.
+                    Assert.AreEqual(offset, arrange.RenderBounds.Y, "Render offset Y should follow after previous offset with height");
+                
+                offset = arrange.RenderBounds.Y + arrange.RenderBounds.Height;
+                
+                
+            }
         }
     }
 }

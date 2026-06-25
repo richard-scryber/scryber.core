@@ -140,7 +140,7 @@ namespace Scryber.Core.UnitTests.Configuration
 
             //Should be 3 registered fonts
             Assert.IsNotNull(font.Register, "The font register should not be null");
-            Assert.AreEqual(3, font.Register.Length, "There are not 3 registered fonts");
+            Assert.AreEqual(3, font.Register.Count, "There are not 3 registered fonts");
 
             var family = "Segoe UI";
             string style = null;
@@ -216,7 +216,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(60, img.ImageCacheDuration, "The image cache duration is not 60");
             Assert.IsNotNull(img.Factories, "The image factories are null");
 
-            Assert.AreEqual(1, img.Factories.Length);
+            Assert.AreEqual(1, img.Factories.Count);
             Assert.AreEqual(".*\\.dynamic", img.Factories[0].Match, "The img factory match path is incorrect");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockImageFactory", img.Factories[0].FactoryType, "The image factory type is not correct");
             Assert.AreEqual("Scryber.UnitTests", img.Factories[0].FactoryAssembly, "The image factory assembly is not correct");
@@ -238,7 +238,7 @@ namespace Scryber.Core.UnitTests.Configuration
             Assert.AreEqual(TraceRecordLevel.Warnings, trace.TraceLevel, "Trace level is not Debug");
 
             Assert.IsNotNull(trace.Loggers, "The tracing loggers is null");
-            Assert.AreEqual(2, trace.Loggers.Length, "The length of the tracing loggers is not 1");
+            Assert.AreEqual(2, trace.Loggers.Count, "The length of the tracing loggers is not 1");
 
             Assert.AreEqual("Spoof", trace.Loggers[0].Name, "THe logger name is not Spoof");
             Assert.AreEqual("Scryber.UnitTests.Mocks.MockTraceLog", trace.Loggers[0].FactoryType, "The logger type does not match");
@@ -385,7 +385,7 @@ namespace Scryber.Core.UnitTests.Configuration
         }
 
 
-        public Options.ImageDataFactoryOption[] EnsureDataImageFactory()
+        public List<Options.ImageDataFactoryOption> EnsureDataImageFactory()
         {
             var services = Scryber.ServiceProvider.GetService<IScryberConfigurationService>();
             var orig = services.ImagingOptions.Factories;
@@ -405,7 +405,7 @@ namespace Scryber.Core.UnitTests.Configuration
                     Match = path,
                     Name = "DataImages"
                 });
-                services.ImagingOptions.Factories = factories.ToArray();
+                services.ImagingOptions.Factories = factories;
 
             }
             return orig;
