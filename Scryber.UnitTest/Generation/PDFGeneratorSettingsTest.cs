@@ -1,6 +1,7 @@
 ﻿using Scryber.Generation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading.Tasks;
 using Scryber;
 using Scryber.Components;
 using Scryber.Logging;
@@ -79,13 +80,14 @@ namespace Scryber.Core.UnitTests.Generation
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
+            PDFReferenceResolverAsync resolverAsync = new PDFReferenceResolverAsync(this.ShimResolverAsync);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor mon = new PerformanceMonitor(true);
             Mocks.MockControllerClass controller = new Mocks.MockControllerClass();
 
-            ParserSettings target = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, controller);
+            ParserSettings target = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, resolverAsync, conformance, loadtype, log, mon, controller, false);
 
             Assert.IsNotNull(target);
             Assert.AreSame(literaltype, target.TextLiteralType);
@@ -105,6 +107,11 @@ namespace Scryber.Core.UnitTests.Generation
             return null;
         }
 
+        Task<IComponent> ShimResolverAsync(string filename, string xpath, ParserSettings settings)
+        {
+            return null;
+        }
+
         /// <summary>
         ///A test for ConformanceMode - read / write
         ///</summary>
@@ -117,11 +124,12 @@ namespace Scryber.Core.UnitTests.Generation
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
+            PDFReferenceResolverAsync resolverAsync = new PDFReferenceResolverAsync(this.ShimResolverAsync);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor mon = new PerformanceMonitor(true);
-            ParserSettings target = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, conformance, loadtype, log, mon, null);
+            ParserSettings target = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, resolverAsync, conformance, loadtype, log, mon, null, false);
 
             Assert.AreEqual(conformance, target.ConformanceMode);
 

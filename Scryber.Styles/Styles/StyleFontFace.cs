@@ -227,7 +227,7 @@ namespace Scryber.Styles
                                 "Initiating the remote request for font " + name + " from source " + source.Source);
                         var cache = Scryber.Caching.PDFCacheProvider.DefaultCacheDuration;
                         
-                        doc.RequestResource(source.Type.ToString(), source.Source, cache, ResolveFontRequest, context.Document,
+                        doc.RequestResource(PDFResource.FontDefnResourceType, source.Source, cache, ResolveFontRequest, context.Document,
                             context);
                     }
                 }

@@ -170,6 +170,23 @@ namespace Scryber.Html.Parsing
         public IComponent Parse(string source, TextReader reader, ParseSourceType type)
         {
             //Use HTMLAgilityPack to load the html into an effective XML document
+            var content = ConvertToXHTML(reader, type);
+
+            IComponent parsed;
+
+            using (var sr = new StringReader(content))
+            {
+                using (var xr = CreateXmlReader(sr))
+                {
+                    parsed = Parse(source, xr, type);
+                }
+            }
+
+            return parsed;
+        }
+
+        protected string ConvertToXHTML(TextReader reader, ParseSourceType type)
+        {
             var hag = new HtmlDocument();
             hag.Load(reader);
             var root = hag.DocumentNode;
@@ -217,20 +234,9 @@ namespace Scryber.Html.Parsing
             content = ReplaceEscapedBindingExpressions(content);
 
             //Console.WriteLine("Extracted HTML content : " + content);
-
-            IComponent parsed;
-
-            using (var sr = new StringReader(content))
-            {
-                using (var xr = CreateXmlReader(sr))
-                {
-                    parsed = Parse(source, xr, type);
-                }
-            }
-
-            return parsed;
+            return content;
         }
-        
+
         protected virtual XmlReader CreateXmlReader(TextReader reader)
         {
 #if PROCESS_HANDLEBAR_HELPERS

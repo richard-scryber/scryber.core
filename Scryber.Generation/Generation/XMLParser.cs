@@ -28,6 +28,7 @@ using System.Data.Common;
 using Scryber.Logging;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Scryber.Generation
 {
@@ -251,8 +252,10 @@ namespace Scryber.Generation
         }
 
         #endregion
+        
+        
 
-        private XmlReader CreateXmlReader(Stream stream)
+        protected XmlReader CreateXmlReader(Stream stream)
         {
 #if PROCESS_HANDLEBAR_HELPERS
             return new XHtmlHandleHelperReader(stream);
@@ -272,15 +275,26 @@ namespace Scryber.Generation
 
         #region protected virtual IPDFComponent DoParse(string source, XmlReader reader, ParseSourceType type)
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="reader"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected virtual IComponent DoParse(string source, XmlReader reader, ParseSourceType type)
+        {
+            return this.DoParseAsync(source, reader, type).GetAwaiter().GetResult();
+        }
 
         /// <summary>
-        /// Top level Parse method which returns the complete component that was parsed from the source.
+        /// Top level asynchronous ParseAsync method which returns the complete component that was parsed from the source.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="reader"></param>
         /// <param name="istemplate"></param>
         /// <returns></returns>
-        protected virtual IComponent DoParse(string source, XmlReader reader, ParseSourceType type)
+        protected virtual async Task<IComponent> DoParseAsync(string source, XmlReader reader, ParseSourceType type)
         {
             var alreadyMoved = false; //allow the read to continue on, without actually moving to the next node.
             

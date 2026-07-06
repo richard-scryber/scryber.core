@@ -37,6 +37,7 @@ using Scryber.PDF.Native;
 using Scryber.Options;
 using Scryber.Logging;
 using System.IO;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace Scryber.Components
@@ -716,10 +717,24 @@ namespace Scryber.Components
         #region public Scryber.PDFReferenceResolver Resolver {get;set;}
 
         /// <summary>
-        /// Gets or sets the reference resolver for this document
+        /// Gets or sets the synchronous reference resolver for this document
         /// </summary>
         /// <remarks>This resolver will be used to generate any referenced files</remarks>
         public Scryber.PDFReferenceResolver Resolver
+        {
+            get;
+            set;
+        }
+
+        #endregion
+        
+        #region public Scryber.PDFReferenceResolverAsync ResolverAsync {get;set;}
+
+        /// <summary>
+        /// Gets or sets the asynchronous reference resolver for this document
+        /// </summary>
+        /// <remarks>This resolver will be used to generate any referenced files</remarks>
+        public Scryber.PDFReferenceResolverAsync ResolverAsync
         {
             get;
             set;
@@ -1112,6 +1127,8 @@ namespace Scryber.Components
         // Style methods
         //
 
+        #region public virtual Style GetPageStyle(string sizeName) + 1 overload
+        
         /// <summary>
         /// Gets the page style for a given page size name. This is used by pages to get the appropriate styles for their size, and can be overridden to provide custom page styles based on the size name.
         /// If sizeName is null or empty, then this will return the default page style for the document. Otherwise it will return a style with all the styles merged in that match the size name. The size name is normally set on the page size definition, and can be used to provide different styles for different page sizes.
@@ -1132,6 +1149,8 @@ namespace Scryber.Components
 
             return style;
         }
+        
+        #endregion
 
         #region public override PDFStyle GetAppliedStyle(PDFComponent forComponent)
 
@@ -1700,7 +1719,7 @@ namespace Scryber.Components
         }
 
         /// <summary>
-        /// Returns the parser factory that an create content based on the provided mime-type
+        /// Returns the parser factory that can create content based on the provided mime-type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -1716,12 +1735,20 @@ namespace Scryber.Components
             if (null == _settings)
             {
                 PDFReferenceResolver resolver = this.Resolver;
+                PDFReferenceResolverAsync resolverAsync = null;
+                
                 if (null == resolver)
                 {
-                    ReferenceChecker checker = new ReferenceChecker(this.LoadedSource);
-                    resolver = checker.Resolver;
+                    resolverAsync = this.ResolverAsync;
+
+                    if (null == resolverAsync)
+                    {
+
+                        ReferenceChecker checker = new ReferenceChecker(this.LoadedSource);
+                        resolver = checker.Resolver;
+                    }
                 }
-                _settings = DoCreateGeneratorSettings(resolver);
+                _settings = DoCreateParserSettings(resolver, resolverAsync);
             }
 
             //try and get a parser for the mime-type
@@ -2956,6 +2983,7 @@ namespace Scryber.Components
         // parse methods
         //
 
+        
         #region protected override IPDFComponent ParseComponentAtPath(string path)
 
         /// <summary>
@@ -3293,7 +3321,7 @@ namespace Scryber.Components
                 resolver = checker.Resolver;
             }
 
-            ParserSettings settings = this.DoCreateGeneratorSettings(resolver);
+            ParserSettings settings = this.DoCreateParserSettings(resolver, null);
             //settings.Controller = this.Controller;
 
             IComponentParser parser = new Scryber.Generation.XMLParser(settings);
@@ -3308,6 +3336,67 @@ namespace Scryber.Components
 
         #endregion
         
+        #region public IPDFComponent ParseTemplateAsync(IPDFRemoteComponent owner, string referencepath, Stream stream) + 2 overloads
+
+        public async Task<IComponent> ParseTemplateAsync(IRemoteComponent owner, System.IO.TextReader reader)
+        {
+            return await ParseTemplateAsync(owner, owner.LoadedSource, reader);
+        }
+
+        public async Task<IComponent> ParseTemplateAsync(IRemoteComponent owner, string referencepath, System.IO.Stream stream)
+        {
+            using (System.Xml.XmlReader xml = System.Xml.XmlReader.Create(stream))
+            {
+                return await ParseTemplateAsync(owner, referencepath, xml);
+            }
+        }
+
+
+
+        public async Task<IComponent> ParseTemplateAsync(IComponent owner, string referencepath, System.IO.TextReader reader)
+        {
+            using (System.Xml.XmlReader xml = System.Xml.XmlReader.Create(reader))
+            {
+                return await ParseTemplateAsync(owner, referencepath, xml);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="referencepath"></param>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public virtual async  Task<IComponent> ParseTemplateAsync(IComponent owner, string referencepath, System.Xml.XmlReader reader)
+        {
+            if (null == owner)
+                throw RecordAndRaise.ArgumentNull("owner");
+            if (null == reader)
+                throw RecordAndRaise.ArgumentNull("reader");
+            
+            IComponent comp;
+
+            PDFReferenceResolverAsync resolver = this.ResolverAsync;
+            if (null == resolver)
+            {
+                ReferenceChecker checker = new ReferenceChecker(referencepath);
+                resolver = checker.ResolverAsync;
+            }
+
+            ParserSettings settings = this.DoCreateParserSettings(null, resolver);
+            //settings.Controller = this.Controller;
+
+            IComponentParserAsync parser = new Scryber.Generation.XMLAsyncParser(settings);
+
+            parser.RootComponent = owner;
+
+            comp = await parser.ParseAsync(referencepath, reader, ParseSourceType.Template);
+            
+            return comp;
+        }
+
+        #endregion
         
         #region protected virtual ParserSettings CreateGeneratorSettings(PDFReferenceResolver resolver)
 
@@ -3316,7 +3405,7 @@ namespace Scryber.Components
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        protected virtual ParserSettings DoCreateGeneratorSettings(PDFReferenceResolver resolver)
+        protected virtual ParserSettings DoCreateParserSettings(PDFReferenceResolver resolver, PDFReferenceResolverAsync resolverAsync)
         {
             TraceLog log = this.TraceLog;
             PerformanceMonitor monitor = this.PerformanceMonitor;
@@ -3324,7 +3413,7 @@ namespace Scryber.Components
             ParserLoadType loadtype = this.LoadType;
             object controller = this.Controller;
 
-            return CreateParserSettings(resolver, mode, 
+            return DoCreateParserSettings(resolver, resolverAsync, mode, 
                 loadtype, log, monitor, controller);
         }
 
@@ -3343,27 +3432,332 @@ namespace Scryber.Components
             TraceLog log = config.TracingOptions.GetTraceLog();
             PerformanceMonitor perfmon = new PerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
 
-            return CreateParserSettings(resolver, conformance, loadtype, log, perfmon, controller);
+            return DoCreateParserSettings(resolver, null, conformance, loadtype, log, perfmon, controller);
+        }
+        
+        public static ParserSettings CreateParserSettingsAsync(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Strict, object controller = null)
+        {
+            ReferenceChecker checker = new ReferenceChecker(templatePath);
+            return CreateParserSettingsAsync(checker.ResolverAsync, mode, controller);
         }
 
-        protected static ParserSettings CreateParserSettings(PDFReferenceResolver resolver, 
+        private static ParserSettings CreateParserSettingsAsync(PDFReferenceResolverAsync resolverAsync, ParserConformanceMode mode, object controller)
+        {
+            ParserConformanceMode conformance = mode;
+            ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
+            var config = ServiceProvider.GetService<IScryberConfigurationService>();
+
+            TraceLog log = config.TracingOptions.GetTraceLog();
+            PerformanceMonitor perfmon = new PerformanceMonitor(log.RecordLevel <= TraceRecordLevel.Verbose);
+
+            return DoCreateParserSettings(null, resolverAsync, conformance, loadtype, log, perfmon, controller);
+        }
+
+        protected static ParserSettings DoCreateParserSettings(PDFReferenceResolver resolver, PDFReferenceResolverAsync resolverAsync, 
             ParserConformanceMode conformance, ParserLoadType loadtype, TraceLog log, PerformanceMonitor perfmon, object controller)
         {
+            bool isAsync;
+            
+            if(null == resolver && null == resolverAsync)
+                throw new ArgumentException("One and only one of EITHER an asynchronous or synchronous resolver should be provided.");
+            if(null ==  resolver)
+                isAsync = true;
+            else if(null ==  resolverAsync)
+                isAsync = false;
+            else
+                throw new ArgumentException("Can only provide 1 and only one of either a synchronous resolver OR an asynchronous resolver not both");
+            
+                
             ParserSettings settings = new ParserSettings(typeof(TextLiteral), typeof(Whitespace)
                                                                     , typeof(ParsableTemplateGenerator)
                                                                     , typeof(TemplateInstance),
                                                                     resolver,
+                                                                    resolverAsync,
                                                                     conformance,
                                                                     loadtype,
                                                                     log,
                                                                     perfmon,
-                                                                    controller);
+                                                                    controller,
+                                                                    isAsync);
             return settings;
         }
 
         #endregion
 
+        //
+        // parse async
+        //
 
+        #region protected override async Task<IComponent> ParseComponentAtPathAsync(string path)
+        
+        /// <summary>
+        /// Overrides  the default behaviour to parse the component using the static Document.Parse method
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected override async Task<IComponent> ParseComponentAtPathAsync(string path)
+        {
+            IComponent parsed = null;
+            try
+            {
+                parsed = await Document.ParseAsync(path, this.ResolverAsync ?? new ReferenceChecker(string.Empty).ResolverAsync);
+            }
+            catch (System.IO.FileNotFoundException ex)
+            {
+                this.HandleRemoteReferenceException(path, ex);
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                this.HandleRemoteReferenceException(path, ex);
+            }
+            catch (System.IO.DirectoryNotFoundException ex)
+            {
+                this.HandleRemoteReferenceException(path, ex);
+            }
+            catch (System.IO.DriveNotFoundException ex)
+            {
+                this.HandleRemoteReferenceException(path, ex);
+            }
+            catch (System.Net.WebException ex)
+            {
+                this.HandleRemoteReferenceException(path, ex);
+            }
+            return parsed;
+        }
+        
+        #endregion
+        
+        
+        #region public static async Task<IComponent> ParseAsync(string fullpath) + 11 overloads
+
+        public static async Task<IComponent> ParseAsync(string fullpath)
+        {
+            using (System.IO.Stream stream = new System.IO.FileStream(fullpath,System.IO.FileMode.Open,System.IO.FileAccess.Read))
+            {
+                
+                ReferenceChecker checker = new ReferenceChecker(fullpath);
+
+                IComponent comp = await ParseAsync(fullpath, stream, ParseSourceType.LocalFile, checker.ResolverAsync);
+
+                if (comp is IRemoteComponent)
+                    ((IRemoteComponent)comp).LoadedSource = fullpath;
+
+                return comp;
+            }
+        }
+
+        public static async Task<IComponent> ParseAsync(System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent comp = await ParseAsync(string.Empty, stream, type, checker.ResolverAsync);
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(string path, System.IO.Stream stream)
+        {
+            return await ParseAsync(path, stream, ParseSourceType.Other);
+        }
+
+        public static async Task<IComponent> ParseAsync(string path, System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            var comp = await ParseAsync(path, stream, type, checker.ResolverAsync);
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent comp = await ParseAsync(string.Empty, reader, type, checker.ResolverAsync);
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(System.Xml.XmlReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent comp = await ParseAsync(string.Empty, reader, type, checker.ResolverAsync);
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(string fullpath, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            return await ParseAsync(fullpath, settings);
+        }
+
+        public static async Task<IComponent> ParseAsync(string fullpath, ParserSettings settings)
+        {
+            if (Uri.IsWellFormedUriString(fullpath, UriKind.Absolute))
+            {
+                var client = Scryber.ServiceProvider.GetService<HttpClient>();
+                bool disposeclient = false;
+
+                if (null == client)
+                {
+                    client = new HttpClient();
+                    disposeclient = true;
+                }
+                try
+                {
+                    using (var stream = await client.GetStreamAsync(fullpath))
+                    {
+                        IComponent comp = await ParseAsync(fullpath, stream, ParseSourceType.LocalFile, settings);
+                        if (comp is IRemoteComponent)
+                            ((IRemoteComponent)comp).LoadedSource = fullpath;
+                        return comp;
+                    }
+                }
+                finally
+                {
+                    if (disposeclient)
+                        client.Dispose();
+                }
+                
+            }
+            else
+            {
+                using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                {
+                    IComponent comp = await ParseAsync(fullpath, stream, ParseSourceType.LocalFile, settings);
+                    if (comp is IRemoteComponent)
+                        ((IRemoteComponent)comp).LoadedSource = fullpath;
+                    return comp;
+                }
+            }
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            return await ParseAsync(source, stream, type, settings);
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.IO.Stream stream, ParseSourceType type, ParserSettings settings)
+        {
+            IComponentParserAsync parser = new Scryber.Generation.XMLAsyncParser(settings);
+
+            IComponent comp = await parser.ParseAsync(source, stream, type);
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.IO.TextReader textreader, ParseSourceType type, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            return await ParseAsync(source, textreader, type, settings);
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.IO.TextReader textreader, ParseSourceType type, ParserSettings settings)
+        {
+            IComponentParserAsync parser = new Scryber.Generation.XMLAsyncParser(settings);
+
+            IComponent comp = await parser.ParseAsync(source, textreader, type);
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            
+            return await ParseAsync(source, xmlreader, type, settings);
+        }
+
+        public static async Task<IComponent> ParseAsync(string source, System.Xml.XmlReader xmlreader, ParseSourceType type, ParserSettings settings)
+        {
+            IComponentParserAsync parser =  new Scryber.Generation.XMLAsyncParser(settings);
+
+            IComponent comp = await parser.ParseAsync(source, xmlreader, type);
+            return comp;
+        }
+
+        #endregion
+        
+        //
+        // parse html async
+        //
+        
+        
+        #region public static IComponent ParseHtml(string fullpath) + 6 overloads
+        
+        public static async Task<IComponent> ParseHtmlAsync(string fullpath)
+        {
+            using (System.IO.Stream stream = new System.IO.FileStream(fullpath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+
+                ReferenceChecker checker = new ReferenceChecker(fullpath);
+
+                IComponent comp = await ParseHtmlAsync(fullpath, stream, ParseSourceType.LocalFile, checker.ResolverAsync);
+
+                if (comp is IRemoteComponent)
+                    ((IRemoteComponent)comp).LoadedSource = fullpath;
+
+                return comp;
+            }
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(source);
+
+            IComponent comp = await ParseHtmlAsync(source, stream, type, checker.ResolverAsync);
+
+            if (comp is IRemoteComponent)
+                ((IRemoteComponent)comp).LoadedSource = source;
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.Stream stream, ParseSourceType type, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            return await ParseHtmlAsync(source, stream, type, settings);
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.Stream stream, ParseSourceType type, ParserSettings settings)
+        {
+            IComponentParserAsync parser = new Scryber.Html.Parsing.HTMLAsyncParser(settings);
+            IComponent comp = await parser.ParseAsync(source, stream, type);
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(source);
+
+            IComponent comp = await ParseHtmlAsync(source, reader, type, checker.ResolverAsync);
+
+            if (comp is IRemoteComponent)
+                ((IRemoteComponent)comp).LoadedSource = source;
+
+            return comp;
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.TextReader reader, ParseSourceType type, PDFReferenceResolverAsync resolverAsync)
+        {
+            ParserConformanceMode mode = ParserConformanceMode.Lax;
+            ParserSettings settings = Document.CreateParserSettingsAsync(resolverAsync, mode, null);
+            return await ParseHtmlAsync(source, reader, type, settings);
+        }
+
+        public static async Task<IComponent> ParseHtmlAsync(string source, System.IO.TextReader reader, ParseSourceType type, ParserSettings settings)
+        {
+            IComponentParserAsync parser = new Scryber.Html.Parsing.HTMLAsyncParser(settings);
+
+            IComponent comp = await parser.ParseAsync(source, reader, type);
+            return comp;
+        }
+
+        #endregion
+        
         //
         // parse document
         //
@@ -3804,6 +4198,445 @@ namespace Scryber.Components
         #endregion
 
         //
+        // parse document async
+        //
+
+        #region public static async Task<Document> ParseDocumentAsync(string path)
+
+        /// <summary>
+        /// Asynchronously parses xml or xhtml content from a local file into a new <see cref="Document"/> instance.
+        /// All relative paths to images, fonts, etc. should be relative to this path, unless a base path is set within the document.
+        /// </summary>
+        /// <param name="path">The full <paramref name="path"/> to the file, or a relative path from the current working directory</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException" >Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(string path)
+        {
+            var provider = Scryber.ServiceProvider.GetService<IPathMappingService>();
+
+            bool isFile;
+            var newPath = provider.MapPath(ParserLoadType.ReflectiveParser, path, null, out isFile);
+
+            var parsed = await ParseAsync(path);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(Stream stream)
+
+        /// <summary>
+        /// Asynchronously parses an xml or xhtml <see cref="Stream"/> into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(Stream stream)
+        {
+            return await ParseDocumentAsync(stream, ParseSourceType.DynamicContent);
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.IO.Stream stream, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses an xml or xhtml <see cref="Stream"/> into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent parsed = await ParseAsync(string.Empty, stream, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader)
+
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner xml or xhtml content read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader)
+        {
+            return await ParseDocumentAsync(reader, ParseSourceType.DynamicContent);
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner xml or xhtml content read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent parsed = await ParseAsync(string.Empty, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader)
+
+        /// <summary>
+        /// Asynchronously parses an <see cref="XmlReader"/> with the inner xml content read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory, or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The xml reader to read the content from.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader)
+        {
+            return await ParseDocumentAsync(reader, ParseSourceType.DynamicContent);
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses an <see cref="XmlReader"/> with the inner xml content read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory, or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The xml reader to read the content from.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent parsed = await ParseAsync(string.Empty, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses an xml or xhtml <see cref="Stream"/> into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = await ParseAsync(path, stream, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner xml or xhtml content read into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = await ParseAsync(path, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+        #endregion
+
+        #region public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader, string path, ParseSourceType type)
+
+        /// <summary>
+        /// Asynchronously parses a <see cref="XmlReader"/> with the inner xml or xhtml content read into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = await ParseAsync(path, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+
+
+
+        #endregion
+        
+        //
+        // Parse Html Document Async
+        //
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(string path)
+        
+        /// <summary>
+        /// Asynchronously parses html content (rather than the more formal xhtml or xml) from a local file into a new <see cref="Document"/> instance.
+        /// All relative paths to images, fonts, etc. should be relative to this path, unless a base path is set within the document.
+        /// </summary>
+        /// <param name="path">The full <paramref name="path"/> to the file, or a relative path from the current working directory</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="DirectoryNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="FileNotFoundException" >Thrown if the specified path could not be found in the local file system.</exception>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException" >Thown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(string path)
+        {
+            var provider = Scryber.ServiceProvider.GetService<IPathMappingService>();
+
+            bool isFile;
+            var newPath = provider.MapPath(ParserLoadType.ReflectiveParser, path, null, out isFile);
+
+            var parsed = await ParseHtmlAsync(path);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+        
+        #endregion
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(Stream stream)
+        
+        /// <summary>
+        /// Asynchronously parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads </returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(Stream stream)
+        {
+            return await ParseHtmlDocumentAsync(stream, ParseSourceType.DynamicContent);
+        }
+        
+        #endregion
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(Stream stream, ParseSourceType type)
+        
+        
+        /// <summary>
+        /// Asynchronously parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(Stream stream, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+
+            IComponent parsed = await ParseHtmlAsync(string.Empty, stream, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+        
+        #endregion
+        
+        #region public static async  Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader)
+        
+        
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml), read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async  Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader)
+        {
+            return await ParseHtmlDocumentAsync(reader, ParseSourceType.DynamicContent);
+        }
+        
+        #endregion
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader, ParseSourceType type)
+        
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml) read into a new <see cref="Document"/> instance.
+        /// As no path is provided, all relative paths to images, fonts, etc. will be relative to the current working directory,
+        /// or a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(string.Empty);
+            IComponent parsed = await ParseHtmlAsync(string.Empty, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+        
+        #endregion
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type)
+        
+        /// <summary>
+        /// Asynchronously parses an html <see cref="Stream"/> (rather than the more formal xhtml or xml) into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes to be made and saving with <see cref="SaveAsPDF(Stream)" />or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = await ParseHtmlAsync(path, stream, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+        
+        #endregion
+        
+        #region public static async Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type)
+        
+        /// <summary>
+        /// Asynchronously parses a <see cref="TextReader"/> with the inner html content (rather than the more formal xhtml or xml), read into a new <see cref="Document"/> instance.
+        /// The path is provided, to map to all relative paths to contained images, fonts, etc.,
+        /// unless a base path if set within the document itself
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="PDFParserException">Thrown if the content of the file could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type)
+        {
+            ReferenceChecker checker = new ReferenceChecker(path);
+            IComponent parsed = await ParseHtmlAsync(path, reader, type, checker.ResolverAsync);
+
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            Document doc = parsed as Document;
+
+            return doc;
+        }
+        
+        #endregion
+        
+        //
         // IRemoteComponent
         //
 
@@ -3872,7 +4705,19 @@ namespace Scryber.Components
             private string _rootPath;
             private Stack<string> _route;
             private PDFReferenceResolver _resolver;
+            private PDFReferenceResolverAsync _resolverAsync;
             private bool _hasroot;
+            
+            
+            public PDFReferenceResolver Resolver
+            {
+                get { return _resolver; }
+            }
+
+            public PDFReferenceResolverAsync ResolverAsync
+            {
+                get { return _resolverAsync; }
+            }
             
             
             public ReferenceChecker(string fullPath)
@@ -3888,6 +4733,13 @@ namespace Scryber.Components
                 }
 
                 _resolver = this.Resolve;
+                _resolverAsync = this.ResolveAsync;
+            }
+
+
+            public async Task<IComponent> ResolveAsync(string fullPath, string xpathSelect, ParserSettings setting)
+            {
+                throw new NotImplementedException();
             }
 
             
@@ -4171,10 +5023,7 @@ namespace Scryber.Components
                 return path;
             }
 
-            public PDFReferenceResolver Resolver
-            {
-                get { return _resolver; }
-            }
+            
         }
 
         #endregion

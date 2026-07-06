@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Scryber.Styles;
 using Scryber.Drawing;
 using Scryber.PDF;
@@ -1489,6 +1490,23 @@ namespace Scryber.Components
                 throw RecordAndRaise.NullReference(Errors.ParentDocumentCannotBeNull);
             else
                 return this.Parent.ParseComponentAtPath(path);
+        }
+
+        #endregion
+        
+        #region protected virtual IPDFComponent ParseComponentAtPath(string path)
+
+        /// <summary>
+        /// Parses a pdfx file located at the full path 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        protected virtual async Task<IComponent> ParseComponentAtPathAsync(string path)
+        {
+            if (null == this.Parent)
+                throw RecordAndRaise.NullReference(Errors.ParentDocumentCannotBeNull);
+            else
+                return await this.Parent.ParseComponentAtPathAsync(path);
         }
 
         #endregion

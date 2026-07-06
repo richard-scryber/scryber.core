@@ -739,6 +739,36 @@ namespace Scryber
         IComponent Parse(string source, System.Xml.XmlReader reader, ParseSourceType type);
     }
 
+    public interface IComponentParserAsync : IComponentParser
+    {
+        /// <summary>
+        /// Parses the specified stream using the resolver to load any referenced files and returns the PDFComponent representation
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="source"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<IComponent> ParseAsync(string source, System.IO.Stream stream, ParseSourceType type);
+
+        /// <summary>
+        /// Parses the specified stream using the resolver to load any referenced files and returns the PDFComponent representation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="reader"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<IComponent> ParseAsync(string source, System.IO.TextReader reader, ParseSourceType type);
+
+        /// <summary>
+        /// Parses the specified stream using the resolver to load any referenced files and returns the PDFComponent representation
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="reaser"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<IComponent> ParseAsync(string source, System.Xml.XmlReader reader, ParseSourceType type);
+    }
+
     #endregion
 
     #region public interface IParserFactory

@@ -54,12 +54,14 @@ namespace Scryber.Generation
         private ParserConformanceMode _conformance;
         private ParserLoadType _loadtype;
         private PDFReferenceResolver _resolver;
+        private PDFReferenceResolverAsync _resolverAsync;
         private PerformanceMonitor _perfmon;
         private bool _appendLog;
         private Type _controllerType;
         private object _controllerInstance;
         private System.Globalization.CultureInfo _specificCulture;
         private ParserReferenceMissingAction _missingRefAction;
+        private bool _useAsync;
 
         #endregion
 
@@ -102,11 +104,28 @@ namespace Scryber.Generation
         }
 
         /// <summary>
-        /// Gets the reference resolver
+        /// Gets the synchronous resolver delegate for any referenced files.
         /// </summary>
         public PDFReferenceResolver Resolver
         {
             get { return _resolver; }
+        }
+
+
+        /// <summary>
+        /// Gets the asynchronous resolver delegate for any referenced files.
+        /// </summary>
+        public PDFReferenceResolverAsync ResolverAsync
+        {
+            get { return _resolverAsync; }
+        }
+
+        /// <summary>
+        /// The flag to indicate is the parser should run in asynchronous mode to load external resources.
+        /// </summary>
+        public bool UseAsync
+        {
+            get { return _useAsync; }
         }
 
         /// <summary>
@@ -197,20 +216,22 @@ namespace Scryber.Generation
         }
 
         public ParserSettings(Type literaltype, Type whitespaceType, Type templategenerator, Type templateinstance, 
-                                PDFReferenceResolver resolver, ParserConformanceMode conformance, ParserLoadType loadtype,
-                                TraceLog log, PerformanceMonitor perfmon, object controllerInstance)
+                                PDFReferenceResolver resolver, PDFReferenceResolverAsync resolverAsync, ParserConformanceMode conformance, ParserLoadType loadtype,
+                                TraceLog log, PerformanceMonitor perfmon, object controllerInstance, bool useAsync)
         {
             this._textLiteralType = literaltype;
             this._whitespaceType = whitespaceType;
             this._tempateGenType = templategenerator;
             this._templateinstanceType = templateinstance;
             this._resolver = resolver;
+            this._resolverAsync = resolverAsync;
             this._conformance = conformance;
             this._loadtype = loadtype;
             this._log = log;
             this._perfmon = perfmon;
             this._controllerInstance = controllerInstance;
             this._controllerType = (null == controllerInstance) ? null : controllerInstance.GetType();
+            this._useAsync = useAsync;
 
             //Get the default culture from the config - can be overridden in the processing instructions, or at generation time in code
             var config = ServiceProvider.GetService<IScryberConfigurationService>();

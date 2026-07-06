@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Scryber;
 using System.Xml;
 using Scryber.Logging;
@@ -79,11 +80,12 @@ namespace Scryber.Core.UnitTests.Generation
             Type templategenerator = typeof(Scryber.Data.ParsableTemplateGenerator);
             Type templateinstance = typeof(Scryber.Data.TemplateInstance);
             PDFReferenceResolver resolver = new PDFReferenceResolver(this.ShimResolver);
+            PDFReferenceResolverAsync resolverAsync = new PDFReferenceResolverAsync(this.ShimResolverAsync);
             ParserConformanceMode conformance = ParserConformanceMode.Lax;
             ParserLoadType loadtype = ParserLoadType.ReflectiveParser;
             TraceLog log = new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Off);
             PerformanceMonitor perfmon = new PerformanceMonitor(true);
-            ParserSettings settings = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, conformance, loadtype, log, perfmon, null);
+            ParserSettings settings = new ParserSettings(literaltype, whitespaceType, templategenerator, templateinstance, resolver, resolverAsync, conformance, loadtype, log, perfmon, null, false);
 
             return settings;
         }
@@ -381,6 +383,33 @@ namespace Scryber.Core.UnitTests.Generation
         /// <param name="settings"></param>
         /// <returns></returns>
         IComponent ShimResolver(string filename, string xpath, ParserSettings settings)
+        {
+            resolverCallCount++;
+            IComponent resolverReturnValue;
+            Assert.IsNotNull(settings);
+
+            if (string.Equals(filename, "ShimFile2.pcfx"))
+            {
+                Assert.AreEqual("//xpath/node", xpath);
+                Fakes.ParserInnerComplex complex = new Fakes.ParserInnerComplex();
+                complex.Inheritable = "ShimFile2" + xpath;
+                complex.Index = 42;
+                resolverReturnValue = complex;
+            }
+            else if (string.Equals(filename, "ShimFile.pcfx"))
+            {
+                Assert.IsTrue(String.IsNullOrEmpty(xpath));
+                Fakes.ParserInnerComplex complex = new Fakes.ParserInnerComplex();
+                complex.Inheritable = "ShimFile";
+                resolverReturnValue = complex;
+            }
+            else
+                throw new ArgumentOutOfRangeException("Unknown remote file : " + filename);
+
+            return resolverReturnValue;
+        }
+        
+        async Task<IComponent> ShimResolverAsync(string filename, string xpath, ParserSettings settings)
         {
             resolverCallCount++;
             IComponent resolverReturnValue;
