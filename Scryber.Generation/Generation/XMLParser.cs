@@ -329,7 +329,7 @@ namespace Scryber.Generation
                     //make sure we have an instance of our controller type to hand
                     this.EnsureControllerInstance();
 
-                    object value = ParseComponent(reader, true);
+                    object value = await ParseComponent(reader, true);
 
                     // must return a value from this parse methos
                     if (!(value is IComponent))
@@ -458,7 +458,7 @@ namespace Scryber.Generation
         /// <param name="reader">The current xml reader to read the component from</param>
         /// <param name="isroot">If true this is the top level component. If false then this </param>
         /// <returns></returns>
-        protected virtual object ParseComponent(XmlReader reader, bool isroot)
+        protected virtual async ValueTask<object> ParseComponent(XmlReader reader, bool isroot)
         {
             if (reader.NodeType != XmlNodeType.Element)
                 throw BuildParserXMLException(reader, Errors.CanOnlyParseComponentAsElement);
@@ -484,9 +484,9 @@ namespace Scryber.Generation
             this.CheckFrameworkIsSupported(reader, cdef, this.Mode);
 
             if (isremote)
-                return this.ParseRemoteComponent(cdef, reader);
+                return await this.ParseRemoteComponent(cdef, reader);
             else
-                return ParseComplexComponent(reader, cdef, isroot);
+                return await ParseComplexComponent(reader, cdef, isroot);
         }
 
         #endregion
@@ -500,7 +500,7 @@ namespace Scryber.Generation
         /// <param name="cdef">The class definition of the type of component that to be parsed</param>
         /// <param name="isroot">If true then this is the top level root component</param>
         /// <returns>The parsed component</returns>
-        private object ParseComplexComponent(XmlReader reader, ParserClassDefinition cdef, bool isroot)
+        private async ValueTask<object> ParseComplexComponent(XmlReader reader, ParserClassDefinition cdef, bool isroot)
         {
             string fullname = reader.Name;
             object value = null;
@@ -513,7 +513,7 @@ namespace Scryber.Generation
                 if (isroot && null == this.RootComponent)
                     this.RootComponent = value;
 
-                ParseComplexComponentXml(value, reader, cdef);
+                await ParseComplexComponentXml(value, reader, cdef);
 
                 LogEnd(TraceLevel.Verbose, "Completed parsing of component of type '{0}'", cdef.ClassType);
             }
@@ -541,7 +541,7 @@ namespace Scryber.Generation
         /// <param name="component"></param>
         /// <param name="reader"></param>
         /// <param name="cdef"></param>
-        private void ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
+        private async ValueTask ParseComplexComponentXml(object component, XmlReader reader, ParserClassDefinition cdef)
         {
             string name = reader.LocalName;
             string ns = reader.NamespaceURI;
@@ -570,7 +570,7 @@ namespace Scryber.Generation
                 else if (cdef.DefaultElement != null && cdef.DefaultElement.PropertyInfo.PropertyType == typeof(System.Xml.XmlNode))
                     ParseSimpleElement(component, reader, cdef.DefaultElement, cdef);
                 else
-                    ParseContents(component, reader, name, ns, cdef);
+                    await ParseContents(component, reader, name, ns, cdef);
             }
             
         }
@@ -586,7 +586,7 @@ namespace Scryber.Generation
         /// <param name="resolver"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private object ParseRemoteComponent(ParserClassDefinition cdef, XmlReader reader)
+        private async ValueTask<object> ParseRemoteComponent(ParserClassDefinition cdef, XmlReader reader)
         {
             string element = reader.LocalName;
             string ns = reader.NamespaceURI;
@@ -601,7 +601,7 @@ namespace Scryber.Generation
             if (reader.MoveToAttribute(SelectAttributeName))
                 select = reader.Value;
 
-            object complex = ResolveAndParseRemoteComponent(reader, path, select);
+            object complex = await ResolveAndParseRemoteComponent(reader, path, select);
 
             if (null != complex)
             {
@@ -770,7 +770,7 @@ namespace Scryber.Generation
         /// <param name="element">The element name of the current component</param>
         /// <param name="ns">The declared namespace of the current component</param>
         /// <param name="cdef">The class definition of the current component</param>
-        private void ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
+        private async ValueTask ParseContents(object container, XmlReader reader, string element, string ns, ParserClassDefinition cdef)
         {
             bool alreadyMoved = false;
             
@@ -793,9 +793,9 @@ namespace Scryber.Generation
                         if (prop.ParseType == DeclaredParseType.SimpleElement)
                             this.ParseSimpleElement(container, reader, prop, cdef);
                         else if (prop.ParseType == DeclaredParseType.ArrayElement)
-                            this.ParseInnerCollection(container, reader, prop);
+                            await this.ParseInnerCollection(container, reader, prop);
                         else if (prop.ParseType == DeclaredParseType.ComplexElement)
-                            this.ParseComplexType(container, reader, prop);
+                            await this.ParseComplexType(container, reader, prop);
                         else if (prop.ParseType == DeclaredParseType.TempateElement)
                         {
                             this.ParseTemplateContent(container, reader, prop);
@@ -810,14 +810,14 @@ namespace Scryber.Generation
                     else if (cdef.DefaultElement != null)
                     {
                         if (cdef.DefaultElement.Name == reader.LocalName && ns == reader.NamespaceURI)
-                            this.ParseComplexType(container, reader, cdef.DefaultElement);
+                            await this.ParseComplexType(container, reader, cdef.DefaultElement);
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
                             var empty = reader.NodeType == XmlNodeType.Element && reader.IsEmptyElement;
                             
                             ParserArrayDefinition arry = (ParserArrayDefinition)cdef.DefaultElement;
                             object collection = InitArrayCollection(container, arry);
-                            object component = ParseComponent(reader, false);
+                            object component = await ParseComponent(reader, false);
 
                             //Check - if we have parsed inner content and are now not on the end node of the element, then we want to parse the current node, rather than move past it.
                             if (!empty && reader.NodeType != XmlNodeType.EndElement && reader.LocalName != element)
@@ -832,7 +832,7 @@ namespace Scryber.Generation
 
                         }
                         else if (String.IsNullOrEmpty(cdef.DefaultElement.Name))
-                            this.ParseComplexType(container, reader, cdef.DefaultElement);
+                            await this.ParseComplexType(container, reader, cdef.DefaultElement);
 
                         else if (reader.NamespaceURI == XmlSchemaNamespace)
                         {
@@ -888,7 +888,7 @@ namespace Scryber.Generation
                             //We are already positioned on the current content so it should be 
                             //included until we end the element
                             bool usecurrenttextnode = true;
-                            ParseInnerCollection(container, element, ns, usecurrenttextnode, reader, cdef.DefaultElement);
+                            await ParseInnerCollection(container, element, ns, usecurrenttextnode, reader, cdef.DefaultElement);
                             //If we have parsed all the content of the element then we need to break off
                             if (reader.NodeType == XmlNodeType.EndElement)
                             {
@@ -1015,7 +1015,7 @@ namespace Scryber.Generation
         /// <param name="container"></param>
         /// <param name="reader"></param>
         /// <param name="prop"></param>
-        private void ParseInnerCollection(object container, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseInnerCollection(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
             if (reader.IsEmptyElement)
                 return; //No inner content
@@ -1027,7 +1027,7 @@ namespace Scryber.Generation
             //we want to read the inner content
             bool parseCurrentNode = false;
 
-            ParseInnerCollection(container, endname, endns, parseCurrentNode, reader, prop);
+            await ParseInnerCollection(container, endname, endns, parseCurrentNode, reader, prop);
         }
 
         /// <summary>
@@ -1040,7 +1040,7 @@ namespace Scryber.Generation
         /// <param name="parsecurrentNode">If true then the current none the reader is positioned at will be parsed (otherwise it will be sipped and the next node will start the parsing</param>
         /// <param name="reader">The current xml reader</param>
         /// <param name="prop">The property definition that refers to the collection to be added to by the parsed contents</param>
-        private void ParseInnerCollection(object container, string endname, string endns, bool parsecurrentNode, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseInnerCollection(object container, string endname, string endns, bool parsecurrentNode, XmlReader reader, ParserPropertyDefinition prop)
         {
             LogAdd(reader, TraceLevel.Debug, "Parsing inner collection from element '{0}' for property '{2}' on class '{3}'", reader.Name, prop.Name, prop.PropertyInfo.Name, prop.PropertyInfo.DeclaringType);
             bool lastwastext = false;
@@ -1071,7 +1071,7 @@ namespace Scryber.Generation
                         textString.Length = 0;
                         lastwastext = false;
                     }
-                    object inner = this.ParseComponent(reader, false);
+                    object inner = await this.ParseComponent(reader, false);
                     if (null != inner)
                     {
                         arraydefn.AddToCollection(collection, inner);
@@ -1135,7 +1135,7 @@ namespace Scryber.Generation
         /// <param name="container"></param>
         /// <param name="reader"></param>
         /// <param name="prop"></param>
-        private void ParseComplexType(object container, XmlReader reader, ParserPropertyDefinition prop)
+        private async ValueTask ParseComplexType(object container, XmlReader reader, ParserPropertyDefinition prop)
         {
             ParserClassDefinition cdef = ParserDefintionFactory.GetClassDefinition(prop.ValueType);
 
@@ -1174,7 +1174,7 @@ namespace Scryber.Generation
                     created = true;
                 }
             }
-            this.ParseComplexComponentXml(value, reader, cdef);
+            await this.ParseComplexComponentXml(value, reader, cdef);
 
             if (created)
                 this.SetValue(container, value, prop);
@@ -1371,7 +1371,7 @@ namespace Scryber.Generation
         /// <param name="path"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        private object ResolveAndParseRemoteComponent(XmlReader reader, string path, string select)
+        private async ValueTask<object> ResolveAndParseRemoteComponent(XmlReader reader, string path, string select)
         {
             if(string.IsNullOrEmpty(path))
                 throw new ArgumentNullException("path");
@@ -1384,7 +1384,10 @@ namespace Scryber.Generation
 
             try
             {
-                parsed = this.Settings.Resolver(path, select, this.Settings);
+                if (Settings.UseAsync)
+                    parsed = await this.Settings.ResolverAsync(path, select, this.Settings);
+                else
+                    parsed = this.Settings.Resolver(path, select, this.Settings);
             }
             catch (System.IO.FileNotFoundException ex)
             {
