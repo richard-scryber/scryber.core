@@ -31,6 +31,15 @@ namespace Scryber.PDF.Layout
 
         private StyleStack _origStyleStack;
 
+        /// <summary>
+        /// True while laying out the content of a generated page header or footer.
+        /// Header/footer content is regenerated on every page, so a page-break request
+        /// originating from within it (e.g. break-after/break-before: always|page) must
+        /// not be allowed to build another page - that would regenerate the same header
+        /// or footer, hit the same break request, and recurse without end.
+        /// </summary>
+        private bool _isLayingOutHeaderOrFooter;
+
         //
         // properties
         //
@@ -329,8 +338,17 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public override bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
-            
-            
+            if (_isLayingOutHeaderOrFooter)
+            {
+                //Header/footer content is regenerated on every page it appears on, so honouring a
+                //page-break request from within it would regenerate the same header/footer, hit the
+                //same break request, and build new pages without end. Treat this as unable to overflow.
+                if (this.Context.ShouldLogVerbose)
+                    this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Ignoring a page break requested from within page header/footer content for " + this.Component);
+
+                return false;
+            }
+
             StyleValue<OverflowAction> action;
             if (this.FullStyle.TryGetValue(StyleKeys.OverflowActionKey, out action) && action.Value(this.FullStyle) == OverflowAction.NewPage)
             {
@@ -579,7 +597,16 @@ namespace Scryber.PDF.Layout
                 this.DocumentLayout.CurrentPage.BeginHeader(header, full, this.Context);
 
                 header.RegisterPreLayout(this.Context);
-                this.DoLayoutAChild(header);
+                bool wasLayingOut = _isLayingOutHeaderOrFooter;
+                _isLayingOutHeaderOrFooter = true;
+                try
+                {
+                    this.DoLayoutAChild(header);
+                }
+                finally
+                {
+                    _isLayingOutHeaderOrFooter = wasLayingOut;
+                }
                 header.RegisterLayoutComplete(this.Context);
 
                 this.DocumentLayout.CurrentPage.EndHeader();
@@ -607,7 +634,16 @@ namespace Scryber.PDF.Layout
                 this.DocumentLayout.CurrentPage.BeginFooter(footer, full, this.Context);
 
                 footer.RegisterPreLayout(this.Context);
-                this.DoLayoutAChild(footer);
+                bool wasLayingOut = _isLayingOutHeaderOrFooter;
+                _isLayingOutHeaderOrFooter = true;
+                try
+                {
+                    this.DoLayoutAChild(footer);
+                }
+                finally
+                {
+                    _isLayingOutHeaderOrFooter = wasLayingOut;
+                }
                 footer.RegisterLayoutComplete(this.Context);
 
                 this.DocumentLayout.CurrentPage.EndFooter();
