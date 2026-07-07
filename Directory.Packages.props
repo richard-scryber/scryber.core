@@ -24,7 +24,7 @@
     <PackageVersion Include="MSTest.TestAdapter" Version="3.4.3" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.4.3" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
-    <PackageVersion Include="Scryber.Core" Version="9.6.0.3-beta" />
+    <PackageVersion Include="Scryber.Core" Version="9.6.0.4-beta" />
     <PackageVersion Include="Scryber.Core.OpenType" Version="9.2.0.0" />
   </ItemGroup>
 </Project>
