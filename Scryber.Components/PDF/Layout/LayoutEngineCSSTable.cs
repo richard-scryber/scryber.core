@@ -39,7 +39,7 @@ namespace Scryber.PDF.Layout
 
             foreach (var item in ic.Content)
             {
-                if (!(item is Component comp) || !comp.Visible)
+                if (!(item is Component comp) || !comp.Visible || comp is Whitespace)
                     continue;
 
                 var style   = comp.GetAppliedStyle();
@@ -89,7 +89,7 @@ namespace Scryber.PDF.Layout
 
             foreach (var item in ic.Content)
             {
-                if (!(item is Component cellComp) || !cellComp.Visible)
+                if (!(item is Component cellComp) || !cellComp.Visible || cellComp is Whitespace)
                     continue;
 
                 var style   = cellComp.GetAppliedStyle();
