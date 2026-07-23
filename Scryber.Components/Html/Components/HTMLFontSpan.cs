@@ -36,10 +36,20 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("size")]
-        public override Unit FontSize
+        public string LegacyFontSize
         {
-            get => base.FontSize;
-            set => base.FontSize = value;
+            get
+            {
+                if (this.HasStyle && this.Style.TryGetValue(StyleKeys.FontSizeKey, out StyleValue<Unit> fontSize))
+                    return GetFontSizeForCSS(fontSize.Value(this.Style));
+                else
+                    return string.Empty;
+            }
+            set
+            { 
+                var points = GetCSSSizeForFontSize(value);
+                this.Style.SetValue(StyleKeys.FontSizeKey, new Unit(points, PageUnits.Points));
+            }
         }
 
         /// <summary>
@@ -79,6 +89,77 @@ namespace Scryber.Html.Components
 
         protected HTMLFontSpan(ObjectType type): base(type)
         { }
+
+        private static readonly double[] _fontPointSizeMapping = { 12, 7.5, 10.0, 12, 13.5, 18, 24, 36 };
+
+        private static double GetCSSSizeForFontSize(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return _fontPointSizeMapping[0];
+            else if (value.StartsWith('-'))
+            {
+                if (int.TryParse(value.Substring(1), out var index))
+                {
+                    index = 3 -  index;
+                    if(index <= 0)
+                        index = 1;
+                    else if(index >= _fontPointSizeMapping.Length)
+                        index = _fontPointSizeMapping.Length - 1;
+                    return _fontPointSizeMapping[index];
+                }
+                return _fontPointSizeMapping[0];
+            }
+            else if (value.StartsWith('+'))
+            {
+                if (int.TryParse(value.Substring(1), out var index))
+                {
+                    index = 3 + index;
+                    if(index <= 0)
+                        index = 1;
+                    else if(index >= _fontPointSizeMapping.Length)
+                        index = _fontPointSizeMapping.Length - 1;
+                    return _fontPointSizeMapping[index];
+                }
+                return _fontPointSizeMapping[0];
+            }
+            else if (int.TryParse(value, out var index))
+            {
+                // Values beyond the legacy 1-7 scale are treated as an explicit point size rather than
+                // being clamped into the mapping table - e.g. content pasted from Apple Pages emits
+                // font size="30" meaning 30pt literally, not the legacy size 7 (36pt).
+                if (index > 7)
+                    return index;
+
+                if(index <= 0)
+                    index = 1;
+
+                return _fontPointSizeMapping[index];
+            }
+            else
+            {
+                return _fontPointSizeMapping[0];
+            }
+
+        }
+
+        private static string GetFontSizeForCSS(Unit fontSize)
+        {
+            var points = fontSize.IsRelative ? 16.0 : fontSize.PointsValue;
+            if (points <= 7.6)
+                return "1";
+            else if(points <= 10.1)
+                return "2";
+            else if(points <= 12.1)
+                return "3";
+            else if(points <= 14.1)
+                return "4";
+            else if(points <= 18.1)
+                return "5";
+            else if (points <= 24.1)
+                return "6";
+            else
+                return "7";
+        }
     }
 
 }

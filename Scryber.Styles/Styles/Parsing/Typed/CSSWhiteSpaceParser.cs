@@ -53,6 +53,7 @@ namespace Scryber.Styles.Parsing.Typed
             }
             else if (TryParseWhitespace(value.ToString(), out wrap, out bool preserve))
             {
+                style.SetValue(StyleKeys.TextWordWrapKey, wrap);
                 style.SetValue(StyleKeys.TextWhitespaceKey, preserve);
                 return true;
             }
