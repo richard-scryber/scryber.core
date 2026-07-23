@@ -27,6 +27,10 @@ namespace Scryber.PDF.Layout
             ContainerStyle = containerStyle;
         }
 
+        // Per-row ordered item list, built in DoLayoutBlockComponent and used by DoLayoutChildren.
+        // Null = use source order. In wrap mode, set per-row in LayoutWrapRows.
+        private List<Component> _orderedItems;
+
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             var flex      = this.FullStyle.Flex;
@@ -46,9 +50,13 @@ namespace Scryber.PDF.Layout
             }
             else
             {
-                int childCount = CountVisibleChildren();
+                // Build order-sorted item list once (used by DoLayoutChildren and ComputeWrapRows)
+                _orderedItems = GetOrderedFlexItems();
+
+                int childCount = _orderedItems.Count;
                 if (childCount <= 0)
                 {
+                    _orderedItems = null;
                     _isRowMode = false;
                     base.DoLayoutBlockComponent(position, columnOptions);
                     return;
@@ -61,9 +69,6 @@ namespace Scryber.PDF.Layout
                 if (position.Width.HasValue)
                 {
                     containerW = position.Width.Value.PointsValue;
-                    // position.Width is the outer/border-box width; subtract padding so
-                    // fractions are computed against the same inner width that
-                    // GetPercentColumnWidths receives (avail.Width).
                     if (!position.Padding.IsEmpty)
                         containerW -= (position.Padding.Left + position.Padding.Right).PointsValue;
                 }
@@ -77,6 +82,7 @@ namespace Scryber.PDF.Layout
                 if (wrapMode == FlexWrap.Wrap || wrapMode == FlexWrap.WrapReverse)
                 {
                     LayoutWrapRows(position, flex, flex.AlignItems, flex.JustifyContent, containerW, colGap);
+                    _orderedItems = null;
                     return;
                 }
 
@@ -108,16 +114,24 @@ namespace Scryber.PDF.Layout
                     var flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
                     if (flexBlock != null && flexBlock.Columns.Length > 0)
                     {
-                        var align   = flex.AlignItems;
-                        var justify = NormaliseJustify(flex.JustifyContent, reverse);
+                        var alignItems = flex.AlignItems;
+                        var justify    = NormaliseJustify(flex.JustifyContent, reverse);
 
-                        if (align != FlexAlignMode.Stretch && align != FlexAlignMode.FlexStart)
-                            ApplyAlignItems(flexBlock, align);
+                        // Build per-column align values: each item's align-self overrides align-items.
+                        var items = reverse ? ListReversed(_orderedItems) : _orderedItems;
+                        var perColAlign = BuildPerColAlign(items, alignItems, 0, items.Count);
+
+                        if (alignItems != FlexAlignMode.Stretch && alignItems != FlexAlignMode.FlexStart)
+                            ApplyAlignItems(flexBlock, perColAlign);
+                        else if (HasAlignSelfOverride(perColAlign, alignItems))
+                            ApplyAlignItems(flexBlock, perColAlign);
 
                         if (justify != FlexJustify.FlexStart)
                             ApplyJustifyContent(flexBlock, justify);
                     }
                 }
+
+                _orderedItems = null;
             }
         }
 
@@ -131,7 +145,7 @@ namespace Scryber.PDF.Layout
         private void LayoutWrapRows(PDFPositionOptions position, FlexStyle flex,
             FlexAlignMode align, FlexJustify justify, double containerW, Unit colGap)
         {
-            var rows = ComputeWrapRows(containerW, colGap.PointsValue);
+            var rows   = ComputeWrapRows(containerW, colGap.PointsValue);
             double prevRowH = 0;
             bool   reverse  = (flex.Direction == FlexDirection.RowReverse);
 
@@ -140,9 +154,6 @@ namespace Scryber.PDF.Layout
                 int rowItemCount = rowEnd - rowStart;
                 if (rowItemCount <= 0) continue;
 
-                // From the second row onward: if available page height is less than the
-                // height of the previous row, force a move to the next page so that all
-                // columns of this row start together rather than overflowing individually.
                 if (prevRowH > 0.5)
                 {
                     var currBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -171,7 +182,6 @@ namespace Scryber.PDF.Layout
                     ColumnWidths = widths
                 };
 
-                // Re-capture parent after any page move.
                 var parentBlock  = this.DocumentLayout.CurrentPage.LastOpenBlock();
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
@@ -188,15 +198,22 @@ namespace Scryber.PDF.Layout
                     flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
                     if (flexBlock != null && flexBlock.Columns.Length > 0)
                     {
+                        var rowItems     = _orderedItems ?? new List<Component>();
+                        var sliceStart   = reverse ? (_orderedItems.Count - rowEnd) : rowStart;
+                        var sliceEnd     = reverse ? (_orderedItems.Count - rowStart) : rowEnd;
+                        var perColAlign  = BuildPerColAlign(rowItems, align, sliceStart, sliceEnd);
+
                         if (align != FlexAlignMode.Stretch && align != FlexAlignMode.FlexStart)
-                            ApplyAlignItems(flexBlock, align);
+                            ApplyAlignItems(flexBlock, perColAlign);
+                        else if (HasAlignSelfOverride(perColAlign, align))
+                            ApplyAlignItems(flexBlock, perColAlign);
+
                         var rowJustify = NormaliseJustify(justify, reverse);
                         if (rowJustify != FlexJustify.FlexStart)
                             ApplyJustifyContent(flexBlock, rowJustify);
                     }
                 }
 
-                // Track the row height so the next iteration can pre-check page space.
                 if (flexBlock != null)
                     prevRowH = flexBlock.TotalBounds.Height.PointsValue;
             }
@@ -207,21 +224,17 @@ namespace Scryber.PDF.Layout
         /// <summary>
         /// Groups visible flex items into rows based on their fixed widths and the container width.
         /// Items with grow > 0 (minWidth = 0) never trigger a break on their own.
+        /// Uses _orderedItems (already sorted by order property).
         /// </summary>
         private List<(int start, int end)> ComputeWrapRows(double containerW, double gapPts)
         {
             var rows = new List<(int start, int end)>();
-            var container = this.Component as IContainerComponent;
-            if (container == null || !container.HasContent) return rows;
+            var items = _orderedItems;
+            if (items == null || items.Count == 0) return rows;
 
-            var minWidths = new List<double>();
-            foreach (var child in container.Content)
-            {
-                if (!IsFlexItem(child)) continue;
-                minWidths.Add(GetItemMinWidth((Component)child));
-            }
-
-            if (minWidths.Count == 0) return rows;
+            var minWidths = new List<double>(items.Count);
+            foreach (var child in items)
+                minWidths.Add(GetItemMinWidth(child));
 
             int    rowStart  = 0;
             double rowFixedW = minWidths[0];
@@ -229,7 +242,6 @@ namespace Scryber.PDF.Layout
             for (int i = 1; i < minWidths.Count; i++)
             {
                 double itemW = minWidths[i];
-                // total = sum of item widths + gaps for (i - rowStart + 1) items
                 double total = rowFixedW + itemW + gapPts * (i - rowStart);
                 if (itemW > 0 && total > containerW + 0.5)
                 {
@@ -277,7 +289,7 @@ namespace Scryber.PDF.Layout
                     return;
                 }
 
-                // column-reverse: render children in reverse source order.
+                // column-reverse: render visible children in reverse source order.
                 var all = new List<Component>();
                 foreach (Component c in children)
                     if (c.Visible) all.Add(c);
@@ -293,83 +305,36 @@ namespace Scryber.PDF.Layout
                 return;
             }
 
-            if (!_reverseItems)
+            // Row mode: use _orderedItems (already sorted by 'order', then source order).
+            // In wrap mode, only render items in [_wrapRowStart, _wrapRowEnd).
+            var ordered = _orderedItems ?? new List<Component>();
+            if (_reverseItems)
+                ordered = ListReversed(ordered);
+
+            bool first = true;
+            for (int idx = 0; idx < ordered.Count; idx++)
             {
-                // Original forward row logic.
-                int  visIdx = -1;
-                bool first  = true;
+                if (_wrapRowStart >= 0 && (idx < _wrapRowStart || idx >= _wrapRowEnd))
+                    continue;
 
-                foreach (Component comp in children)
+                var comp = ordered[idx];
+
+                if (!first)
                 {
-                    if (!comp.Visible) continue;
-
-                    bool isItem = IsFlexItem(comp);
-
-                    if (isItem)
-                    {
-                        visIdx++;
-
-                        if (_wrapRowStart >= 0 && (visIdx < _wrapRowStart || visIdx >= _wrapRowEnd))
-                            continue;
-
-                        if (!first)
-                        {
-                            PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
-                            PDFLayoutRegion reg  = block.CurrentRegion;
-                            bool newPage;
-                            this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
-                        }
-                        first = false;
-                    }
-                    else if (_wrapRowStart > 0)
-                    {
-                        continue;
-                    }
-
-                    this.DoLayoutAChild(comp);
-
-                    if (!this.ContinueLayout
-                        || this.DocumentLayout.CurrentPage.IsClosed
-                        || this.DocumentLayout.CurrentPage.CurrentBlock == null)
-                        break;
+                    PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                    PDFLayoutRegion reg  = block?.CurrentRegion;
+                    if (block == null || reg == null) break;
+                    bool newPage;
+                    this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
                 }
-                return;
-            }
+                first = false;
 
-            // row-reverse: collect flex items in [_wrapRowStart, _wrapRowEnd), reverse, then layout.
-            var flexItems = new List<Component>();
-            {
-                int vi = -1;
-                foreach (Component comp in children)
-                {
-                    if (!comp.Visible || !IsFlexItem(comp)) continue;
-                    vi++;
-                    if (_wrapRowStart >= 0 && (vi < _wrapRowStart || vi >= _wrapRowEnd)) continue;
-                    flexItems.Add(comp);
-                }
-            }
-            flexItems.Reverse();
+                this.DoLayoutAChild(comp);
 
-            {
-                bool first = true;
-                foreach (var comp in flexItems)
-                {
-                    if (!first)
-                    {
-                        PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
-                        PDFLayoutRegion reg  = block.CurrentRegion;
-                        bool newPage;
-                        this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
-                    }
-                    first = false;
-
-                    this.DoLayoutAChild(comp);
-
-                    if (!this.ContinueLayout
-                        || this.DocumentLayout.CurrentPage.IsClosed
-                        || this.DocumentLayout.CurrentPage.CurrentBlock == null)
-                        break;
-                }
+                if (!this.ContinueLayout
+                    || this.DocumentLayout.CurrentPage.IsClosed
+                    || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                    break;
             }
         }
 
@@ -377,12 +342,12 @@ namespace Scryber.PDF.Layout
         // Post-layout: align-items (cross-axis / Y in row mode)
         // -----------------------------------------------------------------------
 
-        private static void ApplyAlignItems(PDFLayoutBlock flexBlock, FlexAlignMode align)
+        private static void ApplyAlignItems(PDFLayoutBlock flexBlock, FlexAlignMode[] perColAlign)
         {
             int colCount = flexBlock.Columns.Length;
-            if (colCount < 2) return;
+            if (colCount < 1) return;
 
-            // Find the tallest first child block across all columns (content height, not region height).
+            // Find the tallest first child block across all columns.
             double maxH = 0;
             for (int i = 0; i < colCount; i++)
             {
@@ -394,10 +359,14 @@ namespace Scryber.PDF.Layout
 
             for (int i = 0; i < colCount; i++)
             {
-                var    col      = flexBlock.Columns[i];
-                double childH   = FirstChildHeight(col);
-                double diff     = maxH - childH;
-                if (diff <= 0.5) continue; // Already at max height.
+                var align = (perColAlign != null && i < perColAlign.Length) ? perColAlign[i] : FlexAlignMode.FlexStart;
+                if (align == FlexAlignMode.Stretch || align == FlexAlignMode.FlexStart)
+                    continue;
+
+                var    col    = flexBlock.Columns[i];
+                double childH = FirstChildHeight(col);
+                double diff   = maxH - childH;
+                if (diff <= 0.5) continue;
 
                 double yOffset = align switch
                 {
@@ -408,7 +377,6 @@ namespace Scryber.PDF.Layout
 
                 if (yOffset <= 0) continue;
 
-                // Offset every child block in this column.
                 foreach (var item in col.Contents)
                 {
                     if (item is PDFLayoutBlock child)
@@ -419,6 +387,40 @@ namespace Scryber.PDF.Layout
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Builds per-column align values: each item's align-self overrides the container's align-items.
+        /// </summary>
+        private static FlexAlignMode[] BuildPerColAlign(List<Component> items, FlexAlignMode containerAlign,
+            int start, int end)
+        {
+            int count = end - start;
+            if (count <= 0) return Array.Empty<FlexAlignMode>();
+
+            var result = new FlexAlignMode[count];
+            for (int i = 0; i < count; i++)
+            {
+                var item = items[start + i];
+                FlexAlignMode alignSelf = containerAlign;
+                if (item is IStyledComponent sc && sc.Style != null
+                    && sc.Style.IsValueDefined(StyleKeys.FlexAlignSelfKey))
+                {
+                    var self = sc.Style.GetValue(StyleKeys.FlexAlignSelfKey, FlexAlignMode.Auto);
+                    if (self != FlexAlignMode.Auto)
+                        alignSelf = self;
+                }
+                result[i] = alignSelf;
+            }
+            return result;
+        }
+
+        private static bool HasAlignSelfOverride(FlexAlignMode[] perColAlign, FlexAlignMode containerAlign)
+        {
+            if (perColAlign == null) return false;
+            foreach (var a in perColAlign)
+                if (a != containerAlign) return true;
+            return false;
         }
 
         private static double FirstChildHeight(PDFLayoutRegion col)
@@ -543,76 +545,105 @@ namespace Scryber.PDF.Layout
         private static bool IsFlexItem(IComponent child)
             => child is IContainerComponent && child is Component c && c.Visible;
 
-        private int CountVisibleChildren()
+        /// <summary>
+        /// Returns the visible flex items from the container's content, sorted by their
+        /// 'order' CSS property (lower values first). Items with the same order value
+        /// retain their source order (stable sort via LINQ).
+        /// </summary>
+        private List<Component> GetOrderedFlexItems()
         {
             var container = this.Component as IContainerComponent;
-            if (container == null || !container.HasContent) return 0;
-            int count = 0;
+            if (container == null || !container.HasContent) return new List<Component>();
+
+            var items = new List<(Component comp, int order, int srcIdx)>();
+            int src   = 0;
             foreach (var child in container.Content)
-                if (IsFlexItem(child)) count++;
-            return count;
+            {
+                if (!IsFlexItem(child)) { src++; continue; }
+                var comp = (Component)child;
+                int order = 0;
+                if (comp is IStyledComponent sc && sc.Style != null
+                    && sc.Style.IsValueDefined(StyleKeys.FlexOrderKey))
+                    order = sc.Style.GetValue(StyleKeys.FlexOrderKey, 0);
+                items.Add((comp, order, src));
+                src++;
+            }
+
+            // Stable sort by order value
+            items.Sort((a, b) => a.order != b.order ? a.order.CompareTo(b.order) : a.srcIdx.CompareTo(b.srcIdx));
+
+            var result = new List<Component>(items.Count);
+            foreach (var (comp, _, __) in items)
+                result.Add(comp);
+            return result;
+        }
+
+        private static List<Component> ListReversed(List<Component> source)
+        {
+            var rev = new List<Component>(source.Count);
+            for (int i = source.Count - 1; i >= 0; i--)
+                rev.Add(source[i]);
+            return rev;
         }
 
         /// <summary>
-        /// Computes per-column width fractions for a row of <paramref name="count"/> items,
-        /// optionally starting from visible-item index <paramref name="itemOffset"/>.
-        /// When any item has flex-grow > 0 the fractions are proportional to grow values.
-        /// When all items have flex-grow = 0 the fractions are derived from their explicit
-        /// widths (width or flex-basis) if set, so that justify-content can redistribute
-        /// any leftover space post-layout.
+        /// Computes per-column width fractions for a row of <paramref name="count"/> items.
+        /// Uses <paramref name="itemOffset"/> to slice into the ordered item list for wrap rows.
+        /// Handles flex-grow (positive free space) and flex-shrink (negative free space).
         /// </summary>
         private ColumnWidths ComputeColumnWidths(int count, double containerWidthPts, double alleyPts,
                                                   int itemOffset = 0)
         {
-            var container = this.Component as IContainerComponent;
-            if (container == null || !container.HasContent) return ColumnWidths.Empty;
+            var items = _orderedItems;
+            if (items == null || items.Count == 0) return ColumnWidths.Empty;
 
             double[] grows       = new double[count];
+            double[] shrinks     = new double[count];
             double[] fixedWidths = new double[count];
             double   totalGrow   = 0.0;
-            bool     anyPositive = false;
-            int      i           = 0;
-            int      visIdx      = 0;
+            bool     anyGrow     = false;
 
-            foreach (var child in container.Content)
+            for (int i = 0; i < count; i++)
             {
-                if (!IsFlexItem(child)) continue;
-                if (visIdx < itemOffset) { visIdx++; continue; }
-                if (i >= count) break;
+                int src = itemOffset + i;
+                if (src >= items.Count) break;
+                var child = items[src];
 
-                double grow = 1.0;
-                if (child is IStyledComponent sc && sc.Style != null
-                    && sc.Style.IsValueDefined(StyleKeys.FlexGrowKey))
-                    grow = sc.Style.GetValue(StyleKeys.FlexGrowKey, 1.0);
+                double grow   = 1.0;
+                double shrink = 1.0;
+                double basis  = 0.0;
 
-                grows[i]   = grow;
-                totalGrow += grow;
-                if (grow > 0)
+                if (child is IStyledComponent sc && sc.Style != null)
                 {
-                    anyPositive = true;
+                    if (sc.Style.IsValueDefined(StyleKeys.FlexGrowKey))
+                        grow = sc.Style.GetValue(StyleKeys.FlexGrowKey, 1.0);
+                    if (sc.Style.IsValueDefined(StyleKeys.FlexShrinkKey))
+                        shrink = sc.Style.GetValue(StyleKeys.FlexShrinkKey, 1.0);
+
+                    if (sc.Style.IsValueDefined(StyleKeys.SizeWidthKey))
+                        basis = sc.Style.Size.Width.PointsValue;
+                    else if (sc.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc.Style.Flex.BasisAuto)
+                        basis = sc.Style.Flex.Basis.PointsValue;
                 }
-                else if (child is IStyledComponent sc2 && sc2.Style != null)
-                {
-                    if (sc2.Style.IsValueDefined(StyleKeys.SizeWidthKey))
-                        fixedWidths[i] = sc2.Style.Size.Width.PointsValue;
-                    else if (sc2.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc2.Style.Flex.BasisAuto)
-                        fixedWidths[i] = sc2.Style.Flex.Basis.PointsValue;
-                }
-                visIdx++;
-                i++;
+
+                grows[i]       = grow;
+                shrinks[i]     = shrink;
+                fixedWidths[i] = basis;
+                totalGrow     += grow;
+                if (grow > 0) anyGrow = true;
             }
 
             double effectiveW = Math.Max(0, containerWidthPts - alleyPts * (count - 1));
 
-            if (anyPositive && totalGrow > 0)
+            // --- Positive free space: grow ---
+            if (anyGrow && totalGrow > 0)
             {
                 double fixedTotal = 0;
                 for (int j = 0; j < count; j++)
                     if (grows[j] == 0) fixedTotal += fixedWidths[j];
 
                 double remaining = Math.Max(0, effectiveW - fixedTotal);
-
-                double growSum = 0;
+                double growSum   = 0;
                 for (int j = 0; j < count; j++)
                     if (grows[j] > 0) growSum += grows[j];
 
@@ -623,8 +654,6 @@ namespace Scryber.PDF.Layout
                         ? (effectiveW > 0 ? fixedWidths[j] / effectiveW : 0)
                         : (growSum > 0 && effectiveW > 0 ? grows[j] / growSum * remaining / effectiveW : 0);
                 }
-                // Clamp: a fixed-width item wider than the container produces pct > 1.0,
-                // which GetPercentColumnWidths rejects. Scale proportionally to fit.
                 double totalPct = 0;
                 for (int j = 0; j < count; j++) totalPct += pct[j];
                 if (totalPct > 1.0)
@@ -632,45 +661,51 @@ namespace Scryber.PDF.Layout
                 return new ColumnWidths(pct);
             }
 
-            // All grow = 0: use explicit widths as fractions of effective width.
+            // --- All grow = 0: use explicit widths, apply shrink if items overflow ---
             if (effectiveW <= 0) return ColumnWidths.Empty;
 
-            double[] fractions = new double[count];
-            bool     anySet    = false;
-            i      = 0;
-            visIdx = 0;
+            // If no explicit widths are set, we have nothing to work with.
+            bool anyBasis = false;
+            for (int j = 0; j < count; j++)
+                if (fixedWidths[j] > 0) { anyBasis = true; break; }
 
-            foreach (var child in container.Content)
+            if (!anyBasis) return ColumnWidths.Empty;
+
+            double totalBasis = 0;
+            for (int j = 0; j < count; j++) totalBasis += fixedWidths[j];
+
+            double[] finalPts = new double[count];
+
+            if (totalBasis <= effectiveW + 0.5)
             {
-                if (!IsFlexItem(child)) continue;
-                if (visIdx < itemOffset) { visIdx++; continue; }
-                if (i >= count) break;
+                // Items fit — use their explicit widths as-is.
+                for (int j = 0; j < count; j++)
+                    finalPts[j] = fixedWidths[j];
+            }
+            else
+            {
+                // --- Negative free space: flex-shrink algorithm ---
+                // Each item shrinks proportional to (shrink × basis) / Σ(shrink × basis).
+                double overflow = totalBasis - effectiveW;
+                double shrinkBasisSum = 0;
+                for (int j = 0; j < count; j++)
+                    shrinkBasisSum += shrinks[j] * fixedWidths[j];
 
-                if (child is IStyledComponent sc && sc.Style != null)
+                for (int j = 0; j < count; j++)
                 {
-                    Unit w = Unit.Zero;
-                    if (sc.Style.IsValueDefined(StyleKeys.SizeWidthKey))
-                        w = sc.Style.Size.Width;
-                    else if (sc.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc.Style.Flex.BasisAuto)
-                        w = sc.Style.Flex.Basis;
-
-                    if (w.PointsValue > 0)
-                    {
-                        fractions[i] = w.PointsValue / effectiveW;
-                        anySet = true;
-                    }
+                    double reduction = shrinkBasisSum > 0
+                        ? (shrinks[j] * fixedWidths[j] / shrinkBasisSum) * overflow
+                        : 0;
+                    finalPts[j] = Math.Max(0, fixedWidths[j] - reduction);
                 }
-                visIdx++;
-                i++;
             }
 
-            if (!anySet) return ColumnWidths.Empty;
-
-            // Clamp: if items collectively exceed the container, scale fractions to 1.0 total.
-            double totalFrac = 0;
-            for (int j = 0; j < count; j++) totalFrac += fractions[j];
-            if (totalFrac > 1.0)
-                for (int j = 0; j < count; j++) fractions[j] /= totalFrac;
+            // Convert to fractions of effectiveW.
+            double[] fractions = new double[count];
+            double   totalF    = 0;
+            for (int j = 0; j < count; j++) { fractions[j] = finalPts[j] / effectiveW; totalF += fractions[j]; }
+            if (totalF > 1.0)
+                for (int j = 0; j < count; j++) fractions[j] /= totalF;
 
             return new ColumnWidths(fractions);
         }

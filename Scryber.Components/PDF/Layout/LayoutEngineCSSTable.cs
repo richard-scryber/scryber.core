@@ -33,22 +33,48 @@ namespace Scryber.PDF.Layout
             if (!(source is IContainerComponent ic) || !ic.HasContent)
                 return grid;
 
+            // Walk children with state — if we encounter table-cells that aren't wrapped
+            // in a table-row, collect them into an anonymous row (CSS anonymous box algorithm).
+            TableRow anonRow = null;
+
             foreach (var item in ic.Content)
             {
-                if (!(item is Component rowComp) || !rowComp.Visible)
-                    continue;
-                var fullRowStyle = rowComp.GetAppliedStyle();
-                
-                var display = fullRowStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
-                
-                if (display != DisplayMode.TableRow)
+                if (!(item is Component comp) || !comp.Visible)
                     continue;
 
-                var row = BuildSyntheticRow(rowComp);
-                grid.Rows.Add(row);
+                var style   = comp.GetAppliedStyle();
+                var display = style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+
+                if (display == DisplayMode.TableRow)
+                {
+                    FlushAnonRow(ref anonRow, grid);
+                    grid.Rows.Add(BuildSyntheticRow(comp));
+                }
+                else if (display == DisplayMode.TableCell)
+                {
+                    // Anonymous row: accumulate consecutive table-cell siblings
+                    if (anonRow == null)
+                        anonRow = new TableRow();
+                    anonRow.Cells.Add(new CSSTableCell(comp, style));
+                }
+                else
+                {
+                    // Non-table element — flush any pending anonymous row and skip
+                    FlushAnonRow(ref anonRow, grid);
+                }
             }
 
+            FlushAnonRow(ref anonRow, grid);
             return grid;
+        }
+
+        private static void FlushAnonRow(ref TableRow anonRow, TableGrid grid)
+        {
+            if (anonRow != null && anonRow.Cells.Count > 0)
+            {
+                grid.Rows.Add(anonRow);
+                anonRow = null;
+            }
         }
 
         private static TableRow BuildSyntheticRow(Component source)
@@ -58,22 +84,42 @@ namespace Scryber.PDF.Layout
             if (!(source is IContainerComponent ic) || !ic.HasContent)
                 return row;
 
+            // Walk children; any non-table-cell visible content is wrapped in an anonymous cell.
+            TableCell anonCell = null;
+
             foreach (var item in ic.Content)
             {
                 if (!(item is Component cellComp) || !cellComp.Visible)
                     continue;
-                
-                var fullCellStyle = cellComp.GetAppliedStyle();
 
-                var display =fullCellStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
-                
-                if (display != DisplayMode.TableCell)
-                    continue;
+                var style   = cellComp.GetAppliedStyle();
+                var display = style.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
 
-                row.Cells.Add(new CSSTableCell(cellComp, fullCellStyle));
+                if (display == DisplayMode.TableCell)
+                {
+                    FlushAnonCell(ref anonCell, row);
+                    row.Cells.Add(new CSSTableCell(cellComp, style));
+                }
+                else
+                {
+                    // Anonymous cell: wrap non-cell content so the table engine can handle it
+                    if (anonCell == null)
+                        anonCell = new TableCell();
+                    anonCell.Contents.Add(cellComp);
+                }
             }
 
+            FlushAnonCell(ref anonCell, row);
             return row;
+        }
+
+        private static void FlushAnonCell(ref TableCell anonCell, TableRow row)
+        {
+            if (anonCell != null && anonCell.Contents.Count > 0)
+            {
+                row.Cells.Add(anonCell);
+                anonCell = null;
+            }
         }
 
         // -----------------------------------------------------------------------

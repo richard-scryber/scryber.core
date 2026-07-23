@@ -224,19 +224,48 @@ namespace Scryber.PDF.Layout
             List<Component> items, int colCount,
             TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows)
         {
-            for (int i = 0; i < items.Count; i += colCount)
+            // Track which grid positions are occupied by spans
+            // slot[r][c] = true means already filled by a span from an earlier cell
+            var occupied = new System.Collections.Generic.Dictionary<(int r, int c), bool>();
+            int r = 0;
+            int c = 0;
+
+            foreach (var item in items)
             {
-                var row = new TableRow();
-                var rowCells = new List<GridCell>();
-                for (int j = 0; j < colCount && (i + j) < items.Count; j++)
+                // Find next free slot
+                while (occupied.ContainsKey((r, c)))
                 {
-                    var cell = new GridCell(items[i + j]);
-                    row.Cells.Add(cell);
-                    rowCells.Add(cell);
+                    c++;
+                    if (c >= colCount) { c = 0; r++; }
                 }
-                grid.Rows.Add(row);
-                cellGrid.Add(rowCells);
-                syntheticRows.Add(row);
+
+                // Ensure row exists
+                while (syntheticRows.Count <= r)
+                {
+                    var newRow = new TableRow();
+                    grid.Rows.Add(newRow);
+                    cellGrid.Add(new List<GridCell>());
+                    syntheticRows.Add(newRow);
+                }
+
+                var itemStyle = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
+                int colSpan = itemStyle?.GetValue(StyleKeys.GridColumnSpanKey, 1) ?? 1;
+                int rowSpan = itemStyle?.GetValue(StyleKeys.GridRowSpanKey, 1) ?? 1;
+                colSpan = Math.Max(1, colSpan);
+                rowSpan = Math.Max(1, rowSpan);
+
+                var cell = new GridCell(item, colSpan, rowSpan);
+                syntheticRows[r].Cells.Add(cell);
+                cellGrid[r].Add(cell);
+
+                // Mark occupied slots
+                for (int dr = 0; dr < rowSpan; dr++)
+                    for (int dc = 0; dc < colSpan; dc++)
+                        if (dr > 0 || dc > 0)
+                            occupied[(r + dr, c + dc)] = true;
+
+                c += colSpan;
+                if (c >= colCount) { c = 0; r++; }
             }
         }
 
@@ -260,7 +289,11 @@ namespace Scryber.PDF.Layout
             for (int i = 0; i < items.Count; i++)
             {
                 int row = i % rowCount;
-                var cell = new GridCell(items[i]);
+                var item = items[i];
+                var itemStyle = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
+                int colSpan = itemStyle?.GetValue(StyleKeys.GridColumnSpanKey, 1) ?? 1;
+                int rowSpan = itemStyle?.GetValue(StyleKeys.GridRowSpanKey, 1) ?? 1;
+                var cell = new GridCell(item, Math.Max(1, colSpan), Math.Max(1, rowSpan));
                 rows[row].Cells.Add(cell);
                 rowCells[row].Add(cell);
             }
@@ -389,10 +422,12 @@ namespace Scryber.PDF.Layout
             /// Creates a cell that contains <paramref name="source"/> as its direct child.
             /// The source Panel is laid out with its own border, padding, and explicit height.
             /// </summary>
-            public GridCell(Component source) : base()
+            public GridCell(Component source, int colSpan = 1, int rowSpan = 1) : base()
             {
                 if (source != null)
                     this.Contents.Add(source);
+                if (colSpan > 1) this.CellColumnSpan = colSpan;
+                if (rowSpan > 1) this.CellRowSpan = rowSpan;
             }
 
             // GridCell has no visual styling of its own — the item Panel handles that.
