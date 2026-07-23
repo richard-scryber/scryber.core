@@ -523,7 +523,7 @@ namespace Scryber.Components
         [PDFAttribute("bg-color",Const.PDFStylesNamespace)]
         [PDFJSConvertor("scryber.studio.design.convertors.color_css", JSParams = "\"background-color\"")]
         [PDFDesignable("Color", Category = "Background", Priority = 1, Type = "Color")]
-        public Drawing.Color BackgroundColor
+        public virtual Drawing.Color BackgroundColor
         {
             get
             {

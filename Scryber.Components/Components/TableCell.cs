@@ -145,6 +145,29 @@ namespace Scryber.Components
         internal int columnIndex { get; set; }
         internal int columnSpan { get; set; }
 
+        private string _ownStyleClass;
+        private bool _ownStyleClassCaptured;
+
+        /// <summary>
+        /// The cell's own style class, exactly as authored - captured the first time this property is
+        /// read, so it stays stable even after StyleClass is later mutated (e.g. by table-column style
+        /// application prepending a colgroup/col class name). Column style application always recomputes
+        /// the combined class from this stable snapshot rather than the live, possibly already-prefixed,
+        /// StyleClass value, so repeated layout passes don't compound duplicate class names.
+        /// </summary>
+        public string OwnStyleClass
+        {
+            get
+            {
+                if (!_ownStyleClassCaptured)
+                {
+                    _ownStyleClass = this.StyleClass;
+                    _ownStyleClassCaptured = true;
+                }
+                return _ownStyleClass;
+            }
+        }
+
         //
         // ctor(s)
         //

@@ -24,6 +24,7 @@ using System.Text;
 using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.Components;
+using Scryber.Html.Components;
 
 namespace Scryber.PDF.Layout
 {
@@ -43,6 +44,15 @@ namespace Scryber.PDF.Layout
         private TableReference _tblRef;
         private PDFLayoutBlock _rowblock;
         private int _rowIndex = -1;
+
+        /// <summary>
+        /// The colgroup/col definitions found as direct children of the table, in document order, each
+        /// with its ColumnOffset already assigned. Lazily built once per table layout by
+        /// GetColumnDefinitions(). Null-checked via a separate "built" flag because an empty list is a
+        /// valid (and common) result for a table with no colgroup/col content.
+        /// </summary>
+        private List<HTMLColBase> _columnDefinitions;
+        private bool _columnDefinitionsBuilt;
 
         Unit _rowOffset = Unit.Zero;
 
@@ -887,6 +897,11 @@ namespace Scryber.PDF.Layout
                     Style cellfull = null;
                     Style cellapplied = null;
 
+                    // NOTE: if a DataStyleIdentifier is shared by cells in different columns, the cached
+                    // style below (from whichever cell populated it first) is reused as-is, bypassing the
+                    // column style lookup for this specific column. This mirrors an existing limitation of
+                    // the DataStyleIdentifier cache (it does not vary the cached style by column), not
+                    // something newly introduced by column style support.
                     if (!string.IsNullOrEmpty(cell.DataStyleIdentifier) && Context.DocumentLayout.TryGetStyleWithIdentifier(cell.DataStyleIdentifier, out cellapplied, out cellfull))
                     {
                         this.StyleStack.Push(cellapplied);
@@ -895,7 +910,34 @@ namespace Scryber.PDF.Layout
                     {
                         this.Context.PerformanceMonitor.Begin(PerformanceMonitorType.Style_Build);
 
+                        // Find any colgroup/col definition covering this cell's starting column, before
+                        // resolving the cell's applied style, so a matched class name can influence
+                        // document-level (class-selector) style matching for this cell too.
+                        var colStyle = this.GetMatchingColumnStyle(columnIndex);
+                        if (colStyle != null && !string.IsNullOrEmpty(colStyle.StyleClass))
+                        {
+                            var ownClass = cell.OwnStyleClass;
+                            cell.StyleClass = string.IsNullOrEmpty(ownClass)
+                                ? colStyle.StyleClass
+                                : colStyle.StyleClass + " " + ownClass;
+                        }
+
                         cellapplied = cell.GetAppliedStyle();
+
+                        // Mix in the column's own directly-set style values (e.g. bgcolor/width/align set
+                        // right on the <col>/<colgroup> element) underneath the cell's already-resolved
+                        // applied style: merge the column's style into a blank style first, then merge the
+                        // cell's own applied style into the same blank style second, so the cell's own
+                        // values (including anything just matched via the class above) always win when
+                        // both define the same style value.
+                        if (colStyle != null && colStyle.HasStyle)
+                        {
+                            var blank = new Style();
+                            colStyle.Style.MergeInto(blank);
+                            cellapplied.MergeInto(blank);
+                            cellapplied = blank;
+                        }
+
                         this.StyleStack.Push(cellapplied);
 
                         cellfull = this.BuildCellFullStyle(cell, row, rowfull, tablePos, rowPos, rowFont);
@@ -1006,6 +1048,72 @@ namespace Scryber.PDF.Layout
 
             if (this.Context.ShouldLogDebug)
                 this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, string.Format("Table grid calculated at {0} rows by {1} columns", rowcount, maxcolcount));
+        }
+
+        #endregion
+
+        #region private List<HTMLColBase> GetColumnDefinitions() + private TableCell GetMatchingColumnStyle(int)
+
+        /// <summary>
+        /// Scans the table's own direct content (not just its Rows) for colgroup/col definitions, in
+        /// document order, assigning each one - and, for a colgroup delegating to child &lt;col&gt;
+        /// elements, each of those children too - a ColumnOffset based on a running column counter that
+        /// advances by each definition's EffectiveSpan. Built once (lazily) per table layout.
+        /// </summary>
+        private List<HTMLColBase> GetColumnDefinitions()
+        {
+            if (!_columnDefinitionsBuilt)
+            {
+                _columnDefinitions = new List<HTMLColBase>();
+                int offset = 0;
+
+                foreach (var child in ((IContainerComponent)this.Table).Content)
+                {
+                    if (child is HTMLColBase colbase)
+                    {
+                        colbase.ColumnOffset = offset;
+
+                        if (colbase is HTMLColGroup group && group.Span < 0 && group.HasColumns)
+                        {
+                            int childOffset = offset;
+                            foreach (var col in group.Columns)
+                            {
+                                col.ColumnOffset = childOffset;
+                                childOffset += col.EffectiveSpan;
+                            }
+                        }
+
+                        offset += colbase.EffectiveSpan;
+                        _columnDefinitions.Add(colbase);
+                    }
+                }
+
+                _columnDefinitionsBuilt = true;
+            }
+
+            return _columnDefinitions;
+        }
+
+        /// <summary>
+        /// Finds the first colgroup/col definition that covers the given column index and returns a
+        /// throwaway TableCell holding whatever Style/StyleClass it would apply - reusing
+        /// HTMLColBase.ApplyStyleToColumnCell's existing matching and merge logic without mutating the
+        /// real cell. Returns null if no definition covers this column.
+        /// </summary>
+        private TableCell GetMatchingColumnStyle(int columnIndex)
+        {
+            var defs = this.GetColumnDefinitions();
+            if (defs.Count == 0)
+                return null;
+
+            foreach (var def in defs)
+            {
+                var scratch = new TableCell();
+                if (def.ApplyStyleToColumnCell(columnIndex, scratch))
+                    return scratch;
+            }
+
+            return null;
         }
 
         #endregion
