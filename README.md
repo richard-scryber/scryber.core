@@ -150,7 +150,7 @@ Handlebar support for dynamic content binding, and expressions
     {{#if count(.nested)}}
         <!-- nested content and complex content creation with expressions -->
         <ul>{{#each .nested}}<li data-content="{{templates.innerContent}}"></li></ul>
-    {{#else}}<div class="muted">No inner items</div>
+    {{else}}<div class="muted">No inner items</div>
     {{/if}}
     </div>
 {{/each}}
