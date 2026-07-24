@@ -2044,6 +2044,7 @@ namespace Scryber.Components
             using (var sr = new System.IO.StringReader(data.Content))
             {
                 var component = parser.Parse(null, sr, ParseSourceType.Template) as Component;
+                component = NormalizeParsedDataContentComponent(component, context);
 
                 //We clear out even if the returned content is null
                 if (data.Action == DataContentAction.Replace)
@@ -2072,11 +2073,150 @@ namespace Scryber.Components
                     //actually perfrom the data binding of the content
                     //TODO: check on the init and load implementation.
 
+                    EnsureParsedDocumentsCanBind(component, context);
+
                     component.DataBind(context);
                 }
                 else if (context.ShouldLogVerbose)
                     context.TraceLog.Add(TraceLevel.Verbose, "Binding", "No component was retruned from the parser with data-content value '" + (data.Content.Length > 50 ? data.Content.Substring(45) + "..." : data.Content) + " on the '" + this.ID + " component");
 
+            }
+        }
+
+        /// <summary>
+        /// Dynamic html snippets can arrive as full html documents. When inserted as nested content this can
+        /// create invalid page/document nesting. Normalize those into body fragment content.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual Component NormalizeParsedDataContentComponent(Component component, DataContext context)
+        {
+            if (component == null)
+                return null;
+
+            if (component is Scryber.Html.Components.HTMLDocument htmlDocument)
+            {
+                return ConvertHtmlDocumentToFragment(htmlDocument, context);
+            }
+
+            if (component is Scryber.Html.Components.HTMLFragmentWrapper wrapper)
+            {
+                bool normalized = false;
+                var extracted = new List<Component>();
+
+                for (int i = 0; i < wrapper.Content.Count; i++)
+                {
+                    var child = wrapper.Content[i];
+
+                    if (child is Scryber.Html.Components.HTMLDocument childDocument)
+                    {
+                        normalized = true;
+                        ExtractHtmlDocumentContent(childDocument, extracted);
+                    }
+                    else
+                    {
+                        extracted.Add(child);
+                    }
+                }
+
+                if (normalized)
+                {
+                    wrapper.Content.Clear();
+                    if (extracted.Count > 0)
+                        wrapper.Content.AddRange(extracted.ToArray());
+
+                    if (context?.ShouldLogDebug == true)
+                        context.TraceLog.Add(TraceLevel.Debug, "Binding", "Normalized nested html document content into fragment content for the '" + this.ID + "' component.");
+                }
+            }
+
+            return component;
+        }
+
+        /// <summary>
+        /// Converts an html document into fragment content for nested insertion.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual Component ConvertHtmlDocumentToFragment(Scryber.Html.Components.HTMLDocument document, DataContext context)
+        {
+            var fragment = new Scryber.Html.Components.HTMLFragmentWrapper();
+            var extracted = new List<Component>();
+            ExtractHtmlDocumentContent(document, extracted);
+
+            if (extracted.Count > 0)
+                fragment.Content.AddRange(extracted.ToArray());
+
+            if (context?.ShouldLogDebug == true)
+                context.TraceLog.Add(TraceLevel.Debug, "Binding", "Converted parsed html document into fragment content for nested data-content binding on '" + this.ID + "'.");
+
+            return fragment;
+        }
+
+        /// <summary>
+        /// Pulls body/frameset content out of a parsed html document for safe nested insertion.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="target"></param>
+        protected virtual void ExtractHtmlDocumentContent(Scryber.Html.Components.HTMLDocument document, List<Component> target)
+        {
+            if (document == null || target == null)
+                return;
+
+            if (document.Body != null)
+            {
+                var bodyContent = document.Body.Contents;
+                for (int i = 0; i < bodyContent.Count; i++)
+                {
+                    target.Add(bodyContent[i]);
+                }
+
+                return;
+            }
+
+            if (document.Frameset != null)
+                target.Add(document.Frameset);
+        }
+
+        /// <summary>
+        /// Parsed data-content can include full html documents inside a fragment. Ensure any nested document
+        /// has reached the Loaded stage before binding; otherwise Document.DoDataBind throws by design.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="context"></param>
+        protected virtual void EnsureParsedDocumentsCanBind(Component component, DataContext context)
+        {
+            if (component == null)
+                return;
+
+            if (component is Document document)
+            {
+                if (document.GenerationStage == DocumentGenerationStage.None)
+                {
+                    document.InitializeAndLoad(context?.Format ?? OutputFormat.PDF);
+                }
+                else if (document.GenerationStage == DocumentGenerationStage.Initialized)
+                {
+                    var loadContext = new LoadContext(document.Params, document.TraceLog, document.PerformanceMonitor, document, context?.Format ?? OutputFormat.PDF);
+                    document.Load(loadContext);
+                }
+
+                return;
+            }
+
+            if (component is IContainerComponent container)
+            {
+                var children = container.Content;
+
+                if (children == null || children.Count == 0)
+                    return;
+
+                for (int i = 0; i < children.Count; i++)
+                {
+                    EnsureParsedDocumentsCanBind(children[i], context);
+                }
             }
         }
 

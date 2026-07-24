@@ -213,7 +213,10 @@ namespace Scryber
         {
             this._totalpages = Math.Max(this._totalpages, pageIndex);
             if (this._route.Count == 0)
-                throw new ArgumentNullException("No Current group on the stack to unregister. Make sure Register is always called first");
+            {
+                this._lastPageIndex = pageIndex;
+                return;
+            }
             
             PageNumberGroup grp = this._route.Peek();
 
