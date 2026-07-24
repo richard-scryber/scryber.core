@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.6-beta</PackageVersion>
+    <PackageVersion>9.6.0.7-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.6-beta
+    <PackageReleaseNotes>9.6.0.7-beta
+BREAKING CHANGE: &lt;img width&gt; / &lt;img height&gt; attributes now match the HTML5 spec - they set the image's intrinsic pixel size (a plain non-negative integer) instead of accepting arbitrary CSS units directly. A bare width="50%" or width="40pt" attribute on &lt;img&gt; will now throw a parse exception; move percentage or point-based sizing into style="width:...; height:..." instead. Also added a style attribute mapping to &lt;colgroup&gt;/&lt;col&gt;.
+
+9.6.0.6-beta
 Fixed LayoutEngineFlexGrid column widths for spanned cells - a cell spanning multiple grid columns now sums the widths of all the tracks it spans, instead of only receiving a single track's width.
 
 9.6.0.5-beta
@@ -114,12 +117,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.6</Version>
+    <Version>9.6.0.7</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.6</FileVersion>
+    <FileVersion>9.6.0.7</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
