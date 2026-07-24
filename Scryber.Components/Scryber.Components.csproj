@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.5-beta</PackageVersion>
+    <PackageVersion>9.6.0.6-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>  
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.5-beta
+    <PackageReleaseNotes>9.6.0.6-beta
+Fixed LayoutEngineFlexGrid column widths for spanned cells - a cell spanning multiple grid columns now sums the widths of all the tracks it spans, instead of only receiving a single track's width.
+
+9.6.0.5-beta
 Added full support for HTML table colgroup/col elements - column width, background, alignment and class styles now apply per-column to matching cells in the table layout engine, without overwriting a cell's own explicit style. Fixed the col/colgroup span calculation (a span of N now covers exactly N columns). Added CSS grid-column/grid-row parsing and span support, flexbox align-self and order properties, the flex-shrink algorithm for overflowing flex rows, and the CSS anonymous box algorithm for display:table/table-row/table-cell content that isn't explicitly wrapped. Fixed legacy &lt;font size&gt; handling for values pasted from Apple Pages.
 
 9.6.0.4-beta
@@ -111,12 +114,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.5</Version>
+    <Version>9.6.0.6</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.5</FileVersion>
+    <FileVersion>9.6.0.6</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
