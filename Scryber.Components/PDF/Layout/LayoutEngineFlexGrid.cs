@@ -115,12 +115,35 @@ namespace Scryber.PDF.Layout
 
             double[] colPts = CalcColumnPtWidths(workingPts);
 
-            // Set explicit widths on GridCell styles
-            foreach (var row in _cellGrid)
+            // Set explicit widths on GridCell styles, summing track widths for spanned cells.
+            // Cells in each row are stored left-to-right, so a running column cursor is sufficient
+            // for the no-row-span case; row spans that leave column gaps are handled by tracking
+            // the occupied slots here too.
+            var colOccupied = new System.Collections.Generic.Dictionary<(int row, int col), bool>();
+            for (int ri = 0; ri < _cellGrid.Count; ri++)
             {
-                for (int c = 0; c < row.Count && c < colPts.Length; c++)
+                var rowCells = _cellGrid[ri];
+                int colCursor = 0;
+                foreach (var cell in rowCells)
                 {
-                    row[c].Style.Size.Width = new Unit(colPts[c], PageUnits.Points);
+                    // Advance past slots already occupied by row-spans from earlier rows
+                    while (colOccupied.ContainsKey((ri, colCursor)))
+                        colCursor++;
+
+                    int span = Math.Max(1, cell.CellColumnSpan);
+                    int rowSpan = Math.Max(1, cell.CellRowSpan);
+                    double totalWidth = 0;
+                    for (int tc = colCursor; tc < colCursor + span && tc < colPts.Length; tc++)
+                        totalWidth += colPts[tc];
+                    if (totalWidth > 0)
+                        cell.Style.Size.Width = new Unit(totalWidth, PageUnits.Points);
+
+                    // Mark slots occupied by this cell's row span
+                    for (int dr = 1; dr < rowSpan; dr++)
+                        for (int dc = 0; dc < span; dc++)
+                            colOccupied[(ri + dr, colCursor + dc)] = true;
+
+                    colCursor += span;
                 }
             }
         }

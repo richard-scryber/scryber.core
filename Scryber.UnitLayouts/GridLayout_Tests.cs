@@ -946,6 +946,131 @@ namespace Scryber.UnitLayouts
         }
 
 
+        // ======================================================================
+        // grid-column / grid-row span
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_ColumnSpan_SpannedItemIsWider()
+        {
+            // 3-column grid: item A spans 2 columns, item B takes the remaining column.
+            // Expected: A width ≈ 2/3 * 600 = 400pt; B width ≈ 1/3 * 600 = 200pt.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr 1fr");
+
+            var itemA = AddItem(grid, "Spanned");
+            itemA.Style.Grid.ColumnSpan = 2;
+
+            var itemB = AddItem(grid, "Normal");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_ColumnSpan_SpannedWider.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock);
+
+            var rowBlock = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(rowBlock, "Row 0 must exist");
+            // 3-column grid always produces 3 physical column slots per row.
+            Assert.AreEqual(3, rowBlock.Columns.Length, "3-column grid always produces 3 physical column slots");
+
+            // Use render bounds to compare item widths: A (span:2) should be wider than B (span:1).
+            var arrangeA = itemA.GetFirstArrangement();
+            var arrangeB = itemB.GetFirstArrangement();
+            Assert.IsNotNull(arrangeA, "Item A must have been laid out");
+            Assert.IsNotNull(arrangeB, "Item B must have been laid out");
+
+            double wA = arrangeA.RenderBounds.Width.PointsValue;
+            double wB = arrangeB.RenderBounds.Width.PointsValue;
+
+            Assert.IsTrue(wA > wB, "Spanned item (col-span:2) should be wider than the normal item");
+            Assert.AreEqual(PageW * 2.0 / 3.0, wA, 4.0, "Spanned item should be ~2/3 of grid width");
+            Assert.AreEqual(PageW / 3.0,         wB, 3.0, "Normal item should be ~1/3 of grid width");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_ColumnSpan_NextItemWrapsToNewRow()
+        {
+            // 2-column grid; item A spans 2 → fills the whole row.
+            // Items B and C go into row 1, side by side.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr");
+
+            var itemA = AddItem(grid, "Full-row");
+            itemA.Style.Grid.ColumnSpan = 2;
+
+            AddItem(grid, "B");
+            AddItem(grid, "C");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_ColumnSpan_NextWraps.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock);
+
+            var tableRegion = gridBlock.Columns[0];
+            Assert.AreEqual(2, tableRegion.Contents.Count, "Should be 2 rows: A alone, then B+C");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0 must exist");
+            Assert.IsNotNull(row1, "Row 1 must exist");
+
+            // The layout engine always produces one column slot per physical grid track.
+            // In a 2-column grid, every row has exactly 2 column slots.
+            Assert.AreEqual(2, row0.Columns.Length, "2-column grid always has 2 track slots per row");
+            Assert.AreEqual(2, row1.Columns.Length, "Row 1 should have 2 cells (B and C)");
+
+            // Row 0: A's span-2 cell fills the entire row width.
+            double wFull = row0.Columns[0].TotalBounds.Width.PointsValue
+                         + row0.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.AreEqual(PageW, wFull, 3.0, "The two tracks combined should equal the grid width");
+
+            // Row 1: B and C are equal halves
+            double w0 = row1.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = row1.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.AreEqual(w0, w1, 2.0, "B and C should have equal widths");
+            Assert.AreEqual(PageW / 2.0, w0, 2.0, "Each half-width cell should be ~300pt");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_ColumnSpan_SpanOne_NoEffect()
+        {
+            // Explicitly setting span:1 should be the same as no span.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr");
+
+            var itemA = AddItem(grid, "Alpha");
+            itemA.Style.Grid.ColumnSpan = 1;
+
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_ColumnSpan_SpanOne.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var rowBlock = GetRowBlock(GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]), 0);
+            Assert.IsNotNull(rowBlock);
+            Assert.AreEqual(2, rowBlock.Columns.Length, "span:1 should produce 2 separate cells");
+
+            double w0 = rowBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = rowBlock.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.AreEqual(w0, w1, 1.0, "Both cells should be equal width with span:1");
+        }
+
         [TestCategory(TestCategory), TestMethod()]
         public void MMckinstry_Issue()
         {

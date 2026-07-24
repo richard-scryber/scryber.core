@@ -272,5 +272,94 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             style.Grid.RemoveRowSpan();
             Assert.AreEqual(1, style.Grid.RowSpan, "After remove RowSpan should revert to 1");
         }
+
+        // -----------------------------------------------------------------------
+        // grid-column parser
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridColumn_SpanN()
+        {
+            var parser = new CSSGridColumnParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "span 3"));
+            Assert.AreEqual(3, style.Grid.ColumnSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridColumn_PlainInteger_SpanIsOne()
+        {
+            var parser = new CSSGridColumnParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "2"));
+            Assert.AreEqual(1, style.Grid.ColumnSpan, "Plain start line → span defaults to 1");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridColumn_StartSlashSpanN()
+        {
+            var parser = new CSSGridColumnParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "1 / span 2"));
+            Assert.AreEqual(2, style.Grid.ColumnSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridColumn_StartSlashEnd_ComputesSpan()
+        {
+            var parser = new CSSGridColumnParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "2 / 4"));
+            Assert.AreEqual(2, style.Grid.ColumnSpan, "Lines 2→4 = span 2");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridColumn_SpanOne()
+        {
+            var parser = new CSSGridColumnParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "span 1"));
+            Assert.AreEqual(1, style.Grid.ColumnSpan);
+        }
+
+        // -----------------------------------------------------------------------
+        // grid-row parser
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridRow_SpanN()
+        {
+            var parser = new CSSGridRowParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "span 2"));
+            Assert.AreEqual(2, style.Grid.RowSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridRow_PlainInteger_SpanIsOne()
+        {
+            var parser = new CSSGridRowParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "1"));
+            Assert.AreEqual(1, style.Grid.RowSpan, "Plain start line → span defaults to 1");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridRow_StartSlashSpanN()
+        {
+            var parser = new CSSGridRowParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "1 / span 3"));
+            Assert.AreEqual(3, style.Grid.RowSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridRow_StartSlashEnd_ComputesSpan()
+        {
+            var parser = new CSSGridRowParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "1 / 3"));
+            Assert.AreEqual(2, style.Grid.RowSpan, "Lines 1→3 = span 2");
+        }
     }
 }

@@ -461,5 +461,209 @@ namespace Scryber.UnitLayouts
             var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(panelBlock, "Empty CSS table should still produce a layout block");
         }
+
+        // -----------------------------------------------------------------------
+        // Anonymous table-row wrapping (table-cells directly inside display:table)
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousRow_CellsDirectInTable_SideBySide()
+        {
+            // Three display:table-cell divs directly inside a display:table — no explicit
+            // table-row wrapper. They should be auto-wrapped in an anonymous row and
+            // laid out side-by-side (like a single table row).
+            var doc   = CreateDoc(out var pg);
+            var table = CreateCSSTable(pg, width: 600);
+
+            var cellA = AddCell(table, height: 40, label: "A");
+            var cellB = AddCell(table, height: 40, label: "B");
+            var cellC = AddCell(table, height: 40, label: "C");
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousRow_Three.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pg0  = _layout.AllPages[0];
+            var tableBlock = GetTableBlock(pg0.ContentBlock.Columns[0]);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+            Assert.AreEqual(1, tableBlock.Columns.Length, "Anonymous row → single table region");
+            // The single region holds one row of 3 cells; all should be on the same Y baseline.
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(rowBlock, "Row block should exist inside the table");
+            Assert.AreEqual(3, rowBlock.Columns.Length, "Three cells should be in the anonymous row");
+
+            double y0 = rowBlock.Columns[0].TotalBounds.Y.PointsValue;
+            double y1 = rowBlock.Columns[1].TotalBounds.Y.PointsValue;
+            double y2 = rowBlock.Columns[2].TotalBounds.Y.PointsValue;
+            Assert.AreEqual(y0, y1, 0.5, "All three cells should start at the same Y");
+            Assert.AreEqual(y0, y2, 0.5, "All three cells should start at the same Y");
+
+            // Cells should be side-by-side (no cell starts at X=0 except the first)
+            double x0 = rowBlock.Columns[0].TotalBounds.X.PointsValue;
+            double x1 = rowBlock.Columns[1].TotalBounds.X.PointsValue;
+            double x2 = rowBlock.Columns[2].TotalBounds.X.PointsValue;
+            Assert.IsTrue(x1 > x0, "Cell B should be to the right of Cell A");
+            Assert.IsTrue(x2 > x1, "Cell C should be to the right of Cell B");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousRow_MixedRowsAndCells()
+        {
+            // A display:table with a mix of explicit table-rows and bare table-cells.
+            // The bare cells should be wrapped in an anonymous row inserted between the explicit rows.
+            var doc   = CreateDoc(out var pg);
+            var table = CreateCSSTable(pg, width: 600);
+
+            // Explicit row with two cells
+            var row1  = AddRow(table);
+            AddCell(row1, height: 30, label: "R1C1");
+            AddCell(row1, height: 30, label: "R1C2");
+
+            // Bare cells — should become an anonymous second row
+            AddCell(table, height: 30, label: "AnonC1");
+            AddCell(table, height: 30, label: "AnonC2");
+
+            // Another explicit row
+            var row2 = AddRow(table);
+            AddCell(row2, height: 30, label: "R3C1");
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousRow_Mixed.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var tableBlock = GetTableBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+
+            // Should have 3 rows: explicit, anonymous, explicit
+            int rowCount = tableBlock.Columns[0].Contents.Count;
+            Assert.AreEqual(3, rowCount, "Should be 3 rows: explicit + anonymous + explicit");
+
+            // Each row block sits below the previous
+            var row1Block = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var anonBlock = tableBlock.Columns[0].Contents[1] as PDFLayoutBlock;
+            var row3Block = tableBlock.Columns[0].Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(row1Block);
+            Assert.IsNotNull(anonBlock);
+            Assert.IsNotNull(row3Block);
+
+            Assert.IsTrue(anonBlock.TotalBounds.Y.PointsValue > row1Block.TotalBounds.Y.PointsValue,
+                "Anonymous row should be below the first explicit row");
+            Assert.IsTrue(row3Block.TotalBounds.Y.PointsValue > anonBlock.TotalBounds.Y.PointsValue,
+                "Third row should be below the anonymous row");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousRow_CSSParsed_DirectCells()
+        {
+            // CSS-parsed: two display:table-cell divs directly inside a display:table div.
+            // They should be auto-wrapped in an anonymous row and rendered side-by-side.
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+  <div style=""display:table; width:600pt;"">
+    <div style=""display:table-cell; padding:4pt;"">Alpha</div>
+    <div style=""display:table-cell; padding:4pt;"">Beta</div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousRow_CSSParsed.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+
+            // The display:table div is the first block in the page.
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "Table block must exist");
+
+            // The table region holds one anonymous row.
+            var tableRegion = tableBlock.Columns[0];
+            Assert.AreEqual(1, tableRegion.Contents.Count, "Should be exactly one anonymous row");
+
+            var rowBlock = tableRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(rowBlock, "Row block must exist");
+            Assert.AreEqual(2, rowBlock.Columns.Length, "Two cells should be side-by-side in one row");
+
+            // Both cells should be on the same Y baseline.
+            double y0 = rowBlock.Columns[0].TotalBounds.Y.PointsValue;
+            double y1 = rowBlock.Columns[1].TotalBounds.Y.PointsValue;
+            Assert.AreEqual(y0, y1, 0.5, "Alpha and Beta should share the same Y (same row)");
+
+            // Beta should be to the right of Alpha.
+            double x0 = rowBlock.Columns[0].TotalBounds.X.PointsValue;
+            double x1 = rowBlock.Columns[1].TotalBounds.X.PointsValue;
+            Assert.IsTrue(x1 > x0, "Beta (column 1) should be to the right of Alpha (column 0)");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousTable_CSSParsed_DirectCells()
+        {
+            // Negative test: a display:table-row div at the body level (no display:table ancestor).
+            // Without a table context, Scryber renders it as a block; the two table-cell children
+            // are also treated as blocks and appear stacked vertically in normal flow — NOT side-by-side.
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+  <div style=""display:table-row;"">
+    <div style=""display:table-cell; padding:4pt;"">Alpha</div>
+    <div style=""display:table-cell; padding:4pt;"">Beta</div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousTable_CSSParsed.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+
+            // The outer table-row div renders as a plain block (single column).
+            var outerBlock = pageRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(outerBlock, "Outer block must exist");
+            Assert.AreEqual(1, outerBlock.Columns.Length,
+                "Without a display:table ancestor, table-row renders as a single-column block");
+
+            // Its children (the two table-cell divs) must be stacked, not side-by-side.
+            // They appear as separate block items in the single column.
+            var innerRegion = outerBlock.Columns[0];
+            Assert.IsTrue(innerRegion.Contents.Count >= 2,
+                "Both child divs should produce layout items in the block column");
+
+            var blockAlpha = innerRegion.Contents[0] as PDFLayoutBlock;
+            var blockBeta  = innerRegion.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(blockAlpha, "Alpha block must exist");
+            Assert.IsNotNull(blockBeta,  "Beta block must exist");
+
+            double yAlpha = blockAlpha.TotalBounds.Y.PointsValue;
+            double yBeta  = blockBeta.TotalBounds.Y.PointsValue;
+            Assert.IsTrue(yBeta > yAlpha,
+                "In normal block flow, Beta should be below Alpha — not side-by-side");
+
+            double xAlpha = blockAlpha.TotalBounds.X.PointsValue;
+            double xBeta  = blockBeta.TotalBounds.X.PointsValue;
+            Assert.AreEqual(xAlpha, xBeta, 1.0,
+                "Both blocks share the same left edge in normal block flow");
+        }
     }
 }

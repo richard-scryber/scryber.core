@@ -2047,5 +2047,269 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(20.0, bC.TotalBounds.Y.PointsValue, 1.0, "Card C (60pt) Y=(100-60)/2=20");
             Assert.AreEqual( 0.0, bD.TotalBounds.Y.PointsValue, 1.0, "Card D (100pt, tallest) Y=0");
         }
+
+        // -----------------------------------------------------------------------
+        // align-self per item
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_AlignSelf_OverridesAlignItems()
+        {
+            // Container: align-items:flex-start (default)
+            // Item A: align-self:flex-end → should be pushed to the bottom
+            // Item B: no align-self → stays at top (flex-start)
+            // Item C: align-self:center → should be centred
+            // Row height determined by tallest item (A=100pt)
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg);
+            flex.Style.Flex.AlignItems = FlexAlignMode.FlexStart;
+            flex.Height = 100;
+
+            var childA = AddChild(flex, height: 100, grow: 0, label: "A"); // tallest
+            childA.Width = 200;
+
+            var childB = AddChild(flex, height: 40, grow: 0, label: "B"); // short, no override → flex-start (Y=0)
+            childB.Width = 200;
+
+            var childC = AddChild(flex, height: 60, grow: 0, label: "C"); // medium, align-self:center
+            childC.Width = 200;
+            childC.Style.Flex.AlignSelf = FlexAlignMode.Center;
+
+            using (var ms = DocStreams.GetOutputStream("Flex_AlignSelf_PerItem.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pg0       = _layout.AllPages[0];
+            var flexBlock = FindFlexBlock(pg0.ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Flex block should exist");
+            Assert.AreEqual(3, flexBlock.Columns.Length, "Should be 3 columns");
+
+            var bA = flexBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var bB = flexBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            var bC = flexBlock.Columns[2].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(bA);
+            Assert.IsNotNull(bB);
+            Assert.IsNotNull(bC);
+
+            // A is tallest — flex-start means Y=0
+            Assert.AreEqual(0.0, bA.TotalBounds.Y.PointsValue, 0.5, "A (tallest, no align-self) Y=0");
+            // B has no align-self and container is flex-start → Y=0
+            Assert.AreEqual(0.0, bB.TotalBounds.Y.PointsValue, 0.5, "B (40pt, flex-start) Y=0");
+            // C has align-self:center → Y = (100-60)/2 = 20
+            Assert.AreEqual(20.0, bC.TotalBounds.Y.PointsValue, 0.5, "C (60pt, align-self:center) Y=20");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_AlignSelf_FlexEnd_OneItem()
+        {
+            // Container: align-items:flex-start, one item with align-self:flex-end
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg);
+            flex.Height = 100;
+            flex.Style.Flex.AlignItems = FlexAlignMode.FlexStart;
+
+            var tall  = AddChild(flex, height: 100, grow: 1, label: "Tall");
+            var short_ = AddChild(flex, height: 30, grow: 1, label: "Short");
+            short_.Style.Flex.AlignSelf = FlexAlignMode.FlexEnd;
+
+            using (var ms = DocStreams.GetOutputStream("Flex_AlignSelf_FlexEnd.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+
+            var bTall  = flexBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var bShort = flexBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(bTall);
+            Assert.IsNotNull(bShort);
+
+            Assert.AreEqual(0.0, bTall.TotalBounds.Y.PointsValue, 0.5, "Tall item Y=0");
+            Assert.AreEqual(70.0, bShort.TotalBounds.Y.PointsValue, 0.5, "Short item (30pt) with align-self:flex-end → Y=100-30=70");
+        }
+
+        // -----------------------------------------------------------------------
+        // order property
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_Order_ReordersItems()
+        {
+            // Three items with explicit order values: C(order:1), A(order:2), B(order:3)
+            // Visual left-to-right should be: C, A, B regardless of source order A, B, C.
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg);
+            flex.Width = 600;
+
+            // Source order: A=200pt, B=100pt, C=300pt
+            // Desired visual order: C(order:1)=300pt, A(order:2)=200pt, B(order:3)=100pt
+            var a = new Div(); a.Width = 200; a.Style.Flex.Grow = 0; a.Style.Flex.Order = 2;
+            a.Contents.Add(new Label { Text = "A" }); flex.Contents.Add(a);
+
+            var b = new Div(); b.Width = 100; b.Style.Flex.Grow = 0; b.Style.Flex.Order = 3;
+            b.Contents.Add(new Label { Text = "B" }); flex.Contents.Add(b);
+
+            var c = new Div(); c.Width = 300; c.Style.Flex.Grow = 0; c.Style.Flex.Order = 1;
+            c.Contents.Add(new Label { Text = "C" }); flex.Contents.Add(c);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_Order_Three.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Flex block should exist");
+            Assert.AreEqual(3, flexBlock.Columns.Length);
+
+            // Column 0 = C (300pt wide), Column 1 = A (200pt), Column 2 = B (100pt)
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            double w2 = flexBlock.Columns[2].TotalBounds.Width.PointsValue;
+
+            // C is 300pt, A is 200pt, B is 100pt — verify ordering by width
+            Assert.IsTrue(w0 > w1, "First column (C,300pt) should be wider than second (A,200pt)");
+            Assert.IsTrue(w1 > w2, "Second column (A,200pt) should be wider than third (B,100pt)");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_Order_NegativeOrderFirst()
+        {
+            // Item with negative order should sort before order:0 items
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg);
+
+            var normal = AddChild(flex, height: 50, grow: 1, label: "Normal"); // order: 0 (default)
+            var first_ = AddChild(flex, height: 80, grow: 1, label: "First");  // order: -1
+            first_.Style.Flex.Order = -1;
+
+            using (var ms = DocStreams.GetOutputStream("Flex_Order_Negative.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(2, flexBlock.Columns.Length);
+
+            // Column 0 should contain the taller item (first_=80pt, since it sorts first with order:-1)
+            var b0 = flexBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var b1 = flexBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(b0);
+            Assert.IsNotNull(b1);
+            Assert.IsTrue(b0.TotalBounds.Height.PointsValue > b1.TotalBounds.Height.PointsValue,
+                "The item with order:-1 (80pt) should be in column 0; the default item (50pt) in column 1");
+        }
+
+        // -----------------------------------------------------------------------
+        // flex-shrink
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_Shrink_ItemsNarrowWhenOverflow()
+        {
+            // Container is 400pt wide; two items each want 300pt (total 600pt → overflow by 200pt).
+            // Default flex-shrink:1, so each should shrink by 100pt → final width 200pt each.
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg, width: 400);
+
+            var itemA = new Div(); itemA.Width = 300; itemA.Style.Flex.Grow = 0; itemA.Style.Flex.Shrink = 1;
+            itemA.Contents.Add(new Label { Text = "A" }); flex.Contents.Add(itemA);
+            var itemB = new Div(); itemB.Width = 300; itemB.Style.Flex.Grow = 0; itemB.Style.Flex.Shrink = 1;
+            itemB.Contents.Add(new Label { Text = "B" }); flex.Contents.Add(itemB);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_Shrink_EqualShrink.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(2, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.AreEqual(200.0, w0, 2.0, "Item A should shrink from 300→200pt");
+            Assert.AreEqual(200.0, w1, 2.0, "Item B should shrink from 300→200pt");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_Shrink_AsymmetricShrinkFactor()
+        {
+            // Container 300pt; A wants 300pt (shrink:2), B wants 300pt (shrink:1).
+            // Overflow = 300pt. Weighted basis: A=300×2=600, B=300×1=300. Total=900.
+            // A shrinks by 600/900×300=200 → 100pt. B shrinks by 300/900×300=100 → 200pt.
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg, width: 300);
+
+            var itemA = new Div(); itemA.Width = 300; itemA.Style.Flex.Grow = 0; itemA.Style.Flex.Shrink = 2;
+            itemA.Contents.Add(new Label { Text = "A" }); flex.Contents.Add(itemA);
+            var itemB = new Div(); itemB.Width = 300; itemB.Style.Flex.Grow = 0; itemB.Style.Flex.Shrink = 1;
+            itemB.Contents.Add(new Label { Text = "B" }); flex.Contents.Add(itemB);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_Shrink_Asymmetric.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(2, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.AreEqual(100.0, w0, 3.0, "A (shrink:2) should shrink more → ~100pt");
+            Assert.AreEqual(200.0, w1, 3.0, "B (shrink:1) should shrink less → ~200pt");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_Shrink_ZeroShrinkDoesNotShrink()
+        {
+            // Item with flex-shrink:0 must not shrink even when container overflows.
+            var doc  = CreateDoc(out var pg);
+            var flex = CreateFlexContainer(pg, width: 300);
+
+            var itemA = new Div(); itemA.Width = 200; itemA.Style.Flex.Grow = 0; itemA.Style.Flex.Shrink = 0;
+            itemA.Contents.Add(new Label { Text = "A" }); flex.Contents.Add(itemA);
+            var itemB = new Div(); itemB.Width = 200; itemB.Style.Flex.Grow = 0; itemB.Style.Flex.Shrink = 1;
+            itemB.Contents.Add(new Label { Text = "B" }); flex.Contents.Add(itemB);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_Shrink_ZeroNoShrink.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(2, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            // A (shrink:0) stays at 200pt; B absorbs all overflow → 300-200=100pt
+            Assert.AreEqual(200.0, w0, 2.0, "A (shrink:0) should remain 200pt");
+            Assert.AreEqual(100.0, w1, 2.0, "B (shrink:1) should absorb all overflow → 100pt");
+        }
     }
 }
