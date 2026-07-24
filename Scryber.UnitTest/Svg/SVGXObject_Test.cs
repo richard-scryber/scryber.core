@@ -165,9 +165,9 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
             
             //Image is set to render at 150pt = 0.75% of file size
-            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(150, 150), context);
-            Assert.AreEqual(0.75, renderSize.Width);
-            Assert.AreEqual(0.75, renderSize.Height);
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(Unit.Px(150), Unit.Px(150)), context);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Width);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Height);
             
             
             var img = doc.FindAComponentById("referenced");
@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents
-            var bounds = new Rect(30, 150, 160, 160);
+            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
@@ -221,9 +221,9 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
             
             //Image is set to render at 150pt = 0.75% of file size
-            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(150, 150), context);
-            Assert.AreEqual(0.75, renderSize.Width);
-            Assert.AreEqual(0.75, renderSize.Height);
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(Unit.Px(150), Unit.Px(150)), context);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Width);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Height);
 
             var font = doc.SharedResources[1] as PDFFontResource;
             Assert.IsNotNull(font);
@@ -239,7 +239,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents and padding
-            var bounds = new Rect(30, 150, 160, 160);
+            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
             Assert.AreEqual(bounds, arrange.RenderBounds);
             
             img = doc.FindAComponentById("referenced2");
@@ -248,10 +248,10 @@ namespace Scryber.Core.UnitTests.Svg
             arrange = img.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             
-            bounds = new Rect(70, 380, 210, 210);
+            bounds = new Rect(70, 342.5, Unit.Px(200) + 10, Unit.Px(200) + 10);
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
-        
+
         /// <summary>
         /// Runs a single image twice for the same file and image - to make sure the SVGCanvas is re-loaded and laid out for each document
         /// </summary>
@@ -303,20 +303,20 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.AreEqual(200, svg.ImgXObjectBBox.Value.Width);
             
             //Image is set to render at 150pt = 0.75% of file size
-            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(150, 150), context);
-            Assert.AreEqual(0.75, renderSize.Width);
-            Assert.AreEqual(0.75, renderSize.Height);
+            var renderSize = imgX.GetRequiredSizeForRender(Point.Empty,  new Size(Unit.Px(150), Unit.Px(150)), context);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Width);
+            Assert.AreEqual(Unit.Px(0.75), renderSize.Height);
 
 
-            
+
             var img = doc.FindAComponentById("referenced");
             Assert.IsNotNull(img);
-            
+
             var arrange = img.GetFirstArrangement();
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents and padding
-            var bounds = new Rect(30, 150, 160, 160);
+            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
@@ -354,18 +354,18 @@ namespace Scryber.Core.UnitTests.Svg
             var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(400, 80), context);
             Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
             Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
-            
-            
+
+
             var img = ((Document)context.Document).FindAComponentById(imgId);
             Assert.IsNotNull(img, "Image component was not found for " + imgId);
-            
+
             var arrange = img.GetFirstArrangement();
             Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
 
-            
+
             Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
         }
-        
+
         private void DoAssertTallImage(string imgId, SVGPDFImageData svg, PDFImageXObject imgX, Point expectedOffset, Size expectedSize, Rect expectedBounds, RenderContext context)
         {
             var renderSize = imgX.GetRequiredSizeForRender(Point.Empty, new Size(100, 250), context);
@@ -375,15 +375,15 @@ namespace Scryber.Core.UnitTests.Svg
             var offset = imgX.GetRequiredOffsetForRender(Point.Empty, new Size(100, 250), context);
             Assert.AreEqual(expectedOffset.X, offset.X, "Offset X did not match for " + imgId);
             Assert.AreEqual(expectedOffset.Y, offset.Y,  "Offset Y did not match for " + imgId); //image height
-            
-            
+
+
             var img = ((Document)context.Document).FindAComponentById(imgId);
             Assert.IsNotNull(img, "Image component was not found for " + imgId);
-            
+
             var arrange = img.GetFirstArrangement();
             Assert.IsNotNull(arrange, "Render bounds not found for " + imgId);
 
-            
+
             Assert.AreEqual(expectedBounds, arrange.RenderBounds, "Render bounds did not match for " + imgId);
         }
         
@@ -424,68 +424,68 @@ namespace Scryber.Core.UnitTests.Svg
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 80);
             var expectedScale = new Size(0.4, 0.4);
-            var expectedBounds = new Rect(20, 60, 410, 90);
-            
+            var expectedBounds = new Rect(20, 60, Unit.Px(400) + 10, Unit.Px(80) + 10);
+
             DoAssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //second is wide middle aligned
-            
+
             imgX = doc.SharedResources[1] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point((400.0 - 80.0) / 2.0, 80.0);
             expectedScale = new Size(0.4, 0.4);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //third is wide right aligned
-            
+
             imgX = doc.SharedResources[2] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point((400.0 - 80.0), 80.0);
             expectedScale = new Size(0.4, 0.4);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xMaxYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //fourth is wide non-proportional
-            
+
             imgX = doc.SharedResources[3] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0, 80.0);
             expectedScale = new Size(2, 0.4);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //
             // tall images
             //
 
             var columnWidth = 141.31889763775;
-            
+
             //first top aligned
-            
+
             imgX = doc.SharedResources[4] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0, 100.0); //just the height of the image
             expectedScale = new Size(0.5, 0.5);
-            
-            expectedBounds.Y += 58 + 20 + 80 + 10; //banner, title, prev image, margin
-            expectedBounds.Width = 110;
-            expectedBounds.Height = 260;
-            
+
+            expectedBounds.Y += 58 + 20 + 60 + 10; //banner, title, prev image (80px = 60pt), margin
+            expectedBounds.Width = Unit.Px(100) + 10;
+            expectedBounds.Height = Unit.Px(250) + 10;
+
             DoAssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //second mid aligned
-            
+
             imgX = doc.SharedResources[1] as PDFImageXObject; //Uses the same resource as xmid ymid as on the wide row.
             svg = DoAssertImageReference(imgX, bbox);
 
@@ -559,64 +559,64 @@ namespace Scryber.Core.UnitTests.Svg
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 400);
             var expectedScale = new Size(2.0, 2.0);
-            var expectedBounds = new Rect(20, 20 + 20 + 20, 410, 90);
-            
+            var expectedBounds = new Rect(20, 20 + 20 + 20, Unit.Px(400) + 10, Unit.Px(80) + 10);
+
             DoAssertWideImage("xMinYMinWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //second is wide middle aligned
-            
+
             imgX = doc.SharedResources[1] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0.0, 240.0);
             expectedScale = new Size(2, 2);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xMidYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //third is wide right aligned
-            
+
             imgX = doc.SharedResources[2] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0.0, 80.0);
             expectedScale = new Size(2, 2);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xMaxYMaxWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //fourth is wide non-proportional
-            
+
             imgX = doc.SharedResources[3] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0, 80.0);
             expectedScale = new Size(2, 0.4);
-            
-            expectedBounds.Y += 80 + 20 + 10; //margin + prev img height + p height
-            
+
+            expectedBounds.Y += 60 + 20 + 10; //margin + prev img height (80px = 60pt) + p height
+
             DoAssertWideImage("xNoneWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
-            
+
             //
             // tall images
             //
 
             var columnWidth = 141.31889763775;
-            
+
             //first top aligned
-            
+
             imgX = doc.SharedResources[0] as PDFImageXObject;
             svg = DoAssertImageReference(imgX, bbox);
-            
+
             expectedOffset = new Point(0, 250.0); //just the height of the image
             expectedScale = new Size(1.25, 1.25);
-            
-            expectedBounds.Y += 58 + 20 + 80 + 10; //banner, title, prev image, margin
-            expectedBounds.Width = 110;
-            expectedBounds.Height = 260;
-            
+
+            expectedBounds.Y += 58 + 20 + 60 + 10; //banner, title, prev image (80px = 60pt), margin
+            expectedBounds.Width = Unit.Px(100) + 10;
+            expectedBounds.Height = Unit.Px(250) + 10;
+
             DoAssertTallImage("xMinYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             
             //second mid aligned
@@ -1245,29 +1245,29 @@ namespace Scryber.Core.UnitTests.Svg
 
            // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
            // var forty = (contentWidth * 0.4).ToPoints();
-            var expected = new Rect(20, 140, 300, 300);
+            var expected = new Rect(20, 140, Unit.Px(300), Unit.Px(300));
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
-            
+
             var reference2 = doc.FindAComponentById("referenced2");
             Assert.IsNotNull(reference2);
 
             arrange = reference2.GetFirstArrangement();
             Assert.IsNotNull(arrange);
-            
-            
-            
+
+
+
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 300 + 50, 50 * 1.5, 50 * 1.5);
+            expected = new Rect(60, 140 + Unit.Px(300) + 50, 50 * 1.5, 50 * 1.5);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
 
         }
-        
+
         /// <summary>
         ///A test to make sure the SVG is rendered at the correct size and aspect
         /// ratio if only the width and height on the actual svg file are specified.
@@ -1300,22 +1300,22 @@ namespace Scryber.Core.UnitTests.Svg
 
            // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
            // var forty = (contentWidth * 0.4).ToPoints();
-            var expected = new Rect(20, 140, 200, 300);
+            var expected = new Rect(20, 140, Unit.Px(200), Unit.Px(300));
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
-            
+
             var reference2 = doc.FindAComponentById("referenced2");
             Assert.IsNotNull(reference2);
 
             arrange = reference2.GetFirstArrangement();
             Assert.IsNotNull(arrange);
-            
-            
-            
+
+
+
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 300 + 50, 200, 50 * 1.5);
+            expected = new Rect(60, 140 + Unit.Px(300) + 50, 200, 50 * 1.5);
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
@@ -1355,22 +1355,22 @@ namespace Scryber.Core.UnitTests.Svg
 
            // var contentWidth = Papers.GetSizeInMM(doc.Pages[0].PaperSize).Width - 40;
            // var forty = (contentWidth * 0.4).ToPoints();
-            var expected = new Rect(20, 140, 200, 200);
+            var expected = new Rect(20, 140, Unit.Px(200), Unit.Px(200));
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(expected.Y, arrange.RenderBounds.Y);
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Height.PointsValue, 5), Math.Round(arrange.RenderBounds.Height.PointsValue, 5));
-            
+
             var reference2 = doc.FindAComponentById("referenced2");
             Assert.IsNotNull(reference2);
 
             arrange = reference2.GetFirstArrangement();
             Assert.IsNotNull(arrange);
-            
-            
-            
+
+
+
             //fit to the bounds proportionally as we have no explicit size.
-            expected = new Rect(60, 140 + 200 + 50, 100, 100);
+            expected = new Rect(60, 140 + Unit.Px(200) + 50, Unit.Px(100), Unit.Px(100));
             Assert.AreEqual(expected.X, arrange.RenderBounds.X);
             Assert.AreEqual(Math.Round(expected.Y.PointsValue, 5), Math.Round(arrange.RenderBounds.Y.PointsValue, 5));
             Assert.AreEqual(Math.Round(expected.Width.PointsValue, 5), Math.Round(arrange.RenderBounds.Width.PointsValue, 5));

@@ -97,19 +97,38 @@ namespace Scryber.Html.Components
             get => base.OutlineTitle;
             set => base.OutlineTitle = value;
         }
+        
+        private int _intrinsicWidth;
+        private int _intrinsicHeight;
 
         [PDFAttribute("width")]
-        public override Unit Width
+        public int InstrinsicWidth
         {
-            get => base.Width;
-            set => base.Width = value;
+            get { return this._intrinsicWidth; }
+            set
+            {
+                this._intrinsicWidth = value;
+                if (this.Style.IsValueDefined(StyleKeys.SizeWidthKey) == false && this._intrinsicWidth > 0)
+                {
+                    Unit px = new Unit(this._intrinsicWidth, PageUnits.Pixel);
+                    this.Style.Size.Width = px;
+                }
+            }
         }
         
         [PDFAttribute("height")]
-        public override Unit Height
+        public int InstrinsicHeight
         {
-            get => base.Height;
-            set => base.Height = value;
+            get { return this._intrinsicHeight;}
+            set
+            {
+                this._intrinsicHeight = value;
+                if (this.Style.IsValueDefined(StyleKeys.SizeHeightKey) == false && this._intrinsicHeight > 0)
+                {
+                    Unit px = new Unit(this._intrinsicHeight, PageUnits.Pixel);
+                    this.Style.Size.Height = px;
+                }
+            }
         }
 
         [PDFAttribute("alt")]
