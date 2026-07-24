@@ -7,8 +7,6 @@ namespace Scryber.Html.Components;
 
 public class HTMLColBase : VisualComponent
 {
-    private VerticalAlignment _verticalAlignment;
-    private Unit _width;
 
     [PDFAttribute("span")] public int Span { get; set; } = -1;
 
@@ -43,6 +41,13 @@ public class HTMLColBase : VisualComponent
     {
         get => base.Width;
         set => base.Width = value;
+    }
+
+    [PDFAttribute("style")]
+    public override Style Style
+    {
+        get => base.Style;
+        set => base.Style = value;
     }
 
     /// <summary>

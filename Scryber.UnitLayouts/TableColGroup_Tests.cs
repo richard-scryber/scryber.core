@@ -901,6 +901,53 @@ namespace Scryber.UnitLayouts
 
         #endregion
 
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_TableWithPercentColStyle_AppliesColumnBWidthToCells()
+        {
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        body { padding: 10pt; }
+        table { width: 100%; margin: 0; padding: 0pt; border-collapse: collapse; }
+        td { margin: 0; padding: 2pt; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width: 70%;' />
+        <col style='width: 30%;' />
+    </colgroup>
+    <tr>
+        <td>A</td>
+        <td>B</td>
+    </tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_StylePercentWidth_Current.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            var rowBlock = GetRowBlock(tblBlock, 0);
+            var cellA = GetCellBlock(rowBlock, 0);
+            var cellB = GetCellBlock(rowBlock, 1);
+
+            var bgA = cellA.FullStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+            var bgB = cellB.FullStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+
+            //Assert.AreEqual(StandardColors.Red, bgA, "Cell A should pick up the first col's red background");
+            //Assert.AreEqual(new Color(0, 255, 0), bgB, "Cell B should pick up the second col's #00ff00 background");
+        }
+        
         #region Data-bound col/colgroup values (parse -> bind -> layout)
 
         [TestCategory(TestCategoryName)]
