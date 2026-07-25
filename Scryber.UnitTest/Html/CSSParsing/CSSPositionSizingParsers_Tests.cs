@@ -693,5 +693,160 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         }
 
         #endregion
+
+        #region Aspect-Ratio Parser Tests
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_WidthSlashHeight_SetsRatio()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "566/311");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(566.0 / 311.0, style.Size.AspectRatio, 0.0001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_IntegerRatio_SetsRatio()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "16/9");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(16.0 / 9.0, style.Size.AspectRatio, 0.0001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_SingleNumber_SetsRatio()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "1.5");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1.5, style.Size.AspectRatio, 0.0001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_SquareRatio_SetsOne()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "1/1");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(1.0, style.Size.AspectRatio, 0.0001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_Auto_RemovesExistingRatio()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            style.Size.AspectRatio = 3.0;
+
+            var result = ParseValue(parser, style, "auto");
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(double.IsNaN(style.Size.AspectRatio), "auto should remove any explicit ratio");
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_ZeroHeight_ReturnsFalse()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "5/0");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_NegativeNumber_ReturnsFalse()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "-2");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_InvalidValue_ReturnsFalse()
+        {
+            var parser = new CSSAspectRatioParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "banana");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_DefaultStyle_IsNaN()
+        {
+            // Without setting aspect-ratio, the default should be NaN (not defined / auto)
+            var style = CreateStyle();
+            Assert.IsTrue(double.IsNaN(style.Size.AspectRatio));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_SetViaStyleItem_CanBeRead()
+        {
+            var style = CreateStyle();
+            style.Size.AspectRatio = 2.0;
+            Assert.AreEqual(2.0, style.Size.AspectRatio, 0.0001);
+
+            style.Size.AspectRatio = 0.5;
+            Assert.AreEqual(0.5, style.Size.AspectRatio, 0.0001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_RemoveAspectRatio_ReturnsDefault()
+        {
+            var style = CreateStyle();
+            style.Size.AspectRatio = 2.0;
+            Assert.AreEqual(2.0, style.Size.AspectRatio, 0.0001);
+
+            style.Size.RemoveAspectRatio();
+            Assert.IsTrue(double.IsNaN(style.Size.AspectRatio));
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void AspectRatio_IsValueDefined_TrueOnceSet()
+        {
+            var style = CreateStyle();
+            Assert.IsFalse(style.IsValueDefined(StyleKeys.SizeAspectRatioKey));
+
+            style.Size.AspectRatio = 2.0;
+            Assert.IsTrue(style.IsValueDefined(StyleKeys.SizeAspectRatioKey));
+        }
+
+        #endregion
     }
 }

@@ -103,6 +103,7 @@ namespace Scryber.Html
         public const string MinimumHeight = "min-height";
         public const string MaximumWidth = "max-width";
         public const string MaximumHeight = "max-height";
+        public const string AspectRatio = "aspect-ratio";
 
         public const string TextAlign = "text-align";
         public const string VerticalAlign = "vertical-align";

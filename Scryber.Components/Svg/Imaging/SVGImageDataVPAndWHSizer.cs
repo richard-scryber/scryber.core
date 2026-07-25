@@ -125,6 +125,20 @@ public class SVGImageDataVPAndWHSizer : SVGImageDataSizer
             {
                 return new Size(width, height);
             }
+
+            double? aspectRatio = null;
+            if (applied.TryGetValue(StyleKeys.SizeAspectRatioKey, out var arValue))
+                aspectRatio = arValue.Value(applied);
+
+            if (aspectRatio.HasValue && aspectRatio.Value > 0)
+            {
+                //An explicit aspect-ratio (or one derived from the outer img's intrinsic width/height
+                //attributes) takes priority over the referenced SVG's own viewBox/width/height ratio.
+                if (hasWidth)
+                    height = width / aspectRatio.Value;
+                else
+                    width = height * aspectRatio.Value;
+            }
             else if (hasWidth)
             {
                 var scale = width.PointsValue / this.SVGWidth.PointsValue;

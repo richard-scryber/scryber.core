@@ -449,6 +449,12 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<bool> SizeFullWidthKey = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"fulw", SizeItemKey);
 
+        /// <summary>
+        /// The width/height ratio (e.g. 'width / height' = 2.0 for a 2:1 ratio) declared by the CSS aspect-ratio property,
+        /// or derived from an HTML img element's width and height attributes if not explicitly overridden by CSS.
+        /// </summary>
+        public static readonly StyleKey<double> SizeAspectRatioKey = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"aspr", SizeItemKey);
+
         //Stroke
 
         public static readonly StyleKey StrokeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleStroke, INHERITED);

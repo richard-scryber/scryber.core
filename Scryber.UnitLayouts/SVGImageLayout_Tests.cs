@@ -1835,9 +1835,50 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(this.layout);
             var svgs = GetSVGImageData(this.layout);
             Assert.AreEqual(7, svgs.Count, "Expected 4 SVG images");
-            
+
         }
 
-        
+        [TestMethod()]
+        public void AspectRatio_01_SVGWithStyledDimension()
+        {
+            var path = GetResourcePath("SVGImages", "AspectRatio_01_SVGWithStyledDimension.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImages_AspectRatio_01_SVGWithStyledDimension.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+
+            //0. height:60pt styled, with 300x100 (3:1) intrinsic attributes providing the ratio - overriding the
+            //   SVG canvas's own default (undimensioned) 2:1 intrinsic ratio. Width should be 60 * 3 = 180pt.
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(180.0, run0.Width.PointsValue, 1.0, "Width should be derived from the 300x100 (3:1) intrinsic attribute ratio");
+            Assert.AreEqual(60.0, run0.Height.PointsValue, 1.0, "Height should be the explicit 60pt style value");
+
+            //1. Explicit CSS aspect-ratio (1/2) takes priority over the 300x100 (3:1) intrinsic attribute ratio.
+            //   Width should be 60 * 0.5 = 30pt.
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(30.0, run1.Width.PointsValue, 1.0, "Width should be derived from the explicit CSS aspect-ratio of 1:2");
+            Assert.AreEqual(60.0, run1.Height.PointsValue, 1.0, "Height should be the explicit 60pt style value");
+
+            //2. Logo_W_Only.svg (own width, no height, no viewBox) exercises SVGImageDataOnlyWHSizer.
+            //   width:60pt styled, 300x100 (3:1) intrinsic attributes provide the ratio. Height should be 60 / 3 = 20pt.
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(60.0, run2.Width.PointsValue, 1.0, "Width should be the explicit 60pt style value");
+            Assert.AreEqual(20.0, run2.Height.PointsValue, 1.0, "Height should be derived from the 300x100 (3:1) intrinsic attribute ratio");
+
+            //3. Logo_VP_W_Only.svg (viewBox + own width, no height) exercises SVGImageDataVPAndWHSizer.
+            //   width:90pt styled, 300x100 (3:1) intrinsic attributes provide the ratio, overriding the SVG's own
+            //   viewBox-derived ratio. Height should be 90 / 3 = 30pt.
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(90.0, run3.Width.PointsValue, 1.0, "Width should be the explicit 90pt style value");
+            Assert.AreEqual(30.0, run3.Height.PointsValue, 1.0, "Height should be derived from the 300x100 (3:1) intrinsic attribute ratio");
+        }
+
+
     }
 }

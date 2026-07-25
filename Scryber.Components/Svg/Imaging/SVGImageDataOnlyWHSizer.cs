@@ -77,8 +77,21 @@ public class SVGImageDataOnlyWHSizer : SVGImageDataSizer
         {
             if(hasWidth &&  hasHeight)
                 return new Size(width, height);
-            
-            if (SVGWidth.HasValue && SVGHeight.HasValue)
+
+            double? aspectRatio = null;
+            if (applied.TryGetValue(StyleKeys.SizeAspectRatioKey, out var arValue))
+                aspectRatio = arValue.Value(applied);
+
+            if (aspectRatio.HasValue && aspectRatio.Value > 0)
+            {
+                //An explicit aspect-ratio (or one derived from the outer img's intrinsic width/height
+                //attributes) takes priority over the referenced SVG's own width/height ratio.
+                if (hasHeight)
+                    width = height * aspectRatio.Value;
+                else
+                    height = width / aspectRatio.Value;
+            }
+            else if (SVGWidth.HasValue && SVGHeight.HasValue)
             {
                 //We have both the SVG Sizes, but only 1 img size so calculate the correct ratio and apply
 

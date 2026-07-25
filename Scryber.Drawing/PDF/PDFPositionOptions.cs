@@ -120,6 +120,12 @@ namespace Scryber.PDF
         public Unit? MaximumHeight { get; set; }
 
         /// <summary>
+        /// Gets or sets the width/height aspect ratio (width / height) used to derive a missing width or height
+        /// when only one of the two is explicitly set. Null if no ratio was declared or derived.
+        /// </summary>
+        public double? AspectRatio { get; set; }
+
+        /// <summary>
         /// The form viewport if this has one.
         /// </summary>
         public Rect? ViewPort { get; set; }

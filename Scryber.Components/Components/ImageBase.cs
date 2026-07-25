@@ -247,7 +247,11 @@ namespace Scryber.Components
             else if(pos.Width.HasValue)
             {
                 w = pos.Width.Value;
-                h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+
+                if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                    h = w / pos.AspectRatio.Value;
+                else
+                    h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
 
                 if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
                     h = pos.MaximumHeight.Value;
@@ -257,7 +261,11 @@ namespace Scryber.Components
             else if(pos.Height.HasValue)
             {
                 h = pos.Height.Value;
-                w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+
+                if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                    w = h * pos.AspectRatio.Value;
+                else
+                    w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
 
                 if (pos.FillWidth)
                     w = available.Width;

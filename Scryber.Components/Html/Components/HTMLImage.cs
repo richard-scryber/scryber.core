@@ -105,30 +105,45 @@ namespace Scryber.Html.Components
         public int InstrinsicWidth
         {
             get { return this._intrinsicWidth; }
-            set
-            {
-                this._intrinsicWidth = value;
-                if (this.Style.IsValueDefined(StyleKeys.SizeWidthKey) == false && this._intrinsicWidth > 0)
-                {
-                    Unit px = new Unit(this._intrinsicWidth, PageUnits.Pixel);
-                    this.Style.Size.Width = px;
-                }
-            }
+            set { this._intrinsicWidth = value; }
         }
-        
+
         [PDFAttribute("height")]
         public int InstrinsicHeight
         {
             get { return this._intrinsicHeight;}
-            set
+            set { this._intrinsicHeight = value; }
+        }
+
+        /// <summary>
+        /// Applies the width and height HTML attributes per the HTML5 spec, once the element (including any
+        /// style attribute, which may appear before or after width/height in the source) has been fully parsed:
+        /// if neither dimension is styled via CSS then they set the literal (pixel) size of the image. If exactly
+        /// one is styled (e.g. a percentage width with no height), the other is left to CSS/layout to derive,
+        /// using the intrinsic width/height as the natural aspect ratio (mirroring the browser's implicit
+        /// 'aspect-ratio: attr(width) / attr(height)' UA rule) rather than forcing it to the fixed pixel value -
+        /// which would otherwise fight the styled dimension and distort the image.
+        /// </summary>
+        protected override void OnInitialized(InitContext context)
+        {
+            bool hasStyleWidth = this.Style.IsValueDefined(StyleKeys.SizeWidthKey);
+            bool hasStyleHeight = this.Style.IsValueDefined(StyleKeys.SizeHeightKey);
+
+            if (!hasStyleWidth && !hasStyleHeight)
             {
-                this._intrinsicHeight = value;
-                if (this.Style.IsValueDefined(StyleKeys.SizeHeightKey) == false && this._intrinsicHeight > 0)
-                {
-                    Unit px = new Unit(this._intrinsicHeight, PageUnits.Pixel);
-                    this.Style.Size.Height = px;
-                }
+                if (this._intrinsicWidth > 0)
+                    this.Style.Size.Width = new Unit(this._intrinsicWidth, PageUnits.Pixel);
+                if (this._intrinsicHeight > 0)
+                    this.Style.Size.Height = new Unit(this._intrinsicHeight, PageUnits.Pixel);
             }
+
+            if (this._intrinsicWidth > 0 && this._intrinsicHeight > 0 &&
+                this.Style.IsValueDefined(StyleKeys.SizeAspectRatioKey) == false)
+            {
+                this.Style.Size.AspectRatio = (double)this._intrinsicWidth / this._intrinsicHeight;
+            }
+
+            base.OnInitialized(context);
         }
 
         [PDFAttribute("alt")]

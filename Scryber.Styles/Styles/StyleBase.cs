@@ -1090,6 +1090,13 @@ namespace Scryber.Styles
             else
                 options.MaximumHeight = null;
 
+            // AspectRatio
+            StyleValue<double> aspectRatio;
+            if (this.TryGetValue(StyleKeys.SizeAspectRatioKey, out aspectRatio))
+                options.AspectRatio = aspectRatio.Value(this);
+            else
+                options.AspectRatio = null;
+
             //viewport
 
             StyleValue<Rect> rect;

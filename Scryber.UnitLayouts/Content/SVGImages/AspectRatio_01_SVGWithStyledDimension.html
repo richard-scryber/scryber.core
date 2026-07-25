@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image Aspect Ratio - styled single dimension</title>
+        <style>
+            @page{
+                size: 300pt 400pt;
+                margin : 0;
+            }
+            body{ margin: 0; padding: 0; }
+        </style>
+    </head>
+    <body>
+    <!-- 0: height-only styled, width/height attributes (300x100, 3:1) provide the ratio, overriding the
+         SVG canvas's own default (undimensioned) 2:1 intrinsic ratio. -->
+    <img src="Logo_None.svg" width="300" height="100" style="height: 60pt;" />
+
+    <!-- 1: explicit CSS aspect-ratio (1/2) takes priority over the 300x100 (3:1) intrinsic attribute ratio. -->
+    <img src="Logo_None.svg" width="300" height="100" style="height: 60pt; aspect-ratio: 1/2; page-break-before: always;" />
+
+    <!-- 2: SVG with only its own width (no height, no viewBox) - exercises SVGImageDataOnlyWHSizer.
+         width-only styled, 300x100 (3:1) intrinsic attributes provide the ratio. -->
+    <img src="Logo_W_Only.svg" width="300" height="100" style="width: 60pt; page-break-before: always;" />
+
+    <!-- 3: SVG with a viewBox and its own width (no height) - exercises SVGImageDataVPAndWHSizer.
+         width-only styled, 300x100 (3:1) intrinsic attributes provide the ratio, overriding the SVG's
+         own viewBox-derived aspect ratio. -->
+    <img src="Logo_VP_W_Only.svg" width="300" height="100" style="width: 90pt; page-break-before: always;" />
+    </body>
+
+</html>

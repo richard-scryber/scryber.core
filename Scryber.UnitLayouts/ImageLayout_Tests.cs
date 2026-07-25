@@ -45,6 +45,20 @@ namespace Scryber.UnitLayouts
             return lrun;
         }
 
+        /// <summary>
+        /// Finds the image component run on a page's content line, regardless of its position amongst any
+        /// incidental whitespace text runs either side of it (unlike GetBlockImageRunForPage's fixed runIndex).
+        /// </summary>
+        private PDFLayoutComponentRun GetImageComponentRunForPage(int pg, int column = 0, int contentIndex = 0)
+        {
+            var lpg = layout.AllPages[pg];
+            var line = lpg.ContentBlock.Columns[column].Contents[contentIndex] as PDFLayoutLine;
+            Assert.IsNotNull(line, "Expected a line of content on page " + pg);
+            var run = line.Runs.OfType<Scryber.PDF.Layout.PDFLayoutComponentRun>().FirstOrDefault();
+            Assert.IsNotNull(run, "Expected an image component run on page " + pg);
+            return run;
+        }
+
         private PDFLayoutComponentRun GetInlineImageRunForPage(int pg, int column = 0, int contentIndex = 0, int runIndex = 0)
         {
             var lpg = layout.AllPages[pg];
@@ -2826,6 +2840,88 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(pixel);
             Assert.AreEqual(72, pixel.HorizontalResolution);
             Assert.AreEqual(72, pixel.VerticalResolution);
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void AspectRatio_01_IntrinsicWithStyledWidth()
+        {
+            var path = AssertGetContentFile("Images/AspectRatio_01_IntrinsicWithStyledWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Images_AspectRatio_01_IntrinsicWithStyledWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            //1. width:50% of a 300pt container with width=400/height=200 attributes (2:1) but no styled height
+            //   should derive the height from the intrinsic attribute ratio, not stretch or use the natural image size.
+            var lrun = GetBlockImageRunForPage(0);
+            AssertAreApproxEqual(150, lrun.Width.PointsValue, "Width should be 50% of the 300pt container");
+            AssertAreApproxEqual(75, lrun.Height.PointsValue, "Height should be derived from the 400x200 (2:1) intrinsic attribute ratio");
+
+            //2. Same as above but with an explicit CSS aspect-ratio:3/1 that should take priority over the
+            //   400x200 (2:1) intrinsic attribute ratio.
+            lrun = GetBlockImageRunForPage(1);
+            AssertAreApproxEqual(150, lrun.Width.PointsValue, "Width should be 50% of the 300pt container");
+            AssertAreApproxEqual(50, lrun.Height.PointsValue, "Height should be derived from the explicit CSS aspect-ratio of 3:1");
+
+            //3. width=400/height=200 attributes with no CSS sizing at all should still set the literal pixel size
+            //   (400px and 200px => 300pt and 150pt), per the base HTML5 spec behaviour.
+            lrun = GetBlockImageRunForPage(2);
+            AssertAreApproxEqual(300, lrun.Width.PointsValue, "Width should be the literal 400px intrinsic attribute size");
+            AssertAreApproxEqual(150, lrun.Height.PointsValue, "Height should be the literal 200px intrinsic attribute size");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void AspectRatio_02_MoreScenarios()
+        {
+            var path = AssertGetContentFile("Images/AspectRatio_02_MoreScenarios");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Images_AspectRatio_02_MoreScenarios.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            //0. height:60pt styled, with 400x200 (2:1) intrinsic attributes providing the ratio.
+            //   Width should derive from the ratio (60 * 2 = 120pt), not the natural decoded image size.
+            var lrun = GetImageComponentRunForPage(0);
+            AssertAreApproxEqual(120, lrun.Width.PointsValue, "Width should be derived from the 400x200 (2:1) intrinsic attribute ratio");
+            AssertAreApproxEqual(60, lrun.Height.PointsValue, "Height should be the explicit 60pt style value");
+
+            //1. Both width and height styled explicitly (150pt x 150pt) - the 400x200 (2:1) intrinsic attribute
+            //   ratio must be ignored entirely, so the image simply stretches to the declared box.
+            lrun = GetImageComponentRunForPage(1);
+            AssertAreApproxEqual(150, lrun.Width.PointsValue, "Width should be the explicit 150pt style value");
+            AssertAreApproxEqual(150, lrun.Height.PointsValue, "Height should be the explicit 150pt style value, ignoring the intrinsic attribute ratio");
+
+            //2. A standalone CSS aspect-ratio (2/1) with no width/height HTML attributes at all - proves the CSS
+            //   aspect-ratio property works independently of the HTMLImage intrinsic attribute integration.
+            lrun = GetImageComponentRunForPage(2);
+            AssertAreApproxEqual(200, lrun.Width.PointsValue, "Width should be derived from the explicit CSS aspect-ratio of 2:1");
+            AssertAreApproxEqual(100, lrun.Height.PointsValue, "Height should be the explicit 100pt style value");
+
+            //3 & 4. width/height attributes (300x150, 2:1) with a styled width of 60pt - once with the width/height
+            //   attributes appearing before the style attribute in source order, and once after. Both must resolve
+            //   identically (height = 60 / 2 = 30pt), proving the derivation no longer depends on attribute order.
+            var caseBefore = GetImageComponentRunForPage(3);
+            var caseAfter = GetImageComponentRunForPage(4);
+
+            AssertAreApproxEqual(60, caseBefore.Width.PointsValue, "Width should be the explicit 60pt style value (attrs before style)");
+            AssertAreApproxEqual(30, caseBefore.Height.PointsValue, "Height should be derived from the 300x150 (2:1) intrinsic ratio (attrs before style)");
+
+            AssertAreApproxEqual(60, caseAfter.Width.PointsValue, "Width should be the explicit 60pt style value (style before attrs)");
+            AssertAreApproxEqual(30, caseAfter.Height.PointsValue, "Height should be derived from the 300x150 (2:1) intrinsic ratio (style before attrs)");
         }
     }
 }

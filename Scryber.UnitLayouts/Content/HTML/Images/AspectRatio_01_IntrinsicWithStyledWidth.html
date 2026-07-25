@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>Image Aspect Ratio - intrinsic attributes combined with a single styled dimension</title>
+        <style>
+            @page{
+                size: 300pt 400pt;
+                margin : 0;
+            }
+            body{ margin: 0; padding: 0; }
+        </style>
+    </head>
+    <body>
+    <img src="../../Images/Toroid32.png" width="400" height="200" style="width: 50%;" />
+    <img src="../../Images/Toroid32.png" width="400" height="200" style="width: 50%; aspect-ratio: 3/1; page-break-before: always;" />
+    <img src="../../Images/Toroid32.png" width="400" height="200" style="page-break-before: always;" />
+    </body>
+
+</html>

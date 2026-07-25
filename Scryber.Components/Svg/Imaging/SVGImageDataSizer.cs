@@ -202,13 +202,17 @@ public class SVGImageDataSizer
         else if (pos.Width.HasValue)
         {
             var w = pos.Width.Value;
-            var h = layout.Height * (w.PointsValue / layout.Width.PointsValue);
+            var h = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
+                ? w / pos.AspectRatio.Value
+                : layout.Height * (w.PointsValue / layout.Width.PointsValue);
             output = new Size(w, h);
         }
         else if (pos.Height.HasValue)
         {
             var h = pos.Height.Value;
-            var w = layout.Width * (h.PointsValue / layout.Height.PointsValue);
+            var w = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
+                ? h * pos.AspectRatio.Value
+                : layout.Width * (h.PointsValue / layout.Height.PointsValue);
             output = new Size(w, h);
         }
         else
@@ -252,6 +256,9 @@ public class SVGImageDataSizer
         if (hasWidth  && widthValue.Value(this.AppliedStyle).IsRelative)  hasWidth  = false;
         if (hasHeight && heightValue.Value(this.AppliedStyle).IsRelative) hasHeight = false;
 
+        bool hasAspectRatio = this.AppliedStyle.TryGetValue(StyleKeys.SizeAspectRatioKey, out var aspectValue);
+        double aspectRatio = hasAspectRatio ? aspectValue.Value(this.AppliedStyle) : double.NaN;
+
         if (hasWidth && hasHeight)
         {
             // Both dimensions explicitly set by the outer img element — use them as-is.
@@ -259,16 +266,20 @@ public class SVGImageDataSizer
         }
         else if (hasWidth)
         {
-            // Width only — scale height proportionally from the intrinsic aspect ratio.
+            // Width only — scale height from an explicit aspect-ratio if set, otherwise the intrinsic aspect ratio.
             var w = widthValue.Value(this.AppliedStyle);
-            var h = w * (intrinsic.Height.PointsValue / intrinsic.Width.PointsValue);
+            var h = hasAspectRatio && aspectRatio > 0
+                ? w / aspectRatio
+                : w * (intrinsic.Height.PointsValue / intrinsic.Width.PointsValue);
             return new Size(w, h);
         }
         else if (hasHeight)
         {
-            // Height only — scale width proportionally from the intrinsic aspect ratio.
+            // Height only — scale width from an explicit aspect-ratio if set, otherwise the intrinsic aspect ratio.
             var h = heightValue.Value(this.AppliedStyle);
-            var w = h * (intrinsic.Width.PointsValue / intrinsic.Height.PointsValue);
+            var w = hasAspectRatio && aspectRatio > 0
+                ? h * aspectRatio
+                : h * (intrinsic.Width.PointsValue / intrinsic.Height.PointsValue);
             return new Size(w, h);
         }
         else

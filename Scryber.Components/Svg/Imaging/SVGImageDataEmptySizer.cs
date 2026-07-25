@@ -62,11 +62,31 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
         var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
         if (pos.Height.HasValue || pos.Width.HasValue)
         {
-            var width = pos.Width ?? SVGCanvas.DefaultWidth;
-            var height = pos.Height ?? SVGCanvas.DefaultHeight;
-            
+            Unit width;
+            Unit height;
+
+            if (pos.Width.HasValue && pos.Height.HasValue)
+            {
+                width = pos.Width.Value;
+                height = pos.Height.Value;
+            }
+            else if (pos.Width.HasValue)
+            {
+                width = pos.Width.Value;
+                height = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
+                    ? width / pos.AspectRatio.Value
+                    : SVGCanvas.DefaultHeight;
+            }
+            else
+            {
+                height = pos.Height.Value;
+                width = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
+                    ? height * pos.AspectRatio.Value
+                    : SVGCanvas.DefaultWidth;
+            }
+
             return new Size(width, height);
-            
+
         }
         return base.DoGetOutputSizeForLayout(layout, available, applied, context);
     }

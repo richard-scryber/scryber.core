@@ -225,6 +225,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.MinimumWidth, new CSSMinWidthParser());
             all.Add(CSSStyleItems.MaximumHeight, new CSSMaxHeightParser());
             all.Add(CSSStyleItems.MaximumWidth, new CSSMaxWidthParser());
+            all.Add(CSSStyleItems.AspectRatio, new Typed.CSSAspectRatioParser());
 
             all.Add(CSSStyleItems.TextAlign, new CSSTextAlignParser());
             all.Add(CSSStyleItems.VerticalAlign, new CSSVerticalAlignParser());
