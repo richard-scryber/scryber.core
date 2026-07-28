@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scryber.Components;
 using Scryber.PDF.Layout;
 using Scryber.PDF;
+using Scryber.PDF.Resources;
 
 namespace Scryber.UnitLayouts
 {
@@ -475,6 +476,136 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(1, fourthPage.ContentBlock.Columns[0].Contents.Count);
         }
 
+
+        /// <summary>
+        /// Verifies that a remote image inside a &lt;header&gt; is loaded BEFORE layout runs
+        /// when using SaveAsPDFAsync. Without the HTMLBody.OnDataBinding fix, the header
+        /// template is only instantiated during Layout (after the async fulfillment windows
+        /// have closed), so the image data is not available in the PDF — matching the WASM
+        /// failure mode where no synchronous HTTP fallback exists.
+        ///
+        /// The test captures image state inside LayoutComplete, which fires before the
+        /// post-render EnsureRequestsFullfilledAsync call that would otherwise mask the bug
+        /// by loading the data too late.
+        /// </summary>
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public async Task HTMLTemplate_HeaderFooter_WithImageAndData_RemoteRequest()
+        {
+            var path = DocStreams.AssertGetTemplatePath("Content/HTML/HeadersAndFooters/HF_WithImageAndData.html");
+
+            using (var doc = await Document.ParseDocumentAsync(path))
+            {
+                doc.Params["model"] = new
+                {
+                    title = "Test Report",
+                    description = "A test document with header, footer, remote image and data binding.",
+                    author = "Unit Test"
+                };
+
+                // Capture whether the image XObject has real data at the moment Layout completes.
+                // With the fix: image was loaded during DataBind → data is ready here.
+                // Without the fix: image request was only queued during Layout → data is still null here.
+                PDFImageXObject imageXobjAtLayout = null;
+                bool imageDataReadyAtLayout = false;
+
+                doc.LayoutComplete += (sender, args) =>
+                {
+                    layout = args.Context.GetLayout<PDFLayoutDocument>();
+
+                    imageXobjAtLayout = doc.SharedResources
+                        .OfType<PDFImageXObject>()
+                        .FirstOrDefault();
+
+                    if (imageXobjAtLayout != null)
+                    {
+                        var data = imageXobjAtLayout.ImageData;
+                        if (data is Imaging.ImageDataProxy proxy)
+                            data = proxy.ImageData;
+                        imageDataReadyAtLayout = data != null;
+                    }
+                };
+
+                using (var ms = DocStreams.GetOutputStream("HeaderFooter_WithImageAndData_RemoteRequest.pdf"))
+                {
+                    await doc.SaveAsPDFAsync(ms);
+                }
+
+                Assert.IsNotNull(imageXobjAtLayout,
+                    "An image XObject should be registered in SharedResources by the time layout completes");
+
+                // This is the critical assertion: image data must have been loaded BEFORE
+                // layout ran (i.e., during the DataBind async phase), not only discovered
+                // during layout and fulfilled too late to appear in the PDF.
+                Assert.IsTrue(imageDataReadyAtLayout,
+                    "Remote image data in header should be available at layout time. " +
+                    "Without the HTMLBody async fix, the header image is only requested " +
+                    "during layout and would not load in WASM (no sync HTTP fallback).");
+            }
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public async Task HTMLTemplate_HeaderFooter_WithImageAndData_Async()
+        {
+            var path = DocStreams.AssertGetTemplatePath("Content/HTML/HeadersAndFooters/HF_WithImageAndData.html");
+
+            using (var doc = await Document.ParseDocumentAsync(path))
+            {
+                doc.Params["model"] = new
+                {
+                    title = "Test Report",
+                    description = "A test document with header, footer, image and data binding.",
+                    author = "Unit Test"
+                };
+
+                doc.LayoutComplete += Doc_LayoutComplete;
+
+                using (var ms = DocStreams.GetOutputStream("HeaderFooter_WithImageAndData_Async.pdf"))
+                {
+                    await doc.SaveAsPDFAsync(ms);
+                }
+
+                // Layout was captured
+                Assert.IsNotNull(layout, "Layout was not captured from the LayoutComplete event");
+                Assert.AreEqual(1, layout.AllPages.Count, "Expected exactly one page");
+
+                var firstPage = layout.AllPages[0] as PDFLayoutPage;
+                Assert.IsNotNull(firstPage);
+
+                // Header and footer blocks are present
+                Assert.IsNotNull(firstPage.HeaderBlock, "Header block should be present");
+                Assert.IsNotNull(firstPage.FooterBlock, "Footer block should be present");
+
+                // Header height matches the CSS height:80pt declared on <header> (h1 + logo image)
+                Assert.AreEqual(80, firstPage.HeaderBlock.Height.PointsValue, 1.0,
+                    "Header block height should be 80pt");
+
+                // Footer height matches the CSS height:30pt declared on <footer>
+                Assert.AreEqual(30, firstPage.FooterBlock.Height.PointsValue, 1.0,
+                    "Footer block height should be 30pt");
+
+                // Content area is reduced by header and footer heights
+                var expectedContentH = 800 - 80 - 30;
+                Assert.AreEqual(expectedContentH, firstPage.ContentBlock.TotalBounds.Height.PointsValue, 1.0,
+                    "Content area height should be page height minus header and footer");
+
+                // The image was loaded — at least one shared image XObject must exist
+                var imageResource = doc.SharedResources
+                    .OfType<PDFImageXObject>()
+                    .FirstOrDefault();
+
+                Assert.IsNotNull(imageResource, "An image XObject resource should have been loaded");
+
+                var imageData = imageResource.ImageData;
+                if (imageData is Imaging.ImageDataProxy proxy)
+                    imageData = proxy.ImageData;
+
+                Assert.IsNotNull(imageData, "Image data should not be null after loading");
+                Assert.IsTrue(imageData.SourcePath.EndsWith("Toroid32.png", StringComparison.OrdinalIgnoreCase),
+                    "Loaded image should be Toroid32.png, but was: " + imageData.SourcePath);
+            }
+        }
 
     }
 }

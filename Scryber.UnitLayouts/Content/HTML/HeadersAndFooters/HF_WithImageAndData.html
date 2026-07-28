@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        @page {
+            size: 600pt 800pt;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12pt;
+        }
+
+        header {
+            background-color: #336699;
+            color: white;
+            padding: 10pt;
+            height: 80pt;
+        }
+
+        header h1 {
+            font-size: 16pt;
+            margin: 0 0 4pt 0;
+        }
+
+        header img.logo {
+            width: 50pt;
+            height: 50pt;
+        }
+
+        footer {
+            background-color: #eeeeee;
+            padding: 8pt;
+            height: 30pt;
+            font-size: 10pt;
+        }
+
+        .content {
+            padding: 20pt;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{model.title}}</h1>
+        <img class="logo" src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/Scryber.UnitLayouts/Content/Images/Toroid32.png" alt="Logo" />
+    </header>
+
+    <div class="content">
+        <p>{{model.description}}</p>
+    </div>
+
+    <footer>
+        <span>Author: {{model.author}}</span>
+    </footer>
+</body>
+</html>

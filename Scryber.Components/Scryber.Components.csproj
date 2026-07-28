@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.9-beta</PackageVersion>
+    <PackageVersion>9.6.0.10-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.9-beta
+    <PackageReleaseNotes>9.6.0.10-beta
+Pre-load header/footer template components during the DataBind phase so that remote image requests in headers and footers are registered before Layout runs. In WASM (and other async-only environments) there is no synchronous HTTP fallback, so images whose requests are only registered at Layout time are never fulfilled. Fixed HasAdornments to check the template properties directly instead of the post-bind list (which was always empty, preventing the fix from running). Removed the now-unnecessary LayoutEngineHTMLBody override.
+
+9.6.0.9-beta
 Fixed flex layout bug where min-height on a flex item caused its width to be inflated by the item's left margin (double-margin application in EnsureContentsFit when SetContentSize was called after Close).
 Fixed flex-grow, flex-shrink and flex-basis set via CSS class rules (not inline style) being ignored in ComputeColumnWidths — now uses the full computed style via GetAppliedStyle + StyleStack + BuildFullStyle so CSS class-driven flex sizing works correctly.
 
@@ -124,12 +127,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.9</Version>
+    <Version>9.6.0.10</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.9</FileVersion>
+    <FileVersion>9.6.0.10</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
