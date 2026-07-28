@@ -223,6 +223,59 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategory)]
         [TestMethod()]
+        public void FlexRow_GrowRatio_CSSClass_DistributesSpace()
+        {
+            // flex-grow via CSS class (not inline style) — verifies GetAppliedStyle() is used.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 200pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    div.container { display: flex; }
+    div.container > div { flex-grow: 1; height: 50pt; }
+    div.container > div.wide { flex-grow: 2; }
+  </style>
+</head>
+<body>
+  <div class=""container"">
+    <div>One</div>
+    <div class=""wide"">Two (wide)</div>
+    <div>Three</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src),
+                                           ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc, "Parsed document should not be null");
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_GrowRatio_CSSClass.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout should complete");
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Flex block should exist");
+            Assert.AreEqual(3, flexBlock.Columns.Length, "Three flex items should produce 3 columns");
+
+            // grow 1:2:1 over 600pt → 150 : 300 : 150
+            double col0W = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double col1W = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            double col2W = flexBlock.Columns[2].TotalBounds.Width.PointsValue;
+
+            Assert.AreEqual(150.0, col0W, 1.0, "Col 0 (grow=1) should be ~150pt");
+            Assert.AreEqual(300.0, col1W, 1.0, "Col 1 (grow=2 via CSS class) should be ~300pt");
+            Assert.AreEqual(150.0, col2W, 1.0, "Col 2 (grow=1) should be ~150pt");
+        }
+
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
         public void FlexRow_GrowRatio_DistributesSpace()
         {
             var doc   = CreateDoc(out var pg);
@@ -2279,6 +2332,122 @@ namespace Scryber.UnitLayouts
             double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
             Assert.AreEqual(100.0, w0, 3.0, "A (shrink:2) should shrink more → ~100pt");
             Assert.AreEqual(200.0, w1, 3.0, "B (shrink:1) should shrink less → ~200pt");
+        }
+
+        // -----------------------------------------------------------------------
+        // FlexRow — min-height + negative container margin should not overflow
+        // -----------------------------------------------------------------------
+
+        // Helper to dump flex column info for debugging
+        private static string DumpFlexColumns(PDFLayoutBlock flexBlock)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"Flex block X: {flexBlock.TotalBounds.X.PointsValue}pt  Width: {flexBlock.TotalBounds.Width.PointsValue}pt");
+            for (int i = 0; i < flexBlock.Columns.Length; i++)
+            {
+                var col = flexBlock.Columns[i];
+                sb.Append($"  Col[{i}]: X={col.TotalBounds.X.PointsValue}  W={col.TotalBounds.Width.PointsValue}  Right={col.TotalBounds.X.PointsValue + col.TotalBounds.Width.PointsValue}");
+                if (col.Contents.Count > 0 && col.Contents[0] is PDFLayoutBlock child)
+                    sb.Append($"   Child: X={child.TotalBounds.X.PointsValue}  W={child.TotalBounds.Width.PointsValue}");
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        // Verifies the full gutter-column CSS pattern:
+        //   container: display:flex; margin-left:-Npt
+        //   items:     margin-left:Npt
+        // Each item's total box (margin+border+content) must fit within the column width;
+        // the last item's right edge must not overflow beyond the page boundary.
+        private void AssertFlexGutterLayout(string html, string label, double pageW, double marginPt, bool hasMinHeight)
+        {
+            using var doc = Document.Parse(new System.IO.StringReader(html),
+                                           ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc, $"[{label}] Parsed document must not be null");
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream($"Flex_GutterLayout_{label}.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, $"[{label}] Layout should complete");
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, $"[{label}] Flex block should exist");
+            Assert.AreEqual(5, flexBlock.Columns.Length, $"[{label}] Five flex items should produce 5 columns");
+
+            Console.WriteLine($"[{label}] {DumpFlexColumns(flexBlock)}");
+
+            // Each child block's total width must not exceed its column width.
+            for (int i = 0; i < flexBlock.Columns.Length; i++)
+            {
+                var col = flexBlock.Columns[i];
+                double colW = col.TotalBounds.Width.PointsValue;
+                if (col.Contents.Count > 0 && col.Contents[0] is PDFLayoutBlock child)
+                {
+                    double childW = child.TotalBounds.Width.PointsValue;
+                    Assert.IsTrue(childW <= colW + 1.0,
+                        $"[{label}] Col[{i}] child width ({childW:F1}pt) must not exceed column width ({colW:F1}pt)");
+                }
+            }
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_MinHeight_NegativeContainerMargin_NoOverflow()
+        {
+            // Container: display:flex; margin-left:-10pt (negative margin trick for gutters).
+            // Items:     margin-left:10pt; min-height:50pt  (flex-grow defaults to 1).
+            // Expected:  each item's box fits within its column — no overflow into next column.
+            // Bug:       when min-height is present, item content gets full column width without
+            //            subtracting margin, causing each item to overflow its column by 10pt.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 200pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div style=""display:flex; margin-left:-10pt;"">
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt; min-height:50pt;"">One</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt; min-height:50pt;"">Two</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt; min-height:50pt;"">Three</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt; min-height:50pt;"">Four</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt; min-height:50pt;"">Five</div>
+  </div>
+</body>
+</html>";
+            AssertFlexGutterLayout(src, "WithMinHeight", 600, 10, true);
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_NoMinHeight_NegativeContainerMargin_NoOverflow()
+        {
+            // Same as FlexRow_MinHeight_NegativeContainerMargin_NoOverflow but WITHOUT min-height.
+            // Should pass both before and after the bug fix — serves as regression baseline.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 200pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div style=""display:flex; margin-left:-10pt;"">
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt;"">One</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt;"">Two</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt;"">Three</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt;"">Four</div>
+    <div style=""border:solid 1pt lightblue; background-color:#6568EC; margin-left:10pt;"">Five</div>
+  </div>
+</body>
+</html>";
+            AssertFlexGutterLayout(src, "NoMinHeight", 600, 10, false);
         }
 
         [TestCategory(TestCategory)]

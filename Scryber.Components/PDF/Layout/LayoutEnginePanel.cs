@@ -148,9 +148,10 @@ namespace Scryber.PDF.Layout
                 block.Close();
 
             bool updateSize = false;
+            bool widthOverridden = false;
             Size updated = block.Size;
 
-            
+
 
             if (block.Position.MinimumHeight.HasValue && block.Height < block.Position.MinimumHeight.Value)
             {
@@ -162,12 +163,25 @@ namespace Scryber.PDF.Layout
             {
                 updated.Width = block.Position.MinimumWidth.Value - (block.Position.Padding.Left + block.Position.Padding.Right);
                 updateSize = true;
+                widthOverridden = true;
             }
 
-            
+
 
             if (updateSize)
-                block.SetContentSize(updated.Width,updated.Height);
+            {
+                Unit contentW = updated.Width;
+                if (!widthOverridden)
+                {
+                    // block.Size.Width after Close() is TotalBounds.Width (content + padding + margin).
+                    // SetContentSize expects content-only and re-adds them, so strip first.
+                    if (!block.Position.Margins.IsEmpty)
+                        contentW -= block.Position.Margins.Left + block.Position.Margins.Right;
+                    if (!block.Position.Padding.IsEmpty)
+                        contentW -= block.Position.Padding.Left + block.Position.Padding.Right;
+                }
+                block.SetContentSize(contentW, updated.Height);
+            }
 
             
 

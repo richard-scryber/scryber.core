@@ -613,18 +613,28 @@ namespace Scryber.PDF.Layout
                 double shrink = 1.0;
                 double basis  = 0.0;
 
-                if (child is IStyledComponent sc && sc.Style != null)
-                {
-                    if (sc.Style.IsValueDefined(StyleKeys.FlexGrowKey))
-                        grow = sc.Style.GetValue(StyleKeys.FlexGrowKey, 1.0);
-                    if (sc.Style.IsValueDefined(StyleKeys.FlexShrinkKey))
-                        shrink = sc.Style.GetValue(StyleKeys.FlexShrinkKey, 1.0);
+                // Resolve the full computed style (CSS classes + inherited + percentages flattened).
+                var applied = child.GetAppliedStyle();
+                if (applied != null)
+                    this.StyleStack.Push(applied);
 
-                    if (sc.Style.IsValueDefined(StyleKeys.SizeWidthKey))
-                        basis = sc.Style.Size.Width.PointsValue;
-                    else if (sc.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc.Style.Flex.BasisAuto)
-                        basis = sc.Style.Flex.Basis.PointsValue;
+                var fullStyle = this.BuildFullStyle(child);
+
+                if (fullStyle != null)
+                {
+                    if (fullStyle.IsValueDefined(StyleKeys.FlexGrowKey))
+                        grow = fullStyle.GetValue(StyleKeys.FlexGrowKey, 1.0);
+                    if (fullStyle.IsValueDefined(StyleKeys.FlexShrinkKey))
+                        shrink = fullStyle.GetValue(StyleKeys.FlexShrinkKey, 1.0);
+
+                    if (fullStyle.IsValueDefined(StyleKeys.SizeWidthKey))
+                        basis = fullStyle.Size.Width.PointsValue;
+                    else if (fullStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !fullStyle.Flex.BasisAuto)
+                        basis = fullStyle.Flex.Basis.PointsValue;
                 }
+
+                if (applied != null)
+                    this.StyleStack.Pop();
 
                 grows[i]       = grow;
                 shrinks[i]     = shrink;
