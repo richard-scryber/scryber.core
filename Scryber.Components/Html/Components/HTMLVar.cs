@@ -80,8 +80,7 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            //Var is by default italic
-            style.Font.FontFaceStyle = Drawing.FontStyle.Italic;
+            //style.Font.FontFaceStyle = Drawing.FontStyle.Italic;
             return style;
         }
 
