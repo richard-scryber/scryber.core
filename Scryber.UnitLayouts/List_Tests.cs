@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1501,6 +1502,21 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
+        }
+        
+        [TestMethod]
+        public void OverflowLongListItems()
+        {
+            var path = DocStreams.AssertGetTemplatePath("Content/HTML/ListOverflow.html");
+
+            using var doc = Document.ParseHtmlDocument(new StreamReader(path), ParseSourceType.LocalFile);
+            
+            using (var ms = DocStreams.GetOutputStream("OrderedList_OverflowLongListItems.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
         }
 
         [TestCategory(TestCategoryName)]

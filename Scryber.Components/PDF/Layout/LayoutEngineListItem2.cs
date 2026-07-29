@@ -189,7 +189,7 @@ namespace Scryber.PDF.Layout
             bool success = base.MoveToNextRegion(requiredHeight, ref region, ref block, out newPage);
             if (!success)
                 this.ContinueLayout = false;
-            else
+            else if(prevRegion.Contents.Count > 0)
             {
                 var line = prevRegion.Contents[prevRegion.Contents.Count - 1] as PDFLayoutLine;
                 if (null != line)
