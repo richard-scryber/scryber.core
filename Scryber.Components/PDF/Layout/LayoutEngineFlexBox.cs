@@ -31,6 +31,12 @@ namespace Scryber.PDF.Layout
         // Null = use source order. In wrap mode, set per-row in LayoutWrapRows.
         private List<Component> _orderedItems;
 
+        // Absolute content widths (pts, excluding margins) per flex item for the current row.
+        // Set by ComputeColumnWidths so DoLayoutAChild can override percentage widths with the
+        // resolved absolute value — the flex algorithm already resolved % against the container,
+        // so re-applying % against the column's available width would shrink the item further.
+        private Dictionary<Component, double> _flexItemContentWidths;
+
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             var flex      = this.FullStyle.Flex;
@@ -87,6 +93,7 @@ namespace Scryber.PDF.Layout
                 }
 
                 bool reverse = (direction == FlexDirection.RowReverse);
+                _flexItemContentWidths = null; // clear before computing for this row
                 var widths = ComputeColumnWidths(childCount, containerW, colGap.PointsValue);
                 if (reverse) widths = ReverseWidths(widths);
 
@@ -107,6 +114,7 @@ namespace Scryber.PDF.Layout
                 base.DoLayoutBlockComponent(position, rowCols);
                 _isRowMode    = false;
                 _reverseItems = false;
+                _flexItemContentWidths = null;
 
                 // Post-layout: apply align-items and justify-content.
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -172,6 +180,7 @@ namespace Scryber.PDF.Layout
                 _wrapRowStart = rowStart;
                 _wrapRowEnd   = rowEnd;
 
+                _flexItemContentWidths = null; // clear per-row before recomputing
                 var widths  = ComputeColumnWidths(rowItemCount, containerW, colGap.PointsValue, rowStart);
                 if (reverse) widths = ReverseWidths(widths);
 
@@ -191,6 +200,7 @@ namespace Scryber.PDF.Layout
                 base.DoLayoutBlockComponent(position, rowCols);
                 _isRowMode    = false;
                 _reverseItems = false;
+                _flexItemContentWidths = null;
 
                 PDFLayoutBlock flexBlock = null;
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -234,7 +244,7 @@ namespace Scryber.PDF.Layout
 
             var minWidths = new List<double>(items.Count);
             foreach (var child in items)
-                minWidths.Add(GetItemMinWidth(child));
+                minWidths.Add(GetItemMinWidth(child, containerW));
 
             int    rowStart  = 0;
             double rowFixedW = minWidths[0];
@@ -259,17 +269,18 @@ namespace Scryber.PDF.Layout
         }
 
         /// <summary>
-        /// Returns the fixed minimum width for a flex item (from explicit width or flex-basis).
+        /// Returns the fixed minimum width for a flex item (from explicit width or flex-basis),
+        /// resolving percentage values against <paramref name="containerWidthPts"/>.
         /// Returns 0 for grow-only items.
         /// </summary>
-        private static double GetItemMinWidth(Component item)
+        private static double GetItemMinWidth(Component item, double containerWidthPts)
         {
             if (item is IStyledComponent sc && sc.Style != null)
             {
                 if (sc.Style.IsValueDefined(StyleKeys.SizeWidthKey))
-                    return sc.Style.Size.Width.PointsValue;
+                    return ResolveFlexUnit(sc.Style.Size.Width, containerWidthPts);
                 if (sc.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc.Style.Flex.BasisAuto)
-                    return sc.Style.Flex.Basis.PointsValue;
+                    return ResolveFlexUnit(sc.Style.Flex.Basis, containerWidthPts);
             }
             return 0;
         }
@@ -578,6 +589,18 @@ namespace Scryber.PDF.Layout
             return result;
         }
 
+        /// <summary>
+        /// Resolves a Unit to points. Percentage units are resolved against the flex container
+        /// width so that e.g. width:48% and margin-left:2% on a flex item correctly reflect
+        /// the container size rather than the page block size.
+        /// </summary>
+        private static double ResolveFlexUnit(Unit u, double containerWidthPts)
+        {
+            if (u.IsRelative)
+                return u.ToAbsolute(new Unit(containerWidthPts, PageUnits.Points)).PointsValue;
+            return u.PointsValue;
+        }
+
         private static List<Component> ListReversed(List<Component> source)
         {
             var rev = new List<Component>(source.Count);
@@ -597,11 +620,12 @@ namespace Scryber.PDF.Layout
             var items = _orderedItems;
             if (items == null || items.Count == 0) return ColumnWidths.Empty;
 
-            double[] grows       = new double[count];
-            double[] shrinks     = new double[count];
-            double[] fixedWidths = new double[count];
-            double   totalGrow   = 0.0;
-            bool     anyGrow     = false;
+            double[] grows        = new double[count];
+            double[] shrinks      = new double[count];
+            double[] fixedWidths  = new double[count]; // content basis (explicit width), no margins
+            double[] marginTotals = new double[count]; // left + right margin per item
+            double   totalGrow    = 0.0;
+            bool     anyGrow      = false;
 
             for (int i = 0; i < count; i++)
             {
@@ -609,7 +633,8 @@ namespace Scryber.PDF.Layout
                 if (src >= items.Count) break;
                 var child = items[src];
 
-                double grow   = 1.0;
+                // CSS default: flex-grow is 0 (not 1)
+                double grow   = 0.0;
                 double shrink = 1.0;
                 double basis  = 0.0;
 
@@ -623,23 +648,51 @@ namespace Scryber.PDF.Layout
                 if (fullStyle != null)
                 {
                     if (fullStyle.IsValueDefined(StyleKeys.FlexGrowKey))
-                        grow = fullStyle.GetValue(StyleKeys.FlexGrowKey, 1.0);
+                        grow = fullStyle.GetValue(StyleKeys.FlexGrowKey, 0.0);
                     if (fullStyle.IsValueDefined(StyleKeys.FlexShrinkKey))
                         shrink = fullStyle.GetValue(StyleKeys.FlexShrinkKey, 1.0);
+                }
 
+                // Width/basis: use the pre-flatten 'applied' style so that percentage values
+                // are resolved against the flex container width, not the page block width
+                // (BuildFullStyle resolves % using GetParentComponentSize which at this point
+                // in the pipeline returns the page block — the flex container isn't open yet).
+                if (applied != null && applied.IsValueDefined(StyleKeys.SizeWidthKey))
+                    basis = ResolveFlexUnit(applied.Size.Width, containerWidthPts);
+                else if (applied != null && applied.IsValueDefined(StyleKeys.FlexBasisKey) && !applied.Flex.BasisAuto)
+                    basis = ResolveFlexUnit(applied.Flex.Basis, containerWidthPts);
+                else if (fullStyle != null)
+                {
                     if (fullStyle.IsValueDefined(StyleKeys.SizeWidthKey))
-                        basis = fullStyle.Size.Width.PointsValue;
+                        basis = ResolveFlexUnit(fullStyle.Size.Width, containerWidthPts);
                     else if (fullStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !fullStyle.Flex.BasisAuto)
-                        basis = fullStyle.Flex.Basis.PointsValue;
+                        basis = ResolveFlexUnit(fullStyle.Flex.Basis, containerWidthPts);
+                }
+
+                // Margins: same treatment — resolve % against the flex container.
+                {
+                    double mLeft  = 0;
+                    double mRight = 0;
+                    if (applied != null && applied.IsValueDefined(StyleKeys.MarginsLeftKey))
+                        mLeft = ResolveFlexUnit(applied.Margins.Left, containerWidthPts);
+                    else if (fullStyle != null && fullStyle.IsValueDefined(StyleKeys.MarginsLeftKey))
+                        mLeft = ResolveFlexUnit(fullStyle.Margins.Left, containerWidthPts);
+
+                    if (applied != null && applied.IsValueDefined(StyleKeys.MarginsRightKey))
+                        mRight = ResolveFlexUnit(applied.Margins.Right, containerWidthPts);
+                    else if (fullStyle != null && fullStyle.IsValueDefined(StyleKeys.MarginsRightKey))
+                        mRight = ResolveFlexUnit(fullStyle.Margins.Right, containerWidthPts);
+
+                    marginTotals[i] = mLeft + mRight;
                 }
 
                 if (applied != null)
                     this.StyleStack.Pop();
 
-                grows[i]       = grow;
-                shrinks[i]     = shrink;
+                grows[i]      = grow;
+                shrinks[i]    = shrink;
                 fixedWidths[i] = basis;
-                totalGrow     += grow;
+                totalGrow    += grow;
                 if (grow > 0) anyGrow = true;
             }
 
@@ -648,21 +701,34 @@ namespace Scryber.PDF.Layout
             // --- Positive free space: grow ---
             if (anyGrow && totalGrow > 0)
             {
-                double fixedTotal = 0;
+                // Fixed space = explicit widths + margins of grow=0 items.
+                // Growing items still consume their own margins from the free space pool.
+                double fixedTotal     = 0;
+                double growMarginTotal = 0;
                 for (int j = 0; j < count; j++)
-                    if (grows[j] == 0) fixedTotal += fixedWidths[j];
+                {
+                    if (grows[j] == 0)
+                        fixedTotal += fixedWidths[j] + marginTotals[j];
+                    else
+                        growMarginTotal += marginTotals[j];
+                }
 
-                double remaining = Math.Max(0, effectiveW - fixedTotal);
+                double remaining = Math.Max(0, effectiveW - fixedTotal - growMarginTotal);
                 double growSum   = 0;
                 for (int j = 0; j < count; j++)
                     if (grows[j] > 0) growSum += grows[j];
 
+                // Column width = content portion + margin so the column region already includes margin.
                 double[] pct = new double[count];
                 for (int j = 0; j < count; j++)
                 {
-                    pct[j] = grows[j] == 0
-                        ? (effectiveW > 0 ? fixedWidths[j] / effectiveW : 0)
-                        : (growSum > 0 && effectiveW > 0 ? grows[j] / growSum * remaining / effectiveW : 0);
+                    double colW = grows[j] == 0
+                        ? fixedWidths[j] + marginTotals[j]
+                        : (growSum > 0 ? grows[j] / growSum * remaining : 0) + marginTotals[j];
+                    pct[j] = effectiveW > 0 ? colW / effectiveW : 0;
+
+                    // Store the resolved content width so DoLayoutAChild can override % widths.
+                    StoreFlexItemContentWidth(items, itemOffset + j, colW - marginTotals[j]);
                 }
                 double totalPct = 0;
                 for (int j = 0; j < count; j++) totalPct += pct[j];
@@ -681,21 +747,25 @@ namespace Scryber.PDF.Layout
 
             if (!anyBasis) return ColumnWidths.Empty;
 
+            // Total space each item occupies = content basis + its margins.
             double totalBasis = 0;
-            for (int j = 0; j < count; j++) totalBasis += fixedWidths[j];
+            for (int j = 0; j < count; j++) totalBasis += fixedWidths[j] + marginTotals[j];
 
             double[] finalPts = new double[count];
 
             if (totalBasis <= effectiveW + 0.5)
             {
-                // Items fit — use their explicit widths as-is.
+                // Items fit — column = basis + margin.
                 for (int j = 0; j < count; j++)
-                    finalPts[j] = fixedWidths[j];
+                {
+                    finalPts[j] = fixedWidths[j] + marginTotals[j];
+                    StoreFlexItemContentWidth(items, itemOffset + j, fixedWidths[j]);
+                }
             }
             else
             {
                 // --- Negative free space: flex-shrink algorithm ---
-                // Each item shrinks proportional to (shrink × basis) / Σ(shrink × basis).
+                // Shrink is applied to the content (basis) only, not to margins.
                 double overflow = totalBasis - effectiveW;
                 double shrinkBasisSum = 0;
                 for (int j = 0; j < count; j++)
@@ -706,7 +776,8 @@ namespace Scryber.PDF.Layout
                     double reduction = shrinkBasisSum > 0
                         ? (shrinks[j] * fixedWidths[j] / shrinkBasisSum) * overflow
                         : 0;
-                    finalPts[j] = Math.Max(0, fixedWidths[j] - reduction);
+                    finalPts[j] = Math.Max(marginTotals[j], fixedWidths[j] + marginTotals[j] - reduction);
+                    StoreFlexItemContentWidth(items, itemOffset + j, finalPts[j] - marginTotals[j]);
                 }
             }
 
@@ -718,6 +789,36 @@ namespace Scryber.PDF.Layout
                 for (int j = 0; j < count; j++) fractions[j] /= totalF;
 
             return new ColumnWidths(fractions);
+        }
+
+        private void StoreFlexItemContentWidth(List<Component> items, int idx, double contentWidthPts)
+        {
+            if (idx < 0 || idx >= items.Count || contentWidthPts <= 0) return;
+            if (_flexItemContentWidths == null)
+                _flexItemContentWidths = new Dictionary<Component, double>(items.Count);
+            _flexItemContentWidths[items[idx]] = contentWidthPts;
+        }
+
+        protected override void DoLayoutAChild(IComponent comp, Style full)
+        {
+            if (_isRowMode && _flexItemContentWidths != null
+                && comp is Component c
+                && _flexItemContentWidths.TryGetValue(c, out double contentW)
+                && contentW > 0)
+            {
+                // Only override when the item has an explicit width or flex-basis. Grow-only
+                // items (no explicit width) should keep FillWidth=true so they fill their column;
+                // overriding them with the grow-computed width misrepresents it as a content-box
+                // value and causes padding/border to push TotalBounds past the column boundary.
+                var appliedStyle = (c as IStyledComponent)?.Style;
+                bool hasExplicitWidth = appliedStyle != null
+                    && (appliedStyle.IsValueDefined(StyleKeys.SizeWidthKey)
+                        || (appliedStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !appliedStyle.Flex.BasisAuto));
+
+                if (hasExplicitWidth)
+                    full.Size.Width = new Unit(contentW, PageUnits.Points);
+            }
+            base.DoLayoutAChild(comp, full);
         }
     }
 }

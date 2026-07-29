@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.10-beta</PackageVersion>
+    <PackageVersion>9.6.0.11-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.10-beta
+    <PackageReleaseNotes>9.6.0.11-beta
+Fixed flex layout percentage-width items being re-resolved against the page width (instead of the flex container) when a child block opened its layout options. Explicit percentage or absolute widths are now correctly pinned to the flex algorithm's container-relative resolved value. Grow-only items (no explicit width) continue to use fill-width behaviour so their padding/border stays within column bounds.
+Fixed flex wrap row-breaking with percentage item widths: GetItemMinWidth previously returned the raw number from a Unit (e.g. 45 for 45%) instead of resolving it against the container, causing all items to appear to fit in one row regardless of their actual pt widths.
+Added Flex_61, Flex_62, Flex_63, Flex_64 layout unit tests covering: flex-grow distribution, explicit fixed widths with no grow, percentage widths resolved against the flex container, and 3-row wrap layout with 45%+100%+45% items.
+
+9.6.0.10-beta
 Pre-load header/footer template components during the DataBind phase so that remote image requests in headers and footers are registered before Layout runs. In WASM (and other async-only environments) there is no synchronous HTTP fallback, so images whose requests are only registered at Layout time are never fulfilled. Fixed HasAdornments to check the template properties directly instead of the post-bind list (which was always empty, preventing the fix from running). Removed the now-unnecessary LayoutEngineHTMLBody override.
 
 9.6.0.9-beta
@@ -127,12 +132,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.10</Version>
+    <Version>9.6.0.11</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.10</FileVersion>
+    <FileVersion>9.6.0.11</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>

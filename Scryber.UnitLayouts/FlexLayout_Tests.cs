@@ -1743,6 +1743,7 @@ namespace Scryber.UnitLayouts
             var inner = new Panel();
             inner.Style.Position.DisplayMode = DisplayMode.FlexBox;
             inner.Style.Flex.Direction       = FlexDirection.Row;
+            inner.Style.Flex.Grow            = 1; // must be explicit — CSS default is 0
             inner.Style.Border.LineStyle = LineType.Solid;
             inner.Style.Border.Width     = 1;
             inner.Style.Border.Color     = new Color(0, 150, 200);
@@ -2479,6 +2480,364 @@ namespace Scryber.UnitLayouts
             // A (shrink:0) stays at 200pt; B absorbs all overflow → 300-200=100pt
             Assert.AreEqual(200.0, w0, 2.0, "A (shrink:0) should remain 200pt");
             Assert.AreEqual(100.0, w1, 2.0, "B (shrink:1) should absorb all overflow → 100pt");
+        }
+
+        /// <summary>
+        /// 3 items: item-1 (width:100, grow:0, no margin), item-2 (grow:1, margin-left:10),
+        /// item-3 (width:100, grow:0, margin-left:10). Container is 400pt.
+        /// The middle item should grow to fill exactly (400 - 100 - 110 - 10) = 180pt of content,
+        /// and its column should be 190pt (180+10pt margin). No item should overflow the container.
+        /// Also verifies that flex-grow defaults to 0 when not set.
+        /// </summary>
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_61_GrowMiddle_FixedOuter_MarginAware()
+        {
+            var doc = new Document();
+            var pg  = new Page();
+            pg.Style.PageStyle.Width  = 400;
+            pg.Style.PageStyle.Height = PageH;
+            pg.Style.Padding.All = 0;
+            doc.Pages.Add(pg);
+
+            var flex = new Panel();
+            flex.Style.Position.DisplayMode = DisplayMode.FlexBox;
+            flex.Style.Flex.Direction       = FlexDirection.Row;
+            flex.Width = 400;
+            pg.Contents.Add(flex);
+
+            // item-1: width=100, grow=0, margin-left=0
+            var i1 = new Div();
+            i1.Width = 100; i1.Style.Flex.Grow = 0;
+            i1.Style.Border.LineStyle = LineType.Solid; i1.Style.Border.Color = new Color(51, 102, 204);
+            i1.Style.Padding.All = 4;
+            i1.Contents.Add(new TextLiteral("item-1\n100pt fixed"));
+            flex.Contents.Add(i1);
+
+            // item-2: no explicit width, grow=1, margin-left=10
+            var i2 = new Div();
+            i2.Style.Flex.Grow = 1; i2.Style.Margins.Left = 10;
+            i2.Style.Border.LineStyle = LineType.Solid; i2.Style.Border.Color = new Color(204, 102, 51);
+            i2.Style.Padding.All = 4;
+            i2.Contents.Add(new TextLiteral("item-2\ngrow:1 + ml:10"));
+            flex.Contents.Add(i2);
+
+            // item-3: width=100, grow=0, margin-left=10
+            var i3 = new Div();
+            i3.Width = 100; i3.Style.Flex.Grow = 0; i3.Style.Margins.Left = 10;
+            i3.Style.Border.LineStyle = LineType.Solid; i3.Style.Border.Color = new Color(51, 178, 76);
+            i3.Style.Padding.All = 4;
+            i3.Contents.Add(new TextLiteral("item-3\n100pt + ml:10"));
+            flex.Contents.Add(i3);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_61_GrowMiddle_FixedOuter_MarginAware.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(3, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            double w2 = flexBlock.Columns[2].TotalBounds.Width.PointsValue;
+
+            // col-0: 100pt (no margin)
+            // col-2: 110pt (100pt width + 10pt margin-left)
+            // col-1 gets all remaining: 400 - 100 - 110 = 190pt (of which 10pt is margin)
+            Assert.AreEqual(100.0, w0, 1.0, "item-1 column should be 100pt");
+            Assert.AreEqual(190.0, w1, 1.0, "item-2 (grow:1) column should be 190pt (180pt content + 10pt margin)");
+            Assert.AreEqual(110.0, w2, 1.0, "item-3 column should be 110pt (100pt width + 10pt margin)");
+
+            double totalW = w0 + w1 + w2;
+            Assert.AreEqual(400.0, totalW, 1.0, "Columns should exactly fill the 400pt container without overflow");
+        }
+
+        /// <summary>
+        /// Verifies that flex-grow defaults to 0 (CSS spec), not 1.
+        /// Three items with no explicit flex-grow should not automatically grow to fill the container.
+        /// </summary>
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_62_DefaultGrow_IsZero()
+        {
+            var doc = new Document();
+            var pg  = new Page();
+            pg.Style.PageStyle.Width  = PageW;
+            pg.Style.PageStyle.Height = PageH;
+            pg.Style.Padding.All = 0;
+            doc.Pages.Add(pg);
+
+            var flex = new Panel();
+            flex.Style.Position.DisplayMode = DisplayMode.FlexBox;
+            flex.Style.Flex.Direction       = FlexDirection.Row;
+            flex.Width = PageW;
+            pg.Contents.Add(flex);
+
+            // Three items with explicit widths but NO flex-grow set (should default to 0).
+            var a = new Div();
+            a.Width = 100;
+            a.Style.Border.LineStyle = LineType.Solid; a.Style.Border.Color = new Color(51, 102, 204);
+            a.Style.Padding.All = 4;
+            a.Contents.Add(new TextLiteral("a\n100pt\nno grow"));
+            flex.Contents.Add(a);
+
+            var b = new Div();
+            b.Width = 150;
+            b.Style.Border.LineStyle = LineType.Solid; b.Style.Border.Color = new Color(204, 102, 51);
+            b.Style.Padding.All = 4;
+            b.Contents.Add(new TextLiteral("b\n150pt\nno grow"));
+            flex.Contents.Add(b);
+
+            var c = new Div();
+            c.Width = 80;
+            c.Style.Border.LineStyle = LineType.Solid; c.Style.Border.Color = new Color(51, 178, 76);
+            c.Style.Padding.All = 4;
+            c.Contents.Add(new TextLiteral("c\n80pt\nno grow"));
+            flex.Contents.Add(c);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_62_DefaultGrow_IsZero.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(3, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+            double w2 = flexBlock.Columns[2].TotalBounds.Width.PointsValue;
+
+            // With flex-grow:0 default, items should keep their explicit widths.
+            Assert.AreEqual(100.0, w0, 1.0, "item-a should be 100pt (no grow)");
+            Assert.AreEqual(150.0, w1, 1.0, "item-b should be 150pt (no grow)");
+            Assert.AreEqual(80.0,  w2, 1.0,  "item-c should be 80pt (no grow)");
+        }
+
+        /// <summary>
+        /// Percentage width and margin-left on flex items should resolve against the flex container
+        /// width, not the page width. Page is 600pt; container is 400pt.
+        /// Two items at 40% width + 5% margin-left = 45% each = 180+20=200pt per column.
+        /// Total = 400pt (fills the container exactly).
+        /// If % had resolved against page (600pt): 40%*600+5%*600=270pt per item — clearly wrong.
+        /// </summary>
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_63_PercentWidthAndMargin_ResolveToContainer()
+        {
+            var doc = new Document();
+            var pg  = new Page();
+            pg.Style.PageStyle.Width  = PageW; // 600pt page
+            pg.Style.PageStyle.Height = PageH;
+            pg.Style.Padding.All = 0;
+            doc.Pages.Add(pg);
+
+            var flex = new Panel();
+            flex.Style.Position.DisplayMode = DisplayMode.FlexBox;
+            flex.Style.Flex.Direction       = FlexDirection.Row;
+            flex.Style.Border.LineStyle = LineType.Solid;
+            flex.Style.OverlayGrid.HighlightColumns = true;
+            flex.Style.OverlayGrid.ShowGrid = true;
+            flex.Width = 400; // narrower than page — distinguishes page-% from container-%
+            pg.Contents.Add(flex);
+
+            // Two items: width=40%, margin-left=5% of the 400pt container.
+            // Each column = 40%*400 + 5%*400 = 160 + 20 = 180pt.
+            // 2 × 180 = 360pt < 400pt — no shrinking, pure explicit-width path.
+            // If resolved against page (600pt): 40%*600+5%*600 = 270pt → total 540pt > 400pt (wrong).
+            var colors = new[] { new Color(51, 102, 204), new Color(204, 102, 51) };
+            for (int n = 0; n < 2; n++)
+            {
+                var item = new Div();
+                item.Style.Size.Width   = Drawing.Unit.Percent(40); // 40%*400 = 160pt
+                item.Style.Margins.Left = Drawing.Unit.Percent(5);  //  5%*400 =  20pt
+                item.Style.Flex.Grow    = 0;
+                item.Style.Border.LineStyle = LineType.Solid;
+                item.Style.Border.Color     = colors[n];
+                item.Style.Padding.All      = 4;
+                
+                item.Contents.Add(new TextLiteral($"item-{n + 1}\n40% + ml:5%\n= 180pt"));
+                flex.Contents.Add(item);
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Flex_63_PercentWidthAndMargin.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var flexBlock = FindFlexBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Flex container block not found");
+            Assert.AreEqual(2, flexBlock.Columns.Length);
+
+            double w0 = flexBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double w1 = flexBlock.Columns[1].TotalBounds.Width.PointsValue;
+
+            // Each column = 40%+5% of 400pt = 160+20 = 180pt.
+            Assert.AreEqual(180.0, w0, 1.0, "col-0: 40%+5% of 400pt container = 180pt");
+            Assert.AreEqual(180.0, w1, 1.0, "col-1: 40%+5% of 400pt container = 180pt");
+
+            // Guard: wrong resolution against page (600pt) would give 270pt.
+            Assert.AreNotEqual(270.0, w0, 5.0, "Must NOT resolve % against page width (600pt)");
+
+            // Inner content block widths: each item's rendered block should fill the content area
+            // of its column (column width - margin = 180 - 20 = 160pt), not re-apply 40% against
+            // the column's available width (which would give 40%*160 = 64pt).
+            // TotalBounds is border-box, so expected = content (160pt) + padding (4+4=8pt) + border (~1pt) ≈ 169pt.
+            var inner0 = flexBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            var inner1 = flexBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(inner0, "item-0 inner block not found");
+            Assert.IsNotNull(inner1, "item-1 inner block not found");
+
+            double iw0 = inner0.TotalBounds.Width.PointsValue;
+            double iw1 = inner1.TotalBounds.Width.PointsValue;
+
+            // Border-box width = content (160pt) + padding L+R (8pt) + border L+R (~1pt) ≈ 169pt.
+            // Wrong value if 40% were re-applied against the 160pt column content: 64+8+1 ≈ 73pt.
+            Assert.AreEqual(169.0, iw0, 3.0, "item-0 inner block border-box should be ~169pt (content 160pt + padding + border)");
+            Assert.AreEqual(169.0, iw1, 3.0, "item-1 inner block border-box should be ~169pt (content 160pt + padding + border)");
+            Assert.IsTrue(iw0 > 150.0, $"item-0 inner block ({iw0}pt) must NOT be the re-applied result (~73pt)");
+        }
+
+        /// <summary>
+        /// Wrap flex layout with 3 rows:
+        ///   Row 0: items 0,1 at width=45% + margin-left=5%  → 2 × 200pt columns
+        ///   Row 1: item  2  at width=100% (no margin)       → 1 × 400pt column
+        ///   Row 2: items 3,4 same as row 0                  → 2 × 200pt columns
+        ///
+        /// Page=600pt, container=400pt.  All % must resolve against the 400pt container.
+        /// Also verifies that percentage widths in wrap mode row-break correctly (% row-breaking
+        /// was previously broken because GetItemMinWidth returned the raw % number rather than
+        /// the resolved pt value).
+        /// </summary>
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_64_WrapThreeRows_PercentWidth()
+        {
+            var doc = new Document();
+            var pg  = new Page();
+            pg.Style.PageStyle.Width  = PageW; // 600pt page — wider than the 400pt container
+            pg.Style.PageStyle.Height = PageH;
+            pg.Style.Padding.All      = 0;
+            doc.Pages.Add(pg);
+
+            var flex = new Panel();
+            flex.Style.Position.DisplayMode = DisplayMode.FlexBox;
+            flex.Style.Flex.Direction       = FlexDirection.Row;
+            flex.Style.Flex.Wrap            = FlexWrap.Wrap;
+            flex.Width = 400;
+            flex.Style.Border.LineStyle = LineType.Solid;
+            flex.Style.Border.Color     = new Color(0, 0, 0);
+            pg.Contents.Add(flex);
+
+            var colors = new[]
+            {
+                new Color(51,  102, 204),   // blue
+                new Color(204, 102, 51),    // orange
+                new Color(51,  178, 76),    // green  (middle row)
+                new Color(204, 51,  102),   // pink
+                new Color(102, 51,  204),   // purple
+            };
+
+            // Items 0,1: 45% width + 5% margin-left → 50% each → two per row (2 × 200pt = 400pt)
+            for (int n = 0; n < 2; n++)
+            {
+                var item = new Div();
+                item.Style.Size.Width   = Drawing.Unit.Percent(45); // 45%*400 = 180pt content
+                item.Style.Margins.Left = Drawing.Unit.Percent(5);  //  5%*400 =  20pt margin
+                item.Style.Flex.Grow    = 0;
+                item.Style.Border.LineStyle = LineType.Solid;
+                item.Style.Border.Color     = colors[n];
+                item.Style.Padding.All      = 4;
+                item.Contents.Add(new TextLiteral($"item-{n}\n45%+ml:5%\n=200pt"));
+                flex.Contents.Add(item);
+            }
+
+            // Item 2: 100% width, no margin → fills entire row (1 × 400pt column)
+            var item2 = new Div();
+            item2.Style.Size.Width      = Drawing.Unit.Percent(100); // 100%*400 = 400pt
+            item2.Style.Flex.Grow       = 0;
+            item2.Style.Border.LineStyle = LineType.Solid;
+            item2.Style.Border.Color     = colors[2];
+            item2.Style.Padding.All      = 4;
+            item2.Contents.Add(new TextLiteral("item-2\n100%\n=400pt"));
+            flex.Contents.Add(item2);
+
+            // Items 3,4: same as 0,1
+            for (int n = 3; n < 5; n++)
+            {
+                var item = new Div();
+                item.Style.Size.Width   = Drawing.Unit.Percent(45);
+                item.Style.Margins.Left = Drawing.Unit.Percent(5);
+                item.Style.Flex.Grow    = 0;
+                item.Style.Border.LineStyle = LineType.Solid;
+                item.Style.Border.Color     = colors[n];
+                item.Style.Padding.All      = 4;
+                item.Contents.Add(new TextLiteral($"item-{n}\n45%+ml:5%\n=200pt"));
+                flex.Contents.Add(item);
+            }
+
+            using (var ms = DocStreams.GetOutputStream("Flex_64_WrapThreeRows_PercentWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+
+            // In wrap mode, each row is a separate block in the page content region.
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            Assert.IsTrue(pageRegion.Contents.Count >= 3, "Expected at least 3 row blocks in page region");
+
+            var row0 = pageRegion.Contents[0] as PDFLayoutBlock;
+            var row1 = pageRegion.Contents[1] as PDFLayoutBlock;
+            var row2 = pageRegion.Contents[2] as PDFLayoutBlock;
+            Assert.IsNotNull(row0, "row-0 block not found");
+            Assert.IsNotNull(row1, "row-1 block not found");
+            Assert.IsNotNull(row2, "row-2 block not found");
+
+            // --- Column widths ---
+
+            // Row 0: 2 columns, each 45%+5% of 400pt = 200pt
+            Assert.AreEqual(2, row0.Columns.Length, "row-0 should have 2 columns");
+            Assert.AreEqual(200.0, row0.Columns[0].TotalBounds.Width.PointsValue, 1.0, "row-0 col-0: 200pt");
+            Assert.AreEqual(200.0, row0.Columns[1].TotalBounds.Width.PointsValue, 1.0, "row-0 col-1: 200pt");
+
+            // Row 1: 1 column at 100% of 400pt = 400pt
+            Assert.AreEqual(1, row1.Columns.Length, "row-1 should have 1 column");
+            Assert.AreEqual(400.0, row1.Columns[0].TotalBounds.Width.PointsValue, 1.0, "row-1 col-0: 400pt");
+
+            // Row 2: 2 columns at 200pt each
+            Assert.AreEqual(2, row2.Columns.Length, "row-2 should have 2 columns");
+            Assert.AreEqual(200.0, row2.Columns[0].TotalBounds.Width.PointsValue, 1.0, "row-2 col-0: 200pt");
+            Assert.AreEqual(200.0, row2.Columns[1].TotalBounds.Width.PointsValue, 1.0, "row-2 col-1: 200pt");
+
+            // --- Inner block widths (TotalBounds = content + padding + border) ---
+            // 45% items: content=180pt + padding(4+4=8pt) + border(~1pt) ≈ 189pt
+            // Guard: 45% re-applied against 180pt column content = 81pt + box ≈ 90pt (wrong)
+
+            var r0i0 = row0.Columns[0].Contents[0] as PDFLayoutBlock;
+            var r0i1 = row0.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(r0i0, "row-0 item-0 inner block not found");
+            Assert.IsNotNull(r0i1, "row-0 item-1 inner block not found");
+            Assert.AreEqual(189.0, r0i0.TotalBounds.Width.PointsValue, 3.0, "row-0 item-0: ~189pt (content 180pt)");
+            Assert.AreEqual(189.0, r0i1.TotalBounds.Width.PointsValue, 3.0, "row-0 item-1: ~189pt (content 180pt)");
+            Assert.IsTrue(r0i0.TotalBounds.Width.PointsValue > 160.0, "row-0 item-0 must not be re-applied % result (~90pt)");
+
+            var r2i0 = row2.Columns[0].Contents[0] as PDFLayoutBlock;
+            var r2i1 = row2.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(r2i0, "row-2 item-3 inner block not found");
+            Assert.IsNotNull(r2i1, "row-2 item-4 inner block not found");
+            Assert.AreEqual(189.0, r2i0.TotalBounds.Width.PointsValue, 3.0, "row-2 item-3: ~189pt (content 180pt)");
+            Assert.AreEqual(189.0, r2i1.TotalBounds.Width.PointsValue, 3.0, "row-2 item-4: ~189pt (content 180pt)");
+            Assert.IsTrue(r2i0.TotalBounds.Width.PointsValue > 160.0, "row-2 item-3 must not be re-applied % result (~90pt)");
         }
     }
 }
