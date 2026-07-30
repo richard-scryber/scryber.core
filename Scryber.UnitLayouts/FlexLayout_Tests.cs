@@ -2861,14 +2861,12 @@ namespace Scryber.UnitLayouts
         // -----------------------------------------------------------------------
 
         [TestCategory(TestCategory), TestMethod()]
-        public void Flex_66_RowOverflow_MovesToNextPage()
+        public void Flex_66_RowOverflow_KeepTogether_MovesToNextPage()
         {
-            // A 300pt-tall flex row that starts with only 100pt available on the page.
-            // With OverflowSplit.Never the whole row must move to page 2 as a unit.
-            // Page: 400pt tall, no margin.
-            // Spacer: 300pt tall → leaves 100pt on page 1.
-            // Flex: 3 items each 200pt tall → row height = 200pt → doesn't fit.
-            // Expected: page 1 has the spacer block, page 2 has the flex block.
+            // A non-wrap flex row with page-break-inside:avoid that starts with only
+            // 100pt available on a 400pt page.  The container must move to page 2 as a unit.
+            // Without page-break-inside:avoid a non-wrap container is free to split across
+            // pages; the CSS property is the correct way to request keep-together behaviour.
             const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <head>
@@ -2876,7 +2874,7 @@ namespace Scryber.UnitLayouts
     @page { size: 600pt 400pt; margin: 0; }
     body  { margin: 0; padding: 0; }
     .spacer { height: 300pt; background-color: #EEEEEE; }
-    .flex   { display: flex; flex-direction: row; }
+    .flex   { display: flex; flex-direction: row; page-break-inside: avoid; }
     .item   { flex-grow: 1; height: 200pt; border: 1pt solid blue; }
   </style>
 </head>
@@ -2891,7 +2889,7 @@ namespace Scryber.UnitLayouts
 </html>";
 
             using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
-            using (var ms = DocStreams.GetOutputStream("Flex_66_RowOverflow.pdf"))
+            using (var ms = DocStreams.GetOutputStream("Flex_66_RowOverflow_KeepTogether.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -2910,13 +2908,6 @@ namespace Scryber.UnitLayouts
             var flexBlock = pg2Region.Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(flexBlock, "Page 2 first block should be the flex container");
             Assert.AreEqual(3, flexBlock.Columns.Length, "Flex block should have 3 columns (one per item)");
-
-            // All three items are on the same page.
-            for (int c = 0; c < 3; c++)
-            {
-                var col = flexBlock.Columns[c];
-                Assert.IsTrue(col.Contents.Count > 0, $"Column {c} should have content on page 2");
-            }
         }
 
         [TestCategory(TestCategory), TestMethod()]

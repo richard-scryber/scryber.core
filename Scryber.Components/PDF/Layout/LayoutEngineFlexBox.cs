@@ -103,19 +103,14 @@ namespace Scryber.PDF.Layout
                 {
                     ColumnCount  = childCount,
                     AlleyWidth   = colGap,
-                    ColumnWidths = widths
+                    ColumnWidths = widths,
+                    AutoFlow     = false
                 };
 
                 // Capture parent region so we can find the new block after layout.
                 var parentBlock  = this.DocumentLayout.CurrentPage.LastOpenBlock();
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
-
-                // Force OverflowSplit.Never so the block is treated as atomic during page
-                // overflow: if any item's content overflows the page the whole row container
-                // moves to the next page rather than being split mid-row.
-                var prevSplitNW = this.FullStyle.GetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Any);
-                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
 
                 _isRowMode    = true;
                 _reverseItems = reverse;
@@ -124,29 +119,35 @@ namespace Scryber.PDF.Layout
                 _reverseItems = false;
                 _flexItemContentWidths = null;
 
-                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, prevSplitNW);
-
                 // Post-layout: apply align-items and justify-content.
+                // If page-break-inside:avoid moved the container to a new page, parentRegion is
+                // stale; fall back to re-querying the current page to find the block.
+                PDFLayoutBlock flexBlock = null;
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
+                    flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
+                if (flexBlock == null)
                 {
-                    var flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
-                    if (flexBlock != null && flexBlock.Columns.Length > 0)
-                    {
-                        var alignItems = flex.AlignItems;
-                        var justify    = NormaliseJustify(flex.JustifyContent, reverse);
+                    var postParent = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                    var postRegion = postParent?.CurrentRegion;
+                    if (postRegion != null && postRegion.Contents.Count > 0)
+                        flexBlock = postRegion.Contents[postRegion.Contents.Count - 1] as PDFLayoutBlock;
+                }
+                if (flexBlock != null && flexBlock.Columns.Length > 0)
+                {
+                    var alignItems = flex.AlignItems;
+                    var justify    = NormaliseJustify(flex.JustifyContent, reverse);
 
-                        // Build per-column align values: each item's align-self overrides align-items.
-                        var items = reverse ? ListReversed(_orderedItems) : _orderedItems;
-                        var perColAlign = BuildPerColAlign(items, alignItems, 0, items.Count);
+                    // Build per-column align values: each item's align-self overrides align-items.
+                    var items = reverse ? ListReversed(_orderedItems) : _orderedItems;
+                    var perColAlign = BuildPerColAlign(items, alignItems, 0, items.Count);
 
-                        if (alignItems != FlexAlignMode.Stretch && alignItems != FlexAlignMode.FlexStart)
-                            ApplyAlignItems(flexBlock, perColAlign);
-                        else if (HasAlignSelfOverride(perColAlign, alignItems))
-                            ApplyAlignItems(flexBlock, perColAlign);
+                    if (alignItems != FlexAlignMode.Stretch && alignItems != FlexAlignMode.FlexStart)
+                        ApplyAlignItems(flexBlock, perColAlign);
+                    else if (HasAlignSelfOverride(perColAlign, alignItems))
+                        ApplyAlignItems(flexBlock, perColAlign);
 
-                        if (justify != FlexJustify.FlexStart)
-                            ApplyJustifyContent(flexBlock, justify);
-                    }
+                    if (justify != FlexJustify.FlexStart)
+                        ApplyJustifyContent(flexBlock, justify, containerW);
                 }
 
                 _orderedItems = null;
@@ -164,7 +165,6 @@ namespace Scryber.PDF.Layout
             FlexAlignMode align, FlexJustify justify, double containerW, Unit colGap)
         {
             var rows   = ComputeWrapRows(containerW, colGap.PointsValue);
-            double prevRowH = 0;
             bool   reverse  = (flex.Direction == FlexDirection.RowReverse);
 
             for (int rowIdx = 0; rowIdx < rows.Count; rowIdx++)
@@ -172,21 +172,6 @@ namespace Scryber.PDF.Layout
                 var (rowStart, rowEnd) = rows[rowIdx];
                 int rowItemCount = rowEnd - rowStart;
                 if (rowItemCount <= 0) continue;
-
-                if (prevRowH > 0.5)
-                {
-                    var currBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
-                    if (currBlock != null)
-                    {
-                        double availH = currBlock.AvailableBounds.Height.PointsValue;
-                        if (availH < prevRowH - 0.5)
-                        {
-                            var reg = currBlock.CurrentRegion;
-                            bool newPage;
-                            this.MoveToNextRegion(new Unit(prevRowH, PageUnits.Points), ref reg, ref currBlock, out newPage);
-                        }
-                    }
-                }
 
                 _wrapRowStart = rowStart;
                 _wrapRowEnd   = rowEnd;
@@ -199,7 +184,8 @@ namespace Scryber.PDF.Layout
                 {
                     ColumnCount  = rowItemCount,
                     AlleyWidth   = colGap,
-                    ColumnWidths = widths
+                    ColumnWidths = widths,
+                    AutoFlow     = false
                 };
 
                 // The flex container is a single visual element: padding and margins apply
@@ -245,7 +231,19 @@ namespace Scryber.PDF.Layout
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
                 {
                     flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
+                }
+                // If OverflowSplit.Never moved the row to a new page, parentRegion no longer
+                // contains the block. Re-query the current page to find where it landed.
+                if (flexBlock == null)
+                {
+                    var postParent = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                    var postRegion = postParent?.CurrentRegion;
+                    if (postRegion != null && postRegion.Contents.Count > 0)
+                        flexBlock = postRegion.Contents[postRegion.Contents.Count - 1] as PDFLayoutBlock;
+                }
 
+                if (flexBlock != null)
+                {
                     // For multi-row layouts the container border should appear as one box,
                     // not one box per row. Suppress the interior top/bottom border sides on
                     // non-edge rows so they don't double up.
@@ -283,12 +281,10 @@ namespace Scryber.PDF.Layout
 
                         var rowJustify = NormaliseJustify(justify, reverse);
                         if (rowJustify != FlexJustify.FlexStart)
-                            ApplyJustifyContent(flexBlock, rowJustify);
+                            ApplyJustifyContent(flexBlock, rowJustify, containerW);
                     }
                 }
 
-                if (flexBlock != null)
-                    prevRowH = flexBlock.TotalBounds.Height.PointsValue;
             }
             _wrapRowStart = -1;
             _wrapRowEnd   = -1;
@@ -399,11 +395,20 @@ namespace Scryber.PDF.Layout
 
                 if (!first)
                 {
-                    PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
-                    PDFLayoutRegion reg  = block?.CurrentRegion;
-                    if (block == null || reg == null) break;
-                    bool newPage;
-                    this.MoveToNextRegion(Unit.Zero, ref reg, ref block, out newPage);
+                    // Advance to the next flex column.  Close the current column first
+                    // (mirroring PushBlockStackOntoNewRegion), then force-advance.
+                    // AutoFlow is false on flex columns to prevent content-overflow from
+                    // auto-advancing and creating ghost blocks; force=true lets the
+                    // explicit inter-item advance bypass that restriction.
+                    var flexBlock = this.CurrentBlock;
+                    if (flexBlock == null || flexBlock.IsClosed) break;
+
+                    var prevRegion = flexBlock.CurrentRegion;
+                    if (prevRegion != null && !prevRegion.IsClosed)
+                        prevRegion.Close();
+
+                    if (!flexBlock.MoveToNextRegion(force: true, Unit.Zero, this.Context))
+                        break;
                 }
                 first = false;
 
@@ -525,12 +530,15 @@ namespace Scryber.PDF.Layout
         // Post-layout: justify-content (main-axis / X in row mode)
         // -----------------------------------------------------------------------
 
-        private static void ApplyJustifyContent(PDFLayoutBlock flexBlock, FlexJustify justify)
+        private static void ApplyJustifyContent(PDFLayoutBlock flexBlock, FlexJustify justify, double contentW)
         {
             int colCount = flexBlock.Columns.Length;
             if (colCount < 1) return;
 
-            double containerW = flexBlock.TotalBounds.Width.PointsValue;
+            // contentW is the flex container's content-area width (padding already excluded).
+            // TotalBounds.Width includes padding, which would make leftover too large and
+            // push the rightmost item outside the container by the padding amount.
+            double containerW = contentW > 0 ? contentW : flexBlock.TotalBounds.Width.PointsValue;
             double totalColW  = 0;
             for (int i = 0; i < colCount; i++)
                 totalColW += flexBlock.Columns[i].TotalBounds.Width.PointsValue;

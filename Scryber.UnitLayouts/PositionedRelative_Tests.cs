@@ -1292,7 +1292,7 @@ namespace Scryber.UnitLayouts
 
             //margins calc(10% - 5pt) should be calculated independently
             var marginX = (pg.ContentBlock.Columns[0].TotalBounds.Width * 0.1) - 5;
-            var marginY = (pg.ContentBlock.Columns[0].TotalBounds.Height * 0.1) - 5;
+            var marginY = (pg.ContentBlock.Columns[0].TotalBounds.Width * 0.1) - 5;
             
             
             width = 300; //explicit width

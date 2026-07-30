@@ -820,8 +820,9 @@ namespace Scryber.UnitLayouts
 
             var pgContent = pg.Size;
 
-            pgContent.Width -= (pgContent.Width * 0.1) * 2; //2 page width margins
-            pgContent.Height -= (pgContent.Height * 0.1) * 2; //2 page height margins
+            var pageWidth = pgContent.Width; // capture before Width is reduced
+            pgContent.Width -= (pageWidth * 0.1) * 2; //2 page width margins
+            pgContent.Height -= (pageWidth * 0.1) * 2; //top/bottom margins are also % of width (CSS spec)
 
             Assert.AreEqual(pgContent.Width, pg.ContentBlock.Width);
             Assert.AreEqual(pgContent.Height, pg.ContentBlock.Height);
@@ -888,7 +889,7 @@ namespace Scryber.UnitLayouts
             var columnWidth = contentWidth / 2; // 2 columns;
             var expectedWidth = columnWidth / 2;  //50% column width
 
-            Unit expectedHeight = ((800.0) - ((800.0 / 10.0) * 2.0)) / 2.0; //50% of (page height - 10% margins)
+            Unit expectedHeight = ((800.0) - ((600.0 / 10.0) * 2.0)) / 2.0; //50% of (page height - 10%-of-width margins)
 
             Assert.AreEqual(expectedWidth.PointsValue, block.Width.PointsValue, "Widths did not match");
             Assert.AreEqual(expectedHeight.PointsValue, block.Height.PointsValue, "Heights did not match");

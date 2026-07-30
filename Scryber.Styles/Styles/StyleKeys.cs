@@ -166,10 +166,10 @@ namespace Scryber.Styles
         public static readonly StyleKey PaddingItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StylePadding, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> PaddingTopKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"top ", PaddingItemKey
-                                                                , new StyleKeyFlattenVerticalValue());
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> PaddingBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"botm", PaddingItemKey
-                                                                , new StyleKeyFlattenVerticalValue());
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> PaddingLeftKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"left", PaddingItemKey
                                                                 , new StyleKeyFlattenHorizontalValue());
@@ -192,10 +192,10 @@ namespace Scryber.Styles
         public static readonly StyleKey MarginsItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleMargins, NOT_INHERITED);
 
         public static readonly StyleKey<Unit> MarginsTopKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"top ", MarginsItemKey
-                                                                , new StyleKeyFlattenVerticalValue());
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> MarginsBottomKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"botm", MarginsItemKey
-                                                                , new StyleKeyFlattenVerticalValue());
+                                                                , new StyleKeyFlattenHorizontalValue());
 
         public static readonly StyleKey<Unit> MarginsLeftKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"left", MarginsItemKey
                                                                 , new StyleKeyFlattenHorizontalValue());
