@@ -49,8 +49,10 @@ namespace Scryber.PDF.Layout
                 if (rowGap.PointsValue > 0)
                     columnOptions = new PDFColumnOptions() { AlleyWidth = rowGap };
 
-                bool colReverse = (direction == FlexDirection.ColumnReverse);
-                var  colJustify = NormaliseJustify(flex.JustifyContent, colReverse);
+                bool colReverse  = (direction == FlexDirection.ColumnReverse);
+                var  colJustify  = NormaliseJustify(flex.JustifyContent, colReverse);
+                var  colAlign    = flex.AlignItems;
+                bool needsAlign  = colAlign != FlexAlignMode.FlexStart && colAlign != FlexAlignMode.Stretch;
 
                 var parentBlock  = this.DocumentLayout.CurrentPage.LastOpenBlock();
                 var parentRegion = parentBlock?.CurrentRegion;
@@ -62,7 +64,7 @@ namespace Scryber.PDF.Layout
                 _isRowMode    = false;
                 _reverseItems = false;
 
-                if (colJustify != FlexJustify.FlexStart)
+                if (colJustify != FlexJustify.FlexStart || needsAlign)
                 {
                     PDFLayoutBlock flexBlock = null;
                     if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -75,7 +77,12 @@ namespace Scryber.PDF.Layout
                             flexBlock = postRegion.Contents[postRegion.Contents.Count - 1] as PDFLayoutBlock;
                     }
                     if (flexBlock != null)
-                        ApplyJustifyContentColumn(flexBlock, colJustify);
+                    {
+                        if (colJustify != FlexJustify.FlexStart)
+                            ApplyJustifyContentColumn(flexBlock, colJustify);
+                        if (needsAlign)
+                            ApplyAlignItemsColumnAllPages(flexBlock, colAlign);
+                    }
                 }
             }
             else
@@ -638,6 +645,89 @@ namespace Scryber.PDF.Layout
                 }
                 yOffset += gapBetween; // item heights already embedded in each b.Y — only accumulate the gap
             }
+        }
+
+        /// <summary>
+        /// Applies align-items cross-axis (X) alignment for flex-direction:column.
+        /// Shifts items horizontally within the container based on <paramref name="containerAlign"/>.
+        /// Stretch and FlexStart are no-ops (items already fill or are left-aligned by default).
+        /// </summary>
+        private static void ApplyAlignItemsColumn(PDFLayoutBlock flexBlock, FlexAlignMode containerAlign)
+        {
+            if (flexBlock.Columns.Length < 1) return;
+            var col = flexBlock.Columns[0];
+
+            double containerW = col.TotalBounds.Width.PointsValue;
+            if (containerW <= 0) return;
+
+            foreach (var item in col.Contents)
+            {
+                if (!(item is PDFLayoutBlock b)) continue;
+
+                double itemW = b.TotalBounds.Width.PointsValue;
+                double diff  = containerW - itemW;
+                if (diff <= 0.5) continue;
+
+                double xOffset = containerAlign switch
+                {
+                    FlexAlignMode.FlexEnd => diff,
+                    FlexAlignMode.Center  => diff / 2.0,
+                    _                     => 0
+                };
+
+                if (xOffset <= 0) continue;
+
+                var tb = b.TotalBounds;
+                tb.X += new Unit(xOffset, PageUnits.Points);
+                b.TotalBounds = tb;
+            }
+        }
+
+        /// <summary>
+        /// Applies ApplyAlignItemsColumn to <paramref name="firstFlexBlock"/> and every
+        /// continuation block (BlockRepeatIndex &gt; 0) on subsequent pages that belongs to the
+        /// same component — so that overflow pages retain the same cross-axis alignment.
+        /// </summary>
+        private void ApplyAlignItemsColumnAllPages(PDFLayoutBlock firstFlexBlock, FlexAlignMode containerAlign)
+        {
+            ApplyAlignItemsColumn(firstFlexBlock, containerAlign);
+
+            var startPage = firstFlexBlock.GetLayoutPage();
+            if (startPage == null) return;
+
+            var component = this.Component;
+            var allPages  = this.DocumentLayout.AllPages;
+
+            for (int i = startPage.PageIndex + 1; i < allPages.Count; i++)
+            {
+                var contBlock = FindBlockByOwner(allPages[i].ContentBlock, component);
+                if (contBlock != null)
+                    ApplyAlignItemsColumn(contBlock, containerAlign);
+            }
+        }
+
+        /// <summary>
+        /// Depth-first search for the first PDFLayoutBlock whose Owner matches
+        /// <paramref name="owner"/> in the subtree rooted at <paramref name="root"/>.
+        /// </summary>
+        private static PDFLayoutBlock FindBlockByOwner(PDFLayoutBlock root, IComponent owner)
+        {
+            if (root == null) return null;
+            if (root.Owner == owner) return root;
+
+            foreach (var col in root.Columns)
+            {
+                if (col == null) continue;
+                foreach (var item in col.Contents)
+                {
+                    if (item is PDFLayoutBlock child)
+                    {
+                        var found = FindBlockByOwner(child, owner);
+                        if (found != null) return found;
+                    }
+                }
+            }
+            return null;
         }
 
         // -----------------------------------------------------------------------
