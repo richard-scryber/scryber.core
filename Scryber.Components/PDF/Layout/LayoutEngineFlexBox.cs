@@ -230,20 +230,26 @@ namespace Scryber.PDF.Layout
                 {
                     flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
 
-                    // For multi-row layouts the container renders as a single bordered box.
-                    // Each row block shares the same FullStyle reference (which carries the
-                    // container border), so replace it with a clone that restricts border sides
-                    // to only those at the outer edge of the container.
+                    // For multi-row layouts the container border should appear as one box,
+                    // not one box per row. Suppress the interior top/bottom border sides on
+                    // non-edge rows so they don't double up.
+                    //
+                    // CreateBorderPen() builds side pens from BorderTopStyleKey etc., NOT from
+                    // BorderSidesKey. To suppress a side we set its side-specific key to
+                    // LineType.None with int.MaxValue priority so it wins over the base
+                    // BorderStyleKey value regardless of its CSS specificity.
                     if (flexBlock != null && (!isFirst || !isLast)
                         && flexBlock.FullStyle.IsValueDefined(StyleKeys.BorderItemKey))
                     {
-                        Sides sides = Sides.Left | Sides.Right;
-                        if (isFirst) sides |= Sides.Top;
-                        if (isLast)  sides |= Sides.Bottom;
-
+                        // Clone at priority 0 so the suppress values can override.
                         var rowStyle = new Style();
-                        flexBlock.FullStyle.MergeInto(rowStyle);
-                        rowStyle.Border.Sides = sides;
+                        flexBlock.FullStyle.MergeInto(rowStyle, 0);
+
+                        var suppress = new Style();
+                        if (!isFirst) suppress.SetValue(StyleKeys.BorderTopStyleKey,    LineType.None);
+                        if (!isLast)  suppress.SetValue(StyleKeys.BorderBottomStyleKey, LineType.None);
+                        suppress.MergeInto(rowStyle, int.MaxValue);
+
                         flexBlock.FullStyle = rowStyle;
                     }
 
