@@ -2846,13 +2846,137 @@ namespace Scryber.UnitLayouts
         public void Flex_65_VariousLayouts_Template()
         {
             var template = DocStreams.AssertGetTemplatePath("Content/HTML/HTML5/Flex_VariousLayouts.html");
-            
+
             using var doc = Document.ParseDocument(template);
-            
+
             using (var ms = DocStreams.GetOutputStream("Flex_65_VariousLayouts.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Page overflow — flex rows must not split across pages
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Flex_66_RowOverflow_MovesToNextPage()
+        {
+            // A 300pt-tall flex row that starts with only 100pt available on the page.
+            // With OverflowSplit.Never the whole row must move to page 2 as a unit.
+            // Page: 400pt tall, no margin.
+            // Spacer: 300pt tall → leaves 100pt on page 1.
+            // Flex: 3 items each 200pt tall → row height = 200pt → doesn't fit.
+            // Expected: page 1 has the spacer block, page 2 has the flex block.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .spacer { height: 300pt; background-color: #EEEEEE; }
+    .flex   { display: flex; flex-direction: row; }
+    .item   { flex-grow: 1; height: 200pt; border: 1pt solid blue; }
+  </style>
+</head>
+<body>
+  <div class=""spacer""></div>
+  <div class=""flex"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Flex_66_RowOverflow.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must be populated");
+            Assert.AreEqual(2, _layout.AllPages.Count, "Flex row should have forced a second page");
+
+            var pg1Region = _layout.AllPages[0].ContentBlock.Columns[0];
+            var pg2Region = _layout.AllPages[1].ContentBlock.Columns[0];
+
+            // Page 1: only the spacer block (the flex block moved away).
+            Assert.AreEqual(1, pg1Region.Contents.Count, "Page 1 should have only the spacer block");
+
+            // Page 2: the flex block (multi-column = flex row).
+            var flexBlock = pg2Region.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(flexBlock, "Page 2 first block should be the flex container");
+            Assert.AreEqual(3, flexBlock.Columns.Length, "Flex block should have 3 columns (one per item)");
+
+            // All three items are on the same page.
+            for (int c = 0; c < 3; c++)
+            {
+                var col = flexBlock.Columns[c];
+                Assert.IsTrue(col.Contents.Count > 0, $"Column {c} should have content on page 2");
+            }
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Flex_67_WrapRow_MovesToNextPage()
+        {
+            // A flex-wrap container whose second row starts with too little space.
+            // Each row is 150pt tall.  Page is 400pt.  Spacer is 300pt → 100pt left.
+            // Row 0 (2 items) fits via the heuristic pre-flight (no previous row yet).
+            // Row 0 actually moves to page 2 because it starts with only 100pt available
+            // and its content is 150pt.  Row 1 follows on the same page 2.
+            // OverflowSplit.Never guarantees each row moves as a unit — items within a
+            // row are never split across pages.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .spacer { height: 300pt; background-color: #EEEEEE; }
+    .flex  { display: flex; flex-wrap: wrap; }
+    .item  { width: 45%; flex-grow: 1; height: 150pt; margin-left: 5%; border: 1pt solid blue; }
+    .item:first-child { margin-left: 0; }
+  </style>
+</head>
+<body>
+  <div class=""spacer""></div>
+  <div class=""flex"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Flex_67_WrapRowOverflow.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must be populated");
+
+            // There must be at least 2 pages.
+            Assert.IsTrue(_layout.AllPages.Count >= 2, "Wrap rows should have caused a page break");
+
+            // Each page's flex row blocks must be multi-column (≥ 2 columns),
+            // confirming items were not placed in separate single-column blocks.
+            for (int p = 1; p < _layout.AllPages.Count; p++)
+            {
+                var region = _layout.AllPages[p].ContentBlock.Columns[0];
+                foreach (var item in region.Contents)
+                {
+                    if (item is PDFLayoutBlock b && b.Columns.Length > 1)
+                    {
+                        Assert.IsTrue(b.Columns.Length >= 2,
+                            $"Flex row block on page {p + 1} should have ≥ 2 columns — items must not be split");
+                    }
+                }
             }
         }
     }

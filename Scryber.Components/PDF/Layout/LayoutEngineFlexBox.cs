@@ -111,12 +111,20 @@ namespace Scryber.PDF.Layout
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
 
+                // Force OverflowSplit.Never so the block is treated as atomic during page
+                // overflow: if any item's content overflows the page the whole row container
+                // moves to the next page rather than being split mid-row.
+                var prevSplitNW = this.FullStyle.GetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Any);
+                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+
                 _isRowMode    = true;
                 _reverseItems = reverse;
                 base.DoLayoutBlockComponent(position, rowCols);
                 _isRowMode    = false;
                 _reverseItems = false;
                 _flexItemContentWidths = null;
+
+                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, prevSplitNW);
 
                 // Post-layout: apply align-items and justify-content.
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
@@ -218,12 +226,20 @@ namespace Scryber.PDF.Layout
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
 
+                // Force OverflowSplit.Never so each wrap-row block is atomic: if any item's
+                // content overflows the page the whole row moves to the next page rather than
+                // items in the same row ending up on different pages.
+                var prevSplit = this.FullStyle.GetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Any);
+                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, OverflowSplit.Never);
+
                 _isRowMode    = true;
                 _reverseItems = reverse;
                 base.DoLayoutBlockComponent(rowPosition, rowCols);
                 _isRowMode    = false;
                 _reverseItems = false;
                 _flexItemContentWidths = null;
+
+                this.FullStyle.SetValue(StyleKeys.OverflowSplitKey, prevSplit);
 
                 PDFLayoutBlock flexBlock = null;
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
