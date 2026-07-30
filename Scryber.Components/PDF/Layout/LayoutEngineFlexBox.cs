@@ -239,7 +239,7 @@ namespace Scryber.PDF.Layout
                     // LineType.None with int.MaxValue priority so it wins over the base
                     // BorderStyleKey value regardless of its CSS specificity.
                     if (flexBlock != null && (!isFirst || !isLast)
-                        && flexBlock.FullStyle.IsValueDefined(StyleKeys.BorderItemKey))
+                        && flexBlock.FullStyle.IsValueDefined(StyleKeys.BorderStyleKey))
                     {
                         // Clone at priority 0 so the suppress values can override.
                         var rowStyle = new Style();
