@@ -20,7 +20,7 @@ namespace Scryber.PDF.Layout
         // Track definition — one entry per column
         // -----------------------------------------------------------------------
 
-        private enum TrackType { Fr, Points, Auto }
+        private enum TrackType { Fr, Points, Percent, Auto }
 
         private readonly struct TrackDef
         {
@@ -150,7 +150,9 @@ namespace Scryber.PDF.Layout
 
         private double[] CalcColumnPtWidths(double workingPts)
         {
-            // First pass: resolve fixed columns, accumulate fr total
+            // First pass: resolve fixed/percent columns, accumulate fr total.
+            // Percent tracks are resolved against workingPts here so fr tracks
+            // correctly share whatever space remains.
             double fixedTotal = 0;
             double frTotal = 0;
 
@@ -158,6 +160,8 @@ namespace Scryber.PDF.Layout
             {
                 if (t.Type == TrackType.Points)
                     fixedTotal += t.Value;
+                else if (t.Type == TrackType.Percent)
+                    fixedTotal += (t.Value / 100.0) * workingPts;
                 else if (t.Type == TrackType.Fr)
                     frTotal += t.Value;
                 // Auto treated as fr=1 if no other fr units, else as fr=1 share
@@ -181,6 +185,9 @@ namespace Scryber.PDF.Layout
                 {
                     case TrackType.Points:
                         widths[i] = t.Value;
+                        break;
+                    case TrackType.Percent:
+                        widths[i] = (t.Value / 100.0) * workingPts;
                         break;
                     case TrackType.Fr:
                         widths[i] = frTotal > 0 ? (t.Value / frTotal) * frSpace : 0;
@@ -410,8 +417,12 @@ namespace Scryber.PDF.Layout
                     Unit u;
                     if (Unit.TryParse(t, out u))
                     {
-                        // Convert to points
-                        tracks.Add(new TrackDef(TrackType.Points, u.ToPoints().PointsValue));
+                        if (u.IsRelative)
+                            // Percent (and other relative units) — defer resolution against
+                            // the available container width until CalcColumnPtWidths runs.
+                            tracks.Add(new TrackDef(TrackType.Percent, u.Value));
+                        else
+                            tracks.Add(new TrackDef(TrackType.Points, u.PointsValue));
                     }
                 }
             }

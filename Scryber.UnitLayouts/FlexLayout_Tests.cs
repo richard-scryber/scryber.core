@@ -2752,7 +2752,7 @@ namespace Scryber.UnitLayouts
                 var item = new Div();
                 item.Style.Size.Width   = Drawing.Unit.Percent(45); // 45%*400 = 180pt content
                 item.Style.Margins.Left = Drawing.Unit.Percent(5);  //  5%*400 =  20pt margin
-                item.Style.Flex.Grow    = 0;
+                item.Style.Flex.Grow    = 1;
                 item.Style.Border.LineStyle = LineType.Solid;
                 item.Style.Border.Color     = colors[n];
                 item.Style.Padding.All      = 4;

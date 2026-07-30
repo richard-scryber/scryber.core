@@ -1717,6 +1717,7 @@ namespace Scryber.Core.UnitTests.Html
             var inner = new Panel();
             inner.Style.Position.DisplayMode = DisplayMode.FlexBox;
             inner.Style.Flex.Direction       = FlexDirection.Row;
+            inner.Style.Flex.Grow            = 1; // CSS default is 0 — must be explicit to share outer space
             inner.Style.Border.LineStyle = LineType.Solid;
             inner.Style.Border.Width     = 1;
             inner.Style.Border.Color     = new Color(0, 150, 200);

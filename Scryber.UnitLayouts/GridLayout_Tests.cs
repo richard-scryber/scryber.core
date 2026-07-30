@@ -1071,6 +1071,155 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(w0, w1, 1.0, "Both cells should be equal width with span:1");
         }
 
+        // ======================================================================
+        // Percentage grid-template-columns
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_PercentageColumns_EqualHalves()
+        {
+            // grid-template-columns: 50% 50% on a 600pt container should give 300pt each.
+            // This previously threw InvalidOperationException because ParseTrackList called
+            // Unit.ToPoints() on a relative unit.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "50% 50%");
+            AddItem(grid, "Left-Pct",  height: 50, borderColor: new Color(200, 0, 0));
+            AddItem(grid, "Right-Pct", height: 50, borderColor: new Color(0, 0, 200));
+
+            using (var ms = DocStreams.GetOutputStream("Grid_PercentColumns_50_50.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must complete without exception");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var rowBlock   = GetRowBlock(GetGridBlock(pageRegion), 0);
+            Assert.IsNotNull(rowBlock, "Row block must exist");
+            Assert.AreEqual(2, rowBlock.Columns.Length, "50% 50% should produce 2 columns");
+
+            // Each column = 50% of 600pt = 300pt
+            Assert.AreEqual(300.0, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+                "Column 0 (50%) should be 300pt");
+            Assert.AreEqual(300.0, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
+                "Column 1 (50%) should be 300pt");
+
+            Assert.AreNotEqual(50.0, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 5.0,
+                "Must NOT treat 50% as 50pt");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Left-Pct");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Right-Pct");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_PercentageColumns_ThreeUnequalColumns()
+        {
+            // 25% 50% 25% on a 600pt container → 150pt 300pt 150pt
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "25% 50% 25%");
+            AddItem(grid, "Quarter-L", height: 50, borderColor: new Color(150, 0,   0));
+            AddItem(grid, "Half",      height: 50, borderColor: new Color(0,   150, 0));
+            AddItem(grid, "Quarter-R", height: 50, borderColor: new Color(0,   0,   150));
+
+            using (var ms = DocStreams.GetOutputStream("Grid_PercentColumns_25_50_25.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var rowBlock = GetRowBlock(GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]), 0);
+            Assert.IsNotNull(rowBlock);
+            Assert.AreEqual(3, rowBlock.Columns.Length);
+
+            Assert.AreEqual(150.0, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+                "Column 0 (25%) = 150pt");
+            Assert.AreEqual(300.0, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
+                "Column 1 (50%) = 300pt");
+            Assert.AreEqual(150.0, rowBlock.Columns[2].TotalBounds.Width.PointsValue, 1.0,
+                "Column 2 (25%) = 150pt");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Quarter-L");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Half");
+            StringAssert.Contains(CollectText(rowBlock.Columns[2]), "Quarter-R");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_PercentageColumns_MixedWithFr()
+        {
+            // 50% 1fr on a 600pt container: percent column = 300pt, fr column gets remaining 300pt
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "50% 1fr");
+            AddItem(grid, "HalfPct", height: 50, borderColor: new Color(180, 90, 0));
+            AddItem(grid, "FrRest",  height: 50, borderColor: new Color(0, 90, 180));
+
+            using (var ms = DocStreams.GetOutputStream("Grid_PercentColumns_50pct_1fr.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var rowBlock = GetRowBlock(GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]), 0);
+            Assert.IsNotNull(rowBlock);
+            Assert.AreEqual(2, rowBlock.Columns.Length);
+
+            // 50% = 300pt; remaining 300pt goes to 1fr
+            Assert.AreEqual(300.0, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+                "Column 0 (50%) = 300pt");
+            Assert.AreEqual(300.0, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
+                "Column 1 (1fr of remaining 300pt) = 300pt");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "HalfPct");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "FrRest");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_PercentageColumns_CSSParsed()
+        {
+            // Verify percentage columns parsed from an inline CSS string.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style=""margin:0;padding:0;"">
+  <div style=""display:grid;width:600pt;grid-template-columns:33% 34% 33%;border:1pt solid #000000;"">
+    <div style=""height:50pt;padding:4pt;border:1pt solid #646464;"">P</div>
+    <div style=""height:50pt;padding:4pt;border:1pt solid #646464;"">Q</div>
+    <div style=""height:50pt;padding:4pt;border:1pt solid #646464;"">R</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src),
+                                           ParseSourceType.DynamicContent) as Document;
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Grid_PercentColumns_CSS.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout must complete without exception");
+            var rowBlock = FindRowWithCols(layout.AllPages[0].ContentBlock.Columns[0], 3);
+            Assert.IsNotNull(rowBlock, "Row with 3 columns must exist");
+
+            // 33%+34%+33% of 600pt = 198+204+198 = 600pt
+            Assert.AreEqual(198.0, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 2.0,
+                "Column 0 (33%) ≈ 198pt");
+            Assert.AreEqual(204.0, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 2.0,
+                "Column 1 (34%) ≈ 204pt");
+            Assert.AreEqual(198.0, rowBlock.Columns[2].TotalBounds.Width.PointsValue, 2.0,
+                "Column 2 (33%) ≈ 198pt");
+
+            // Must NOT treat 33% as 33pt
+            Assert.IsTrue(rowBlock.Columns[0].TotalBounds.Width.PointsValue > 100.0,
+                "Column 0 must NOT be 33pt (the raw percent number)");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "P");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Q");
+            StringAssert.Contains(CollectText(rowBlock.Columns[2]), "R");
+        }
+
         [TestCategory(TestCategory), TestMethod()]
         public void MMckinstry_Issue()
         {
