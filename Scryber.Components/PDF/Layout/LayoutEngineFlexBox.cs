@@ -111,7 +111,13 @@ namespace Scryber.PDF.Layout
                 }
                 else
                 {
-                    containerW = this.DocumentLayout.CurrentPage.LastOpenBlock()?.AvailableBounds.Width.PointsValue ?? 0;
+                    // Use the current column region's width, not AvailableBounds.Width — the latter
+                    // is the full block width (before column splitting), which is wrong when the
+                    // flex container sits inside a multi-column parent (e.g. column-count: 2).
+                    var openBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                    containerW = openBlock?.CurrentRegion?.TotalBounds.Width.PointsValue
+                              ?? openBlock?.AvailableBounds.Width.PointsValue
+                              ?? 0;
                     if (!position.Padding.IsEmpty)
                         containerW -= (position.Padding.Left + position.Padding.Right).PointsValue;
                 }
@@ -684,36 +690,84 @@ namespace Scryber.PDF.Layout
         }
 
         /// <summary>
-        /// Applies ApplyAlignItemsColumn to <paramref name="firstFlexBlock"/> and every
-        /// continuation block (BlockRepeatIndex &gt; 0) on subsequent pages that belongs to the
-        /// same component — so that overflow pages retain the same cross-axis alignment.
+        /// Applies ApplyAlignItemsColumn to every layout block for the same flex-container
+        /// component, covering both same-page multi-column overflow and multi-page overflow.
+        ///
+        /// Phase 1 — same-page column overflow:
+        ///   Navigate directly to the parent block and scan its columns for flex blocks.
+        ///   O(parent_columns × items_per_column) — no page traversal.
+        ///
+        /// Phase 2 — page overflow:
+        ///   Search only pages [startPage+1 … currentPage] (the range the layout engine
+        ///   actually used for this container), not the entire document.
         /// </summary>
         private void ApplyAlignItemsColumnAllPages(PDFLayoutBlock firstFlexBlock, FlexAlignMode containerAlign)
         {
-            ApplyAlignItemsColumn(firstFlexBlock, containerAlign);
+            var flexOwner   = (IComponent)firstFlexBlock.Owner;
+            var parentBlock = GetParentBlock(firstFlexBlock);
 
-            var startPage = firstFlexBlock.GetLayoutPage();
+            // Phase 1 — scan all columns of the direct parent (same page, multi-column parent).
+            // This also covers the primary flex block in col[0], so ApplyAlignItemsColumn is
+            // called exactly once per block.
+            if (parentBlock != null)
+            {
+                foreach (var col in parentBlock.Columns)
+                {
+                    if (col == null) continue;
+                    foreach (var item in col.Contents)
+                    {
+                        if (item is PDFLayoutBlock b && b.Owner == flexOwner)
+                            ApplyAlignItemsColumn(b, containerAlign);
+                    }
+                }
+            }
+            else
+            {
+                // No navigable parent — apply to the block we know about.
+                ApplyAlignItemsColumn(firstFlexBlock, containerAlign);
+            }
+
+            // Phase 2 — page overflow: only search pages actually used by this container.
+            var startPage  = firstFlexBlock.GetLayoutPage();
             if (startPage == null) return;
 
-            var component = this.Component;
-            var allPages  = this.DocumentLayout.AllPages;
+            var endPageIdx = this.DocumentLayout.CurrentPage.PageIndex;
+            if (startPage.PageIndex >= endPageIdx) return; // no page overflow occurred
 
-            for (int i = startPage.PageIndex + 1; i < allPages.Count; i++)
+            var allPages = this.DocumentLayout.AllPages;
+            for (int i = startPage.PageIndex + 1; i <= endPageIdx; i++)
             {
-                var contBlock = FindBlockByOwner(allPages[i].ContentBlock, component);
-                if (contBlock != null)
-                    ApplyAlignItemsColumn(contBlock, containerAlign);
+                var found = new List<PDFLayoutBlock>();
+                CollectBlocksByOwner(allPages[i].ContentBlock, flexOwner, found);
+                foreach (var b in found)
+                    ApplyAlignItemsColumn(b, containerAlign);
             }
         }
 
         /// <summary>
-        /// Depth-first search for the first PDFLayoutBlock whose Owner matches
-        /// <paramref name="owner"/> in the subtree rooted at <paramref name="root"/>.
+        /// Returns the PDFLayoutBlock that is the direct parent of <paramref name="block"/>.
+        /// A block's Parent pointer is the enclosing block (not the intermediate region that
+        /// physically holds it in its Contents list).
         /// </summary>
-        private static PDFLayoutBlock FindBlockByOwner(PDFLayoutBlock root, IComponent owner)
+        private static PDFLayoutBlock GetParentBlock(PDFLayoutBlock block)
         {
-            if (root == null) return null;
-            if (root.Owner == owner) return root;
+            return block.Parent as PDFLayoutBlock;
+        }
+
+        /// <summary>
+        /// Depth-first collector: adds every PDFLayoutBlock whose Owner matches
+        /// <paramref name="owner"/> to <paramref name="found"/>.
+        /// Stops recursing into a matched block (its interior belongs to the container itself).
+        /// </summary>
+        private static void CollectBlocksByOwner(PDFLayoutBlock root, IComponent owner,
+            List<PDFLayoutBlock> found)
+        {
+            if (root == null) return;
+            if (root.Owner == owner)
+            {
+                found.Add(root);
+                return;
+            }
 
             foreach (var col in root.Columns)
             {
@@ -721,13 +775,9 @@ namespace Scryber.PDF.Layout
                 foreach (var item in col.Contents)
                 {
                     if (item is PDFLayoutBlock child)
-                    {
-                        var found = FindBlockByOwner(child, owner);
-                        if (found != null) return found;
-                    }
+                        CollectBlocksByOwner(child, owner, found);
                 }
             }
-            return null;
         }
 
         // -----------------------------------------------------------------------

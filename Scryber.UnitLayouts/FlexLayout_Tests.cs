@@ -2855,6 +2855,21 @@ namespace Scryber.UnitLayouts
                 doc.SaveAsPDF(ms);
             }
         }
+        
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_65_VariousLayouts_Template2Column()
+        {
+            var template = DocStreams.AssertGetTemplatePath("Content/HTML/HTML5/Flex_VariousLayouts_2Column.html");
+
+            using var doc = Document.ParseDocument(template);
+
+            using (var ms = DocStreams.GetOutputStream("Flex_65_VariousLayouts_2Column.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
 
         // -----------------------------------------------------------------------
         // Page overflow — flex rows must not split across pages
@@ -2969,6 +2984,165 @@ namespace Scryber.UnitLayouts
                     }
                 }
             }
+        }
+
+        // -----------------------------------------------------------------------
+        // Flex_68 / Flex_69 — align-items: center (column direction) with overflow
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Flex_68_ColAlignCenter_MultiColumnParent_AllColumnsAligned()
+        {
+            // A flex-direction:column container with align-items:center sits inside a
+            // two-column parent div.  Items are 100pt wide; each parent column is 300pt
+            // wide, so the centering offset is (300 - 100) / 2 = 100pt.
+            //
+            // 4 items × 200pt = 800pt > parent column height 600pt → items A/B/C land
+            // in parent column 0, item D overflows into parent column 1.
+            // Both the primary and the continuation flex block must have their items centred.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page   { size: 600pt 800pt; margin: 0; }
+    body    { margin: 0; padding: 0; }
+    .parent { column-count: 2; column-gap: 0pt; column-fill: auto;
+              width: 600pt; height: 600pt; }
+    .flex   { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .item   { width: 100pt; height: 200pt; border: 1pt solid blue; }
+  </style>
+</head>
+<body>
+  <div class=""parent"">
+    <div class=""flex"">
+      <div class=""item"">A</div>
+      <div class=""item"">B</div>
+      <div class=""item"">C</div>
+      <div class=""item"">D</div>
+    </div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Flex_68_ColAlignCenter_MultiColumnParent.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(1, _layout.AllPages.Count, "Should fit on one page");
+
+            var bodyRegion  = _layout.AllPages[0].ContentBlock.Columns[0];
+            var parentBlock = bodyRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(parentBlock, "Parent (2-col div) block should exist");
+            Assert.AreEqual(2, parentBlock.Columns.Length, "Parent should have 2 columns");
+
+            // Parent column width = 600/2 = 300pt.  Item width = 100pt.
+            // Expected X offset inside the flex block's single region = (300 - 100) / 2 = 100pt.
+            const double expectedX = (300.0 - 100.0) / 2.0;
+
+            // ---- parent column 0: items A, B, C ----
+            var flexBlock0 = parentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(flexBlock0, "Flex block should be in parent column 0");
+
+            int itemsCol0 = 0;
+            foreach (var item in flexBlock0.Columns[0].Contents)
+            {
+                if (item is PDFLayoutBlock b)
+                {
+                    Assert.AreEqual(expectedX, b.TotalBounds.X.PointsValue, 1.0,
+                        $"Item {++itemsCol0} in parent-col 0 should be centred at X={expectedX}");
+                }
+            }
+            Assert.IsTrue(itemsCol0 >= 1, "At least one item should be in parent column 0");
+
+            // ---- parent column 1: item D (continuation) ----
+            var flexBlock1 = parentBlock.Columns[1].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(flexBlock1,
+                "Flex block continuation should be in parent column 1 — centering must survive overflow");
+
+            int itemsCol1 = 0;
+            foreach (var item in flexBlock1.Columns[0].Contents)
+            {
+                if (item is PDFLayoutBlock b)
+                {
+                    Assert.AreEqual(expectedX, b.TotalBounds.X.PointsValue, 1.0,
+                        $"Item {++itemsCol1} in parent-col 1 should be centred at X={expectedX}");
+                }
+            }
+            Assert.IsTrue(itemsCol1 >= 1, "At least one item should have overflowed to parent column 1");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Flex_69_ColAlignCenter_MultiPage_AllPagesAligned()
+        {
+            // A flex-direction:column container with align-items:center on a page that is
+            // only 500pt tall.  Items are 150pt wide; container is 400pt wide.
+            // Centering offset = (400 - 150) / 2 = 125pt.
+            //
+            // 4 items × 200pt = 800pt > 500pt → overflows to page 2.
+            // Items on BOTH pages must have the same centering offset.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page  { size: 400pt 500pt; margin: 0; }
+    body   { margin: 0; padding: 0; }
+    .flex  { display: flex; flex-direction: column; align-items: center; width: 400pt; }
+    .item  { width: 150pt; height: 200pt; border: 1pt solid blue; }
+  </style>
+</head>
+<body>
+  <div class=""flex"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Flex_69_ColAlignCenter_MultiPage.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.IsTrue(_layout.AllPages.Count >= 2,
+                "4 × 200pt items on a 500pt page should overflow to at least 2 pages");
+
+            // Container = 400pt wide, item = 150pt wide → centre offset = 125pt.
+            const double expectedX = (400.0 - 150.0) / 2.0;
+
+            int totalItemsChecked = 0;
+            for (int p = 0; p < _layout.AllPages.Count; p++)
+            {
+                var pageRegion = _layout.AllPages[p].ContentBlock.Columns[0];
+
+                // The flex block is the only top-level block on each page.
+                foreach (var entry in pageRegion.Contents)
+                {
+                    if (!(entry is PDFLayoutBlock flexBlock)) continue;
+                    if (flexBlock.Columns.Length < 1) continue;
+
+                    foreach (var item in flexBlock.Columns[0].Contents)
+                    {
+                        if (item is PDFLayoutBlock b)
+                        {
+                            Assert.AreEqual(expectedX, b.TotalBounds.X.PointsValue, 1.0,
+                                $"Item on page {p + 1} should be centred at X={expectedX}");
+                            totalItemsChecked++;
+                        }
+                    }
+                }
+            }
+
+            Assert.AreEqual(4, totalItemsChecked,
+                "All 4 items (across both pages) should have been checked for centering");
         }
     }
 }
