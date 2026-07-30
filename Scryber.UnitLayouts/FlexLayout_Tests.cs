@@ -2839,5 +2839,21 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(189.0, r2i1.TotalBounds.Width.PointsValue, 3.0, "row-2 item-4: ~189pt (content 180pt)");
             Assert.IsTrue(r2i0.TotalBounds.Width.PointsValue > 160.0, "row-2 item-3 must not be re-applied % result (~90pt)");
         }
+
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Flex_65_VariousLayouts_Template()
+        {
+            var template = DocStreams.AssertGetTemplatePath("Content/HTML/HTML5/Flex_VariousLayouts.html");
+            
+            using var doc = Document.ParseDocument(template);
+            
+            using (var ms = DocStreams.GetOutputStream("Flex_65_VariousLayouts.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
     }
 }

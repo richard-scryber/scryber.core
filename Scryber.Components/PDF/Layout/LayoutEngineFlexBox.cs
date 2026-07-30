@@ -81,6 +81,8 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     containerW = this.DocumentLayout.CurrentPage.LastOpenBlock()?.AvailableBounds.Width.PointsValue ?? 0;
+                    if (!position.Padding.IsEmpty)
+                        containerW -= (position.Padding.Left + position.Padding.Right).PointsValue;
                 }
 
                 // Check for wrap mode
@@ -157,8 +159,9 @@ namespace Scryber.PDF.Layout
             double prevRowH = 0;
             bool   reverse  = (flex.Direction == FlexDirection.RowReverse);
 
-            foreach (var (rowStart, rowEnd) in rows)
+            for (int rowIdx = 0; rowIdx < rows.Count; rowIdx++)
             {
+                var (rowStart, rowEnd) = rows[rowIdx];
                 int rowItemCount = rowEnd - rowStart;
                 if (rowItemCount <= 0) continue;
 
@@ -191,13 +194,33 @@ namespace Scryber.PDF.Layout
                     ColumnWidths = widths
                 };
 
+                // The flex container is a single visual element: padding and margins apply
+                // once at the outer edges, not between rows. Strip top padding/margin from
+                // every row except the first, and bottom padding/margin from every row except
+                // the last. The border is handled the same way on the layout blocks below.
+                var rowPosition = position.Clone();
+                bool isFirst = rowIdx == 0;
+                bool isLast  = rowIdx == rows.Count - 1;
+                if (!isFirst || !isLast)
+                {
+                    var pad = rowPosition.Padding;
+                    if (!isFirst) pad.Top    = Unit.Zero;
+                    if (!isLast)  pad.Bottom = Unit.Zero;
+                    rowPosition.Padding = pad;
+
+                    var mar = rowPosition.Margins;
+                    if (!isFirst) mar.Top    = Unit.Zero;
+                    if (!isLast)  mar.Bottom = Unit.Zero;
+                    rowPosition.Margins = mar;
+                }
+
                 var parentBlock  = this.DocumentLayout.CurrentPage.LastOpenBlock();
                 var parentRegion = parentBlock?.CurrentRegion;
                 int priorCount   = parentRegion?.Contents.Count ?? 0;
 
                 _isRowMode    = true;
                 _reverseItems = reverse;
-                base.DoLayoutBlockComponent(position, rowCols);
+                base.DoLayoutBlockComponent(rowPosition, rowCols);
                 _isRowMode    = false;
                 _reverseItems = false;
                 _flexItemContentWidths = null;
@@ -206,6 +229,24 @@ namespace Scryber.PDF.Layout
                 if (parentRegion != null && parentRegion.Contents.Count > priorCount)
                 {
                     flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
+
+                    // For multi-row layouts the container renders as a single bordered box.
+                    // Each row block shares the same FullStyle reference (which carries the
+                    // container border), so replace it with a clone that restricts border sides
+                    // to only those at the outer edge of the container.
+                    if (flexBlock != null && (!isFirst || !isLast)
+                        && flexBlock.FullStyle.IsValueDefined(StyleKeys.BorderItemKey))
+                    {
+                        Sides sides = Sides.Left | Sides.Right;
+                        if (isFirst) sides |= Sides.Top;
+                        if (isLast)  sides |= Sides.Bottom;
+
+                        var rowStyle = new Style();
+                        flexBlock.FullStyle.MergeInto(rowStyle);
+                        rowStyle.Border.Sides = sides;
+                        flexBlock.FullStyle = rowStyle;
+                    }
+
                     if (flexBlock != null && flexBlock.Columns.Length > 0)
                     {
                         var rowItems     = _orderedItems ?? new List<Component>();
@@ -275,12 +316,16 @@ namespace Scryber.PDF.Layout
         /// </summary>
         private static double GetItemMinWidth(Component item, double containerWidthPts)
         {
-            if (item is IStyledComponent sc && sc.Style != null)
+            // Use the full applied style (includes CSS class rules) so that items that
+            // receive their width via a class selector are recognised as having a fixed
+            // width for wrap-row breaking — not just items with inline/direct styles.
+            var applied = item.GetAppliedStyle();
+            if (applied != null)
             {
-                if (sc.Style.IsValueDefined(StyleKeys.SizeWidthKey))
-                    return ResolveFlexUnit(sc.Style.Size.Width, containerWidthPts);
-                if (sc.Style.IsValueDefined(StyleKeys.FlexBasisKey) && !sc.Style.Flex.BasisAuto)
-                    return ResolveFlexUnit(sc.Style.Flex.Basis, containerWidthPts);
+                if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
+                    return ResolveFlexUnit(applied.Size.Width, containerWidthPts);
+                if (applied.IsValueDefined(StyleKeys.FlexBasisKey) && !applied.Flex.BasisAuto)
+                    return ResolveFlexUnit(applied.Flex.Basis, containerWidthPts);
             }
             return 0;
         }
@@ -414,10 +459,10 @@ namespace Scryber.PDF.Layout
             {
                 var item = items[start + i];
                 FlexAlignMode alignSelf = containerAlign;
-                if (item is IStyledComponent sc && sc.Style != null
-                    && sc.Style.IsValueDefined(StyleKeys.FlexAlignSelfKey))
+                var applied = item.GetAppliedStyle();
+                if (applied != null && applied.IsValueDefined(StyleKeys.FlexAlignSelfKey))
                 {
-                    var self = sc.Style.GetValue(StyleKeys.FlexAlignSelfKey, FlexAlignMode.Auto);
+                    var self = applied.GetValue(StyleKeys.FlexAlignSelfKey, FlexAlignMode.Auto);
                     if (self != FlexAlignMode.Auto)
                         alignSelf = self;
                 }
@@ -573,9 +618,9 @@ namespace Scryber.PDF.Layout
                 if (!IsFlexItem(child)) { src++; continue; }
                 var comp = (Component)child;
                 int order = 0;
-                if (comp is IStyledComponent sc && sc.Style != null
-                    && sc.Style.IsValueDefined(StyleKeys.FlexOrderKey))
-                    order = sc.Style.GetValue(StyleKeys.FlexOrderKey, 0);
+                var applied = comp.GetAppliedStyle();
+                if (applied != null && applied.IsValueDefined(StyleKeys.FlexOrderKey))
+                    order = applied.GetValue(StyleKeys.FlexOrderKey, 0);
                 items.Add((comp, order, src));
                 src++;
             }
@@ -810,7 +855,7 @@ namespace Scryber.PDF.Layout
                 // items (no explicit width) should keep FillWidth=true so they fill their column;
                 // overriding them with the grow-computed width misrepresents it as a content-box
                 // value and causes padding/border to push TotalBounds past the column boundary.
-                var appliedStyle = (c as IStyledComponent)?.Style;
+                var appliedStyle = c.GetAppliedStyle();
                 bool hasExplicitWidth = appliedStyle != null
                     && (appliedStyle.IsValueDefined(StyleKeys.SizeWidthKey)
                         || (appliedStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !appliedStyle.Flex.BasisAuto));

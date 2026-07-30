@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        @page {
+            size: 600pt 800pt;
+            margin: 0;
+        }
+
+        body {
+            margin: 20pt;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: bold;
+            font-style: normal;
+            color: #000;
+            text-decoration: none;
+        }
+
+        h1 {
+            font-size: 24pt;
+            margin: 11pt 0;
+        }
+
+        h2 {
+            font-size: 18pt;
+            margin: 13pt 0;
+        }
+
+        h3 {
+            font-size: 14pt;
+            margin: 16pt 0;
+        }
+
+        .container{
+            display: flex;
+            border: solid 1px green;
+            padding : 5px;
+        }
+
+        .container .item{
+            min-height: 50pt;
+            border: solid 1px blue;
+            background-color: rgba(128, 255,255, 0.3);
+            margin-left: 10pt;
+            flex-grow: 1;
+        }
+
+        .container .item-1{
+            margin-left: 0;
+        }
+
+        .container-2 .item-3{
+            flex-grow: 3;
+        }
+
+
+        .container-3 .item-1, .container-3 .item-3{
+            width: 100px;
+            flex-grow: 0;
+        }
+        .container-3 .item-2{
+            flex-grow: 1;
+        }
+
+        .container-4{
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+
+        .container-4 .item{
+            width: 45%;
+            flex-grow: 1;
+        }
+
+        .container-4 .item-3{
+            width: 100%;
+            flex-grow:0;
+            margin-left: 0;
+        }
+
+        .container-4 .item-4{
+            margin-left: 0;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<main>
+    <h1>Testing the flexbox layout options</h1>
+    <h3>Simple flex layout.</h3>
+    <div class="container container-1">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+    </div>
+    <hr/>
+    <h3>Changing the middle size flex layout.</h3>
+    <div class="container container-2">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+    </div>
+    <hr/>
+    <h3>Stretch middle, fixed spacing.</h3>
+    <div class="container container-3">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+    </div>
+    <hr/>
+    <h3>Alternating grid.</h3>
+    <div class="container container-4">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+    </div>
+</main>
+
+</body>
+</html>
