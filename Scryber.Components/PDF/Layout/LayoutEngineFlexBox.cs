@@ -49,10 +49,34 @@ namespace Scryber.PDF.Layout
                 if (rowGap.PointsValue > 0)
                     columnOptions = new PDFColumnOptions() { AlleyWidth = rowGap };
 
+                bool colReverse = (direction == FlexDirection.ColumnReverse);
+                var  colJustify = NormaliseJustify(flex.JustifyContent, colReverse);
+
+                var parentBlock  = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                var parentRegion = parentBlock?.CurrentRegion;
+                int priorCount   = parentRegion?.Contents.Count ?? 0;
+
                 _isRowMode     = false;
-                _reverseItems  = (direction == FlexDirection.ColumnReverse);
+                _reverseItems  = colReverse;
                 base.DoLayoutBlockComponent(position, columnOptions);
-                _reverseItems  = false;
+                _isRowMode    = false;
+                _reverseItems = false;
+
+                if (colJustify != FlexJustify.FlexStart)
+                {
+                    PDFLayoutBlock flexBlock = null;
+                    if (parentRegion != null && parentRegion.Contents.Count > priorCount)
+                        flexBlock = parentRegion.Contents[parentRegion.Contents.Count - 1] as PDFLayoutBlock;
+                    if (flexBlock == null)
+                    {
+                        var postParent = this.DocumentLayout.CurrentPage.LastOpenBlock();
+                        var postRegion = postParent?.CurrentRegion;
+                        if (postRegion != null && postRegion.Contents.Count > 0)
+                            flexBlock = postRegion.Contents[postRegion.Contents.Count - 1] as PDFLayoutBlock;
+                    }
+                    if (flexBlock != null)
+                        ApplyJustifyContentColumn(flexBlock, colJustify);
+                }
             }
             else
             {
@@ -95,6 +119,17 @@ namespace Scryber.PDF.Layout
                 }
 
                 bool reverse = (direction == FlexDirection.RowReverse);
+
+                // Explicit container height → cross-axis reference for flex-end / center.
+                // Uses the same padding-box convention as containerW above.
+                double? containerH = null;
+                if (position.Height.HasValue)
+                {
+                    containerH = position.Height.Value.PointsValue;
+                    if (!position.Padding.IsEmpty)
+                        containerH -= (position.Padding.Top + position.Padding.Bottom).PointsValue;
+                }
+
                 _flexItemContentWidths = null; // clear before computing for this row
                 var widths = ComputeColumnWidths(childCount, containerW, colGap.PointsValue);
                 if (reverse) widths = ReverseWidths(widths);
@@ -142,9 +177,9 @@ namespace Scryber.PDF.Layout
                     var perColAlign = BuildPerColAlign(items, alignItems, 0, items.Count);
 
                     if (alignItems != FlexAlignMode.Stretch && alignItems != FlexAlignMode.FlexStart)
-                        ApplyAlignItems(flexBlock, perColAlign);
+                        ApplyAlignItems(flexBlock, perColAlign, containerH);
                     else if (HasAlignSelfOverride(perColAlign, alignItems))
-                        ApplyAlignItems(flexBlock, perColAlign);
+                        ApplyAlignItems(flexBlock, perColAlign, containerH);
 
                     if (justify != FlexJustify.FlexStart)
                         ApplyJustifyContent(flexBlock, justify, containerW);
@@ -425,7 +460,8 @@ namespace Scryber.PDF.Layout
         // Post-layout: align-items (cross-axis / Y in row mode)
         // -----------------------------------------------------------------------
 
-        private static void ApplyAlignItems(PDFLayoutBlock flexBlock, FlexAlignMode[] perColAlign)
+        private static void ApplyAlignItems(PDFLayoutBlock flexBlock, FlexAlignMode[] perColAlign,
+            double? containerH = null)
         {
             int colCount = flexBlock.Columns.Length;
             if (colCount < 1) return;
@@ -440,6 +476,10 @@ namespace Scryber.PDF.Layout
 
             if (maxH <= 0) return;
 
+            // When the container has an explicit height, use it as the cross-axis reference
+            // so flex-end / center items align to the container bottom, not just the tallest item.
+            double refH = (containerH.HasValue && containerH.Value > maxH) ? containerH.Value : maxH;
+
             for (int i = 0; i < colCount; i++)
             {
                 var align = (perColAlign != null && i < perColAlign.Length) ? perColAlign[i] : FlexAlignMode.FlexStart;
@@ -448,7 +488,7 @@ namespace Scryber.PDF.Layout
 
                 var    col    = flexBlock.Columns[i];
                 double childH = FirstChildHeight(col);
-                double diff   = maxH - childH;
+                double diff   = refH - childH;
                 if (diff <= 0.5) continue;
 
                 double yOffset = align switch
@@ -524,6 +564,80 @@ namespace Scryber.PDF.Layout
                     return b.TotalBounds.Width.PointsValue;
             }
             return 0;
+        }
+
+        // -----------------------------------------------------------------------
+        // Post-layout: justify-content (main-axis / Y in column mode)
+        // -----------------------------------------------------------------------
+
+        /// <summary>
+        /// Applies justify-content spacing along the main axis (Y) for flex-direction:column.
+        /// The column TotalBounds.Height is the explicit container content height set by ShrinkToFit;
+        /// items are repositioned within that space according to <paramref name="justify"/>.
+        /// </summary>
+        private static void ApplyJustifyContentColumn(PDFLayoutBlock flexBlock, FlexJustify justify)
+        {
+            if (flexBlock.Columns.Length < 1) return;
+            var col = flexBlock.Columns[0];
+
+            // After ShrinkToFit, column height = explicit container content height (padding already excluded).
+            double containerH = col.TotalBounds.Height.PointsValue;
+
+            var    items  = new List<PDFLayoutBlock>();
+            double totalH = 0;
+            foreach (var item in col.Contents)
+            {
+                if (item is PDFLayoutBlock b)
+                {
+                    items.Add(b);
+                    totalH += b.TotalBounds.Height.PointsValue;
+                }
+            }
+
+            if (items.Count == 0) return;
+
+            double leftover = containerH - totalH;
+            if (leftover < 1.0) return;
+
+            double startOffset = 0;
+            double gapBetween  = 0;
+            int    count       = items.Count;
+
+            switch (justify)
+            {
+                case FlexJustify.FlexEnd:
+                    startOffset = leftover;
+                    break;
+                case FlexJustify.Center:
+                    startOffset = leftover / 2.0;
+                    break;
+                case FlexJustify.SpaceBetween:
+                    if (count > 1) gapBetween = leftover / (count - 1);
+                    else           startOffset = leftover / 2.0;
+                    break;
+                case FlexJustify.SpaceAround:
+                    double aroundUnit = leftover / count;
+                    startOffset = aroundUnit / 2.0;
+                    gapBetween  = aroundUnit;
+                    break;
+                case FlexJustify.SpaceEvenly:
+                    double evenUnit = leftover / (count + 1);
+                    startOffset = evenUnit;
+                    gapBetween  = evenUnit;
+                    break;
+            }
+
+            double yOffset = startOffset;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (yOffset >= 0.5)
+                {
+                    var b = items[i].TotalBounds;
+                    b.Y += new Unit(yOffset, PageUnits.Points);
+                    items[i].TotalBounds = b;
+                }
+                yOffset += gapBetween; // item heights already embedded in each b.Y — only accumulate the gap
+            }
         }
 
         // -----------------------------------------------------------------------

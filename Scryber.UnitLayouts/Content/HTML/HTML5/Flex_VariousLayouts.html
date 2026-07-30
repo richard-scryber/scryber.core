@@ -116,6 +116,55 @@
         }
 
 
+        .container-7 {
+            display: flex;
+            height: 300px;
+            border: solid 1px green;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding : 5px;
+        }
+        
+        .container-7 .item{
+            flex-grow: 0;
+            border: solid 1px blue;
+            background-color: rgba(128, 255,255, 0.3);
+            width: 15%;
+            text-align: center;
+        }
+
+        .container-7 .item-1 { height: 40%; }
+        .container-7 .item-2 { height: 50%; }
+        .container-7 .item-3 { height: 60%; }
+        .container-7 .item-4 { height: 20%; }
+        .container-7 .item-5 { height: 30%; }
+
+        .container-8 {
+            display: flex;
+            height: 300px;
+            border: solid 1px green;
+            justify-content: space-between;
+            flex-direction: column;
+            padding : 5px;
+        }
+
+        .container-8 .item{
+            flex-grow: 0;
+            border: solid 1px blue;
+            background-color: rgba(128, 255,255, 0.3);
+            width: 15%;
+            text-align: center;
+            height: 14%;
+        }
+        
+        .container-8 .item-1 { width: 40%; }
+        .container-8 .item-2 { width: 50%; }
+        .container-8 .item-3 { width: 60%; }
+        .container-8 .item-4 { width: 20%; }
+        .container-8 .item-5 { width: 30%; }
+
+
+
     </style>
 </head>
 <body>
@@ -180,17 +229,22 @@
         <div class="item item-8">Eight</div>
         <div class="item item-9">Nine</div>
     </div>
-    <h3>3x3 grid, constrained proportions.</h3>
-    <div class="container container-6">
+    <h3>Graph vertical bars.</h3>
+    <div class="container-7">
         <div class="item item-1">One</div>
         <div class="item item-2">Two</div>
         <div class="item item-3">Three</div>
         <div class="item item-4">Four</div>
         <div class="item item-5">Five</div>
-        <div class="item item-6">Six</div>
-        <div class="item item-7">Seven</div>
-        <div class="item item-8">Eight</div>
-        <div class="item item-9">Nine</div>
+    </div>
+
+    <h3>Graph horizontal bars.</h3>
+    <div class="container-8">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
     </div>
 </main>
 
