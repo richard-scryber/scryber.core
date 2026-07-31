@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.11-beta</PackageVersion>
+    <PackageVersion>9.6.0.12-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.11-beta
+    <PackageReleaseNotes>9.6.0.12-beta
+CSS grid row-span and row-gap border rendering: grid cells now fill their spanning row height via a post-layout stretch pass. The inner grid-item block is updated to the cell block's final height minus the top margin (row-gap), preventing items overflowing into the gap area and causing missing borders on rows 2+.
+CSS grid explicit placement: fixed gap/column-gap cascade so both shorthand and longhand properties are respected in the correct CSS order. Column-gap visual spacing is now injected as left margin on non-first-column cells so cells render in the correct position. Added Grid_21 through Grid_29 unit tests covering line-based placement, grid-column/grid-row, grid-area with spans, and row-spanning cells.
+flex-direction:column: added justify-content support for column-direction flex containers; fixed align-items when an explicit height is set on the container.
+flex align-items: added support for align-items (flex-start, flex-end, center, stretch, baseline) on flex containers; fixed overflow when the container has multiple columns.
+flex layout in multi-column parents: fixed containerW calculation so percentage-width flex items resolve against the actual flex container width rather than the page width when the container is inside a multi-column layout.
+flex wrap fixes: fixed CSS class-based border suppression (was checking BorderItemKey instead of BorderStyleKey); fixed ghost blank rows and blank pages when flex wrap produces a partial last row; fixed CSS percentage padding/margin axis resolution in wrapped flex rows.
+
+9.6.0.11-beta
 Fixed flex layout percentage-width items being re-resolved against the page width (instead of the flex container) when a child block opened its layout options. Explicit percentage or absolute widths are now correctly pinned to the flex algorithm's container-relative resolved value. Grow-only items (no explicit width) continue to use fill-width behaviour so their padding/border stays within column bounds.
 Fixed flex wrap row-breaking with percentage item widths: GetItemMinWidth previously returned the raw number from a Unit (e.g. 45 for 45%) instead of resolving it against the container, causing all items to appear to fit in one row regardless of their actual pt widths.
 Added Flex_61, Flex_62, Flex_63, Flex_64 layout unit tests covering: flex-grow distribution, explicit fixed widths with no grow, percentage widths resolved against the flex container, and 3-row wrap layout with 45%+100%+45% items.
@@ -132,12 +140,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.11</Version>
+    <Version>9.6.0.12</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.11</FileVersion>
+    <FileVersion>9.6.0.12</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
