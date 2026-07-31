@@ -75,11 +75,19 @@ namespace Scryber.PDF.Layout
             var asDefined = Container.Content.ToArray();
             try
             {
-                
+
                 Container.Content.Clear();
                 Container.Content.Insert(0, this.Table);
-                
+
                 base.DoLayoutComponent();
+
+                // The table engine sets every cell block's height to the row's max height
+                // (via SetCellHeightForRow) and, for spanning cells, to the combined span
+                // height (via AdjustRowspanCellHeights).  Neither step updates the inner
+                // grid-item block (the actual div inside the GridCell), so items shorter
+                // than their row appear floating rather than filling the cell.
+                // Propagate each cell block's final height to its inner div block.
+                StretchAllCellContent();
             }
             finally
             {
@@ -87,6 +95,76 @@ namespace Scryber.PDF.Layout
                 Container.Content.AddRange(asDefined);
             }
             
+        }
+
+        // -----------------------------------------------------------------------
+        // Row-span height propagation
+        // -----------------------------------------------------------------------
+
+        // After base.DoLayoutComponent(), every GridCell block has its final height:
+        //   - non-spanning cells: set to the row's max height by SetCellHeightForRow
+        //   - spanning cells:     set to the combined row span height by AdjustRowspanCellHeights
+        // The inner grid-item block (the actual div) was sized to content height during layout
+        // and is not updated by either step.  Stretch all inner blocks to fill their cell.
+        private void StretchAllCellContent()
+        {
+            var targets = new HashSet<GridCell>();
+            foreach (var rowCells in _cellGrid)
+                foreach (var cell in rowCells)
+                    targets.Add(cell);
+
+            if (targets.Count == 0) return;
+
+            var page = this.Context.DocumentLayout.CurrentPage;
+            SearchAndStretch(page.ContentBlock, targets);
+        }
+
+        private static void SearchAndStretch(PDFLayoutBlock block, HashSet<GridCell> targets)
+        {
+            if (block == null) return;
+
+            if (block.Owner is GridCell gc && targets.Contains(gc))
+            {
+                StretchFirstChildBlock(block);
+                return; // no need to recurse inside the cell we just fixed
+            }
+
+            if (block.Columns == null) return;
+            foreach (var region in block.Columns)
+            {
+                if (region?.Contents == null) continue;
+                for (int i = 0; i < region.Contents.Count; i++)
+                {
+                    if (region.Contents[i] is PDFLayoutBlock child)
+                        SearchAndStretch(child, targets);
+                }
+            }
+        }
+
+        // The GridCell block's TotalBounds.Height includes the cell's top margin (which
+        // carries the row-gap).  The inner grid-item block lives in the content area
+        // *after* that margin, so we must subtract the margin before applying the height.
+        private static void StretchFirstChildBlock(PDFLayoutBlock cellBlock)
+        {
+            var newHeight = cellBlock.TotalBounds.Height;
+            if (newHeight <= Unit.Zero) return;
+
+            // Strip the top margin (row-gap) so the inner block doesn't overflow the gap.
+            if (cellBlock.Position != null)
+                newHeight -= cellBlock.Position.Margins.Top;
+
+            if (newHeight <= Unit.Zero) return;
+
+            if (cellBlock.Columns == null || cellBlock.Columns.Length == 0) return;
+            var region = cellBlock.Columns[0];
+            if (region?.Contents == null || region.Contents.Count == 0) return;
+
+            if (region.Contents[0] is PDFLayoutBlock innerBlock)
+            {
+                var bounds = innerBlock.TotalBounds;
+                bounds.Height = newHeight;
+                innerBlock.TotalBounds = bounds;
+            }
         }
 
         private void InjectColumnWidths()

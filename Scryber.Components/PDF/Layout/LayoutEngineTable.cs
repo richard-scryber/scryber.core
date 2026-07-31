@@ -1135,31 +1135,19 @@ namespace Scryber.PDF.Layout
                 {
                     CellReference cref = this._tblRef.AllCells[r, c];
 
-                    // Only process actual cells, not null placeholders
-                    if (cref != null && cref.Block != null && cref.Type == CellContentType.Content)
-                    {
-                        // Check if this cell has rowspan > 1
-                        int rowspan = cref.RowSpan;
-                        if (rowspan > 1)
-                        {
-                            // Calculate the cumulative height of all spanned rows
-                            Unit totalHeight = Unit.Zero;
-                            for (int spanRow = r; spanRow < r + rowspan && spanRow < rowcount; spanRow++)
-                            {
-                                // Get the height of this row
-                                Unit rowHeight = this._tblRef.GetMaxCellHeightForRow(spanRow);
-                                totalHeight += rowHeight;
-                            }
+                    if (cref == null || cref.Block == null || cref.Type != CellContentType.Content || cref.RowSpan <= 1)
+                        continue;
 
-                            // Set the cell's block height to span all rows
-                            if (totalHeight > Unit.Zero && cref.Block != null)
-                            {
-                                Rect bounds = cref.Block.TotalBounds;
-                                bounds.Height = totalHeight;
-                                cref.Block.TotalBounds = bounds;
-                            }
-                        }
-                    }
+                    int rowspan = cref.RowSpan;
+                    int lastSpanRow = Math.Min(r + rowspan - 1, rowcount - 1);
+
+                    Unit combinedHeight = Unit.Zero;
+                    for (int spanRow = r; spanRow <= lastSpanRow; spanRow++)
+                        combinedHeight += this._tblRef.GetMaxCellHeightForRow(spanRow);
+
+                    Rect bounds = cref.Block.TotalBounds;
+                    bounds.Height = combinedHeight;
+                    cref.Block.TotalBounds = bounds;
                 }
             }
         }

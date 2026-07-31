@@ -450,12 +450,11 @@ namespace Scryber.PDF.Layout
                     if (null != cref && null != cref.Block)
                     {
                         Rect total = cref.Block.TotalBounds;
-                        total.Height = h; //- cref.Margins.Top - cref.Margins.Bottom;
+                        total.Height = h;
                         cref.Block.TotalBounds = total;
                     }
                 }
                 rref.ExplicitHeight = h;
-                
             }
 
             #endregion
