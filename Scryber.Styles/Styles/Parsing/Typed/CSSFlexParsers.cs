@@ -209,12 +209,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && Unit.TryParse(reader.CurrentTextValue, out var gap))
+            if (!reader.ReadNextValue() || !Unit.TryParse(reader.CurrentTextValue, out var first))
+                return false;
+
+            // CSS gap: <row-gap> [<column-gap>]
+            // gap is a shorthand that expands to row-gap + column-gap, writing the same keys
+            // as those individual properties.  This lets CSS declaration order determine which
+            // wins: e.g. "gap:10pt; column-gap:20pt" → column-gap overwrites gap's column value.
+            if (reader.ReadNextValue() && Unit.TryParse(reader.CurrentTextValue, out var second))
             {
-                this.SetValue(onStyle, gap);
-                return true;
+                onStyle.SetValue(StyleKeys.FlexRowGapKey, first);
+                onStyle.SetValue(StyleKeys.FlexColumnGapKey, second);
             }
-            return false;
+            else
+            {
+                onStyle.SetValue(StyleKeys.FlexRowGapKey, first);
+                onStyle.SetValue(StyleKeys.FlexColumnGapKey, first);
+            }
+            return true;
         }
     }
 

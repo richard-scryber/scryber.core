@@ -746,9 +746,15 @@ namespace Scryber.Styles
 
         public static readonly StyleKey GridItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleGrid, NOT_INHERITED);
         public static readonly StyleKey<string> GridTemplateColumnsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtc", GridItemKey);
-        public static readonly StyleKey<string> GridTemplateRowsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtr", GridItemKey);
+        public static readonly StyleKey<string> GridTemplateRowsKey    = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtr", GridItemKey);
+        // Item span keys (legacy / span-only syntax: grid-column: span 2)
         public static readonly StyleKey<int> GridColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcs", GridItemKey);
-        public static readonly StyleKey<int> GridRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrs", GridItemKey);
+        public static readonly StyleKey<int> GridRowSpanKey    = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrs", GridItemKey);
+        // Item explicit placement keys (positive = 1-based line; negative = from-end; 0 = auto)
+        public static readonly StyleKey<int> GridColumnStartKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcl", GridItemKey);
+        public static readonly StyleKey<int> GridColumnEndKey   = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdce", GridItemKey);
+        public static readonly StyleKey<int> GridRowStartKey    = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrl", GridItemKey);
+        public static readonly StyleKey<int> GridRowEndKey      = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdre", GridItemKey);
         public static readonly StyleKey<GridAutoFlow> GridAutoFlowKey = StyleKey.InternalCreateStyleValueKey<GridAutoFlow>((ObjectType)"gdaf", GridItemKey);
 
         //Attachments

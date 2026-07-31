@@ -421,12 +421,14 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(rowBlock);
             Assert.AreEqual(2, rowBlock.Columns.Length);
 
-            // Each column = (600 - 20) / 2 = 290pt
+            // Each column content = (600 - 20) / 2 = 290pt.
+            // Column 0 has no left margin so TotalBounds.Width == content width.
+            // Column 1 has margin-left == gap, so TotalBounds.Width == gap + content width.
             double expectedW = (PageW - gap) / 2.0;
-            Assert.AreEqual(expectedW, rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+            Assert.AreEqual(expectedW,        rowBlock.Columns[0].TotalBounds.Width.PointsValue, 1.0,
                 "Column 0 width with gap");
-            Assert.AreEqual(expectedW, rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
-                "Column 1 width with gap");
+            Assert.AreEqual(gap + expectedW,  rowBlock.Columns[1].TotalBounds.Width.PointsValue, 1.0,
+                "Column 1 total bounds includes margin-left gap");
 
             StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Left",  "Col0 text");
             StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Right", "Col1 text");
@@ -1265,6 +1267,138 @@ namespace Scryber.UnitLayouts
                 
                 
             }
+        }
+        
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Grid_VariousLayouts_Template()
+        {
+            var template = DocStreams.AssertGetTemplatePath("Content/HTML/HTML5/Grid_VariousLayouts.html");
+
+            using var doc = Document.ParseDocument(template);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_VariousLayouts.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
+
+        // ======================================================================
+        // gap CSS property — single and two-value layout tests
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_GapCSS_SingleValue_SetsColumnAndRowGap()
+        {
+            // gap: 20pt (single value) → column-gap = 20pt AND row-gap = 20pt.
+            // Grid: 600pt wide, 2 columns (1fr 1fr), 2 rows, items 50pt high.
+            // Expected column width = (600 - 20) / 2 = 290pt.
+            // Row 1 should be offset by item height (50) + row gap (20) = 70pt from grid top,
+            // and its total height should be item height + row gap = 70pt (top margin on cell).
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20pt; width: 600pt; }
+    .item { height: 50pt; border: 1pt solid black; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_GapCSS_SingleValue.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0       = GetRowBlock(gridBlock, 0);
+            var row1       = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+
+            // Column gap: each column = (600 - 20) / 2 = 290pt
+            const double colGap  = 20;
+            const double rowGap  = 20;
+            const double itemH   = 50;
+            double expectedColW  = (PageW - colGap) / 2.0;
+            Assert.AreEqual(expectedColW, row0.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+                "Column width with single-value gap");
+
+            // Row gap: row 1 starts immediately after row 0 (which is 50pt high),
+            // and its height = 50pt item + 20pt top margin injected for row gap.
+            Assert.AreEqual(itemH,          row1.TotalBounds.Y.PointsValue,      1.0, "Row 1 Y");
+            Assert.AreEqual(itemH + rowGap, row1.TotalBounds.Height.PointsValue, 1.0, "Row 1 height includes row gap");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_GapCSS_TwoValues_SetsColumnAndRowGapIndependently()
+        {
+            // gap: 15pt 25pt → row-gap = 15pt, column-gap = 25pt.
+            // Grid: 600pt wide, 2 columns (1fr 1fr), 2 rows, items 50pt high.
+            // Expected column width = (600 - 25) / 2 = 287.5pt.
+            // Row 1 height = 50pt item + 15pt row gap = 65pt.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15pt 25pt; width: 600pt; }
+    .item { height: 50pt; border: 1pt solid black; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_GapCSS_TwoValues.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0       = GetRowBlock(gridBlock, 0);
+            var row1       = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+
+            const double colGap = 25;
+            const double rowGap = 15;
+            const double itemH  = 50;
+
+            // Column gap = 25pt → each column = (600 - 25) / 2 = 287.5pt
+            double expectedColW = (PageW - colGap) / 2.0;
+            Assert.AreEqual(expectedColW, row0.Columns[0].TotalBounds.Width.PointsValue, 1.0,
+                "Column width with two-value gap (column portion)");
+
+            // Row gap = 15pt → row 1 height = 50pt + 15pt
+            Assert.AreEqual(itemH,          row1.TotalBounds.Y.PointsValue,      1.0, "Row 1 Y");
+            Assert.AreEqual(itemH + rowGap, row1.TotalBounds.Height.PointsValue, 1.0, "Row 1 height includes row gap");
         }
     }
 }

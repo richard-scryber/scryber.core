@@ -318,11 +318,17 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.FlexBasis, new Typed.CSSFlexBasisParser());
             all.Add(CSSStyleItems.Order, new Typed.CSSFlexOrderParser());
 
+            all.Add(CSSStyleItems.GridArea,            new Typed.CSSGridAreaParser());
             all.Add(CSSStyleItems.GridTemplateColumns, new Typed.CSSGridTemplateColumnsParser());
-            all.Add(CSSStyleItems.GridTemplateRows, new Typed.CSSGridTemplateRowsParser());
-            all.Add(CSSStyleItems.GridAutoFlow, new Typed.CSSGridAutoFlowParser());
-            all.Add(CSSStyleItems.GridColumn, new Typed.CSSGridColumnParser());
-            all.Add(CSSStyleItems.GridRow, new Typed.CSSGridRowParser());
+            all.Add(CSSStyleItems.GridTemplateRows,    new Typed.CSSGridTemplateRowsParser());
+            all.Add(CSSStyleItems.GridAutoFlow,        new Typed.CSSGridAutoFlowParser());
+            all.Add(CSSStyleItems.GridColumn,          new Typed.CSSGridColumnParser());
+            all.Add(CSSStyleItems.GridColumnStart,     new Typed.CSSGridColumnStartParser());
+            all.Add(CSSStyleItems.GridColumnEnd,       new Typed.CSSGridColumnEndParser());
+            all.Add(CSSStyleItems.GridRow,             new Typed.CSSGridRowParser());
+            all.Add(CSSStyleItems.GridRowStart,        new Typed.CSSGridRowStartParser());
+            all.Add(CSSStyleItems.GridRowEnd,          new Typed.CSSGridRowEndParser());
+            all.Add(CSSStyleItems.GridGap,             new Typed.CSSGapParser());
 
             _allknown = new ReadOnlyDictionary<string, IParserStyleFactory>(all);
         }

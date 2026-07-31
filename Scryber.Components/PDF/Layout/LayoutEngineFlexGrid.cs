@@ -66,9 +66,11 @@ namespace Scryber.PDF.Layout
         {
             if (_tracks.Count > 0 && _cellGrid.Count > 0)
                 InjectColumnWidths();
-            
+
             if (_rowTracks.Count > 0 && _syntheticRows.Count > 0)
                 InjectRowHeights();
+
+            InjectRowGaps();
 
             var asDefined = Container.Content.ToArray();
             try
@@ -102,12 +104,13 @@ namespace Scryber.PDF.Layout
             if (!tablePos.Padding.IsEmpty)
                 availPts -= (tablePos.Padding.Left + tablePos.Padding.Right).PointsValue;
 
-            // Column gap — reuse the flex gap keys (gap / column-gap)
+            // Column gap: gap and column-gap both write FlexColumnGapKey so CSS order wins.
+            // Fall back to ColumnAlleyKey for legacy usages that only set that key.
             double gapPts = 0;
             if (this.FullStyle.IsValueDefined(StyleKeys.FlexColumnGapKey))
                 gapPts = this.FullStyle.Flex.ColumnGap.PointsValue;
-            else if (this.FullStyle.IsValueDefined(StyleKeys.FlexGapKey))
-                gapPts = this.FullStyle.Flex.Gap.PointsValue;
+            else if (this.FullStyle.IsValueDefined(StyleKeys.ColumnAlleyKey))
+                gapPts = this.FullStyle.GetValue(StyleKeys.ColumnAlleyKey, Drawing.Unit.Zero).PointsValue;
 
             int colCount = _tracks.Count;
             double totalGapPts = gapPts * (colCount - 1);
@@ -119,6 +122,13 @@ namespace Scryber.PDF.Layout
             // Cells in each row are stored left-to-right, so a running column cursor is sufficient
             // for the no-row-span case; row spans that leave column gaps are handled by tracking
             // the occupied slots here too.
+            //
+            // Column gap is injected as margin-left on cells that are not in the first column,
+            // mirroring how InjectRowGaps injects margin-top for row gaps.  The gap space was
+            // already removed from workingPts so column widths are already narrower; the margin
+            // puts the visual space back between adjacent columns.
+            var colGapUnit = gapPts > 0 ? new Unit(gapPts, PageUnits.Points) : Unit.Zero;
+
             var colOccupied = new System.Collections.Generic.Dictionary<(int row, int col), bool>();
             for (int ri = 0; ri < _cellGrid.Count; ri++)
             {
@@ -130,13 +140,24 @@ namespace Scryber.PDF.Layout
                     while (colOccupied.ContainsKey((ri, colCursor)))
                         colCursor++;
 
-                    int span = Math.Max(1, cell.CellColumnSpan);
+                    int span    = Math.Max(1, cell.CellColumnSpan);
                     int rowSpan = Math.Max(1, cell.CellRowSpan);
+
+                    // Sum column widths for this cell's span, clipped to available columns
+                    int actualSpan = Math.Min(span, colPts.Length - colCursor);
                     double totalWidth = 0;
-                    for (int tc = colCursor; tc < colCursor + span && tc < colPts.Length; tc++)
+                    for (int tc = colCursor; tc < colCursor + actualSpan; tc++)
                         totalWidth += colPts[tc];
+                    // Spanning cells must also absorb the inter-column gaps they bridge
+                    if (gapPts > 0 && actualSpan > 1)
+                        totalWidth += gapPts * (actualSpan - 1);
+
                     if (totalWidth > 0)
                         cell.Style.Size.Width = new Unit(totalWidth, PageUnits.Points);
+
+                    // Column gap: inject left margin on every cell that is not in the first column
+                    if (colCursor > 0 && gapPts > 0)
+                        cell.Style.Margins.Left = colGapUnit;
 
                     // Mark slots occupied by this cell's row span
                     for (int dr = 1; dr < rowSpan; dr++)
@@ -250,52 +271,204 @@ namespace Scryber.PDF.Layout
             return grid;
         }
 
+        // -----------------------------------------------------------------------
+        // Placement resolution
+        // -----------------------------------------------------------------------
+
+        private struct GridItemPlacement
+        {
+            public Component Item;
+            public int ColStart; // 0-indexed, or -1 for auto
+            public int ColSpan;  // >= 1
+            public int RowStart; // 0-indexed, or -1 for auto
+            public int RowSpan;  // >= 1
+        }
+
+        // Resolves a component's grid placement from its applied style.
+        // col/row-start -1 means "auto" (let the auto-flow algorithm choose).
+        private static GridItemPlacement ResolveGridItemPlacement(Component item, int colCount)
+        {
+            var style = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
+
+            int colStartRaw = style?.GetValue(StyleKeys.GridColumnStartKey, 0) ?? 0;
+            int colEndRaw   = style?.GetValue(StyleKeys.GridColumnEndKey,   0) ?? 0;
+            int colSpanKey  = style?.GetValue(StyleKeys.GridColumnSpanKey,  0) ?? 0;
+            int rowStartRaw = style?.GetValue(StyleKeys.GridRowStartKey, 0) ?? 0;
+            int rowEndRaw   = style?.GetValue(StyleKeys.GridRowEndKey,   0) ?? 0;
+            int rowSpanKey  = style?.GetValue(StyleKeys.GridRowSpanKey,  0) ?? 0;
+
+            // Resolve column start to 0-indexed, or -1 for auto.
+            // Positive: 1-based line → subtract 1.
+            // Negative: count from end — for N columns, line -1 = line N+1 = 0-indexed N.
+            int colStart = colStartRaw > 0 ? colStartRaw - 1
+                         : colStartRaw < 0 ? Math.Max(0, colCount + colStartRaw + 1)
+                         : -1;
+
+            // Resolve column span from end or span key.
+            int colSpan = 1;
+            if (colEndRaw != 0)
+            {
+                int endLine   = colEndRaw  > 0 ? colEndRaw  : colCount + 2 + colEndRaw;
+                int startLine = colStart   >= 0 ? colStart + 1 : 1;
+                colSpan = Math.Max(1, endLine - startLine);
+            }
+            else if (colSpanKey > 0)
+                colSpan = colSpanKey;
+
+            // Clamp to fit within the grid and ensure at least 1.
+            int maxSpan = colStart >= 0 ? colCount - colStart : colCount;
+            colSpan = Math.Max(1, Math.Min(colSpan, maxSpan));
+
+            // Resolve row start to 0-indexed, or -1 for auto.
+            // Negative row indices are treated as auto (row count is not known upfront).
+            int rowStart = rowStartRaw > 0 ? rowStartRaw - 1 : -1;
+
+            // Resolve row span.
+            int rowSpan = 1;
+            if (rowEndRaw > 0 && rowStartRaw > 0)
+                rowSpan = Math.Max(1, rowEndRaw - rowStartRaw);
+            else if (rowSpanKey > 0)
+                rowSpan = rowSpanKey;
+
+            return new GridItemPlacement
+            {
+                Item     = item,
+                ColStart = colStart,
+                ColSpan  = colSpan,
+                RowStart = rowStart,
+                RowSpan  = rowSpan
+            };
+        }
+
+        // -----------------------------------------------------------------------
+        // Placement helpers
+        // -----------------------------------------------------------------------
+
+        private static void EnsureRows(
+            List<TableRow> syntheticRows, TableGrid grid, List<List<GridCell>> cellGrid, int maxRow)
+        {
+            while (syntheticRows.Count <= maxRow)
+            {
+                var newRow = new TableRow();
+                grid.Rows.Add(newRow);
+                cellGrid.Add(new List<GridCell>());
+                syntheticRows.Add(newRow);
+            }
+        }
+
+        // Stores a cell in the placement map (column-keyed SortedDictionary per row) and marks
+        // the occupied slots.  Cells are committed to syntheticRows/cellGrid in column order
+        // after all placements are resolved, so rendering order matches column position.
+        private static void StoreCell(
+            in GridItemPlacement p, int r, int c,
+            Dictionary<(int, int), bool> occupied,
+            Dictionary<int, SortedDictionary<int, GridCell>> placedCells)
+        {
+            var cell = new GridCell(p.Item, p.ColSpan, p.RowSpan);
+            if (!placedCells.ContainsKey(r))
+                placedCells[r] = new SortedDictionary<int, GridCell>();
+            placedCells[r][c] = cell;
+            for (int dr = 0; dr < p.RowSpan; dr++)
+                for (int dc = 0; dc < p.ColSpan; dc++)
+                    occupied[(r + dr, c + dc)] = true;
+        }
+
+        // Returns true when the rectangular area [r..r+rowSpan) x [c..c+colSpan) is free.
+        private static bool CanPlace(
+            Dictionary<(int, int), bool> occupied, int r, int c, int colSpan, int rowSpan)
+        {
+            for (int dr = 0; dr < rowSpan; dr++)
+                for (int dc = 0; dc < colSpan; dc++)
+                    if (occupied.ContainsKey((r + dr, c + dc))) return false;
+            return true;
+        }
+
+        // -----------------------------------------------------------------------
+        // Row-major placement
+        // -----------------------------------------------------------------------
+
         private static void BuildRowMajor(
             List<Component> items, int colCount,
             TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows)
         {
-            // Track which grid positions are occupied by spans
-            // slot[r][c] = true means already filled by a span from an earlier cell
-            var occupied = new System.Collections.Generic.Dictionary<(int r, int c), bool>();
-            int r = 0;
-            int c = 0;
-
+            var occupied    = new Dictionary<(int, int), bool>();
+            // Cells are stored here (row → col-ordered map) and committed to rows in
+            // column order at the end, so the table engine sees them left-to-right.
+            var placedCells = new Dictionary<int, SortedDictionary<int, GridCell>>();
+            var placements  = new List<GridItemPlacement>(items.Count);
             foreach (var item in items)
+                placements.Add(ResolveGridItemPlacement(item, colCount));
+
+            // Phase 1: items with both row AND column explicitly set.
+            // Pre-place them so the auto-flow cursor can route around them.
+            foreach (var p in placements)
             {
-                // Find next free slot
-                while (occupied.ContainsKey((r, c)))
+                if (p.RowStart < 0 || p.ColStart < 0) continue;
+                EnsureRows(syntheticRows, grid, cellGrid, p.RowStart + p.RowSpan - 1);
+                StoreCell(p, p.RowStart, p.ColStart, occupied, placedCells);
+            }
+
+            // Phase 2: auto-flow cursor for everything else.
+            // Items with explicit column are placed at their column in the first
+            // available row (from the cursor) but do not advance the cursor.
+            // Items with explicit row only find the first free column in that row.
+            // Fully auto items use the normal left-to-right, row-by-row cursor.
+            int curR = 0, curC = 0;
+            foreach (var p in placements)
+            {
+                if (p.RowStart >= 0 && p.ColStart >= 0) continue; // already placed
+
+                int r, c;
+
+                if (p.ColStart >= 0)
                 {
-                    c++;
-                    if (c >= colCount) { c = 0; r++; }
+                    // Explicit column, auto row — find the first row (from curR) where
+                    // the column range is free.
+                    c = p.ColStart;
+                    r = curR;
+                    while (!CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        r++;
+                    // Explicit-column items do not advance the auto-flow cursor.
+                }
+                else if (p.RowStart >= 0)
+                {
+                    // Explicit row, auto column — scan left to right for a free slot.
+                    r = p.RowStart;
+                    c = 0;
+                    while (c + p.ColSpan <= colCount && !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        c++;
+                    if (c + p.ColSpan > colCount) { r = curR; c = curC; } // fallback
+                    // Explicit-row items do not advance the auto-flow cursor.
+                }
+                else
+                {
+                    // Fully auto: advance cursor until we find a slot that fits.
+                    r = curR; c = curC;
+                    while (c + p.ColSpan > colCount || !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                    {
+                        c++;
+                        if (c + p.ColSpan > colCount) { c = 0; r++; }
+                    }
+                    // Advance the cursor past this item.
+                    curC = c + p.ColSpan;
+                    curR = r;
+                    if (curC >= colCount) { curC = 0; curR++; }
                 }
 
-                // Ensure row exists
-                while (syntheticRows.Count <= r)
+                EnsureRows(syntheticRows, grid, cellGrid, r + p.RowSpan - 1);
+                StoreCell(p, r, c, occupied, placedCells);
+            }
+
+            // Commit cells to rows and cellGrid in column order so the table engine
+            // renders them left-to-right regardless of HTML source order.
+            for (int r = 0; r < syntheticRows.Count; r++)
+            {
+                if (!placedCells.TryGetValue(r, out var rowDict)) continue;
+                foreach (var kvp in rowDict) // SortedDictionary iterates in ascending column order
                 {
-                    var newRow = new TableRow();
-                    grid.Rows.Add(newRow);
-                    cellGrid.Add(new List<GridCell>());
-                    syntheticRows.Add(newRow);
+                    syntheticRows[r].Cells.Add(kvp.Value);
+                    cellGrid[r].Add(kvp.Value);
                 }
-
-                var itemStyle = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
-                int colSpan = itemStyle?.GetValue(StyleKeys.GridColumnSpanKey, 1) ?? 1;
-                int rowSpan = itemStyle?.GetValue(StyleKeys.GridRowSpanKey, 1) ?? 1;
-                colSpan = Math.Max(1, colSpan);
-                rowSpan = Math.Max(1, rowSpan);
-
-                var cell = new GridCell(item, colSpan, rowSpan);
-                syntheticRows[r].Cells.Add(cell);
-                cellGrid[r].Add(cell);
-
-                // Mark occupied slots
-                for (int dr = 0; dr < rowSpan; dr++)
-                    for (int dc = 0; dc < colSpan; dc++)
-                        if (dr > 0 || dc > 0)
-                            occupied[(r + dr, c + dc)] = true;
-
-                c += colSpan;
-                if (c >= colCount) { c = 0; r++; }
             }
         }
 
@@ -354,6 +527,30 @@ namespace Scryber.PDF.Layout
                         cell.Style.Size.Height = unit;
                 }
             }
+        }
+
+        private void InjectRowGaps()
+        {
+            double rowGapPts = GetRowGapPts();
+            if (rowGapPts <= 0) return;
+
+            // Add a top margin to all cells in rows after the first.
+            // Cell top margin adds space between the bottom of the previous row and the
+            // top of this row's cells — exactly the CSS row-gap behaviour.
+            var rowGapUnit = new Unit(rowGapPts, PageUnits.Points);
+            for (int r = 1; r < _cellGrid.Count; r++)
+            {
+                foreach (var cell in _cellGrid[r])
+                    cell.Style.Margins.Top = rowGapUnit;
+            }
+        }
+
+        private double GetRowGapPts()
+        {
+            // gap and row-gap both write FlexRowGapKey so CSS order determines the winner.
+            if (this.FullStyle.IsValueDefined(StyleKeys.FlexRowGapKey))
+                return this.FullStyle.Flex.RowGap.PointsValue;
+            return 0;
         }
 
         // -----------------------------------------------------------------------

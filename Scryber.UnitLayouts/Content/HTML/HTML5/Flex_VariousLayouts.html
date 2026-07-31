@@ -170,14 +170,23 @@
             align-items: center;
         }
 
-        .container-9 .item {
+        .container-9 .item,
+        .container-10 .item{
             height: 40px;
-            width: 40%;
+            width: 30%;
             margin-bottom: 10px;
             border: solid 1px blue;
             background-color: rgba(128, 255,255, 0.3);
         }
 
+        .container-10 {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            border: solid 1px green;
+            align-items: center;
+        }
 
     </style>
 </head>
@@ -268,6 +277,19 @@
         <div class="item item-3">Three</div>
         <div class="item item-4">Four</div>
         <div class="item item-5">Five</div>
+    </div>
+
+    <h3>3x3 grid, column reversed.</h3>
+    <div class="container container-10">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+        <div class="item item-6">Six</div>
+        <div class="item item-7">Seven</div>
+        <div class="item item-8">Eight</div>
+        <div class="item item-9">Nine</div>
     </div>
 </main>
 

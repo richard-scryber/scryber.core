@@ -331,10 +331,12 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Flex")]
         public void Gap_SingleValue()
         {
+            // gap is a shorthand: a single value expands to both row-gap and column-gap
             var parser = new CSSGapParser();
             var style = CreateStyle();
             Assert.IsTrue(ParseValue(parser, style, "10pt"));
-            Assert.AreEqual(10.0, style.Flex.Gap.PointsValue, 0.1);
+            Assert.AreEqual(10.0, style.Flex.RowGap.PointsValue,    0.1, "row-gap");
+            Assert.AreEqual(10.0, style.Flex.ColumnGap.PointsValue, 0.1, "column-gap");
         }
 
         [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Flex")]
@@ -344,6 +346,32 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             Assert.IsTrue(ParseValue(parser, style, "5pt"));
             Assert.AreEqual(5.0, style.Flex.RowGap.PointsValue, 0.1);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Flex")]
+        public void Gap_TwoValues_SetsRowAndColumnGapKeys()
+        {
+            var parser = new CSSGapParser();
+            var style = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "10pt 20pt"));
+            Assert.AreEqual(10.0, style.Flex.RowGap.PointsValue, 0.1,
+                "First value is row-gap");
+            Assert.AreEqual(20.0, style.Flex.ColumnGap.PointsValue, 0.1,
+                "Second value is column-gap");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Flex")]
+        public void GridGap_Alias_FullCSSParse()
+        {
+            // grid-gap is an alias for gap: it expands to row-gap + column-gap
+            var allParser = new CSSStyleItemAllParser();
+            var style = new Style();
+            var reader = new CSSStyleItemReader("grid-gap: 15pt");
+            reader.ReadNextAttributeName();
+            Assert.IsTrue(allParser.SetStyleValue(style, reader, null),
+                "grid-gap should be recognised by the all-parser");
+            Assert.AreEqual(15.0, style.Flex.RowGap.PointsValue,    0.1, "grid-gap sets row-gap");
+            Assert.AreEqual(15.0, style.Flex.ColumnGap.PointsValue, 0.1, "grid-gap sets column-gap");
         }
 
         // -----------------------------------------------------------------------

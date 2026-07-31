@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        @page {
+            size: 600pt 800pt;
+            margin: 0;
+        }
+
+        body {
+            margin: 20pt;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: bold;
+            font-style: normal;
+            color: #000;
+            text-decoration: none;
+        }
+
+        h1 {
+            font-size: 24pt;
+            margin: 11pt 0;
+        }
+
+        h2 {
+            font-size: 18pt;
+            margin: 13pt 0;
+        }
+
+        h3 {
+            font-size: 14pt;
+            margin: 16pt 0;
+        }
+
+        .container-1{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            width: 100%;
+        }
+
+        .item {
+            padding: 15px;
+            border: solid 1px blue;
+            background-color: rgba(128, 255, 255, 0.3);
+        }
+
+        .container-2{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            width: 100%;
+        }
+
+        .container-2 .a {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .container-2 .b {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .c {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .d {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .container-2 .e {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 2;
+            grid-row-end: 3;
+        }
+        .container-2 .f {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+
+        .container-3{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            width: 100%;
+        }
+
+        .container-3 .a {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+        .container-3 .b {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+        }
+        .container-3 .c {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+        }
+        .container-3 .d {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+        .container-3 .e {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+        }
+        .container-3 .f {
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
+        }
+
+        .container-4{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            width: 100%;
+        }
+
+
+        .container-4 .a {
+            grid-area: 1 / 2 / 2 / 3;
+        }
+        .container-4 .b {
+            grid-area: 2 / 2 / 3 / 3;
+        }
+        .container-4 .c {
+            grid-area: 2 / 3 / 3 / 4;
+        }
+        .container-4 .d {
+            grid-area: 1 / 1 / 2 / 2;
+        }
+        .container-4 .e {
+            grid-area: 2 / 1 / 3 / 2;
+        }
+        .container-4 .f {
+            grid-area: 1 / 3 / 2 / 4;
+        }
+
+    </style>
+</head>
+<body>
+
+<main>
+    <h1>Testing the grid layout options</h1>
+    <h3>Simple grid layout.</h3>
+    <div class="container container-1">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+        <div class="item item-6">Six</div>
+    </div>
+    <hr/>
+    <h3>Line based placement.</h3>
+    <div class="container container-2">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>Line based placement, grid-row, grid-column.</h3>
+    <div class="container container-3">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>Line based placement, grid-area.</h3>
+    <div class="container container-4">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+</main>
+
+</body>
+</html>

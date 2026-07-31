@@ -201,8 +201,14 @@ namespace Scryber.Html
         public const string GridTemplateColumns = "grid-template-columns";
         public const string GridTemplateRows = "grid-template-rows";
         public const string GridAutoFlow = "grid-auto-flow";
-        public const string GridColumn = "grid-column";
-        public const string GridRow = "grid-row";
+        public const string GridColumn      = "grid-column";
+        public const string GridColumnStart = "grid-column-start";
+        public const string GridColumnEnd   = "grid-column-end";
+        public const string GridRow         = "grid-row";
+        public const string GridRowStart    = "grid-row-start";
+        public const string GridRowEnd      = "grid-row-end";
+        public const string GridArea        = "grid-area";
+        public const string GridGap = "grid-gap";
     }
 }
 
