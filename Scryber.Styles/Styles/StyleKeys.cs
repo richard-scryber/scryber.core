@@ -747,14 +747,13 @@ namespace Scryber.Styles
         public static readonly StyleKey GridItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleGrid, NOT_INHERITED);
         public static readonly StyleKey<string> GridTemplateColumnsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtc", GridItemKey);
         public static readonly StyleKey<string> GridTemplateRowsKey    = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdtr", GridItemKey);
-        // Item span keys (legacy / span-only syntax: grid-column: span 2)
-        public static readonly StyleKey<int> GridColumnSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcs", GridItemKey);
-        public static readonly StyleKey<int> GridRowSpanKey    = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrs", GridItemKey);
-        // Item explicit placement keys (positive = 1-based line; negative = from-end; 0 = auto)
-        public static readonly StyleKey<int> GridColumnStartKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdcl", GridItemKey);
-        public static readonly StyleKey<int> GridColumnEndKey   = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdce", GridItemKey);
-        public static readonly StyleKey<int> GridRowStartKey    = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdrl", GridItemKey);
-        public static readonly StyleKey<int> GridRowEndKey      = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"gdre", GridItemKey);
+        public static readonly StyleKey<Drawing.GridTemplateAreasValue> GridTemplateAreasKey = StyleKey.InternalCreateStyleValueKey<Drawing.GridTemplateAreasValue>((ObjectType)"gdta", GridItemKey);
+        // Item placement keys — each holds a GridLineValue (explicit line, named line, span, or auto)
+        public static readonly StyleKey<Drawing.GridLineValue> GridColumnStartKey = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdcl", GridItemKey);
+        public static readonly StyleKey<Drawing.GridLineValue> GridColumnEndKey   = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdce", GridItemKey);
+        public static readonly StyleKey<Drawing.GridLineValue> GridRowStartKey    = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdrl", GridItemKey);
+        public static readonly StyleKey<Drawing.GridLineValue> GridRowEndKey      = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdre", GridItemKey);
+        public static readonly StyleKey<string> GridAreaNameKey                   = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdan", GridItemKey);
         public static readonly StyleKey<GridAutoFlow> GridAutoFlowKey = StyleKey.InternalCreateStyleValueKey<GridAutoFlow>((ObjectType)"gdaf", GridItemKey);
 
         //Attachments

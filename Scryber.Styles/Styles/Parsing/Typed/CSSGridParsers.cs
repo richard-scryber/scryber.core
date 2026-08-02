@@ -29,39 +29,48 @@ namespace Scryber.Styles.Parsing.Typed
         static List<string> Tokenise(string s)
             => new List<string>(s.Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries));
 
-        // Parses a list of tokens as a single grid-line value.
-        // Returns isAuto=true when the value is unset/auto.
-        // isSpan=true  → value is a span count (no explicit line number)
-        // isSpan=false → value is a line number (positive or negative)
-        public static bool TryParse(List<string> tokens,
-                                    out int value, out bool isSpan, out bool isAuto)
+        // Returns true if the string looks like a CSS identifier (not a number / keyword).
+        static bool IsIdentifier(string s)
         {
-            value = 0; isSpan = false; isAuto = true;
+            if (string.IsNullOrEmpty(s)) return false;
+            char first = s[0];
+            return char.IsLetter(first) || first == '-' || first == '_';
+        }
 
-            if (tokens.Count == 0) return true; // auto
+        // Parse a token list into a single GridLineValue.
+        // Handles: auto, N, span N, <name>, span <name>.
+        public static GridLineValue Parse(List<string> tokens)
+        {
+            if (tokens.Count == 0)
+                return GridLineValue.Auto;
 
-            if (tokens[0].Equals("auto", StringComparison.OrdinalIgnoreCase)) return true;
+            string t0 = tokens[0];
 
-            // "span N"
-            if (tokens.Count >= 2
-                && tokens[0].Equals("span", StringComparison.OrdinalIgnoreCase)
-                && int.TryParse(tokens[1], out int s))
+            if (t0.Equals("auto", StringComparison.OrdinalIgnoreCase))
+                return GridLineValue.Auto;
+
+            bool isSpanKeyword = t0.Equals("span", StringComparison.OrdinalIgnoreCase);
+
+            if (isSpanKeyword && tokens.Count >= 2)
             {
-                value = Math.Max(1, s);
-                isSpan = true;
-                isAuto = false;
-                return true;
+                string t1 = tokens[1];
+                // "span N"
+                if (int.TryParse(t1, out int sn))
+                    return GridLineValue.Span(Math.Max(1, sn));
+                // "span <name>"
+                if (IsIdentifier(t1))
+                    return GridLineValue.Named(t1, span: true);
             }
 
-            // Integer (positive or negative)
-            if (tokens.Count == 1 && int.TryParse(tokens[0], out int n) && n != 0)
-            {
-                value  = n;
-                isAuto = false;
-                return true;
-            }
+            // Integer line number (positive or negative)
+            if (tokens.Count == 1 && int.TryParse(t0, out int n) && n != 0)
+                return GridLineValue.Line(n);
 
-            return false; // unrecognised
+            // Named line reference
+            if (tokens.Count == 1 && IsIdentifier(t0))
+                return GridLineValue.Named(t0);
+
+            return GridLineValue.Auto; // unrecognised — treat as auto
         }
     }
 
@@ -77,31 +86,15 @@ namespace Scryber.Styles.Parsing.Typed
         {
             var (left, right) = GridLineParser.ReadAndSplit(reader);
 
-            if (!GridLineParser.TryParse(left, out int startVal, out bool startIsSpan, out bool startIsAuto))
-                return false;
+            var startVal = GridLineParser.Parse(left);
+            if (startVal.IsSet && !startVal.IsAuto)
+                onStyle.SetValue(StyleKeys.GridColumnStartKey, startVal);
 
-            // Left side
-            if (!startIsAuto)
-            {
-                if (startIsSpan)
-                    onStyle.SetValue(StyleKeys.GridColumnSpanKey, startVal);
-                else
-                    onStyle.SetValue(StyleKeys.GridColumnStartKey, startVal);
-            }
-
-            // Right side (optional)
             if (right.Count > 0)
             {
-                if (!GridLineParser.TryParse(right, out int endVal, out bool endIsSpan, out bool endIsAuto))
-                    return false;
-
-                if (!endIsAuto)
-                {
-                    if (endIsSpan)
-                        onStyle.SetValue(StyleKeys.GridColumnSpanKey, endVal);
-                    else
-                        onStyle.SetValue(StyleKeys.GridColumnEndKey, endVal);
-                }
+                var endVal = GridLineParser.Parse(right);
+                if (endVal.IsSet && !endVal.IsAuto)
+                    onStyle.SetValue(StyleKeys.GridColumnEndKey, endVal);
             }
 
             return true;
@@ -120,29 +113,15 @@ namespace Scryber.Styles.Parsing.Typed
         {
             var (left, right) = GridLineParser.ReadAndSplit(reader);
 
-            if (!GridLineParser.TryParse(left, out int startVal, out bool startIsSpan, out bool startIsAuto))
-                return false;
-
-            if (!startIsAuto)
-            {
-                if (startIsSpan)
-                    onStyle.SetValue(StyleKeys.GridRowSpanKey, startVal);
-                else
-                    onStyle.SetValue(StyleKeys.GridRowStartKey, startVal);
-            }
+            var startVal = GridLineParser.Parse(left);
+            if (startVal.IsSet && !startVal.IsAuto)
+                onStyle.SetValue(StyleKeys.GridRowStartKey, startVal);
 
             if (right.Count > 0)
             {
-                if (!GridLineParser.TryParse(right, out int endVal, out bool endIsSpan, out bool endIsAuto))
-                    return false;
-
-                if (!endIsAuto)
-                {
-                    if (endIsSpan)
-                        onStyle.SetValue(StyleKeys.GridRowSpanKey, endVal);
-                    else
-                        onStyle.SetValue(StyleKeys.GridRowEndKey, endVal);
-                }
+                var endVal = GridLineParser.Parse(right);
+                if (endVal.IsSet && !endVal.IsAuto)
+                    onStyle.SetValue(StyleKeys.GridRowEndKey, endVal);
             }
 
             return true;
@@ -160,13 +139,9 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             var (left, _) = GridLineParser.ReadAndSplit(reader);
-            if (!GridLineParser.TryParse(left, out int val, out bool isSpan, out bool isAuto))
-                return false;
-            if (!isAuto)
-            {
-                if (isSpan) onStyle.SetValue(StyleKeys.GridColumnSpanKey, val);
-                else        onStyle.SetValue(StyleKeys.GridColumnStartKey, val);
-            }
+            var val = GridLineParser.Parse(left);
+            if (val.IsSet && !val.IsAuto)
+                onStyle.SetValue(StyleKeys.GridColumnStartKey, val);
             return true;
         }
     }
@@ -178,13 +153,9 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             var (left, _) = GridLineParser.ReadAndSplit(reader);
-            if (!GridLineParser.TryParse(left, out int val, out bool isSpan, out bool isAuto))
-                return false;
-            if (!isAuto)
-            {
-                if (isSpan) onStyle.SetValue(StyleKeys.GridRowSpanKey, val);
-                else        onStyle.SetValue(StyleKeys.GridRowStartKey, val);
-            }
+            var val = GridLineParser.Parse(left);
+            if (val.IsSet && !val.IsAuto)
+                onStyle.SetValue(StyleKeys.GridRowStartKey, val);
             return true;
         }
     }
@@ -200,13 +171,9 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             var (left, _) = GridLineParser.ReadAndSplit(reader);
-            if (!GridLineParser.TryParse(left, out int val, out bool isSpan, out bool isAuto))
-                return false;
-            if (!isAuto)
-            {
-                if (isSpan) onStyle.SetValue(StyleKeys.GridColumnSpanKey, val);
-                else        onStyle.SetValue(StyleKeys.GridColumnEndKey,   val);
-            }
+            var val = GridLineParser.Parse(left);
+            if (val.IsSet && !val.IsAuto)
+                onStyle.SetValue(StyleKeys.GridColumnEndKey, val);
             return true;
         }
     }
@@ -218,20 +185,17 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             var (left, _) = GridLineParser.ReadAndSplit(reader);
-            if (!GridLineParser.TryParse(left, out int val, out bool isSpan, out bool isAuto))
-                return false;
-            if (!isAuto)
-            {
-                if (isSpan) onStyle.SetValue(StyleKeys.GridRowSpanKey, val);
-                else        onStyle.SetValue(StyleKeys.GridRowEndKey,   val);
-            }
+            var val = GridLineParser.Parse(left);
+            if (val.IsSet && !val.IsAuto)
+                onStyle.SetValue(StyleKeys.GridRowEndKey, val);
             return true;
         }
     }
 
     // -----------------------------------------------------------------------
-    // grid-area shorthand: row-start / col-start / row-end / col-end
-    // Named areas are not supported; only line numbers and span values.
+    // grid-area shorthand
+    // Single identifier  → grid-area: header  (named template area)
+    // 4-part slash form  → grid-area: row-start / col-start / row-end / col-end
     // -----------------------------------------------------------------------
 
     public class CSSGridAreaParser : CSSStyleValueParser
@@ -245,26 +209,69 @@ namespace Scryber.Styles.Parsing.Typed
                 all.Add(reader.CurrentTextValue.Trim());
 
             var joined = string.Join(" ", all);
-            var parts  = joined.Split(new[] { '/' }, 4);
 
-            // Order: row-start / col-start / row-end / col-end
-            Apply(onStyle, parts, 0, StyleKeys.GridRowStartKey,    StyleKeys.GridRowSpanKey);
-            Apply(onStyle, parts, 1, StyleKeys.GridColumnStartKey, StyleKeys.GridColumnSpanKey);
-            Apply(onStyle, parts, 2, StyleKeys.GridRowEndKey,      StyleKeys.GridRowSpanKey);
-            Apply(onStyle, parts, 3, StyleKeys.GridColumnEndKey,   StyleKeys.GridColumnSpanKey);
+            // Single token with no '/' → named area reference
+            if (!joined.Contains('/'))
+            {
+                var tokens = new List<string>(joined.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries));
+                if (tokens.Count == 1)
+                {
+                    var val = GridLineParser.Parse(tokens);
+                    if (val.IsNamed)
+                    {
+                        onStyle.SetValue(StyleKeys.GridAreaNameKey, val.Name);
+                        return true;
+                    }
+                }
+            }
+
+            // 4-part form: row-start / col-start / row-end / col-end
+            var parts = joined.Split(new[] {'/'}, 4);
+            Apply(onStyle, parts, 0, StyleKeys.GridRowStartKey);
+            Apply(onStyle, parts, 1, StyleKeys.GridColumnStartKey);
+            Apply(onStyle, parts, 2, StyleKeys.GridRowEndKey);
+            Apply(onStyle, parts, 3, StyleKeys.GridColumnEndKey);
             return true;
         }
 
         private static void Apply(Style onStyle, string[] parts, int index,
-                                   StyleKey<int> lineKey, StyleKey<int> spanKey)
+                                   StyleKey<GridLineValue> key)
         {
             if (index >= parts.Length) return;
             var tokens = new List<string>(
-                parts[index].Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            if (!GridLineParser.TryParse(tokens, out int val, out bool isSpan, out bool isAuto))
-                return;
-            if (!isAuto)
-                onStyle.SetValue(isSpan ? spanKey : lineKey, val);
+                parts[index].Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries));
+            var val = GridLineParser.Parse(tokens);
+            if (val.IsSet && !val.IsAuto)
+                onStyle.SetValue(key, val);
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // grid-template-areas  — stores the parsed GridTemplateAreasValue
+    // -----------------------------------------------------------------------
+
+    public class CSSGridTemplateAreasParser : CSSStyleValueParser
+    {
+        public CSSGridTemplateAreasParser() : base(CSSStyleItems.GridTemplateAreas) { }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            // Collect all tokens (the CSS reader preserves quoted strings with their quotes)
+            var sb = new System.Text.StringBuilder();
+            while (reader.ReadNextValue())
+            {
+                if (sb.Length > 0) sb.Append(' ');
+                sb.Append(reader.CurrentTextValue);
+            }
+            var raw = sb.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            if (GridTemplateAreasValue.TryParse(raw, out var areas))
+            {
+                onStyle.SetValue(StyleKeys.GridTemplateAreasKey, areas);
+                return true;
+            }
+            return false;
         }
     }
 

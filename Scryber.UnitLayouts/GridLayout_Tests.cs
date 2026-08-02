@@ -961,7 +961,7 @@ namespace Scryber.UnitLayouts
             var grid = CreateGrid(pg, "1fr 1fr 1fr");
 
             var itemA = AddItem(grid, "Spanned");
-            itemA.Style.Grid.ColumnSpan = 2;
+            itemA.Style.Grid.ColumnEnd = Scryber.Drawing.GridLineValue.Span(2);
 
             var itemB = AddItem(grid, "Normal");
 
@@ -1004,7 +1004,7 @@ namespace Scryber.UnitLayouts
             var grid = CreateGrid(pg, "1fr 1fr");
 
             var itemA = AddItem(grid, "Full-row");
-            itemA.Style.Grid.ColumnSpan = 2;
+            itemA.Style.Grid.ColumnEnd = Scryber.Drawing.GridLineValue.Span(2);
 
             AddItem(grid, "B");
             AddItem(grid, "C");
@@ -1053,7 +1053,7 @@ namespace Scryber.UnitLayouts
             var grid = CreateGrid(pg, "1fr 1fr");
 
             var itemA = AddItem(grid, "Alpha");
-            itemA.Style.Grid.ColumnSpan = 1;
+            itemA.Style.Grid.ColumnEnd = Scryber.Drawing.GridLineValue.Span(1);
 
             AddItem(grid, "Beta");
 

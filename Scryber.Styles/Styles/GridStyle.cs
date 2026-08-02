@@ -27,21 +27,37 @@ namespace Scryber.Styles
 
         public void RemoveTemplateRows() { this.RemoveValue(StyleKeys.GridTemplateRowsKey); }
 
-        public int ColumnSpan
+        public GridLineValue ColumnStart
         {
-            get { int v; return this.TryGetValue(StyleKeys.GridColumnSpanKey, out v) ? v : 1; }
-            set { this.SetValue(StyleKeys.GridColumnSpanKey, value); }
+            get { GridLineValue v; return this.TryGetValue(StyleKeys.GridColumnStartKey, out v) ? v : GridLineValue.Unset; }
+            set { this.SetValue(StyleKeys.GridColumnStartKey, value); }
         }
 
-        public void RemoveColumnSpan() { this.RemoveValue(StyleKeys.GridColumnSpanKey); }
+        public void RemoveColumnStart() { this.RemoveValue(StyleKeys.GridColumnStartKey); }
 
-        public int RowSpan
+        public GridLineValue ColumnEnd
         {
-            get { int v; return this.TryGetValue(StyleKeys.GridRowSpanKey, out v) ? v : 1; }
-            set { this.SetValue(StyleKeys.GridRowSpanKey, value); }
+            get { GridLineValue v; return this.TryGetValue(StyleKeys.GridColumnEndKey, out v) ? v : GridLineValue.Unset; }
+            set { this.SetValue(StyleKeys.GridColumnEndKey, value); }
         }
 
-        public void RemoveRowSpan() { this.RemoveValue(StyleKeys.GridRowSpanKey); }
+        public void RemoveColumnEnd() { this.RemoveValue(StyleKeys.GridColumnEndKey); }
+
+        public GridLineValue RowStart
+        {
+            get { GridLineValue v; return this.TryGetValue(StyleKeys.GridRowStartKey, out v) ? v : GridLineValue.Unset; }
+            set { this.SetValue(StyleKeys.GridRowStartKey, value); }
+        }
+
+        public void RemoveRowStart() { this.RemoveValue(StyleKeys.GridRowStartKey); }
+
+        public GridLineValue RowEnd
+        {
+            get { GridLineValue v; return this.TryGetValue(StyleKeys.GridRowEndKey, out v) ? v : GridLineValue.Unset; }
+            set { this.SetValue(StyleKeys.GridRowEndKey, value); }
+        }
+
+        public void RemoveRowEnd() { this.RemoveValue(StyleKeys.GridRowEndKey); }
 
         public GridAutoFlow AutoFlow
         {

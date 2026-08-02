@@ -376,6 +376,193 @@ namespace Scryber.Drawing
         Column = 1
     }
 
+    // -----------------------------------------------------------------------
+    // Grid line value — encapsulates one grid-column/row start or end value.
+    // Replaces the separate int + span int style keys.
+    // -----------------------------------------------------------------------
+
+    public readonly struct GridLineValue
+    {
+        public enum LineKind { Unset, Auto, Explicit, Named }
+
+        public readonly LineKind Kind;
+        public readonly int      Value;  // 1-based line number or span count
+        public readonly string   Name;   // non-null when Kind == Named
+        public readonly bool     IsSpan; // "span N" or "span <name>"
+
+        public bool IsUnset    => Kind == LineKind.Unset;
+        public bool IsAuto     => Kind == LineKind.Auto;
+        public bool IsExplicit => Kind == LineKind.Explicit;
+        public bool IsNamed    => Kind == LineKind.Named;
+        public bool IsSet      => Kind != LineKind.Unset;
+
+        private GridLineValue(LineKind kind, string name, int value, bool isSpan)
+        { Kind = kind; Name = name; Value = value; IsSpan = isSpan; }
+
+        public static GridLineValue Unset  => default;
+        public static GridLineValue Auto   => new GridLineValue(LineKind.Auto,     null, 0, false);
+        public static GridLineValue Line(int n)                           => new GridLineValue(LineKind.Explicit, null, n,    false);
+        public static GridLineValue Span(int n)                           => new GridLineValue(LineKind.Explicit, null, n,    true);
+        public static GridLineValue Named(string nm, bool span = false)   => new GridLineValue(LineKind.Named,    nm,   0,    span);
+
+        // Resolve to 0-based start index, or -1 for auto/unresolved.
+        public int ResolveStart(System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>> lineNames)
+        {
+            if (!IsSet || IsAuto || IsSpan) return -1;
+            if (IsExplicit) return Value > 0 ? Value - 1 : -1;
+            if (IsNamed && lineNames != null && lineNames.TryGetValue(Name, out var lines) && lines.Count > 0)
+                return lines[0] - 1;
+            return -1;
+        }
+
+        // Resolve to span count given the resolved 0-based start index.
+        public int ResolveSpan(int resolvedStart, int trackCount,
+            System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>> lineNames)
+        {
+            if (!IsSet) return 1;
+
+            if (IsExplicit)
+            {
+                if (IsSpan) return System.Math.Max(1, Value);
+                // end line number → span = end - start
+                int endLine = Value > 0 ? Value : trackCount + 2 + Value;
+                int startLine = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                return System.Math.Max(1, endLine - startLine);
+            }
+
+            if (IsNamed && lineNames != null && lineNames.TryGetValue(Name, out var lines) && lines.Count > 0)
+            {
+                if (IsSpan)
+                {
+                    // span <name>: distance to the next occurrence of this line after start
+                    int startLine = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                    foreach (var l in lines)
+                        if (l > startLine) return l - startLine;
+                    return 1;
+                }
+                // end name: span = first matching line - start
+                int startL = resolvedStart >= 0 ? resolvedStart + 1 : 1;
+                return System.Math.Max(1, lines[0] - startL);
+            }
+
+            return 1;
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Grid template areas value — parsed form of grid-template-areas.
+    // -----------------------------------------------------------------------
+
+    public readonly struct GridTemplateAreasValue
+    {
+        private readonly string[,] _grid; // [row, col] — null = empty cell (dot)
+
+        public int RowCount { get; }
+        public int ColCount { get; }
+
+        public bool IsEmpty => _grid == null || RowCount == 0 || ColCount == 0;
+
+        private GridTemplateAreasValue(string[,] grid, int rows, int cols)
+        { _grid = grid; RowCount = rows; ColCount = cols; }
+
+        // All distinct non-empty area names in document order.
+        public System.Collections.Generic.IEnumerable<string> AreaNames()
+        {
+            if (_grid == null) yield break;
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+            for (int r = 0; r < RowCount; r++)
+                for (int c = 0; c < ColCount; c++)
+                {
+                    var n = _grid[r, c];
+                    if (n != null && seen.Add(n)) yield return n;
+                }
+        }
+
+        // Resolve a named area to 1-based line indices (start inclusive, end exclusive).
+        // Returns false if the name is not found in the grid.
+        public bool TryGetAreaBounds(string name,
+            out int rowStart, out int rowEnd, out int colStart, out int colEnd)
+        {
+            rowStart = rowEnd = colStart = colEnd = 0;
+            if (_grid == null || string.IsNullOrEmpty(name)) return false;
+
+            bool found = false;
+            for (int r = 0; r < RowCount; r++)
+            {
+                for (int c = 0; c < ColCount; c++)
+                {
+                    if (!string.Equals(_grid[r, c], name, System.StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    if (!found)
+                    {
+                        rowStart = r + 1; rowEnd = r + 2;
+                        colStart = c + 1; colEnd = c + 2;
+                        found = true;
+                    }
+                    else
+                    {
+                        if (r + 1 < rowStart) rowStart = r + 1;
+                        if (r + 2 > rowEnd)   rowEnd   = r + 2;
+                        if (c + 1 < colStart) colStart = c + 1;
+                        if (c + 2 > colEnd)   colEnd   = c + 2;
+                    }
+                }
+            }
+            return found;
+        }
+
+        // Parse the raw CSS value: a sequence of quoted row strings.
+        // Dots (any run of only '.' characters) denote empty cells.
+        public static bool TryParse(string raw, out GridTemplateAreasValue result)
+        {
+            result = default;
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            var rows = new System.Collections.Generic.List<string[]>();
+            int i = 0;
+            while (i < raw.Length)
+            {
+                // skip whitespace
+                while (i < raw.Length && char.IsWhiteSpace(raw[i])) i++;
+                if (i >= raw.Length) break;
+
+                char open = raw[i];
+                if (open != '"' && open != '\'') { i++; continue; } // skip non-quoted tokens
+                i++;
+                int start = i;
+                while (i < raw.Length && raw[i] != open) i++;
+                string rowStr = raw.Substring(start, i - start);
+                i++; // skip closing quote
+
+                var cells = rowStr.Split(new[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries);
+                var row = new string[cells.Length];
+                for (int c = 0; c < cells.Length; c++)
+                    row[c] = IsDot(cells[c]) ? null : cells[c];
+                rows.Add(row);
+            }
+
+            if (rows.Count == 0) return false;
+
+            int colCount = 0;
+            foreach (var r in rows) if (r.Length > colCount) colCount = r.Length;
+
+            var grid = new string[rows.Count, colCount];
+            for (int r = 0; r < rows.Count; r++)
+                for (int c = 0; c < rows[r].Length; c++)
+                    grid[r, c] = rows[r][c];
+
+            result = new GridTemplateAreasValue(grid, rows.Count, colCount);
+            return true;
+        }
+
+        // Any token consisting solely of '.' characters is an empty cell.
+        private static bool IsDot(string s)
+        {
+            foreach (char c in s) if (c != '.') return false;
+            return s.Length > 0;
+        }
+    }
+
     public enum FloatMode
     {
         /// <summary>

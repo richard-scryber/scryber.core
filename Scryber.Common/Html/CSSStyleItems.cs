@@ -207,7 +207,8 @@ namespace Scryber.Html
         public const string GridRow         = "grid-row";
         public const string GridRowStart    = "grid-row-start";
         public const string GridRowEnd      = "grid-row-end";
-        public const string GridArea        = "grid-area";
+        public const string GridArea          = "grid-area";
+        public const string GridTemplateAreas = "grid-template-areas";
         public const string GridGap = "grid-gap";
     }
 }

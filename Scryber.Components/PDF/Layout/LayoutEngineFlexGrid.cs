@@ -38,24 +38,35 @@ namespace Scryber.PDF.Layout
         private readonly List<TrackDef> _rowTracks;
         private readonly List<TableRow> _syntheticRows;
 
+        // Line-name maps built from [name] tokens in grid-template-columns/rows.
+        // Key = name, value = sorted list of 1-based line indices.
+        private readonly Dictionary<string, List<int>> _colLineNames;
+        private readonly Dictionary<string, List<int>> _rowLineNames;
+
+        // Parsed grid-template-areas (may be empty).
+        private readonly GridTemplateAreasValue _templateAreas;
+
         protected IContainerComponent Container { get; set; }
         protected Style ContainerStyle { get; set; }
-        
+
         // -----------------------------------------------------------------------
         // Constructor
         // -----------------------------------------------------------------------
 
         public LayoutEngineFlexGrid(ContainerComponent container, IPDFLayoutEngine parent, Style containerStyle)
-            : base(BuildSyntheticTable(container, containerStyle, out var tracks, out var cellGrid, out var syntheticRows, out var rowTracks), parent)
+            : base(BuildSyntheticTable(container, containerStyle,
+                   out var tracks, out var cellGrid, out var syntheticRows, out var rowTracks,
+                   out var colLineNames, out var rowLineNames, out var templateAreas), parent)
         {
-            _tracks       = tracks;
-            _cellGrid     = cellGrid;
+            _tracks        = tracks;
+            _cellGrid      = cellGrid;
             _syntheticRows = syntheticRows;
-            _rowTracks    = rowTracks;
+            _rowTracks     = rowTracks;
+            _colLineNames  = colLineNames;
+            _rowLineNames  = rowLineNames;
+            _templateAreas = templateAreas;
             ContainerStyle = containerStyle;
-            Container = container;
-            
-            //((Panel)container).Contents.Insert(0, this.Table);
+            Container      = container;
         }
 
         // -----------------------------------------------------------------------
@@ -420,20 +431,24 @@ namespace Scryber.PDF.Layout
             out List<TrackDef> tracks,
             out List<List<GridCell>> cellGrid,
             out List<TableRow> syntheticRows,
-            out List<TrackDef> rowTracks)
+            out List<TrackDef> rowTracks,
+            out Dictionary<string, List<int>> colLineNames,
+            out Dictionary<string, List<int>> rowLineNames,
+            out GridTemplateAreasValue templateAreas)
         {
-            tracks       = ParseTemplateCols(source, containerStyle);
-            rowTracks    = ParseTemplateRows(source, containerStyle);
-            cellGrid     = new List<List<GridCell>>();
+            tracks        = ParseTemplateCols(source, containerStyle, out colLineNames);
+            rowTracks     = ParseTemplateRows(source, containerStyle, out rowLineNames);
+            templateAreas = ParseTemplateAreas(source, containerStyle, colLineNames, rowLineNames);
+            cellGrid      = new List<List<GridCell>>();
             syntheticRows = new List<TableRow>();
-            
-            if(tracks.Count == 0)
+
+            if (tracks.Count == 0)
                 tracks.Add(new TrackDef(TrackType.Fr, 1));
-            
-            if(rowTracks.Count == 0)
+
+            if (rowTracks.Count == 0)
                 rowTracks.Add(new TrackDef(TrackType.Fr, 1));
 
-            var grid = new TableGrid();
+            var grid     = new TableGrid();
             int colCount = tracks.Count;
 
             if (colCount == 0 || !(source is IContainerComponent ic) || !ic.HasContent)
@@ -453,9 +468,11 @@ namespace Scryber.PDF.Layout
             var autoFlow = containerStyle.GetValue(StyleKeys.GridAutoFlowKey, GridAutoFlow.Row);
 
             if (autoFlow == GridAutoFlow.Column)
-                BuildColumnMajor(items, colCount, grid, cellGrid, syntheticRows);
+                BuildColumnMajor(items, colCount, grid, cellGrid, syntheticRows,
+                                  colLineNames, rowLineNames, templateAreas);
             else
-                BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows);
+                BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows,
+                              colLineNames, rowLineNames, templateAreas);
 
             return grid;
         }
@@ -475,57 +492,60 @@ namespace Scryber.PDF.Layout
 
         // Resolves a component's grid placement from its applied style.
         // col/row-start -1 means "auto" (let the auto-flow algorithm choose).
-        private static GridItemPlacement ResolveGridItemPlacement(Component item, int colCount)
+        private static GridItemPlacement ResolveGridItemPlacement(
+            Component item, int colCount,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
         {
             var style = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
 
-            int colStartRaw = style?.GetValue(StyleKeys.GridColumnStartKey, 0) ?? 0;
-            int colEndRaw   = style?.GetValue(StyleKeys.GridColumnEndKey,   0) ?? 0;
-            int colSpanKey  = style?.GetValue(StyleKeys.GridColumnSpanKey,  0) ?? 0;
-            int rowStartRaw = style?.GetValue(StyleKeys.GridRowStartKey, 0) ?? 0;
-            int rowEndRaw   = style?.GetValue(StyleKeys.GridRowEndKey,   0) ?? 0;
-            int rowSpanKey  = style?.GetValue(StyleKeys.GridRowSpanKey,  0) ?? 0;
-
-            // Resolve column start to 0-indexed, or -1 for auto.
-            // Positive: 1-based line → subtract 1.
-            // Negative: count from end — for N columns, line -1 = line N+1 = 0-indexed N.
-            int colStart = colStartRaw > 0 ? colStartRaw - 1
-                         : colStartRaw < 0 ? Math.Max(0, colCount + colStartRaw + 1)
-                         : -1;
-
-            // Resolve column span from end or span key.
-            int colSpan = 1;
-            if (colEndRaw != 0)
+            // Named grid-area reference takes precedence over individual line values.
+            if (style != null)
             {
-                int endLine   = colEndRaw  > 0 ? colEndRaw  : colCount + 2 + colEndRaw;
-                int startLine = colStart   >= 0 ? colStart + 1 : 1;
-                colSpan = Math.Max(1, endLine - startLine);
+                var areaName = style.GetValue(StyleKeys.GridAreaNameKey, null as string);
+                if (!string.IsNullOrEmpty(areaName) &&
+                    templateAreas.TryGetAreaBounds(areaName,
+                        out int rs, out int re, out int cs, out int ce))
+                {
+                    return new GridItemPlacement
+                    {
+                        Item     = item,
+                        ColStart = cs - 1,
+                        ColSpan  = Math.Max(1, ce - cs),
+                        RowStart = rs - 1,
+                        RowSpan  = Math.Max(1, re - rs)
+                    };
+                }
             }
-            else if (colSpanKey > 0)
-                colSpan = colSpanKey;
 
-            // Clamp to fit within the grid and ensure at least 1.
-            int maxSpan = colStart >= 0 ? colCount - colStart : colCount;
-            colSpan = Math.Max(1, Math.Min(colSpan, maxSpan));
+            var colStart = style?.GetValue(StyleKeys.GridColumnStartKey, GridLineValue.Unset) ?? GridLineValue.Unset;
+            var colEnd   = style?.GetValue(StyleKeys.GridColumnEndKey,   GridLineValue.Unset) ?? GridLineValue.Unset;
+            var rowStart = style?.GetValue(StyleKeys.GridRowStartKey,    GridLineValue.Unset) ?? GridLineValue.Unset;
+            var rowEnd   = style?.GetValue(StyleKeys.GridRowEndKey,      GridLineValue.Unset) ?? GridLineValue.Unset;
 
-            // Resolve row start to 0-indexed, or -1 for auto.
-            // Negative row indices are treated as auto (row count is not known upfront).
-            int rowStart = rowStartRaw > 0 ? rowStartRaw - 1 : -1;
+            int cs0 = colStart.ResolveStart(colLineNames);  // 0-based or -1
+            int rs0 = rowStart.ResolveStart(rowLineNames);
 
-            // Resolve row span.
-            int rowSpan = 1;
-            if (rowEndRaw > 0 && rowStartRaw > 0)
-                rowSpan = Math.Max(1, rowEndRaw - rowStartRaw);
-            else if (rowSpanKey > 0)
-                rowSpan = rowSpanKey;
+            int colSpan = colEnd.IsSet
+                ? colEnd.ResolveSpan(cs0, colCount, colLineNames)
+                : colStart.IsSpan ? Math.Max(1, colStart.Value) : 1;
+
+            int rowSpan = rowEnd.IsSet
+                ? rowEnd.ResolveSpan(rs0, rowLineNames.Count, rowLineNames)
+                : rowStart.IsSpan ? Math.Max(1, rowStart.Value) : 1;
+
+            // Clamp column span to available columns.
+            int maxColSpan = cs0 >= 0 ? colCount - cs0 : colCount;
+            colSpan = Math.Max(1, Math.Min(colSpan, maxColSpan));
 
             return new GridItemPlacement
             {
                 Item     = item,
-                ColStart = colStart,
+                ColStart = cs0,
                 ColSpan  = colSpan,
-                RowStart = rowStart,
-                RowSpan  = rowSpan
+                RowStart = rs0,
+                RowSpan  = Math.Max(1, rowSpan)
             };
         }
 
@@ -578,7 +598,10 @@ namespace Scryber.PDF.Layout
 
         private static void BuildRowMajor(
             List<Component> items, int colCount,
-            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows)
+            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
         {
             var occupied    = new Dictionary<(int, int), bool>();
             // Cells are stored here (row → col-ordered map) and committed to rows in
@@ -586,7 +609,8 @@ namespace Scryber.PDF.Layout
             var placedCells = new Dictionary<int, SortedDictionary<int, GridCell>>();
             var placements  = new List<GridItemPlacement>(items.Count);
             foreach (var item in items)
-                placements.Add(ResolveGridItemPlacement(item, colCount));
+                placements.Add(ResolveGridItemPlacement(item, colCount,
+                               colLineNames, rowLineNames, templateAreas));
 
             // Phase 1: items with both row AND column explicitly set.
             // Pre-place them so the auto-flow cursor can route around them.
@@ -663,17 +687,20 @@ namespace Scryber.PDF.Layout
 
         private static void BuildColumnMajor(
             List<Component> items, int colCount,
-            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows)
+            TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames,
+            GridTemplateAreasValue templateAreas)
         {
             // rows = ceil(itemCount / colCount)
             int rowCount = (items.Count + colCount - 1) / colCount;
 
             // Pre-build rows and cell lists
-            var rows = new TableRow[rowCount];
+            var rows     = new TableRow[rowCount];
             var rowCells = new List<GridCell>[rowCount];
             for (int r = 0; r < rowCount; r++)
             {
-                rows[r] = new TableRow();
+                rows[r]     = new TableRow();
                 rowCells[r] = new List<GridCell>();
             }
 
@@ -682,10 +709,9 @@ namespace Scryber.PDF.Layout
             {
                 int row = i % rowCount;
                 var item = items[i];
-                var itemStyle = (item is IStyledComponent sc) ? sc.GetAppliedStyle() : null;
-                int colSpan = itemStyle?.GetValue(StyleKeys.GridColumnSpanKey, 1) ?? 1;
-                int rowSpan = itemStyle?.GetValue(StyleKeys.GridRowSpanKey, 1) ?? 1;
-                var cell = new GridCell(item, Math.Max(1, colSpan), Math.Max(1, rowSpan));
+                var p = ResolveGridItemPlacement(item, colCount,
+                        colLineNames, rowLineNames, templateAreas);
+                var cell = new GridCell(item, Math.Max(1, p.ColSpan), Math.Max(1, p.RowSpan));
                 rows[row].Cells.Add(cell);
                 rowCells[row].Add(cell);
             }
@@ -746,20 +772,24 @@ namespace Scryber.PDF.Layout
         // grid-template-columns / grid-template-rows parsers
         // -----------------------------------------------------------------------
 
-        private static List<TrackDef> ParseTemplateRows(ContainerComponent source, Style sourceStyle)
+        private static List<TrackDef> ParseTemplateRows(ContainerComponent source, Style sourceStyle,
+            out Dictionary<string, List<int>> lineNames)
         {
+            lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
             if (!(source is IStyledComponent sc) || !sc.HasStyle)
                 return new List<TrackDef>();
-            
+
             var raw = sourceStyle.GetValue(StyleKeys.GridTemplateRowsKey, null as string);
             if (string.IsNullOrWhiteSpace(raw))
                 return new List<TrackDef>();
-            
-            return ParseTrackList(raw);
+
+            return ParseTrackList(raw, lineNames);
         }
 
-        private static List<TrackDef> ParseTemplateCols(ContainerComponent source, Style sourceStyle)
+        private static List<TrackDef> ParseTemplateCols(ContainerComponent source, Style sourceStyle,
+            out Dictionary<string, List<int>> lineNames)
         {
+            lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
             if (null == sourceStyle)
                 return new List<TrackDef>();
 
@@ -767,24 +797,46 @@ namespace Scryber.PDF.Layout
             if (string.IsNullOrWhiteSpace(raw))
                 return new List<TrackDef>();
 
-            return ParseTrackList(raw);
+            return ParseTrackList(raw, lineNames);
         }
 
-        private static List<TrackDef> ParseTrackList(string value)
+        // Parses a track-list string into TrackDefs and populates a name→line-index map.
+        // [name1 name2] tokens are stripped; each name maps to the 1-based line index
+        // immediately following the bracket group (line 1 is before track 0).
+        private static List<TrackDef> ParseTrackList(string value,
+            Dictionary<string, List<int>> lineNames)
         {
             var tracks = new List<TrackDef>();
             if (string.IsNullOrWhiteSpace(value))
                 return tracks;
 
-            // Expand repeat(N, ...) first
+            // Expand repeat(N, ...) first — names inside repeat expand verbatim.
             var expanded = ExpandRepeat(value.Trim());
 
-            // Split on whitespace (commas inside repeat already expanded)
+            // Split on whitespace, then walk tokens:
+            // [name...] groups are recorded against the next 1-based line index;
+            // track tokens are parsed and added to the track list.
             var tokens = expanded.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var token in tokens)
             {
-                var t = token.Trim().ToLowerInvariant();
+                var t = token.Trim();
+
+                // [name1 name2 ...] — line-name group; line index = tracks so far + 1
+                if (t.StartsWith("[") && t.EndsWith("]"))
+                {
+                    int lineIndex = tracks.Count + 1;
+                    foreach (var name in t.Substring(1, t.Length - 2)
+                             .Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (!lineNames.TryGetValue(name, out var nameList))
+                            lineNames[name] = nameList = new List<int>();
+                        if (!nameList.Contains(lineIndex)) nameList.Add(lineIndex);
+                    }
+                    continue;
+                }
+
+                t = t.ToLowerInvariant();
                 if (t == "auto")
                 {
                     tracks.Add(new TrackDef(TrackType.Auto, 1.0));
@@ -830,6 +882,44 @@ namespace Scryber.PDF.Layout
                     parts.Add(track);
                 return string.Join(" ", parts);
             });
+        }
+
+        // Parses grid-template-areas and injects implicit area-start/area-end line names
+        // into the column and row name maps.
+        private static GridTemplateAreasValue ParseTemplateAreas(
+            ContainerComponent source, Style containerStyle,
+            Dictionary<string, List<int>> colLineNames,
+            Dictionary<string, List<int>> rowLineNames)
+        {
+            if (!(source is IStyledComponent sc) || !sc.HasStyle)
+                return default;
+
+            var areas = containerStyle.GetValue(StyleKeys.GridTemplateAreasKey,
+                            default(GridTemplateAreasValue));
+            if (areas.IsEmpty) return default;
+
+            // Inject implicit line names: each named area "foo" creates
+            // foo-start and foo-end in both axes.
+            foreach (var name in areas.AreaNames())
+            {
+                if (!areas.TryGetAreaBounds(name,
+                        out int rs, out int re, out int cs, out int ce))
+                    continue;
+
+                AddLineName(colLineNames, name + "-start", cs);
+                AddLineName(colLineNames, name + "-end",   ce);
+                AddLineName(rowLineNames, name + "-start", rs);
+                AddLineName(rowLineNames, name + "-end",   re);
+            }
+
+            return areas;
+        }
+
+        private static void AddLineName(Dictionary<string, List<int>> map, string name, int lineIndex)
+        {
+            if (!map.TryGetValue(name, out var list))
+                map[name] = list = new List<int>();
+            if (!list.Contains(lineIndex)) list.Add(lineIndex);
         }
 
         // -----------------------------------------------------------------------
