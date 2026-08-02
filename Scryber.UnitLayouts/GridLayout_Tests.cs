@@ -1400,5 +1400,282 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(itemH,          row1.TotalBounds.Y.PointsValue,      1.0, "Row 1 Y");
             Assert.AreEqual(itemH + rowGap, row1.TotalBounds.Height.PointsValue, 1.0, "Row 1 height includes row gap");
         }
+
+        // ------------------------------------------------------------------
+        // Grid_30 — page-overflow: row-spanning cell inner-block stretched
+        // ------------------------------------------------------------------
+        // Row 2 (E, F) overflows to page 2.  B spans rows 0-1, both on page 1.
+        // StretchAllCellContent must search all grid blocks across pages so B's
+        // inner div is expanded to the full 2-row combined height even when the
+        // current page at layout-end is page 2.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_30_PageOverflow_RowSpanStretchedOnPriorPage()
+        {
+            const double rowGap = 10;
+            const double itemH  = 50;
+            // Row 0: A (cols 0-1, colSpan=2) + B (col 2, rowSpan=2)  = 50 pt
+            // Row 1: C (col 0) + D (col 1)  + B continues             = 50 + 10 gap = 60 pt
+            // Row 2: E (col 0) + F (col 1)                            = 50 + 10 gap = 60 pt
+            // Page 130 pt: rows 0+1 = 110 pt fit; row 2 needs 60 > 20 remaining → overflow
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 130pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 100pt 100pt 100pt; column-gap: 20pt; row-gap: 10pt; }
+    .a    { grid-column: 1 / span 2; grid-row: 1; }
+    .b    { grid-column: 3;          grid-row: 1 / span 2; }
+    .c    { grid-column: 1;          grid-row: 2; }
+    .d    { grid-column: 2;          grid-row: 2; }
+    .item { height: 50pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item a"">A</div>
+    <div class=""item b"">B</div>
+    <div class=""item c"">C</div>
+    <div class=""item d"">D</div>
+    <div class=""item e"">E</div>
+    <div class=""item f"">F</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_30_PageOverflow_RowSpanStretched.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(2, _layout.AllPages.Count, "Row 2 must overflow to a second page");
+
+            // Locate row 0 on page 1 via FindRowWithCols (3 columns = one per grid column).
+            var page1Region = _layout.AllPages[0].ContentBlock.Columns[0];
+            var row0        = FindRowWithCols(page1Region, 3);
+            Assert.IsNotNull(row0, "Row 0 on page 1");
+
+            // B is at column 2 (0-indexed) of row 0.
+            var bCellBlock = GetItemBlock(row0, 2);
+            Assert.IsNotNull(bCellBlock, "B GridCell block on page 1");
+
+            // AdjustRowspanCellHeights must have set the cell to row0 + row1 height.
+            double bExpectedH = itemH + itemH + rowGap; // 50 + 50 + 10 = 110 pt
+            Assert.AreEqual(bExpectedH, bCellBlock.TotalBounds.Height.PointsValue, 2.0,
+                "B cell block height == combined row 0+1 height");
+
+            // StretchAllCellContent must have propagated that height to the inner div.
+            var bInnerBlock = bCellBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(bInnerBlock, "B inner div block");
+            Assert.AreEqual(bExpectedH, bInnerBlock.TotalBounds.Height.PointsValue, 2.0,
+                "B inner div is stretched to fill the 2-row span (all-grids search)");
+        }
+
+        // ------------------------------------------------------------------
+        // Grid_31 — page-overflow: first continuation row carries no gap
+        // ------------------------------------------------------------------
+        // Same layout: row 2 (E, F) overflows to page 2.  InjectRowGaps injects
+        // a 10 pt top margin on rows 1+ before layout; ClearContinuationRowGaps
+        // must strip it from the first row of each overflow page so no phantom
+        // space appears at the top of the second page.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_31_PageOverflow_NoContinuationRowGap()
+        {
+            const double itemH  = 50;
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 130pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 100pt 100pt 100pt; column-gap: 20pt; row-gap: 10pt; }
+    .a    { grid-column: 1 / span 2; grid-row: 1; }
+    .b    { grid-column: 3;          grid-row: 1 / span 2; }
+    .c    { grid-column: 1;          grid-row: 2; }
+    .d    { grid-column: 2;          grid-row: 2; }
+    .item { height: 50pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item a"">A</div>
+    <div class=""item b"">B</div>
+    <div class=""item c"">C</div>
+    <div class=""item d"">D</div>
+    <div class=""item e"">E</div>
+    <div class=""item f"">F</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_31_PageOverflow_NoContinuationGap.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(2, _layout.AllPages.Count, "Row 2 must overflow to a second page");
+
+            // The first (only) row on page 2 is E/F's row — find it via FindRowWithCols.
+            var page2Region  = _layout.AllPages[1].ContentBlock.Columns[0];
+            var row2OnPage2  = FindRowWithCols(page2Region, 3);
+            Assert.IsNotNull(row2OnPage2, "E/F row block on page 2");
+
+            // Height must equal itemH only — no row-gap margin.
+            Assert.AreEqual(itemH, row2OnPage2.TotalBounds.Height.PointsValue, 2.0,
+                "First row on continuation page must not include row-gap margin");
+
+            // E's cell block (col 0) must have its top margin cleared.
+            var eCellBlock = GetItemBlock(row2OnPage2, 0);
+            Assert.IsNotNull(eCellBlock, "E GridCell block on page 2");
+            double eTopMargin = eCellBlock.Position?.Margins.Top.PointsValue ?? 0.0;
+            Assert.AreEqual(0.0, eTopMargin, 0.5,
+                "E's row-gap margin must be zero on the continuation page");
+
+            // The grid continuation block itself must also reflect the reduced height so
+            // that content following the grid is positioned correctly.
+            var gridBlock2 = GetGridBlock(page2Region);
+            Assert.IsNotNull(gridBlock2, "Grid continuation block on page 2");
+            Assert.AreEqual(itemH, gridBlock2.TotalBounds.Height.PointsValue, 2.0,
+                "Grid continuation block height must not include the stripped row-gap");
+        }
+        // ------------------------------------------------------------------
+        // Grid_32 — page-overflow: subsequent continuation rows Y-shifted
+        // ------------------------------------------------------------------
+        // When the first row of a continuation page has its gap stripped, every
+        // later row on that same page was positioned by the layout engine relative
+        // to the gap-inflated first row.  Their TotalBounds.Y must be shifted up
+        // by the gap so they sit immediately after the corrected first row.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_32_PageOverflow_SubsequentRowsYShifted()
+        {
+            const double rowGap = 10;
+            const double itemH  = 50;
+            // 2-column grid, 4 rows of items.  Page = 120 pt.
+            // Row 0: A B → 50 pt         (cumulative 50 pt)
+            // Row 1: C D → 50+10 = 60 pt (cumulative 110 pt)
+            // Row 2: E F → 60 pt needed, 10 pt available → OVERFLOW to page 2
+            // Row 3: G H → also on page 2
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 120pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 200pt 200pt; column-gap: 20pt; row-gap: 10pt; }
+    .item { height: 50pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+    <div class=""item"">E</div>
+    <div class=""item"">F</div>
+    <div class=""item"">G</div>
+    <div class=""item"">H</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_32_PageOverflow_YShift.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(2, _layout.AllPages.Count, "Rows 2+3 must overflow to a second page");
+
+            var page2Region = _layout.AllPages[1].ContentBlock.Columns[0];
+            var gridBlock2  = GetGridBlock(page2Region);
+            Assert.IsNotNull(gridBlock2, "Grid continuation block on page 2");
+
+            // Row 2 (E/F) — first continuation row, gap stripped.
+            var rowEF = GetRowBlock(gridBlock2, 0);
+            Assert.IsNotNull(rowEF, "E/F row block on page 2");
+            Assert.AreEqual(0.0,   rowEF.TotalBounds.Y.PointsValue,      1.0, "Row EF starts at top of page 2");
+            Assert.AreEqual(itemH, rowEF.TotalBounds.Height.PointsValue,  2.0, "Row EF height has no gap");
+
+            // Row 3 (G/H) — second row on page 2, keeps its own gap but must be
+            // repositioned immediately after the (now-shorter) first row.
+            var rowGH = GetRowBlock(gridBlock2, 1);
+            Assert.IsNotNull(rowGH, "G/H row block on page 2");
+            Assert.AreEqual(itemH + rowGap, rowGH.TotalBounds.Height.PointsValue, 2.0,
+                "Row GH height keeps its own row-gap");
+            Assert.AreEqual(itemH, rowGH.TotalBounds.Y.PointsValue, 1.0,
+                "Row GH Y immediately follows the gap-corrected first row (Y-shift fix)");
+        }
+        // ------------------------------------------------------------------
+        // Grid_33 — page-overflow: sibling element after grid positioned correctly
+        // ------------------------------------------------------------------
+        // When the first continuation row's gap is stripped, the parent region's
+        // UsedSize must also be reduced so that the next sibling (a div after the
+        // grid) is laid out at the corrected Y, not 10pt too low.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_33_PageOverflow_SiblingAfterGridPositionedCorrectly()
+        {
+            const double rowGap  = 10;
+            const double itemH   = 50;
+            // 2-column grid, 4 rows, page height 150 pt.
+            // Page 1: rows 0+1 = 110 pt; row 2 needs 60 but only 40 available → overflows.
+            // Page 2: rows 2+3 (corrected = 50+60 = 110 pt), then the after-div.
+            // Without the UsedSize fix the after-div would start at Y=120 pt.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 150pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid  { display: grid; grid-template-columns: 200pt 200pt; column-gap: 20pt; row-gap: 10pt; }
+    .item  { height: 50pt; }
+    .after { height: 20pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+    <div class=""item"">C</div>
+    <div class=""item"">D</div>
+    <div class=""item"">E</div>
+    <div class=""item"">F</div>
+    <div class=""item"">G</div>
+    <div class=""item"">H</div>
+  </div>
+  <div class=""after"">After Grid</div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_33_PageOverflow_SiblingY.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            Assert.AreEqual(2, _layout.AllPages.Count, "Content must span 2 pages");
+
+            // Page 2 region contains: [0] = grid continuation, [1] = after-div.
+            var page2Region = _layout.AllPages[1].ContentBlock.Columns[0];
+
+            Assert.IsTrue(page2Region.Contents.Count >= 2, "Page 2 must have grid + after-div");
+            var afterBlock = page2Region.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(afterBlock, "After-div block on page 2");
+
+            // Corrected grid height on page 2: row 2 (50) + row 3 (50+10) = 110 pt.
+            double expectedY = itemH + itemH + rowGap; // 110 pt
+            Assert.AreEqual(expectedY, afterBlock.TotalBounds.Y.PointsValue, 2.0,
+                "After-div must start immediately after the corrected grid (UsedSize fix)");
+        }
     }
 }

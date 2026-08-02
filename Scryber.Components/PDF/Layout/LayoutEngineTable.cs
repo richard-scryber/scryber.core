@@ -62,7 +62,7 @@ namespace Scryber.PDF.Layout
         }
 
 
-        private TableReference AllCells
+        protected TableReference AllCells
         {
             get { return _tblRef; }
         }

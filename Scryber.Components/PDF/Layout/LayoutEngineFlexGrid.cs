@@ -81,11 +81,9 @@ namespace Scryber.PDF.Layout
 
                 base.DoLayoutComponent();
 
-                // The table engine sets every cell block's height to the row's max height
-                // (via SetCellHeightForRow) and, for spanning cells, to the combined span
-                // height (via AdjustRowspanCellHeights).  Neither step updates the inner
-                // grid-item block (the actual div inside the GridCell), so items shorter
-                // than their row appear floating rather than filling the cell.
+                // Strip the injected row-gap from the first row of each overflow page.
+                ClearContinuationRowGaps();
+
                 // Propagate each cell block's final height to its inner div block.
                 StretchAllCellContent();
             }
@@ -94,38 +92,151 @@ namespace Scryber.PDF.Layout
                 Container.Content.Clear();
                 Container.Content.AddRange(asDefined);
             }
-            
+
         }
 
         // -----------------------------------------------------------------------
-        // Row-span height propagation
+        // Row-span height propagation and continuation-row gap removal
         // -----------------------------------------------------------------------
+
+        // When the grid overflows to a new page each overflow GridReference knows its
+        // StartRowIndex — the first row on that page.  InjectRowGaps already injected a
+        // row-gap top margin on those rows; strip it so no phantom gap appears at the top
+        // of each continuation page.
+        // Must run BEFORE StretchAllCellContent so the corrected heights feed into the stretch.
+        private void ClearContinuationRowGaps()
+        {
+            int colCount = this.AllCells.TotalColumnCount;
+            bool first = true;
+
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (first) { first = false; continue; } // first grid = first page, no gap to strip
+
+                int r = grid.StartRowIndex;
+                var rowRef = this.AllCells.AllRows[r];
+                if (rowRef?.Block == null) continue;
+
+                // Find the gap amount from the first cell in this row that carries one.
+                Unit gap = Unit.Zero;
+                for (int c = 0; c < colCount && gap == Unit.Zero; c++)
+                {
+                    var cref = this.AllCells.AllCells[r, c];
+                    if (cref?.Block?.Position != null && cref.Block.Position.Margins.Top > Unit.Zero)
+                        gap = cref.Block.Position.Margins.Top;
+                }
+                if (gap == Unit.Zero) continue;
+
+                // Remove the gap from every cell block in this row.
+                for (int c = 0; c < colCount; c++)
+                {
+                    var cref = this.AllCells.AllCells[r, c];
+                    if (cref?.Block?.Position == null) continue;
+                    if (cref.Block.Position.Margins.Top == Unit.Zero) continue;
+
+                    var margins = cref.Block.Position.Margins;
+                    margins.Top = Unit.Zero;
+                    cref.Block.Position.Margins = margins;
+
+                    var bounds = cref.Block.TotalBounds;
+                    bounds.Height -= gap;
+                    cref.Block.TotalBounds = bounds;
+                }
+
+                // Shrink the row block to match the corrected cell heights.
+                var rowBounds = rowRef.Block.TotalBounds;
+                rowBounds.Height -= gap;
+                rowRef.Block.TotalBounds = rowBounds;
+
+                // Every subsequent row on this continuation page was positioned by the
+                // layout engine using the original (gap-inflated) row offset, so its
+                // TotalBounds.Y is `gap` too large.  Slide each one up.
+                for (int rNext = r + 1; rNext <= grid.EndRowIndex; rNext++)
+                {
+                    var nextRow = this.AllCells.AllRows[rNext];
+                    if (nextRow?.Block == null) continue;
+                    var nextBounds = nextRow.Block.TotalBounds;
+                    nextBounds.Y -= gap;
+                    nextRow.Block.TotalBounds = nextBounds;
+                }
+
+                // Propagate the height reduction upward: the grid continuation block and its
+                // containing column region still reflect the old (gap-inclusive) height.
+                if (grid.TableBlock?.Columns != null && grid.TableBlock.Columns.Length > 0)
+                {
+                    var region = grid.TableBlock.Columns[0];
+
+                    var colBounds = region.TotalBounds;
+                    colBounds.Height -= gap;
+                    region.TotalBounds = colBounds;
+
+                    var usedSize = region.UsedSize;
+                    usedSize.Height -= gap;
+                    region.UsedSize = usedSize;
+                }
+                if (grid.TableBlock != null)
+                {
+                    var tableBounds = grid.TableBlock.TotalBounds;
+                    tableBounds.Height -= gap;
+                    grid.TableBlock.TotalBounds = tableBounds;
+
+                    // The parent region's UsedSize was incremented by the original
+                    // (gap-inflated) TableBlock height when the block was closed.
+                    // Reduce it now so that any content laid out after the grid
+                    // (e.g. a sibling span) is positioned correctly.
+                    if (grid.TableBlock.Parent is PDFLayoutBlock parentBlock &&
+                        parentBlock.Columns != null)
+                    {
+                        foreach (var col in parentBlock.Columns)
+                        {
+                            if (col?.Contents != null && col.Contents.Contains(grid.TableBlock))
+                            {
+                                var usedSize = col.UsedSize;
+                                usedSize.Height -= gap;
+                                col.UsedSize = usedSize;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // After base.DoLayoutComponent(), every GridCell block has its final height:
         //   - non-spanning cells: set to the row's max height by SetCellHeightForRow
         //   - spanning cells:     set to the combined row span height by AdjustRowspanCellHeights
         // The inner grid-item block (the actual div) was sized to content height during layout
         // and is not updated by either step.  Stretch all inner blocks to fill their cell.
+        // Uses AllGrids.TableBlock to search only this grid's layout blocks — one per overflow
+        // page — so the search is O(grids × depth) rather than O(all-document-pages × depth).
+        // This also correctly finds cells placed in headers or footers.
         private void StretchAllCellContent()
         {
-            var targets = new HashSet<GridCell>();
+            var remaining = new HashSet<GridCell>();
             foreach (var rowCells in _cellGrid)
                 foreach (var cell in rowCells)
-                    targets.Add(cell);
+                    remaining.Add(cell);
 
-            if (targets.Count == 0) return;
+            if (remaining.Count == 0) return;
 
-            var page = this.Context.DocumentLayout.CurrentPage;
-            SearchAndStretch(page.ContentBlock, targets);
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (remaining.Count == 0) break;
+                if (grid.TableBlock != null)
+                    SearchAndStretch(grid.TableBlock, remaining);
+            }
         }
 
-        private static void SearchAndStretch(PDFLayoutBlock block, HashSet<GridCell> targets)
+        // Removes found cells from `remaining` as they are processed so we stop early
+        // once every cell has been found (important when the grid spans multiple pages).
+        private static void SearchAndStretch(PDFLayoutBlock block, HashSet<GridCell> remaining)
         {
-            if (block == null) return;
+            if (block == null || remaining.Count == 0) return;
 
-            if (block.Owner is GridCell gc && targets.Contains(gc))
+            if (block.Owner is GridCell gc && remaining.Contains(gc))
             {
                 StretchFirstChildBlock(block);
+                remaining.Remove(gc);
                 return; // no need to recurse inside the cell we just fixed
             }
 
@@ -136,7 +247,7 @@ namespace Scryber.PDF.Layout
                 for (int i = 0; i < region.Contents.Count; i++)
                 {
                     if (region.Contents[i] is PDFLayoutBlock child)
-                        SearchAndStretch(child, targets);
+                        SearchAndStretch(child, remaining);
                 }
             }
         }
