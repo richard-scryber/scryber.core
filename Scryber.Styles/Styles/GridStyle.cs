@@ -59,6 +59,22 @@ namespace Scryber.Styles
 
         public void RemoveRowEnd() { this.RemoveValue(StyleKeys.GridRowEndKey); }
 
+        public GridTemplateAreasValue TemplateAreas
+        {
+            get { GridTemplateAreasValue v; return this.TryGetValue(StyleKeys.GridTemplateAreasKey, out v) ? v : default; }
+            set { this.SetValue(StyleKeys.GridTemplateAreasKey, value); }
+        }
+
+        public void RemoveTemplateAreas() { this.RemoveValue(StyleKeys.GridTemplateAreasKey); }
+
+        public string AreaName
+        {
+            get { string v; return this.TryGetValue(StyleKeys.GridAreaNameKey, out v) ? v : null; }
+            set { this.SetValue(StyleKeys.GridAreaNameKey, value); }
+        }
+
+        public void RemoveAreaName() { this.RemoveValue(StyleKeys.GridAreaNameKey); }
+
         public GridAutoFlow AutoFlow
         {
             get { GridAutoFlow v; return this.TryGetValue(StyleKeys.GridAutoFlowKey, out v) ? v : GridAutoFlow.Row; }

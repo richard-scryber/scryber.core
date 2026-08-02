@@ -672,11 +672,21 @@ namespace Scryber.PDF.Layout
                 StoreCell(p, r, c, occupied, placedCells);
             }
 
-            // Commit cells to rows and cellGrid in column order so the table engine
-            // renders them left-to-right regardless of HTML source order.
+            // Commit cells to rows and cellGrid in column order.
+            // Columns with no placed cell AND not covered by a rowspan from above need an
+            // empty placeholder so the table engine doesn't slide subsequent cells left
+            // (this is the case for dot "." cells from grid-template-areas).
             for (int r = 0; r < syntheticRows.Count; r++)
             {
-                if (!placedCells.TryGetValue(r, out var rowDict)) continue;
+                if (!placedCells.TryGetValue(r, out var rowDict))
+                    rowDict = new SortedDictionary<int, GridCell>();
+
+                for (int c = 0; c < colCount; c++)
+                {
+                    if (!rowDict.ContainsKey(c) && !occupied.ContainsKey((r, c)))
+                        rowDict[c] = new GridCell(null, 1, 1); // empty placeholder for dot/gap cell
+                }
+
                 foreach (var kvp in rowDict) // SortedDictionary iterates in ascending column order
                 {
                     syntheticRows[r].Cells.Add(kvp.Value);

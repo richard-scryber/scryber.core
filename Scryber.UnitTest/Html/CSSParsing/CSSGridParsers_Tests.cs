@@ -414,5 +414,409 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.IsTrue(style.Grid.RowEnd.IsNamed);
             Assert.AreEqual("row-end", style.Grid.RowEnd.Name);
         }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridRow_SpanNamedLine()
+        {
+            var parser = new CSSGridRowParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "2 / span row-end"));
+            Assert.AreEqual(2, style.Grid.RowStart.Value);
+            Assert.IsTrue(style.Grid.RowEnd.IsNamed && style.Grid.RowEnd.IsSpan);
+            Assert.AreEqual("row-end", style.Grid.RowEnd.Name);
+        }
+
+        // -----------------------------------------------------------------------
+        // grid-template-columns / grid-template-rows with [name] tokens
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateColumns_WithNamedLines()
+        {
+            var parser = new CSSGridTemplateColumnsParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "[col-start] 1fr [col-mid] 1fr [col-end]"));
+            Assert.IsNotNull(style.Grid.TemplateColumns);
+            StringAssert.Contains(style.Grid.TemplateColumns, "col-start");
+            StringAssert.Contains(style.Grid.TemplateColumns, "col-end");
+            StringAssert.Contains(style.Grid.TemplateColumns, "1fr");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateRows_WithNamedLines()
+        {
+            var parser = new CSSGridTemplateRowsParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "[row-start] 50pt [row-mid] 80pt [row-end]"));
+            Assert.IsNotNull(style.Grid.TemplateRows);
+            StringAssert.Contains(style.Grid.TemplateRows, "row-start");
+            StringAssert.Contains(style.Grid.TemplateRows, "80pt");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateColumns_WithNamedLines_FullCSS()
+        {
+            var allParser = new CSSStyleItemAllParser();
+            var style = new Style();
+            var reader = new CSSStyleItemReader("grid-template-columns: [main-start] 200pt [content-start] 1fr [content-end] 200pt [main-end]");
+            reader.ReadNextAttributeName();
+            allParser.SetStyleValue(style, reader, null);
+            Assert.IsNotNull(style.Grid.TemplateColumns);
+            StringAssert.Contains(style.Grid.TemplateColumns, "main-start");
+            StringAssert.Contains(style.Grid.TemplateColumns, "content-start");
+        }
+
+        // -----------------------------------------------------------------------
+        // grid-area — single identifier (named template area)
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridArea_SingleName()
+        {
+            var parser = new CSSGridAreaParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "header"));
+            Assert.AreEqual("header", style.Grid.AreaName);
+            Assert.IsTrue(style.Grid.ColumnStart.IsUnset, "No positional keys set for named area");
+            Assert.IsTrue(style.Grid.RowStart.IsUnset,    "No positional keys set for named area");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridArea_SingleName_Sidebar()
+        {
+            var parser = new CSSGridAreaParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "sidebar"));
+            Assert.AreEqual("sidebar", style.Grid.AreaName);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridArea_FourPartSlash()
+        {
+            // grid-area: row-start / col-start / row-end / col-end
+            var parser = new CSSGridAreaParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "1 / 2 / 3 / 4"));
+            Assert.IsTrue(style.Grid.RowStart.IsExplicit);
+            Assert.AreEqual(1, style.Grid.RowStart.Value);
+            Assert.IsTrue(style.Grid.ColumnStart.IsExplicit);
+            Assert.AreEqual(2, style.Grid.ColumnStart.Value);
+            Assert.IsTrue(style.Grid.RowEnd.IsExplicit);
+            Assert.AreEqual(3, style.Grid.RowEnd.Value);
+            Assert.IsTrue(style.Grid.ColumnEnd.IsExplicit);
+            Assert.AreEqual(4, style.Grid.ColumnEnd.Value);
+            Assert.IsNull(style.Grid.AreaName, "4-part form must not set area name");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridArea_FourPartSlash_WithSpan()
+        {
+            var parser = new CSSGridAreaParser();
+            var style  = CreateStyle();
+            Assert.IsTrue(ParseValue(parser, style, "2 / 1 / span 2 / span 3"));
+            Assert.AreEqual(2, style.Grid.RowStart.Value);
+            Assert.AreEqual(1, style.Grid.ColumnStart.Value);
+            Assert.IsTrue(style.Grid.RowEnd.IsSpan && style.Grid.RowEnd.Value == 2);
+            Assert.IsTrue(style.Grid.ColumnEnd.IsSpan && style.Grid.ColumnEnd.Value == 3);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridArea_FullCSSParse()
+        {
+            var allParser = new CSSStyleItemAllParser();
+            var style = new Style();
+            var reader = new CSSStyleItemReader("grid-area: main");
+            reader.ReadNextAttributeName();
+            allParser.SetStyleValue(style, reader, null);
+            Assert.AreEqual("main", style.Grid.AreaName);
+        }
+
+        // -----------------------------------------------------------------------
+        // GridTemplateAreasValue struct — TryParse, TryGetAreaBounds, AreaNames
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryParse_TwoByTwo()
+        {
+            bool ok = Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+            Assert.IsTrue(ok);
+            Assert.AreEqual(2, areas.RowCount);
+            Assert.AreEqual(2, areas.ColCount);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryParse_ThreeByThree()
+        {
+            bool ok = Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header header\" \"sidebar content content\" \"footer footer footer\"", out var areas);
+            Assert.IsTrue(ok);
+            Assert.AreEqual(3, areas.RowCount);
+            Assert.AreEqual(3, areas.ColCount);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryParse_DotNotation()
+        {
+            bool ok = Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\". header .\" \"sidebar content content\"", out var areas);
+            Assert.IsTrue(ok);
+            Assert.AreEqual(2, areas.RowCount);
+            Assert.AreEqual(3, areas.ColCount);
+
+            // "header" starts at col 2, row 1
+            bool found = areas.TryGetAreaBounds("header", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found);
+            Assert.AreEqual(1, rs); Assert.AreEqual(2, re);
+            Assert.AreEqual(2, cs); Assert.AreEqual(3, ce);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryParse_MultiDotEmpty()
+        {
+            bool ok = Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"....... header header\" \"sidebar content content\"", out var areas);
+            Assert.IsTrue(ok);
+            Assert.AreEqual(2, areas.RowCount);
+            Assert.AreEqual(3, areas.ColCount);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryParse_Empty_ReturnsFalse()
+        {
+            bool ok = Scryber.Drawing.GridTemplateAreasValue.TryParse("", out _);
+            Assert.IsFalse(ok);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryGetAreaBounds_Header()
+        {
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+
+            bool found = areas.TryGetAreaBounds("header", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found, "header area must be found");
+            Assert.AreEqual(1, rs, "header row start = 1");
+            Assert.AreEqual(2, re, "header row end   = 2 (exclusive)");
+            Assert.AreEqual(1, cs, "header col start = 1");
+            Assert.AreEqual(3, ce, "header col end   = 3 (spans cols 1-2)");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryGetAreaBounds_Sidebar()
+        {
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+
+            bool found = areas.TryGetAreaBounds("sidebar", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found);
+            Assert.AreEqual(2, rs); Assert.AreEqual(3, re);
+            Assert.AreEqual(1, cs); Assert.AreEqual(2, ce);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryGetAreaBounds_Main()
+        {
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+
+            bool found = areas.TryGetAreaBounds("main", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found);
+            Assert.AreEqual(2, rs); Assert.AreEqual(3, re);
+            Assert.AreEqual(2, cs); Assert.AreEqual(3, ce);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryGetAreaBounds_NotFound()
+        {
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+
+            bool found = areas.TryGetAreaBounds("footer", out _, out _, out _, out _);
+            Assert.IsFalse(found, "Non-existent area must return false");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_TryGetAreaBounds_SpannedRows()
+        {
+            // sidebar spans both rows
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header header\" \"sidebar content content\" \"sidebar footer footer\"", out var areas);
+
+            bool found = areas.TryGetAreaBounds("sidebar", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found);
+            Assert.AreEqual(2, rs, "sidebar starts at row 2");
+            Assert.AreEqual(4, re, "sidebar ends at row 4 (spans rows 2-3)");
+            Assert.AreEqual(1, cs); Assert.AreEqual(2, ce);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_AreaNames_Order()
+        {
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header\" \"sidebar main\"", out var areas);
+
+            var names = new System.Collections.Generic.List<string>(areas.AreaNames());
+            Assert.AreEqual(3, names.Count);
+            Assert.AreEqual("header",  names[0]);
+            Assert.AreEqual("sidebar", names[1]);
+            Assert.AreEqual("main",    names[2]);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_AreaNames_NoDuplicates()
+        {
+            // header appears in both columns of row 1 — must appear only once
+            Scryber.Drawing.GridTemplateAreasValue.TryParse(
+                "\"header header header\" \"sidebar content content\" \"footer footer footer\"", out var areas);
+
+            var names = new System.Collections.Generic.List<string>(areas.AreaNames());
+            Assert.AreEqual(4, names.Count);
+            Assert.AreEqual(4, new System.Collections.Generic.HashSet<string>(names).Count,
+                "Each name must appear exactly once");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreasValue_IsEmpty_WhenDefault()
+        {
+            var areas = default(Scryber.Drawing.GridTemplateAreasValue);
+            Assert.IsTrue(areas.IsEmpty);
+        }
+
+        // -----------------------------------------------------------------------
+        // grid-template-areas via CSSStyleItemAllParser
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreas_FullCSSParse_TwoByTwo()
+        {
+            var allParser = new CSSStyleItemAllParser();
+            var style = new Style();
+            var reader = new CSSStyleItemReader("grid-template-areas: \"header header\" \"sidebar main\"");
+            reader.ReadNextAttributeName();
+            allParser.SetStyleValue(style, reader, null);
+
+            Assert.IsFalse(style.Grid.TemplateAreas.IsEmpty);
+            Assert.AreEqual(2, style.Grid.TemplateAreas.RowCount);
+            Assert.AreEqual(2, style.Grid.TemplateAreas.ColCount);
+
+            bool found = style.Grid.TemplateAreas.TryGetAreaBounds("header", out int rs, out int re, out int cs, out int ce);
+            Assert.IsTrue(found);
+            Assert.AreEqual(1, cs); Assert.AreEqual(3, ce);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateAreas_RoundTrip_RemoveRestoresDefault()
+        {
+            var style = CreateStyle();
+            Scryber.Drawing.GridTemplateAreasValue.TryParse("\"header header\" \"sidebar main\"", out var areas);
+            style.Grid.TemplateAreas = areas;
+            Assert.IsFalse(style.Grid.TemplateAreas.IsEmpty);
+
+            style.Grid.RemoveTemplateAreas();
+            Assert.IsTrue(style.Grid.TemplateAreas.IsEmpty, "After remove TemplateAreas should be default/empty");
+        }
+
+        // -----------------------------------------------------------------------
+        // GridLineValue struct edge cases
+        // -----------------------------------------------------------------------
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Unset_IsUnset()
+        {
+            var v = Scryber.Drawing.GridLineValue.Unset;
+            Assert.IsTrue(v.IsUnset);
+            Assert.IsFalse(v.IsSet);
+            Assert.IsFalse(v.IsAuto);
+            Assert.IsFalse(v.IsExplicit);
+            Assert.IsFalse(v.IsNamed);
+            Assert.IsFalse(v.IsSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Auto_IsAuto()
+        {
+            var v = Scryber.Drawing.GridLineValue.Auto;
+            Assert.IsTrue(v.IsAuto);
+            Assert.IsTrue(v.IsSet);
+            Assert.IsFalse(v.IsExplicit);
+            Assert.IsFalse(v.IsNamed);
+            Assert.IsFalse(v.IsSpan);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Line_IsExplicit()
+        {
+            var v = Scryber.Drawing.GridLineValue.Line(3);
+            Assert.IsTrue(v.IsExplicit);
+            Assert.AreEqual(3, v.Value);
+            Assert.IsFalse(v.IsSpan);
+            Assert.IsFalse(v.IsNamed);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Span_IsExplicitAndIsSpan()
+        {
+            var v = Scryber.Drawing.GridLineValue.Span(2);
+            Assert.IsTrue(v.IsExplicit);
+            Assert.IsTrue(v.IsSpan);
+            Assert.AreEqual(2, v.Value);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Named_IsNamed()
+        {
+            var v = Scryber.Drawing.GridLineValue.Named("col-start");
+            Assert.IsTrue(v.IsNamed);
+            Assert.IsFalse(v.IsSpan);
+            Assert.AreEqual("col-start", v.Name);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_Named_WithSpan()
+        {
+            var v = Scryber.Drawing.GridLineValue.Named("col-end", span: true);
+            Assert.IsTrue(v.IsNamed);
+            Assert.IsTrue(v.IsSpan);
+            Assert.AreEqual("col-end", v.Name);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_ResolveStart_ExplicitLine()
+        {
+            var v = Scryber.Drawing.GridLineValue.Line(3);
+            int start = v.ResolveStart(null);
+            Assert.AreEqual(2, start, "1-based line 3 → 0-based index 2");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_ResolveStart_NamedLine()
+        {
+            var lineNames = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>>
+            {
+                { "col-start", new System.Collections.Generic.List<int> { 1 } },
+                { "col-mid",   new System.Collections.Generic.List<int> { 2 } }
+            };
+            var v = Scryber.Drawing.GridLineValue.Named("col-mid");
+            int start = v.ResolveStart(lineNames);
+            Assert.AreEqual(1, start, "col-mid → line index 2 → 0-based index 1");
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_ResolveSpan_ExplicitSpan()
+        {
+            var v = Scryber.Drawing.GridLineValue.Span(3);
+            int span = v.ResolveSpan(0, 4, null);
+            Assert.AreEqual(3, span);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridLineValue_ResolveSpan_EndLine()
+        {
+            // end line 4, start line 2 → span = 4-2 = 2
+            var v = Scryber.Drawing.GridLineValue.Line(4);
+            int span = v.ResolveSpan(1, 4, null); // resolvedStart=1 = 0-based line 2
+            Assert.AreEqual(2, span);
+        }
     }
 }

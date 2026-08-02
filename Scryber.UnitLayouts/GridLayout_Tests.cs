@@ -1677,5 +1677,416 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(expectedY, afterBlock.TotalBounds.Y.PointsValue, 2.0,
                 "After-div must start immediately after the corrected grid (UsedSize fix)");
         }
+
+        // ======================================================================
+        // Named grid lines — [name] tokens in grid-template-columns/rows
+        // ======================================================================
+
+        // Grid_34 — item placed by named column lines using fr units (fills container cleanly).
+        // grid-template-columns: [c1] 1fr [c2] 2fr [c3] 1fr [c4]
+        // → col widths: 150pt / 300pt / 150pt (4fr → 600pt)
+        // Item B-wide: grid-column: c2 / c4 → cols 1-2, width = 300+150 = 450pt.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_34_NamedColumnLines_PlacementByName()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid;
+            grid-template-columns: [c1] 1fr [c2] 2fr [c3] 1fr [c4];
+            width: 600pt; }
+    .item { height: 50pt; border: 1pt solid #888; padding: 4pt; }
+    .wide { grid-column: c2 / c4; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item wide"">B-wide</div>
+    <div class=""item"">C</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_34_NamedColLines.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // Row 0: A in col 0 (150pt), B-wide in cols 1-2 (300+150=450pt)
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.AreEqual(3, row0.Columns.Length, "Row 0: 3 column slots");
+
+            // 4fr total → 1fr=150, 2fr=300, 1fr=150
+            Assert.AreEqual(150.0, row0.Columns[0].TotalBounds.Width.PointsValue, 2.0,
+                "Col 0 (c1→c2) = 1fr = 150pt");
+            Assert.AreEqual(300.0, row0.Columns[1].TotalBounds.Width.PointsValue, 2.0,
+                "Col 1 (c2→c3) = 2fr = 300pt");
+            Assert.AreEqual(150.0, row0.Columns[2].TotalBounds.Width.PointsValue, 2.0,
+                "Col 2 (c3→c4) = 1fr = 150pt");
+
+            // B-wide spans cols 1-2 → 300+150 = 450pt
+            var bBlock = GetItemBlock(row0, 1);
+            Assert.IsNotNull(bBlock, "B-wide item block");
+            Assert.AreEqual(450.0, bBlock.TotalBounds.Width.PointsValue, 2.0,
+                "B-wide spans c2→c4 = 2fr+1fr = 450pt");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "A",      "Col 0 = A");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "B-wide", "Col 1 = B-wide");
+        }
+
+        // Grid_35 — item placed by named row lines (programmatic API).
+        // grid-template-rows: [r1] 60pt [r2] 80pt [r3]
+        // A-tall: RowStart=Named("r1"), RowEnd=Named("r3") → rowspan=2, height = 60+80 = 140pt.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_35_NamedRowLines_PlacementByName()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr", templateRows: "[r1] 60pt [r2] 80pt [r3]");
+
+            var aTall = AddItem(grid, "A-tall");
+            aTall.Style.Grid.RowStart = GridLineValue.Named("r1");
+            aTall.Style.Grid.RowEnd   = GridLineValue.Named("r3");
+
+            AddItem(grid, "B");
+            AddItem(grid, "C");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_35_NamedRowLines.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // Must produce 2 rows
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0 (60pt template)");
+            Assert.IsNotNull(row1, "Row 1 (80pt template)");
+
+            // Template row heights are injected via InjectRowHeights
+            Assert.AreEqual(60.0, row0.TotalBounds.Height.PointsValue, 2.0, "Row 0 = 60pt");
+            Assert.AreEqual(80.0, row1.TotalBounds.Height.PointsValue, 2.0, "Row 1 = 80pt");
+
+            // A-tall spans r1→r3 (rowspan=2) → StretchAllCellContent gives it 60+80 = 140pt
+            var aTallBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(aTallBlock, "A-tall block in row 0 col 0");
+            Assert.AreEqual(140.0, aTallBlock.TotalBounds.Height.PointsValue, 2.0,
+                "A-tall rowspan=2 → 60+80 = 140pt");
+
+            // Content in correct cells
+            StringAssert.Contains(CollectText(row0.Columns[0]), "A-tall", "Col 0 row 0 = A-tall");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "B",      "Col 1 row 0 = B");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "C",      "Col 1 row 1 = C");
+        }
+
+        // Grid_36 — explicit integer span combined with named [col-start] lines.
+        // grid-template-columns: [col-start] 1fr [col-start] 1fr [col-start] 1fr [col-end]
+        // → 3 equal 200pt columns.
+        // Item Wide: grid-column: 1 / span 2 → 200+200 = 400pt.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_36_NamedColumnLines_SpanByCount()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid  { display: grid;
+             grid-template-columns: [col-start] 1fr [col-start] 1fr [col-start] 1fr [col-end];
+             width: 600pt; }
+    .item  { height: 50pt; border: 1pt solid #888; }
+    .span2 { grid-column: 1 / span 2; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item span2"">Wide</div>
+    <div class=""item"">Right</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_36_NamedLines_SpanCount.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var row0 = GetRowBlock(GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]), 0);
+            Assert.IsNotNull(row0, "Row 0");
+
+            // 3 equal fr columns → 200pt each
+            Assert.AreEqual(200.0, row0.Columns[0].TotalBounds.Width.PointsValue, 2.0,
+                "Each col-start column = 1fr = 200pt");
+
+            // Wide spans cols 0-1 = 200+200 = 400pt
+            var wideBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(wideBlock, "Wide item block");
+            Assert.AreEqual(400.0, wideBlock.TotalBounds.Width.PointsValue, 2.0,
+                "1 / span 2 = 200+200 = 400pt");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "Wide",  "Col 0 = Wide");
+            StringAssert.Contains(CollectText(row0.Columns[2]), "Right", "Col 2 = Right");
+        }
+
+        // ======================================================================
+        // grid-template-areas — tested via programmatic API to validate the
+        // layout engine independently of the HTML CSS cascade.
+        // ======================================================================
+
+        // Grid_37 — 2×2 template-areas: header spans 2 cols, sidebar and main fill row 2.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_37_TemplateAreas_TwoByTwo()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr");
+
+            // Set template areas programmatically
+            GridTemplateAreasValue.TryParse("\"header header\" \"sidebar main\"", out var areas);
+            grid.Style.Grid.TemplateAreas = areas;
+
+            // Items — use style API so placement is independent of CSS cascade timing
+            var header  = AddItem(grid, "Header",  height: 60, borderColor: new Color(0, 0, 200));
+            header.Style.Grid.AreaName = "header";
+
+            var sidebar = AddItem(grid, "Sidebar", height: 80, borderColor: new Color(0, 160, 0));
+            sidebar.Style.Grid.AreaName = "sidebar";
+
+            var main    = AddItem(grid, "Main",    height: 80, borderColor: new Color(160, 0, 0));
+            main.Style.Grid.AreaName = "main";
+
+            using (var ms = DocStreams.GetOutputStream("Grid_37_TemplateAreas_2x2.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0 (header)");
+            Assert.IsNotNull(row1, "Row 1 (sidebar/main)");
+
+            // Header spans both columns → 600pt wide
+            var headerBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(headerBlock, "Header block");
+            Assert.AreEqual(600.0, headerBlock.TotalBounds.Width.PointsValue, 2.0,
+                "Header spans both cols = 600pt");
+            Assert.AreEqual(60.0, headerBlock.TotalBounds.Height.PointsValue, 2.0,
+                "Header height = 60pt");
+
+            // Row 1: sidebar (300pt) and main (300pt)
+            Assert.AreEqual(2, row1.Columns.Length, "Row 1 has 2 column slots");
+            Assert.AreEqual(300.0, row1.Columns[0].TotalBounds.Width.PointsValue, 2.0,
+                "Sidebar col = 300pt (1fr)");
+            Assert.AreEqual(300.0, row1.Columns[1].TotalBounds.Width.PointsValue, 2.0,
+                "Main col = 300pt (1fr)");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "Header",  "Row 0 = Header");
+            StringAssert.Contains(CollectText(row1.Columns[0]), "Sidebar", "Row 1 col 0 = Sidebar");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "Main",    "Row 1 col 1 = Main");
+        }
+
+        // Grid_38 — 3-area layout with dot empty cell.
+        // ". sidebar main" — middle row col 0 is empty.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_38_TemplateAreas_DotEmptyCell()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr 1fr");
+
+            GridTemplateAreasValue.TryParse(
+                "\"header header header\" \". sidebar main\" \"footer footer footer\"",
+                out var areas);
+            grid.Style.Grid.TemplateAreas = areas;
+
+            var header  = AddItem(grid, "Header",  height: 50, borderColor: new Color(0, 0, 200));
+            header.Style.Grid.AreaName = "header";
+
+            var sidebar = AddItem(grid, "Sidebar", height: 70, borderColor: new Color(0, 160, 0));
+            sidebar.Style.Grid.AreaName = "sidebar";
+
+            var main    = AddItem(grid, "Main",    height: 70, borderColor: new Color(160, 0, 0));
+            main.Style.Grid.AreaName = "main";
+
+            var footer  = AddItem(grid, "Footer",  height: 40, borderColor: new Color(100, 100, 100));
+            footer.Style.Grid.AreaName = "footer";
+
+            using (var ms = DocStreams.GetOutputStream("Grid_38_TemplateAreas_DotEmpty.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            var row2 = GetRowBlock(gridBlock, 2);
+            Assert.IsNotNull(row0, "Row 0 (header)");
+            Assert.IsNotNull(row1, "Row 1 (. sidebar main)");
+            Assert.IsNotNull(row2, "Row 2 (footer)");
+
+            // Header: spans 3 columns → 600pt
+            var headerBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(headerBlock, "Header block");
+            Assert.AreEqual(600.0, headerBlock.TotalBounds.Width.PointsValue, 2.0,
+                "Header spans 3 cols = 600pt");
+
+            // Col 0 of row 1 is the empty dot cell — a placeholder exists but has no text
+            var dotCellText = CollectText(row1.Columns[0]).Trim();
+            Assert.AreEqual("", dotCellText, "Row 1 col 0 is the dot (empty) cell — no text content");
+
+            StringAssert.Contains(CollectText(row1.Columns[1]), "Sidebar", "Row 1 col 1 = Sidebar");
+            StringAssert.Contains(CollectText(row1.Columns[2]), "Main",    "Row 1 col 2 = Main");
+
+            // Footer: spans 3 columns → 600pt
+            var footerBlock = GetItemBlock(row2, 0);
+            Assert.IsNotNull(footerBlock, "Footer block");
+            Assert.AreEqual(600.0, footerBlock.TotalBounds.Width.PointsValue, 2.0,
+                "Footer spans 3 cols = 600pt");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "Header", "Row 0 = Header");
+            StringAssert.Contains(CollectText(row2.Columns[0]), "Footer", "Row 2 = Footer");
+        }
+
+        // Grid_39 — sidebar spanning 2 explicit rows via template-areas.
+        // "sidebar top" / "sidebar bottom" — sidebar spans both rows, height = 100+100 = 200pt.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_39_TemplateAreas_SidebarSpansRows()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "150pt 1fr", templateRows: "100pt 100pt");
+
+            // sidebar spans both rows; top and bottom are the two content slots
+            GridTemplateAreasValue.TryParse(
+                "\"sidebar top\" \"sidebar bottom\"", out var areas);
+            grid.Style.Grid.TemplateAreas = areas;
+
+            var sidebar  = AddItem(grid, "Sidebar spans rows", height: 50, borderColor: new Color(0, 160, 0));
+            sidebar.Style.Grid.AreaName = "sidebar";
+
+            var top = AddItem(grid, "Content row 1", height: 50, borderColor: new Color(80, 80, 80));
+            top.Style.Grid.AreaName = "top";
+
+            var bottom = AddItem(grid, "Content row 2", height: 50, borderColor: new Color(80, 80, 80));
+            bottom.Style.Grid.AreaName = "bottom";
+
+            using (var ms = DocStreams.GetOutputStream("Grid_39_TemplateAreas_SidebarSpan.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.AreEqual(2, row0.Columns.Length, "2 columns");
+
+            // Fixed-width sidebar column: 150pt; content: 600-150 = 450pt
+            Assert.AreEqual(150.0, row0.Columns[0].TotalBounds.Width.PointsValue, 2.0,
+                "Sidebar col = 150pt");
+            Assert.AreEqual(450.0, row0.Columns[1].TotalBounds.Width.PointsValue, 2.0,
+                "Content col = 450pt (1fr)");
+
+            // Row 0 = 100pt (from template-rows)
+            Assert.AreEqual(100.0, row0.TotalBounds.Height.PointsValue, 2.0, "Row 0 = 100pt");
+
+            // Sidebar spans 2 rows: StretchAllCellContent gives it 100+100 = 200pt
+            var sidebarBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(sidebarBlock, "Sidebar block");
+            Assert.AreEqual(200.0, sidebarBlock.TotalBounds.Height.PointsValue, 2.0,
+                "Sidebar rowspan=2 → 100+100 = 200pt");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "Sidebar",       "Col 0 = sidebar");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "Content row 1", "Col 1 row 0 = top");
+
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row1, "Row 1");
+            Assert.AreEqual(100.0, row1.TotalBounds.Height.PointsValue, 2.0, "Row 1 = 100pt");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "Content row 2", "Col 1 row 1 = bottom");
+        }
+
+        // Grid_40 — implicit line names from grid-template-areas used in grid-column.
+        // "header header header" → injects header-start (col line 1) and header-end (col line 4).
+        // .hdr: grid-column: header-start / header-end → spans all 3 columns = 600pt.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_40_TemplateAreas_ImplicitLineNames()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr 1fr");
+
+            // Template areas generate implicit col line names: header-start=1, header-end=4
+            GridTemplateAreasValue.TryParse(
+                "\"header header header\" \"a b c\"", out var areas);
+            grid.Style.Grid.TemplateAreas = areas;
+
+            // Header item uses implicit line names header-start / header-end
+            var hdr = AddItem(grid, "Full-width Header", height: 50, borderColor: new Color(0, 0, 200));
+            hdr.Style.Grid.ColumnStart = GridLineValue.Named("header-start");
+            hdr.Style.Grid.ColumnEnd   = GridLineValue.Named("header-end");
+
+            AddItem(grid, "A", height: 60);
+            AddItem(grid, "B", height: 60);
+            AddItem(grid, "C", height: 60);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_40_ImplicitLineNames.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0 (header row)");
+
+            // header-start → line 1, header-end → line 4 → spans all 3 cols = 600pt
+            var hdrBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(hdrBlock, "Header block");
+            Assert.AreEqual(600.0, hdrBlock.TotalBounds.Width.PointsValue, 2.0,
+                "header-start/header-end = 3 cols = 600pt");
+            Assert.AreEqual(50.0, hdrBlock.TotalBounds.Height.PointsValue, 2.0);
+
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row1, "Row 1 (A, B, C)");
+            Assert.AreEqual(3, row1.Columns.Length);
+            StringAssert.Contains(CollectText(row1.Columns[0]), "A");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "B");
+            StringAssert.Contains(CollectText(row1.Columns[2]), "C");
+        }
     }
 }
