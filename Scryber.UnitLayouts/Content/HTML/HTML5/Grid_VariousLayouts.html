@@ -136,73 +136,32 @@
             grid-row: 1 / 2;
         }
 
-        .container-4{
+        .container-6{
             display: grid;
-            grid-template-columns: 100px 100px 100px;
-            gap: 10px;
-            column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
-            width: 100%;
-        }
-
-
-        .container-4 .a {
-            grid-area: 1 / 2 / 2 / span 2;
-        }
-        .container-4 .b {
-            grid-area: 2 / 3 / 3 / 3;
-        }
-        .container-4 .c {
-            grid-area: 2 / 4 / 3 / 4;
-        }
-        .container-4 .d {
-            grid-area: 1 / 1 / 2 / 2;
-        }
-        .container-4 .e {
-            grid-area: 2 / 1 / 3 / span 2;
-        }
-        .container-4 .f {
-            grid-area: 1 / 4 / 2 / 4;
-        }
-
-        .container-5{
-            display: grid;
-            grid-template-columns: 100px 100px 100px;
+            grid-template-columns: repeat(4, [col] 100px ) ;
+            grid-template-rows: repeat(3, [row] auto  );
             gap: 10px;
             column-gap: 20px;
             border: solid 1px green;
             padding : 5px;
             position: relative;
         }
-        
-        table{
-            border: solid 1px green;
-            padding : 5px;
-        }
-        
-        td{
-            padding: 15px;
-            border: solid 1px blue;
-            background-color: rgba(128, 255, 255, 0.3);
-        }
 
-
-        .container-5 .a {
-            grid-column: 1 / span 2;
-            grid-row: 1;
+        .container-6 .a {
+            grid-column: col / span 2;
+            grid-row: row ;
         }
-        .container-5 .b {
-            grid-column: 3 ;
-            grid-row: 1 / span 2;
+        .container-6 .b {
+            grid-column: col 3 / span 2 ;
+            grid-row: row ;
         }
-        .container-5 .c {
-            grid-column: 1 ;
-            grid-row: 2 ;
+        .container-6 .c {
+            grid-column: col ;
+            grid-row: row 2 ;
         }
-        .container-5 .d {
-            grid-column: 2;
-            grid-row: 2;
+        .container-6 .d {
+            grid-column: col 2 / span 3 ;
+            grid-row: row 2 ;
         }
 
     </style>
@@ -240,18 +199,78 @@
         <div class="item e">E</div>
         <div class="item f">F</div>
     </div>
-<!--    <hr/>-->
-    <h3>Line based placement, grid-area with column spans.</h3>
-<!--    <div class="container container-4">-->
-<!--        <div class="item a">A</div>-->
-<!--        <div class="item b">B</div>-->
-<!--        <div class="item c">C</div>-->
-<!--        <div class="item d">D</div>-->
-<!--        <div class="item e">E</div>-->
-<!--        <div class="item f">F</div>-->
-<!--    </div>-->
     <hr/>
-    <h3>Line based placement, spanning tracks.</h3>
+    <style >
+        .container-4{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            width: 100%;
+        }
+
+
+        .container-4 .a {
+            grid-area: 1 / 2 / 2 / span 2;
+        }
+        .container-4 .b {
+            grid-area: 2 / 3 / 3 / 3;
+        }
+        .container-4 .c {
+            grid-area: 2 / 4 / 3 / 4;
+        }
+        .container-4 .d {
+            grid-area: 1 / 1 / 2 / 2;
+        }
+        .container-4 .e {
+            grid-area: 2 / 1 / 3 / span 2;
+        }
+        .container-4 .f {
+            grid-area: 1 / 4 / 2 / 4;
+        }
+    </style>
+    <h3>4. Line based placement, grid-area with column spans.</h3>
+    <div class="container container-4">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>5. Line based placement, spanning tracks.</h3>
+    <style>
+        .container-5{
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            position: relative;
+        }
+
+
+        .container-5 .a {
+            grid-column: 1 / span 2;
+            grid-row: 1;
+        }
+        .container-5 .b {
+            grid-column: 3 ;
+            grid-row: 1 / span 2;
+        }
+        .container-5 .c {
+            grid-column: 1 ;
+            grid-row: 2 ;
+        }
+        .container-5 .d {
+            grid-column: 2;
+            grid-row: 2;
+        }
+    </style>
     <div class="container container-5">
         <div class="item a">A</div>
         <div class="item b">B</div>
@@ -259,15 +278,17 @@
         <div class="item d">D</div>
         <div class="item e">E</div>
         <div class="item f">F</div>
-        <div class="item g">G</div>
-        <div class="item h">H</div>
-        <div class="item i">I</div>
-        <div class="item j">J</div>
-        <div class="item h">H</div>
-        <div class="item i">I</div>
-        <div class="item j">J</div>
     </div>
-    <span style="font-size: 10pt;" >After the grid</span>
+    <hr/>
+    <h3>Using Repeat notation.</h3>
+    <div class="container container-6">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
     <hr/>
 </main>
 
