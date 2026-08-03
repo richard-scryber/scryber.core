@@ -2037,6 +2037,156 @@ namespace Scryber.UnitLayouts
             StringAssert.Contains(CollectText(row1.Columns[1]), "Content row 2", "Col 1 row 1 = bottom");
         }
 
+        // Grid_43 — grid-template-areas with CSS class selectors for grid-area.
+        // Items carry class names matched by descendant CSS selectors that assign grid-area.
+        // Reproduces the "all cells in one row" bug reported by users of CSS-driven layouts.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_43_TemplateAreas_CSSClassGridArea()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        grid-template-columns: 200pt 200pt 200pt;
+        grid-template-areas:
+           ""....... header  header""
+           ""sidebar content content"";
+        width: 600pt;
+    }
+    .item { height: 50pt; border: 1pt solid black; }
+    .header  { grid-area: header; }
+    .sidebar { grid-area: sidebar; }
+    .content { grid-area: content; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item header"">Header</div>
+    <div class=""item sidebar"">Sidebar</div>
+    <div class=""item content"">Content</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_43_TemplateAreas_CSSClass.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // Should have 2 rows: row 0 = [dot, header], row 1 = [sidebar, content]
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0 (dot + header)");
+            Assert.IsNotNull(row1, "Row 1 (sidebar + content)");
+
+            // Header spans cols 1-2 (200+200=400pt)
+            StringAssert.Contains(CollectText(row0.Columns[1]), "Header",  "Row 0 col 1 = Header");
+            var headerBlock = GetItemBlock(row0, 1);
+            Assert.IsNotNull(headerBlock, "Header block");
+            Assert.AreEqual(400.0, headerBlock.TotalBounds.Width.PointsValue, 2.0,
+                "Header spans 2 cols = 400pt");
+
+            // Sidebar at col 0 of row 1
+            StringAssert.Contains(CollectText(row1.Columns[0]), "Sidebar", "Row 1 col 0 = Sidebar");
+            // Content spans cols 1-2 of row 1
+            StringAssert.Contains(CollectText(row1.Columns[1]), "Content", "Row 1 col 1 = Content");
+        }
+
+        // Grid_41 — grid-auto-columns: item placed at column 4 of a 3-column explicit grid.
+        // The 4th column gets the auto-column width (100pt), and the cell at column 4 should
+        // have width = 100pt.  Columns 1–3 remain at their explicit widths (200pt each).
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_41_AutoColumns_ImplicitColumnGetsAutoWidth()
+        {
+            var doc = CreateDoc(out var pg);
+            // Explicit 3-column grid: 200pt each (600pt page with no gap).
+            var grid = CreateGrid(pg, "200pt 200pt 200pt");
+            grid.Style.Grid.AutoColumns = "100pt";
+
+            AddItem(grid, "A", height: 40); // col 1 (auto)
+            AddItem(grid, "B", height: 40); // col 2 (auto)
+            AddItem(grid, "C", height: 40); // col 3 (auto)
+
+            // E is placed explicitly at the implicit 4th column.
+            var e = AddItem(grid, "E", height: 40);
+            e.Style.Grid.ColumnStart = GridLineValue.Line(4);
+            e.Style.Grid.ColumnEnd   = GridLineValue.Line(5);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_41_AutoColumns.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // All items land in row 0 (A at col0, B at col1, C at col2, E at col3).
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.AreEqual(4, row0.Columns.Length, "Row should have 4 columns (3 explicit + 1 implicit)");
+
+            var aBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(aBlock, "A block");
+            Assert.AreEqual(200.0, aBlock.TotalBounds.Width.PointsValue, 1.0, "A width = 200pt");
+
+            var eBlock = GetItemBlock(row0, 3);
+            Assert.IsNotNull(eBlock, "E block in implicit col 4");
+            Assert.AreEqual(100.0, eBlock.TotalBounds.Width.PointsValue, 1.0, "E width = 100pt (auto-column)");
+        }
+
+        // Grid_42 — grid-auto-rows: implicit rows get the declared height.
+        // Explicit template has 1 row at 80pt.  A second row is created by auto-flow;
+        // grid-auto-rows: 50pt should give that row 50pt height.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_42_AutoRows_ImplicitRowGetsAutoHeight()
+        {
+            var doc = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "1fr 1fr", templateRows: "80pt");
+            grid.Style.Grid.AutoRows = "50pt";
+
+            AddItem(grid, "A", height: 40); // row 0 col 0 (explicit 80pt row)
+            AddItem(grid, "B", height: 40); // row 0 col 1
+            AddItem(grid, "C", height: 30); // row 1 col 0 (implicit 50pt row)
+            AddItem(grid, "D", height: 30); // row 1 col 1
+
+            using (var ms = DocStreams.GetOutputStream("Grid_42_AutoRows.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0");
+            var aBlock = GetItemBlock(row0, 0);
+            Assert.IsNotNull(aBlock, "A block");
+            Assert.AreEqual(80.0, aBlock.TotalBounds.Height.PointsValue, 2.0, "Row 0 height = 80pt (explicit track)");
+
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row1, "Row 1");
+            var cBlock = GetItemBlock(row1, 0);
+            Assert.IsNotNull(cBlock, "C block");
+            Assert.AreEqual(50.0, cBlock.TotalBounds.Height.PointsValue, 2.0, "Row 1 height = 50pt (auto-row track)");
+        }
+
         // Grid_40 — implicit line names from grid-template-areas used in grid-column.
         // "header header header" → injects header-start (col line 1) and header-end (col line 4).
         // .hdr: grid-column: header-start / header-end → spans all 3 columns = 600pt.

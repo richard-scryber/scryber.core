@@ -318,6 +318,48 @@ namespace Scryber.Styles.Parsing.Typed
     }
 
     // -----------------------------------------------------------------------
+    // grid-auto-columns / grid-auto-rows  — single track-size value
+    // -----------------------------------------------------------------------
+
+    public class CSSGridAutoColumnsParser : CSSStyleAttributeParser<string>
+    {
+        public CSSGridAutoColumnsParser() : base(CSSStyleItems.GridAutoColumns, StyleKeys.GridAutoColumnsKey) { }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            var sb = new System.Text.StringBuilder();
+            while (reader.ReadNextValue())
+            {
+                if (sb.Length > 0) sb.Append(' ');
+                sb.Append(reader.CurrentTextValue);
+            }
+            var raw = sb.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+            this.SetValue(onStyle, raw);
+            return true;
+        }
+    }
+
+    public class CSSGridAutoRowsParser : CSSStyleAttributeParser<string>
+    {
+        public CSSGridAutoRowsParser() : base(CSSStyleItems.GridAutoRows, StyleKeys.GridAutoRowsKey) { }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            var sb = new System.Text.StringBuilder();
+            while (reader.ReadNextValue())
+            {
+                if (sb.Length > 0) sb.Append(' ');
+                sb.Append(reader.CurrentTextValue);
+            }
+            var raw = sb.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+            this.SetValue(onStyle, raw);
+            return true;
+        }
+    }
+
+    // -----------------------------------------------------------------------
     // grid-auto-flow  (unchanged)
     // -----------------------------------------------------------------------
 

@@ -20,7 +20,7 @@ namespace Scryber.PDF.Layout
         // Track definition — one entry per column
         // -----------------------------------------------------------------------
 
-        private enum TrackType { Fr, Points, Percent, Auto }
+        private enum TrackType { Fr, Points, Percent, Auto, MinContent, MaxContent }
 
         private readonly struct TrackDef
         {
@@ -388,13 +388,16 @@ namespace Scryber.PDF.Layout
                 // Auto treated as fr=1 if no other fr units, else as fr=1 share
             }
 
-            // Auto columns: if no fr columns exist, treat each Auto as 1fr
+            // Auto / min-content / max-content: if no fr columns exist, treat each as 1fr.
+            // min-content and max-content are content-intrinsic so the table engine handles
+            // their sizing; we just need them to share leftover space the same way Auto does.
             int autoCount = 0;
             foreach (var t in _tracks)
-                if (t.Type == TrackType.Auto) autoCount++;
+                if (t.Type == TrackType.Auto || t.Type == TrackType.MinContent || t.Type == TrackType.MaxContent)
+                    autoCount++;
 
             if (autoCount > 0 && frTotal == 0)
-                frTotal = autoCount; // each Auto gets 1fr
+                frTotal = autoCount; // each auto-like track gets 1fr of remaining space
 
             double frSpace = Math.Max(0, workingPts - fixedTotal);
 
@@ -414,6 +417,8 @@ namespace Scryber.PDF.Layout
                         widths[i] = frTotal > 0 ? (t.Value / frTotal) * frSpace : 0;
                         break;
                     case TrackType.Auto:
+                    case TrackType.MinContent:
+                    case TrackType.MaxContent:
                         widths[i] = frTotal > 0 ? (1.0 / frTotal) * frSpace : 0;
                         break;
                 }
@@ -442,11 +447,26 @@ namespace Scryber.PDF.Layout
             cellGrid      = new List<List<GridCell>>();
             syntheticRows = new List<TableRow>();
 
+            // Parse auto-track values for implicit columns/rows beyond the explicit template.
+            var autoColRaw = containerStyle.GetValue(StyleKeys.GridAutoColumnsKey, null as string);
+            var autoRowRaw = containerStyle.GetValue(StyleKeys.GridAutoRowsKey, null as string);
+            TrackDef autoColTrack = !string.IsNullOrWhiteSpace(autoColRaw)
+                ? ParseAutoTrack(autoColRaw)
+                : new TrackDef(TrackType.Auto, 0);
+            TrackDef autoRowTrack = !string.IsNullOrWhiteSpace(autoRowRaw)
+                ? ParseAutoTrack(autoRowRaw)
+                : new TrackDef(TrackType.Auto, 0);
+
+            // When no explicit template is defined, seed with the auto track (or 1fr).
             if (tracks.Count == 0)
-                tracks.Add(new TrackDef(TrackType.Fr, 1));
+                tracks.Add(!string.IsNullOrWhiteSpace(autoColRaw)
+                    ? autoColTrack
+                    : new TrackDef(TrackType.Fr, 1));
 
             if (rowTracks.Count == 0)
-                rowTracks.Add(new TrackDef(TrackType.Fr, 1));
+                rowTracks.Add(!string.IsNullOrWhiteSpace(autoRowRaw)
+                    ? autoRowTrack
+                    : new TrackDef(TrackType.Fr, 1));
 
             var grid     = new TableGrid();
             int colCount = tracks.Count;
@@ -466,13 +486,22 @@ namespace Scryber.PDF.Layout
                 return grid;
 
             var autoFlow = containerStyle.GetValue(StyleKeys.GridAutoFlowKey, GridAutoFlow.Row);
+            int maxColUsed;
 
             if (autoFlow == GridAutoFlow.Column)
-                BuildColumnMajor(items, colCount, grid, cellGrid, syntheticRows,
+                maxColUsed = BuildColumnMajor(items, colCount, grid, cellGrid, syntheticRows,
                                   colLineNames, rowLineNames, templateAreas);
             else
-                BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows,
+                maxColUsed = BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows,
                               colLineNames, rowLineNames, templateAreas);
+
+            // Extend column tracks for any implicit columns placed beyond the explicit template.
+            for (int i = tracks.Count; i <= maxColUsed; i++)
+                tracks.Add(autoColTrack);
+
+            // Extend row tracks to cover all synthetic rows with the auto-row track.
+            for (int i = rowTracks.Count; i < syntheticRows.Count; i++)
+                rowTracks.Add(autoRowTrack);
 
             return grid;
         }
@@ -596,7 +625,7 @@ namespace Scryber.PDF.Layout
         // Row-major placement
         // -----------------------------------------------------------------------
 
-        private static void BuildRowMajor(
+        private static int BuildRowMajor(
             List<Component> items, int colCount,
             TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
             Dictionary<string, List<int>> colLineNames,
@@ -675,13 +704,18 @@ namespace Scryber.PDF.Layout
             // Commit cells to rows and cellGrid in column order.
             // Columns with no placed cell AND not covered by a rowspan from above need an
             // empty placeholder so the table engine doesn't slide subsequent cells left
-            // (this is the case for dot "." cells from grid-template-areas).
+            // (this is the case for dot "." cells from grid-template-areas, or implicit columns).
+            int maxColUsed = colCount - 1;
+            foreach (var k in occupied.Keys)
+                if (k.Item2 > maxColUsed) maxColUsed = k.Item2;
+
+            int fillCount = maxColUsed + 1;
             for (int r = 0; r < syntheticRows.Count; r++)
             {
                 if (!placedCells.TryGetValue(r, out var rowDict))
                     rowDict = new SortedDictionary<int, GridCell>();
 
-                for (int c = 0; c < colCount; c++)
+                for (int c = 0; c < fillCount; c++)
                 {
                     if (!rowDict.ContainsKey(c) && !occupied.ContainsKey((r, c)))
                         rowDict[c] = new GridCell(null, 1, 1); // empty placeholder for dot/gap cell
@@ -693,9 +727,11 @@ namespace Scryber.PDF.Layout
                     cellGrid[r].Add(kvp.Value);
                 }
             }
+
+            return maxColUsed;
         }
 
-        private static void BuildColumnMajor(
+        private static int BuildColumnMajor(
             List<Component> items, int colCount,
             TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
             Dictionary<string, List<int>> colLineNames,
@@ -732,6 +768,8 @@ namespace Scryber.PDF.Layout
                 cellGrid.Add(rowCells[r]);
                 syntheticRows.Add(rows[r]);
             }
+
+            return colCount - 1;
         }
 
         // -----------------------------------------------------------------------
@@ -786,7 +824,7 @@ namespace Scryber.PDF.Layout
             out Dictionary<string, List<int>> lineNames)
         {
             lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
-            if (!(source is IStyledComponent sc) || !sc.HasStyle)
+            if (sourceStyle == null)
                 return new List<TrackDef>();
 
             var raw = sourceStyle.GetValue(StyleKeys.GridTemplateRowsKey, null as string);
@@ -849,7 +887,15 @@ namespace Scryber.PDF.Layout
                 t = t.ToLowerInvariant();
                 if (t == "auto")
                 {
-                    tracks.Add(new TrackDef(TrackType.Auto, 1.0));
+                    tracks.Add(new TrackDef(TrackType.Auto, 0));
+                }
+                else if (t == "min-content")
+                {
+                    tracks.Add(new TrackDef(TrackType.MinContent, 0));
+                }
+                else if (t == "max-content")
+                {
+                    tracks.Add(new TrackDef(TrackType.MaxContent, 0));
                 }
                 else if (t.EndsWith("fr"))
                 {
@@ -878,6 +924,17 @@ namespace Scryber.PDF.Layout
             return tracks;
         }
 
+        // Parses a single track-size value (for grid-auto-columns / grid-auto-rows).
+        // Returns Auto if the string is empty or unrecognised.
+        private static TrackDef ParseAutoTrack(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+                return new TrackDef(TrackType.Auto, 0);
+            var dummy = new Dictionary<string, List<int>>();
+            var list = ParseTrackList(raw, dummy);
+            return list.Count > 0 ? list[0] : new TrackDef(TrackType.Auto, 0);
+        }
+
         private static readonly Regex RepeatRegex =
             new Regex(@"repeat\(\s*(\d+)\s*,\s*([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -901,7 +958,7 @@ namespace Scryber.PDF.Layout
             Dictionary<string, List<int>> colLineNames,
             Dictionary<string, List<int>> rowLineNames)
         {
-            if (!(source is IStyledComponent sc) || !sc.HasStyle)
+            if (containerStyle == null)
                 return default;
 
             var areas = containerStyle.GetValue(StyleKeys.GridTemplateAreasKey,

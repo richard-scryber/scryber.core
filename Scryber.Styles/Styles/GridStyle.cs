@@ -82,5 +82,21 @@ namespace Scryber.Styles
         }
 
         public void RemoveAutoFlow() { this.RemoveValue(StyleKeys.GridAutoFlowKey); }
+
+        public string AutoColumns
+        {
+            get { string v; return this.TryGetValue(StyleKeys.GridAutoColumnsKey, out v) ? v : null; }
+            set { this.SetValue(StyleKeys.GridAutoColumnsKey, value); }
+        }
+
+        public void RemoveAutoColumns() { this.RemoveValue(StyleKeys.GridAutoColumnsKey); }
+
+        public string AutoRows
+        {
+            get { string v; return this.TryGetValue(StyleKeys.GridAutoRowsKey, out v) ? v : null; }
+            set { this.SetValue(StyleKeys.GridAutoRowsKey, value); }
+        }
+
+        public void RemoveAutoRows() { this.RemoveValue(StyleKeys.GridAutoRowsKey); }
     }
 }

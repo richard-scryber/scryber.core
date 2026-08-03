@@ -754,7 +754,9 @@ namespace Scryber.Styles
         public static readonly StyleKey<Drawing.GridLineValue> GridRowStartKey    = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdrl", GridItemKey);
         public static readonly StyleKey<Drawing.GridLineValue> GridRowEndKey      = StyleKey.InternalCreateStyleValueKey<Drawing.GridLineValue>((ObjectType)"gdre", GridItemKey);
         public static readonly StyleKey<string> GridAreaNameKey                   = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdan", GridItemKey);
-        public static readonly StyleKey<GridAutoFlow> GridAutoFlowKey = StyleKey.InternalCreateStyleValueKey<GridAutoFlow>((ObjectType)"gdaf", GridItemKey);
+        public static readonly StyleKey<GridAutoFlow> GridAutoFlowKey   = StyleKey.InternalCreateStyleValueKey<GridAutoFlow>((ObjectType)"gdaf", GridItemKey);
+        public static readonly StyleKey<string> GridAutoColumnsKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdac", GridItemKey);
+        public static readonly StyleKey<string> GridAutoRowsKey    = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"gdar", GridItemKey);
 
         //Attachments
 

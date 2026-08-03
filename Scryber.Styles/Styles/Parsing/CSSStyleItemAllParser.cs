@@ -323,6 +323,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.GridTemplateRows,    new Typed.CSSGridTemplateRowsParser());
             all.Add(CSSStyleItems.GridTemplateAreas,   new Typed.CSSGridTemplateAreasParser());
             all.Add(CSSStyleItems.GridAutoFlow,        new Typed.CSSGridAutoFlowParser());
+            all.Add(CSSStyleItems.GridAutoColumns,     new Typed.CSSGridAutoColumnsParser());
+            all.Add(CSSStyleItems.GridAutoRows,        new Typed.CSSGridAutoRowsParser());
             all.Add(CSSStyleItems.GridColumn,          new Typed.CSSGridColumnParser());
             all.Add(CSSStyleItems.GridColumnStart,     new Typed.CSSGridColumnStartParser());
             all.Add(CSSStyleItems.GridColumnEnd,       new Typed.CSSGridColumnEndParser());

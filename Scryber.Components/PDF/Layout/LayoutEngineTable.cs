@@ -1129,6 +1129,15 @@ namespace Scryber.PDF.Layout
             int rowcount = this._tblRef.AllRows.Length;
             int colcount = this._tblRef.TotalColumnCount;
 
+            // Snapshot natural row heights before adjusting any spanning cell.
+            // Without this, an earlier spanning cell (e.g. B rowspan=2) would have its
+            // block height raised to 98pt before a later spanning cell (E rowspan=3)
+            // computes GetMaxCellHeightForRow(row0), which would then see 98pt for B
+            // instead of the natural 44pt — inflating E's combined height incorrectly.
+            Unit[] rowHeights = new Unit[rowcount];
+            for (int r = 0; r < rowcount; r++)
+                rowHeights[r] = this._tblRef.GetMaxCellHeightForRow(r);
+
             for (int r = 0; r < rowcount; r++)
             {
                 for (int c = 0; c < colcount; c++)
@@ -1143,7 +1152,7 @@ namespace Scryber.PDF.Layout
 
                     Unit combinedHeight = Unit.Zero;
                     for (int spanRow = r; spanRow <= lastSpanRow; spanRow++)
-                        combinedHeight += this._tblRef.GetMaxCellHeightForRow(spanRow);
+                        combinedHeight += rowHeights[spanRow];
 
                     Rect bounds = cref.Block.TotalBounds;
                     bounds.Height = combinedHeight;

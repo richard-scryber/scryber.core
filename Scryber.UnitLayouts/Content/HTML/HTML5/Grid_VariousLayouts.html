@@ -38,6 +38,14 @@
             margin: 16pt 0;
         }
 
+    </style>
+</head>
+<body>
+
+<main>
+    <h1>Testing the grid layout options</h1>
+    <h3>Simple grid layout.</h3>
+    <style>
         .container-1{
             display: grid;
             grid-template-columns: 100px 100px 100px;
@@ -53,7 +61,18 @@
             border: solid 1px blue;
             background-color: rgba(128, 255, 255, 0.3);
         }
-
+    </style>
+    <div class="container container-1">
+        <div class="item item-1">One</div>
+        <div class="item item-2">Two</div>
+        <div class="item item-3">Three</div>
+        <div class="item item-4">Four</div>
+        <div class="item item-5">Five</div>
+        <div class="item item-6">Six</div>
+    </div>
+    <hr/>
+    <h3>Line based placement.</h3>
+    <style>
         .container-2{
             display: grid;
             grid-template-columns: 100px 100px 100px;
@@ -100,7 +119,18 @@
             grid-row-start: 1;
             grid-row-end: 2;
         }
-
+    </style>
+    <div class="container container-2">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+        <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3>Line based placement, grid-row, grid-column.</h3>
+    <style>
         .container-3{
             display: grid;
             grid-template-columns: 100px 100px 100px;
@@ -135,62 +165,7 @@
             grid-column: 3 / 4;
             grid-row: 1 / 2;
         }
-
-        .container-6{
-            display: grid;
-            grid-template-columns: repeat(4, [col] 100px ) ;
-            grid-template-rows: repeat(3, [row] auto  );
-            gap: 10px;
-            column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
-            position: relative;
-        }
-
-        .container-6 .a {
-            grid-column: col / span 2;
-            grid-row: row ;
-        }
-        .container-6 .b {
-            grid-column: col 3 / span 2 ;
-            grid-row: row ;
-        }
-        .container-6 .c {
-            grid-column: col ;
-            grid-row: row 2 ;
-        }
-        .container-6 .d {
-            grid-column: col 2 / span 3 ;
-            grid-row: row 2 ;
-        }
-
     </style>
-</head>
-<body>
-
-<main>
-    <h1>Testing the grid layout options</h1>
-    <h3>Simple grid layout.</h3>
-    <div class="container container-1">
-        <div class="item item-1">One</div>
-        <div class="item item-2">Two</div>
-        <div class="item item-3">Three</div>
-        <div class="item item-4">Four</div>
-        <div class="item item-5">Five</div>
-        <div class="item item-6">Six</div>
-    </div>
-    <hr/>
-    <h3>Line based placement.</h3>
-    <div class="container container-2">
-        <div class="item a">A</div>
-        <div class="item b">B</div>
-        <div class="item c">C</div>
-        <div class="item d">D</div>
-        <div class="item e">E</div>
-        <div class="item f">F</div>
-    </div>
-    <hr/>
-    <h3>Line based placement, grid-row, grid-column.</h3>
     <div class="container container-3">
         <div class="item a">A</div>
         <div class="item b">B</div>
@@ -281,13 +256,164 @@
     </div>
     <hr/>
     <h3>Using Repeat notation.</h3>
+    <style>
+        .container-6{
+            display: grid;
+            grid-template-columns: repeat(4, [col] 100px ) ;
+            grid-template-rows: repeat(3, [row] auto  );
+            gap: 10px;
+            column-gap: 20px;
+            border: solid 1px green;
+            padding : 5px;
+            position: relative;
+        }
+
+        .container-6 .a {
+            grid-column: col / span 2;
+            grid-row: row ;
+        }
+        .container-6 .b {
+            grid-column: col 3 / span 2 ;
+            grid-row: row ;
+        }
+        .container-6 .c {
+            grid-column: col ;
+            grid-row: row 2 ;
+        }
+        .container-6 .d {
+            grid-column: col 2 / span 3 ;
+            grid-row: row 2 ;
+        }
+        .container-6 .e {
+            grid-column: col / span 4;
+            grid-row: row 3;
+        }
+    </style>
     <div class="container container-6">
         <div class="item a">A</div>
         <div class="item b">B</div>
         <div class="item c">C</div>
         <div class="item d">D</div>
         <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3>Explicit and Implicit Grid.</h3>
+    <style>
+        .container-7{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-auto-columns: 3fr 1fr;
+            border: solid 1px green;
+            padding : 5px;
+        }
+
+        .container-7 .a {
+            grid-column: 1 / 3;
+            grid-row: 1;
+        }
+        .container-7 .b {
+            grid-column: 3 ;
+            grid-row: 1 / 3;
+        }
+        .container-7 .c {
+            grid-column: 1 ;
+            grid-row: 2 ;
+        }
+        .container-7 .d {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .container-7 .e {
+            grid-column: 4 / 5;
+            grid-row: 1 / 4;
+        }
+        .container-7 .f {
+            grid-column: 5 / 6;
+            grid-row: 3 / 4;
+        }
+    </style>
+    <div class="container container-7">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
         <div class="item f">F</div>
+    </div>
+    <hr/>
+    <h3 >Explicit and Implicit Grid Before.</h3>
+    <style>
+        .container-8{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 100px 100px;
+            grid-auto-columns: 200px;
+            border: solid 1px green;
+            padding : 5px;
+        }
+
+        .container-8 .a {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .container-8 .b {
+            grid-column: 3 ;
+            grid-row: 1 / 2;
+        }
+        .container-8 .c {
+            grid-column: 2;
+            grid-row: 2 ;
+        }
+        .container-8 .d {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .container-8 .e {
+            grid-column: 1;
+            grid-row: 1 / 4;
+        }
+    </style>
+    <div class="container container-8">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >Defining Areas.</h3>
+    <style>
+        .container-9{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 120px  120px  120px;
+            grid-template-areas:
+               "....... header  header"
+               "sidebar content content";
+            border: solid 1px green;
+            padding : 5px;
+        }
+
+        .container-9 .sidebar {
+            grid-area: sidebar;
+        }
+
+        .container-9 .content {
+            grid-area: content;
+        }
+
+        .container-9 .header {
+            grid-area: header;
+        }
+        
+    </style>
+    <div class="container container-9">
+        <div class="item header">Header</div>
+        <div class="item sidebar">Sidebar</div>
+        <div class="item content">Content</div>
     </div>
     <hr/>
 </main>
