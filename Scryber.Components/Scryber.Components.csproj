@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.12-beta</PackageVersion>
+    <PackageVersion>9.6.0.13-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.12-beta
+    <PackageReleaseNotes>9.6.0.13-beta
+CSS grid auto-fill/auto-fit: repeat(auto-fill, size) and repeat(auto-fit, size) now compute the column count from the container width at layout time. When no explicit width is set on the grid container, the count is resolved from the parent engine's available block width. Grid containers without an explicit CSS width now render as block-level boxes, filling the full parent available width (matching browser behaviour), including on overflow/continuation pages.
+CSS grid explicit placement with auto-fill: grid-column/grid-row explicit placements now work correctly when auto-fill tracks are used.
+
+9.6.0.12-beta
 CSS grid row-span and row-gap border rendering: grid cells now fill their spanning row height via a post-layout stretch pass. The inner grid-item block is updated to the cell block's final height minus the top margin (row-gap), preventing items overflowing into the gap area and causing missing borders on rows 2+.
 CSS grid explicit placement: fixed gap/column-gap cascade so both shorthand and longhand properties are respected in the correct CSS order. Column-gap visual spacing is now injected as left margin on non-first-column cells so cells render in the correct position. Added Grid_21 through Grid_29 unit tests covering line-based placement, grid-column/grid-row, grid-area with spans, and row-spanning cells.
 flex-direction:column: added justify-content support for column-direction flex containers; fixed align-items when an explicit height is set on the container.
@@ -140,12 +144,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.12</Version>
+    <Version>9.6.0.13</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.12</FileVersion>
+    <FileVersion>9.6.0.13</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
