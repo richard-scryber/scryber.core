@@ -83,6 +83,9 @@ namespace Scryber.PDF.Layout
 
             InjectRowGaps();
 
+            // Returns > 0 if we should expand the container to the full parent width post-layout.
+            double expandWidth = ExpandToFillParentWidth();
+
             var asDefined = Container.Content.ToArray();
             try
             {
@@ -97,6 +100,11 @@ namespace Scryber.PDF.Layout
 
                 // Propagate each cell block's final height to its inner div block.
                 StretchAllCellContent();
+
+                // The table engine sizes the block to fit its cells; widen to the full parent
+                // width so the container renders as a block-level box.
+                if (expandWidth > 0)
+                    ExpandTableBlocks(expandWidth);
             }
             finally
             {
@@ -104,6 +112,79 @@ namespace Scryber.PDF.Layout
                 Container.Content.AddRange(asDefined);
             }
 
+        }
+
+        // When no explicit CSS width is declared, CSS grid is a block-level box and should
+        // stretch to fill the full available parent width.  Cell widths are already baked by
+        // InjectColumnWidths so setting FullStyle.Size.Width here only widens the outer block;
+        // it does not trigger any recalculation of column or cell widths.
+        // Returns the target full width (pts) so DoLayoutComponent can apply it post-layout,
+        // or 0 if the container already has an explicit width.
+        private double ExpandToFillParentWidth()
+        {
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+            if (tablePos.Width.HasValue)
+                return 0;
+
+            var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            double fullWidth = block.AvailableBounds.Width.PointsValue;
+            if (!tablePos.Margins.IsEmpty)
+                fullWidth -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
+
+            if (fullWidth > 0)
+            {
+                this.FullStyle.Size.Width = new Drawing.Unit(fullWidth, PageUnits.Points);
+                // CreatePostionOptions is cached on StyleFull; clear it so base.DoLayoutComponent
+                // picks up the width we just set.
+                (this.FullStyle as StyleFull)?.ClearFullRefs();
+                return fullWidth;
+            }
+            return 0;
+        }
+
+        // Widens each TableBlock (and its column region and row blocks) to targetWidth so the
+        // container renders as a block-level box matching the full parent available width.
+        private void ExpandTableBlocks(double targetWidth)
+        {
+            var target = new Drawing.Unit(targetWidth, PageUnits.Points);
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (grid.TableBlock == null) continue;
+
+                // Widen the column region that contains all row blocks.
+                if (grid.TableBlock.Columns != null && grid.TableBlock.Columns.Length > 0)
+                {
+                    var region = grid.TableBlock.Columns[0];
+                    if (region != null && region.TotalBounds.Width < target)
+                    {
+                        var rb = region.TotalBounds;
+                        rb.Width = target;
+                        region.TotalBounds = rb;
+                    }
+
+                    // Widen each row block inside the region.
+                    if (region?.Contents != null)
+                    {
+                        foreach (var item in region.Contents)
+                        {
+                            if (item is PDFLayoutBlock rowBlock && rowBlock.TotalBounds.Width < target)
+                            {
+                                var rowb = rowBlock.TotalBounds;
+                                rowb.Width = target;
+                                rowBlock.TotalBounds = rowb;
+                            }
+                        }
+                    }
+                }
+
+                // Widen the table block itself.
+                if (grid.TableBlock.TotalBounds.Width < target)
+                {
+                    var tb = grid.TableBlock.TotalBounds;
+                    tb.Width = target;
+                    grid.TableBlock.TotalBounds = tb;
+                }
+            }
         }
 
         // -----------------------------------------------------------------------
