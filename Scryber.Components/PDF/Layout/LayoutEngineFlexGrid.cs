@@ -54,7 +54,7 @@ namespace Scryber.PDF.Layout
         // -----------------------------------------------------------------------
 
         public LayoutEngineFlexGrid(ContainerComponent container, IPDFLayoutEngine parent, Style containerStyle)
-            : base(BuildSyntheticTable(container, containerStyle,
+            : base(BuildSyntheticTable(container, containerStyle, parent,
                    out var tracks, out var cellGrid, out var syntheticRows, out var rowTracks,
                    out var colLineNames, out var rowLineNames, out var templateAreas), parent)
         {
@@ -433,6 +433,7 @@ namespace Scryber.PDF.Layout
         private static TableGrid BuildSyntheticTable(
             ContainerComponent source,
             Style containerStyle,
+            IPDFLayoutEngine parent,
             out List<TrackDef> tracks,
             out List<List<GridCell>> cellGrid,
             out List<TableRow> syntheticRows,
@@ -441,7 +442,7 @@ namespace Scryber.PDF.Layout
             out Dictionary<string, List<int>> rowLineNames,
             out GridTemplateAreasValue templateAreas)
         {
-            tracks        = ParseTemplateCols(source, containerStyle, out colLineNames);
+            tracks        = ParseTemplateCols(source, containerStyle, parent, out colLineNames);
             rowTracks     = ParseTemplateRows(source, containerStyle, out rowLineNames);
             templateAreas = ParseTemplateAreas(source, containerStyle, colLineNames, rowLineNames);
             cellGrid      = new List<List<GridCell>>();
@@ -907,10 +908,16 @@ namespace Scryber.PDF.Layout
             if (string.IsNullOrWhiteSpace(raw))
                 return new List<TrackDef>();
 
-            return ParseTrackList(raw, lineNames);
+            var h = sourceStyle.GetValue(StyleKeys.SizeHeightKey, Unit.Zero);
+            double containerH = (!h.IsRelative && h.PointsValue > 0) ? h.PointsValue : 0;
+            var rg = sourceStyle.GetValue(StyleKeys.FlexRowGapKey, Unit.Zero);
+            double rowGap = (!rg.IsRelative) ? rg.PointsValue : 0;
+
+            return ParseTrackList(raw, lineNames, containerH, rowGap);
         }
 
         private static List<TrackDef> ParseTemplateCols(ContainerComponent source, Style sourceStyle,
+            IPDFLayoutEngine parent,
             out Dictionary<string, List<int>> lineNames)
         {
             lineNames = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
@@ -921,21 +928,67 @@ namespace Scryber.PDF.Layout
             if (string.IsNullOrWhiteSpace(raw))
                 return new List<TrackDef>();
 
-            return ParseTrackList(raw, lineNames);
+            var w = sourceStyle.GetValue(StyleKeys.SizeWidthKey, Unit.Zero);
+            double containerW = (!w.IsRelative && w.PointsValue > 0)
+                ? w.PointsValue
+                : GetParentAvailableWidth(parent, sourceStyle);
+
+            var cg = sourceStyle.GetValue(StyleKeys.FlexColumnGapKey, Unit.Zero);
+            double colGap = (!cg.IsRelative) ? cg.PointsValue : 0;
+            if (colGap == 0)
+            {
+                var cg2 = sourceStyle.GetValue(StyleKeys.ColumnAlleyKey, Unit.Zero);
+                colGap = (!cg2.IsRelative) ? cg2.PointsValue : 0;
+            }
+
+            return ParseTrackList(raw, lineNames, containerW, colGap);
+        }
+
+        // Returns the available width for grid track layout from the parent engine's current
+        // open block, minus the container's own margins and padding, so auto-fill can compute
+        // the correct repeat count when no explicit CSS width is set on the container.
+        private static double GetParentAvailableWidth(IPDFLayoutEngine parent, Style containerStyle)
+        {
+            if (parent?.Context?.DocumentLayout?.CurrentPage == null)
+                return 0;
+
+            var block = parent.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            if (block == null)
+                return 0;
+
+            double available = block.AvailableBounds.Width.PointsValue;
+            if (available <= 0)
+                return 0;
+
+            // Mirror CalculateTableSpace: subtract margins and padding when no explicit width.
+            var ml = containerStyle.GetValue(StyleKeys.MarginsLeftKey, Unit.Zero);
+            var mr = containerStyle.GetValue(StyleKeys.MarginsRightKey, Unit.Zero);
+            var pl = containerStyle.GetValue(StyleKeys.PaddingLeftKey, Unit.Zero);
+            var pr = containerStyle.GetValue(StyleKeys.PaddingRightKey, Unit.Zero);
+
+            if (!ml.IsRelative) available -= ml.PointsValue;
+            if (!mr.IsRelative) available -= mr.PointsValue;
+            if (!pl.IsRelative) available -= pl.PointsValue;
+            if (!pr.IsRelative) available -= pr.PointsValue;
+
+            return available > 0 ? available : 0;
         }
 
         // Parses a track-list string into TrackDefs and populates a name→line-index map.
         // [name1 name2] tokens are stripped; each name maps to the 1-based line index
         // immediately following the bracket group (line 1 is before track 0).
+        // containerSizePts and gapPts are required only when the value contains auto-fill/auto-fit.
         private static List<TrackDef> ParseTrackList(string value,
-            Dictionary<string, List<int>> lineNames)
+            Dictionary<string, List<int>> lineNames,
+            double containerSizePts = 0,
+            double gapPts = 0)
         {
             var tracks = new List<TrackDef>();
             if (string.IsNullOrWhiteSpace(value))
                 return tracks;
 
-            // Expand repeat(N, ...) first — names inside repeat expand verbatim.
-            var expanded = ExpandRepeat(value.Trim());
+            // Expand repeat(N/auto-fill/auto-fit, ...) first — names inside repeat expand verbatim.
+            var expanded = ExpandRepeat(value.Trim(), containerSizePts, gapPts);
 
             // Split on whitespace, then walk tokens:
             // [name...] groups are recorded against the next 1-based line index;
@@ -1012,19 +1065,74 @@ namespace Scryber.PDF.Layout
         }
 
         private static readonly Regex RepeatRegex =
-            new Regex(@"repeat\(\s*(\d+)\s*,\s*([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            new Regex(@"repeat\(\s*(auto-fill|auto-fit|\d+)\s*,\s*([^)]+)\)",
+                      RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        private static string ExpandRepeat(string value)
+        private static string ExpandRepeat(string value, double containerSizePts, double gapPts)
         {
             return RepeatRegex.Replace(value, m =>
             {
-                int count = int.Parse(m.Groups[1].Value);
-                string track = m.Groups[2].Value.Trim();
+                string countToken = m.Groups[1].Value.Trim();
+                string trackGroup = m.Groups[2].Value.Trim();
+
+                int count;
+                if (!int.TryParse(countToken, out count))
+                    count = ComputeAutoRepeatCount(trackGroup, containerSizePts, gapPts);
+
                 var parts = new List<string>();
                 for (int i = 0; i < count; i++)
-                    parts.Add(track);
+                    parts.Add(trackGroup);
                 return string.Join(" ", parts);
             });
+        }
+
+        // Computes how many times a track group should repeat for auto-fill/auto-fit.
+        // Returns 1 when the count cannot be determined (unknown track size or no container width).
+        // Formula: n = floor((containerSizePts + gapPts) / (groupSizePts + trackCount * gapPts))
+        // where trackCount is the number of track tokens in the group.
+        private static int ComputeAutoRepeatCount(string trackGroupRaw, double containerSizePts, double gapPts)
+        {
+            if (containerSizePts <= 0)
+                return 1;
+
+            var tokens = trackGroupRaw.Trim()
+                .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+            double groupSizePts = 0;
+            int trackCount = 0;
+
+            foreach (var t in tokens)
+            {
+                var lower = t.ToLowerInvariant();
+
+                // Skip inline line-name groups like [col-start]
+                if (lower.StartsWith("[") && lower.EndsWith("]"))
+                    continue;
+
+                trackCount++;
+
+                if (lower == "auto" || lower == "min-content" || lower == "max-content"
+                    || lower.EndsWith("fr"))
+                    return 1; // indeterminate size — can't compute
+
+                Unit u;
+                if (!Unit.TryParse(lower, out u))
+                    return 1; // unrecognised
+
+                if (u.IsRelative)
+                    groupSizePts += (u.Value / 100.0) * containerSizePts;
+                else
+                    groupSizePts += u.PointsValue;
+            }
+
+            if (trackCount == 0 || groupSizePts <= 0)
+                return 1;
+
+            double denominator = groupSizePts + trackCount * gapPts;
+            if (denominator <= 0)
+                return 1;
+
+            return Math.Max(1, (int)Math.Floor((containerSizePts + gapPts) / denominator));
         }
 
         // Parses grid-template-areas and injects implicit area-start/area-end line names

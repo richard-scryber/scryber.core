@@ -2389,5 +2389,289 @@ namespace Scryber.UnitLayouts
             StringAssert.Contains(CollectText(row1.Columns[1]), "B");
             StringAssert.Contains(CollectText(row1.Columns[2]), "C");
         }
+
+        // Grid_44_AutoFill_RepeatColumns
+        // repeat(auto-fill, 100pt) with a 460pt container and 10pt column gap.
+        // Expected count: floor((460 + 10) / (100 + 10)) = floor(4.27) = 4 columns.
+        // 8 items → 2 full rows of 4.
+        [TestMethod]
+        public void Grid_44_AutoFill_RepeatColumns()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        width: 460pt;
+        column-gap: 10pt;
+        grid-template-columns: repeat(auto-fill, 100pt);
+    }
+    .item { height: 40pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">1</div>
+    <div class=""item"">2</div>
+    <div class=""item"">3</div>
+    <div class=""item"">4</div>
+    <div class=""item"">5</div>
+    <div class=""item"">6</div>
+    <div class=""item"">7</div>
+    <div class=""item"">8</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_44_AutoFill_RepeatColumns.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // 4 columns → 8 items fills exactly 2 rows.
+            Assert.AreEqual(2, gridBlock.Columns[0].Contents.Count, "Expected exactly 2 rows");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+
+            Assert.AreEqual(4, row0.Columns.Length, "Row 0 should have 4 columns");
+            Assert.AreEqual(4, row1.Columns.Length, "Row 1 should have 4 columns");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "1", "Row0 Col0 = item 1");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "2", "Row0 Col1 = item 2");
+            StringAssert.Contains(CollectText(row0.Columns[2]), "3", "Row0 Col2 = item 3");
+            StringAssert.Contains(CollectText(row0.Columns[3]), "4", "Row0 Col3 = item 4");
+
+            StringAssert.Contains(CollectText(row1.Columns[0]), "5", "Row1 Col0 = item 5");
+            StringAssert.Contains(CollectText(row1.Columns[3]), "8", "Row1 Col3 = item 8");
+
+            // Each fixed-width track is exactly 100pt.
+            var cell0 = GetItemBlock(row0, 0);
+            Assert.IsNotNull(cell0, "Cell (0,0) block");
+            Assert.AreEqual(100.0, cell0.TotalBounds.Width.PointsValue, 2.0, "Column width = 100pt");
+        }
+
+        // Grid_45_AutoFit_SameAsAutoFill
+        // auto-fit must produce the same column count as auto-fill for a fixed track size.
+        [TestMethod]
+        public void Grid_45_AutoFit_SameAsAutoFill()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        width: 460pt;
+        column-gap: 10pt;
+        grid-template-columns: repeat(auto-fit, 100pt);
+    }
+    .item { height: 40pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">1</div>
+    <div class=""item"">2</div>
+    <div class=""item"">3</div>
+    <div class=""item"">4</div>
+    <div class=""item"">5</div>
+    <div class=""item"">6</div>
+    <div class=""item"">7</div>
+    <div class=""item"">8</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_45_AutoFit_RepeatColumns.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+
+            // Same 4-column layout as auto-fill.
+            Assert.AreEqual(4, row0.Columns.Length, "auto-fit: Row 0 should have 4 columns");
+            Assert.AreEqual(4, row1.Columns.Length, "auto-fit: Row 1 should have 4 columns");
+
+            StringAssert.Contains(CollectText(row0.Columns[0]), "1", "Row0 Col0 = item 1");
+            StringAssert.Contains(CollectText(row0.Columns[3]), "4", "Row0 Col3 = item 4");
+            StringAssert.Contains(CollectText(row1.Columns[0]), "5", "Row1 Col0 = item 5");
+            StringAssert.Contains(CollectText(row1.Columns[3]), "8", "Row1 Col3 = item 8");
+        }
+
+        // Grid_46_AutoFill_NoExplicitWidth_UsesParentWidth
+        // When the container has no explicit CSS width, auto-fill resolves the repeat count
+        // from the parent layout engine's last open block available width.
+        // Page = 600pt wide, no margins/padding → parent available = 600pt.
+        // repeat(auto-fill, 100pt), no gap → floor(600/100) = 6 columns.
+        // 3 items → 1 row of 3 (remaining 3 column slots are empty placeholders).
+        [TestMethod]
+        public void Grid_46_AutoFill_NoExplicitWidth_UsesParentWidth()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        /* no explicit width — auto-fill uses parent available width = 600pt */
+        grid-template-columns: repeat(auto-fill, 100pt);
+    }
+    .item { height: 40pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">1</div>
+    <div class=""item"">2</div>
+    <div class=""item"">3</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_46_AutoFill_NoWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must be produced without exception");
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // 6 columns from parent width → 3 items in 1 row.
+            Assert.AreEqual(1, gridBlock.Columns[0].Contents.Count, "Expected exactly 1 row");
+            var row0 = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.AreEqual(6, row0.Columns.Length, "6 columns from 600pt / 100pt");
+            StringAssert.Contains(CollectText(row0.Columns[0]), "1", "Row0 Col0 = item 1");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "2", "Row0 Col1 = item 2");
+            StringAssert.Contains(CollectText(row0.Columns[2]), "3", "Row0 Col2 = item 3");
+        }
+
+        // Grid_47_AutoFill_NoWidth_ExplicitPlacements
+        // auto-fill with no explicit container width + items with explicit grid-column and grid-row.
+        // Page = 500pt, container padding = 5pt each side → parent available = 490pt.
+        // repeat(auto-fill, 100pt) + 10pt gap → floor((490 + 10) / (100 + 10)) = floor(500/110) = 4 columns.
+        //
+        // Item placements:
+        //   A: grid-column 1/3  → row 0, cols 0-1 (span 2)   → width = 2×100 + 10 = 210pt
+        //   B: grid-column 3/5  → row 0, cols 2-3 (span 2)   → width = 2×100 + 10 = 210pt
+        //   C: grid-column 1/2, grid-row 2 → row 1, col 0    → width = 100pt
+        //   D: grid-column 2/5, grid-row 2 → row 1, cols 1-3 (span 3) → width = 3×100 + 2×10 = 320pt
+        //   E: grid-column 1/5, grid-row 3 → row 2, cols 0-3 (span 4) → width = 4×100 + 3×10 = 430pt
+        [TestMethod]
+        public void Grid_47_AutoFill_NoWidth_ExplicitPlacements()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 500pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        grid-gap: 10pt;
+        grid-template-columns: repeat(auto-fill, 100pt);
+        padding: 5pt;
+    }
+    .grid .a { grid-column: 1 / 3; }
+    .grid .b { grid-column: 3 / 5; }
+    .grid .c { grid-column: 1 / 2; grid-row: 2; }
+    .grid .d { grid-column: 2 / 5; grid-row: 2; }
+    .grid .e { grid-column: 1 / 5; grid-row: 3; }
+    .item { height: 40pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item a"">A</div>
+    <div class=""item b"">B</div>
+    <div class=""item c"">C</div>
+    <div class=""item d"">D</div>
+    <div class=""item e"">E</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_47_AutoFill_ExplicitPlacements.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must be produced without exception");
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // 3 rows: row 0 (A+B), row 1 (C+D), row 2 (E)
+            Assert.AreEqual(3, gridBlock.Columns[0].Contents.Count, "Expected 3 rows");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            var row2 = GetRowBlock(gridBlock, 2);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+            Assert.IsNotNull(row2, "Row 2");
+
+            Assert.AreEqual(4, row0.Columns.Length, "4 columns from auto-fill");
+
+            // A spans cols 0-1 in row 0
+            StringAssert.Contains(CollectText(row0.Columns[0]), "A", "Row0 Col0 = A");
+            var blockA = GetItemBlock(row0, 0);
+            Assert.IsNotNull(blockA, "Block A");
+            Assert.AreEqual(210.0, blockA.TotalBounds.Width.PointsValue, 2.0, "A spans 2 cols = 210pt");
+
+            // B spans cols 2-3 in row 0. colCursor=2 → margin-left=10pt injected.
+            // TotalBounds.Width = 10(margin) + 210(content) = 220pt.
+            StringAssert.Contains(CollectText(row0.Columns[2]), "B", "Row0 Col2 = B");
+            var blockB = GetItemBlock(row0, 2);
+            Assert.IsNotNull(blockB, "Block B");
+            Assert.AreEqual(220.0, blockB.TotalBounds.Width.PointsValue, 2.0, "B: 2 cols (210) + 10pt gap margin = 220pt");
+
+            // C is at col 0, row 1
+            StringAssert.Contains(CollectText(row1.Columns[0]), "C", "Row1 Col0 = C");
+
+            // D spans cols 1-3 in row 1. colCursor=1 → margin-left=10pt injected.
+            // TotalBounds.Width = 10(margin) + 320(content) = 330pt.
+            StringAssert.Contains(CollectText(row1.Columns[1]), "D", "Row1 Col1 = D");
+            var blockD = GetItemBlock(row1, 1);
+            Assert.IsNotNull(blockD, "Block D");
+            Assert.AreEqual(330.0, blockD.TotalBounds.Width.PointsValue, 2.0, "D: 3 cols (320) + 10pt gap margin = 330pt");
+
+            // E spans all 4 cols in row 2 from col 0 — no gap margin on first column.
+            // TotalBounds.Width = 430pt (4×100 + 3×10 gaps).
+            StringAssert.Contains(CollectText(row2.Columns[0]), "E", "Row2 Col0 = E");
+            var blockE = GetItemBlock(row2, 0);
+            Assert.IsNotNull(blockE, "Block E");
+            Assert.AreEqual(430.0, blockE.TotalBounds.Width.PointsValue, 2.0, "E spans 4 cols = 430pt");
+        }
     }
 }
