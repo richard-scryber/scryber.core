@@ -883,6 +883,89 @@ namespace Scryber.UnitLayouts
             StringAssert.Contains(CollectText(row2.Columns[1]), "F", "Row2 Col1 = F");
         }
 
+        // Grid_AutoFlow_Column_ExplicitItemSkipsOccupied — mirrors the container-14 scenario:
+        // 12 items, 6 explicit columns, grid-auto-flow: column, no explicit rows.
+        // Item 2 is placed explicitly at grid-row: 2, grid-column: 3 / 6 (cols 3-5, 0-indexed 2-4).
+        // The auto-flow cursor must skip the cells occupied by item 2 and route around them.
+        //
+        // Expected column-major layout (2 rows driven by item 2 being at row 2):
+        //   col0  col1  col2  col3  col4  col5  [col6]  [col7]
+        //  row0:  1    4     6     7     8     9    11     ...
+        //  row1:  3    5   [item2 spans cols 2-4]  10    12
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_AutoFlow_Column_ExplicitItemSkipsOccupied()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 700pt 300pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 100pt);
+        grid-auto-flow: column;
+        width: 600pt;
+    }
+    .item  { height: 50pt; border: 1pt solid black; }
+    .item2 { grid-column: 3 / 6; grid-row: 2 / 3; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">1</div>
+    <div class=""item item2"">2</div>
+    <div class=""item"">3</div>
+    <div class=""item"">4</div>
+    <div class=""item"">5</div>
+    <div class=""item"">6</div>
+    <div class=""item"">7</div>
+    <div class=""item"">8</div>
+    <div class=""item"">9</div>
+    <div class=""item"">10</div>
+    <div class=""item"">11</div>
+    <div class=""item"">12</div>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_AutoFlow_Column_ExplicitSkip.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            // Item 2 at row 2 forces at least 2 rows.
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+
+            // Item 2 is explicitly at row 1 (0-indexed), cols 2-4 — verify its text and width.
+            // It spans 3 cols = 300pt.
+            StringAssert.Contains(CollectText(row1.Columns[2]), "2",  "Item 2 in row1 col2");
+            var item2Block = GetItemBlock(row1, 2);
+            Assert.IsNotNull(item2Block, "Item 2 block");
+            Assert.AreEqual(300.0, item2Block.TotalBounds.Width.PointsValue, 2.0, "Item 2 spans 3 cols = 300pt");
+
+            // Auto-placed items: cursor goes down col 0 (items 1, 3), then col 1 (4, 5), etc.
+            // Col 0 row 0 = item 1, col 0 row 1 = item 3.
+            StringAssert.Contains(CollectText(row0.Columns[0]), "1",  "Row0 Col0 = item 1");
+            StringAssert.Contains(CollectText(row1.Columns[0]), "3",  "Row1 Col0 = item 3");
+
+            // Col 1: items 4, 5.
+            StringAssert.Contains(CollectText(row0.Columns[1]), "4",  "Row0 Col1 = item 4");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "5",  "Row1 Col1 = item 5");
+
+            // Col 2 row 0: item 6 (row 1 is occupied by item 2).
+            StringAssert.Contains(CollectText(row0.Columns[2]), "6",  "Row0 Col2 = item 6");
+        }
+
         // ======================================================================
         // grid-template-rows — explicit row sizing
         // ======================================================================

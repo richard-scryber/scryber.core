@@ -742,41 +742,110 @@ namespace Scryber.PDF.Layout
             Dictionary<string, List<int>> rowLineNames,
             GridTemplateAreasValue templateAreas)
         {
-            // Use the explicit row count (grid-template-rows) as the per-column capacity.
-            // Fall back to ceil(items / colCount) when no explicit rows are defined.
-            int rowCount = explicitRowCount > 0
-                ? explicitRowCount
-                : (items.Count + colCount - 1) / colCount;
+            var occupied    = new Dictionary<(int, int), bool>();
+            var placedCells = new Dictionary<int, SortedDictionary<int, GridCell>>();
+            var placements  = new List<GridItemPlacement>(items.Count);
+            foreach (var item in items)
+                placements.Add(ResolveGridItemPlacement(item, colCount,
+                               colLineNames, rowLineNames, templateAreas));
 
-            // Pre-build rows and cell lists
-            var rows     = new TableRow[rowCount];
-            var rowCells = new List<GridCell>[rowCount];
-            for (int r = 0; r < rowCount; r++)
+            // Phase 1: items with both row AND column explicitly set.
+            foreach (var p in placements)
             {
-                rows[r]     = new TableRow();
-                rowCells[r] = new List<GridCell>();
+                if (p.RowStart < 0 || p.ColStart < 0) continue;
+                EnsureRows(syntheticRows, grid, cellGrid, p.RowStart + p.RowSpan - 1);
+                StoreCell(p, p.RowStart, p.ColStart, occupied, placedCells);
             }
 
-            // Place items column-by-column: item i → col = i/rowCount, row = i%rowCount
-            for (int i = 0; i < items.Count; i++)
+            // Determine the row cap — how many rows before the cursor wraps to the next column.
+            // Priority: (1) explicit grid-template-rows; (2) max row extent from phase-1
+            // placements (e.g. an item at row 2 forces at least 2 rows); (3) heuristic.
+            int rowCap = explicitRowCount;
+            if (rowCap == 0)
             {
-                int row = i % rowCount;
-                var item = items[i];
-                var p = ResolveGridItemPlacement(item, colCount,
-                        colLineNames, rowLineNames, templateAreas);
-                var cell = new GridCell(item, Math.Max(1, p.ColSpan), Math.Max(1, p.RowSpan));
-                rows[row].Cells.Add(cell);
-                rowCells[row].Add(cell);
+                foreach (var p in placements)
+                    if (p.RowStart >= 0)
+                        rowCap = Math.Max(rowCap, p.RowStart + p.RowSpan);
+            }
+            if (rowCap == 0)
+                rowCap = (items.Count + colCount - 1) / colCount;
+
+            // Phase 2: column-major auto-flow cursor (rows advance first, then columns).
+            int curR = 0, curC = 0;
+            foreach (var p in placements)
+            {
+                if (p.RowStart >= 0 && p.ColStart >= 0) continue; // already placed in phase 1
+
+                int r, c;
+
+                if (p.ColStart >= 0)
+                {
+                    // Explicit column, auto row — find the first row where the range is free.
+                    c = p.ColStart;
+                    r = 0;
+                    while (!CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        r++;
+                }
+                else if (p.RowStart >= 0)
+                {
+                    // Explicit row, auto column — find the first column (from curC) with room.
+                    r = p.RowStart;
+                    c = curC;
+                    while (c < colCount && !CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                        c++;
+                    if (c >= colCount) { r = curR; c = curC; } // fallback: treat as fully auto
+                }
+                else
+                {
+                    // Fully auto: move down rows first, wrap to next column when row cap is hit.
+                    r = curR; c = curC;
+                    while (true)
+                    {
+                        if (r + p.RowSpan <= rowCap && CanPlace(occupied, r, c, p.ColSpan, p.RowSpan))
+                            break;
+                        r++;
+                        if (r + p.RowSpan > rowCap) { r = 0; c++; }
+                    }
+                    // Advance cursor past this item.
+                    curR = r + p.RowSpan;
+                    curC = c;
+                    if (curR >= rowCap) { curR = 0; curC++; }
+                }
+
+                EnsureRows(syntheticRows, grid, cellGrid, r + p.RowSpan - 1);
+                StoreCell(p, r, c, occupied, placedCells);
             }
 
-            for (int r = 0; r < rowCount; r++)
+            // Commit cells to rows and cellGrid in column order, filling gaps with empty
+            // placeholder cells so the table engine doesn't slide cells left.
+            // In column-major flow items may not fill all explicit columns (e.g. 12 items
+            // in 3 explicit rows only needs 4 of 6 explicit columns), so derive maxColUsed
+            // purely from what was actually placed rather than initialising to colCount - 1.
+            int maxColUsed = -1;
+            foreach (var k in occupied.Keys)
+                if (k.Item2 > maxColUsed) maxColUsed = k.Item2;
+            if (maxColUsed < 0) maxColUsed = 0;
+
+            int fillCount = maxColUsed + 1;
+            for (int r = 0; r < syntheticRows.Count; r++)
             {
-                grid.Rows.Add(rows[r]);
-                cellGrid.Add(rowCells[r]);
-                syntheticRows.Add(rows[r]);
+                if (!placedCells.TryGetValue(r, out var rowDict))
+                    rowDict = new SortedDictionary<int, GridCell>();
+
+                for (int c = 0; c < fillCount; c++)
+                {
+                    if (!rowDict.ContainsKey(c) && !occupied.ContainsKey((r, c)))
+                        rowDict[c] = new GridCell(null, 1, 1);
+                }
+
+                foreach (var kvp in rowDict)
+                {
+                    syntheticRows[r].Cells.Add(kvp.Value);
+                    cellGrid[r].Add(kvp.Value);
+                }
             }
 
-            return colCount - 1;
+            return maxColUsed;
         }
 
         // -----------------------------------------------------------------------
