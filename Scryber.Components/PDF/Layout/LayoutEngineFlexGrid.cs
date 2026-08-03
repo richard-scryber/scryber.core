@@ -457,6 +457,10 @@ namespace Scryber.PDF.Layout
                 ? ParseAutoTrack(autoRowRaw)
                 : new TrackDef(TrackType.Auto, 0);
 
+            // Capture the explicit row count from grid-template-rows before seeding defaults.
+            // Column-major flow uses this to determine how many items fill each column.
+            int explicitRowCount = rowTracks.Count;
+
             // When no explicit template is defined, seed with the auto track (or 1fr).
             if (tracks.Count == 0)
                 tracks.Add(!string.IsNullOrWhiteSpace(autoColRaw)
@@ -489,7 +493,7 @@ namespace Scryber.PDF.Layout
             int maxColUsed;
 
             if (autoFlow == GridAutoFlow.Column)
-                maxColUsed = BuildColumnMajor(items, colCount, grid, cellGrid, syntheticRows,
+                maxColUsed = BuildColumnMajor(items, colCount, explicitRowCount, grid, cellGrid, syntheticRows,
                                   colLineNames, rowLineNames, templateAreas);
             else
                 maxColUsed = BuildRowMajor(items, colCount, grid, cellGrid, syntheticRows,
@@ -732,14 +736,17 @@ namespace Scryber.PDF.Layout
         }
 
         private static int BuildColumnMajor(
-            List<Component> items, int colCount,
+            List<Component> items, int colCount, int explicitRowCount,
             TableGrid grid, List<List<GridCell>> cellGrid, List<TableRow> syntheticRows,
             Dictionary<string, List<int>> colLineNames,
             Dictionary<string, List<int>> rowLineNames,
             GridTemplateAreasValue templateAreas)
         {
-            // rows = ceil(itemCount / colCount)
-            int rowCount = (items.Count + colCount - 1) / colCount;
+            // Use the explicit row count (grid-template-rows) as the per-column capacity.
+            // Fall back to ceil(items / colCount) when no explicit rows are defined.
+            int rowCount = explicitRowCount > 0
+                ? explicitRowCount
+                : (items.Count + colCount - 1) / colCount;
 
             // Pre-build rows and cell lists
             var rows     = new TableRow[rowCount];

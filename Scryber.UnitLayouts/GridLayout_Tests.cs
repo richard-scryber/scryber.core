@@ -815,6 +815,74 @@ namespace Scryber.UnitLayouts
             StringAssert.Contains(CollectText(row1.Columns[1]), "D", "Row1 Col1 = D");
         }
 
+        // Grid_AutoFlow_Column_ExplicitRowCount — 12 items, 6 explicit cols, 3 explicit rows,
+        // auto-flow: column.  The explicit row count (3) must cap each column; items wrap to the
+        // next column after 3 items.  Expected: 3 rows × 4 columns, NOT 2 rows × 6 columns.
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_AutoFlow_Column_ExplicitRowCountCapsCols()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 400pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 100pt);
+        grid-template-rows: repeat(3, 100pt);
+        grid-auto-flow: column;
+        width: 600pt;
+    }
+    .item { border: 1pt solid black; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div><div class=""item"">B</div><div class=""item"">C</div>
+    <div class=""item"">D</div><div class=""item"">E</div><div class=""item"">F</div>
+    <div class=""item"">G</div><div class=""item"">H</div><div class=""item"">I</div>
+    <div class=""item"">J</div><div class=""item"">K</div><div class=""item"">L</div>
+  </div>
+</body>
+</html>";
+            // Column-major order with 3-row capacity:
+            //  col0: A B C   col1: D E F   col2: G H I   col3: J K L
+            // → 3 rows × 4 columns
+
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_AutoFlow_Column_12x3rows4cols.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var gridBlock = GetGridBlock(_layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            Assert.AreEqual(3, gridBlock.Columns[0].Contents.Count, "Must have 3 rows (from grid-template-rows)");
+
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+            var row2 = GetRowBlock(gridBlock, 2);
+            Assert.IsNotNull(row0, "Row 0");
+            Assert.IsNotNull(row1, "Row 1");
+            Assert.IsNotNull(row2, "Row 2");
+
+            Assert.AreEqual(4, row0.Columns.Length, "Row 0 should have 4 columns");
+            Assert.AreEqual(4, row1.Columns.Length, "Row 1 should have 4 columns");
+            Assert.AreEqual(4, row2.Columns.Length, "Row 2 should have 4 columns");
+
+            // col0 = A,B,C  col1 = D,E,F  col2 = G,H,I  col3 = J,K,L
+            StringAssert.Contains(CollectText(row0.Columns[0]), "A", "Row0 Col0 = A");
+            StringAssert.Contains(CollectText(row1.Columns[0]), "B", "Row1 Col0 = B");
+            StringAssert.Contains(CollectText(row2.Columns[0]), "C", "Row2 Col0 = C");
+            StringAssert.Contains(CollectText(row0.Columns[1]), "D", "Row0 Col1 = D");
+            StringAssert.Contains(CollectText(row1.Columns[1]), "E", "Row1 Col1 = E");
+            StringAssert.Contains(CollectText(row2.Columns[1]), "F", "Row2 Col1 = F");
+        }
+
         // ======================================================================
         // grid-template-rows — explicit row sizing
         // ======================================================================
