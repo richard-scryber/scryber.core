@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.6.0.13-beta</PackageVersion>
+    <PackageVersion>9.6.0.14-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.6.0.13-beta
+    <PackageReleaseNotes>9.6.0.14-beta
+Fixed a defect in PDFFontDefinition (GitHub issue #183) where the bfrange table's glyph offset array was sized by the count of registered characters rather than the count of glyph offsets, producing incorrect font width/ToUnicode output for composite and OpenType fonts.
+Fixed a CSS parsing defect where a var()/calc() expression on certain properties (e.g. column-gap) could throw during premature evaluation, silently discarding the entire enclosing CSS style block - including every other property already parsed in it.
+Added var()/calc() expression support to the Flex and Grid CSS property parsers (flex-direction, flex-wrap, justify-content, align-items/content/self, flex-grow/shrink/basis, order, gap, row-gap, grid-column/row (and start/end), grid-template-columns/rows, grid-auto-columns/rows, grid-auto-flow, and named grid-area), so these properties can now be driven by CSS custom properties and calc() expressions.
+
+9.6.0.13-beta
 CSS grid auto-fill/auto-fit: repeat(auto-fill, size) and repeat(auto-fit, size) now compute the column count from the container width at layout time. When no explicit width is set on the grid container, the count is resolved from the parent engine's available block width. Grid containers without an explicit CSS width now render as block-level boxes, filling the full parent available width (matching browser behaviour), including on overflow/continuation pages.
 CSS grid explicit placement with auto-fill: grid-column/grid-row explicit placements now work correctly when auto-fill tracks are used.
 
@@ -144,12 +149,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.6.0.13</Version>
+    <Version>9.6.0.14</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.6.0.13</FileVersion>
+    <FileVersion>9.6.0.14</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
