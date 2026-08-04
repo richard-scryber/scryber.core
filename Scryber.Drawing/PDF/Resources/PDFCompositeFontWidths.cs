@@ -39,7 +39,7 @@ namespace Scryber.PDF.Resources
         /// </summary>
         public override bool IsEmpty
         {
-            get { return this.Count > 0; }
+            get { return this._offset2char.Count > 0; }
         }
 
         #endregion
@@ -75,18 +75,6 @@ namespace Scryber.PDF.Resources
         //
         // public methods
         //
-
-        #region public int Count {get;}
-
-        /// <summary>
-        /// Gets the number of registered glyphs / characters in this Composite fond widths instance
-        /// </summary>
-        public int Count
-        {
-            get { return _char2offset.Count; }
-        }
-
-        #endregion
 
         /// <summary>
         /// Get the number of PDF units in an Em (m)
@@ -127,7 +115,7 @@ namespace Scryber.PDF.Resources
         /// <summary>
         /// Gets the list of registered Glyph Offsets within the CMAP for this font. (sorted by ascending char character value)
         /// </summary>
-        public IEnumerable<int> RegisterdGlyphOffsets
+        public ICollection<int> RegisterdGlyphOffsets
         {
             get { return _offset2char.Keys; }
         }
@@ -135,7 +123,7 @@ namespace Scryber.PDF.Resources
         /// <summary>
         /// Gets the list of registered characters (sorted by ascending char character value)
         /// </summary>
-        public IEnumerable<char> RegistedCharacters
+        public ICollection<char> RegistedCharacters
         {
             get { return _char2offset.Keys; }
         }

@@ -613,7 +613,7 @@ namespace Scryber.Generation
                     cdef = AssertGetClassDefinition(complex.GetType());
 
                 if (!empty)
-                    this.ParseContents(complex, reader, element, ns, cdef);
+                    await this.ParseContents(complex, reader, element, ns, cdef);
             }
             //this.ParseComplexComponent(complex, reader, cdef, resolver);
             return complex;

@@ -470,11 +470,12 @@ namespace Scryber.PDF.Resources
                 writer.WriteLine();
                 writer.WriteRaw("endcodespacerange");
                 writer.WriteLine();
-                writer.WriteRaw(comp.Count.ToString());
+                var offsets = comp.RegisterdGlyphOffsets;
+                writer.WriteRaw(offsets.Count.ToString());
                 writer.WriteRaw(" beginbfrange");
                 writer.WriteLine();
                 int count = 0;
-                foreach (int glyphindex in comp.RegisterdGlyphOffsets)
+                foreach (int glyphindex in offsets)
                 {
                     char ch = comp.GetCharacterForGlyphOffset(glyphindex);
                     string g = "<" + Convert.ToString(glyphindex, 16).PadLeft(4, '0') + ">";
