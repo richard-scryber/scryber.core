@@ -685,6 +685,37 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategory)]
         [TestMethod()]
+        public void FlexRow_AlignItems_Center_MinHeightOnly_UsesMinHeightAsReference()
+        {
+            // No explicit height on the container, only min-height. The cross-axis reference
+            // for align-items should still fall back to min-height (grown the same way height
+            // would be), not just the tallest child - matching the analogous fix in
+            // LayoutEngineFlexGrid's align-content.
+            var doc   = CreateDoc(out var pg);
+            var panel = CreateFlexContainer(pg);
+            panel.Style.Flex.AlignItems = FlexAlignMode.Center;
+            panel.MinimumHeight = 100;
+            AddChild(panel, height: 50, label: "Short");
+
+            using (var ms = DocStreams.GetOutputStream("Flex_AlignItems_Center_MinHeightOnly.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(panelBlock);
+            var shortBlock = panelBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(shortBlock);
+
+            // Reference height = min-height (100pt), not the child's own 50pt.
+            // Offset = (100 - 50) / 2 = 25pt.
+            Assert.AreEqual(25.0, shortBlock.TotalBounds.Y.PointsValue, 0.5,
+                "center: child should align against the 100pt min-height, not its own 50pt height");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
         public void FlexRow_AlignItems_EqualHeights_NoOffset()
         {
             // When all children have equal height, align-items has no visible effect.

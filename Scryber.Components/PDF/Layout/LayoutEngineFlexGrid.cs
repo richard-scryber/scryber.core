@@ -20,6 +20,10 @@ namespace Scryber.PDF.Layout
         // Track definition — one entry per column
         // -----------------------------------------------------------------------
 
+        // subgrid is not represented here - a subgrid track doesn't have its own size, it
+        // inherits the corresponding track from the parent grid, which this engine's track
+        // model has no notion of. CSSGridTrackStringParser rejects the "subgrid" keyword at
+        // CSS-parse time, so it never reaches this type.
         private enum TrackType { Fr, Points, Percent, Auto, MinContent, MaxContent }
 
         private readonly struct TrackDef
@@ -67,6 +71,22 @@ namespace Scryber.PDF.Layout
             _templateAreas = templateAreas;
             ContainerStyle = containerStyle;
             Container      = container;
+        }
+
+        // A block that itself has multiple CSS columns (e.g. a <main> with column-count:2) has
+        // an AvailableBounds.Width covering its FULL un-split content area - the region actually
+        // being laid into (one column) is narrower. Always prefer CurrentRegion's width when a
+        // region has been established; fall back to the block's own AvailableBounds otherwise.
+        // Used everywhere this engine resolves "how much width is available" from the parent
+        // block, so a grid with no explicit width nested inside a multi-column parent sizes to
+        // its own column rather than the parent's full (pre-split) width.
+        private static Unit GetCurrentRegionWidth(PDFLayoutBlock block)
+        {
+            if (block == null)
+                return Unit.Zero;
+            if (block.CurrentRegion != null)
+                return block.CurrentRegion.TotalBounds.Width;
+            return block.AvailableBounds.Width;
         }
 
         // -----------------------------------------------------------------------
@@ -138,7 +158,7 @@ namespace Scryber.PDF.Layout
             else
             {
                 var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-                fullWidth = block.AvailableBounds.Width.PointsValue;
+                fullWidth = GetCurrentRegionWidth(block).PointsValue;
                 if (!tablePos.Margins.IsEmpty)
                     fullWidth -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
             }
@@ -215,10 +235,17 @@ namespace Scryber.PDF.Layout
         private void ApplyAlignContent()
         {
             var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
-            if (!tablePos.Height.HasValue)
-                return; // no explicit height - nothing to distribute
+            if (!tablePos.Height.HasValue && !tablePos.MinimumHeight.HasValue)
+                return; // no explicit or minimum height - nothing to distribute
 
-            double declaredHeight = tablePos.Height.Value.PointsValue;
+            // With no explicit height, min-height is the closest thing to a "declared" box -
+            // treat it the same way here, otherwise align-content is a no-op on a min-height-only
+            // grid. This also grows the block itself (via ExpandLastSegment below), since that
+            // runs unconditionally whenever there's leftover space to distribute - min-height
+            // growth for plain tables/flexbox isn't covered yet (see follow-up task).
+            double declaredHeight = tablePos.Height.HasValue ? tablePos.Height.Value.PointsValue : 0;
+            if (tablePos.MinimumHeight.HasValue && tablePos.MinimumHeight.Value.PointsValue > declaredHeight)
+                declaredHeight = tablePos.MinimumHeight.Value.PointsValue;
 
             double totalActualHeight = 0;
             GridReference lastGrid = null;
@@ -516,7 +543,7 @@ namespace Scryber.PDF.Layout
 
             double availPts = tablePos.Width.HasValue
                 ? tablePos.Width.Value.PointsValue
-                : block.AvailableBounds.Width.PointsValue;
+                : GetCurrentRegionWidth(block).PointsValue;
 
             if (!tablePos.Margins.IsEmpty && !tablePos.Width.HasValue)
                 availPts -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
@@ -1206,7 +1233,7 @@ namespace Scryber.PDF.Layout
             if (block == null)
                 return 0;
 
-            double available = block.AvailableBounds.Width.PointsValue;
+            double available = GetCurrentRegionWidth(block).PointsValue;
             if (available <= 0)
                 return 0;
 

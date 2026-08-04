@@ -133,12 +133,19 @@ namespace Scryber.PDF.Layout
 
                 bool reverse = (direction == FlexDirection.RowReverse);
 
-                // Explicit container height → cross-axis reference for flex-end / center.
+                // Explicit or minimum container height → cross-axis reference for flex-end / center.
+                // With no explicit height, min-height is the closest thing to a "declared" box -
+                // without this, align-items/align-content would have no reference to align
+                // against on a min-height-only row container. Note this only affects the
+                // alignment reference, not the block's own rendered size - a min-height-only
+                // flex row container doesn't yet grow its visible box either (see follow-up task).
                 // Uses the same padding-box convention as containerW above.
                 double? containerH = null;
-                if (position.Height.HasValue)
+                if (position.Height.HasValue || position.MinimumHeight.HasValue)
                 {
-                    containerH = position.Height.Value.PointsValue;
+                    containerH = position.Height.HasValue ? position.Height.Value.PointsValue : 0;
+                    if (position.MinimumHeight.HasValue && position.MinimumHeight.Value.PointsValue > containerH)
+                        containerH = position.MinimumHeight.Value.PointsValue;
                     if (!position.Padding.IsEmpty)
                         containerH -= (position.Padding.Top + position.Padding.Bottom).PointsValue;
                 }

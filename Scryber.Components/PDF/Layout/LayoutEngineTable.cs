@@ -88,25 +88,54 @@ namespace Scryber.PDF.Layout
                 if (this.CurrentBlock.CurrentRegion != null && this.CurrentBlock.CurrentRegion.HasOpenItem)
                     this.CurrentBlock.CurrentRegion.CloseCurrentItem();
 
-                this.IsInNotSplittingBlock = false;
-                
-                var parents = this.CurrentBlock;
-                while (parents != null)
-                {
-                    if (parents.Position.OverflowSplit == OverflowSplit.Never)
-                    {
-                        this.IsInNotSplittingBlock = true;
-                        break;
-                    }
-
-                    parents = parents.GetParentBlock();
-                }
+                this.IsInNotSplittingBlock = !this.CanOverflowFromCurrentRegion(this.CurrentBlock.CurrentRegion);
 
                 PDFPositionOptions tablepos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
                 //fix for width - if we have an explicit width, then we should fill it.
                 if (tablepos.Width.HasValue)
                     tablepos.FillWidth = true;
+
+                if (this.IsInNotSplittingBlock == false && (tablepos.Height.HasValue || tablepos.MinimumHeight.HasValue))
+                {
+                    var required = Unit.Zero;
+                    if (tablepos.MinimumHeight.HasValue)
+                        required = tablepos.MinimumHeight.Value;
+                    if(tablepos.Height.HasValue && tablepos.Height.Value > required)
+                        required = tablepos.Height.Value;
+                    
+                    //Let's look at this.
+                    var availableH = this.CurrentBlock.CurrentRegion.AvailableHeight;
+
+                    if (availableH < required)
+                    {
+                        var newRegion = this.CurrentBlock.CurrentRegion;
+                        var newBlock = this.CurrentBlock;
+                        var newPage = false;
+                        var moved = this.MoveToNextRegion(required, ref  newRegion, ref newBlock, out newPage);
+
+                        // KNOWN BUG (not fixed here, deliberately deferred): MoveToNextRegion can
+                        // return true while the block it hands back via the ref param is already
+                        // closed - confirmed by reproduction (a single-column Page, explicit
+                        // height table with a spacer pushing it near the bottom) that crashed with
+                        // "Cannot alter the layout of a block that has been closed" inside
+                        // BeginNewContainerBlock -> LastOpenBlock(), immediately after a call here
+                        // that reported moved=true. The real fix belongs inside MoveToNextRegion
+                        // itself (it should never report success with a closed block) - this
+                        // IsClosed guard is a defensive workaround at the call site, not a fix.
+                        if (moved && newBlock != null && !newBlock.IsClosed)
+                        {
+                            this.CurrentBlock = newBlock;
+                        }
+                        else
+                        {
+                            //cannot continue
+                            return;
+                        }
+                    }
+                    
+                }
+                
 
                 int rowcount, columncount;
                 this.BuildStyles(out rowcount, out columncount);

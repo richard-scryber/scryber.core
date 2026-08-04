@@ -48,6 +48,7 @@ namespace Scryber.UnitLayouts
             pg.Style.PageStyle.Height = PageH;
             pg.Style.Padding.All  = 0;
             pg.Style.Margins.All  = 0;
+            pg.Style.Overflow.Action = OverflowAction.NewPage;
             doc.Pages.Add(pg);
             return doc;
         }
@@ -1401,7 +1402,7 @@ namespace Scryber.UnitLayouts
             var grids = doc.FindMatches(".padded-top-large");
             Assert.AreEqual(5, grids.Count(), "Should be 5 grids with class .padded-top-large");
             
-            var rows = grids.Find("div.row");
+            var rows = grids.FindMatches("div.row");
             Assert.AreEqual(14, rows.Count(), "Should be 14 Rows with class .row");
 
             var offset = Unit.Zero;
@@ -1429,6 +1430,21 @@ namespace Scryber.UnitLayouts
             using var doc = Document.ParseDocument(template);
 
             using (var ms = DocStreams.GetOutputStream("Grid_VariousLayouts.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+        }
+        
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void Grid_VariousLayouts_2Column_Template()
+        {
+            var template = DocStreams.AssertGetTemplatePath("Content/HTML/HTML5/Grid_VariousLayouts_2Column.html");
+
+            using var doc = Document.ParseDocument(template);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_VariousLayouts_2Column.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -3065,6 +3081,147 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(gridBlock.TotalBounds.Y.PointsValue + gridBlock.TotalBounds.Height.PointsValue,
                 siblingBlock.TotalBounds.Y.PointsValue, 1.0,
                 "Sibling must be positioned below the full expanded grid block, not the original shorter content height");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_59_NoExplicitWidth_InsideMultiColumnParent_SizesToOwnColumn()
+        {
+            // A block that itself has multiple CSS columns (column-count:2) has an
+            // AvailableBounds.Width covering its FULL un-split content area - a grid with no
+            // explicit width nested inside one of those columns must size itself to the single
+            // column it's actually laid out in, not the parent's full pre-split width.
+            // Tracks are kept comfortably narrower than the 300pt column so this isolates the
+            // width-detection fix from any separate track-overflow behaviour.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    main  { column-count: 2; column-gap: 0; }
+    .grid { display: grid; grid-template-columns: 100pt 100pt; gap: 10pt; }
+    .item { height: 40pt; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class=""grid"">
+        <div class=""item"">1</div>
+        <div class=""item"">2</div>
+    </div>
+  </main>
+</body>
+</html>";
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_59_MultiColumnParent.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var mainBlock  = pageRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(mainBlock, "<main> block");
+
+            // <main>'s own column region (one of its 2 CSS columns) - the grid DIV is the
+            // first thing laid out inside it.
+            var mainColumn = mainBlock.Columns[0];
+            var gridBlock  = mainColumn.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(gridBlock, "Grid block nested inside <main>'s first column");
+
+            // Page is 600pt wide with 2 equal columns and no column-gap -> 300pt each.
+            Assert.AreEqual(300.0, gridBlock.TotalBounds.Width.PointsValue, 1.0,
+                "Grid with no explicit width must size to its own 300pt column, not the page's full 600pt width");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_60_ExplicitHeight_MovesToNextRegionWhenItDoesNotFit()
+        {
+            // A grid with an explicit height that doesn't fit in the remaining space of the
+            // current region (here, column 1 of a 2-column <main>, mostly filled by a spacer)
+            // must move to the next region (column 2) rather than silently overflowing off the
+            // edge of column 1 - the same behaviour LayoutEnginePanel already provides for
+            // divs/images with an explicit height.
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page  { size: 600pt 400pt; margin: 0; }
+    body   { margin: 0; padding: 0; }
+    main   { column-count: 2; column-gap: 0; }
+    .spacer { height: 350pt; border: solid 1pt green; }
+    .grid  { display: grid; grid-template-columns: 100pt; grid-template-rows: 50pt; height: 200pt; border: solid 1pt green; }
+    .item  { height: 50pt; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class=""spacer""></div>
+    <div class=""grid"">
+        <div class=""item"">1</div>
+    </div>
+  </main>
+</body>
+</html>";
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_60_ExplicitHeightMovesRegion.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(1, _layout.AllPages.Count, "Should still fit on a single page (column 2 has room)");
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var mainBlock  = pageRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(mainBlock, "<main> block");
+
+            // Column 1 should contain only the spacer - the grid must NOT have been placed there.
+            var column1 = mainBlock.Columns[0];
+            Assert.AreEqual(1, column1.Contents.Count, "Column 1 should only contain the spacer");
+
+            // The grid should be the first (only) thing in column 2, starting at its top.
+            var column2 = mainBlock.Columns[1];
+            Assert.AreEqual(1, column2.Contents.Count, "Column 2 should contain only the grid");
+            var gridBlock = column2.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(gridBlock, "Grid block moved into column 2");
+
+            // Column 2 itself sits at the page's absolute X=300; the grid's own TotalBounds.X is
+            // relative to its containing region (column 2), so 0 here means "flush with the left
+            // edge of column 2" - i.e. correctly positioned, not still stuck in column 1.
+            Assert.AreEqual(300.0, column2.TotalBounds.X.PointsValue, 1.0, "Column 2 itself starts at absolute X=300");
+            Assert.AreEqual(0.0, gridBlock.TotalBounds.X.PointsValue, 1.0, "Grid is flush with column 2's own left edge");
+            Assert.AreEqual(0.0, gridBlock.TotalBounds.Y.PointsValue, 1.0, "Grid starts at the top of column 2");
+            Assert.AreEqual(200.0, gridBlock.TotalBounds.Height.PointsValue, 1.0, "Grid keeps its full declared 200pt height");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_61_AlignContent_Center_WithMinHeightOnly_TreatsMinHeightAsDeclaredHeight()
+        {
+            // No explicit height, only min-height. align-content should still have a box to
+            // distribute leftover space within - min-height (grown the same way height would be)
+            // is the declared reference height here, matching the analogous fix in
+            // LayoutEngineFlexBox for row-mode align-items.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "200pt", templateRows: "50pt");
+            grid.MinimumHeight = 200;
+            grid.Style.Flex.AlignContent = FlexAlignMode.Center;
+            AddItem(grid, "Alpha");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_61_AlignContent_MinHeightOnly.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0 = GetRowBlock(gridBlock, 0);
+
+            // Leftover = 200 - 50 = 150; center shift = 75.
+            Assert.AreEqual(75.0, row0.TotalBounds.Y.PointsValue, 1.0, "Row0 Y=75 (centered within min-height)");
+            Assert.AreEqual(200.0, gridBlock.TotalBounds.Height.PointsValue, 1.0,
+                "Grid block should expand to the 200pt min-height even though only the row's 50pt content was laid out");
         }
     }
 }
