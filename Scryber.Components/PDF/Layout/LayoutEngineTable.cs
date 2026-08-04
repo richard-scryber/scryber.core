@@ -1693,6 +1693,11 @@ namespace Scryber.PDF.Layout
                                 resolved++;
                         }
                         spanned.RemoveAt(spanIndex);
+
+                        // The removal shifts everything after spanIndex down by one, so if
+                        // spanIndex was pointing at the last item, it is now one past the end.
+                        if (spanIndex >= spanned.Count)
+                            spanIndex = 0;
                     }
                     else
                     {

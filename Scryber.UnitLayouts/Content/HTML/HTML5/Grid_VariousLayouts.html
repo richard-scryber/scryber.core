@@ -37,6 +37,11 @@
             font-size: 14pt;
             margin: 16pt 0;
         }
+        
+        .container{
+            border: solid 1px green;
+            padding : 5px;
+        }
 
         .item {
             padding: 15px;
@@ -57,8 +62,6 @@
             grid-template-columns: 100px 100px 100px;
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             width: 100%;
         }
     
@@ -79,8 +82,6 @@
             grid-template-columns: 100px 100px 100px;
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             width: 100%;
         }
 
@@ -137,8 +138,6 @@
             grid-template-columns: 100px 100px 100px;
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             width: 100%;
         }
 
@@ -182,8 +181,6 @@
             grid-template-columns: 100px 100px 100px;
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             width: 100%;
         }
 
@@ -224,8 +221,6 @@
             grid-template-columns: 100px 100px 100px;
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             position: relative;
         }
 
@@ -264,8 +259,6 @@
             grid-template-rows: repeat(3, [row] auto  );
             gap: 10px;
             column-gap: 20px;
-            border: solid 1px green;
-            padding : 5px;
             position: relative;
         }
 
@@ -305,8 +298,6 @@
             grid-gap: 10px;
             grid-template-columns: 1fr 2fr 1fr;
             grid-auto-columns: 3fr 1fr;
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-7 .a {
@@ -351,8 +342,6 @@
             grid-gap: 10px;
             grid-template-columns: 100px 100px;
             grid-auto-columns: 200px;
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-8 .a {
@@ -394,8 +383,6 @@
             grid-template-areas:
                "....... header  header"
                "sidebar content content";
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-9 .sidebar {
@@ -427,8 +414,6 @@
                "....... header  header"
                "sidebar content content"
                "footer footer footer";
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-10 .sidebar {
@@ -465,8 +450,6 @@
                "....... header  header"
                "sidebar content content"
                "footer footer footer";
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-11 .sidebar {
@@ -534,8 +517,6 @@
             display: grid;
             grid-gap: 10px;
             grid-template-columns: repeat(6, 100px);
-            border: solid 1px green;
-            padding : 5px;
         }
     </style>
     <div class="container container-12">
@@ -560,8 +541,6 @@
             grid-gap: 10px;
             grid-template-columns: repeat(6, 100px);
             grid-template-rows: repeat(3, 100px);
-            border: solid 1px green;
-            padding : 5px;
             grid-auto-flow: column;
         }
     </style>
@@ -586,8 +565,6 @@
             display: grid;
             grid-gap: 10px;
             grid-template-columns: repeat(5, 60px);
-            border: solid 1px green;
-            padding : 5px;
             grid-auto-flow: column;
         }
         
@@ -618,8 +595,6 @@
             display: grid;
             grid-gap: 10px;
             grid-template-columns: repeat(auto-fill, 100px);
-            border: solid 1px green;
-            padding : 5px;
         }
 
         .container-15 .a {
@@ -643,6 +618,91 @@
         }
     </style>
     <div class="container container-15">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >Auto-fill with named grid lines.</h3>
+    <style>
+        .container-16{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fill, [col] 100px ) ;
+            grid-template-rows: repeat(auto-fill, [row] auto  );
+        }
+
+        .container-16 .a {
+            grid-column: col / span 2;
+            grid-row: row ;
+        }
+        .container-16 .b {
+            grid-column: col 3 / span 2 ;
+            grid-row: row ;
+        }
+        .container-16 .c {
+            grid-column: col ;
+            grid-row: row 2 ;
+        }
+        .container-16 .d {
+            grid-column: col 2 / span  3 ;
+            grid-row: row 2 ;
+        }
+
+        .container-16 .e {
+            grid-column: col / span 4;
+            grid-row: row 3;
+        }
+    </style>
+    <div class="container container-16">
+        <div class="item a">A</div>
+        <div class="item b">B</div>
+        <div class="item c">C</div>
+        <div class="item d">D</div>
+        <div class="item e">E</div>
+    </div>
+    <hr/>
+    <h3 >Auto-fill with named grid lines.</h3>
+    <style>
+        .container-17{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(3,100px);
+            justify-content: center;
+            align-content: end;
+            width: 500px;
+            height: 400px;
+        }
+
+        .container-17 .a {
+            grid-column: 1 / 5;
+        }
+        .container-17 .b {
+            grid-column: 1 / 3;
+            grid-row: 2 / 4;
+        }
+        .container-17 .c {
+            grid-column: 3 / 5;
+        }
+        
+    </style>
+    <table>
+        <tr>
+            <td colspan="4">One</td>
+        </tr>
+        <tr>
+            <td colspan="2" rowspan="2" >Two</td>
+            <td colspan="2" >Three</td>
+        </tr>
+        <tr>
+            <td>Four</td>
+            <td>Five</td>
+        </tr>
+    </table>
+    <div class="container container-17">
         <div class="item a">A</div>
         <div class="item b">B</div>
         <div class="item c">C</div>
