@@ -439,6 +439,16 @@ namespace Scryber.Styles.Parsing.Typed
             var raw = sb.ToString().Trim();
             if (string.IsNullOrWhiteSpace(raw)) return false;
 
+            // subgrid is not supported - the value would otherwise be stored and silently
+            // misinterpreted as an (invalid) track list at layout time. Rejecting it here
+            // means the standard CSSStyleValueParser.SetStyleValue path logs a trace warning
+            // automatically (it does so for any parser that returns false), without us having
+            // to reach for a TraceLog ourselves. Revisit if subgrid support is ever requested -
+            // it would need each track to inherit its size from the parent grid's own tracks,
+            // which this engine's track model does not currently represent.
+            if (tokens.Count > 0 && tokens[0].Equals("subgrid", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             if (tokens.Count == 1 && IsExpression(tokens[0]))
                 return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, tokens[0], this.DoConvertString);
 

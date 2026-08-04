@@ -111,6 +111,18 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             Assert.AreEqual("1fr 2fr 1fr 1fr", style.Grid.TemplateColumns);
         }
 
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateColumns_Subgrid_NotSupported_ReturnsFalse()
+        {
+            // subgrid is not supported - the parser must reject it (rather than storing it as
+            // an opaque track-list string that would be silently misinterpreted at layout
+            // time), so the property is left unset.
+            var parser = new CSSGridTemplateColumnsParser();
+            var style = CreateStyle();
+            Assert.IsFalse(ParseValue(parser, style, "subgrid"));
+            Assert.IsNull(style.Grid.TemplateColumns);
+        }
+
         // -----------------------------------------------------------------------
         // grid-template-rows
         // -----------------------------------------------------------------------
@@ -163,6 +175,15 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
             var style = CreateStyle();
             Assert.IsTrue(ParseValue(parser, style, "100pt 200pt 50pt"));
             Assert.AreEqual("100pt 200pt 50pt", style.Grid.TemplateRows);
+        }
+
+        [TestMethod()][TestCategory("CSS")][TestCategory("CSS-Grid")]
+        public void GridTemplateRows_Subgrid_NotSupported_ReturnsFalse()
+        {
+            var parser = new CSSGridTemplateRowsParser();
+            var style = CreateStyle();
+            Assert.IsFalse(ParseValue(parser, style, "subgrid"));
+            Assert.IsNull(style.Grid.TemplateRows);
         }
 
         // -----------------------------------------------------------------------
