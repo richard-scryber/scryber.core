@@ -2673,5 +2673,398 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(blockE, "Block E");
             Assert.AreEqual(430.0, blockE.TotalBounds.Width.PointsValue, 2.0, "E spans 4 cols = 430pt");
         }
+
+        // ======================================================================
+        // justify-content — positions the tracks-as-a-block within an explicit
+        // container width that is larger than the sum of the tracks.
+        // Grid: 400pt wide container, two 100pt fixed columns (200pt of tracks),
+        // leaving 200pt of leftover space to distribute.
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_48_JustifyContent_Start_NoOffsetButBlockExpandsToDeclaredWidth()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "100pt 100pt", width: 400);
+            // start is the default - no explicit justify-content needed.
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_48_JustifyContent_Start.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var rowBlock   = GetRowBlock(gridBlock, 0);
+
+            // Columns stay flush against the left edge - no offset.
+            Assert.AreEqual(0.0,   rowBlock.Columns[0].TotalBounds.X.PointsValue, 1.0, "Col0 X=0 (start)");
+            Assert.AreEqual(100.0, rowBlock.Columns[1].TotalBounds.X.PointsValue, 1.0, "Col1 X=100 (start)");
+
+            // The outer block still reserves the full declared width (box-model correctness),
+            // even though the tracks only consume 200pt of it.
+            Assert.AreEqual(400.0, gridBlock.TotalBounds.Width.PointsValue, 1.0,
+                "Grid block should expand to the declared 400pt width even with narrower tracks");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_49_JustifyContent_Center_OffsetsColumnsBySharedLeftover()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "100pt 100pt", width: 400);
+            grid.Style.Flex.JustifyContent = FlexJustify.Center;
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_49_JustifyContent_Center.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var rowBlock   = GetRowBlock(gridBlock, 0);
+            var item0      = GetItemBlock(rowBlock, 0);
+
+            // Leftover = 400 - 200 = 200; center offset = 100, injected as margin-left on the
+            // first column's cell (same mechanism as column-gap) - the cell block's own width
+            // grows to absorb it (100 offset + 100 content = 200), which in turn pushes column
+            // 1's region to start further right.
+            Assert.AreEqual(100.0, item0.Position.Margins.Left.PointsValue, 1.0, "Col0 cell margin-left = 100 (centered)");
+            Assert.AreEqual(200.0, item0.TotalBounds.Width.PointsValue, 1.0, "Col0 cell width = 100 offset + 100 content");
+            Assert.AreEqual(200.0, rowBlock.Columns[1].TotalBounds.X.PointsValue, 1.0, "Col1 region X=200 (centered)");
+            Assert.AreEqual(400.0, gridBlock.TotalBounds.Width.PointsValue, 1.0, "Grid block width = 400pt");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_50_JustifyContent_End_OffsetsColumnsByFullLeftover()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "100pt 100pt", width: 400);
+            grid.Style.Flex.JustifyContent = FlexJustify.FlexEnd; // CSS "end"
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_50_JustifyContent_End.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var rowBlock   = GetRowBlock(gridBlock, 0);
+            var item0      = GetItemBlock(rowBlock, 0);
+
+            // Leftover = 200; end offset = full 200, so column 1's region is pushed flush
+            // against the right edge (200 offset + 100 col0 content + 100 col1 width = 400).
+            Assert.AreEqual(200.0, item0.Position.Margins.Left.PointsValue, 1.0, "Col0 cell margin-left = 200 (end)");
+            Assert.AreEqual(300.0, item0.TotalBounds.Width.PointsValue, 1.0, "Col0 cell width = 200 offset + 100 content");
+            Assert.AreEqual(300.0, rowBlock.Columns[1].TotalBounds.X.PointsValue, 1.0, "Col1 region X=300 (end)");
+            Assert.AreEqual(400.0, gridBlock.TotalBounds.Width.PointsValue, 1.0, "Grid block width = 400pt");
+        }
+
+        private void AssertJustifyContentKeywordRecognised(string keyword)
+        {
+            // "end" (CSS grid's logical keyword) and "right" (the physical-direction keyword,
+            // a *separate* value in the CSS spec - not an alias for "end") must both be
+            // recognised, rather than falling through the parser's default case and silently
+            // failing to set the property at all (which leaves justify-content at its
+            // FlexStart/"left" default - the exact bug "right behaves like left" reports).
+            string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 400pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid { display: grid; grid-template-columns: 100pt 100pt; justify-content: " + keyword + @"; width: 400pt; }
+    .item { height: 50pt; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item"">A</div>
+    <div class=""item"">B</div>
+  </div>
+</body>
+</html>";
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+
+            using (var ms = DocStreams.GetOutputStream("Grid_51_JustifyContent_" + keyword + ".pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var rowBlock   = GetRowBlock(gridBlock, 0);
+            var item0      = GetItemBlock(rowBlock, 0);
+
+            Assert.AreEqual(200.0, item0.Position.Margins.Left.PointsValue, 1.0,
+                $"justify-content: {keyword} should be recognised, not silently ignored");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_51_JustifyContent_CSSParsed_EndKeyword()
+            => AssertJustifyContentKeywordRecognised("end");
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_51b_JustifyContent_CSSParsed_RightKeyword()
+            => AssertJustifyContentKeywordRecognised("right");
+
+        // ======================================================================
+        // align-content — reserves declared-height leftover and positions the rows
+        // within it (start/center/end).  Grid: 300pt tall container, two fixed 50pt
+        // rows (100pt of row content), leaving 200pt of leftover to distribute.
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_52_AlignContent_Start_NoShiftButBlockExpandsToDeclaredHeight()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "200pt", templateRows: "50pt 50pt");
+            grid.Height = 300;
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_52_AlignContent_Start.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+
+            // Rows stay at the top - no shift.
+            Assert.AreEqual(0.0,  row0.TotalBounds.Y.PointsValue, 1.0, "Row0 Y=0 (start)");
+            Assert.AreEqual(50.0, row1.TotalBounds.Y.PointsValue, 1.0, "Row1 Y=50 (start)");
+
+            // The outer block still reserves the full declared height.
+            Assert.AreEqual(300.0, gridBlock.TotalBounds.Height.PointsValue, 1.0,
+                "Grid block should expand to the declared 300pt height even with shorter rows");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_53_AlignContent_Center_ShiftsRowsBySharedLeftover()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "200pt", templateRows: "50pt 50pt");
+            grid.Height = 300;
+            grid.Style.Flex.AlignContent = FlexAlignMode.Center;
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_53_AlignContent_Center.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+
+            // Leftover = 300 - 100 = 200; center shift = 100.
+            Assert.AreEqual(100.0, row0.TotalBounds.Y.PointsValue, 1.0, "Row0 Y=100 (centered)");
+            Assert.AreEqual(150.0, row1.TotalBounds.Y.PointsValue, 1.0, "Row1 Y=150 (centered)");
+            Assert.AreEqual(300.0, gridBlock.TotalBounds.Height.PointsValue, 1.0, "Grid block height = 300pt");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_54_AlignContent_End_ShiftsRowsByFullLeftover()
+        {
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "200pt", templateRows: "50pt 50pt");
+            grid.Height = 300;
+            grid.Style.Flex.AlignContent = FlexAlignMode.FlexEnd; // CSS "end"
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            using (var ms = DocStreams.GetOutputStream("Grid_54_AlignContent_End.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            var row0 = GetRowBlock(gridBlock, 0);
+            var row1 = GetRowBlock(gridBlock, 1);
+
+            // Leftover = 200; end shift = full 200, rows flush against the bottom.
+            Assert.AreEqual(200.0, row0.TotalBounds.Y.PointsValue, 1.0, "Row0 Y=200 (end)");
+            Assert.AreEqual(250.0, row1.TotalBounds.Y.PointsValue, 1.0, "Row1 Y=250 (end)");
+            Assert.AreEqual(300.0, gridBlock.TotalBounds.Height.PointsValue, 1.0, "Grid block height = 300pt");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_55_AlignContent_End_ClampedByRemainingPageSpace()
+        {
+            // Page is only 800pt tall. Push the grid down near the bottom with a big spacer
+            // div so there isn't enough room left to honour the full requested leftover -
+            // the offset should clamp to whatever space actually remains, not overflow.
+            var doc = CreateDoc(out var pg);
+
+            var spacer = new Div();
+            spacer.Height = 700; // leaves only 100pt of page below it
+            pg.Contents.Add(spacer);
+
+            var grid = CreateGrid(pg, "200pt", templateRows: "20pt");
+            grid.Height = 300; // would need 280pt of leftover space - far more than remains
+            grid.Style.Flex.AlignContent = FlexAlignMode.FlexEnd;
+            AddItem(grid, "Alpha", height: 20);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_55_AlignContent_Clamped.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+
+            // The grid's own block must never be pushed/grown past the bottom of the page -
+            // whatever space was actually available, the block stays within it.
+            var pageBottom = pageRegion.TotalBounds.Y + pageRegion.TotalBounds.Height;
+            var gridBottom = gridBlock.TotalBounds.Y + gridBlock.TotalBounds.Height;
+            Assert.IsTrue(gridBottom.PointsValue <= pageBottom.PointsValue + 1.0,
+                "Grid block must not be expanded past the available page space");
+        }
+
+        // ======================================================================
+        // container-17 from Grid_VariousLayouts.html - the original repro case for
+        // both the ApplySpannedWidths crash fix and the justify/align-content work.
+        // 4x80px cols + 10px gap, 3x100px rows + 10px gap, justify-content:center,
+        // align-content:end, in a 500x400px box.
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_57_JustifyAndAlignContent_Container17()
+        {
+            const string src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+  <style>
+    @page { size: 600pt 800pt; margin: 0; }
+    body  { margin: 0; padding: 0; }
+    .grid {
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: repeat(4, 80px);
+        grid-template-rows: repeat(3, 100px);
+        justify-content: center;
+        align-content: end;
+        width: 500px;
+        height: 400px;
+    }
+    .grid .a { grid-column: 1 / 5; }
+    .grid .b { grid-column: 1 / 3; grid-row: 2 / 4; }
+    .grid .c { grid-column: 3 / 5; }
+    .item { height: 40px; }
+  </style>
+</head>
+<body>
+  <div class=""grid"">
+    <div class=""item a"">A</div>
+    <div class=""item b"">B</div>
+    <div class=""item c"">C</div>
+    <div class=""item d"">D</div>
+    <div class=""item e"">E</div>
+  </div>
+</body>
+</html>";
+            using var doc = Document.Parse(new System.IO.StringReader(src), ParseSourceType.DynamicContent) as Document;
+            using (var ms = DocStreams.GetOutputStream("Grid_57_Container17.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout must be produced without exception (the original crash repro)");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block");
+
+            const double px = 0.75; // 1px = 0.75pt
+            double declaredW = 500 * px; // 375pt
+            double declaredH = 400 * px; // 300pt
+            double colW      = 80  * px; // 60pt
+            double rowH      = 100 * px; // 75pt
+            double gap       = 10  * px; // 7.5pt
+
+            double tracksW = 4 * colW + 3 * gap; // 262.5pt
+            double tracksH = 3 * rowH + 2 * gap; // 240pt
+            double justifyOffset = (declaredW - tracksW) / 2;  // center: 56.25pt
+            double alignOffset   = declaredH - tracksH;         // end: 60pt (full leftover)
+
+            // Block-level box model: the container reserves its full declared size.
+            Assert.AreEqual(declaredW, gridBlock.TotalBounds.Width.PointsValue,  1.0, "Grid block width = 375pt");
+            Assert.AreEqual(declaredH, gridBlock.TotalBounds.Height.PointsValue, 1.0, "Grid block height = 300pt");
+
+            var row0 = GetRowBlock(gridBlock, 0); // A alone
+            var itemA = GetItemBlock(row0, 0);
+
+            // justify-content: center - injected as margin-left on column 0.
+            Assert.AreEqual(justifyOffset, itemA.Position.Margins.Left.PointsValue, 1.0,
+                "justify-content:center offset = 56.25pt");
+
+            // align-content: end - every row shifted down by the full 60pt leftover.
+            // Row 0 (A) would naturally be at Y=0; row 1 (B+C) at Y=75+7.5=82.5.
+            Assert.AreEqual(alignOffset, row0.TotalBounds.Y.PointsValue, 1.0,
+                "align-content:end shifts row 0 down by the full 60pt leftover");
+
+            // Row 1's row-gap is a margin-top on its own cells (absorbed into row1's own
+            // height, same as the justify-content margin pattern), not a shift of row1's own
+            // Y - so row1 simply starts right where row0's (shifted) block ends.
+            var row1 = GetRowBlock(gridBlock, 1); // B + C
+            Assert.AreEqual(row0.TotalBounds.Y.PointsValue + row0.TotalBounds.Height.PointsValue,
+                row1.TotalBounds.Y.PointsValue, 1.0,
+                "Row 1 starts right after row 0's (shifted) block ends");
+        }
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_58_AlignContent_SiblingPositionedAfterExpandedBlock()
+        {
+            // The grid's block height grows post-layout to reserve the declared-but-unused
+            // space (100pt content -> 300pt declared). A sibling after the grid must be
+            // positioned below the FULL 300pt block, not the original 100pt content height -
+            // this is the same class of bug fixed for the row-gap-shrink case
+            // (ClearContinuationRowGaps), just for a post-layout height *increase* instead.
+            var doc  = CreateDoc(out var pg);
+            var grid = CreateGrid(pg, "200pt", templateRows: "50pt 50pt");
+            grid.Height = 300;
+            AddItem(grid, "Alpha");
+            AddItem(grid, "Beta");
+
+            var sibling = new Div();
+            sibling.Height = 40;
+            pg.Contents.Add(sibling);
+
+            using (var ms = DocStreams.GetOutputStream("Grid_58_AlignContent_Sibling.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.AreEqual(300.0, gridBlock.TotalBounds.Height.PointsValue, 1.0, "Grid block height = 300pt");
+
+            // The sibling is the second item in the page's content region.
+            var siblingBlock = pageRegion.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(siblingBlock, "Sibling block");
+            Assert.AreEqual(gridBlock.TotalBounds.Y.PointsValue + gridBlock.TotalBounds.Height.PointsValue,
+                siblingBlock.TotalBounds.Y.PointsValue, 1.0,
+                "Sibling must be positioned below the full expanded grid block, not the original shorter content height");
+        }
     }
 }

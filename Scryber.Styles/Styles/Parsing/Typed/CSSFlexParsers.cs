@@ -112,8 +112,12 @@ namespace Scryber.Styles.Parsing.Typed
         {
             switch (value.ToLower())
             {
-                case "flex-start":    justify = FlexJustify.FlexStart;    return true;
-                case "flex-end":      justify = FlexJustify.FlexEnd;      return true;
+                case "flex-start":
+                case "start":
+                case "left":          justify = FlexJustify.FlexStart;    return true;
+                case "flex-end":
+                case "end":
+                case "right":         justify = FlexJustify.FlexEnd;      return true;
                 case "center":        justify = FlexJustify.Center;       return true;
                 case "space-between": justify = FlexJustify.SpaceBetween; return true;
                 case "space-around":  justify = FlexJustify.SpaceAround;  return true;
@@ -154,8 +158,10 @@ namespace Scryber.Styles.Parsing.Typed
             switch (value.ToLower())
             {
                 case "stretch":       align = FlexAlignMode.Stretch;      return true;
-                case "flex-start":    align = FlexAlignMode.FlexStart;    return true;
-                case "flex-end":      align = FlexAlignMode.FlexEnd;      return true;
+                case "flex-start":
+                case "start":         align = FlexAlignMode.FlexStart;    return true;
+                case "flex-end":
+                case "end":           align = FlexAlignMode.FlexEnd;      return true;
                 case "center":        align = FlexAlignMode.Center;       return true;
                 case "baseline":      align = FlexAlignMode.Baseline;     return true;
                 case "auto":          align = FlexAlignMode.Auto;         return true;

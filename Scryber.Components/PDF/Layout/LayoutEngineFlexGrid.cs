@@ -105,6 +105,10 @@ namespace Scryber.PDF.Layout
                 // width so the container renders as a block-level box.
                 if (expandWidth > 0)
                     ExpandTableBlocks(expandWidth);
+
+                // align-content: reserve any declared-height leftover on the last page segment
+                // and position the row content within it (start/center/end).
+                ApplyAlignContent();
             }
             finally
             {
@@ -114,22 +118,30 @@ namespace Scryber.PDF.Layout
 
         }
 
-        // When no explicit CSS width is declared, CSS grid is a block-level box and should
-        // stretch to fill the full available parent width.  Cell widths are already baked by
+        // A CSS grid container is a block-level box: with no explicit width it should stretch to
+        // fill the full available parent width, and even WITH an explicit width larger than its
+        // tracks it should still occupy that declared width (the leftover space is then
+        // positioned by justify-content, handled separately in InjectColumnWidths - this method
+        // only concerns the outer block's own size).  Cell widths are already baked by
         // InjectColumnWidths so setting FullStyle.Size.Width here only widens the outer block;
         // it does not trigger any recalculation of column or cell widths.
-        // Returns the target full width (pts) so DoLayoutComponent can apply it post-layout,
-        // or 0 if the container already has an explicit width.
+        // Returns the target full width (pts) so DoLayoutComponent can apply it post-layout.
         private double ExpandToFillParentWidth()
         {
             var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
-            if (tablePos.Width.HasValue)
-                return 0;
 
-            var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-            double fullWidth = block.AvailableBounds.Width.PointsValue;
-            if (!tablePos.Margins.IsEmpty)
-                fullWidth -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
+            double fullWidth;
+            if (tablePos.Width.HasValue)
+            {
+                fullWidth = tablePos.Width.Value.PointsValue;
+            }
+            else
+            {
+                var block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                fullWidth = block.AvailableBounds.Width.PointsValue;
+                if (!tablePos.Margins.IsEmpty)
+                    fullWidth -= (tablePos.Margins.Left + tablePos.Margins.Right).PointsValue;
+            }
 
             if (fullWidth > 0)
             {
@@ -184,6 +196,132 @@ namespace Scryber.PDF.Layout
                     tb.Width = target;
                     grid.TableBlock.TotalBounds = tb;
                 }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // align-content — positions the grid's rows as a block within an explicit
+        // container height that is larger than the rows actually consume.
+        //
+        // Row heights (unlike column widths) are not known until after layout - most row
+        // tracks are content-driven (auto/fr), so the total content height can only be
+        // measured once every row has actually been laid out across however many pages the
+        // grid landed on.  The declared height is only ever "missing" on the LAST such page:
+        // every earlier segment is, by definition, full (that's why it needed to continue).
+        // So the leftover is computed from the grand total across every segment, but only
+        // ever applied to the last one - earlier segments are untouched.
+        // -----------------------------------------------------------------------
+
+        private void ApplyAlignContent()
+        {
+            var tablePos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
+            if (!tablePos.Height.HasValue)
+                return; // no explicit height - nothing to distribute
+
+            double declaredHeight = tablePos.Height.Value.PointsValue;
+
+            double totalActualHeight = 0;
+            GridReference lastGrid = null;
+            foreach (var grid in this.AllCells.AllGrids)
+            {
+                if (grid.TableBlock == null) continue;
+                totalActualHeight += grid.TableBlock.TotalBounds.Height.PointsValue;
+                lastGrid = grid;
+            }
+            if (lastGrid == null) return;
+
+            double leftover = declaredHeight - totalActualHeight;
+            if (leftover <= 0) return; // content already fills (or exceeds) the declared height
+
+            // Clamp to whatever space actually remains on the page the last segment ends on,
+            // so we never manufacture a new overflow that wouldn't otherwise happen.
+            var parentRegion = FindParentRegion(lastGrid.TableBlock);
+            double available = parentRegion?.AvailableHeight.PointsValue ?? 0;
+            double growBy = Math.Max(0, Math.Min(leftover, available));
+            if (growBy <= 0) return;
+
+            double shiftBy;
+            switch (this.FullStyle.Flex.AlignContent)
+            {
+                case FlexAlignMode.Center:
+                    shiftBy = growBy / 2;
+                    break;
+                case FlexAlignMode.FlexEnd:
+                    shiftBy = growBy;
+                    break;
+                // Stretch (the CSS default), FlexStart, Baseline, Auto and the space-* values
+                // (not yet supported) all fall back to start - rows stay at the top, the
+                // reserved space simply trails after them.
+                default:
+                    shiftBy = 0;
+                    break;
+            }
+
+            ExpandLastSegment(lastGrid, growBy, shiftBy);
+        }
+
+        // Finds the region containing tableBlock within its parent block - i.e. the region
+        // whose AvailableHeight tells us how far tableBlock could grow before overflowing onto
+        // a new page, and whose UsedSize must be kept in sync with tableBlock's own height so
+        // that anything laid out after the grid (e.g. a sibling) is positioned correctly.
+        private static PDFLayoutRegion FindParentRegion(PDFLayoutBlock tableBlock)
+        {
+            if (tableBlock.Parent is PDFLayoutBlock parentBlock && parentBlock.Columns != null)
+            {
+                foreach (var col in parentBlock.Columns)
+                {
+                    if (col?.Contents != null && col.Contents.Contains(tableBlock))
+                        return col;
+                }
+            }
+            return null;
+        }
+
+        // Grows the last segment's table block (and its column region) by growBy, and shifts
+        // every row in that segment down by shiftBy so the rows sit at the correct position
+        // (start/center/end) within the newly-reserved space.
+        private void ExpandLastSegment(GridReference lastGrid, double growBy, double shiftBy)
+        {
+            var grow = new Unit(growBy, PageUnits.Points);
+
+            if (shiftBy > 0)
+            {
+                var shift = new Unit(shiftBy, PageUnits.Points);
+                for (int r = lastGrid.StartRowIndex; r <= lastGrid.EndRowIndex; r++)
+                {
+                    var rowRef = this.AllCells.AllRows[r];
+                    if (rowRef?.Block == null) continue;
+                    var bounds = rowRef.Block.TotalBounds;
+                    bounds.Y += shift;
+                    rowRef.Block.TotalBounds = bounds;
+                }
+            }
+
+            if (lastGrid.TableBlock.Columns != null && lastGrid.TableBlock.Columns.Length > 0)
+            {
+                var region = lastGrid.TableBlock.Columns[0];
+                if (region != null)
+                {
+                    var rb = region.TotalBounds;
+                    rb.Height += grow;
+                    region.TotalBounds = rb;
+                }
+            }
+
+            var tb = lastGrid.TableBlock.TotalBounds;
+            tb.Height += grow;
+            lastGrid.TableBlock.TotalBounds = tb;
+
+            // The parent region's UsedSize was set from the table block's height BEFORE we grew
+            // it here. Bring it in line so any content laid out after the grid (e.g. a sibling)
+            // is positioned below the full (now-taller) block, not the original shorter one -
+            // same fix as ClearContinuationRowGaps applies for the row-gap-shrink case.
+            var parentRegion = FindParentRegion(lastGrid.TableBlock);
+            if (parentRegion != null)
+            {
+                var usedSize = parentRegion.UsedSize;
+                usedSize.Height += grow;
+                parentRegion.UsedSize = usedSize;
             }
         }
 
@@ -399,6 +537,33 @@ namespace Scryber.PDF.Layout
 
             double[] colPts = CalcColumnPtWidths(workingPts);
 
+            // justify-content: when the tracks (+ gaps) don't consume all of availPts - which
+            // only happens when every track is a fixed size (fr/auto tracks always expand to
+            // fill workingPts) - the leftover space positions the whole set of tracks within
+            // the container box.  Injected as extra margin-left on the first column; the tracks
+            // themselves are unaffected, so this never needs to touch workingPts.
+            double actualContentWidth = totalGapPts;
+            for (int i = 0; i < colPts.Length; i++)
+                actualContentWidth += colPts[i];
+            double leftoverWidth = availPts - actualContentWidth;
+            double justifyOffset = 0;
+            if (leftoverWidth > 0)
+            {
+                switch (this.FullStyle.Flex.JustifyContent)
+                {
+                    case FlexJustify.Center:
+                        justifyOffset = leftoverWidth / 2;
+                        break;
+                    case FlexJustify.FlexEnd:
+                        justifyOffset = leftoverWidth;
+                        break;
+                    // FlexStart and the space-* values (not yet supported - fall back to start)
+                    default:
+                        justifyOffset = 0;
+                        break;
+                }
+            }
+
             // Set explicit widths on GridCell styles, summing track widths for spanned cells.
             // Cells in each row are stored left-to-right, so a running column cursor is sufficient
             // for the no-row-span case; row spans that leave column gaps are handled by tracking
@@ -409,6 +574,7 @@ namespace Scryber.PDF.Layout
             // already removed from workingPts so column widths are already narrower; the margin
             // puts the visual space back between adjacent columns.
             var colGapUnit = gapPts > 0 ? new Unit(gapPts, PageUnits.Points) : Unit.Zero;
+            var justifyUnit = justifyOffset > 0 ? new Unit(justifyOffset, PageUnits.Points) : Unit.Zero;
 
             var colOccupied = new System.Collections.Generic.Dictionary<(int row, int col), bool>();
             for (int ri = 0; ri < _cellGrid.Count; ri++)
@@ -436,9 +602,12 @@ namespace Scryber.PDF.Layout
                     if (totalWidth > 0)
                         cell.Style.Size.Width = new Unit(totalWidth, PageUnits.Points);
 
-                    // Column gap: inject left margin on every cell that is not in the first column
+                    // Column gap: inject left margin on every cell that is not in the first column.
+                    // First-column cells instead get the justify-content offset (if any).
                     if (colCursor > 0 && gapPts > 0)
                         cell.Style.Margins.Left = colGapUnit;
+                    else if (colCursor == 0 && justifyOffset > 0)
+                        cell.Style.Margins.Left = justifyUnit;
 
                     // Mark slots occupied by this cell's row span
                     for (int dr = 1; dr < rowSpan; dr++)
