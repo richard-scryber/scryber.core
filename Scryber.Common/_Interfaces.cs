@@ -128,7 +128,9 @@ namespace Scryber
 
     public interface IMatchedEnumerable: IEnumerable<IComponent>
     {
-        IMatchedEnumerable Find(string selector);
+        int Count { get; }
+        
+        IMatchedEnumerable FindMatches(string selector);
     }
     
     #region public interface IMetadataContainer

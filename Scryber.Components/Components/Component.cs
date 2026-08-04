@@ -1239,7 +1239,7 @@ namespace Scryber.Components
         public IMatchedEnumerable FindMatches(string cssPattern)
         {
             if (string.IsNullOrEmpty(cssPattern))
-                return new MatchedComponentList(cssPattern);
+                return new MatchedComponentList(cssPattern, null);
             
             var matcher = (StyleMatcher)cssPattern;
             
@@ -1255,7 +1255,7 @@ namespace Scryber.Components
         {
             if(matcher ==  null)
                 throw new ArgumentNullException(nameof(matcher));
-            var all = new  MatchedComponentList(matcher);
+            var all = new  MatchedComponentList(matcher, null);
             
             this.DoFindMatches(all, matcher);
             
