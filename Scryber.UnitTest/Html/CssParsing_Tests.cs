@@ -2646,7 +2646,127 @@ body.grey div.reverse{
             Assert.AreEqual(12, applied.Text.WordSpacing.PointsValue, "Word spacing was not set");
             Assert.AreEqual(WordWrap.NoWrap, applied.Text.WrapText, "Word wrapping was not set");
             Assert.AreEqual(true, applied.Text.PreserveWhitespace, "White space preservation was not set");
-            
+
+        }
+
+        [TestMethod]
+        public void ParseCssAllVariableProperties_FlexAndGrid()
+        {
+            var cssAll = @"
+
+            :root{
+               --dir: column;
+               --wrap: wrap;
+               --justify: center;
+               --align: flex-end;
+               --align2: space-between;
+               --align3: baseline;
+               --grow: 2;
+               --shrink: 3;
+               --basis: 50pt;
+               --order: 4;
+               --gap: 8pt;
+               --rowgap: 6pt;
+
+               --cols: 1fr 2fr 1fr;
+               --rows: auto 100pt;
+               --autocol: 100pt;
+               --autorow: 50pt;
+               --flow: column;
+               --colstart: 2;
+               --colend: 4;
+               --rowstart: 1;
+               --rowend: 3;
+               --areaname: header;
+
+               --colshort: 1 / 3;
+               --rowshort: 2 / 4;
+            }
+
+            .flexgrid{
+               flex-direction: var(--dir);
+               flex-wrap: var(--wrap);
+               justify-content: var(--justify);
+               align-items: var(--align);
+               align-content: var(--align2);
+               align-self: var(--align3);
+               flex-grow: var(--grow);
+               flex-shrink: var(--shrink);
+               flex-basis: var(--basis);
+               order: var(--order);
+               gap: var(--gap);
+               row-gap: var(--rowgap);
+
+               grid-template-columns: var(--cols);
+               grid-template-rows: var(--rows);
+               grid-auto-columns: var(--autocol);
+               grid-auto-rows: var(--autorow);
+               grid-auto-flow: var(--flow);
+               grid-column-start: var(--colstart);
+               grid-column-end: var(--colend);
+               grid-row-start: var(--rowstart);
+               grid-row-end: var(--rowend);
+               grid-area: var(--areaname);
+            }
+
+            .gridshorthand{
+               grid-column: var(--colshort);
+               grid-row: var(--rowshort);
+            }";
+
+            var doc = BuildDocumentWithStyles(cssAll);
+
+            doc.StyleClass = "flexgrid";
+            var applied = doc.GetAppliedStyle();
+
+            Assert.AreEqual(FlexDirection.Column, applied.Flex.Direction, "flex-direction was not set");
+            Assert.AreEqual(FlexWrap.Wrap, applied.Flex.Wrap, "flex-wrap was not set");
+            Assert.AreEqual(FlexJustify.Center, applied.Flex.JustifyContent, "justify-content was not set");
+            Assert.AreEqual(FlexAlignMode.FlexEnd, applied.Flex.AlignItems, "align-items was not set");
+            Assert.AreEqual(FlexAlignMode.SpaceBetween, applied.Flex.AlignContent, "align-content was not set");
+            Assert.AreEqual(FlexAlignMode.Baseline, applied.Flex.AlignSelf, "align-self was not set");
+            Assert.AreEqual(2.0, applied.Flex.Grow, 0.001, "flex-grow was not set");
+            Assert.AreEqual(3.0, applied.Flex.Shrink, 0.001, "flex-shrink was not set");
+            Assert.AreEqual(false, applied.Flex.BasisAuto, "flex-basis auto flag was not cleared");
+            Assert.AreEqual(50.0, applied.Flex.Basis.PointsValue, 0.1, "flex-basis was not set");
+            Assert.AreEqual(4, applied.Flex.Order, "order was not set");
+
+            // row-gap (declared after gap) should win for the row value; gap's expression
+            // still governs the column value - same cascade behaviour as column-gap/gap.
+            Assert.AreEqual(6.0, applied.Flex.RowGap.PointsValue, 0.1, "row-gap did not override gap's row value");
+            Assert.AreEqual(8.0, applied.Flex.ColumnGap.PointsValue, 0.1, "gap's column value was not applied");
+
+            StringAssert.Contains(applied.Grid.TemplateColumns, "1fr", "grid-template-columns was not set");
+            StringAssert.Contains(applied.Grid.TemplateColumns, "2fr", "grid-template-columns was not set");
+            StringAssert.Contains(applied.Grid.TemplateRows, "auto", "grid-template-rows was not set");
+            StringAssert.Contains(applied.Grid.TemplateRows, "100pt", "grid-template-rows was not set");
+            StringAssert.Contains(applied.Grid.AutoColumns, "100pt", "grid-auto-columns was not set");
+            StringAssert.Contains(applied.Grid.AutoRows, "50pt", "grid-auto-rows was not set");
+            Assert.AreEqual(GridAutoFlow.Column, applied.Grid.AutoFlow, "grid-auto-flow was not set");
+
+            Assert.IsTrue(applied.Grid.ColumnStart.IsExplicit, "grid-column-start was not set");
+            Assert.AreEqual(2, applied.Grid.ColumnStart.Value, "grid-column-start value was not set");
+            Assert.IsTrue(applied.Grid.ColumnEnd.IsExplicit, "grid-column-end was not set");
+            Assert.AreEqual(4, applied.Grid.ColumnEnd.Value, "grid-column-end value was not set");
+            Assert.IsTrue(applied.Grid.RowStart.IsExplicit, "grid-row-start was not set");
+            Assert.AreEqual(1, applied.Grid.RowStart.Value, "grid-row-start value was not set");
+            Assert.IsTrue(applied.Grid.RowEnd.IsExplicit, "grid-row-end was not set");
+            Assert.AreEqual(3, applied.Grid.RowEnd.Value, "grid-row-end value was not set");
+
+            Assert.AreEqual("header", applied.Grid.AreaName, "grid-area named value was not set");
+
+            doc.StyleClass = "gridshorthand";
+            applied = doc.GetAppliedStyle();
+
+            Assert.IsTrue(applied.Grid.ColumnStart.IsExplicit, "grid-column shorthand start was not set");
+            Assert.AreEqual(1, applied.Grid.ColumnStart.Value, "grid-column shorthand start value was not set");
+            Assert.IsTrue(applied.Grid.ColumnEnd.IsExplicit, "grid-column shorthand end was not set");
+            Assert.AreEqual(3, applied.Grid.ColumnEnd.Value, "grid-column shorthand end value was not set");
+
+            Assert.IsTrue(applied.Grid.RowStart.IsExplicit, "grid-row shorthand start was not set");
+            Assert.AreEqual(2, applied.Grid.RowStart.Value, "grid-row shorthand start value was not set");
+            Assert.IsTrue(applied.Grid.RowEnd.IsExplicit, "grid-row shorthand end was not set");
+            Assert.AreEqual(4, applied.Grid.RowEnd.Value, "grid-row shorthand end value was not set");
         }
 
         [TestMethod]

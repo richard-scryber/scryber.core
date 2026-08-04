@@ -19,15 +19,21 @@ namespace Scryber.Styles.Parsing.Typed
             while (reader.ReadNextValue())
                 all.Add(reader.CurrentTextValue.Trim());
 
-            var joined = string.Join(" ", all);
-            var parts  = joined.Split(new[] {'/'}, 2);
+            return SplitJoined(string.Join(" ", all));
+        }
+
+        // Same split, but operating on an already-resolved string (e.g. the output of
+        // evaluating a var()/calc() expression) rather than reading from a CSS reader.
+        public static (List<string> left, List<string> right) SplitJoined(string joined)
+        {
+            var parts = (joined ?? string.Empty).Split(new[] {'/'}, 2);
 
             return (Tokenise(parts[0]),
                     parts.Length > 1 ? Tokenise(parts[1]) : new List<string>());
         }
 
-        static List<string> Tokenise(string s)
-            => new List<string>(s.Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries));
+        internal static List<string> Tokenise(string s)
+            => new List<string>((s ?? string.Empty).Trim().Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries));
 
         // Returns true if the string looks like a CSS identifier (not a number / keyword).
         static bool IsIdentifier(string s)
@@ -84,7 +90,21 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, right) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+            {
+                // Whole value is a single var()/calc() expression (e.g. resolves to "1 / 3") -
+                // mirror it onto both start and end keys, each extracting its own side at
+                // data-bind time.
+                bool r1 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridColumnStartKey, all[0], this.DoConvertStart);
+                bool r2 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridColumnEndKey, all[0], this.DoConvertEnd);
+                return r1 || r2;
+            }
+
+            var (left, right) = GridLineParser.SplitJoined(string.Join(" ", all));
 
             var startVal = GridLineParser.Parse(left);
             if (startVal.IsSet && !startVal.IsAuto)
@@ -99,6 +119,20 @@ namespace Scryber.Styles.Parsing.Typed
 
             return true;
         }
+
+        private bool DoConvertStart(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            var (left, _) = GridLineParser.SplitJoined(value?.ToString());
+            result = GridLineParser.Parse(left);
+            return result.IsSet;
+        }
+
+        private bool DoConvertEnd(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            var (_, right) = GridLineParser.SplitJoined(value?.ToString());
+            result = right.Count > 0 ? GridLineParser.Parse(right) : GridLineValue.Unset;
+            return result.IsSet;
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -111,7 +145,18 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, right) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+            {
+                bool r1 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridRowStartKey, all[0], this.DoConvertStart);
+                bool r2 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridRowEndKey, all[0], this.DoConvertEnd);
+                return r1 || r2;
+            }
+
+            var (left, right) = GridLineParser.SplitJoined(string.Join(" ", all));
 
             var startVal = GridLineParser.Parse(left);
             if (startVal.IsSet && !startVal.IsAuto)
@@ -126,6 +171,20 @@ namespace Scryber.Styles.Parsing.Typed
 
             return true;
         }
+
+        private bool DoConvertStart(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            var (left, _) = GridLineParser.SplitJoined(value?.ToString());
+            result = GridLineParser.Parse(left);
+            return result.IsSet;
+        }
+
+        private bool DoConvertEnd(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            var (_, right) = GridLineParser.SplitJoined(value?.ToString());
+            result = right.Count > 0 ? GridLineParser.Parse(right) : GridLineValue.Unset;
+            return result.IsSet;
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -138,11 +197,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, _) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridColumnStartKey, all[0], this.DoConvertLine);
+
+            var (left, _) = GridLineParser.SplitJoined(string.Join(" ", all));
             var val = GridLineParser.Parse(left);
             if (val.IsSet && !val.IsAuto)
                 onStyle.SetValue(StyleKeys.GridColumnStartKey, val);
             return true;
+        }
+
+        private bool DoConvertLine(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            result = GridLineParser.Parse(GridLineParser.Tokenise(value?.ToString()));
+            return result.IsSet;
         }
     }
 
@@ -152,11 +224,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, _) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridRowStartKey, all[0], this.DoConvertLine);
+
+            var (left, _) = GridLineParser.SplitJoined(string.Join(" ", all));
             var val = GridLineParser.Parse(left);
             if (val.IsSet && !val.IsAuto)
                 onStyle.SetValue(StyleKeys.GridRowStartKey, val);
             return true;
+        }
+
+        private bool DoConvertLine(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            result = GridLineParser.Parse(GridLineParser.Tokenise(value?.ToString()));
+            return result.IsSet;
         }
     }
 
@@ -170,11 +255,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, _) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridColumnEndKey, all[0], this.DoConvertLine);
+
+            var (left, _) = GridLineParser.SplitJoined(string.Join(" ", all));
             var val = GridLineParser.Parse(left);
             if (val.IsSet && !val.IsAuto)
                 onStyle.SetValue(StyleKeys.GridColumnEndKey, val);
             return true;
+        }
+
+        private bool DoConvertLine(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            result = GridLineParser.Parse(GridLineParser.Tokenise(value?.ToString()));
+            return result.IsSet;
         }
     }
 
@@ -184,11 +282,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            var (left, _) = GridLineParser.ReadAndSplit(reader);
+            var all = new List<string>();
+            while (reader.ReadNextValue())
+                all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridRowEndKey, all[0], this.DoConvertLine);
+
+            var (left, _) = GridLineParser.SplitJoined(string.Join(" ", all));
             var val = GridLineParser.Parse(left);
             if (val.IsSet && !val.IsAuto)
                 onStyle.SetValue(StyleKeys.GridRowEndKey, val);
             return true;
+        }
+
+        private bool DoConvertLine(StyleBase onStyle, object value, out GridLineValue result)
+        {
+            result = GridLineParser.Parse(GridLineParser.Tokenise(value?.ToString()));
+            return result.IsSet;
         }
     }
 
@@ -207,6 +318,14 @@ namespace Scryber.Styles.Parsing.Typed
             var all = new List<string>();
             while (reader.ReadNextValue())
                 all.Add(reader.CurrentTextValue.Trim());
+
+            if (all.Count == 1 && IsExpression(all[0]))
+            {
+                // Whole grid-area value is a single var()/calc() expression. Only the simple
+                // named-area form is supported here (grid-area: var(--name)) - the ambiguous
+                // 4-part "row/col/row/col" shorthand-via-expression form is not.
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridAreaNameKey, all[0], this.DoConvertName);
+            }
 
             var joined = string.Join(" ", all);
 
@@ -234,6 +353,12 @@ namespace Scryber.Styles.Parsing.Typed
             return true;
         }
 
+        private bool DoConvertName(StyleBase onStyle, object value, out string result)
+        {
+            result = value?.ToString();
+            return !string.IsNullOrEmpty(result);
+        }
+
         private static void Apply(Style onStyle, string[] parts, int index,
                                    StyleKey<GridLineValue> key)
         {
@@ -257,14 +382,19 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             // Collect all tokens (the CSS reader preserves quoted strings with their quotes)
+            var tokens = new List<string>();
             var sb = new System.Text.StringBuilder();
             while (reader.ReadNextValue())
             {
+                tokens.Add(reader.CurrentTextValue);
                 if (sb.Length > 0) sb.Append(' ');
                 sb.Append(reader.CurrentTextValue);
             }
             var raw = sb.ToString().Trim();
             if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            if (tokens.Count == 1 && IsExpression(tokens[0]))
+                return this.AttachExpressionBindingHandler(onStyle, StyleKeys.GridTemplateAreasKey, tokens[0], this.DoConvertAreas);
 
             if (GridTemplateAreasValue.TryParse(raw, out var areas))
             {
@@ -273,94 +403,78 @@ namespace Scryber.Styles.Parsing.Typed
             }
             return false;
         }
+
+        private bool DoConvertAreas(StyleBase onStyle, object value, out GridTemplateAreasValue result)
+        {
+            var text = value?.ToString() ?? string.Empty;
+            if (GridTemplateAreasValue.TryParse(text, out result))
+                return true;
+            result = default;
+            return false;
+        }
     }
 
     // -----------------------------------------------------------------------
-    // grid-template-columns / grid-template-rows  (unchanged — raw string storage)
+    // grid-template-columns / grid-template-rows / grid-auto-columns / grid-auto-rows
+    // Raw string storage (track sizes are resolved at layout time). All support a
+    // whole-value var()/calc() expression - the individual track sizes inside a
+    // repeat()/track-list (e.g. "repeat(3, var(--w))") are not evaluated as expressions,
+    // since those are resolved at layout time, not CSS parse time.
     // -----------------------------------------------------------------------
 
-    public class CSSGridTemplateColumnsParser : CSSStyleAttributeParser<string>
+    public abstract class CSSGridTrackStringParser : CSSStyleAttributeParser<string>
+    {
+        protected CSSGridTrackStringParser(string cssName, StyleKey<string> key) : base(cssName, key) { }
+
+        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
+        {
+            var tokens = new List<string>();
+            var sb = new System.Text.StringBuilder();
+            while (reader.ReadNextValue())
+            {
+                tokens.Add(reader.CurrentTextValue);
+                if (sb.Length > 0) sb.Append(' ');
+                sb.Append(reader.CurrentTextValue);
+            }
+            var raw = sb.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            if (tokens.Count == 1 && IsExpression(tokens[0]))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, tokens[0], this.DoConvertString);
+
+            this.SetValue(onStyle, raw);
+            return true;
+        }
+
+        protected virtual bool DoConvertString(StyleBase onStyle, object value, out string result)
+        {
+            result = value?.ToString();
+            return !string.IsNullOrEmpty(result);
+        }
+    }
+
+    public class CSSGridTemplateColumnsParser : CSSGridTrackStringParser
     {
         public CSSGridTemplateColumnsParser() : base(CSSStyleItems.GridTemplateColumns, StyleKeys.GridTemplateColumnsKey) { }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            var sb = new System.Text.StringBuilder();
-            while (reader.ReadNextValue())
-            {
-                if (sb.Length > 0) sb.Append(' ');
-                sb.Append(reader.CurrentTextValue);
-            }
-            var raw = sb.ToString().Trim();
-            if (string.IsNullOrWhiteSpace(raw)) return false;
-            this.SetValue(onStyle, raw);
-            return true;
-        }
     }
 
-    public class CSSGridTemplateRowsParser : CSSStyleAttributeParser<string>
+    public class CSSGridTemplateRowsParser : CSSGridTrackStringParser
     {
         public CSSGridTemplateRowsParser() : base(CSSStyleItems.GridTemplateRows, StyleKeys.GridTemplateRowsKey) { }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            var sb = new System.Text.StringBuilder();
-            while (reader.ReadNextValue())
-            {
-                if (sb.Length > 0) sb.Append(' ');
-                sb.Append(reader.CurrentTextValue);
-            }
-            var raw = sb.ToString().Trim();
-            if (string.IsNullOrWhiteSpace(raw)) return false;
-            this.SetValue(onStyle, raw);
-            return true;
-        }
     }
 
-    // -----------------------------------------------------------------------
-    // grid-auto-columns / grid-auto-rows  — single track-size value
-    // -----------------------------------------------------------------------
-
-    public class CSSGridAutoColumnsParser : CSSStyleAttributeParser<string>
+    public class CSSGridAutoColumnsParser : CSSGridTrackStringParser
     {
         public CSSGridAutoColumnsParser() : base(CSSStyleItems.GridAutoColumns, StyleKeys.GridAutoColumnsKey) { }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            var sb = new System.Text.StringBuilder();
-            while (reader.ReadNextValue())
-            {
-                if (sb.Length > 0) sb.Append(' ');
-                sb.Append(reader.CurrentTextValue);
-            }
-            var raw = sb.ToString().Trim();
-            if (string.IsNullOrWhiteSpace(raw)) return false;
-            this.SetValue(onStyle, raw);
-            return true;
-        }
     }
 
-    public class CSSGridAutoRowsParser : CSSStyleAttributeParser<string>
+    public class CSSGridAutoRowsParser : CSSGridTrackStringParser
     {
         public CSSGridAutoRowsParser() : base(CSSStyleItems.GridAutoRows, StyleKeys.GridAutoRowsKey) { }
-
-        protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
-        {
-            var sb = new System.Text.StringBuilder();
-            while (reader.ReadNextValue())
-            {
-                if (sb.Length > 0) sb.Append(' ');
-                sb.Append(reader.CurrentTextValue);
-            }
-            var raw = sb.ToString().Trim();
-            if (string.IsNullOrWhiteSpace(raw)) return false;
-            this.SetValue(onStyle, raw);
-            return true;
-        }
     }
 
     // -----------------------------------------------------------------------
-    // grid-auto-flow  (unchanged)
+    // grid-auto-flow
     // -----------------------------------------------------------------------
 
     public class CSSGridAutoFlowParser : CSSStyleAttributeParser<GridAutoFlow>
@@ -370,15 +484,30 @@ namespace Scryber.Styles.Parsing.Typed
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
             if (!reader.ReadNextValue()) return false;
-            GridAutoFlow flow;
-            switch (reader.CurrentTextValue.ToLowerInvariant())
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertFlow);
+
+            if (TryGetFlow(text, out var flow))
             {
-                case "column": flow = GridAutoFlow.Column; break;
-                case "row":    flow = GridAutoFlow.Row;    break;
-                default:       return false;
+                this.SetValue(onStyle, flow);
+                return true;
             }
-            this.SetValue(onStyle, flow);
-            return true;
+            return false;
+        }
+
+        protected virtual bool DoConvertFlow(StyleBase onStyle, object value, out GridAutoFlow result)
+            => TryGetFlow(value?.ToString() ?? string.Empty, out result);
+
+        private static bool TryGetFlow(string value, out GridAutoFlow flow)
+        {
+            switch (value.ToLowerInvariant())
+            {
+                case "column": flow = GridAutoFlow.Column; return true;
+                case "row":    flow = GridAutoFlow.Row;    return true;
+                default:       flow = GridAutoFlow.Row;    return false;
+            }
         }
     }
 }

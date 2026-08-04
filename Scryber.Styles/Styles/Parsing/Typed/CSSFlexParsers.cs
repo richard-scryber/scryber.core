@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Scryber.Drawing;
 using Scryber.Html;
 
@@ -10,12 +11,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && TryGetDirection(reader.CurrentTextValue, out var dir))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertDirection);
+            else if (TryGetDirection(text, out var dir))
             {
                 this.SetValue(onStyle, dir);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertDirection(StyleBase onStyle, object value, out FlexDirection result)
+        {
+            if (value is FlexDirection fd) { result = fd; return true; }
+            return TryGetDirection(value?.ToString() ?? string.Empty, out result);
         }
 
         public static bool TryGetDirection(string value, out FlexDirection direction)
@@ -37,12 +50,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && TryGetWrap(reader.CurrentTextValue, out var wrap))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertWrap);
+            else if (TryGetWrap(text, out var wrap))
             {
                 this.SetValue(onStyle, wrap);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertWrap(StyleBase onStyle, object value, out FlexWrap result)
+        {
+            if (value is FlexWrap fw) { result = fw; return true; }
+            return TryGetWrap(value?.ToString() ?? string.Empty, out result);
         }
 
         public static bool TryGetWrap(string value, out FlexWrap wrap)
@@ -63,12 +88,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && TryGetJustify(reader.CurrentTextValue, out var justify))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertJustify);
+            else if (TryGetJustify(text, out var justify))
             {
                 this.SetValue(onStyle, justify);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertJustify(StyleBase onStyle, object value, out FlexJustify result)
+        {
+            if (value is FlexJustify fj) { result = fj; return true; }
+            return TryGetJustify(value?.ToString() ?? string.Empty, out result);
         }
 
         public static bool TryGetJustify(string value, out FlexJustify justify)
@@ -92,12 +129,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && TryGetAlign(reader.CurrentTextValue, out var align))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertAlign);
+            else if (TryGetAlign(text, out var align))
             {
                 this.SetValue(onStyle, align);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertAlign(StyleBase onStyle, object value, out FlexAlignMode result)
+        {
+            if (value is FlexAlignMode fa) { result = fa; return true; }
+            return TryGetAlign(value?.ToString() ?? string.Empty, out result);
         }
 
         public static bool TryGetAlign(string value, out FlexAlignMode align)
@@ -124,12 +173,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && CSSAlignItemsParser.TryGetAlign(reader.CurrentTextValue, out var align))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertAlign);
+            else if (CSSAlignItemsParser.TryGetAlign(text, out var align))
             {
                 this.SetValue(onStyle, align);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertAlign(StyleBase onStyle, object value, out FlexAlignMode result)
+        {
+            if (value is FlexAlignMode fa) { result = fa; return true; }
+            return CSSAlignItemsParser.TryGetAlign(value?.ToString() ?? string.Empty, out result);
         }
     }
 
@@ -139,12 +200,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && CSSAlignItemsParser.TryGetAlign(reader.CurrentTextValue, out var align))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertAlign);
+            else if (CSSAlignItemsParser.TryGetAlign(text, out var align))
             {
                 this.SetValue(onStyle, align);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertAlign(StyleBase onStyle, object value, out FlexAlignMode result)
+        {
+            if (value is FlexAlignMode fa) { result = fa; return true; }
+            return CSSAlignItemsParser.TryGetAlign(value?.ToString() ?? string.Empty, out result);
         }
     }
 
@@ -154,11 +227,36 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && double.TryParse(reader.CurrentTextValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertGrow);
+            else if (DoConvertGrow(onStyle, text, out var v))
             {
-                this.SetValue(onStyle, Math.Max(0.0, v));
+                this.SetValue(onStyle, v);
                 return true;
             }
+            return false;
+        }
+
+        protected virtual bool DoConvertGrow(StyleBase onStyle, object value, out double result)
+        {
+            if (TryParseDouble(value, out result))
+            {
+                result = Math.Max(0.0, result);
+                return true;
+            }
+            return false;
+        }
+
+        internal static bool TryParseDouble(object value, out double result)
+        {
+            if (value is double d) { result = d; return true; }
+            if (value != null && double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                return true;
+            result = 0.0;
             return false;
         }
     }
@@ -169,9 +267,25 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && double.TryParse(reader.CurrentTextValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var v))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertShrink);
+            else if (DoConvertShrink(onStyle, text, out var v))
             {
-                this.SetValue(onStyle, Math.Max(0.0, v));
+                this.SetValue(onStyle, v);
+                return true;
+            }
+            return false;
+        }
+
+        protected virtual bool DoConvertShrink(StyleBase onStyle, object value, out double result)
+        {
+            if (CSSFlexGrowParser.TryParseDouble(value, out result))
+            {
+                result = Math.Max(0.0, result);
                 return true;
             }
             return false;
@@ -193,13 +307,26 @@ namespace Scryber.Styles.Parsing.Typed
                 onStyle.SetValue(StyleKeys.FlexBasisAutoKey, true);
                 return true;
             }
-            if (Unit.TryParse(text, out var unit))
+
+            if (IsExpression(text))
+            {
+                onStyle.SetValue(StyleKeys.FlexBasisAutoKey, false);
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertBasis);
+            }
+
+            if (DoConvertBasis(onStyle, text, out var unit))
             {
                 this.SetValue(onStyle, unit);
                 onStyle.SetValue(StyleKeys.FlexBasisAutoKey, false);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertBasis(StyleBase onStyle, object value, out Unit result)
+        {
+            if (value is Unit u) { result = u; return true; }
+            return TryConvertToUnit(value, out result);
         }
     }
 
@@ -209,24 +336,51 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (!reader.ReadNextValue() || !Unit.TryParse(reader.CurrentTextValue, out var first))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var first = reader.CurrentTextValue;
+
+            if (IsExpression(first))
+            {
+                // Whole gap value is a single var()/calc() expression - mirror it onto both
+                // row-gap and column-gap so it resolves independently at data-bind time.
+                bool r1 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.FlexRowGapKey, first, this.DoConvertUnit);
+                bool r2 = this.AttachExpressionBindingHandler(onStyle, StyleKeys.FlexColumnGapKey, first, this.DoConvertUnit);
+                return r1 || r2;
+            }
+
+            if (!Unit.TryParse(first, out var firstUnit))
                 return false;
 
             // CSS gap: <row-gap> [<column-gap>]
             // gap is a shorthand that expands to row-gap + column-gap, writing the same keys
             // as those individual properties.  This lets CSS declaration order determine which
             // wins: e.g. "gap:10pt; column-gap:20pt" → column-gap overwrites gap's column value.
-            if (reader.ReadNextValue() && Unit.TryParse(reader.CurrentTextValue, out var second))
+            if (reader.ReadNextValue())
             {
-                onStyle.SetValue(StyleKeys.FlexRowGapKey, first);
-                onStyle.SetValue(StyleKeys.FlexColumnGapKey, second);
+                var second = reader.CurrentTextValue;
+                onStyle.SetValue(StyleKeys.FlexRowGapKey, firstUnit);
+
+                if (IsExpression(second))
+                    this.AttachExpressionBindingHandler(onStyle, StyleKeys.FlexColumnGapKey, second, this.DoConvertUnit);
+                else if (Unit.TryParse(second, out var secondUnit))
+                    onStyle.SetValue(StyleKeys.FlexColumnGapKey, secondUnit);
+                else
+                    onStyle.SetValue(StyleKeys.FlexColumnGapKey, firstUnit);
             }
             else
             {
-                onStyle.SetValue(StyleKeys.FlexRowGapKey, first);
-                onStyle.SetValue(StyleKeys.FlexColumnGapKey, first);
+                onStyle.SetValue(StyleKeys.FlexRowGapKey, firstUnit);
+                onStyle.SetValue(StyleKeys.FlexColumnGapKey, firstUnit);
             }
             return true;
+        }
+
+        protected virtual bool DoConvertUnit(StyleBase onStyle, object value, out Unit result)
+        {
+            if (value is Unit u) { result = u; return true; }
+            return TryConvertToUnit(value, out result);
         }
     }
 
@@ -236,12 +390,24 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && Unit.TryParse(reader.CurrentTextValue, out var gap))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertUnit);
+            else if (Unit.TryParse(text, out var gap))
             {
                 this.SetValue(onStyle, gap);
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool DoConvertUnit(StyleBase onStyle, object value, out Unit result)
+        {
+            if (value is Unit u) { result = u; return true; }
+            return TryConvertToUnit(value, out result);
         }
     }
 
@@ -251,11 +417,26 @@ namespace Scryber.Styles.Parsing.Typed
 
         protected override bool DoSetStyleValue(Style onStyle, CSSStyleItemReader reader)
         {
-            if (reader.ReadNextValue() && int.TryParse(reader.CurrentTextValue, out var order))
+            if (!reader.ReadNextValue())
+                return false;
+
+            var text = reader.CurrentTextValue;
+            if (IsExpression(text))
+                return this.AttachExpressionBindingHandler(onStyle, this.StyleAttribute, text, this.DoConvertOrder);
+            else if (int.TryParse(text, out var order))
             {
                 this.SetValue(onStyle, order);
                 return true;
             }
+            return false;
+        }
+
+        protected virtual bool DoConvertOrder(StyleBase onStyle, object value, out int result)
+        {
+            if (value is int i) { result = i; return true; }
+            if (value != null && int.TryParse(value.ToString(), out result))
+                return true;
+            result = 0;
             return false;
         }
     }
@@ -263,6 +444,11 @@ namespace Scryber.Styles.Parsing.Typed
     /// <summary>
     /// Parses the flex shorthand: flex: [grow] [shrink] [basis] | none | auto
     /// </summary>
+    /// <remarks>
+    /// var()/calc() is not supported for the shorthand itself (grow/shrink/basis packed into
+    /// one expression is ambiguous to unpack generically) - use the flex-grow, flex-shrink and
+    /// flex-basis longhand properties individually, which all support expressions.
+    /// </remarks>
     public class CSSFlexShorthandParser : CSSStyleValueParser
     {
         public CSSFlexShorthandParser() : base(CSSStyleItems.Flex) { }
