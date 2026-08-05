@@ -2150,6 +2150,24 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300.0, run4.Width.PointsValue,  1.0, "min-width should grow the width independently");
             Assert.AreEqual(200.0, run4.Height.PointsValue, 1.0, "min-height should grow the height independently");
         }
+        
+        [TestMethod()]
+        public void SVGLogo_OverflowingPages()
+        {
+            var path = GetResourcePath("SVGImages", "Logo_OverflowingPages.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGLogo_OverflowingPages.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+            Assert.AreEqual(5, this.layout.AllPages.Count, "There should only be 5 pages.");
+
+        }
 
     }
 }

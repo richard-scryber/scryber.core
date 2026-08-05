@@ -749,20 +749,26 @@ namespace Scryber.PDF.Layout
                 StyleValue<bool> pbr;
                 if (full.TryGetValue(StyleKeys.ColumnBreakBeforeKey, out cbr))
                 {
-                    var value = cbr.Value(full);
-                    
-                    if (value == BreakContentType.Column)
+                    if (!this.IsJustAnEmptyRegion(cleanEmpty:true))
                     {
-                        this.DoLayoutColumnBreak(comp, full);
-                    }
-                    else if (value >= BreakContentType.Page)
-                    {
-                        this.DoLayoutPageBreak(comp, full, value);
+                        var value = cbr.Value(full);
+
+                        if (value == BreakContentType.Column)
+                        {
+                            this.DoLayoutColumnBreak(comp, full);
+                        }
+                        else if (value >= BreakContentType.Page)
+                        {
+                            this.DoLayoutPageBreak(comp, full, value);
+                        }
                     }
                 }
                 else if (full.TryGetValue(StyleKeys.PageBreakBeforeKey, out pbr) && pbr.Value(full))
                 {
-                    this.DoLayoutPageBreak(comp, full);
+                    if (!this.IsJustAnEmptyRegion(cleanEmpty:true))
+                    {
+                        this.DoLayoutPageBreak(comp, full);
+                    }
                 }
                 
             }
@@ -880,6 +886,75 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Checks the contents of the current region and
+        /// returns true if the current region, is open and has no content
+        /// (or is a blank / whitespace line).
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool IsJustAnEmptyRegion(bool cleanEmpty = false)
+        {
+            var block = this.CurrentBlock;
+            if (block == null)
+                block = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+            
+            if(block == null)
+                return false;
+
+            var region = block.CurrentRegion;
+            
+            if (region == null || region.IsClosed)
+                return false;
+
+            if (region.Contents.Count == 0)
+                return true;
+
+            if (region.Contents.Count == 1 && region.Contents[0] is PDFLayoutLine)
+            {
+                var line = (PDFLayoutLine) region.Contents[0];
+                if(line.Runs.Count == 0)
+                    return true;
+                else if (line.Runs.Count == 2)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    var end = line.Runs[1] as PDFTextRunEnd;
+                    if(null != start && null != end)
+                    {
+                        if (cleanEmpty)
+                        {
+                            region.Contents.Clear();
+                            region.UsedSize = Size.Empty;
+
+                        }
+                        
+                        return true;
+                    }
+                }
+                else if (line.Runs.Count == 3)
+                {
+                    var start = line.Runs[0] as PDFTextRunBegin;
+                    var chars = line.Runs[1] as PDFTextRunCharacter;
+                    var end = line.Runs[2] as PDFTextRunEnd;
+                    
+                    if(null != start && null != end && null != chars && string.IsNullOrWhiteSpace(chars.Characters))
+                    {
+                        if (cleanEmpty)
+                        {
+                            region.Contents.Clear();
+                            region.UsedSize = Size.Empty;
+
+                        }
+                        
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+
+        }
+        
+        
         #region protected virtual void CheckForPrecedingInlineWhitespace(Component current, Style currentFullStyle)
 
         private DisplayMode _lastDisplayMode = DisplayMode.Block;
