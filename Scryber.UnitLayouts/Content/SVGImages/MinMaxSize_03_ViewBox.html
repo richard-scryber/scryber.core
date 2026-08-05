@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image (viewBox only) min/max width/height - aspect ratio should be preserved</title>
+        <style>
+            @page{
+                size: 500pt 400pt;
+                margin : 10pt;
+            }
+            body{ margin: 0; padding: 0; background-color: #ffffff; }
+            img { border: solid 1px #000; }
+            .narrow { width: 150pt; border: dashed 1pt #f00; }
+        </style>
+    </head>
+    <body>
+    <!-- Sample_ViewboxOnly_200x150.svg has viewBox="0 0 200 150" (4:3, 1.333 ratio) and no
+         width/height/aspect-ratio CSS of its own. Confirmed against real browser rendering:
+         min/max-width/height alone (no explicit width/height/aspect-ratio) derive the
+         unconstrained axis from the viewBox's own natural ratio, UNLESS both axes end up
+         independently constrained by their own min/max, in which case the ratio can break.
+
+         Without something else set, an unconstrained SVG fills its available container (confirmed
+         against real browser rendering - block-level default sizing), so min-width/min-height
+         alone need a narrower container to actually be the binding constraint - the dashed border
+         marks that container so it's clear the image legitimately grows past it. A width-only
+         narrow container is used throughout (rather than constraining height directly) - a fixed
+         height on a plain block container behaves oddly with overflowing content in this engine,
+         whereas narrowing width also naturally shrinks the fill-derived height (since fill
+         preserves the viewBox ratio), which is enough to make min-height bind too. -->
+
+    <!-- 0: min-width:400pt in a 150pt-wide container -> fill(150,112.5), w=400, h=400/(4/3)=300 -->
+    <div class="narrow">
+        <img src="Sample_ViewboxOnly_200x150.svg" style="min-width: 400pt;" />
+    </div>
+
+    <!-- 1: max-width:100pt, natural fill (wider than 100pt) -> w=100, h=75. No narrow container
+         needed - max always caps the fill value regardless of container size. -->
+    <img src="Sample_ViewboxOnly_200x150.svg" style="max-width: 100pt; page-break-before: always;" />
+
+    <!-- 2: min-height:300pt in the same 150pt-wide container -> fill(150,112.5) is already
+         shorter than 300pt, so min-height binds -> h=300, w=300*(4/3)=400 -->
+    <div class="narrow" style="page-break-before: always;">
+        <img src="Sample_ViewboxOnly_200x150.svg" style="min-height: 300pt;" />
+    </div>
+
+    <!-- 3: max-height:50pt, natural fill (taller than 50pt) -> h=50, w=50*(4/3)=66.67 -->
+    <img src="Sample_ViewboxOnly_200x150.svg" style="max-height: 50pt; page-break-before: always;" />
+
+    <!-- 4: min-width:250pt and min-height:200pt together in the 150pt-wide container - both axes
+         independently constrained, so the ratio is allowed to break: w=250, h=200. -->
+    <div class="narrow" style="page-break-before: always;">
+        <img src="Sample_ViewboxOnly_200x150.svg" style="min-width: 250pt; min-height: 200pt;" />
+    </div>
+    </body>
+</html>

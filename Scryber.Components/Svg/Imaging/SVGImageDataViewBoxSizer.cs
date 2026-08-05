@@ -92,17 +92,51 @@ public class SVGImageDataViewBoxSizer : SVGImageDataSizer
     protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
         var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
-        
+
         if(pos.Width.HasValue || pos.Height.HasValue)
             return base.DoGetOutputSizeForLayout(layout, available, applied, context);
-        
+
         //scale proportionally to the available size
-        if(layout == available)
-            return layout;
-        
-        var proportional = this.DoGetProportionalSize(layout, available, context);
-        
-        return proportional;
+        Size calculated = (layout == available) ? layout : this.DoGetProportionalSize(layout, available, context);
+
+        // Neither width nor height explicit - apply min/max on top of the fill-to-available size,
+        // deriving whichever axis isn't independently constrained from the viewBox's own natural
+        // ratio (confirmed against real browser rendering - mirrors the equivalent fix in
+        // SVGImageDataEmptySizer, using the viewBox ratio in place of CSS aspect-ratio). Max is
+        // applied before min so min wins if they conflict (also confirmed against real browser
+        // rendering). If both axes end up independently constrained, the ratio is allowed to break.
+        bool hasWidth = false, hasHeight = false;
+
+        if (pos.MaximumHeight.HasValue && calculated.Height > pos.MaximumHeight.Value)
+        {
+            calculated.Height = pos.MaximumHeight.Value;
+            hasHeight = true;
+        }
+
+        if (pos.MaximumWidth.HasValue && calculated.Width > pos.MaximumWidth.Value)
+        {
+            calculated.Width = pos.MaximumWidth.Value;
+            hasWidth = true;
+        }
+
+        if (pos.MinimumHeight.HasValue && calculated.Height < pos.MinimumHeight.Value)
+        {
+            calculated.Height = pos.MinimumHeight.Value;
+            hasHeight = true;
+        }
+
+        if (pos.MinimumWidth.HasValue && calculated.Width < pos.MinimumWidth.Value)
+        {
+            calculated.Width = pos.MinimumWidth.Value;
+            hasWidth = true;
+        }
+
+        if (hasWidth && !hasHeight)
+            calculated.Height = calculated.Width * (this.ViewBox.Height.PointsValue / this.ViewBox.Width.PointsValue);
+        else if (hasHeight && !hasWidth)
+            calculated.Width = calculated.Height * (this.ViewBox.Width.PointsValue / this.ViewBox.Height.PointsValue);
+
+        return calculated;
     }
 
     protected override Point DoGetRenderOffsetForContent(Point offset, Size available, ContextBase context)

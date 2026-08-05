@@ -2000,5 +2000,54 @@ namespace Scryber.UnitLayouts
             }
         }
 
+        [TestMethod()]
+        public void MinMaxSize_03_ViewBox_AspectRatioPreservedOnSingleAxis()
+        {
+            // Sample_ViewboxOnly_200x150.svg has viewBox="0 0 200 150" (4:3, 1.333 ratio) and no
+            // width/height/aspect-ratio CSS of its own. Confirmed against real browser rendering:
+            // min/max-width/height alone (no explicit width/height/aspect-ratio) derive the
+            // unconstrained axis from the viewBox's own natural ratio, unless both axes end up
+            // independently constrained by their own min/max, in which case the ratio can break -
+            // mirroring the CSS aspect-ratio behaviour already confirmed for SVGImageDataEmptySizer.
+            var path = GetResourcePath("SVGImages", "MinMaxSize_03_ViewBox.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImages_MinMaxSize_03_ViewBox.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+
+            // 0. min-width:400pt in a 150pt-wide container -> fill(150,112.5), w=400, h=300
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(400.0, run0.Width.PointsValue,  1.0, "min-width should grow the width");
+            Assert.AreEqual(300.0, run0.Height.PointsValue, 1.0, "height should derive from the viewBox's 4:3 ratio");
+
+            // 1. max-width:100pt, natural fill (wider than 100pt) -> w=100, h=75
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(100.0, run1.Width.PointsValue, 1.0, "max-width should shrink the width");
+            Assert.AreEqual(75.0,  run1.Height.PointsValue, 1.0, "height should derive from the viewBox's 4:3 ratio");
+
+            // 2. min-height:300pt in the same 150pt-wide container -> fill height (112.5) is
+            //    already shorter than 300pt, so min-height binds -> h=300, w=400
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(400.0, run2.Width.PointsValue,  1.0, "width should derive from the viewBox's 4:3 ratio");
+            Assert.AreEqual(300.0, run2.Height.PointsValue, 1.0, "min-height should grow the height");
+
+            // 3. max-height:50pt, natural fill (taller than 50pt) -> h=50, w=66.67
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(66.7, run3.Width.PointsValue,  1.0, "width should derive from the viewBox's 4:3 ratio");
+            Assert.AreEqual(50.0, run3.Height.PointsValue, 1.0, "max-height should shrink the height");
+
+            // 4. min-width:250pt and min-height:200pt together in the 150pt-wide container - both
+            //    axes independently constrained, so the ratio is allowed to break: w=250, h=200.
+            var run4 = GetImageRunFromBody(4);
+            Assert.AreEqual(250.0, run4.Width.PointsValue,  1.0, "min-width should grow the width independently");
+            Assert.AreEqual(200.0, run4.Height.PointsValue, 1.0, "min-height should grow the height independently");
+        }
+
     }
 }
