@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image explicit size bigger than the 300x150 default - not clipped to it</title>
+        <style>
+            @page {
+                size: 500pt 700pt;
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+    <!-- Explicit width/height, both bigger than the natural 300x150 default and bigger than the
+         rect drawn in Logo_None.svg (5,5 350x320). The referenced SVG has no width/height/viewBox
+         of its own, so it is sized by SVGImageDataEmptySizer. The shared PDF Form XObject wrapping
+         its content must not have its /BBox fixed at the 300x150 default - otherwise content
+         beyond 300x150 would be permanently clipped at the PDF spec level, regardless of how big
+         any individual <img> referencing it ends up being. Confirmed against real browser
+         rendering. The page size (500x700, distinct from both the 300x150 default and this img's
+         own 370x350 box) is used here specifically so the test can tell which one the BBox
+         actually reflects. -->
+    <img src="Logo_None.svg" style="width: 370pt; height: 350pt;" />
+    </body>
+</html>

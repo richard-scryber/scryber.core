@@ -26,7 +26,11 @@ public class SVGPDFImageDataLayoutEngine
             return null;
         }
 
-        var size = sizer.GetLayoutSize();
+        // GetContentLayoutSize (not GetLayoutSize) - for most strategies these are the same, but
+        // for a dimensionless SVG (SVGImageDataEmptySizer) GetContentLayoutSize is the current page
+        // size, not the fixed 300x150 default, so content isn't permanently clipped to that
+        // default regardless of how big any individual <img> referencing it ends up being.
+        var size = sizer.GetContentLayoutSize(context);
 
         if (!canvas.Style.IsValueDefined(StyleKeys.SizeWidthKey))
         {

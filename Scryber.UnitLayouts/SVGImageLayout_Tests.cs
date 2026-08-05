@@ -135,10 +135,18 @@ namespace Scryber.UnitLayouts
             
             Assert.AreEqual(4, svgs.Count, "Expected 4 SVG images");
 
-            // 1. SVG 300×150 (viewBox), img 300×150 — canvas stays intrinsic, run matches override
-            Assert.AreEqual((Unit)300, svgs[0].Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svgs[0].Canvas.Height, "1. Canvas height stays intrinsic");
+            // 1. Sample_NoViewbox_NoWidth_NoHeight.svg has no sizing information of its own, so it's
+            //    sized via SVGImageDataEmptySizer. The canvas's own content is now laid out at the
+            //    current page size (not the 300x150 default) so content beyond 300x150 isn't
+            //    permanently clipped regardless of how big any individual <img> referencing it ends
+            //    up being (confirmed against real browser rendering - see
+            //    SVGImageDataEmptySizer.GetContentLayoutSize). The *output box* (run0, below) still
+            //    correctly defaults to 300x150 when nothing else is specified - only the internal
+            //    canvas/XObject sizing changed.
             var run0 = GetImageRunFromBody(0);
+            var pageSize = run0.GetLayoutPage().Size.Size;
+            Assert.AreEqual(pageSize.Width,  svgs[0].Canvas.Width,  "1. Canvas width matches the page size");
+            Assert.AreEqual(pageSize.Height, svgs[0].Canvas.Height, "1. Canvas height matches the page size");
             Assert.AreEqual(300.0, run0.Width.PointsValue,  1.0, "1. Run width from img override");
             Assert.AreEqual(150.0, run0.Height.PointsValue, 1.0, "1. Run height from img override");
             
@@ -167,9 +175,15 @@ namespace Scryber.UnitLayouts
             
             //second page
             
-            // 6. img 200x200 explicit — canvas is new for aspect ratio
-            Assert.AreEqual((Unit)300, svgs[1].Canvas.Width,  "1. Canvas width stays intrinsic");
-            Assert.AreEqual((Unit)150, svgs[1].Canvas.Height, "1. Canvas height stays intrinsic");
+            // 6. img 200x200 explicit — canvas is new for aspect ratio. The SVG has no sizing
+            //    information of its own (no viewBox, no width/height), so unlike a viewBox-bound
+            //    canvas, there's no author-declared boundary to preserve - the canvas's own content
+            //    is laid out at the page size (same as case 1 above), regardless of this
+            //    particular <img>'s own 200x200 box, so content beyond 300x150 isn't clipped
+            //    (confirmed against real browser rendering - see
+            //    SVGImageDataEmptySizer.GetContentLayoutSize).
+            Assert.AreEqual(pageSize.Width,  svgs[1].Canvas.Width,  "1. Canvas width matches the page size");
+            Assert.AreEqual(pageSize.Height, svgs[1].Canvas.Height, "1. Canvas height matches the page size");
             
             var run5 = GetImageRunFromBody(5);
             Assert.AreEqual(200.0, run5.Width.PointsValue,  1.0, "2. Run width from img override");
@@ -1897,6 +1911,7 @@ namespace Scryber.UnitLayouts
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(stream);
             }
+            
 
             Assert.IsNotNull(this.layout);
 
@@ -1925,6 +1940,64 @@ namespace Scryber.UnitLayouts
             var run4 = GetImageRunFromBody(4);
             Assert.AreEqual(350.0, run4.Width.PointsValue,  1.0, "min-width should grow the box width independently");
             Assert.AreEqual(200.0, run4.Height.PointsValue, 1.0, "min-height should grow the box height independently");
+
+            // 5. explicit width:370pt height:350pt, both bigger than the natural 300x150. Unlike
+            //    min/max, the SVG canvas itself must be sized to match this explicit box - not left
+            //    at the 300x150 default - otherwise content beyond 300x150 (the rect drawn at
+            //    5,5 350x320 in Logo_None.svg) would be silently clipped regardless of how big the
+            //    box actually is. Confirmed against real browser rendering.
+            var run5 = GetImageRunFromBody(5);
+            Assert.AreEqual(370.0, run5.Width.PointsValue,  1.0, "explicit width should set the box width");
+            Assert.AreEqual(350.0, run5.Height.PointsValue, 1.0, "explicit height should set the box height");
+
+        }
+
+        [TestMethod()]
+        public void MinMaxSize_02_ExplicitSizeBiggerThanDefault_XObjectBBoxNotClippedTo300x150()
+        {
+            // The actual PDF-level clip boundary for a dimensionless SVG (no width/height/viewBox
+            // of its own) is the /BBox entry on the shared Form XObject wrapping its content -
+            // SVGImageDataEmptySizer.DoGetImageToCanvasBBox - not anything about the SVGCanvas's own
+            // layout size. That must not be fixed at the 300x150 default regardless of how big any
+            // individual <img> referencing it ends up being (confirmed against real browser
+            // rendering, using a rect in Logo_None.svg that extends past 300x150). Verified here by
+            // reading the actual /BBox written into the rendered PDF bytes, since PDFRenderContext
+            // (needed to call the sizer method directly) has an internal-only constructor.
+            var path = GetResourcePath("SVGImages", "MinMaxSize_02_ExplicitSizeBiggerThanDefault.html");
+
+            using var doc = Document.ParseDocument(path);
+
+            var stream = DocStreams.GetOutputStream("SVGImages_MinMaxSize_02_ExplicitSize.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.LayoutComplete += Doc_LayoutComplete;
+            doc.SaveAsPDF(stream);
+
+            Assert.IsNotNull(this.layout);
+
+            var run = GetImageRunFromBody(0);
+            Assert.AreEqual(370.0, run.Width.PointsValue,  1.0, "explicit width should set the box width");
+            Assert.AreEqual(350.0, run.Height.PointsValue, 1.0, "explicit height should set the box height");
+
+            stream.Position = 0;
+            using var reader = new System.IO.StreamReader(stream, System.Text.Encoding.Latin1);
+            var pdfText = reader.ReadToEnd();
+
+            var matches = System.Text.RegularExpressions.Regex.Matches(pdfText,
+                @"/BBox\s*\[\s*([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s*\]");
+            Assert.IsTrue(matches.Count >= 2, "Expected at least 2 /BBox entries in the rendered PDF (inner content block + outer wrapper)");
+
+            // Both the inner content block's own Form XObject and the outer wrapper must be sized
+            // to the page (500x700), not the 300x150 default - otherwise content beyond 300x150
+            // (the rect in Logo_None.svg) is clipped by whichever of the two is still 300x150,
+            // regardless of the other being fixed.
+            foreach (System.Text.RegularExpressions.Match match in matches)
+            {
+                var bboxWidth  = double.Parse(match.Groups[3].Value, System.Globalization.CultureInfo.InvariantCulture);
+                var bboxHeight = double.Parse(match.Groups[4].Value, System.Globalization.CultureInfo.InvariantCulture);
+
+                Assert.AreEqual(500.0, bboxWidth,  1.0, $"BBox width should match the page width (500pt): {match.Value}");
+                Assert.AreEqual(700.0, bboxHeight, 1.0, $"BBox height should match the page height (700pt): {match.Value}");
+            }
         }
 
     }

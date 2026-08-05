@@ -1,6 +1,7 @@
 using System;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.PDF;
 using Scryber.PDF.Graphics;
 using Scryber.Svg.Components;
 
@@ -16,6 +17,11 @@ namespace Scryber.Svg.Imaging;
 public class SVGImageDataEmptySizer : SVGImageDataSizer
 {
 
+    /// <summary>
+    /// Stores the available loyout space as a whole page. As we have no explicit sizing on the svg
+    /// </summary>
+    private Size _pageLayoutSize;
+    
     public SVGImageDataEmptySizer(SVGCanvas forCanvas, Style appliedStyle, LayoutContext context)
         : base(forCanvas, appliedStyle, context)
     {
@@ -27,6 +33,12 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
         if (!empty) 
             throw new ArgumentOutOfRangeException("This SVG Image data sizing strategy can only be used with canvas's and styles that have no dimensions specified. Use the SVGImageDataSizer.CreateSizingStrategy to create the correct instance.", (Exception)null);
         
+        // Null-safe: low-level unit tests construct sizers with context: null (no full layout
+        // pipeline needed for what they're testing), so this can't assume a page is available.
+        var pageSize = (context as PDFLayoutContext)?.DocumentLayout?.CurrentPage?.Size.Size;
+        this._pageLayoutSize = (pageSize.HasValue && pageSize.Value.Width > Unit.Zero && pageSize.Value.Height > Unit.Zero)
+            ? pageSize.Value
+            : new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
     }
 
     /// <summary>
@@ -35,11 +47,20 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
     /// <returns></returns>
     protected override Size DoGetLayoutSize()
     {
-        return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+        return this._pageLayoutSize;
+        //return new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
     }
 
+
+    // No need to override as just calls as base just calls DoGetLayoutSize
+    // public override Size GetContentLayoutSize(LayoutContext context)
+    // {
+    //     return this.GetLayoutSize();
+    // }
+
     /// <summary>
-    /// Overrides the base implementation to return an identity matrix
+    /// Overrides the base implementation to return an identity matrix.
+    /// Without sizing an svg is always rendered at 1:1 scale.
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
@@ -52,45 +73,95 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
 
     protected override Rect? DoGetClippingRect(Point offset, Size available, ContextBase context)
     {
-        var rect = base.DoGetClippingRect(offset, available, context);
-        rect = new Rect(offset, available);
+        var rect = new Rect(offset, available);
         return rect;
     }
 
-    protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
+    /// <summary>
+    /// Overrides the base implementation, to return the layout page size (as we have no knowledge of how big it will be.
+    /// </summary>
+    protected override Rect DoGetImageToCanvasBBox(ContextBase context)
     {
-        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
-        if (pos.Height.HasValue || pos.Width.HasValue)
-        {
-            Unit width;
-            Unit height;
-
-            if (pos.Width.HasValue && pos.Height.HasValue)
-            {
-                width = pos.Width.Value;
-                height = pos.Height.Value;
-            }
-            else if (pos.Width.HasValue)
-            {
-                width = pos.Width.Value;
-                height = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
-                    ? width / pos.AspectRatio.Value
-                    : SVGCanvas.DefaultHeight;
-            }
-            else
-            {
-                height = pos.Height.Value;
-                width = pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0
-                    ? height * pos.AspectRatio.Value
-                    : SVGCanvas.DefaultWidth;
-            }
-
-            return new Size(width, height);
-
-        }
-        return base.DoGetOutputSizeForLayout(layout, available, applied, context);
+        return new Rect(Point.Empty, _pageLayoutSize);
     }
 
+    /// <summary>
+    /// Caclulates the actual required image size based on the applied style, taken from a canvas default size.
+    /// </summary>
+    /// <param name="layout"></param>
+    /// <param name="available"></param>
+    /// <param name="applied"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    protected override Size DoGetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
+    {
+        Size calculated = new Size(SVGCanvas.DefaultWidth, SVGCanvas.DefaultHeight);
+        bool hasWidth = false;
+        bool hasHeight = false;
+        
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+
+        if (pos.Height.HasValue)
+        {
+            calculated.Height = pos.Height.Value;
+            hasHeight = true;
+        }
+
+        if (pos.Width.HasValue)
+        {
+            calculated.Width = pos.Width.Value;
+            hasWidth = true;
+        }
+        
+        if (pos.MaximumHeight.HasValue && calculated.Height > pos.MaximumHeight.Value)
+        {
+            calculated.Height = pos.MaximumHeight.Value;
+            hasHeight = true;
+        }
+
+        if (pos.MaximumWidth.HasValue && calculated.Width > pos.MaximumWidth.Value)
+        {
+            calculated.Width = pos.MaximumWidth.Value;
+            hasWidth = true;
+        }
+
+        if (pos.MinimumHeight.HasValue && calculated.Height < pos.MinimumHeight.Value)
+        {
+            calculated.Height = pos.MinimumHeight.Value;
+            hasHeight = true;
+        }
+
+        if (pos.MinimumWidth.HasValue && calculated.Width < pos.MinimumWidth.Value)
+        {
+            calculated.Width = pos.MinimumWidth.Value;
+            hasWidth = true;
+        }
+        
+
+        if (pos.AspectRatio.HasValue)
+        {
+            if (hasWidth && hasHeight)
+                ; //Do nothing.
+            else if (hasWidth)
+            {
+                calculated.Height = calculated.Width * (1/pos.AspectRatio.Value);
+            }
+            else if (hasHeight)
+            {
+                calculated.Width = calculated.Height * pos.AspectRatio.Value;
+            }
+        }
+
+        return calculated;
+    }
+
+    /// <summary>
+    /// No sizing always rendered at 1:1 scale
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <param name="available"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
     protected override Size DoGetRenderScaleForContent(Point offset, Size available, ContextBase context)
     {
         //var scale = base.DoGetRenderScaleForContent(offset, available, context);
@@ -98,11 +169,18 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
         return scale;
     }
 
+    /// <summary>
+    /// We have our page layout size, so we need to update offset based on the layout size and the output height.
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <param name="available"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
     protected override Point DoGetRenderOffsetForContent(Point offset, Size available, ContextBase context)
     {
         var layout = GetLayoutSize();
-        var diffh = layout.Height - available.Height;
-        var pt = new Point(offset.X, offset.Y + available.Height + diffh);
+        //var diffh = layout.Height - available.Height;
+        var pt = new Point(offset.X, offset.Y + layout.Height);
         return pt;
     }
 }

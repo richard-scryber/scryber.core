@@ -6,7 +6,7 @@
                 size: 700pt 400pt;
                 margin : 0;
             }
-            body{ margin: 0; padding: 0; background-color: #ffffff; }
+            body{ margin: 10pt; padding: 0; background-color: #ffffff; }
             
             img { border: solid 1px #000; }
         </style>
@@ -22,12 +22,15 @@
     <!-- 1: max-width smaller than the natural 300pt width. Content still renders at natural scale
          and is clipped to the narrower box; height is untouched.
          w = 150 (< natural 300, so clamped); h = 150 (unchanged). -->
-    <img src="Logo_None.svg" style="max-width: 150pt; page-break-before: always;" />
+    <img src="Logo_None.svg" style="max-width: 150pt; page-break-before: always; page-break-after: always;" />
 
+    <p style="text-align: right;">
+    This is going to push the image content down.<br/>
+    Need to make sure this is accounted for in the image.<br/>
     <!-- 2: min-height larger than the natural 150pt height. Width is untouched.
          h = max(150, 300) = 300; w = 300 (unchanged). -->
-    <img src="Logo_None.svg" style="min-height: 300pt; page-break-before: always;" />
-
+   <img src="Logo_None.svg" style="min-height: 300pt;" /><br/>
+    After the image.</p>
     <!-- 3: max-height smaller than the natural 150pt height. Width is untouched.
          h = 50 (< natural 150, so clamped); w = 300 (unchanged). -->
     <img src="Logo_None.svg" style="max-height: 50pt; page-break-before: always;" />
@@ -36,9 +39,12 @@
          with no coupling between them: w = 350; h = 200. -->
     <img src="Logo_None.svg" style="min-width: 350pt; min-height: 200pt; page-break-before: always;" />
 
-    <!-- checking the explicit widths and heights, just to see if it is a min/max thing, or 
-    the actual width and height cause the same clipping -->
-    <img src="Logo_None.svg" style="width: 370pt; height: 350pt; page-break-before: always;" />
+    <!-- 5: explicit width/height, both bigger than the natural 300x150. Checks box sizing only -
+         the canvas-not-clipped behaviour (see MinMaxSize_02_ExplicitSizeBiggerThanDefault.html) is
+         verified in its own isolated document instead, since the earlier cases in this same
+         document already forced the shared Logo_None.svg canvas/data to size itself once. -->
+     <img src="Logo_None.svg" style="width: 370pt; height: 350pt; page-break-before: always; " />
+    
     </body>
 
 </html>

@@ -119,10 +119,26 @@ public class SVGImageDataSizer
     {
         if (!this.LayoutSize.HasValue)
             this.LayoutSize = this.DoGetLayoutSize();
-        
+
         return this.LayoutSize.Value;
     }
 
+    /// <summary>
+    /// Returns the size the SVG's own content should actually be laid out (and clipped) into -
+    /// used by SVGPDFImageDataLayoutEngine.TryLayoutCanvas to size the canvas, and shared as the
+    /// default for GetImageToCanvasBBox. For most strategies this is the same as GetLayoutSize() -
+    /// a viewBox, or the SVG's own declared width/height, is a real author-declared boundary that
+    /// content is genuinely clipped against per the SVG spec, and that boundary shouldn't change
+    /// just because some particular &lt;img&gt; referencing it has a bigger or smaller box.
+    /// SVGImageDataEmptySizer overrides this: its GetLayoutSize() (300x150) is only an arbitrary
+    /// UA fallback used for the *default output box*, not a real content boundary, so laying its
+    /// content out at that fixed size would clip anything beyond it regardless of how big any
+    /// individual &lt;img&gt; ends up being.
+    /// </summary>
+    public virtual Size GetContentLayoutSize(LayoutContext context)
+    {
+        return this.GetLayoutSize();
+    }
 
     public Size GetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
@@ -476,7 +492,7 @@ public class SVGImageDataSizer
     }
     
 
-    protected Rect DoGetImageToCanvasBBox(ContextBase context)
+    protected virtual Rect DoGetImageToCanvasBBox(ContextBase context)
     {
         var size = this.GetLayoutSize();
         return new Rect(Point.Empty, size);
