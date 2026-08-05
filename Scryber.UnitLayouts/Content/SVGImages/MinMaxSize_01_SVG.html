@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image min/max width/height parity check against raster images</title>
+        <style>
+            @page{
+                size: 700pt 400pt;
+                margin : 0;
+            }
+            body{ margin: 0; padding: 0; background-color: #ffffff; }
+            
+            img { border: solid 1px #000; }
+        </style>
+    </head>
+    <body>
+    <!-- 0: Logo_None.svg has no width/height/viewBox of its own, so its natural size is the
+         SVGCanvas default (300x150). No CSS width/height on the img either - only min-width,
+         larger than the natural 300pt. Confirmed against real browser rendering: the SVG content
+         still renders at natural scale (1:1) - only the box widens, height is untouched.
+         w = max(300, 400) = 400; h = 150 (unchanged). -->
+    <img src="Logo_None.svg" style="min-width: 400pt;" />
+
+    <!-- 1: max-width smaller than the natural 300pt width. Content still renders at natural scale
+         and is clipped to the narrower box; height is untouched.
+         w = 150 (< natural 300, so clamped); h = 150 (unchanged). -->
+    <img src="Logo_None.svg" style="max-width: 150pt; page-break-before: always;" />
+
+    <!-- 2: min-height larger than the natural 150pt height. Width is untouched.
+         h = max(150, 300) = 300; w = 300 (unchanged). -->
+    <img src="Logo_None.svg" style="min-height: 300pt; page-break-before: always;" />
+
+    <!-- 3: max-height smaller than the natural 150pt height. Width is untouched.
+         h = 50 (< natural 150, so clamped); w = 300 (unchanged). -->
+    <img src="Logo_None.svg" style="max-height: 50pt; page-break-before: always;" />
+
+    <!-- 4: min-width and min-height together - each clamps its own dimension independently,
+         with no coupling between them: w = 350; h = 200. -->
+    <img src="Logo_None.svg" style="min-width: 350pt; min-height: 200pt; page-break-before: always;" />
+
+    <!-- checking the explicit widths and heights, just to see if it is a min/max thing, or 
+    the actual width and height cause the same clipping -->
+    <img src="Logo_None.svg" style="width: 370pt; height: 350pt; page-break-before: always;" />
+    </body>
+
+</html>

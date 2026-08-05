@@ -1879,6 +1879,53 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(30.0, run3.Height.PointsValue, 1.0, "Height should be derived from the 300x100 (3:1) intrinsic attribute ratio");
         }
 
+        [TestMethod()]
+        public void MinMaxSize_01_SVG_ParityWithRasterImages()
+        {
+            // Confirms min-width/max-width/min-height/max-height are honoured for an unsized
+            // SVG-sourced <img> (natural size 300x150, no viewBox). Verified against real browser
+            // rendering: min/max-width/height on an unsized SVG resize the box independently, with
+            // NO proportional coupling to the other dimension - the SVG content renders at its
+            // natural scale within that box (padded when the box grows, clipped when it shrinks),
+            // rather than being stretched/scaled to match.
+            var path = GetResourcePath("SVGImages", "MinMaxSize_01_SVG.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImages_MinMaxSize_01_SVG.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+
+            // 0. min-width:400pt, natural 300x150 -> w=400 (clamped), h=150 (untouched)
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(400.0, run0.Width.PointsValue,  1.0, "min-width should grow the box width");
+            Assert.AreEqual(150.0, run0.Height.PointsValue, 1.0, "height should stay at its natural size, not scale with width");
+
+            // 1. max-width:150pt, natural 300x150 -> w=150 (clamped), h=150 (untouched)
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(150.0, run1.Width.PointsValue, 1.0, "max-width should shrink the box width");
+            Assert.AreEqual(150.0, run1.Height.PointsValue, 1.0, "height should stay at its natural size, not scale with width");
+
+            // 2. min-height:300pt, natural 300x150 -> h=300 (clamped), w=300 (untouched)
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(300.0, run2.Width.PointsValue,  1.0, "width should stay at its natural size, not scale with height");
+            Assert.AreEqual(300.0, run2.Height.PointsValue, 1.0, "min-height should grow the box height");
+
+            // 3. max-height:50pt, natural 300x150 -> h=50 (clamped), w=300 (untouched)
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(300.0, run3.Width.PointsValue, 1.0, "width should stay at its natural size, not scale with height");
+            Assert.AreEqual(50.0,  run3.Height.PointsValue, 1.0, "max-height should shrink the box height");
+
+            // 4. min-width:350pt and min-height:200pt together, natural 300x150 -> each dimension
+            //    clamps independently: w=350, h=200.
+            var run4 = GetImageRunFromBody(4);
+            Assert.AreEqual(350.0, run4.Width.PointsValue,  1.0, "min-width should grow the box width independently");
+            Assert.AreEqual(200.0, run4.Height.PointsValue, 1.0, "min-height should grow the box height independently");
+        }
 
     }
 }

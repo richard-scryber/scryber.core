@@ -126,7 +126,71 @@ public class SVGImageDataSizer
 
     public Size GetOutputSizeForLayout(Size layout, Size available, Style applied, LayoutContext context)
     {
-        return this.DoGetOutputSizeForLayout(layout, available, applied, context);
+        var size = this.DoGetOutputSizeForLayout(layout, available, applied, context);
+        return ApplyMinMaxConstraints(size, applied, context);
+    }
+
+    /// <summary>
+    /// Applies min-width/max-width/min-height/max-height to whatever size DoGetOutputSizeForLayout
+    /// (or a subclass override) computed. None of the sizing strategies otherwise consider these -
+    /// unlike raster images, which apply them via ImageBase.GetRequiredSizeForLayout - so they were
+    /// silently ignored for SVG images. This deliberately only adds the min/max clamp on top of each
+    /// strategy's own result, rather than replacing how an unsized SVG is sized in the first place:
+    /// several strategies have their own correct, spec-aligned behaviour for that case (e.g. a
+    /// viewBox-only SVG fills its container per SVGImageDataViewBoxSizer, and an SVG with no sizing
+    /// information at all always renders at the SVG default per SVGImageDataEmptySizer's own doc
+    /// comment) that a generic "shrink/grow to fit" replacement would have broken.
+    /// </summary>
+    private static Size ApplyMinMaxConstraints(Size size, Style applied, LayoutContext context)
+    {
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+
+        // Both explicit - matches ImageBase, which doesn't clamp this combination either.
+        if (pos.Width.HasValue && pos.Height.HasValue)
+            return size;
+
+        if (!pos.MinimumWidth.HasValue && !pos.MaximumWidth.HasValue &&
+            !pos.MinimumHeight.HasValue && !pos.MaximumHeight.HasValue)
+            return size;
+
+        Unit w = size.Width;
+        Unit h = size.Height;
+
+        if (pos.Width.HasValue)
+        {
+            // Width is explicit/derived already - only the derived height is clamped, matching
+            // ImageBase's width-only branch (which only ever adjusts the derived height).
+            if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value) h = pos.MaximumHeight.Value;
+            if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value) h = pos.MinimumHeight.Value;
+            return new Size(w, h);
+        }
+
+        if (pos.Height.HasValue)
+        {
+            if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value) w = pos.MaximumWidth.Value;
+            if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value) w = pos.MinimumWidth.Value;
+            return new Size(w, h);
+        }
+
+        // Neither explicit - clamp width and height independently, with NO proportional coupling
+        // between them. Confirmed against real browser rendering: e.g. min-width alone on an
+        // unsized SVG does not scale the content up and derive a taller height - it only widens
+        // the box (300x150 natural -> 400x150 with min-width:400), and the SVG content still
+        // renders at its natural scale within that box (padded or clipped as needed). This mirrors
+        // how an unsized SVG has no inherent width/height coupling to begin with - unlike the
+        // width-only/height-only branches above, where DoGetOutputSizeForLayout already derived
+        // the other dimension from an explicit aspect-ratio/viewBox, so clamping is appropriate.
+        if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value)
+            w = pos.MaximumWidth.Value;
+        else if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value)
+            w = pos.MinimumWidth.Value;
+
+        if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+            h = pos.MaximumHeight.Value;
+        else if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+            h = pos.MinimumHeight.Value;
+
+        return new Size(w, h);
     }
     
 
