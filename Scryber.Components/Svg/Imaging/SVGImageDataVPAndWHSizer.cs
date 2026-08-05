@@ -149,8 +149,48 @@ public class SVGImageDataVPAndWHSizer : SVGImageDataSizer
                 var scale = height.PointsValue / this.SVGHeight.PointsValue;
                 width = this.SVGWidth * scale;
             }
+
+            return new Size(width, height);
         }
-        
+
+        // Neither explicit - width/height are still the SVG's own declared size (from the
+        // constructor). Apply min/max on top, deriving whichever axis isn't independently
+        // constrained from the SVG's own declared ratio (confirmed against real browser rendering
+        // - mirrors the equivalent fix in the other three sizing strategies). Max is applied
+        // before min so min wins on conflict (also confirmed). If both axes end up independently
+        // constrained, the ratio is allowed to break.
+        var pos = applied.CreatePostionOptions(context.PositionDepth > 0);
+        bool hasW = false, hasH = false;
+
+        if (pos.MaximumHeight.HasValue && height > pos.MaximumHeight.Value)
+        {
+            height = pos.MaximumHeight.Value;
+            hasH = true;
+        }
+
+        if (pos.MaximumWidth.HasValue && width > pos.MaximumWidth.Value)
+        {
+            width = pos.MaximumWidth.Value;
+            hasW = true;
+        }
+
+        if (pos.MinimumHeight.HasValue && height < pos.MinimumHeight.Value)
+        {
+            height = pos.MinimumHeight.Value;
+            hasH = true;
+        }
+
+        if (pos.MinimumWidth.HasValue && width < pos.MinimumWidth.Value)
+        {
+            width = pos.MinimumWidth.Value;
+            hasW = true;
+        }
+
+        if (hasW && !hasH)
+            height = width * (this.SVGHeight.PointsValue / this.SVGWidth.PointsValue);
+        else if (hasH && !hasW)
+            width = height * (this.SVGWidth.PointsValue / this.SVGHeight.PointsValue);
+
         return new Size(width, height);
     }
 

@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+        <title>SVG Image (viewBox + own width/height) min/max width/height - ratio should be preserved</title>
+        <style>
+            @page{
+                size: 500pt 400pt;
+                margin : 10pt;
+            }
+            body{ margin: 0; padding: 0; background-color: #ffffff; }
+            img { border: solid 1px #000; }
+        </style>
+    </head>
+    <body>
+    <!-- Sample_HasViewbox_HasWidth_HasHeight.svg declares viewBox="0 0 200 150" AND its own
+         width=200 height=150 (4:3 ratio). Confirmed against real browser rendering: an unstyled
+         instance renders at its own declared 200x150 size (NOT filled to container, unlike a
+         bare-viewBox-only SVG) - and min/max-width/height alone derive the unconstrained axis
+         from that same declared ratio, unless both axes end up independently constrained, in
+         which case the ratio can break - same rule already confirmed for the other three sizing
+         strategies.
+
+         Unlike the other three strategies, this one's "neither explicit" fallback never reads the
+         available container space - it always starts from the SVG's own declared 200x150,
+         regardless of container width. So no narrow-container trick is needed here: min-width/
+         min-height just need a value bigger than 200/150 directly to be the binding constraint. -->
+
+    <!-- 0: min-width:300pt (> declared 200) -> w=300, h=300/(4/3)=225 -->
+    <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="min-width: 300pt;" />
+
+    <!-- 1: max-width:50pt (< declared 200) -> w=50, h=50/(4/3)=37.5 -->
+    <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="max-width: 50pt; page-break-before: always;" />
+
+    <!-- 2: min-height:200pt (> declared 150) -> h=200, w=200*(4/3)=266.67 -->
+    <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="min-height: 200pt; page-break-before: always;" />
+
+    <!-- 3: max-height:20pt (< declared 150) -> h=20, w=20*(4/3)=26.67 -->
+    <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="max-height: 20pt; page-break-before: always;" />
+
+    <!-- 4: min-width:300pt and min-height:200pt together (both > declared size) - both axes
+         independently constrained, so the ratio is allowed to break: w=300, h=200. -->
+    <img src="Sample_HasViewbox_HasWidth_HasHeight.svg" style="min-width: 300pt; min-height: 200pt; page-break-before: always;" />
+    </body>
+</html>

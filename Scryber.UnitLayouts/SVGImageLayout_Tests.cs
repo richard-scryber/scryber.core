@@ -2099,5 +2099,57 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(150.0, run4.Height.PointsValue, 1.0, "min-height should grow the height independently");
         }
 
+        [TestMethod()]
+        public void MinMaxSize_05_VPAndWH_AspectRatioPreservedOnSingleAxis()
+        {
+            // Sample_HasViewbox_HasWidth_HasHeight.svg declares viewBox="0 0 200 150" AND its own
+            // width=200 height=150 (4:3 ratio). Confirmed against real browser rendering: an
+            // unstyled instance renders at its own declared 200x150 size (not filled to container,
+            // unlike a bare-viewBox-only SVG), and min/max-width/height alone derive the
+            // unconstrained axis from that same declared ratio, unless both axes end up
+            // independently constrained, in which case the ratio can break - same rule already
+            // confirmed for the other three sizing strategies. Unlike those three, this
+            // strategy's "neither explicit" fallback never reads the available container space,
+            // so min-width/min-height just need a value bigger than the declared 200/150 directly
+            // to be the binding constraint - no narrow-container trick needed.
+            var path = GetResourcePath("SVGImages", "MinMaxSize_05_VPAndWH.html");
+
+            using (var doc = Document.ParseDocument(path))
+            using (var stream = DocStreams.GetOutputStream("SVGImages_MinMaxSize_05_VPAndWH.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(stream);
+            }
+
+            Assert.IsNotNull(this.layout);
+
+            // 0. min-width:300pt (> declared 200) -> w=300, h=225
+            var run0 = GetImageRunFromBody(0);
+            Assert.AreEqual(300.0, run0.Width.PointsValue,  1.0, "min-width should grow the width");
+            Assert.AreEqual(225.0, run0.Height.PointsValue, 1.0, "height should derive from the SVG's 4:3 ratio");
+
+            // 1. max-width:50pt (< declared 200) -> w=50, h=37.5
+            var run1 = GetImageRunFromBody(1);
+            Assert.AreEqual(50.0,  run1.Width.PointsValue, 1.0, "max-width should shrink the width");
+            Assert.AreEqual(37.5, run1.Height.PointsValue, 1.0, "height should derive from the SVG's 4:3 ratio");
+
+            // 2. min-height:200pt (> declared 150) -> h=200, w=266.67
+            var run2 = GetImageRunFromBody(2);
+            Assert.AreEqual(266.7, run2.Width.PointsValue,  1.0, "width should derive from the SVG's 4:3 ratio");
+            Assert.AreEqual(200.0, run2.Height.PointsValue, 1.0, "min-height should grow the height");
+
+            // 3. max-height:20pt (< declared 150) -> h=20, w=26.67
+            var run3 = GetImageRunFromBody(3);
+            Assert.AreEqual(26.7, run3.Width.PointsValue,  1.0, "width should derive from the SVG's 4:3 ratio");
+            Assert.AreEqual(20.0, run3.Height.PointsValue, 1.0, "max-height should shrink the height");
+
+            // 4. min-width:300pt and min-height:200pt together (both > declared size) - both axes
+            //    independently constrained, so the ratio is allowed to break: w=300, h=200.
+            var run4 = GetImageRunFromBody(4);
+            Assert.AreEqual(300.0, run4.Width.PointsValue,  1.0, "min-width should grow the width independently");
+            Assert.AreEqual(200.0, run4.Height.PointsValue, 1.0, "min-height should grow the height independently");
+        }
+
     }
 }
