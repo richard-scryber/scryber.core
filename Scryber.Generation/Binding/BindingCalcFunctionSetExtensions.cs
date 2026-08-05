@@ -172,7 +172,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="function">The name to be used.</param>
         /// <returns>True</returns>
-        internal static bool RegisterFunction(IFunction function)
+        public static bool RegisterFunction(IFunction function)
         {
             if (null == function)
                 throw new ArgumentNullException(nameof(function));
@@ -190,7 +190,7 @@ namespace Scryber.Binding
         /// </summary>
         /// <param name="functions"></param>
         /// <returns></returns>
-        internal static int RegisterFunction(params IFunction[] functions)
+        public static int RegisterFunction(params IFunction[] functions)
         {
             if (null == functions)
                 return 0;
