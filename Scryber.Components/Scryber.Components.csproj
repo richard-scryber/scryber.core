@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.7.0-beta</PackageVersion>
+    <PackageVersion>9.7.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.0-beta
+    <PackageReleaseNotes>9.7.0
 BREAKING CHANGE: &lt;img width&gt;/&lt;img height&gt; already accepted integer pixels only (from 9.6.0.7-beta); now correctly documented as a breaking change for this major version bump.
 Added CSS aspect-ratio support for images and block elements.
 Added colgroup/col table column support with width, background-color, and span.
