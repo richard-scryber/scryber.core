@@ -140,13 +140,11 @@ public class SVGImageDataEmptySizer : SVGImageDataSizer
 
         if (pos.AspectRatio.HasValue)
         {
-            if (hasWidth && hasHeight)
-                ; //Do nothing.
-            else if (hasWidth)
+            if (hasWidth && !hasHeight)
             {
                 calculated.Height = calculated.Width * (1/pos.AspectRatio.Value);
             }
-            else if (hasHeight)
+            else if (hasHeight && !hasWidth)
             {
                 calculated.Width = calculated.Height * pos.AspectRatio.Value;
             }
