@@ -395,6 +395,8 @@ https://paperwork.help/configuration/processing-instructions.html
 - cascading styles: linked, embedded or inline using [css syntax and priority](https://www.paperwork.help/learning/03-styling/).
 - [attaching](https://www.paperwork.help/reference/htmltags/elements/html_object_element.html) of external files or streams.
 - [sizing](https://www.paperwork.help/learning/03-styling/04_units_measurements.html) and [positioning](https://papwerwok.help/learning/04-layout/) of elements inline, block, relative or absolute.
+- CSS flexbox (`display: flex`) and grid (`display: grid`) layout including named areas, auto-fill tracks, and alignment.
+- table `colgroup`/`col` column definitions with widths, background colours, and span.
 - support for [relative units](https://paperwork.help/learning/03-styling/04_units_measurements.html) and [transformations](https://paperwork.help/reference/cssproperties/properties/css_prop_transform.html).
 - [gradients](https://paperwork.help/reference/cssproperties/properties/css_prop_background-image.html) and colours with text and shape [fills, backgrounds](https://www.paperwork.help/reference/cssproperties/) and borders.
 - [multiple fonts](https://www.paperwork.help/learning/05-typography/), including google fonts, supporting text [alignment; spacing; leading; decoration](https://www.paperwork.help/learning/05-typography/05_text_spacing.html).
