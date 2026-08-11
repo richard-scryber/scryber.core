@@ -373,7 +373,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets or Sets the Parent of this Component in the PDF Hierarchy
         /// </summary>
-        public Component Parent
+        public virtual Component Parent
         {
             get { return _par; }
             set 
@@ -488,7 +488,7 @@ namespace Scryber.Components
         /// <summary>
         /// Gets the document that this Component belongs to.
         /// </summary>
-        public Document Document
+        public virtual Document Document
         {
             get
             {

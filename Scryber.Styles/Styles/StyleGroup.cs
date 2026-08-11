@@ -73,6 +73,13 @@ namespace Scryber.Styles
             }
         }
 
+        /// <summary>
+        /// If true (default) then the styles in the group will be included in building styles, otherwise they will be ignored;
+        /// </summary>
+        
+        public bool Enabled { get; set; }
+        
+
         #region protected PDFStyleCollection InnerItems
 
         private StyleCollection _innerItems;
@@ -132,6 +139,7 @@ namespace Scryber.Styles
         protected StyleGroup(ObjectType type)
             : base(type)
         {
+            this.Enabled = true;
         }
 
         #endregion
@@ -200,7 +208,8 @@ namespace Scryber.Styles
         /// <param name="state"></param>
         public override void MergeInto(Style style, IComponent Component)
         {
-            this.InnerItems.MergeInto(style, Component);
+            if (this.Enabled)
+                this.InnerItems.MergeInto(style, Component);
         }
 
         #endregion

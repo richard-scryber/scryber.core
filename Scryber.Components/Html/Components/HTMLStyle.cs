@@ -11,7 +11,7 @@ using Scryber.PDF;
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("style")]
-    public class HTMLStyle : Scryber.Components.Component
+    public class HTMLStyle : Scryber.Components.Component, IStyledComponent
     {
         private string _contents;
         private StyleGroup _parsedGroup = null;
@@ -72,6 +72,34 @@ namespace Scryber.Html.Components
             get;
             set;
         }
+        
+        #region explicit IStyledComponent implementation
+        
+        private Style _innerStyle = null;
+
+
+        bool IStyledComponent.HasStyle
+        {
+            get
+            {
+                if (null == this._innerStyle || this._innerStyle.ValueCount == 0) 
+                    return false;
+                
+                return true;
+            }
+        }
+
+        Style IStyledComponent.Style
+        {
+            get
+            {
+                if(null == this._innerStyle)
+                    this._innerStyle = new Style();
+                return this._innerStyle;
+            }
+        }
+        
+        #endregion
 
         /// <summary>
         /// Global Html hidden attribute used with xhtml as hidden='hidden'
@@ -92,6 +120,21 @@ namespace Scryber.Html.Components
                     this.Visible = true;
                 else
                     this.Visible = false;
+            }
+        }
+
+        public override bool Visible
+        {
+            get{ return base.Visible; }
+            set
+            { 
+                base.Visible = value;
+                if (value == true)
+                    this.EnableInnerStyles();
+                else
+                {
+                    this.DisableInnerStyles();
+                }
             }
         }
 
@@ -159,7 +202,7 @@ namespace Scryber.Html.Components
 
         protected virtual void AddStylesToDocument()
         {
-            if (this.Visible && null != this.Styles)
+            if (null != this.Styles)
             {
                 StyleGroup grp;
 
@@ -175,6 +218,11 @@ namespace Scryber.Html.Components
 
                 this.Document.Styles.Add(grp);
                 this._parsedGroup = grp;
+                
+                if(this.Visible)
+                    this.EnableInnerStyles();
+                else
+                    this.DisableInnerStyles();
             }
         }
 
@@ -207,6 +255,18 @@ namespace Scryber.Html.Components
                     collection.Add(style);
             }
 
+        }
+
+        protected virtual void EnableInnerStyles()
+        {
+            if(null != this._parsedGroup)
+                this._parsedGroup.Enabled = true;
+        }
+
+        protected virtual void DisableInnerStyles()
+        {
+            if (null != this._parsedGroup)
+                this._parsedGroup.Enabled = false;
         }
 
         public override string MapPath(string source, out bool isfile)
