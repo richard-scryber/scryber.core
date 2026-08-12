@@ -64,5 +64,14 @@ namespace Scryber.Html.Components
             return style;
         }
 
+        // protected override void OnInitialized(InitContext context)
+        // {
+        //     base.OnInitialized(context);
+        // }
+        //
+        // protected override void OnLoaded(LoadContext context)
+        // {
+        //     base.OnLoaded(context);
+        // }
     }
 }

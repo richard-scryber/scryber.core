@@ -92,7 +92,7 @@ namespace Scryber.Expressive.Expressions
 
             if(null == parent)
             {
-                throw new ArgumentNullException(nameof(parent));
+                return null;
             }
 
             //Do the JSON object checks first

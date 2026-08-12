@@ -41,6 +41,7 @@ namespace Scryber
         public DataStack DataStack
         {
             get { return _datastack; }
+            set { _datastack = value; }
         }
 
         #endregion

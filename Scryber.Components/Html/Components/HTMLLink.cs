@@ -108,6 +108,11 @@ namespace Scryber.Html.Components
             private StyleRemoteGroup _parsedGroup = null;
             private StyleCollection _parsed;
 
+            public StyleCollection ParsedStyles
+            {
+                get{ return this._parsed; }
+            }
+
             public LinkContentCSS(StyleCollection styles, string path, HTMLLink forLink) : base(HTMLLinkType.CSS, path, forLink)
             {
                 _parsed = styles;
@@ -165,6 +170,20 @@ namespace Scryber.Html.Components
             get { return _content; }
         }
 
+        public StyleCollection LoadedStyles
+        {
+            get
+            {
+                if (null != this._content && this._content.LinkType == HTMLLinkType.CSS)
+                {
+                    var css = (LinkContentCSS)this._content;
+                    return css.ParsedStyles;
+                }
+
+                return null;
+            }
+        }
+        
         [PDFAttribute("href")]
         public string Href
         {

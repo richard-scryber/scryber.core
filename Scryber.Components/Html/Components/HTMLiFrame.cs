@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Net.Sockets;
 using Scryber.Html.Components;
 using Scryber.Styles;
 using Scryber.Components;
@@ -13,8 +14,12 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("iframe")]
     public class HTMLiFrame : Div
     {
+        private static string DefaultPermissionsPolicy = "inline-styles any;inner-images any; inner-navigation any";
+        
         private IRemoteRequest _executingRequest;
-        private string _policy;
+        private DocumentPermissionsPolicy _policy;
+        
+        protected IMatchedEnumerable FrameStyles { get; set; }
 
         [PDFAttribute("class")]
         public override string StyleClass
@@ -81,35 +86,13 @@ namespace Scryber.Html.Components
         }
 
         [PDFAttribute("allow")]
-        public string AllowPolicy
+        public DocumentPermissionsPolicy AllowPolicy
         {
             get{ return this._policy; }
             set
             {
                 this._policy = value;
-                this.ApplyFramePolicy(value);
             }
-        }
-
-        [PDFAttribute("data-passthrough")]
-        public bool DataPassthrough
-        {
-            get;
-            set;
-        }
-        
-        [PDFAttribute("data-style-passthrough")]
-        public bool StylePassthrough
-        {
-            get;
-            set;
-        }
-
-        [PDFAttribute("data-allow-styles")]
-        public bool AllowInnerStyles
-        {
-            get; 
-            set;
         }
         
         
@@ -121,15 +104,15 @@ namespace Scryber.Html.Components
 
         protected HTMLiFrame(ObjectType type): base(type)
         {
-            this.DataPassthrough = false;
-            this.AllowInnerStyles = false;
-            this.StylePassthrough = false;
+            this.AllowPolicy = DocumentPermissionsPolicy.Parse(DefaultPermissionsPolicy);
         }
         
         
         private InitContext _initContext;
         private LoadContext _loadContext;
         private DataContext _dataContext;
+        
+        
 
         protected override void DoInit(InitContext context)
         {
@@ -147,58 +130,113 @@ namespace Scryber.Html.Components
 
         protected override void DoDataBind(DataContext context, bool includeChildren)
         {
-            this._dataContext = context;
             this.EnsureContentLoaded(_initContext, _loadContext, _dataContext);
-            base.DoDataBind(context, includeChildren);
+            
+            this._dataContext = context;
+            var stack = context.DataStack;
+            var index = context.CurrentIndex;
+            var key = context.CurrentKey;
+            var paramValues = new Dictionary<string, object>();
+            
+            
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.DataPassthrough);
+            var allow = policy != null && policy.IsAllowed("self");
+
+            //Cannot pass data through, so we store the existing stack and make a blank one.
+            if (!allow)
+            {
+                if (context.ShouldLogVerbose)
+                {
+                    context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Releasing current data stack, so no values are bound on the inner content.");
+                }
+                
+                context.DataStack = new DataStack();
+                context.CurrentIndex = -1;
+                context.CurrentKey = string.Empty;
+                var keys = this.Document.Params.Keys;
+                
+                foreach (var p in keys)
+                {
+                    paramValues[p.ToString()] = this.Document.Params[p.ToString()];
+                }
+                
+                this.Document.Params.Clear();
+            }
+
+            try
+            {
+                base.DoDataBind(context, includeChildren);
+            }
+            finally
+            {
+                if (!allow)
+                {
+                    if (context.ShouldLogVerbose)
+                    {
+                        context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Restoring current data stack, so execution continues as normal after the iframe.");
+                    }
+                    
+                    context.DataStack = stack;
+                    context.CurrentIndex = index;
+                    context.CurrentKey = key;
+                    
+                    foreach (var p in paramValues.Keys)
+                    {
+                        this.Document.Params[p] = paramValues[p];
+                    }
+                    
+                }
+            }
+
+        }
+
+        public override Style GetAppliedStyle(Component forComponent, Style baseStyle)
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.StylePassthrough);
+            if (policy.IsAllowed("self"))
+                return base.GetAppliedStyle(forComponent, baseStyle);
+            else
+            {
+                //we are not allowed to pass through styles, but if we are allowed inner styles
+                //then we need to apply them ourselves from the cached styles that
+                //were set when the inner content was parsed.
+                
+                policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerStyles);
+                if (policy.IsAllowed("self"))
+                {
+                    if (null != this.FrameStyles && this.FrameStyles.Count > 0)
+                    {
+                        foreach (var item in this.FrameStyles)
+                        {
+                            if (item is HTMLStyle htmlStyle)
+                            {
+                                htmlStyle.Styles.MergeInto(baseStyle, forComponent);
+                            }
+                            else if (item is HTMLLink htmlLink)
+                            {
+                                var css = htmlLink.LoadedStyles;
+                                if (null != css)
+                                {
+                                    css.MergeInto(baseStyle, forComponent);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return baseStyle;
+            }
         }
 
         protected virtual void ClearParsedContent()
         {
             this.Contents.Clear();
+            this.FrameStyles = null;
+            this.RootComponent = null;
+            
+            //TODO: Clear any styles from the outer document for good housekeeping
+            
             _executingRequest = null;
-        }
-
-        private static string DefaultPolicy = "";
-        
-        public void ApplyFramePolicy(string policies)
-        {
-            if (string.IsNullOrEmpty(policies))
-                policies = HTMLiFrame.DefaultPolicy;
-            this._policy = policies;
-            
-            var all = policies.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            
-            bool dataPassthrough = false;
-            bool allowStyles = false;
-            bool stylePassthrough =  false;
-            
-            for (var i = 0; i < all.Length; i++)
-            {
-                var policy = all[i].ToLower().Trim();
-                
-                switch (policy)
-                {
-                    case("data-passthrough"):
-                        dataPassthrough = true;
-                        break;
-                    case("inner-styles"):
-                        allowStyles = true;
-                        break;
-                    case("style-passthrough"):
-                        stylePassthrough = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            
-            if(dataPassthrough)
-                this.DataPassthrough = true;
-            if (allowStyles)
-                this.AllowInnerStyles = true;
-            if (stylePassthrough)
-                this.StylePassthrough = true;
-            
         }
 
         protected virtual void DoApplyStylePolicy(bool apply)
@@ -216,9 +254,132 @@ namespace Scryber.Html.Components
             }
         }
         
-        protected virtual void CleanStyles()
+        protected virtual int RemoveChildrenFromHierarchy(string matchingSelector, bool includeSelf = false)
         {
+            int count = 0;
+            var all = this.FindMatches(matchingSelector);
+            if (all != null && all.Count > 0)
+            {
+                foreach (var comp in all)
+                {
+                    if (comp is Component c)
+                    {
+                        if(c == this && !includeSelf)
+                            continue;
+                        
+                        if(((IContainerComponent)c.Parent).Content.Remove(c))
+                            count++;
+                    }
+                }
+            }
+            return count;
+        }
+        
+        protected virtual void EnsureCleanStyles()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerStyles);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                this.RemoveChildrenFromHierarchy("style");
+            }
+            else
+            {
+                policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.StylePassthrough);
+                if (!policy.IsAllowed("self"))
+                {
+                    this.FrameStyles = this.FindMatches("style, link");
+                }
+            }
+            policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerInlineStyle);
+            allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                var all = this.FindMatches("iframe *");
+                if (all != null && all.Count > 0)
+                {
+                    foreach (var comp in all)
+                    {
+                        if (comp is IStyledComponent style && style.HasStyle)
+                        {
+                            style.Style.Clear();
+                        }
+                    }
+                }
+            }
             this.DoApplyStylePolicy(false);
+        }
+        
+        protected virtual void EnsureCleanLinks()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerLink);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                this.RemoveChildrenFromHierarchy("link");
+            }
+        }
+        
+        protected virtual void EnsureCleanNavigation()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerNavigation);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                var all = this.FindMatches("a");
+                if (all != null && all.Count > 0)
+                {
+                    foreach (var comp in all)
+                    {
+                        if (comp is HTMLAnchor anchor)
+                        {
+                            anchor.File = string.Empty;
+                        }
+                    }
+                }
+            }
+        }
+        
+        protected virtual void EnsureCleanImages()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerImages);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                this.RemoveChildrenFromHierarchy("img");
+            }
+        }
+        
+        protected virtual void EnsureCleanFrames()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerFrames);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                this.RemoveChildrenFromHierarchy("iframe, embed, object");
+            }
+        }
+        
+        protected virtual void EnsureCleanForms()
+        {
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerForms);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (!allow)
+            {
+                this.RemoveChildrenFromHierarchy("form, input, select, button", false);
+            }
+        }
+        
+        
+
+        protected void CleanContents()
+        {
+            this.EnsureCleanStyles();
+            this.EnsureCleanLinks();
+            this.EnsureCleanNavigation();
+            this.EnsureCleanImages();
+            this.EnsureCleanFrames();
+            this.EnsureCleanForms();
         }
 
         private void EnsureContentLoaded(InitContext init, LoadContext load, DataContext data)
@@ -241,12 +402,22 @@ namespace Scryber.Html.Components
                             try
                             {
                                 var parsed = parser.Parse(srcPath, stream, ParseSourceType.Template);
-                                var all = this.EnsureBodyContent(parsed);
+                                var all = this.EnsureBodyContent(parsed, init);
                                 if (all != null && all.Count > 0)
                                 {
                                     this.Contents.AddRange(all);
-                                    this.CleanStyles();
+                                    this.CleanContents();
                                     request.CompleteRequest(all, true, null);
+
+                                    //We can check our stage based on the next context,
+                                    //and ensure the previous context is completed.
+                                   
+                                    if (null != load)
+                                        this.DoInitChildren(init);
+
+                                    if (null != data)
+                                        this.DoLoadChildren(load);
+                                    
                                     return true;
                                 }
                                 else
@@ -268,9 +439,12 @@ namespace Scryber.Html.Components
         
         
 
-        protected virtual ICollection<Component> EnsureBodyContent(IComponent parsed)
+        protected virtual ICollection<Component> EnsureBodyContent(IComponent parsed, ContextBase context)
         {
             this.RootComponent = (Component)parsed;
+            
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.OuterHtml);
+            var allowOuterHtml = policy != null && policy.IsAllowed("self");
             
             var all = new List<Component>();
             if (parsed is HTMLFragmentWrapper fragment)
@@ -281,7 +455,18 @@ namespace Scryber.Html.Components
                 {
                     if (contents.Count == 1 && contents[0] is HTMLDocument doc)
                     {
-                        contents = doc.Body.Contents;
+                        if (allowOuterHtml)
+                        {
+                            var spoof = this.WrapContentsInSpoofDocument(doc, context);
+                            contents.Clear();
+                            contents.Add(spoof);
+                        }
+                        else
+                        {
+                            var article = this.WrapContentsInArticle(doc);
+                            contents.Clear();
+                            contents.Add(article);
+                        }
                     }
                     
                     all.AddRange(contents);
@@ -292,11 +477,21 @@ namespace Scryber.Html.Components
             {
                 if (comp is HTMLDocument doc && null != doc.Body)
                 {
-                    foreach (var inner in doc.Body.Contents)
-                    {
-                        all.Add(inner);
-                    }
+                    if(allowOuterHtml)
+                        comp = this.WrapContentsInSpoofDocument(doc, context);
+                    
+                    
+                    //add html to the collection
+                    all.Add(comp);
 
+                    
+                    
+
+                    if (null != doc.Head.Contents && doc.Head.Contents.Count > 0)
+                    {
+                        //If we have a policy that allows inner styles then include them in the document.
+                        
+                    }
                 }
                 else
                 {
@@ -307,23 +502,188 @@ namespace Scryber.Html.Components
             return all;
         }
 
+        private HTMLArticle WrapContentsInArticle(HTMLDocument doc)
+        {
+            var article =
+                new HTMLArticle(); //No tag, class or id - therefore no pass through style anyway.
+            article.Contents.AddRange(doc.Body.Contents);
+            if (null != doc.Body.Header)
+            {
+                var htmlHead = new HTMLComponentHeader();
+                article.Contents.Add(htmlHead);
+                var template = doc.Body.Header;
+                var headerContent = template.Instantiate(0, this);
+                                
+                foreach (var item in headerContent)
+                {
+                    if(item is Component comp)
+                        htmlHead.Contents.Add(comp);
+                }
+            }
+                            
+            if (null != doc.Body.Footer)
+            {
+                var htmlFooter = new HTMLComponentFooter();
+                article.Contents.Add(htmlFooter);
+                var footerContent = doc.Body.Footer.Instantiate(0, this);
+                                
+                foreach (var item in footerContent)
+                {
+                    if(item is Component comp)
+                        htmlFooter.Contents.Add(comp);
+                }
+            }
 
+            return article;
+        }
+
+        private Component WrapContentsInSpoofDocument(HTMLDocument doc, ContextBase context)
+        {
+            var spoofHtml = new Div();
+            spoofHtml.ElementName = doc.ElementName;
+            spoofHtml.StyleClass = doc.StyleClass;
+                    
+            //We make a spoofed body element and add all the content to that.
+            var spoofBody = new HTMLArticle();
+            spoofBody.Style = doc.Body.Style;
+            spoofBody.ElementName = doc.Body.ElementName;
+            spoofBody.StyleClass = doc.Body.StyleClass;
+            //add the body to html
+            spoofHtml.Contents.Add(spoofBody);
+                    
+            //add contents to the body
+            foreach (var inner in doc.Body.Contents)
+            {
+                spoofBody.Contents.Add(inner);
+            }
+            
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerStyles);
+            var allowStyle = policy != null && policy.IsAllowed("self");
+            
+            policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerLink);
+            var allowLink = policy != null && policy.IsAllowed("self");
+            if (allowStyle || allowLink)
+            {
+                var i = 0;
+                //Check if we have styles and insert them.
+                foreach (var inner in doc.Head.Contents)
+                {
+                    if (inner is HTMLStyle style)
+                    {
+                        if (allowStyle)
+                        {
+                            spoofHtml.Contents.Insert(i, style);
+                            style.Visible = false;
+                            i++;
+                        }
+                        else
+                        {
+                            ((IContainerComponent)style.Parent).Content.Remove(style);
+                        }
+                    }
+                    else if (inner is HTMLLink link)
+                    {
+                        if (allowLink)
+                        {
+                            spoofHtml.Contents.Insert(i, link);
+                            link.Visible = false;
+                            i++;
+                        }
+                        else
+                        {
+                            ((IContainerComponent)link.Parent).Content.Remove(link);
+                        }
+                    }
+                }
+            }
+            
+            //Set the new base path for relative paths.
+            if (null != doc.Head.BasePath && !string.IsNullOrEmpty(doc.Head.BasePath.Href))
+                spoofHtml.LoadedSource = doc.Head.BasePath.Href;
+                    
+            return spoofHtml;
+        }
+        
+        
+
+
+        //
+        // layout engine implementation
+        //
+        
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             var engine = base.CreateLayoutEngine(parent, context, style);
             return new LayoutEngineFrameWrapping(this, engine);
         }
 
+        private StyleStack _originalStyleStack = null;
+        
+        
 
         public void ApplyLayoutPolicy(LayoutContext context, ref Style style)
         {
-            this.DoApplyStylePolicy(this.AllowInnerStyles);
+            var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerStyles);
+            var allow = policy != null && policy.IsAllowed("self");
+            if (context.ShouldLogVerbose)
+            {
+                context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Setting the support for inner styles within the iframe to " + (allow ? "enabled" : "disabled"));
+            }
+            this.DoApplyStylePolicy(allow);
+            
+            policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.StylePassthrough);
+            allow = policy != null && policy.IsAllowed("self");
+
+            if (context.ShouldLogVerbose)
+            {
+                context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Setting the support for pass through styles within the iframe to " + (allow ? "enabled" : "disabled"));
+            }
+            this.DoApplyContextStylePolicy(context, allow);
         }
         
         public void ReleaseLayoutPolicy(LayoutContext context, ref Style style)
         {
+            if (context.ShouldLogVerbose)
+            {
+                context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Resetting the support for inner styles within the iframe to disabled");
+            }
             //No matter what we do, we want to disable any inner styles from affecting further content.
             this.DoApplyStylePolicy(false);
+            
+            if (context.ShouldLogVerbose)
+            {
+                context.TraceLog.Add(TraceLevel.Verbose, "iFrame", "Resetting the support for pass through styles outside the iframe to enabled");
+            }
+            this.DoRestoreContextStylePolicy(context);
+        }
+        
+        /// <summary>
+        /// If Context styles are not 'allow'ed to be passed down into the frame contents,
+        /// then this will clean the stack, except for the iFrame style. So any further components do not get
+        ///  styles applied from definitions outside 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="allow"></param>
+        protected virtual void DoApplyContextStylePolicy(LayoutContext context, bool allow)
+        {
+            _originalStyleStack = context.StyleStack.Clone();
+            if (!allow)
+            {
+                var defaultStyle = new Style();
+                this.Document.FillStdStyleValues(defaultStyle);
+                context.StyleStack = new StyleStack(defaultStyle);
+                var applied = this.GetAppliedStyle();
+                context.StyleStack.Push(applied);
+            }
+        }
+        
+        protected virtual void DoRestoreContextStylePolicy(LayoutContext context)
+        {
+            if (null == _originalStyleStack)
+                throw new InvalidOperationException(
+                    "Can only call restore after completing a successful apply policy on the context style stack");
+            
+            context.StyleStack = _originalStyleStack;
         }
     }
 }

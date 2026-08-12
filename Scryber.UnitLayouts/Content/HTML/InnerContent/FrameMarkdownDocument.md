@@ -1,0 +1,5 @@
+<html>
+
+</html>
+<div class='grey' >This a is simple html fragment</div>
+<div class='blue' >This is a second html fragment</div>

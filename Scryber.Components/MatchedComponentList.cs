@@ -10,6 +10,7 @@ public class MatchedComponentList : List<Component>, IMatchedEnumerable
     public MatchedComponentList Previous { get; private set; }
     
     public StyleMatcher MatchedTo { get; private set; }
+    
 
     public MatchedComponentList(StyleMatcher matchedTo, MatchedComponentList previous)
     {
@@ -47,7 +48,9 @@ public class MatchedComponentList : List<Component>, IMatchedEnumerable
     //
     // explicit IMatchedEnumerable implementation
     //
-    
+
+    IComponent IMatchedEnumerable.this[int index] => this[index];
+
     IMatchedEnumerable IMatchedEnumerable.FindMatches(string selector)
     {
         return this.FindMatches(selector);

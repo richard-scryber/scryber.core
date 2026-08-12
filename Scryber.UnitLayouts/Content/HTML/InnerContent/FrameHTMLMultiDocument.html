@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <link href="../../../Content/StyleSheet.css" rel="stylesheet" type="text/css" />
+        <style>
+            body{
+                border: solid 1pt #555;
+                background-color: #aaa;
+                margin:10pt;
+            }
+            
+            
+        </style>
+    </head>
+    <body>
+        <header>This is a page header</header>
+        <div id="firstEntry" >This a is simple html fragment</div>
+        <div >This is a second html fragment</div>
+        <div >This is a bound <var>{{model.fallout}}</var> fragment</div>
+        <style>
+            .nested{
+                border: solid 1pt #e00;
+                padding: 10pt;
+            }
+        </style>
+        <div class="nested" >
+            <div class="positioned" >This is positioned absolute within the frame</div>
+            <div class="overlay" >This is fixed position on the page.</div>
+            <img src="../../../Content/Images/Toroid32.png" alt="Toroid32" />
+            <a href="https://google.com" target="_blank">Link to Google</a>
+            <div id="inlineStyled" style="border: solid 1pt #555; background-color:#aaa; padding: 10pt;" >Has Inline Styles</div>
+        </div>
+        <div class="nested frame">
+            <iframe style="width: 200pt; " src="../../../Content/HTML/InnerContent/FrameXHTMLComplexFragment.html" ></iframe>
+        </div>
+    </body>
+</html>

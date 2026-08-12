@@ -130,6 +130,8 @@ namespace Scryber
     {
         int Count { get; }
         
+        IComponent this[int index] { get; }
+        
         IMatchedEnumerable FindMatches(string selector);
     }
     

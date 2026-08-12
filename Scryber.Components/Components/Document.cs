@@ -1205,23 +1205,22 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-            Styles.FillStyle fill = new Styles.FillStyle();
-            style.StyleItems.Add(fill);
-            fill.Color = StandardColors.Black;
-
-
-            PageStyle defpaper = new PageStyle();
-            style.StyleItems.Add(defpaper);
-            defpaper.PaperSize = PaperSize.A4;
-            defpaper.PaperOrientation = PaperOrientation.Portrait;
-
-            Styles.FontStyle fs = new Styles.FontStyle();
-            style.StyleItems.Add(fs);
-            fs.FontFamily = (FontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
-            fs.FontSize = new Unit(24.0, PageUnits.Points);
-
-
+            this.FillStdStyleValues(style);
+            
             return style;
+        }
+
+        public void FillStdStyleValues(Style style)
+        {
+            style.Fill.Color = StandardColors.Black;
+            
+            style.PageStyle.PaperSize = PaperSize.A4;
+            style.PageStyle.PaperOrientation = PaperOrientation.Portrait;
+
+            
+            style.Font.FontFamily = (FontSelector)ServiceProvider.GetService<IScryberConfigurationService>().FontOptions.DefaultFont;
+            style.Font.FontSize = new Unit(24.0, PageUnits.Points);
+            style.Font.FontWeight = FontWeights.Regular;
         }
 
         #endregion
@@ -1449,6 +1448,9 @@ namespace Scryber.Components
         /// <returns>A PDFFontResource that can be included in the document (or null if it is not loaded and should not be created)</returns>
         public virtual PDFFontResource GetFontResource(Font font, bool create, bool throwOnNotFound = true)
         {
+            if(null == font)
+                throw new ArgumentNullException("font");
+
             var found = this.FontMatcher.GetFont(font, create);
             if(null == found)
             {

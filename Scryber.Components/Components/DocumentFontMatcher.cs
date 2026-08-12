@@ -128,6 +128,9 @@ namespace Scryber.Components
             /// <returns></returns>
             protected bool TryGetExistingExactMatch(Font font, out PDFFontResource match, out string matchedFamily)
             {
+                if(null == font)
+                    throw new ArgumentNullException(nameof(font));
+                
                 var sel = font.Selector;
 
                 while (null != sel)
