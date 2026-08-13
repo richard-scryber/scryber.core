@@ -997,7 +997,12 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual("frame1", iframe.ID);
 
             Assert.IsTrue(iframe.Contents.Count > 0, "The frame was empty");
-            Assert.IsInstanceOfType(iframe.Contents[1], typeof(Scryber.Components.Paragraph));
+
+            //The fragment's root <div> is preserved as-is (not flattened) by the content-cleaning pipeline.
+            var wrapper = iframe.Contents[0] as Div;
+            Assert.IsNotNull(wrapper, "The frame content wrapper was not a Div");
+            var inner = wrapper.FindAComponentById("FrameInner");
+            Assert.IsInstanceOfType(inner, typeof(Scryber.Components.Paragraph));
         }
         
         
