@@ -382,6 +382,48 @@ namespace Scryber.Html.Components
             this.EnsureCleanForms();
         }
 
+        protected override void DoBindContentIntoComponent(Data.DataBindingContent data, DataContext context)
+        {
+            if (null == data)
+                throw new ArgumentNullException(nameof(data));
+
+            if (string.IsNullOrEmpty(data.Content))
+                return;
+
+            if (null == data.Type)
+                data.Type = this.Document.GetDefaultContentMimeType();
+
+            var parser = this.Document.EnsureParser(data.Type);
+            IComponent parsed;
+            using (var sr = new System.IO.StringReader(data.Content))
+                parsed = parser.Parse(null, sr, ParseSourceType.Template);
+
+            if (parsed == null) return;
+
+            var all = this.EnsureBodyContent(parsed, _initContext);
+            if (all == null || all.Count == 0) return;
+
+            if (data.Action == DataContentAction.Replace)
+                this.InnerContent.Clear();
+
+            if (data.Action == DataContentAction.PrePend)
+            {
+                var list = new List<Component>(all);
+                for (int i = list.Count - 1; i >= 0; i--)
+                    this.InnerContent.Insert(0, list[i]);
+            }
+            else
+            {
+                foreach (var comp in all)
+                    this.InnerContent.Add(comp);
+            }
+
+            this.CleanContents();
+
+            foreach (var comp in all)
+                comp.DataBind(context);
+        }
+
         private void EnsureContentLoaded(InitContext init, LoadContext load, DataContext data)
         {
             if (null == this._executingRequest)
@@ -479,8 +521,9 @@ namespace Scryber.Html.Components
                 {
                     if(allowOuterHtml)
                         comp = this.WrapContentsInSpoofDocument(doc, context);
-                    
-                    
+                    else
+                        comp = this.WrapContentsInArticle(doc);
+
                     //add html to the collection
                     all.Add(comp);
 

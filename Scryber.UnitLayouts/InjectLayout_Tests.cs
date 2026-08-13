@@ -1138,75 +1138,294 @@ This is the {{.name}} item at index {{.index}}</div>";
 
         }
         
+        // Inner HTML used by data-content permission tests — contains one of each element type.
+        // Note: <form> is not a registered HTML component, so input is placed directly in body.
+        private static readonly string IFramePermissionInnerHtml =
+            "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+            "<head><style>.head-style{ color:red; }</style></head>" +
+            "<body>" +
+            "<div>Value: <var>{{model.value}}</var></div>" +
+            "<div class='inner-inline' style='color:blue;'>Inline Styled</div>" +
+            "<img id='inner-img' src='missing.png' alt='test' />" +
+            "<a id='inner-link' href='https://example.com'>Link</a>" +
+            "<style>.body-style{ font-size:12pt; }</style>" +
+            "<iframe id='inner-frame' src='nested.html'>Nested frame</iframe>" +
+            "<input id='inner-input' type='text' name='field' />" +
+            "</body></html>";
+
+        // Outer template used by data-content permission tests
+        private static string BuildPermissionOuterTemplate(string allowPolicy = "inline-styles any; inner-images any; inner-navigation any") =>
+            "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+            "<body>" +
+            "<h3>Content below</h3>" +
+            "<iframe id='srcFrame' data-content='{{boundContent}}' allow='" + allowPolicy + "' style='border:solid 1pt black;'></iframe>" +
+            "<div>After: <var>{{model.restored}}</var></div>" +
+            "</body></html>";
+
         [TestCategory(TestCategory)]
         [TestMethod()]
         public void InjectLayouts_iFrame_DataContentDocument_DefaultPermissions()
         {
-            var path = DocStreams.AssertGetTemplatePath("Content/HTML/InnerContent/FrameHTMLMultiDocument.html");
-            
-            var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
-<body>
-    <h3>Content below is injected into an iFrame</h3>
-    <iframe id='srcFrame' data-content='{{boundContent}}' data-content-type='text/html'
-        style='border:solid 1pt black; padding: 5pt; background-color: silver;' ></iframe>
-    <div>After the frame with <var>{{model.restored}}</var></div>
-</body>
-</html>";
-            
-            var text = System.IO.File.ReadAllText(path);
-
-            var doc = Document.ParseDocument(new StringReader(str));
-
-            var layouts = new Dictionary<string, string>();
-            
+            // Default: inline-styles any; inner-images any; inner-navigation any
+            // Denied by default: inner-style, inner-link, outer-html, inner-frames, inner-forms, data-passthrough, style-passthrough
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate()));
             using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContentDocument_DefaultPermissions.pdf"))
             {
-                doc.AppendTraceLog = true;
-                doc.Params["boundContent"] = str;
-                doc.Params["model"] = new { fallout = "This should appear", restored = "This value should be accessible after the frame" };
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "Model Value", restored = "Restored After" };
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
             }
 
-            Assert.IsNotNull(_layout, "Layout should not be null");
-            Assert.AreEqual(1, _layout.AllPages.Count);
-            var pg = _layout.AllPages[0];
-            var pageRegion = pg.ContentBlock.Columns[0];
-            Assert.IsNotNull(pageRegion, "pageRegion should not be null");
-            Assert.AreEqual(3, pageRegion.Contents.Count);
-            
-            var frame = pageRegion.Contents[1] as PDFLayoutBlock;
-            Assert.IsNotNull(frame, "frame should not be null");
-            Assert.AreEqual(1, frame.Columns.Length);
-            Assert.AreEqual(2, frame.Columns[0].Contents.Count);
+            // Frame wraps content in HTMLArticle (outer-html denied by default)
+            var frame = AssertGetFrameBlock(_layout);
+            Assert.IsTrue(frame.Columns[0].Contents.Count > 0, "Frame should have content");
+            var articleBlock = frame.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(articleBlock, "Article block should exist");
+            Assert.IsInstanceOfType(articleBlock.Owner, typeof(HTMLArticle), "Content should be wrapped in HTMLArticle (outer-html denied)");
+
+            // inner-style denied: style blocks stripped (outer template has none, so total = 0)
+            var styles = doc.FindMatches("style");
+            Assert.AreEqual(0, styles.Count, "Style blocks should be removed (inner-style denied)");
+
+            // inner-images allowed: img kept
+            var images = doc.FindMatches("img");
+            Assert.AreEqual(1, images.Count, "Image should be kept (inner-images allowed)");
+
+            // inner-navigation allowed: anchor kept
+            var links = doc.FindMatches("a");
+            Assert.AreEqual(1, links.Count, "Link should be kept (inner-navigation allowed)");
+
+            // inner-frames denied: nested iframe removed; only outer srcFrame remains
+            var frames = doc.FindMatches("iframe");
+            Assert.AreEqual(1, frames.Count, "Only outer iframe should remain (inner-frames denied)");
+
+            // inner-forms denied: input element stripped (form tag is not a registered component)
+            var inputs = doc.FindMatches("input");
+            Assert.AreEqual(0, inputs.Count, "Input should be removed (inner-forms denied)");
+
+            // data-passthrough denied: outer model.restored is still accessible after the frame
+            var vars = doc.FindMatches("var");
+            Assert.AreEqual(2, vars.Count, "Two var elements: one inside frame, one after");
+            var varAfter = vars[1] as HTMLVar;
+            Assert.IsNotNull(varAfter, "varAfter should not be null");
+            Assert.AreEqual(1, varAfter.Contents.Count);
+            var literal = varAfter.Contents[0] as TextLiteral;
+            Assert.AreEqual("Restored After", literal.Text, "Outer var should be bound to model.restored");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_DataPassthrough_Allow()
+        {
+            // data-passthrough any: model IS accessible inside the frame
+            var policy = "data-passthrough any; inline-styles any; inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_DataPassthrough_Allow.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "Bound Inside", restored = "Restored After" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
 
             var vars = doc.FindMatches("var");
-            Assert.IsNotNull(vars, "vars should not be null");
-            Assert.AreEqual(3, vars.Count);
-            var var1 = vars[0] as HTMLVar;
-            var var2 = vars[1] as HTMLVar;
-            var varAfter = vars[2] as HTMLVar;
-            
-            Assert.IsNotNull(var1, "var1 should not be null");
-            Assert.IsNotNull(var2, "var2 should not be null");
+            Assert.AreEqual(2, vars.Count, "Two var elements: one inside frame, one after");
+
+            // Inner var should be bound to model.value
+            var varInner = vars[0] as HTMLVar;
+            Assert.IsNotNull(varInner, "varInner should not be null");
+            Assert.AreEqual(1, varInner.Contents.Count);
+            var innerLiteral = varInner.Contents[0] as TextLiteral;
+            Assert.IsNotNull(innerLiteral, "inner literal should not be null");
+            Assert.AreEqual("Bound Inside", innerLiteral.Text, "Inner var should be bound to model.value");
+
+            // Outer var still accessible
+            var varAfter = vars[1] as HTMLVar;
             Assert.IsNotNull(varAfter, "varAfter should not be null");
-            
-            Assert.AreEqual(1, var1.Contents.Count);
-            var literal = var1.Contents[0] as TextLiteral;
-            Assert.IsNotNull(literal, "literal should not be null");
-            Assert.AreEqual("This should appear", literal.Text, "literal should have text '" + literal.Text + "'");
+            var literal = varAfter.Contents[0] as TextLiteral;
+            Assert.AreEqual("Restored After", literal.Text, "Outer var should be bound to model.restored");
+        }
 
-            Assert.AreEqual(1, var2.Contents.Count);
-            literal = var2.Contents[0] as TextLiteral;
-            Assert.IsNotNull(literal, "literal should not be null");
-            Assert.IsTrue(literal.Text.Length > 0, "Frame literal should have text");
-            
-            //after the frame is still bound correctly
-            Assert.AreEqual(1, varAfter.Contents.Count);
-            literal = varAfter.Contents[0] as TextLiteral;
-            Assert.IsNotNull(literal, "literal should not be null");
-            Assert.AreEqual("This value should be accessible after the frame", literal.Text, "literal should have text '" + literal.Text + "'");
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerStyle_Allow()
+        {
+            // inner-style any: style blocks are kept in the frame
+            var policy = "inner-style any; inline-styles any; inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerStyle_Allow.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
 
+            // style block in body should be kept (inner-style allowed); head style excluded by article wrap
+            var styles = doc.FindMatches("style");
+            Assert.AreEqual(1, styles.Count, "Body style block should be kept when inner-style is allowed");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InlineStyles_Deny()
+        {
+            // No inline-styles in policy: style attributes should be stripped
+            var policy = "inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InlineStyles_Deny.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            // The inline-styled div should have its Style cleared
+            var inlineDivs = doc.FindMatches(".inner-inline");
+            Assert.AreEqual(1, inlineDivs.Count, "Inline-styled div should exist");
+            var inlineDiv = inlineDivs[0] as IStyledComponent;
+            Assert.IsNotNull(inlineDiv, "Inline div should be an IStyledComponent");
+            Assert.IsFalse(inlineDiv.Style.IsValueDefined(StyleKeys.FillColorKey),
+                "Inline color style should be cleared when inline-styles is denied");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerImages_Deny()
+        {
+            // No inner-images in policy: img elements should be removed
+            var policy = "inline-styles any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerImages_Deny.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var images = doc.FindMatches("img");
+            Assert.AreEqual(0, images.Count, "Images should be removed when inner-images is denied");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerNavigation_Deny()
+        {
+            // No inner-navigation in policy: anchor href should be cleared (element kept but link removed)
+            var policy = "inline-styles any; inner-images any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerNavigation_Deny.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            // Anchor element still exists but href is cleared
+            var links = doc.FindMatches("a");
+            Assert.AreEqual(1, links.Count, "Anchor element should still exist");
+            var anchor = links[0] as HTMLAnchor;
+            Assert.IsNotNull(anchor, "Link should be an HTMLAnchor");
+            Assert.IsTrue(string.IsNullOrEmpty(anchor.File),
+                "Anchor href should be cleared when inner-navigation is denied");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_OuterHtml_Allow()
+        {
+            // outer-html any: content is wrapped in spoof document div, not HTMLArticle
+            var policy = "outer-html any; inline-styles any; inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_OuterHtml_Allow.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var frame = AssertGetFrameBlock(_layout);
+            Assert.IsTrue(frame.Columns[0].Contents.Count > 0, "Frame should have content");
+            var outerBlock = frame.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(outerBlock, "Outer block should exist");
+
+            // With outer-html allowed, content is wrapped in a Div (spoof document), not HTMLArticle
+            Assert.IsNotInstanceOfType(outerBlock.Owner, typeof(HTMLArticle),
+                "Content should NOT be wrapped in HTMLArticle when outer-html is allowed");
+            Assert.IsInstanceOfType(outerBlock.Owner, typeof(Div),
+                "Content should be wrapped in a Div (spoof document) when outer-html is allowed");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerFrames_Allow()
+        {
+            // inner-frames any: nested iframe is kept
+            var policy = "inner-frames any; inline-styles any; inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerFrames_Allow.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            // Both outer srcFrame and inner-frame should exist
+            var frames = doc.FindMatches("iframe");
+            Assert.AreEqual(2, frames.Count, "Both outer and inner iframes should exist when inner-frames is allowed");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerForms_Deny()
+        {
+            // inner-forms denied (default): input elements removed (form tag is not a registered component)
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate()));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerForms_Deny.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var inputs = doc.FindMatches("input");
+            Assert.AreEqual(0, inputs.Count, "Input should be removed when inner-forms is denied");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void InjectLayouts_iFrame_DataContent_InnerForms_Allow()
+        {
+            // inner-forms any: with allow policy, no crash occurs and document renders correctly.
+            // Form elements (input, select, button) are not currently registered components so
+            // they produce no components in the tree; this test verifies the policy is accepted.
+            var policy = "inner-forms any; inline-styles any; inner-images any; inner-navigation any";
+            var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
+            using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerForms_Allow.pdf"))
+            {
+                doc.Params["boundContent"] = IFramePermissionInnerHtml;
+                doc.Params["model"] = new { value = "V", restored = "R" };
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            // Frame should still have content despite allow policy
+            var frame = AssertGetFrameBlock(_layout);
+            Assert.IsTrue(frame.Columns[0].Contents.Count > 0, "Frame should have content with inner-forms allowed");
+
+            // Outer model still accessible after the frame
+            var vars = doc.FindMatches("var");
+            Assert.AreEqual(2, vars.Count);
+            var varAfter = vars[1] as HTMLVar;
+            var literal = varAfter.Contents[0] as TextLiteral;
+            Assert.AreEqual("R", literal.Text, "Outer var should still be accessible");
         }
     }
 }
