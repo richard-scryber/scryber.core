@@ -87,6 +87,17 @@ namespace Scryber.Styles.Selectors
 
         #endregion
 
+        #region public StructuralPseudoClass AppliedStructural {get;set;}
+
+        /// <summary>
+        /// Gets or sets the structural (positional) pseudo-class - :nth-child, :first-child,
+        /// :nth-of-type, etc. - applied to this selector, or null if none. Independent of
+        /// AppliedState, which is reserved for runtime state variants (:hover, :before, :after).
+        /// </summary>
+        public StructuralPseudoClass AppliedStructural { get; set; }
+
+        #endregion
+
         #region public bool IsEmpty {get;set;}
 
         public bool IsEmpty
@@ -193,6 +204,11 @@ namespace Scryber.Styles.Selectors
             if (string.IsNullOrEmpty(this.AppliedID) == false)
                 mine += IDPriority;
 
+            //A pseudo-class (state or structural) counts the same as a class in the CSS
+            //specificity model, so :hover, :before, :after, :nth-child(), etc. all participate.
+            if (this.AppliedState != ComponentState.Normal || null != this.AppliedStructural)
+                mine += ClassPriority;
+
             if (depth >= AncestorFactors.Length)
                 depth = AncestorFactors.Length - 1;
 
@@ -227,6 +243,14 @@ namespace Scryber.Styles.Selectors
             {
                 //and the state we are looking for is not us, then we don't match
                 if (state != this.AppliedState)
+                    return false;
+            }
+
+            //Structural pseudo-classes (:nth-child, :first-child, etc.) are evaluated once,
+            //based on the component's tree position, not per render-state.
+            if (null != this.AppliedStructural)
+            {
+                if (!(component is ISiblingIndexProvider sibProvider) || !this.AppliedStructural.IsMatch(sibProvider))
                     return false;
             }
 
@@ -365,6 +389,9 @@ namespace Scryber.Styles.Selectors
                         break;
                 }
             }
+
+            if (null != this.AppliedStructural)
+                this.AppliedStructural.ToString(sb);
 
             if (this.Placement == StylePlacement.DirectParent)
                 sb.Append(" >");

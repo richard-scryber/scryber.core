@@ -37,7 +37,7 @@ namespace Scryber.Components
     /// <summary>
     /// Base class for all complex pdf Components
     /// </summary>
-    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent, IMetadataContainer
+    public abstract class Component : TypedObject, IDisposable, IComponent, IBindableComponent, ILoadableComponent, ICountableComponent, IMetadataContainer, ISiblingIndexProvider
     {
         // static event keys for the PDFEventList
 
@@ -692,6 +692,63 @@ namespace Scryber.Components
         {
             get;
             set;
+        }
+
+        #endregion
+
+        #region ISiblingIndexProvider
+
+        /// <summary>
+        /// Supports the CSS :nth-child family of structural pseudo-classes. Element siblings are
+        /// this component's parent's children that have an ElementName set - text/whitespace nodes
+        /// are not counted, matching real CSS :nth-child semantics.
+        /// </summary>
+        int ISiblingIndexProvider.SiblingIndex => this.GetSiblingPosition(false, out _);
+
+        int ISiblingIndexProvider.SiblingCount
+        {
+            get { this.GetSiblingPosition(false, out var count); return count; }
+        }
+
+        int ISiblingIndexProvider.SiblingOfTypeIndex => this.GetSiblingPosition(true, out _);
+
+        int ISiblingIndexProvider.SiblingOfTypeCount
+        {
+            get { this.GetSiblingPosition(true, out var count); return count; }
+        }
+
+        /// <summary>
+        /// Scans this component's parent's element children once, returning both this component's
+        /// 1-based position and the total count - optionally restricted to children sharing this
+        /// component's ElementName (for the :nth-of-type family). Returns (1, 1) for a component
+        /// with no parent container, so a lone/root component matches :first-child, :last-child,
+        /// and :only-child as expected.
+        /// </summary>
+        private int GetSiblingPosition(bool ofTypeOnly, out int count)
+        {
+            if (!(this.Parent is IContainerComponent container) || !container.HasContent)
+            {
+                count = 1;
+                return 1;
+            }
+
+            int index = 0;
+            int total = 0;
+            foreach (var child in container.Content)
+            {
+                if (string.IsNullOrEmpty(child.ElementName))
+                    continue;
+
+                if (ofTypeOnly && !string.Equals(child.ElementName, this.ElementName, StringComparison.Ordinal))
+                    continue;
+
+                total++;
+                if (ReferenceEquals(child, this))
+                    index = total;
+            }
+
+            count = total;
+            return index;
         }
 
         #endregion

@@ -30,12 +30,12 @@ namespace Scryber.UnitLayouts
             var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <style>
-        .box { width: 100pt !important; }
+        .box { width: 100pt !important; border: solid 2pt blue; background-color: #DCE8FF; }
         body div#target.box { width: 300pt; }
     </style>
 </head>
 <body>
-    <div id='target' class='box' style='height: 40pt; background-color: lime;'></div>
+    <div id='target' class='box' style='height: 40pt;'>!important 100pt wins</div>
 </body>
 </html>";
 
@@ -65,18 +65,18 @@ namespace Scryber.UnitLayouts
             var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <style>
-        .box { width: 100pt; }
+        .box { width: 100pt; border: solid 2pt green; background-color: #E0FFE0; }
         body div#target.box { width: 300pt; }
     </style>
 </head>
 <body>
-    <div id='target' class='box' style='height: 40pt; background-color: lime;'></div>
+    <div id='target' class='box' style='height: 40pt;'>specificity 300pt wins</div>
 </body>
 </html>";
 
             var doc = Document.ParseDocument(new StringReader(str));
 
-            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_RegressionNoImportant.pdf"))
+            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_RegressionNoImportantAnywhere.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -89,7 +89,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(300.0, targetBlock.TotalBounds.Width.PointsValue, 1.0,
                 "Without !important, the higher specificity width (300pt) should win as before");
         }
-        
+
         [TestCategory(TestCategory)]
         [TestMethod()]
         public void NoImportant_InlineWidth_StillWins_Regression()
@@ -98,18 +98,18 @@ namespace Scryber.UnitLayouts
             var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <style>
-        .box { width: 100pt; }
+        .box { width: 100pt; border: solid 2pt orange; background-color: #FFF0DC; }
         body div#target.box { width: 300pt; }
     </style>
 </head>
 <body>
-    <div id='target' class='box' style='height: 40pt; width:200pt; background-color: lime;'></div>
+    <div id='target' class='box' style='height: 40pt; width:200pt;'>inline 200pt wins</div>
 </body>
 </html>";
 
             var doc = Document.ParseDocument(new StringReader(str));
 
-            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_RegressionNoImportant.pdf"))
+            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_InlineWinsNoImportant.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -131,18 +131,18 @@ namespace Scryber.UnitLayouts
             var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <style>
-        .box { width: 100pt !important; }
+        .box { width: 100pt !important; border: solid 2pt purple; background-color: #F0E0FF; }
         body div#target.box { width: 300pt; }
     </style>
 </head>
 <body>
-    <div id='target' class='box' style='height: 40pt; width:200pt; background-color: lime;'></div>
+    <div id='target' class='box' style='height: 40pt; width:200pt;'>!important 100pt beats plain inline</div>
 </body>
 </html>";
 
             var doc = Document.ParseDocument(new StringReader(str));
 
-            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_RegressionNoImportant.pdf"))
+            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_ImportantBeatsPlainInline.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);
@@ -155,7 +155,7 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(100.0, targetBlock.TotalBounds.Width.PointsValue, 1.0,
                 "Without !important, the higher specificity width (300pt) should win as before");
         }
-        
+
         [TestCategory(TestCategory)]
         [TestMethod()]
         public void NoImportant_ImportantInlineWidth_ImportantInlineWins_Regression()
@@ -164,18 +164,18 @@ namespace Scryber.UnitLayouts
             var str = @"<html xmlns='http://www.w3.org/1999/xhtml' >
 <head>
     <style>
-        .box { width: 100pt !important; }
+        .box { width: 100pt !important; border: solid 2pt red; background-color: #FFE0E0; }
         body div#target.box { width: 300pt; }
     </style>
 </head>
 <body>
-    <div id='target' class='box' style='height: 40pt; width:200pt !important; background-color: lime;'></div>
+    <div id='target' class='box' style='height: 40pt; width:200pt !important;'>!important inline 200pt wins</div>
 </body>
 </html>";
 
             var doc = Document.ParseDocument(new StringReader(str));
 
-            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_RegressionNoImportant.pdf"))
+            using (var ms = DocStreams.GetOutputStream("CSSImportantLayout_ImportantInlineWins.pdf"))
             {
                 doc.LayoutComplete += Doc_LayoutComplete;
                 doc.SaveAsPDF(ms);

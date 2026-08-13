@@ -164,6 +164,7 @@ namespace Scryber.Styles.Selectors
             ParsingType statePreviousType = ParsingType.Type;
 
             ComponentState appliedState = ComponentState.Normal;
+            StructuralPseudoClass appliedStructural = null;
 
             ParsingType pt = ParsingType.Type; // no selector
 
@@ -275,16 +276,77 @@ namespace Scryber.Styles.Selectors
                             appliedState = ComponentState.Over;
                             break;
                         default:
-                            //Use the unknown state so it is not captured as part of the default style.
-                            appliedState = ComponentState.Unknown;
+                            appliedStructural = TryParseStructuralPseudoClass(state.ToLowerInvariant());
+                            if (null == appliedStructural)
+                                //Use the unknown state so it is not captured as part of the default style.
+                                appliedState = ComponentState.Unknown;
                             break;
                     }
                 }
 
             }
 
-            return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState };
+            return new StyleSelector() { AppliedClass = appliedClass, AppliedID = appliedId, AppliedElement = appliedType, AppliedState = appliedState, AppliedStructural = appliedStructural };
         }
+
+        private static StructuralPseudoClass TryParseStructuralPseudoClass(string stateLower)
+        {
+            switch (stateLower)
+            {
+                case ":first-child": return new StructuralPseudoClass(StructuralPseudoClassKind.FirstChild);
+                case ":last-child": return new StructuralPseudoClass(StructuralPseudoClassKind.LastChild);
+                case ":only-child": return new StructuralPseudoClass(StructuralPseudoClassKind.OnlyChild);
+                case ":first-of-type": return new StructuralPseudoClass(StructuralPseudoClassKind.FirstOfType);
+                case ":last-of-type": return new StructuralPseudoClass(StructuralPseudoClassKind.LastOfType);
+                case ":only-of-type": return new StructuralPseudoClass(StructuralPseudoClassKind.OnlyOfType);
+            }
+
+            StructuralPseudoClassKind kind;
+            string prefix;
+
+            if (stateLower.StartsWith(":nth-last-child("))
+            {
+                kind = StructuralPseudoClassKind.NthLastChild;
+                prefix = ":nth-last-child(";
+            }
+            else if (stateLower.StartsWith(":nth-child("))
+            {
+                kind = StructuralPseudoClassKind.NthChild;
+                prefix = ":nth-child(";
+            }
+            else if (stateLower.StartsWith(":nth-last-of-type("))
+            {
+                kind = StructuralPseudoClassKind.NthLastOfType;
+                prefix = ":nth-last-of-type(";
+            }
+            else if (stateLower.StartsWith(":nth-of-type("))
+            {
+                kind = StructuralPseudoClassKind.NthOfType;
+                prefix = ":nth-of-type(";
+            }
+            else
+            {
+                return null;
+            }
+
+            if (!stateLower.EndsWith(")"))
+                return null;
+
+            string arg = stateLower.Substring(prefix.Length, stateLower.Length - prefix.Length - 1);
+
+            if (!NthExpressionParser.TryParse(arg, out int a, out int b))
+                return null;
+
+            return new StructuralPseudoClass(kind, a, b);
+        }
+
+        private static readonly string[] _knownStructuralPrefixes = new string[]
+        {
+            ":nth-child(",
+            ":nth-last-child(",
+            ":nth-of-type(",
+            ":nth-last-of-type("
+        };
 
         private static bool IsKnownState(string stateValue)
         {
@@ -294,9 +356,24 @@ namespace Scryber.Styles.Selectors
                     || string.Equals(stateValue, "::after")
                     || string.Equals(stateValue, ":hover")
                     || string.Equals(stateValue, ":before")
-                    || string.Equals(stateValue, ":after"))
+                    || string.Equals(stateValue, ":after")
+                    || string.Equals(stateValue, ":first-child", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(stateValue, ":last-child", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(stateValue, ":only-child", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(stateValue, ":first-of-type", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(stateValue, ":last-of-type", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(stateValue, ":only-of-type", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
+                }
+
+                if (stateValue.EndsWith(")"))
+                {
+                    foreach (var prefix in _knownStructuralPrefixes)
+                    {
+                        if (stateValue.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                    }
                 }
             }
             return false;
