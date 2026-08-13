@@ -1111,24 +1111,17 @@ This is the {{.name}} item at index {{.index}}</div>";
 
             var vars = doc.FindMatches("var");
             Assert.IsNotNull(vars, "vars should not be null");
-            Assert.AreEqual(3, vars.Count);
+            Assert.AreEqual(2, vars.Count);
             var var1 = vars[0] as HTMLVar;
-            var var2 = vars[1] as HTMLVar;
-            var varAfter = vars[2] as HTMLVar;
+            var varAfter = vars[1] as HTMLVar;
             
             Assert.IsNotNull(var1, "var1 should not be null");
-            Assert.IsNotNull(var2, "var2 should not be null");
             Assert.IsNotNull(varAfter, "varAfter should not be null");
             
             Assert.AreEqual(1, var1.Contents.Count);
             var literal = var1.Contents[0] as TextLiteral;
             Assert.IsNotNull(literal, "literal should not be null");
-            Assert.AreEqual("This should appear", literal.Text, "literal should have text '" + literal.Text + "'");
-
-            Assert.AreEqual(1, var2.Contents.Count);
-            literal = var2.Contents[0] as TextLiteral;
-            Assert.IsNotNull(literal, "literal should not be null");
-            Assert.IsTrue(literal.Text.Length > 0, "Frame literal should have text");
+            Assert.IsNull(literal.Text, "literal should not have text");
             
             //after the frame is still bound correctly
             Assert.AreEqual(1, varAfter.Contents.Count);

@@ -576,6 +576,9 @@ namespace Scryber.Html.Components
                         htmlFooter.Contents.Add(comp);
                 }
             }
+            
+            if (null != doc.Head.BasePath && !string.IsNullOrEmpty(doc.Head.BasePath.Href))
+                article.LoadedSource = doc.Head.BasePath.Href;
 
             return article;
         }
@@ -600,11 +603,40 @@ namespace Scryber.Html.Components
                 spoofBody.Contents.Add(inner);
             }
             
+            if (null != doc.Body.Header)
+            {
+                var htmlHead = new HTMLComponentHeader();
+                spoofBody.Contents.Add(htmlHead);
+                var template = doc.Body.Header;
+                var headerContent = template.Instantiate(0, this);
+                                
+                foreach (var item in headerContent)
+                {
+                    if(item is Component comp)
+                        htmlHead.Contents.Add(comp);
+                }
+            }
+                            
+            if (null != doc.Body.Footer)
+            {
+                var htmlFooter = new HTMLComponentFooter();
+                spoofBody.Contents.Add(htmlFooter);
+                
+                var footerContent = doc.Body.Footer.Instantiate(0, this);
+                                
+                foreach (var item in footerContent)
+                {
+                    if(item is Component comp)
+                        htmlFooter.Contents.Add(comp);
+                }
+            }
+            
             var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerStyles);
             var allowStyle = policy != null && policy.IsAllowed("self");
             
             policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.InnerLink);
             var allowLink = policy != null && policy.IsAllowed("self");
+            
             if (allowStyle || allowLink)
             {
                 var i = 0;
