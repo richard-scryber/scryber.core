@@ -84,6 +84,23 @@ namespace Scryber.Html.Components
                 this._src = value;
             }
         }
+        
+        [PDFAttribute("data-passthrough")]
+        [Obsolete("Use AllowPolicy property permissions instead",  false)]
+        public bool DataPassthrough {
+            get
+            {
+                var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.DataPassthrough);
+                return policy != null && policy.IsAllowed("self");
+            }
+            set
+            {
+                if(value)
+                    this.AllowPolicy.SetPolicy(PermissionPolicyType.DataPassthrough, "any");
+                else
+                    this.AllowPolicy.SetPolicy(PermissionPolicyType.DataPassthrough, "none");
+            }
+        }
 
         [PDFAttribute("allow")]
         public DocumentPermissionsPolicy AllowPolicy

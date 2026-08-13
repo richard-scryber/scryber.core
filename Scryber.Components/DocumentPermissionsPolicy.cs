@@ -21,6 +21,47 @@ public class DocumentPermissionsPolicy
             _parsedGroup.Add(perm.Type, perm);
     }
 
+    public void SetPolicy(PermissionPolicyType policyType, string options)
+    {
+        PermissionsPolicy policy;
+        switch (policyType)
+        {
+            case PermissionPolicyType.DataPassthrough:
+                policy = new PermissionDataPassthrough(options ?? "self");
+                break;
+                case PermissionPolicyType.StylePassthrough:
+                    policy = new PermissionStylePassthrough(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerStyles:
+                    policy = new PermissionAllowInnerStyles(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerLink:
+                    policy = new PermissionAllowInnerLink(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerNavigation:
+                    policy = new PermissionAllowInnerNavigation(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerForms:
+                    policy = new PermissionAllowInnerForms(options ?? "self");
+                    break;
+                case PermissionPolicyType.OuterHtml:
+                    policy = new PermissionAllowOuterHtml(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerFrames:
+                    policy = new PermissionAllowInnerFrames(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerImages:
+                    policy = new PermissionAllowInnerImages(options ?? "self");
+                    break;
+                case PermissionPolicyType.InnerInlineStyle:
+                    policy = new PermissionAllowInlineStyles(options ?? "self");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(policyType), policyType, null);
+        }
+        _parsedGroup[policy.Type] = policy;
+    }
+
     public void SetPolicy(PermissionsPolicy policy)
     {
         if(null ==policy)
