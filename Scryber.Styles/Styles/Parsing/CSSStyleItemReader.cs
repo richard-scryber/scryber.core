@@ -103,6 +103,34 @@ namespace Scryber.Styles.Parsing
             private set;
         }
 
+        /// <summary>
+        /// If set (>= 0), the effective end offset for reading THIS declaration's value,
+        /// so that a trailing '!important' flag is never included in the read value text.
+        /// -1 means no shrinking is in effect (this declaration is not marked important).
+        /// </summary>
+        private int _importantValueEnd = -1;
+
+        /// <summary>
+        /// If set (>= 0), the absolute offset that the cursor should be moved to once this
+        /// declaration's (important) value has been fully read, so parsing can continue
+        /// correctly from the real ';' (or end of block) rather than stopping mid-'!important'.
+        /// </summary>
+        private int _importantSkipTo = -1;
+
+        /// <summary>
+        /// The effective upper bound for value-reading methods, shrunk to exclude a trailing
+        /// '!important' flag when one has been detected for the current declaration.
+        /// </summary>
+        private int CurrentValueEndOffset
+        {
+            get
+            {
+                if (_importantValueEnd >= 0 && _importantValueEnd < _endOffset)
+                    return _importantValueEnd;
+                return _endOffset;
+            }
+        }
+
         //
         // .ctor
         //
@@ -201,7 +229,9 @@ namespace Scryber.Styles.Parsing
             {
                 this.Buffer.Append(this.InnerEnumerator.Substring(start, (end - start) + 1));
                 this._attr = this.Buffer.ToString().TrimEnd();
-                
+
+                this.DetectImportantFlag();
+
                 return true;
             }
             else
@@ -231,7 +261,7 @@ namespace Scryber.Styles.Parsing
             bool indoublequote = this.InnerEnumerator.Current == '"';
             bool inparentheses = this.InnerEnumerator.Current == '(';
 
-            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.CurrentValueEndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
                 if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
@@ -284,7 +314,7 @@ namespace Scryber.Styles.Parsing
             bool indoublequote = this.InnerEnumerator.Current == '"';
             bool inparentheses = this.InnerEnumerator.Current == '(';
 
-            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.CurrentValueEndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
                 if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
@@ -342,7 +372,7 @@ namespace Scryber.Styles.Parsing
             bool indoublequote = this.InnerEnumerator.Current == '"';
             bool inparentheses = this.InnerEnumerator.Current == '(';
             
-            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.CurrentValueEndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
                 if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
@@ -398,7 +428,7 @@ namespace Scryber.Styles.Parsing
             bool indoublequote = this.InnerEnumerator.Current == '"';
             bool inparentheses = this.InnerEnumerator.Current == '(';
 
-            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.CurrentValueEndOffset)
             {
                 char cur = this.InnerEnumerator.Current;
                 if (CurrentIsWhiteSpace() && !ignoreWhiteSpace)
@@ -443,7 +473,7 @@ namespace Scryber.Styles.Parsing
 
             int count = 1;
 
-            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.EndOffset)
+            while (this.InnerEnumerator.MoveNext() && this.InnerEnumerator.Offset <= this.CurrentValueEndOffset)
             {
                 if (this.InnerEnumerator.Current == ')')
                 {
@@ -487,12 +517,12 @@ namespace Scryber.Styles.Parsing
 
             if (this.InnerEnumerator.Current == ':')
             {
-                if (!this.InnerEnumerator.MoveNext() || this.InnerEnumerator.Offset > this.EndOffset)
+                if (!this.InnerEnumerator.MoveNext() || this.InnerEnumerator.Offset > this.CurrentValueEndOffset)
                     return false;
             }
             while (CurrentIsWhiteSpace())
             {
-                if (!this.InnerEnumerator.MoveNext() || this.InnerEnumerator.Offset > this.EndOffset)
+                if (!this.InnerEnumerator.MoveNext() || this.InnerEnumerator.Offset > this.CurrentValueEndOffset)
                     return false;
             }
             return true;
@@ -500,9 +530,13 @@ namespace Scryber.Styles.Parsing
 
         private bool BeginNameRead()
         {
+            this.EnsureImportantConsumed();
+
             this._attr = string.Empty;
             this._value = string.Empty;
             //this._valueType = CSSValueType.None;
+            this.IsImportantAttribute = false;
+            this._importantValueEnd = -1;
 
             this.Buffer.Clear();
 
@@ -515,6 +549,100 @@ namespace Scryber.Styles.Parsing
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// If a trailing '!important' flag was detected for the previous declaration, moves the
+        /// cursor forward past it to the real ';' (or end of block) so parsing continues correctly.
+        /// </summary>
+        private void EnsureImportantConsumed()
+        {
+            if (this._importantSkipTo >= 0)
+            {
+                this.InnerEnumerator.Offset = this._importantSkipTo;
+                this._importantSkipTo = -1;
+            }
+        }
+
+        /// <summary>
+        /// Performs a non-destructive lookahead from the current position (expected to be sitting on
+        /// the ':' separator after an attribute name) to determine whether this declaration's value
+        /// ends with a '!important' flag, respecting quoted strings and parenthesised values.
+        /// Sets IsImportantAttribute and the internal bounds used to exclude the flag from the value
+        /// text, without moving the enumerator.
+        /// </summary>
+        private void DetectImportantFlag()
+        {
+            this.IsImportantAttribute = false;
+            this._importantValueEnd = -1;
+            this._importantSkipTo = -1;
+
+            if (this.InnerEnumerator.EOS)
+                return;
+
+            int start = this.InnerEnumerator.Offset;
+            if (this.InnerEnumerator.Current == ':')
+                start += 1;
+
+            if (start > this._endOffset)
+                return;
+
+            string remainder = this.InnerEnumerator.Substring(start, (this._endOffset - start) + 1);
+
+            //Find the end of this declaration's value: the next un-nested ';', respecting quotes and parens.
+            bool inquote = false, indoublequote = false;
+            int parenDepth = 0;
+            int declEnd = remainder.Length;
+            int semicolonOffset = -1;
+
+            for (int i = 0; i < remainder.Length; i++)
+            {
+                char c = remainder[i];
+                if (inquote)
+                {
+                    if (c == '\'') inquote = false;
+                }
+                else if (indoublequote)
+                {
+                    if (c == '"') indoublequote = false;
+                }
+                else if (c == '\'')
+                    inquote = true;
+                else if (c == '"')
+                    indoublequote = true;
+                else if (c == '(')
+                    parenDepth++;
+                else if (c == ')')
+                {
+                    if (parenDepth > 0) parenDepth--;
+                }
+                else if (c == ';' && parenDepth == 0)
+                {
+                    declEnd = i;
+                    semicolonOffset = start + i;
+                    break;
+                }
+            }
+
+            string declarationValue = remainder.Substring(0, declEnd);
+            string trimmedEnd = declarationValue.TrimEnd();
+
+            int bangIndex = trimmedEnd.LastIndexOf('!');
+            if (bangIndex < 0)
+                return;
+
+            string afterBang = trimmedEnd.Substring(bangIndex + 1).TrimStart();
+            if (!string.Equals(afterBang, "important", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            //Trim any whitespace immediately before the '!' too.
+            int realLen = bangIndex;
+            while (realLen > 0 && char.IsWhiteSpace(trimmedEnd[realLen - 1]))
+                realLen--;
+
+            this.IsImportantAttribute = true;
+            this._importantValueEnd = start + realLen - 1;
+            this._importantSkipTo = semicolonOffset >= 0 ? semicolonOffset : this._endOffset + 1;
         }
 
         #region private int FindRange()

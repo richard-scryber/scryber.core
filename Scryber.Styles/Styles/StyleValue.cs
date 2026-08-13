@@ -33,12 +33,18 @@ namespace Scryber.Styles
         public StyleKey Key { get; set; }
 
         public int Priority { get; set; }
-        
+
         //TODO: Implement the initial and inherit options.
-        
+
         public bool IsInitial { get; set; }
-        
+
         public bool IsInherit { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this value was declared with the CSS !important flag,
+        /// which takes priority over specificity/source-order within the cascade.
+        /// </summary>
+        public bool IsImportant { get; set; }
 
         protected StyleValueBase(StyleKey key)
         {

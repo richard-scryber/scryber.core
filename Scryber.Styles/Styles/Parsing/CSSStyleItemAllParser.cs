@@ -38,7 +38,10 @@ namespace Scryber.Styles.Parsing
                 return false;
 
             if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
+            {
+                component.Style.IsSettingImportantValue = reader.IsImportantAttribute;
                 return found.SetStyleValue(parser, component, reader);
+            }
             else
             {
                 if (null != parser && parser.IsLogging)
@@ -77,7 +80,10 @@ namespace Scryber.Styles.Parsing
                 return false;
             }
             else if (_knownStyles.TryGetValue(reader.CurrentAttribute, out found))
+            {
+                style.IsSettingImportantValue = reader.IsImportantAttribute;
                 return found.SetStyleValue(style, reader, context);
+            }
             else
             {
                 if (null != context && context.TraceLog.ShouldLog(TraceLevel.Verbose))

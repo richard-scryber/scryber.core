@@ -524,7 +524,14 @@ namespace Scryber.Styles
             StyleValueBase exist;
             if (this.TryGetValue(key, out exist))
             {
-                if (exist.Priority <= priority)
+                //Importance is a separate cascade tier above specificity: an important value always
+                //wins over a non-important one regardless of priority. Within the same importance
+                //tier, the existing specificity/source-order comparison applies as before.
+                bool overrides = value.IsImportant != exist.IsImportant
+                    ? value.IsImportant
+                    : exist.Priority <= priority;
+
+                if (overrides)
                 {
                     this[key] = value.CloneWithPriority(priority);
                 }

@@ -61,6 +61,18 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region internal bool IsSettingImportantValue {get;set;}
+
+        /// <summary>
+        /// Transient, ambient flag set by the CSS parser immediately before setting the value(s) for a
+        /// declaration that was parsed with the '!important' flag, so that SetValue&lt;T&gt; can mark
+        /// the resulting StyleValue as important without threading a parameter through every typed
+        /// property parser. Not intended for use outside the parsing pipeline.
+        /// </summary>
+        internal bool IsSettingImportantValue { get; set; }
+
+        #endregion
+
         #region public bool HasValues {get;}
 
         /// <summary>
@@ -2644,12 +2656,35 @@ namespace Scryber.Styles
             if(stylebase.TryGetValue(key,out match))
             {
                 match.SetValue(value);
+                match.IsImportant = stylebase.IsSettingImportantValue;
             }
             else
             {
                 match = new StyleValue<T>(key, value);
+                match.IsImportant = stylebase.IsSettingImportantValue;
                 stylebase.AddValue(match);
             }
+        }
+
+        /// <summary>
+        /// Marks (or clears) the CSS !important flag on an already-set style value.
+        /// Has no effect if the key has not been set on this style.
+        /// </summary>
+        public static void MakeImportant<T>(this StyleBase stylebase, StyleKey<T> key, bool important = true)
+        {
+            StyleValue<T> match;
+            if (stylebase.TryGetValue(key, out match))
+                match.IsImportant = important;
+        }
+
+        /// <summary>
+        /// Returns true if the value for this key has been marked with the CSS !important flag.
+        /// Returns false if the key has not been set.
+        /// </summary>
+        public static bool IsImportant<T>(this StyleBase stylebase, StyleKey<T> key)
+        {
+            StyleValue<T> match;
+            return stylebase.TryGetValue(key, out match) && match.IsImportant;
         }
 
         public static void SetMargins(this StyleBase stylebase, Thickness thickness)
