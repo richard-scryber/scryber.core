@@ -87,7 +87,7 @@ namespace Scryber.Html.Components
         
         [PDFAttribute("data-passthrough")]
         [Obsolete("Use AllowPolicy property permissions instead",  false)]
-        public bool DataPassthrough {
+        public bool PassThrough {
             get
             {
                 var policy = this.AllowPolicy.GetPolicy(PermissionPolicyType.DataPassthrough);
@@ -95,10 +95,9 @@ namespace Scryber.Html.Components
             }
             set
             {
-                if(value)
-                    this.AllowPolicy.SetPolicy(PermissionPolicyType.DataPassthrough, "any");
-                else
-                    this.AllowPolicy.SetPolicy(PermissionPolicyType.DataPassthrough, "none");
+                var option = value ? "any" : "none";
+                this.AllowPolicy.SetPolicy(PermissionPolicyType.DataPassthrough, option);
+                this.AllowPolicy.SetPolicy(PermissionPolicyType.StylePassthrough, option);
             }
         }
 
