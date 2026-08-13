@@ -699,37 +699,100 @@ namespace Scryber.Components
         #region ISiblingIndexProvider
 
         /// <summary>
+        /// Lazily computed and cached sibling position values used by the CSS :nth-child family.
+        /// A single field cost on Component (only allocated the first time a structural
+        /// pseudo-class is evaluated against this component), since a single selector match can
+        /// request the same value repeatedly - e.g. a nested selector like 'td:nth-child(odd)
+        /// :first-child' re-evaluating the same candidate components many times.
+        /// </summary>
+        private class SiblingIndexes
+        {
+            public int Index = -1;
+            public int Count = -1;
+            public int OfTypeIndex = -1;
+            public int OfTypeCount = -1;
+        }
+
+        private SiblingIndexes _siblingIndexes;
+
+        /// <summary>
         /// Supports the CSS :nth-child family of structural pseudo-classes. Element siblings are
         /// this component's parent's children that have an ElementName set - text/whitespace nodes
         /// are not counted, matching real CSS :nth-child semantics.
         /// </summary>
-        int ISiblingIndexProvider.SiblingIndex => this.GetSiblingPosition(false, out _);
+        int ISiblingIndexProvider.SiblingIndex
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.Index < 0)
+                    this.PopulateSiblingPosition(indexes, false);
+                return indexes.Index;
+            }
+        }
 
         int ISiblingIndexProvider.SiblingCount
         {
-            get { this.GetSiblingPosition(false, out var count); return count; }
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.Count < 0)
+                    this.PopulateSiblingPosition(indexes, false);
+                return indexes.Count;
+            }
         }
 
-        int ISiblingIndexProvider.SiblingOfTypeIndex => this.GetSiblingPosition(true, out _);
+        int ISiblingIndexProvider.SiblingOfTypeIndex
+        {
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.OfTypeIndex < 0)
+                    this.PopulateSiblingPosition(indexes, true);
+                return indexes.OfTypeIndex;
+            }
+        }
 
         int ISiblingIndexProvider.SiblingOfTypeCount
         {
-            get { this.GetSiblingPosition(true, out var count); return count; }
+            get
+            {
+                var indexes = this.EnsureSiblingIndexes();
+                if (indexes.OfTypeCount < 0)
+                    this.PopulateSiblingPosition(indexes, true);
+                return indexes.OfTypeCount;
+            }
+        }
+
+        private SiblingIndexes EnsureSiblingIndexes()
+        {
+            if (null == _siblingIndexes)
+                _siblingIndexes = new SiblingIndexes();
+            return _siblingIndexes;
         }
 
         /// <summary>
-        /// Scans this component's parent's element children once, returning both this component's
-        /// 1-based position and the total count - optionally restricted to children sharing this
-        /// component's ElementName (for the :nth-of-type family). Returns (1, 1) for a component
-        /// with no parent container, so a lone/root component matches :first-child, :last-child,
-        /// and :only-child as expected.
+        /// Scans this component's parent's element children once, populating either the plain
+        /// (Index/Count) or of-type (OfTypeIndex/OfTypeCount) pair on the cache - optionally
+        /// restricted to children sharing this component's ElementName (for the :nth-of-type
+        /// family). Defaults to (1, 1) for a component with no parent container, so a lone/root
+        /// component matches :first-child, :last-child, and :only-child as expected.
         /// </summary>
-        private int GetSiblingPosition(bool ofTypeOnly, out int count)
+        private void PopulateSiblingPosition(SiblingIndexes indexes, bool ofTypeOnly)
         {
             if (!(this.Parent is IContainerComponent container) || !container.HasContent)
             {
-                count = 1;
-                return 1;
+                if (ofTypeOnly)
+                {
+                    indexes.OfTypeIndex = 1;
+                    indexes.OfTypeCount = 1;
+                }
+                else
+                {
+                    indexes.Index = 1;
+                    indexes.Count = 1;
+                }
+                return;
             }
 
             int index = 0;
@@ -747,8 +810,16 @@ namespace Scryber.Components
                     index = total;
             }
 
-            count = total;
-            return index;
+            if (ofTypeOnly)
+            {
+                indexes.OfTypeIndex = index;
+                indexes.OfTypeCount = total;
+            }
+            else
+            {
+                indexes.Index = index;
+                indexes.Count = total;
+            }
         }
 
         #endregion
