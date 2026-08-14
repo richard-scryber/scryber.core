@@ -64,11 +64,11 @@ namespace Scryber.Binding
                 else
                     id = "";
 
-                string message = "Cannot bind the values for '" + owner.ToString() + "' with id " + id;
+                string message = "The expression " + this.Expression.ToString() + " failed for '" + owner.ToString() + "' with id " + id;
                 result = false;
 
                 if (context.Conformance == ParserConformanceMode.Lax)
-                    context.TraceLog.Add(TraceLevel.Error, "Data Binding", message, ex);
+                    context.TraceLog.Add(TraceLevel.Warning, "Data Binding", message + ": " + ex.Message);
                 else
                     throw new Scryber.PDFBindException(message, ex);
             }

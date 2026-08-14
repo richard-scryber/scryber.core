@@ -109,6 +109,39 @@ public class InvalidStatements : SampleBase
         Assert.IsTrue(parsed, "Document should have been parsed");
 
     }
+    
+    [TestMethod]
+    public void InvalidInside_NoParent()
+    {
+        var path = GetTemplatePath("Invalid", "InvalidInside.html");
+        bool error = false;
+        bool parsed =  true;
+        Exception exception = null;
+        try
+        {
+            using var doc = Document.ParseDocument(path);
+
+            //Any errors will be consumed and processing continues.
+            //But the logs will appear at the end of the output document.
+            doc.AppendTraceLog = true;
+            
+            
+            using var ms = DocStreams.GetOutputStream("InvalidTemplates_InvalidInside_NoParent.pdf");
+            doc.SaveAsPDF(ms);
+            
+            
+        }
+        catch (Exception ex)
+        {
+            error = true;
+            exception = ex;
+        }
+        
+        Assert.IsFalse(error, "Error found");
+        Assert.IsNull(exception, "Exception found");
+        Assert.IsTrue(parsed, "Document should have been parsed");
+
+    }
 
 
     
