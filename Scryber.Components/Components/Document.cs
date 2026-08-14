@@ -1100,7 +1100,7 @@ namespace Scryber.Components
 
         #region public ParserConformanceMode ConformanceMode {get;set;}
 
-        private ParserConformanceMode _confmode = ParserConformanceMode.Strict;
+        
         /// <summary>
         /// Gets or sets the parser conformance mode
         /// </summary>
@@ -1118,7 +1118,7 @@ namespace Scryber.Components
         /// <param name="mode"></param>
         void IParsedDocument.SetConformanceMode(ParserConformanceMode mode)
         {
-            this._confmode = mode;
+            this.RenderOptions.ConformanceMode = mode;
         }
 
         #endregion
