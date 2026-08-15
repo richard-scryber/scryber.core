@@ -271,7 +271,11 @@ namespace Scryber.Components
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            this.InnerList.CopyTo(array, arrayIndex);
+            //Must copy from the filtered/typed AllItems, not the raw InnerList - InnerList's count
+            //(everything, including non-T siblings) rarely matches Count (just the T items), so
+            //copying from it overruns any array sized against Count (as List<T>(IEnumerable<T>)
+            //and therefore ToList() do).
+            this.AllItems.CopyTo(array, arrayIndex);
         }
 
         public void RemoveAt(int index)

@@ -138,6 +138,44 @@ namespace Scryber.Core.UnitTests.Html
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
+        public void Select_OptionsBoundViaEachHelper_AreHarvested()
+        {
+            var src = @"<html><body>
+                <select id='s1' name='country'>
+                {{#each model.countries}}
+                    <option value='{{this.code}}'>{{this.name}}</option>
+                {{/each}}
+                </select>
+                </body></html>";
+
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+            doc.Params["model"] = new
+            {
+                countries = new[]
+                {
+                    new { code = "UK", name = "United Kingdom" },
+                    new { code = "US", name = "United States" },
+                    new { code = "FR", name = "France" }
+                }
+            };
+
+            var select = doc.FindAComponentById("s1") as HTMLSelect;
+            Assert.IsNotNull(select);
+
+            using (var ms = DocStreams.GetOutputStream("HTMLSelect_EachBound.pdf"))
+            {
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(3, select.Choices.Count);
+            Assert.AreEqual("UK", select.Choices[0].Value);
+            Assert.AreEqual("United Kingdom", select.Choices[0].Label);
+            Assert.AreEqual("US", select.Choices[1].Value);
+            Assert.AreEqual("FR", select.Choices[2].Value);
+        }
+
+        [TestMethod()]
+        [TestCategory("Html-Forms")]
         public void Select_OptionWithNoValueAttribute_UsesInnerTextAsValue()
         {
             var doc = ParseHtml("<select id='s1' name='x'><option>Plain Text</option></select>");
