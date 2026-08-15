@@ -83,12 +83,18 @@ namespace Scryber.Core.UnitTests.Html
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
-        public void Input_CheckboxRadioTypes_FallBackToTextWithoutError()
+        public void Input_CheckboxRadioTypes_MapToButtonFieldTypeWithButtonType()
         {
-            // Checkbox/radio widget support is not yet implemented (later phase of work) -
-            // this asserts the safe fallback behaviour rather than a crash or silent mismatch.
-            Assert.AreEqual(FormInputFieldType.Text, ParseSingleInput("<input type='checkbox' name='agree' />").FieldType);
-            Assert.AreEqual(FormInputFieldType.Text, ParseSingleInput("<input type='radio' name='choice' />").FieldType);
+            // Checkbox/radio share PDF's /FT /Btn with pushbuttons - ButtonType is what
+            // distinguishes them (and drives which widget/appearance gets built).
+            var checkbox = ParseSingleInput("<input type='checkbox' name='agree' />");
+            Assert.AreEqual(FormInputFieldType.Button, checkbox.FieldType);
+            Assert.AreEqual(FormButtonFieldType.CheckBox, checkbox.ButtonType);
+
+            var radio = ParseSingleInput("<input type='radio' name='choice' />");
+            Assert.AreEqual(FormInputFieldType.Button, radio.FieldType);
+            Assert.AreEqual(FormButtonFieldType.Radio, radio.ButtonType);
+            Assert.IsTrue((radio.Options & FormFieldOptions.Radio) == FormFieldOptions.Radio);
         }
 
         [TestMethod()]

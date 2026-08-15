@@ -1,12 +1,13 @@
 using System;
 
-namespace Scryber.Html.Components
+namespace Scryber.Components
 {
     /// <summary>
     /// Wraps a bool for HTML boolean attributes (selected, checked, multiple, disabled, readonly)
     /// which HtmlAgilityPack normalizes to a self-valued attribute (selected="selected") when
     /// converting to XHTML - a value the standard bool.Parse-based converter always rejects,
-    /// unconditionally, in both parser conformance modes.
+    /// unconditionally, in both parser conformance modes. Lives in Scryber.Components (not
+    /// Scryber.Html.Components) since FormInputField itself needs it for a native "checked" attribute.
     /// </summary>
     [PDFParsableValue()]
     public struct HtmlBoolean
