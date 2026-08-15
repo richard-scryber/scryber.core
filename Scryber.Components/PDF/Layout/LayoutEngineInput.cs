@@ -67,8 +67,17 @@ namespace Scryber.PDF.Layout
 
             annots.Register(this.Field.Widget);
             this.Field.Widget.SetAppearance(FormFieldAppearanceState.Normal, xObject, this.LayoutPage, this.FullStyle);
-            this.Field.Widget.SetAppearance(FormFieldAppearanceState.Down, xObject, this.LayoutPage, this.FullStyle);
-            this.Field.Widget.SetAppearance(FormFieldAppearanceState.Over, xObject, this.LayoutPage, this.FullStyle);
+
+            //A :hover/:active rule that actually matched this field carries its own state style -
+            //pass it through so the widget can repaint Normal's box with its colours. Without one,
+            //this state's appearance stays exactly the Normal xObject, unchanged from before.
+            Style downStyle;
+            this.FullStyle.TryGetStyleState(ComponentState.Down, out downStyle);
+            this.Field.Widget.SetAppearance(FormFieldAppearanceState.Down, xObject, this.LayoutPage, this.FullStyle, downStyle);
+
+            Style overStyle;
+            this.FullStyle.TryGetStyleState(ComponentState.Over, out overStyle);
+            this.Field.Widget.SetAppearance(FormFieldAppearanceState.Over, xObject, this.LayoutPage, this.FullStyle, overStyle);
         }
 
         protected override void DoLayoutChildren()

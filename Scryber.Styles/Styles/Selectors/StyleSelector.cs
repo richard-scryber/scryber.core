@@ -385,6 +385,9 @@ namespace Scryber.Styles.Selectors
                     case (ComponentState.Over):
                         sb.Append(":hover");
                         break;
+                    case (ComponentState.Down):
+                        sb.Append(":active");
+                        break;
                     default:
                         break;
                 }

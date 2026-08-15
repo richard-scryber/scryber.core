@@ -1085,6 +1085,46 @@ body.grey div.reverse{
         }
 
         [TestMethod]
+        public void ParseCSSActiveSelector()
+        {
+            var src = @"button:active{
+                            background-color: darkblue;
+                        }
+
+                        button:hover{
+                            background-color: lightblue;
+                        }";
+
+            var parser = new CSSStyleParser(src, null);
+            List<Style> all = new List<Style>();
+
+            foreach (var item in parser)
+            {
+                all.Add(item as Style);
+            }
+
+            Assert.AreEqual(2, all.Count);
+
+            var active = all[0] as StyleDefn;
+            var hover = all[1] as StyleDefn;
+
+            Assert.IsNotNull(active);
+            Assert.IsNotNull(hover);
+
+            Assert.AreEqual(ComponentState.Down, active.Match.Selector.AppliedState);
+            Assert.AreEqual("button", active.Match.Selector.AppliedElement);
+            Assert.IsNull(active.Match.Selector.AppliedClass);
+            Assert.IsNull(active.Match.Selector.AppliedID);
+
+            Assert.AreEqual(ComponentState.Over, hover.Match.Selector.AppliedState);
+            Assert.AreEqual("button", hover.Match.Selector.AppliedElement);
+
+            //Round-trip symmetry
+            Assert.IsTrue(active.Match.Selector.ToString().Contains(":active"));
+            Assert.IsTrue(hover.Match.Selector.ToString().Contains(":hover"));
+        }
+
+        [TestMethod]
         public void ParseCSSComplexPseudoClasses()
         {
             var src = @".added::before, .added::after{

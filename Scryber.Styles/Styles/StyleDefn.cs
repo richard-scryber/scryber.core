@@ -271,6 +271,14 @@ namespace Scryber.Styles
                 this.MergeInto(stateStyle, priority);
 
             }
+            else if (this.IsMatchedTo(forComponent, ComponentState.Down, out priority))
+            {
+                var stateStyle = style.GetStyleState(ComponentState.Down, true);
+                if (this.HasVariables)
+                    this.MergeVariables(stateStyle);
+                this.MergeInto(stateStyle, priority);
+
+            }
             else if (this.IsMatchedTo(forComponent, ComponentState.After, out priority))
             {
                 var stateStyle = style.GetStyleState(ComponentState.After, true);
