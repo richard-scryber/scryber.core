@@ -47,6 +47,7 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType Picture = (ObjectType)"hPic";
 		public static readonly ObjectType PictureSource = (ObjectType)"hPsc";
 		public static readonly ObjectType FormInput = (ObjectType)"hInp";
+		public static readonly ObjectType Form = (ObjectType)"hFrm";
 		public static readonly ObjectType Italic = ObjectTypes.ItalicSpan;
 		public static readonly ObjectType Emphasis = (ObjectType)"hEmp";
 		public static readonly ObjectType Label = ObjectTypes.Label;

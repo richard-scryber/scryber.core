@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Scryber.PDF.Native;
+using Scryber.PDF.Resources;
+using Scryber.Components;
 
 namespace Scryber.PDF
 {
@@ -11,7 +13,7 @@ namespace Scryber.PDF
     {
         public string CollectionName { get; private set; }
 
-        public List<PDFAcrobatFormFieldWidget> Fields { get; private set; }
+        public List<IPDFFormFieldNode> Fields { get; private set; }
 
         public PDFAcrobatFormEntry Current { get; private set; }
 
@@ -20,7 +22,7 @@ namespace Scryber.PDF
         public PDFAcrobatFormFieldCollection(string collectionName, IComponent owner)
         {
             this.CollectionName = collectionName;
-            this.Fields = new List<PDFAcrobatFormFieldWidget>();
+            this.Fields = new List<IPDFFormFieldNode>();
             this.Owner = owner;
         }
 
@@ -50,7 +52,8 @@ namespace Scryber.PDF
                 writer.BeginDictionary();
 
                 OutputFields(context, writer);
-                //OutputDefaultResources(context, writer);
+                OutputDefaultResources(context, writer);
+                writer.WriteDictionaryBooleanEntry("NeedAppearances", true);
 
                 writer.EndDictionary();
                 writer.EndObject();
@@ -61,24 +64,38 @@ namespace Scryber.PDF
                 return null;
         }
 
-        [Obsolete("Needs updating from hard coding",false)]
+        /// <summary>
+        /// Writes the /DR default resources dictionary for the AcroForm, listing every font resource
+        /// actually registered/used by the document, so readers can fall back on it for fields whose
+        /// own appearance stream doesn't carry its own font resource (e.g. NeedAppearances regeneration).
+        /// </summary>
         private void OutputDefaultResources(PDFRenderContext context, PDFWriter writer)
         {
+            Document doc = this.Owner as Document;
+            if (null == doc)
+                return;
+
             writer.BeginDictionaryEntry("DR");
-            writer.BeginDictionaryS();
+            writer.BeginDictionary();
 
             writer.BeginDictionaryEntry("Font");
-
             writer.BeginDictionary();
-            writer.WriteDictionaryObjectRefEntry("frsc1", new PDFObjectRef(7, 0));
-            writer.EndDictionary();
 
+            foreach (PDFResource rsrc in doc.SharedResources)
+            {
+                if (rsrc.ResourceType == PDFResource.FontDefnResourceType)
+                {
+                    PDFObjectRef oref = rsrc.EnsureRendered(context, writer);
+                    if (null != oref)
+                        writer.WriteDictionaryObjectRefEntry(rsrc.Name.Value, oref);
+                }
+            }
+
+            writer.EndDictionary();
             writer.EndDictionaryEntry();
 
             writer.EndDictionary();
-
             writer.EndDictionaryEntry();
-
         }
 
         private void OutputFields(PDFRenderContext context, PDFWriter writer)
@@ -86,9 +103,8 @@ namespace Scryber.PDF
             writer.BeginDictionaryEntry("Fields");
 
             List<PDFObjectRef> entries = new List<PDFObjectRef>();
-            Resources.PDFResourceCollection all = new Resources.PDFResourceCollection(this.Owner);
 
-            foreach (PDFAcrobatFormFieldWidget entry in this.Fields)
+            foreach (IPDFFormFieldNode entry in this.Fields)
             {
                 IEnumerable<PDFObjectRef> orefs = entry.OutputToPDF(context, writer);
                 if (null != orefs)
@@ -100,14 +116,13 @@ namespace Scryber.PDF
                 }
             }
             writer.WriteArrayRefEntries(true, entries.ToArray());
-            List<IPDFResource> rsrs = new List<IPDFResource>();
 
             writer.EndDictionaryEntry();
         }
 
         public object Register(IArtefactEntry catalogobject)
         {
-            PDFAcrobatFormFieldWidget field = (PDFAcrobatFormFieldWidget)catalogobject;
+            IPDFFormFieldNode field = (IPDFFormFieldNode)catalogobject;
             this.Fields.Add(field);
             return field;
         }

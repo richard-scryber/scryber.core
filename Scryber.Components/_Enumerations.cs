@@ -130,15 +130,40 @@ namespace Scryber
 
     // form fields
 
+    /// <summary>
+    /// The PDF /Ff field-flag bits (PDF spec tables 221/226/227). Values are the field type's
+    /// own bit position, not sequential - each PDF field type (button/text/choice) interprets
+    /// bits beyond the first 3 (common) differently, so they legitimately overlap across types.
+    /// </summary>
+    [Flags]
     public enum FormFieldOptions : int
     {
         None = 0,
+        //Common to all field types
         ReadOnly = 1,
         Required = 2,
         NoExport = 4,
-        MultiLine = 4096, //8192,
-        Password = 8192, //16384,
-        File = 1048576
+
+        //Text fields
+        MultiLine = 4096,
+        Password = 8192,
+        File = 1048576, //FileSelect
+        DoNotScroll = 8388608,
+        Comb = 16777216,
+
+        //Button fields
+        NoToggleToOff = 16384,
+        Radio = 32768,
+        Pushbutton = 65536,
+
+        //Choice fields
+        Combo = 131072,
+        Edit = 262144, //editable combo box
+        Sort = 524288,
+        Multiselect = 2097152,
+
+        //Shared between Text and Choice fields
+        DoNotSpellCheck = 4194304
     }
 
     public enum FormInputFieldType : int
@@ -151,7 +176,9 @@ namespace Scryber
 
     public enum FormButtonFieldType : int
     {
-
+        PushButton = 0,
+        CheckBox,
+        Radio
     }
 
     public enum FormFieldAppearanceState

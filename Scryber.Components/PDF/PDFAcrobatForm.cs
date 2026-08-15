@@ -7,7 +7,17 @@ using Scryber.PDF.Native;
 
 namespace Scryber.PDF
 {
-    public class PDFAcrobatFormEntry : IArtefactEntry
+    /// <summary>
+    /// Common contract for anything that can appear in the AcroForm's top-level /Fields array -
+    /// either a terminal field widget (PDFAcrobatFormFieldWidget) or a group node with its own
+    /// /Kids (PDFAcrobatFormEntry).
+    /// </summary>
+    public interface IPDFFormFieldNode : IArtefactEntry
+    {
+        IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer);
+    }
+
+    public class PDFAcrobatFormEntry : IPDFFormFieldNode
     {
         public string Name { get; private set; }
         public PDFAcrobatFormFieldEntryList Fields { get; private set; }
@@ -31,7 +41,7 @@ namespace Scryber.PDF
                 return false;
         }
 
-        public PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        public IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             if(this.Fields.Count > 0)
             {
@@ -57,7 +67,7 @@ namespace Scryber.PDF
                 writer.EndDictionaryEntry();
                 writer.EndDictionary();
                 writer.EndObject();
-                return parent;
+                return new PDFObjectRef[] { parent };
             }
             return null;
         }

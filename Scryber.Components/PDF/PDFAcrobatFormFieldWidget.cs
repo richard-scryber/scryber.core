@@ -10,7 +10,7 @@ using Scryber.PDF.Layout;
 
 namespace Scryber.PDF
 {
-    public class PDFAcrobatFormFieldWidget : PDFAnnotationEntry
+    public class PDFAcrobatFormFieldWidget : PDFAnnotationEntry, IPDFFormFieldNode
     {
         public string Name { get; set; }
 
@@ -81,7 +81,7 @@ namespace Scryber.PDF
                 writer.WriteDictionaryStringEntry("DV", this.DefaultValue);
             }
 
-            writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions + (int)this.FieldType);
+            writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
             writer.WriteDictionaryStringEntry("DA", da);
             writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
             if (null != this._page && null != this._page.PageObjectRef)

@@ -1396,9 +1396,7 @@ This is the {{.name}} item at index {{.index}}</div>";
         [TestMethod()]
         public void InjectLayouts_iFrame_DataContent_InnerForms_Allow()
         {
-            // inner-forms any: with allow policy, no crash occurs and document renders correctly.
-            // Form elements (input, select, button) are not currently registered components so
-            // they produce no components in the tree; this test verifies the policy is accepted.
+            // inner-forms any: the input element is kept and its attributes bound correctly.
             var policy = "inner-forms any; inline-styles any; inner-images any; inner-navigation any";
             var doc = Document.ParseDocument(new StringReader(BuildPermissionOuterTemplate(policy)));
             using (var ms = DocStreams.GetOutputStream("InjectLayouts_iFrame_DataContent_InnerForms_Allow.pdf"))
@@ -1412,6 +1410,13 @@ This is the {{.name}} item at index {{.index}}</div>";
             // Frame should still have content despite allow policy
             var frame = AssertGetFrameBlock(_layout);
             Assert.IsTrue(frame.Columns[0].Contents.Count > 0, "Frame should have content with inner-forms allowed");
+
+            var inputs = doc.FindMatches("input");
+            Assert.AreEqual(1, inputs.Count, "Input should be kept when inner-forms is allowed");
+            var input = inputs[0] as HTMLInput;
+            Assert.IsNotNull(input, "Matched input should be an HTMLInput");
+            Assert.AreEqual("inner-input", input.ID);
+            Assert.AreEqual("field", input.Name);
 
             // Outer model still accessible after the frame
             var vars = doc.FindMatches("var");
