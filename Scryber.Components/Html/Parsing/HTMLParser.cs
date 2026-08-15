@@ -223,6 +223,7 @@ namespace Scryber.Html.Parsing
 
                 content = ReplaceCDATATitle(content);
                 content = ReplaceCDATAStyle(content);
+                content = ReplaceCDATATextArea(content);
 
                 if (!string.IsNullOrEmpty(processing))
                     content = processing + "\r\n" + content;
@@ -446,6 +447,43 @@ namespace Scryber.Html.Parsing
                 else
                     return match.Groups[0].Value;
             }, 1);
+
+            return content;
+        }
+
+        #endregion
+
+        #region public virtual string ReplaceCDATATextArea(string content)
+
+        /// <summary>
+        /// Matches each &lt;textarea(...)&gt;(Anything)&lt;/textarea&gt; - non-greedy, as unlike
+        /// title/style a document can contain more than one textarea.
+        /// </summary>
+        private static readonly System.Text.RegularExpressions.Regex matchTextArea =
+            new System.Text.RegularExpressions.Regex("<textarea([\\s\\S]*?)<\\/textarea>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        /// <summary>
+        /// textarea is also an HTML5 "rawtext" element, so HTML Agility Pack wraps its content in
+        /// the same //&lt;![CDATA[ ... //]]&gt;// wrapping it gives script/style - strip that back out,
+        /// leaving the attributes and literal text untouched (unlike title/style, the surrounding
+        /// whitespace here is left for the field itself to trim, since it's user-facing content).
+        /// </summary>
+        /// <param name="content">The html content to find CDATA-wrapped textarea content in.</param>
+        /// <returns>The content with the //&lt;[CDATA[ ... //]]&gt;// removed from every textarea</returns>
+        public virtual string ReplaceCDATATextArea(string content)
+        {
+            content = matchTextArea.Replace(content, (match) => {
+                if (match.Groups.Count > 1)
+                {
+                    var middle = match.Groups[1].Value;
+
+                    middle = middle.Replace("//<![CDATA[", "");
+                    middle = middle.Replace("//]]>//", "");
+                    return "<textarea" + middle + "</textarea>";
+                }
+                else
+                    return match.Groups[0].Value;
+            });
 
             return content;
         }

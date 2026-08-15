@@ -48,6 +48,10 @@ namespace Scryber.Html.Components
 		public static readonly ObjectType PictureSource = (ObjectType)"hPsc";
 		public static readonly ObjectType FormInput = (ObjectType)"hInp";
 		public static readonly ObjectType Form = (ObjectType)"hFrm";
+		public static readonly ObjectType TextArea = (ObjectType)"hTxA";
+		public static readonly ObjectType Select = (ObjectType)"hSel";
+		public static readonly ObjectType Option = (ObjectType)"hOpt";
+		public static readonly ObjectType Button = (ObjectType)"hBtn";
 		public static readonly ObjectType Italic = ObjectTypes.ItalicSpan;
 		public static readonly ObjectType Emphasis = (ObjectType)"hEmp";
 		public static readonly ObjectType Label = ObjectTypes.Label;
