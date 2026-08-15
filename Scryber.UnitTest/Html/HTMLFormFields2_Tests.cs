@@ -200,6 +200,21 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.IsTrue(select.Multiple);
             Assert.IsTrue((select.Options & FormFieldOptions.Multiselect) == FormFieldOptions.Multiselect);
+            Assert.IsFalse((select.Options & FormFieldOptions.Combo) == FormFieldOptions.Combo, "A multiple select is a list box, not a combo/dropdown");
+        }
+
+        [TestMethod()]
+        [TestCategory("Html-Forms")]
+        public void Select_WithoutMultiple_DefaultsToComboBox()
+        {
+            // Without /Ff Combo, a PDF Choice field defaults to a list box that draws every /Opt
+            // entry stacked within its own rect - a plain <select> should render as a dropdown
+            // (a combo box) showing only the current value, matching real HTML behaviour.
+            var doc = ParseHtml("<select id='s1' name='x'><option>A</option><option>B</option></select>");
+            var select = doc.FindAComponentById("s1") as HTMLSelect;
+
+            Assert.IsFalse(select.Multiple);
+            Assert.IsTrue((select.Options & FormFieldOptions.Combo) == FormFieldOptions.Combo);
         }
 
         [TestMethod()]
