@@ -5,6 +5,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.PDF.Graphics;
 using Scryber.Drawing;
+using Scryber.Components;
 
 namespace Scryber.PDF
 {
@@ -50,7 +51,7 @@ namespace Scryber.PDF
             PDFObjectRef root = writer.BeginObject();
 
             var font = this._style.CreateFont();
-            var rsrc = xObject.Document.GetResource(PDFResource.FontDefnResourceType, font.FullName, true) as PDFResource;
+            var rsrc = ((Document)xObject.Document).GetFontResource(font, true);
             string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
 
             writer.BeginDictionary();

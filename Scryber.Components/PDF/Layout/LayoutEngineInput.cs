@@ -34,7 +34,10 @@ namespace Scryber.PDF.Layout
             PDFLayoutXObjectRun xObject = this.CreateAndAddInput(pos);
             _addedProxyText = false;
 
-            if(string.IsNullOrEmpty(this.Field.Value))
+            //A signature field is either unsigned (nothing to show - the reader draws its own
+            //"click to sign" UI) or signed (a reader-owned concern entirely out of scope here) -
+            //either way it should never get placeholder text baked into its appearance.
+            if (string.IsNullOrEmpty(this.Field.Value) && this.Field.FieldType != FormInputFieldType.Signature)
             {
                 this.Field.Value = "Proxy Text";
                 _addedProxyText = true;
