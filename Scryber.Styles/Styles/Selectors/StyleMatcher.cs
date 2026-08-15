@@ -275,6 +275,9 @@ namespace Scryber.Styles.Selectors
                         case (":hover"):
                             appliedState = ComponentState.Over;
                             break;
+                        case (":active"):
+                            appliedState = ComponentState.Down;
+                            break;
                         default:
                             appliedStructural = TryParseStructuralPseudoClass(state.ToLowerInvariant());
                             if (null == appliedStructural)
@@ -355,6 +358,7 @@ namespace Scryber.Styles.Selectors
                 if(string.Equals(stateValue, "::before")
                     || string.Equals(stateValue, "::after")
                     || string.Equals(stateValue, ":hover")
+                    || string.Equals(stateValue, ":active")
                     || string.Equals(stateValue, ":before")
                     || string.Equals(stateValue, ":after")
                     || string.Equals(stateValue, ":first-child", StringComparison.OrdinalIgnoreCase)

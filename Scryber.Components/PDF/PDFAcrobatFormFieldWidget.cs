@@ -7,6 +7,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
 using Scryber.PDF.Layout;
+using Scryber.PDF.Graphics;
 using Scryber.Components;
 
 namespace Scryber.PDF
@@ -42,6 +43,13 @@ namespace Scryber.PDF
 
         protected Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun> _states;
 
+        /// <summary>
+        /// Per-state styles for Over/Down, populated only when a :hover/:active rule actually
+        /// matched this field with its own values - drives a colour-only repaint of Normal's box
+        /// at output time. Never populated for Normal itself (that's _style).
+        /// </summary>
+        protected Dictionary<FormFieldAppearanceState, Styles.Style> _stateStyles = new Dictionary<FormFieldAppearanceState, Styles.Style>();
+
         protected Drawing.Point _location;
         protected Drawing.Size _size;
         protected Layout.PDFLayoutPage _page;
@@ -57,11 +65,18 @@ namespace Scryber.PDF
             this.DefaultValue = defaultValue;
         }
 
-        public void SetAppearance(FormFieldAppearanceState state, PDFLayoutXObjectRun xObject, Layout.PDFLayoutPage page, Styles.Style style)
+        /// <summary>
+        /// stateStyle is the state-specific style (from Style.TryGetStyleState) when a :hover/:active
+        /// rule matched this field, or null when none did - in which case this state's appearance
+        /// just reuses the Normal xObject unchanged, exactly as before this existed.
+        /// </summary>
+        public void SetAppearance(FormFieldAppearanceState state, PDFLayoutXObjectRun xObject, Layout.PDFLayoutPage page, Styles.Style style, Styles.Style stateStyle = null)
         {
             this._states[state] = xObject;
             if (state == FormFieldAppearanceState.Normal)
                 this._style = style;
+            else if (null != stateStyle)
+                this._stateStyles[state] = stateStyle;
             this._page = page;
         }
 
@@ -154,8 +169,12 @@ namespace Scryber.PDF
                     xObject = kvp.Value;
                     FormFieldAppearanceState state = kvp.Key;
 
-                    PDFObjectRef oref = xObject.OutputToPDF(context, writer);
-                    
+                    PDFObjectRef oref;
+                    if (this._stateStyles.TryGetValue(state, out var stateStyle))
+                        oref = WriteRepaintedAppearance(context, writer, xObject, stateStyle);
+                    else
+                        oref = xObject.OutputToPDF(context, writer);
+
                     if (null != oref)
                     {
                         
@@ -192,6 +211,50 @@ namespace Scryber.PDF
             writer.EndObject();
             //context.Offset = new PDFPoint(context.Offset.X, context.Offset.Y + _size.Height);
             return new PDFObjectRef[] { root };
+        }
+
+        /// <summary>
+        /// A colour-only repaint of Normal's exact box (same geometry, hand-drawn independently
+        /// of the layout engine like the checkbox/radio appearances) using a :hover/:active
+        /// state's background/border colours, falling back to Normal's own colour for whichever
+        /// of the two the state doesn't override. Text content isn't reproduced here - a full
+        /// second layout pass per state was explicitly out of scope for this - so Normal remains
+        /// the only appearance state that shows the field's value text.
+        /// </summary>
+        private PDFObjectRef WriteRepaintedAppearance(PDFRenderContext context, PDFWriter writer, PDFLayoutXObjectRun normalXObject, Styles.Style stateStyle)
+        {
+            var size = new Drawing.Size(normalXObject.Width, normalXObject.Height);
+
+            var oref = writer.BeginObject();
+            writer.BeginStream(oref);
+
+            using (var g = PDFGraphics.Create(writer, false, this._page, DrawingOrigin.TopLeft, size, context))
+            {
+                if (stateStyle.IsValueDefined(Styles.StyleKeys.BgColorKey) || this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
+                {
+                    var bgColor = stateStyle.IsValueDefined(Styles.StyleKeys.BgColorKey) ? stateStyle.Background.Color : this._style.Background.Color;
+                    g.FillRectangle(new PDFSolidBrush(bgColor), 0, 0, size.Width, size.Height);
+                }
+
+                var borderColor = stateStyle.IsValueDefined(Styles.StyleKeys.BorderColorKey) ? stateStyle.Border.Color : this._style.Border.Color;
+                var borderWidth = this._style.Border.Width;
+                g.DrawRectangle(PDFPen.Create(borderColor, borderWidth), 0, 0, size.Width, size.Height);
+            }
+
+            var len = writer.EndStream();
+            writer.BeginDictionary();
+            writer.WriteDictionaryNameEntry("Type", "XObject");
+            writer.WriteDictionaryNameEntry("Subtype", "Form");
+            writer.BeginDictionaryEntry("BBox");
+            writer.WriteArrayRealEntries(true, 0f, 0f, (float)size.Width.PointsValue, (float)size.Height.PointsValue);
+            writer.EndDictionaryEntry();
+            writer.BeginDictionaryEntry("Length");
+            writer.WriteNumberS(len);
+            writer.EndDictionaryEntry();
+            writer.EndDictionary();
+            writer.EndObject();
+
+            return oref;
         }
 
         /// <summary>
