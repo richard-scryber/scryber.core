@@ -7,6 +7,7 @@ using Scryber.PDF.Native;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
 using Scryber.PDF.Layout;
+using Scryber.Components;
 
 namespace Scryber.PDF
 {
@@ -76,7 +77,11 @@ namespace Scryber.PDF
             PDFObjectRef root = writer.BeginObject();
 
             var font = this._style.CreateFont();
-            var rsrc = xObject.Document.GetResource(PDFResource.FontDefnResourceType, font.FullName, true) as PDFResource;
+            //GetResource(..., create:true) only works if this exact font was already registered
+            //by something else (its create-fallback goes through the never-implemented
+            //FontFactory.GetFontDefinition(string) overload) - GetFontResource is the real,
+            //self-sufficient resolver normal text layout uses (see LayoutEngineText).
+            var rsrc = ((Document)xObject.Document).GetFontResource(font, true);
             string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
 
             writer.BeginDictionary();

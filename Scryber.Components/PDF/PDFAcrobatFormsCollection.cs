@@ -55,6 +55,9 @@ namespace Scryber.PDF
                 OutputDefaultResources(context, writer);
                 writer.WriteDictionaryBooleanEntry("NeedAppearances", true);
 
+                if (HasSignatureField())
+                    writer.WriteDictionaryNumberEntry("SigFlags", 1); //bit 1 = SignaturesExist
+
                 writer.EndDictionary();
                 writer.EndObject();
 
@@ -62,6 +65,31 @@ namespace Scryber.PDF
             }
             else
                 return null;
+        }
+
+        /// <summary>
+        /// True if any registered field - flat, or nested inside a Form's /Kids group - is a
+        /// signature field, in which case /SigFlags must be set on the AcroForm dictionary.
+        /// </summary>
+        private bool HasSignatureField()
+        {
+            foreach (var node in this.Fields)
+            {
+                if (node is PDFAcrobatFormFieldWidget widget)
+                {
+                    if (widget.FieldType == FormInputFieldType.Signature)
+                        return true;
+                }
+                else if (node is PDFAcrobatFormEntry group)
+                {
+                    foreach (var kid in group.Fields)
+                    {
+                        if (kid.FieldType == FormInputFieldType.Signature)
+                            return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
