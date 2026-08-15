@@ -29,6 +29,13 @@ namespace Scryber.Html.Components
             }
         }
 
+        /// <summary>
+        /// Without the PDF /Ff Combo bit, a Choice field defaults to a list box - every /Opt entry
+        /// drawn stacked within the field's own (single-line-sized) rect, which is exactly the
+        /// "reader draws all the options crammed into the control" symptom. A plain HTML
+        /// &lt;select&gt; (no "multiple") is a dropdown - the PDF equivalent is a combo box, so Combo
+        /// is set by default here and only cleared when multiple= makes this a real list box instead.
+        /// </summary>
         [PDFAttribute("multiple")]
         public HtmlBoolean Multiple
         {
@@ -36,9 +43,15 @@ namespace Scryber.Html.Components
             set
             {
                 if (value)
+                {
                     this.Options |= FormFieldOptions.Multiselect;
+                    this.Options &= ~FormFieldOptions.Combo;
+                }
                 else
+                {
                     this.Options &= ~FormFieldOptions.Multiselect;
+                    this.Options |= FormFieldOptions.Combo;
+                }
             }
         }
 
@@ -55,6 +68,7 @@ namespace Scryber.Html.Components
         {
             this.FieldType = FormInputFieldType.Choice;
             this.Choices = new FormFieldOptionList();
+            this.Options |= FormFieldOptions.Combo;
         }
 
         /// <summary>
