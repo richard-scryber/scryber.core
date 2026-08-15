@@ -100,6 +100,29 @@ namespace Scryber.Components
 
         public PDFAcrobatFormFieldWidget Widget { get; private set; }
 
+        /// <summary>
+        /// Some HTML field elements (textarea, button) carry their initial Value as literal
+        /// inner text rather than a value= attribute. The generic content parser attaches that
+        /// text as a plain child (subclasses must re-declare Contents with [PDFElement] for this
+        /// to happen at all, since FormInputField itself doesn't - &lt;input&gt; has no inner
+        /// text in HTML), so once data binding completes it's harvested here into Value - the
+        /// single source of truth this class renders and exports from - rather than being left
+        /// to render again as a second, untracked child.
+        /// </summary>
+        protected void HarvestInnerTextAsValueIfEmpty()
+        {
+            if (string.IsNullOrEmpty(this.Value))
+            {
+                var text = this.Contents.OfType<TextLiteral>().FirstOrDefault();
+                if (null != text)
+                {
+                    var content = text.Text;
+                    this.Contents.Remove(text);
+                    this.Value = string.IsNullOrEmpty(content) ? content : content.Trim();
+                }
+            }
+        }
+
         public FormInputField() : this(ObjectTypes.FormInputField)
         { }
 

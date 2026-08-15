@@ -22,6 +22,12 @@ namespace Scryber.PDF
 
         public FormInputFieldType FieldType { get; set; }
 
+        /// <summary>
+        /// The choices for a Choice (select/combo/list) field, written as the /Opt array.
+        /// Null or empty for any other field type.
+        /// </summary>
+        public IEnumerable<Scryber.Components.FormFieldOption> Choices { get; set; }
+
         public IEnumerable<IResourceContainer> Resources
         {
             get { return this._states.Values.AsEnumerable<IResourceContainer>(); }
@@ -86,6 +92,27 @@ namespace Scryber.PDF
             writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
             if (null != this._page && null != this._page.PageObjectRef)
                 writer.WriteDictionaryObjectRefEntry("P", this._page.PageObjectRef);
+
+            if (null != this.Choices && this.Choices.Any())
+            {
+                writer.BeginDictionaryEntry("Opt");
+                writer.BeginArray();
+                foreach (var choice in this.Choices)
+                {
+                    writer.BeginArrayEntry();
+                    writer.BeginArray();
+                    writer.BeginArrayEntry();
+                    writer.WriteStringLiteral(choice.Value ?? string.Empty);
+                    writer.EndArrayEntry();
+                    writer.BeginArrayEntry();
+                    writer.WriteStringLiteral(choice.Label ?? string.Empty);
+                    writer.EndArrayEntry();
+                    writer.EndArray();
+                    writer.EndArrayEntry();
+                }
+                writer.EndArray();
+                writer.EndDictionaryEntry();
+            }
 
             //MK - appearance dictionary
             writer.BeginDictionaryEntry("MK");
