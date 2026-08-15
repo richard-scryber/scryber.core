@@ -28,6 +28,12 @@ namespace Scryber.PDF
         /// </summary>
         public IEnumerable<Scryber.Components.FormFieldOption> Choices { get; set; }
 
+        /// <summary>
+        /// The action to fire on activation (e.g. a submit/reset action for a button-behaviour
+        /// field). Null for fields with no click behaviour.
+        /// </summary>
+        public PDFAction Action { get; set; }
+
         public IEnumerable<IResourceContainer> Resources
         {
             get { return this._states.Values.AsEnumerable<IResourceContainer>(); }
@@ -92,6 +98,8 @@ namespace Scryber.PDF
             writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
             if (null != this._page && null != this._page.PageObjectRef)
                 writer.WriteDictionaryObjectRefEntry("P", this._page.PageObjectRef);
+
+            WriteAction(context, writer);
 
             if (null != this.Choices && this.Choices.Any())
             {
@@ -179,6 +187,22 @@ namespace Scryber.PDF
             writer.EndObject();
             //context.Offset = new PDFPoint(context.Offset.X, context.Offset.Y + _size.Height);
             return new PDFObjectRef[] { root };
+        }
+
+        /// <summary>
+        /// Writes /A inline, mirroring PDFAnnotationLinkEntry's exact pattern - the action's own
+        /// OutputToPDF writes its dictionary directly (it returns null rather than an indirect ref).
+        /// </summary>
+        protected void WriteAction(PDFRenderContext context, PDFWriter writer)
+        {
+            if (null != this.Action)
+            {
+                writer.BeginDictionaryEntry("A");
+                var actionref = this.Action.OutputToPDF(context, writer);
+                if (null != actionref)
+                    writer.WriteObjectRefS(actionref);
+                writer.EndDictionaryEntry();
+            }
         }
 
         protected void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, Color color)
