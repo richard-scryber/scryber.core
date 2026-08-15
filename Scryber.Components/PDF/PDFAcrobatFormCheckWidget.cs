@@ -69,6 +69,8 @@ namespace Scryber.PDF
             if (null != this._page && null != this._page.PageObjectRef)
                 writer.WriteDictionaryObjectRefEntry("P", this._page.PageObjectRef);
 
+            WriteAction(context, writer);
+
             //MK - appearance dictionary
             writer.BeginDictionaryEntry("MK");
             writer.BeginDictionary();

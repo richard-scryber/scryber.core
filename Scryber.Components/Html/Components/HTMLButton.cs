@@ -29,6 +29,7 @@ namespace Scryber.Html.Components
             //which defaults to "text". An explicit type= attribute overrides this afterwards.
             this.FieldType = FormInputFieldType.Button;
             this.Options |= FormFieldOptions.Pushbutton;
+            this.SubmitBehavior = FormSubmitBehavior.Submit;
         }
 
         protected override void OnDataBound(DataContext context)

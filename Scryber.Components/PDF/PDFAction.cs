@@ -357,4 +357,95 @@ namespace Scryber.PDF
     }
 
     #endregion
+
+    #region public class PDFSubmitFormAction : PDFAction
+
+    /// <summary>
+    /// A submit-form action, triggered by a button/input with submit behaviour - matches an
+    /// HTML &lt;form&gt;'s own submission, encoding field values as an HTML-style form post/get
+    /// (the ExportFormat flag) rather than PDF's legacy FDF format.
+    /// </summary>
+    public class PDFSubmitFormAction : PDFAction
+    {
+        private const int ExportFormatFlag = 4;  //submit as HTML form data, not FDF
+        private const int GetMethodFlag = 8;     //GET instead of the default POST
+
+        /// <summary>
+        /// The URL to submit to.
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
+        /// "get" or "post" (case-insensitive, matching the HTML method attribute) - anything
+        /// else (including unset) submits as post, matching HTML's own default.
+        /// </summary>
+        public string Method { get; set; }
+
+        public PDFSubmitFormAction(Component owner, string url, string method = null)
+            : base(owner, LinkAction.SubmitForm)
+        {
+            if (string.IsNullOrEmpty(url))
+                throw new ArgumentNullException(nameof(url));
+            this.Url = url;
+            this.Method = method;
+        }
+
+        public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            int flags = ExportFormatFlag;
+            if (!string.IsNullOrEmpty(this.Method) && this.Method.Equals("get", StringComparison.OrdinalIgnoreCase))
+                flags |= GetMethodFlag;
+
+            writer.BeginDictionary();
+            writer.WriteDictionaryNameEntry("Type", "Action");
+            writer.WriteDictionaryNameEntry("S", "SubmitForm");
+
+            writer.BeginDictionaryEntry("F");
+            writer.BeginDictionary();
+            writer.WriteDictionaryNameEntry("Type", "Filespec");
+            writer.WriteDictionaryStringEntry("F", this.Url);
+            writer.WriteDictionaryNameEntry("FS", "URL");
+            writer.EndDictionary();
+            writer.EndDictionaryEntry();
+
+            writer.WriteDictionaryNumberEntry("Flags", flags);
+            writer.EndDictionary();
+
+            if (context.ShouldLogDebug)
+                context.TraceLog.Add(TraceLevel.Debug, "Submit Form Action", "Added submit-form action to " + this.Url);
+
+            return null;
+        }
+    }
+
+    #endregion
+
+    #region public class PDFResetFormAction : PDFAction
+
+    /// <summary>
+    /// A reset-form action, triggered by a button/input with reset behaviour - clears every
+    /// field back to its default value, matching an HTML &lt;button type="reset"&gt;.
+    /// </summary>
+    public class PDFResetFormAction : PDFAction
+    {
+        public PDFResetFormAction(Component owner)
+            : base(owner, LinkAction.ResetForm)
+        {
+        }
+
+        public override PDFObjectRef OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        {
+            writer.BeginDictionary();
+            writer.WriteDictionaryNameEntry("Type", "Action");
+            writer.WriteDictionaryNameEntry("S", "ResetForm");
+            writer.EndDictionary();
+
+            if (context.ShouldLogDebug)
+                context.TraceLog.Add(TraceLevel.Debug, "Reset Form Action", "Added reset-form action for " + this.Component.UniqueID);
+
+            return null;
+        }
+    }
+
+    #endregion
 }

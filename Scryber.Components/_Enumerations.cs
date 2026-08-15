@@ -78,7 +78,20 @@ namespace Scryber
         PrevPage,
         FirstPage,
         LastPage,
+        SubmitForm,
+        ResetForm,
         Other
+    }
+
+    /// <summary>
+    /// Whether a form field's default click behaviour is to submit or reset its Form, matching
+    /// HTML's own &lt;button&gt;/&lt;input type="submit"|"reset"&gt; default actions.
+    /// </summary>
+    public enum FormSubmitBehavior
+    {
+        None = 0,
+        Submit,
+        Reset
     }
 
     public enum PageDisplayMode

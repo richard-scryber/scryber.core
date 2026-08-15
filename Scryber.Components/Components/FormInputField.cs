@@ -68,6 +68,13 @@ namespace Scryber.Components
         public HtmlBoolean Checked { get; set; }
 
         /// <summary>
+        /// None by default - set to Submit/Reset for a submit/reset-behaviour button or input,
+        /// which builds and attaches a PDFSubmitFormAction/PDFResetFormAction to this field's
+        /// widget using the parent Form's Action/Method.
+        /// </summary>
+        public FormSubmitBehavior SubmitBehavior { get; set; }
+
+        /// <summary>
         /// Binds the raw "type" attribute string. Accepts both Scryber's native FormInputFieldType
         /// member names (e.g. "Signature") and real HTML input type keywords (e.g. "password", "submit"),
         /// which don't map 1:1 onto FormInputFieldType and so can't be bound directly via enum parsing.
@@ -95,8 +102,19 @@ namespace Scryber.Components
                     this.Options |= FormFieldOptions.File;
                     break;
                 case "submit":
+                    this.FieldType = FormInputFieldType.Button;
+                    this.SubmitBehavior = FormSubmitBehavior.Submit;
+                    break;
                 case "reset":
                     this.FieldType = FormInputFieldType.Button;
+                    this.SubmitBehavior = FormSubmitBehavior.Reset;
+                    break;
+                case "button":
+                    //An explicit type="button" has no default click behaviour (unlike a bare
+                    //<button>, which defaults to submit) - clears any default set by a subclass
+                    //constructor (e.g. HTMLButton) before this attribute was parsed.
+                    this.FieldType = FormInputFieldType.Button;
+                    this.SubmitBehavior = FormSubmitBehavior.None;
                     break;
                 case "checkbox":
                     this.FieldType = FormInputFieldType.Button;
@@ -214,7 +232,29 @@ namespace Scryber.Components
                 this._fieldEntry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
             }
 
+            this._fieldEntry.Action = this.BuildSubmitAction(context);
+
             return this._fieldEntry;
+        }
+
+        /// <summary>
+        /// Builds the submit/reset action for this field, if it has submit behaviour. A reset
+        /// action needs no target, but a submit action does nothing without a Form ancestor
+        /// that has an action= URL to submit to - it's not an error, just nothing to attach.
+        /// </summary>
+        protected virtual PDF.PDFAction BuildSubmitAction(ContextBase context)
+        {
+            if (this.SubmitBehavior == FormSubmitBehavior.Reset)
+                return new PDF.PDFResetFormAction(this);
+
+            if (this.SubmitBehavior == FormSubmitBehavior.Submit)
+            {
+                var form = this.GetParentForm(context);
+                if (null != form && !string.IsNullOrEmpty(form.Action))
+                    return new PDF.PDFSubmitFormAction(this, form.Action, form.Method);
+            }
+
+            return null;
         }
 
         object IPDFFormField.GetFieldEntry(ContextBase context)

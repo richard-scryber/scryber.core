@@ -24,6 +24,21 @@ namespace Scryber.Components
 
         protected PDFAcrobatFormEntry FormEntry { get; set; }
 
+        /// <summary>
+        /// The URL a submit-behaviour field within this form should submit to. A generic PDF
+        /// forms concept (not HTML-specific) - PDFSubmitFormAction doesn't care whether the form
+        /// came from HTML markup or native XML, so this lives on the base Form rather than HTMLForm.
+        /// </summary>
+        [PDFAttribute("action")]
+        public string Action { get; set; }
+
+        /// <summary>
+        /// "get" or "post" (matching HTML's own form method values) - "post" (the HTML default)
+        /// if not set. Only "get" is checked for specifically; anything else submits as post.
+        /// </summary>
+        [PDFAttribute("method")]
+        public string Method { get; set; }
+
         public Form() : this(ObjectTypes.Form)
         {
 
