@@ -1714,7 +1714,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var src = @"<!DOCTYPE html>
-                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <?scryber parser-mode='lax' append-log='true' ?>
                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Expression JElement</title>
@@ -1842,7 +1842,7 @@ namespace Scryber.Core.UnitTests.Binding
         {
 
             var src = @"<!DOCTYPE html>
-                        <?scryber parser-mode='strict' append-log='true' ?>
+                        <?scryber parser-mode='lax' append-log='true' ?>
                         <html xmlns='http://www.w3.org/1999/xhtml' >
                             <head>
                                 <title>Expression Newtonsoft</title>
@@ -1867,7 +1867,7 @@ namespace Scryber.Core.UnitTests.Binding
                                     <tr><td colspan='3'>Bound Array</td></tr>
                                     <template data-bind='{{deeparray}}'>
                                         <tr>
-                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',.object.value)}}</td>
+                                            <td>{{.name}}</td><td><num data-value='{{.value}}'></num></td><td>{{concat(index(),'. ',this.object.value)}}</td>
                                         </tr>
                                     </template>";
 
