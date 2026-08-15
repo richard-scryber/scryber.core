@@ -11,7 +11,7 @@ using Scryber.PDF.Layout;
 namespace Scryber.Components
 {
     [PDFParsableComponent("Input")]
-    public class FormInputField : Panel
+    public class FormInputField : Panel, IPDFFormField
     {
         private TextLiteral _innerContent;
 
@@ -49,11 +49,54 @@ namespace Scryber.Components
         [PDFAttribute("default-value")]
         public string DefaultValue { get; set; }
 
-        [PDFAttribute("type")]
         public FormInputFieldType FieldType { get; set; }
 
         [PDFAttribute("options")]
         public FormFieldOptions Options { get; set; }
+
+        /// <summary>
+        /// Binds the raw "type" attribute string. Accepts both Scryber's native FormInputFieldType
+        /// member names (e.g. "Signature") and real HTML input type keywords (e.g. "password", "submit"),
+        /// which don't map 1:1 onto FormInputFieldType and so can't be bound directly via enum parsing.
+        /// </summary>
+        [PDFAttribute("type")]
+        public string FieldTypeName
+        {
+            get { return this.FieldType.ToString(); }
+            set { this.SetFieldTypeFromAttributeValue(value); }
+        }
+
+        private void SetFieldTypeFromAttributeValue(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return;
+
+            switch (value.ToLowerInvariant())
+            {
+                case "password":
+                    this.FieldType = FormInputFieldType.Text;
+                    this.Options |= FormFieldOptions.Password;
+                    break;
+                case "file":
+                    this.FieldType = FormInputFieldType.Text;
+                    this.Options |= FormFieldOptions.File;
+                    break;
+                case "submit":
+                case "reset":
+                    this.FieldType = FormInputFieldType.Button;
+                    break;
+                case "checkbox":
+                case "radio":
+                    //Dedicated checkbox/radio widgets are not yet supported - fall back to
+                    //the safe Text default rather than failing, until that is implemented.
+                    this.FieldType = FormInputFieldType.Text;
+                    break;
+                default:
+                    if (Enum.TryParse<FormInputFieldType>(value, true, out var parsed))
+                        this.FieldType = parsed;
+                    break;
+            }
+        }
 
         public PDFAcrobatFormFieldWidget Widget { get; private set; }
 
@@ -66,6 +109,10 @@ namespace Scryber.Components
         }
 
 
+        /// <summary>
+        /// Returns the nearest ancestor Form, or null if this field is not contained within one -
+        /// fields with no Form ancestor are valid and fall back to direct root registration.
+        /// </summary>
         protected Form GetParentForm(ContextBase context)
         {
             var parent = this.Parent;
@@ -73,47 +120,54 @@ namespace Scryber.Components
             {
                 parent = parent.Parent;
             }
-
-            if (null == parent)
-            {
-                if (context.Conformance == ParserConformanceMode.Strict)
-                    throw new PDFLayoutException("The input field '" + this.ID + " is not contained within a Form");
-                else
-                    context.TraceLog.Add(TraceLevel.Error, "Form Fields", "The input field '" + this.ID + " is not contained within a Form");
-
-                return null;
-            }
-            else
-                return (Form)parent;
+            return parent as Form;
         }
 
 
         protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
         {
-            //var form = this.GetParentForm(context);
             PDFAcrobatFormFieldWidget entry = GetFieldEntry(context);
-            context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.AcrobatForms, entry);
             this.Widget = entry;
 
+            var form = this.GetParentForm(context);
+            if (null != form)
+                form.RegisterField(this, context);
+            else
+                context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.AcrobatForms, entry);
+
             base.DoRegisterArtefacts(context, set, fullstyle);
-            
+
         }
 
-        
+        private PDFAcrobatFormFieldWidget _fieldEntry;
 
+        /// <summary>
+        /// Builds (or returns the already-built) widget entry for this field. Cached because this can be
+        /// invoked twice in one render pass - directly here, and again via IPDFFormField.GetFieldEntry when
+        /// a parent Form registers this field into its own /Kids - and both call sites must share one instance
+        /// so the appearance streams set on this.Widget during layout end up on the object that's actually output.
+        /// </summary>
         protected virtual PDFAcrobatFormFieldWidget GetFieldEntry(ContextBase context)
         {
+            if (null != this._fieldEntry)
+                return this._fieldEntry;
+
             if (string.IsNullOrEmpty(this.Name))
             {
                 if (string.IsNullOrEmpty(this.ID))
                     this.ID = this.GetIncrementID(this.Type);
 
                 this.Name = this.UniqueID;
-                
-            }
-            PDFAcrobatFormFieldWidget entry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
 
-            return entry;
+            }
+            this._fieldEntry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
+
+            return this._fieldEntry;
+        }
+
+        object IPDFFormField.GetFieldEntry(ContextBase context)
+        {
+            return this.GetFieldEntry(context);
         }
 
 

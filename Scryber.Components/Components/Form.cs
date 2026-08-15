@@ -45,6 +45,15 @@ namespace Scryber.Components
 
         }
 
-        
+        protected override void DoRegisterArtefacts(PDFLayoutContext context, PDFArtefactRegistrationSet set, Style fullstyle)
+        {
+            var name = string.IsNullOrEmpty(this.Name) ? this.UniqueID : this.Name;
+            var entry = new PDF.PDFAcrobatFormEntry(name);
+            context.DocumentLayout.RegisterCatalogEntry(context, PDFArtefactTypes.AcrobatForms, entry);
+            this.FormEntry = entry;
+
+            base.DoRegisterArtefacts(context, set, fullstyle);
+        }
+
     }
 }
