@@ -33,12 +33,12 @@ namespace Scryber.PDF
             get { return this._states.Values.AsEnumerable<IResourceContainer>(); }
         }
 
-        private Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun> _states;
+        protected Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun> _states;
 
-        private Drawing.Point _location;
-        private Drawing.Size _size;
-        private Layout.PDFLayoutPage _page;
-        private Styles.Style _style;
+        protected Drawing.Point _location;
+        protected Drawing.Size _size;
+        protected Layout.PDFLayoutPage _page;
+        protected Styles.Style _style;
 
         public PDFAcrobatFormFieldWidget(string name, string value, string defaultValue, FormInputFieldType type, FormFieldOptions options)
         {
@@ -181,7 +181,7 @@ namespace Scryber.PDF
             return new PDFObjectRef[] { root };
         }
 
-        private void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, Color color)
+        protected void WriteInputColor(PDFRenderContext context, PDFWriter writer, string key, Color color)
         {
             writer.BeginDictionaryEntry(key);
 

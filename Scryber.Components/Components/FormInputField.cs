@@ -55,6 +55,19 @@ namespace Scryber.Components
         public FormFieldOptions Options { get; set; }
 
         /// <summary>
+        /// Distinguishes the Button-family field types (checkbox/radio/pushbutton) that all
+        /// share FieldType = Button (PDF's /FT /Btn covers all three) - set alongside FieldType
+        /// whenever the "type" attribute maps to one of them.
+        /// </summary>
+        public FormButtonFieldType ButtonType { get; set; }
+
+        /// <summary>
+        /// Whether a checkbox/radio field is checked. Ignored for other field types.
+        /// </summary>
+        [PDFAttribute("checked")]
+        public HtmlBoolean Checked { get; set; }
+
+        /// <summary>
         /// Binds the raw "type" attribute string. Accepts both Scryber's native FormInputFieldType
         /// member names (e.g. "Signature") and real HTML input type keywords (e.g. "password", "submit"),
         /// which don't map 1:1 onto FormInputFieldType and so can't be bound directly via enum parsing.
@@ -86,10 +99,13 @@ namespace Scryber.Components
                     this.FieldType = FormInputFieldType.Button;
                     break;
                 case "checkbox":
+                    this.FieldType = FormInputFieldType.Button;
+                    this.ButtonType = FormButtonFieldType.CheckBox;
+                    break;
                 case "radio":
-                    //Dedicated checkbox/radio widgets are not yet supported - fall back to
-                    //the safe Text default rather than failing, until that is implemented.
-                    this.FieldType = FormInputFieldType.Text;
+                    this.FieldType = FormInputFieldType.Button;
+                    this.ButtonType = FormButtonFieldType.Radio;
+                    this.Options |= FormFieldOptions.Radio;
                     break;
                 default:
                     if (Enum.TryParse<FormInputFieldType>(value, true, out var parsed))
@@ -183,7 +199,20 @@ namespace Scryber.Components
                 this.Name = this.UniqueID;
 
             }
-            this._fieldEntry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
+
+            if (this.ButtonType == FormButtonFieldType.CheckBox || this.ButtonType == FormButtonFieldType.Radio)
+            {
+                var checkWidget = new PDFAcrobatFormCheckWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
+                checkWidget.IsChecked = this.Checked;
+                checkWidget.ButtonType = this.ButtonType;
+                if (!string.IsNullOrEmpty(this.Value))
+                    checkWidget.OnStateName = this.Value;
+                this._fieldEntry = checkWidget;
+            }
+            else
+            {
+                this._fieldEntry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
+            }
 
             return this._fieldEntry;
         }
