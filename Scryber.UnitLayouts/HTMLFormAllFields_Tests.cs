@@ -20,23 +20,7 @@ namespace Scryber.UnitLayouts
     {
         private const string TestCategory = "Html-Forms";
 
-        private const string FormHtml = @"<html><body>
-<form id='mainform' name='registration' action='https://example.com/submit' method='post'>
-    <input type='text' id='f-text' name='fullname' value='Jane Doe' />
-    <input type='password' id='f-pass' name='pwd' value='secret' />
-    <textarea id='f-notes' name='notes' rows='3' cols='30'>Some notes</textarea>
-    <select id='f-country' name='country'>
-        <option value='UK'>United Kingdom</option>
-        <option value='US' selected='selected'>United States</option>
-        <option value='FR'>France</option>
-    </select>
-    <input type='checkbox' id='f-agree' name='agree' value='yes' checked='checked' />
-    <input type='radio' id='f-opt-a' name='choice' value='A' />
-    <input type='radio' id='f-opt-b' name='choice' value='B' checked='checked' />
-    <button id='f-submit' name='go' type='submit'>Save</button>
-    <button id='f-reset' name='clear' type='reset'>Clear</button>
-</form>
-</body></html>";
+        private const string FormTemplatePath = "Content/HTML/Forms/AllFieldTypes.html";
 
         private static PDFDictionary GetDictionary(PDFReader reader, PDFObjectRef oref)
         {
@@ -56,7 +40,8 @@ namespace Scryber.UnitLayouts
         [TestMethod()]
         public void AllFieldTypes_InOneForm_GenerateCorrectStructure()
         {
-            var doc = Document.ParseHtmlDocument(new StringReader(FormHtml));
+            var template = DocStreams.AssertGetTemplatePath(FormTemplatePath);
+            var doc = Document.ParseHtmlDocument(template);
 
             using var stream = DocStreams.GetOutputStream("HTMLFormAllFields.pdf");
             doc.SaveAsPDF(stream);
