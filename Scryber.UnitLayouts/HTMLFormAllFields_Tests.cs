@@ -44,6 +44,7 @@ namespace Scryber.UnitLayouts
             var doc = Document.ParseHtmlDocument(template);
 
             using var stream = DocStreams.GetOutputStream("HTMLFormAllFields.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.SaveAsPDF(stream);
             stream.Flush();
 
@@ -141,6 +142,10 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual("Btn", (submitFt as PDFName)?.Value);
             submit.TryGetValue("Ff", out var submitFf);
             Assert.AreEqual(65536L, ((PDFNumber)submitFf).Value, "Pushbutton flag");
+            Assert.IsTrue(submit.TryGetValue("MK", out var submitMkEntry));
+            var submitMk = submitMkEntry as PDFDictionary;
+            submitMk.TryGetValue("CA", out var submitCa);
+            Assert.AreEqual("Save", (submitCa as PDFString)?.Value, "/MK /CA is what readers show as a pushbutton's caption, not /V or /AP content");
             Assert.IsTrue(submit.TryGetValue("A", out var submitAEntry));
             var submitA = submitAEntry as PDFDictionary;
             submitA.TryGetValue("S", out var submitS);
@@ -154,6 +159,10 @@ namespace Scryber.UnitLayouts
             var reset = fields.Single(f => NameOf(f) == "clear");
             reset.TryGetValue("FT", out var resetFt);
             Assert.AreEqual("Btn", (resetFt as PDFName)?.Value);
+            Assert.IsTrue(reset.TryGetValue("MK", out var resetMkEntry));
+            var resetMk = resetMkEntry as PDFDictionary;
+            resetMk.TryGetValue("CA", out var resetCa);
+            Assert.AreEqual("Clear", (resetCa as PDFString)?.Value);
             Assert.IsTrue(reset.TryGetValue("A", out var resetAEntry));
             var resetA = resetAEntry as PDFDictionary;
             resetA.TryGetValue("S", out var resetS);

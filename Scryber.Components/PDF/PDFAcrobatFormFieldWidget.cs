@@ -154,6 +154,18 @@ namespace Scryber.PDF
             {
                 WriteInputColor(context, writer, "BG", this._style.Background.Color);
             }
+
+            //A pushbutton's visible label comes from /MK /CA (its "caption"), not from /V or
+            //whatever text happens to be baked into our own /AP - readers that regenerate a
+            //pushbutton's appearance (which NeedAppearances invites, and buttons especially
+            //tend to get fully self-rendered) look here for what to draw, and draw a blank
+            //button without it.
+            if ((this.FieldOptions & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton
+                && !string.IsNullOrEmpty(this.Value))
+            {
+                writer.WriteDictionaryStringEntry("CA", this.Value);
+            }
+
             writer.EndDictionary();
             writer.EndDictionaryEntry();
 

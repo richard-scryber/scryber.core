@@ -1,14 +1,34 @@
-<html><body>
+<html>
+<head>
+    <style>
+        button{ padding: 4pt;
+        font-size: 10pt;
+        background-color: silver;
+            color: brown;
+        }
+        
+        button:focus, button:hover {
+            background-color: lightgreen;
+        }
+    </style>
+</head>
+<body>
 <form id='mainform' name='registration' action='https://example.com/submit' method='post'>
+    String:
     <input type='text' id='f-text' name='fullname' value='Jane Doe' />
+    Password:
     <input type='password' id='f-pass' name='pwd' value='secret' />
+    Text:
     <textarea id='f-notes' name='notes' rows='3' cols='30'>Some notes</textarea>
+    Select:
     <select id='f-country' name='country'>
         <option value='UK'>United Kingdom</option>
         <option value='US' selected='selected'>United States</option>
         <option value='FR'>France</option>
     </select>
+    Checkbox:
     <input type='checkbox' id='f-agree' name='agree' value='yes' checked='checked' />
+    Radios:
     <input type='radio' id='f-opt-a' name='choice' value='A' />
     <input type='radio' id='f-opt-b' name='choice' value='B' checked='checked' />
     <button id='f-submit' name='go' type='submit'>Save</button>
