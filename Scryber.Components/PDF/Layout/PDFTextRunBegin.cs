@@ -1122,7 +1122,7 @@ namespace Scryber.PDF.Layout
 
             if (null != arrange && null == arrange.NextArrangement) //There is only one arrangement - we are a simple rect.
             {
-                this.OutputBorder(null, border, context, arrange.RenderBounds);
+                OutputBorder(null, border, context, arrange.RenderBounds);
                 return;
             }
 
@@ -1170,7 +1170,7 @@ namespace Scryber.PDF.Layout
                     
                     
 
-                this.OutputBorder(null, border, context, rect);
+                OutputBorder(null, border, context, rect);
                 
                 //Back to the original state
                 border.AllPen = all;

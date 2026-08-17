@@ -23,6 +23,9 @@ namespace Scryber.PDF
         public FormFieldOptions FieldOptions { get; set; }
 
         public FormInputFieldType FieldType { get; set; }
+        
+        public int MaxLength { get; set; }
+        
 
         /// <summary>
         /// The choices for a Choice (select/combo/list) field, written as the /Opt array.
@@ -99,6 +102,18 @@ namespace Scryber.PDF
             var rsrc = ((Document)xObject.Document).GetFontResource(font, true);
             string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
 
+            //DA is what a reader falls back to whenever it regenerates a field's appearance itself
+            //(e.g. after the user edits the value) - without a colour operator here, that
+            //regenerated text always comes out default black regardless of the field's CSS colour.
+            if (this._style.IsValueDefined(Styles.StyleKeys.FillColorKey))
+            {
+                var color = this._style.Fill.Color;
+                if (color.ColorSpace == ColorSpace.RGB)
+                    da += " " + color.Red.ToString() + " " + color.Green.ToString() + " " + color.Blue.ToString() + " rg";
+                else if (color.ColorSpace == ColorSpace.G)
+                    da += " " + color.Gray.ToString() + " g";
+            }
+
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Subtype", "Widget");
             writer.WriteDictionaryStringEntry("T", this.Name);
@@ -114,6 +129,8 @@ namespace Scryber.PDF
             }
 
             writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
+            if (this.MaxLength > 0)
+                writer.WriteDictionaryNumberEntry("MaxLen", this.MaxLength);
             writer.WriteDictionaryStringEntry("DA", da);
             writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
             if (null != this._page && null != this._page.PageObjectRef)
@@ -174,8 +191,8 @@ namespace Scryber.PDF
                 _location = context.Offset;
 
                 Drawing.Rect bounds = Drawing.Rect.Empty;
-                writer.BeginDictionaryEntry("AP");
-                writer.BeginDictionary();
+                //writer.BeginDictionaryEntry("AP");
+                //writer.BeginDictionary();
                 foreach (var kvp in _states)
                 {
                     xObject = kvp.Value;
@@ -183,9 +200,9 @@ namespace Scryber.PDF
 
                     PDFObjectRef oref;
                     if (this._stateStyles.TryGetValue(state, out var stateStyle))
-                        oref = WriteRepaintedAppearance(context, writer, xObject, stateStyle);
+                        oref = WriteRepaintedAppearance(context, writer, xObject, stateStyle, state);
                     else
-                        oref = xObject.OutputToPDF(context, writer);
+                        oref =  xObject.OutputToPDF(context, writer);
 
                     if (null != oref)
                     {
@@ -200,15 +217,24 @@ namespace Scryber.PDF
                             if (_size.Height < sz.Height)
                                 _size.Height = sz.Height;
                         }
-                        var name = GetFieldStateName(kvp.Key);
-                        writer.WriteDictionaryObjectRefEntry(name, oref);
+                        //var name = GetFieldStateName(kvp.Key);
+                        //writer.WriteDictionaryObjectRefEntry(name, oref);
 
                         //We should have all states starting at the same location no matter what.
-                        this._location = xObject.Location; 
+                        this._location = new Point(xObject.Location.X, xObject.Location.Y);
+
+                        var pos = this._style.CreatePostionOptions(false);
+                        if (!pos.Margins.IsEmpty && pos.DisplayMode != DisplayMode.Inline)
+                        {
+                            _location.X += pos.Margins.Left;
+                            _location.Y += pos.Margins.Top;
+                            _size.Width -= pos.Margins.Right + pos.Margins.Left;
+                            _size.Height -= pos.Margins.Top + pos.Margins.Bottom;
+                        }
                     }
                 }
-                writer.EndDictionary();
-                writer.EndDictionaryEntry();
+                //writer.EndDictionary();
+                //writer.EndDictionaryEntry();
 
                 PDFReal left = context.Graphics.GetXPosition(_location.X);
                 PDFReal top = context.Graphics.GetYPosition(_location.Y);
@@ -233,24 +259,26 @@ namespace Scryber.PDF
         /// second layout pass per state was explicitly out of scope for this - so Normal remains
         /// the only appearance state that shows the field's value text.
         /// </summary>
-        private PDFObjectRef WriteRepaintedAppearance(PDFRenderContext context, PDFWriter writer, PDFLayoutXObjectRun normalXObject, Styles.Style stateStyle)
+        private PDFObjectRef WriteRepaintedAppearance(PDFRenderContext context, PDFWriter writer, PDFLayoutXObjectRun normalXObject, Styles.Style stateStyle, FormFieldAppearanceState state)
         {
             var size = new Drawing.Size(normalXObject.Width, normalXObject.Height);
-
+            var origGraphics = context.Graphics;
+            
             var oref = writer.BeginObject();
             writer.BeginStream(oref);
 
             using (var g = PDFGraphics.Create(writer, false, this._page, DrawingOrigin.TopLeft, size, context))
             {
-                if (stateStyle.IsValueDefined(Styles.StyleKeys.BgColorKey) || this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
-                {
-                    var bgColor = stateStyle.IsValueDefined(Styles.StyleKeys.BgColorKey) ? stateStyle.Background.Color : this._style.Background.Color;
-                    g.FillRectangle(new PDFSolidBrush(bgColor), 0, 0, size.Width, size.Height);
-                }
-
-                var borderColor = stateStyle.IsValueDefined(Styles.StyleKeys.BorderColorKey) ? stateStyle.Border.Color : this._style.Border.Color;
-                var borderWidth = this._style.Border.Width;
-                g.DrawRectangle(PDFPen.Create(borderColor, borderWidth), 0, 0, size.Width, size.Height);
+                context.Graphics = g;
+                var rect = new Rect(0, 0, size.Width, size.Height);
+                var borders = stateStyle.CreateBorderPen();
+                var bg = stateStyle.CreateBackgroundBrush();
+                
+                PDFLayoutItem.OutputBackground(bg, borders, context, rect);
+                
+                PDFLayoutItem.OutputBorder(bg, borders, context, rect);
+                
+                
             }
 
             var len = writer.EndStream();
@@ -265,6 +293,8 @@ namespace Scryber.PDF
             writer.EndDictionaryEntry();
             writer.EndDictionary();
             writer.EndObject();
+
+            context.Graphics = origGraphics;
 
             return oref;
         }

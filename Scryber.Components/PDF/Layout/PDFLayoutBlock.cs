@@ -1708,7 +1708,7 @@ namespace Scryber.PDF.Layout
 
                 if (null != background)
                 {
-                    this.OutputBackground(background, border,
+                    OutputBackground(background, border,
                         context, borderRect);
                 }
 
@@ -1736,7 +1736,7 @@ namespace Scryber.PDF.Layout
                         context.TraceLog.Add(TraceLevel.Debug, "Layout Block",
                             "Rendering border of block " + this.ToString() + " with rect " + borderRect.ToString());
 
-                    this.OutputBorder(background, border, context, borderRect);
+                    OutputBorder(background, border, context, borderRect);
 
                     if(this.ColumnOptions.ColumnCount > 1 && this.ColumnOptions.ColumnRule != null)
                     {

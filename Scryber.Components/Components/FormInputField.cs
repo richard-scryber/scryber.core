@@ -48,6 +48,13 @@ namespace Scryber.Components
 
         [PDFAttribute("default-value")]
         public string DefaultValue { get; set; }
+        
+        [PDFAttribute("maxlength")]
+        public int MaxLength
+        {
+            get;
+            set;
+        }
 
         public FormInputFieldType FieldType { get; set; }
 
@@ -66,6 +73,14 @@ namespace Scryber.Components
         /// </summary>
         [PDFAttribute("checked")]
         public HtmlBoolean Checked { get; set; }
+
+        /// <summary>
+        /// HTML's "required" boolean attribute - maps onto the PDF /Ff Required bit (readers like
+        /// Acrobat/Chrome highlight required fields, e.g. in red, using this flag rather than anything
+        /// visual we bake into the appearance stream).
+        /// </summary>
+        [PDFAttribute("required")]
+        public HtmlBoolean Required { get; set; }
 
         /// <summary>
         /// None by default - set to Submit/Reset for a submit/reset-behaviour button or input,
@@ -218,6 +233,9 @@ namespace Scryber.Components
 
             }
 
+            if (this.Required)
+                this.Options |= FormFieldOptions.Required;
+
             if (this.ButtonType == FormButtonFieldType.CheckBox || this.ButtonType == FormButtonFieldType.Radio)
             {
                 var checkWidget = new PDFAcrobatFormCheckWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
@@ -230,6 +248,7 @@ namespace Scryber.Components
             else
             {
                 this._fieldEntry = new PDFAcrobatFormFieldWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
+                this._fieldEntry.MaxLength = this.MaxLength;
             }
 
             this._fieldEntry.Action = this.BuildSubmitAction(context);
@@ -271,15 +290,17 @@ namespace Scryber.Components
         protected override Style GetBaseStyle()
         {
             Style style = base.GetBaseStyle();
-
             style.Position.PositionMode = Drawing.PositionMode.Static;
             style.Position.DisplayMode = DisplayMode.InlineBlock;
             style.Border.Width = 1;
             style.Border.LineStyle = Drawing.LineType.Solid;
             style.Border.Color = Drawing.StandardColors.Black;
+            style.Background.Color = StandardColors.White;
+            style.Position.VAlign = VerticalAlignment.Bottom;
+            style.Fill.Color = StandardColors.Black;
+            
             style.Padding.All = 5;
-            style.Size.FullWidth = true;
-
+            style.Margins.All = 5;
             if ((this.Options & FormFieldOptions.MultiLine) != FormFieldOptions.MultiLine)
                 style.Text.WrapText = Text.WordWrap.NoWrap;
             

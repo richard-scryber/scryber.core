@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Scryber.Components;
+using Scryber.Styles;
 
 namespace Scryber.Html.Components
 {
@@ -13,6 +14,35 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("option")]
     public class HTMLOption : ContainerComponent
     {
+        [PDFAttribute("class")]
+        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
+
+        [PDFAttribute("style")]
+        public Style Style { get; set; }
+        
+
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+        
         [PDFAttribute("value")]
         public string Value { get; set; }
 
