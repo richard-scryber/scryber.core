@@ -3,6 +3,7 @@ using Scryber.Styles;
 using System.Collections.Generic;
 using Scryber.PDF.Graphics;
 using Scryber.PDF.Layout;
+using Scryber.PDF.Native;
 
 namespace Scryber.PDF
 {
@@ -109,5 +110,16 @@ namespace Scryber.PDF
         
         PDFPenBorders FallbackBorder { get; set; }
         
+    }
+    
+    
+    /// <summary>
+    /// Common contract for anything that can appear in the AcroForm's top-level /Fields array -
+    /// either a terminal field widget (PDFAcrobatFormFieldWidget) or a group node with its own
+    /// /Kids (PDFAcrobatFormEntry).
+    /// </summary>
+    public interface IPDFFormFieldNode : IArtefactEntry
+    {
+        IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer);
     }
 }

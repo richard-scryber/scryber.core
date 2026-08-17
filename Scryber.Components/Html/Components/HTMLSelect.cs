@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using Scryber.Styles;
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.PDF;
 
 namespace Scryber.Html.Components
@@ -8,6 +10,49 @@ namespace Scryber.Html.Components
     [PDFParsableComponent("select")]
     public class HTMLSelect : FormInputField
     {
+        [PDFAttribute("class")]
+        public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
+
+        [PDFAttribute("style")]
+        public override Style Style { get => base.Style; set => base.Style = value; }
+        
+
+        /// <summary>
+        /// Global Html hidden attribute used with xhtml as hidden='hidden'
+        /// </summary>
+        [PDFAttribute("hidden")]
+        public string Hidden
+        {
+            get
+            {
+                if (this.Visible)
+                    return string.Empty;
+                else
+                    return "hidden";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value != "hidden")
+                    this.Visible = true;
+                else
+                    this.Visible = false;
+            }
+        }
+
+        [PDFAttribute("title")]
+        public override string OutlineTitle
+        {
+            get => base.OutlineTitle;
+            set => base.OutlineTitle = value;
+        }
+        
+        [PDFAttribute("size")]
+        public int Size
+        {
+            get;
+            set;
+        }
+        
         private HTMLOptionList _items;
 
         /// <summary>
@@ -110,6 +155,18 @@ namespace Scryber.Html.Components
             var entry = base.GetFieldEntry(context);
             entry.Choices = this.Choices;
             return entry;
+        }
+        
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            
+            this.Width = Unit.Ex(20);
+            
+            if(this.Size > 0)
+                style.Size.Height = Scryber.Drawing.Unit.Em(this.Size);
+            
+            return style;
         }
     }
 }

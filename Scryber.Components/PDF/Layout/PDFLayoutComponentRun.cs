@@ -239,7 +239,7 @@ namespace Scryber.PDF.Layout
                 borderRect = borderRect.Offset(context.Offset.X + this.TotalBounds.X, context.Offset.Y + this.TotalBounds.Y);
                 
                 if (null != background)
-            this.OutputBackground(background, border, context, borderRect);
+                    OutputBackground(background, border, context, borderRect);
 
                 //Calculate the image size and location
                 
@@ -295,7 +295,7 @@ namespace Scryber.PDF.Layout
                 //finally if we have a border then write this
                 if (null != border)
                 {
-                    this.OutputBorder(background, border, context, borderRect);
+                    OutputBorder(background, border, context, borderRect);
                 }
 
                 if (context.ShouldLogDebug)

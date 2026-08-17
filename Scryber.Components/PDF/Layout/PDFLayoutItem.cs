@@ -410,28 +410,9 @@ namespace Scryber.PDF.Layout
         #endregion
 
         #region protected void OutputBackground(PDFBackgroundStyle bg, PDFBorderStyle border, PDFRenderContext context, PDFRect rect)
+        
 
-        /// <summary>
-        /// Outputs the background for this block in the specified rect with the background style.
-        /// </summary>
-        /// <param name="bg">The backgrond style</param>
-        /// <param name="border">The border style (which indicates the corner radius)</param>
-        /// <param name="context">The current render context</param>
-        /// <param name="rect">The rectangle to be output</param>
-        protected virtual void OutputBackground(PDFBrush bg, Unit? corner, PDFRenderContext context, Rect rect)
-        {
-            var g = context.Graphics;
-            
-            if (null != bg)
-            {
-                if (corner.HasValue && corner.Value != Unit.Zero)
-                    g.FillRoundRectangle(bg, rect, corner.Value);
-                else
-                    g.FillRectangle(bg, rect);
-            }
-        }
-
-        protected virtual void OutputBackground(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
+        public static void OutputBackground(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
             if (null != bg)
@@ -464,7 +445,7 @@ namespace Scryber.PDF.Layout
         /// <param name="border">The border style</param>
         /// <param name="context">The current render context</param>
         /// <param name="rect">The rectangle that shoud be rendered as the border</param>
-        protected virtual void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
+        public static void OutputBorder(PDFBrush bg, PDFPenBorders border, PDFRenderContext context, Rect rect)
         {
             var g = context.Graphics;
 

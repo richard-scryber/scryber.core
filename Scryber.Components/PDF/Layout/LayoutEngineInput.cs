@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
+using Scryber.Drawing;
 
 namespace Scryber.PDF.Layout
 {
@@ -32,6 +33,12 @@ namespace Scryber.PDF.Layout
             PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
 
             PDFLayoutXObjectRun xObject = this.CreateAndAddInput(pos);
+            if (null == xObject)
+            {
+                this.ContinueLayout =  false;
+                return;
+            }
+            
             _addedProxyText = false;
 
             //A signature field is either unsigned (nothing to show - the reader draws its own
@@ -48,8 +55,25 @@ namespace Scryber.PDF.Layout
             
 
             xObject.Close();
-
-            if (pos.DisplayMode == Drawing.DisplayMode.Block)
+            
+            var width = xObject.Width;
+            
+            if (this.Line.AvailableWidth < 0)
+            {
+                this.Line.RemoveRun(xObject);
+                this.CloseCurrentLine();
+                
+                var newLine = this.Line.Region.BeginNewLine();
+                
+                newLine.AddRun(xObject);
+                
+                xObject.SetOffsetX(newLine.OffsetX);
+                xObject.SetOffsetY(newLine.OffsetY + this.Line.Height);
+                
+                this.Line = newLine;
+                xObject.SetParent(this.Line);
+            }
+            else if (pos.DisplayMode == Drawing.DisplayMode.Block)
             {
                 this.CloseCurrentLine();
             }
@@ -78,6 +102,17 @@ namespace Scryber.PDF.Layout
             Style overStyle;
             this.FullStyle.TryGetStyleState(ComponentState.Over, out overStyle);
             this.Field.Widget.SetAppearance(FormFieldAppearanceState.Over, xObject, this.LayoutPage, this.FullStyle, overStyle);
+
+            if (pos.PositionMode == PositionMode.Static)
+            {
+                //recalculate the offset
+                var loc = Point.Empty;
+                loc.X += this.Line.Width - xObject.ChildContainer.Width;
+                
+                xObject.SetOffsetX(loc.X);
+            }
+
+            //this.Field.Widget.XObjectOffset = new Size(this.Line.OffsetX + this.Line.Width - xObject.Width, this.Line.OffsetY);
         }
 
         protected override void DoLayoutChildren()
@@ -117,24 +152,79 @@ namespace Scryber.PDF.Layout
         {
             PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;
-            if (containerRegion.HasOpenItem == false)
-                containerRegion.BeginNewLine();
-            //pos.Y = 200;
-            PDFLayoutRegion container = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage, this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
+            
+            //If we have a position of static, then we need to create a new positioned region (without an associated run)
+            //And then add a new XObjectRun to t
 
-            this.Line = containerRegion.CurrentItem as PDFLayoutLine;
-            PDFLayoutXObjectRun begin = this.Line.AddXObjectRun(this, this.Field, container, pos, this.FullStyle);
+            if (this.HasExistingPositionedRegion(pos))
+            {
+                if(containerRegion is PDFLayoutPositionedRegion posRegion)
+                {
+                    var posRun = posRegion.AssociatedRun;
+                    this.Line = posRun.Line;
+                    this.Line.RemoveRun(posRun);
+                }
+                else
+                {
+                    this.ContinueLayout = false;
+                    return null;
+                }
+                
+            }
+            else if (pos.DisplayMode == Drawing.DisplayMode.Inline)
+            {
+                if (containerRegion.HasOpenItem == false)
+                    containerRegion.BeginNewLine(); // this will hold our xObjectRun
+                
+                this.Line = containerRegion.CurrentItem as PDFLayoutLine;
+                
+                containerRegion = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage,
+                    this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
+
+            }
+            else //maps to all types, as it has no diverse content, then it appears on it's own line and in a xObjectRun
+            {
+                if (containerRegion.HasOpenItem)
+                    containerRegion.CloseCurrentItem(); // this will hold our xObjectRun
+                
+                this.Line = containerRegion.BeginNewLine();
+                
+                containerRegion = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage,
+                    this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
+            }
+            
+            
+            
+            //pos.Y = 200;
+            
+            PDFLayoutXObjectRun begin = this.Line.AddXObjectRun(this, this.Field, containerRegion, pos, this.FullStyle);
+            
+            
+            // System.IO.File.AppendAllText("/tmp/scryber_xobj_debug.log",
+            //     $"CreateAndAddInput field={this.Field.ID} region={containerRegion.GetHashCode()} line={this.Line.GetHashCode()} line.OffsetY={this.Line.OffsetY}\n");
 
             return begin;
         }
 
+        /// <summary>
+        /// Returns true if the parent engines have already created a new positioned block for this input, (e.g. display inlineBlock, or position absolute)
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        protected virtual bool HasExistingPositionedRegion(PDFPositionOptions pos)
+        {
+            if (pos.DisplayMode == DisplayMode.InlineBlock)
+            {
+                return true;
+            }
+            
+            return false;
+        }
+
         private void CloseCurrentLine()
         {
-
             if (!this.Line.IsClosed)
                 this.Line.Region.CloseCurrentItem();
-
-            
         }
 
     }

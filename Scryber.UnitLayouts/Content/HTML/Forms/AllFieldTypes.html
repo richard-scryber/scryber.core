@@ -1,37 +1,60 @@
 <html>
 <head>
     <style>
-        button{ padding: 4pt;
-        font-size: 10pt;
-        background-color: silver;
-            color: brown;
+        body{
+            margin: 10pt;
+            border: solid 1px #ccc;
         }
         
-        button:focus, button:hover {
+        button{ 
+            padding: 4pt;
+            font-size: 18pt;
+            background-color: silver;
+            color: green;
+            display: inline-block;
+        }
+        
+        button:active, button:hover {
             background-color: lightgreen;
+        }
+        
+        input, select, textarea {
+
         }
     </style>
 </head>
-<body>
-<form id='mainform' name='registration' action='https://example.com/submit' method='post'>
+<body id="body">
+Before the form
+<form id='mainform' name='registration' action='https://example.com/submit' method='post' 
+      style="border: 1px solid black; background-color: lightgreen; ">
+    Before the string<br/>
     String:
     <input type='text' id='f-text' name='fullname' value='Jane Doe' />
-    Password:
-    <input type='password' id='f-pass' name='pwd' value='secret' />
-    Text:
-    <textarea id='f-notes' name='notes' rows='3' cols='30'>Some notes</textarea>
+    A Password:
+    <input type='password' id='f-pass' name='pwd' value='secret' style="vertical-align: bottom; width: 60pt; border-radius: 5pt;" />
+    <span style="vertical-align: bottom;">After Password</span>
+<!--    Text:-->
+    <textarea id='f-notes' name='notes' rows='5' cols='20' style="margin: 10pt;">Some notes</textarea>
     Select:
-    <select id='f-country' name='country'>
+    <select id='f-country' name='country' required="required" multiple='multiple' size="5">
         <option value='UK'>United Kingdom</option>
-        <option value='US' selected='selected'>United States</option>
+        <option value='US' >United States</option>
         <option value='FR'>France</option>
     </select>
-    Checkbox:
-    <input type='checkbox' id='f-agree' name='agree' value='yes' checked='checked' />
-    Radios:
-    <input type='radio' id='f-opt-a' name='choice' value='A' />
-    <input type='radio' id='f-opt-b' name='choice' value='B' checked='checked' />
-    <button id='f-submit' name='go' type='submit'>Save</button>
-    <button id='f-reset' name='clear' type='reset'>Clear</button>
+<!--    Checkbox:-->
+<!--    <input type='checkbox' id='f-agree' name='agree' value='yes' checked='checked' />-->
+<!--    Radios:-->
+<!--    <input type='radio' id='f-opt-a' name='choice' value='A' />-->
+<!--    <input type='radio' id='f-opt-b' name='choice' value='B' checked='checked' />-->
+<!--    <button id='f-submit' name='go' type='submit'>Save</button>-->
+<!--    <button id='f-reset' name='clear' type='reset'>Clear</button>-->
+</form>
+After the form.
+<form action="http://localhost:8080/submit" method="post"> 
+    Before the string<br/>
+    String:
+    <input type='text' id='f-text-2' name='fullname_other' value='Jane Doe' style="display: inline-block; margin: 10pt;" required="required" />
+    <input type='text' id='f-text-3' name='fullname' value='Jane Doe' style="display: block; margin: 10pt;" />
+    <button type="submit">Submit</button>
 </form>
 </body></html>

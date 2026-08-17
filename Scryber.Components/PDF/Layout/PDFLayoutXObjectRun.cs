@@ -34,6 +34,11 @@ namespace Scryber.PDF.Layout
             this.DrawingOrigin = DrawingOrigin.BottomLeft;
         }
 
+        public PDFLayoutRegion ChildContainer
+        {
+            get { return _childContainer; }
+        }
+
         public PDFTransformationMatrix Matrix { get; set; }
 
         public Rect? ClipRect { get; set; }
@@ -42,7 +47,7 @@ namespace Scryber.PDF.Layout
 
         public string SubType { get; set; }
 
-        public Point Location { get; private set; }
+        public Point Location { get; set; }
 
         public PDFPositionOptions PositionOptions { get { return _position; } }
 
@@ -51,8 +56,32 @@ namespace Scryber.PDF.Layout
             get { return _resources; }
         }
 
+        public override Unit OffsetX
+        {
+            get { return this._offsetX; }
+        }
+
         private Unit? _explicitH;
         private Unit? _explicitW;
+
+        private Unit _offsetY = Unit.Zero;
+        private Unit _offsetX = Unit.Zero;
+
+        /// <summary>
+        /// Baseline/vertical-align offset assigned by the containing line's
+        /// EnsureAllRunsOnSameLevel/AlignBlocksFromBaseline pass, mirroring
+        /// PDFLayoutInlineBlockRun - previously silently discarded via the no-op base
+        /// SetOffsetY, which is why every field sat pinned to the top of its line.
+        /// </summary>
+        public override void SetOffsetY(Unit y)
+        {
+            this._offsetY = y;
+        }
+
+        public void SetOffsetX(Unit x)
+        {
+            this._offsetX = x;
+        }
 
         public override Unit Height
         {
@@ -86,6 +115,14 @@ namespace Scryber.PDF.Layout
         protected override void DoPushComponentLayout(PDFLayoutContext context, int pageIndex, Unit xoffset, Unit yoffset)
         {
             this._page = context.DocumentLayout.CurrentPage;
+
+            //Mirrors PDFLayoutInlineBlockRun.DoPushComponentLayout - the incoming yoffset isn't
+            //meaningful for a positioned-region-based run; the real vertical position is the
+            //line's own offset plus whatever baseline/vertical-align offset was assigned to us.
+            yoffset = this.Line.OffsetY;
+            if (this._offsetY != Unit.Zero)
+                yoffset += this._offsetY;
+
             this._childContainer.PushComponentLayout(context, pageIndex, xoffset, yoffset);
         }
 
@@ -185,14 +222,18 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private PDFObjectRef OutputContent(PDFRenderContext context, PDFWriter writer)
         {
+            Point origOffset = context.Offset;
+            Size origSpace = context.Space.Clone();
+            PDFGraphics prevGraphics = context.Graphics;
+            
+            
             PDFObjectRef xObject = writer.BeginObject();
             IStreamFilter[] filters = (context.Compression == OutputCompressionType.FlateDecode) ? this._page.PageCompressionFilters : null;
 
             writer.BeginStream(xObject, filters);
+            
 
-            this.Location = context.Offset.Offset(0, this.Line.OffsetY);
-            Size origSpace = context.Space.Clone();
-            PDFGraphics prevGraphics = context.Graphics;
+            this.Location = context.Offset.Offset(this._offsetX, this.Line.OffsetY + this._offsetY);
 
             using (PDFGraphics g = this.CreateGraphics(writer, context.StyleStack, context))
             {
@@ -205,21 +246,7 @@ namespace Scryber.PDF.Layout
                 this._childContainer.OutputToPDF(context, writer);
 
             }
-
-            ////Move the drawing origin to the bottom corner of the XObject viewbox
-            //var origin = new Point(0, context.PageSize.Height);
-            //origin.Y -= this.Height;
-            //origin.Y -= this.Location.Y;
-
-            //origin.X += this.Location.X;
-            //if (null == this.Matrix)
-            //    this.Matrix = PDFTransformationMatrix.Identity();
-
-            //this.Matrix.SetTranslation(origin.X, origin.Y);
-
-            context.Offset = this.Location;
-            context.Space = origSpace;
-            context.Graphics = prevGraphics;
+            
 
             long len = writer.EndStream();
             writer.BeginDictionary();
@@ -228,6 +255,11 @@ namespace Scryber.PDF.Layout
 
             writer.EndDictionary();
             writer.EndObject();
+            
+            
+            context.Offset = origOffset;
+            context.Space = origSpace;
+            context.Graphics = prevGraphics;
 
             return xObject;
         }

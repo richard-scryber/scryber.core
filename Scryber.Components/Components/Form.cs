@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scryber.Drawing;
 using Scryber.Styles;
 using Scryber.PDF;
 
@@ -70,5 +71,14 @@ namespace Scryber.Components
             base.DoRegisterArtefacts(context, set, fullstyle);
         }
 
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+            style.Position.DisplayMode = DisplayMode.Block;
+            style.Size.FullWidth = true;
+            style.Margins.Bottom = Unit.Em(0.5);
+            
+            return style;
+        }
     }
 }
