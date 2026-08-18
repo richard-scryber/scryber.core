@@ -296,6 +296,12 @@ namespace Scryber.Components
 
         protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
+            //Only pushbuttons self-render a real /AP with independent Down/Over layouts - every
+            //other field type keeps the plain single-appearance engine (relying on
+            ///NeedAppearances for anything a reader needs to show beyond Normal).
+            if ((this.Options & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton)
+                return new PDF.Layout.LayoutEngineStatedButton(this, parent);
+
             return new PDF.Layout.LayoutEngineInput(this, parent);
         }
 

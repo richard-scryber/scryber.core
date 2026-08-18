@@ -18,9 +18,16 @@ namespace Scryber.PDF.Layout
 
         protected FormInputField Field { get; private set; }
 
-        protected PDFLayoutPage LayoutPage { get; private set; }
+        protected PDFLayoutPage LayoutPage { get; set; }
 
-        protected PDFLayoutLine Line { get; private set; }
+        protected PDFLayoutLine Line { get; set; }
+
+        /// <summary>
+        /// The run produced by this pass, once DoLayoutComponent has closed it - lets an external
+        /// orchestrator (LayoutEngineStatedButton) retrieve the result of a plain, real in-flow
+        /// Normal-state pass without needing its own field on this class.
+        /// </summary>
+        public PDFLayoutXObjectRun Result { get; protected set; }
 
         private bool _addedProxyText = false;
 
@@ -123,21 +130,34 @@ namespace Scryber.PDF.Layout
                 this.Field.Value = originalValue;
 
             xObject.Close();
-            
+            this.Result = xObject;
+
+            this.CompleteLineFlow(xObject, pos);
+            this.RegisterAppearances(xObject, pos);
+        }
+
+        /// <summary>
+        /// Wraps the field onto a fresh line if it overflowed the current one, or closes the
+        /// line for a block-display field, then recalculates its final X offset. Overridden by
+        /// LayoutEngineButtonState (a throwaway, isolated pass) as a no-op - that run is never
+        /// attached to any real line/flow, so there's nothing here to complete.
+        /// </summary>
+        protected virtual void CompleteLineFlow(PDFLayoutXObjectRun xObject, PDFPositionOptions pos)
+        {
             var width = xObject.Width;
-            
+
             if (this.Line.AvailableWidth < 0)
             {
                 this.Line.RemoveRun(xObject);
                 this.CloseCurrentLine();
-                
+
                 var newLine = this.Line.Region.BeginNewLine();
-                
+
                 newLine.AddRun(xObject);
-                
+
                 xObject.SetOffsetX(newLine.OffsetX);
                 xObject.SetOffsetY(newLine.OffsetY + this.Line.Height);
-                
+
                 this.Line = newLine;
                 xObject.SetParent(this.Line);
             }
@@ -146,6 +166,27 @@ namespace Scryber.PDF.Layout
                 this.CloseCurrentLine();
             }
 
+            if (pos.PositionMode == PositionMode.Static)
+            {
+                //recalculate the offset
+                var loc = Point.Empty;
+                loc.X += this.Line.Width - xObject.ChildContainer.Width;
+
+                xObject.SetOffsetX(loc.X);
+            }
+        }
+
+        /// <summary>
+        /// Registers the field's widget annotation and sets its Normal/Down/Over appearances -
+        /// Down/Over default to a colour-only repaint of Normal's own box (see
+        /// PDFAcrobatFormFieldWidget.WriteRepaintedAppearance) when a matching :hover/:active
+        /// rule exists, or reuse Normal's exact xObject unchanged when none does. Overridden by
+        /// LayoutEngineStatedButton to lay out genuinely independent appearances per state
+        /// instead. Overridden by LayoutEngineButtonState (a throwaway, isolated pass) to just
+        /// capture its own result rather than registering anything.
+        /// </summary>
+        protected virtual void RegisterAppearances(PDFLayoutXObjectRun xObject, PDFPositionOptions pos)
+        {
             this.LayoutPage = this.Context.DocumentLayout.CurrentPage;
             IArtefactCollection annots;
             if (!this.LayoutPage.Artefacts.TryGetCollection(PDFArtefactTypes.Annotations, out annots))
@@ -153,9 +194,6 @@ namespace Scryber.PDF.Layout
                 annots = new PDFAnnotationCollection(PDFArtefactTypes.Annotations);
                 this.LayoutPage.Artefacts.Add(annots);
             }
-
-            
-            this.LayoutPage = this.Context.DocumentLayout.CurrentPage;
 
             annots.Register(this.Field.Widget);
             this.Field.Widget.SetAppearance(FormFieldAppearanceState.Normal, xObject, this.LayoutPage, this.FullStyle);
@@ -170,17 +208,6 @@ namespace Scryber.PDF.Layout
             Style overStyle;
             this.FullStyle.TryGetStyleState(ComponentState.Over, out overStyle);
             this.Field.Widget.SetAppearance(FormFieldAppearanceState.Over, xObject, this.LayoutPage, this.FullStyle, overStyle);
-
-            if (pos.PositionMode == PositionMode.Static)
-            {
-                //recalculate the offset
-                var loc = Point.Empty;
-                loc.X += this.Line.Width - xObject.ChildContainer.Width;
-                
-                xObject.SetOffsetX(loc.X);
-            }
-
-            //this.Field.Widget.XObjectOffset = new Size(this.Line.OffsetX + this.Line.Width - xObject.Width, this.Line.OffsetY);
         }
 
         private string GetLongestOptionsText(FormFieldOptionList fieldOptions)
@@ -229,7 +256,7 @@ namespace Scryber.PDF.Layout
             line.AddMarkedContentEnd(this, bmc);
         }
 
-        private PDFLayoutXObjectRun CreateAndAddInput(PDFPositionOptions pos)
+        protected virtual PDFLayoutXObjectRun CreateAndAddInput(PDFPositionOptions pos)
         {
             PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
             PDFLayoutRegion containerRegion = containerBlock.CurrentRegion;

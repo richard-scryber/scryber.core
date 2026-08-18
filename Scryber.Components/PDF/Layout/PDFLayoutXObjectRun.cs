@@ -289,7 +289,7 @@ namespace Scryber.PDF.Layout
             {
                 writer.WriteReal(0.0F);
                 writer.WriteRealS(0.0F);
-                writer.WriteRealS(this._childContainer.Height.PointsValue);
+                writer.WriteRealS(this._childContainer.Width.PointsValue);
                 writer.WriteRealS(this._childContainer.Height.PointsValue);
             }
             writer.EndArray();

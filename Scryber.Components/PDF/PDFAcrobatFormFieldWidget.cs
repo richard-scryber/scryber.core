@@ -186,13 +186,23 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndDictionaryEntry();
 
+            //Only buttons self-render an /AP for now - everything else relies on the reader
+            //regenerating its own appearance from /DA + /MK via /NeedAppearances. xObject.OutputToPDF
+            //still runs below for every field regardless (its side effects - Location/Width/Height -
+            //are what /Rect is computed from), it just isn't wired into a real /AP dictionary unless
+            //this is a pushbutton, so non-button fields end up with a harmless unreferenced XObject.
+            bool isPushbutton = (this.FieldOptions & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton;
+
             if (this._states.Count > 0)
             {
                 _location = context.Offset;
 
                 Drawing.Rect bounds = Drawing.Rect.Empty;
-                //writer.BeginDictionaryEntry("AP");
-                //writer.BeginDictionary();
+                if (isPushbutton)
+                {
+                    writer.BeginDictionaryEntry("AP");
+                    writer.BeginDictionary();
+                }
                 foreach (var kvp in _states)
                 {
                     xObject = kvp.Value;
@@ -217,8 +227,11 @@ namespace Scryber.PDF
                             if (_size.Height < sz.Height)
                                 _size.Height = sz.Height;
                         }
-                        //var name = GetFieldStateName(kvp.Key);
-                        //writer.WriteDictionaryObjectRefEntry(name, oref);
+                        if (isPushbutton)
+                        {
+                            var name = GetFieldStateName(kvp.Key);
+                            writer.WriteDictionaryObjectRefEntry(name, oref);
+                        }
 
                         //We should have all states starting at the same location no matter what.
                         this._location = new Point(xObject.Location.X, xObject.Location.Y);
@@ -233,8 +246,11 @@ namespace Scryber.PDF
                         }
                     }
                 }
-                //writer.EndDictionary();
-                //writer.EndDictionaryEntry();
+                if (isPushbutton)
+                {
+                    writer.EndDictionary();
+                    writer.EndDictionaryEntry();
+                }
 
                 PDFReal left = context.Graphics.GetXPosition(_location.X);
                 PDFReal top = context.Graphics.GetYPosition(_location.Y);
