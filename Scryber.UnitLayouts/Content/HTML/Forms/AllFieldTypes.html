@@ -4,14 +4,20 @@
         body{
             margin: 10pt;
             border: solid 1px #ccc;
+            font-size: 12pt;
         }
         
         button{ 
             padding: 4pt;
-            font-size: 18pt;
             background-color: silver;
             color: green;
             display: inline-block;
+        }
+        
+        form{
+            border: 1px solid black; 
+            background-color: lightgreen;
+            padding: 10pt;
         }
         
         button:active, button:hover {
@@ -19,14 +25,19 @@
         }
         
         input, select, textarea {
-
+            font-family: serif;
+            color: blue;
+            font-size: 80%;
+        }
+        .checkbox{
+            width: 1em;
+            margin-right: 10pt;
         }
     </style>
 </head>
 <body id="body">
 Before the form
-<form id='mainform' name='registration' action='https://example.com/submit' method='post' 
-      style="border: 1px solid black; background-color: lightgreen; ">
+<form id='mainform' name='registration' action='https://www.paperwork.vu/submit' method='post'>
     Before the string<br/>
     String:
     <input type='text' id='f-text' name='fullname' value='Jane Doe' />
@@ -34,11 +45,14 @@ Before the form
     <input type='password' id='f-pass' name='pwd' value='secret' style="vertical-align: bottom; width: 60pt; border-radius: 5pt;" />
     <span style="vertical-align: bottom;">After Password</span>
 <!--    Text:-->
-    <textarea id='f-notes' name='notes' rows='5' cols='20' style="margin: 10pt;">Some notes</textarea>
-    Select:
-    <select id='f-country' name='country' required="required" multiple='multiple' size="5">
-        <option value='UK'>United Kingdom</option>
-        <option value='US' >United States</option>
+    <textarea id='f-notes' name='notes' rows='5' cols='20' style="margin: 0pt;">
+        Some notes
+    That should
+    Appear on new lines
+    </textarea>Select:
+    <select id='f-country' name='country' required="required" >
+        <option value='UK' selected="selected">United Kingdom</option>
+        <option value='US' >United States long country name</option>
         <option value='FR'>France</option>
     </select>
 <!--    Checkbox:-->
@@ -49,12 +63,46 @@ Before the form
 <!--    <button id='f-submit' name='go' type='submit'>Save</button>-->
 <!--    <button id='f-reset' name='clear' type='reset'>Clear</button>-->
 </form>
-After the form.
+After the form.<br/>
+A submit form...
 <form action="http://localhost:8080/submit" method="post"> 
     Before the string<br/>
     String:
-    <input type='text' id='f-text-2' name='fullname_other' value='Jane Doe' style="display: inline-block; margin: 10pt;" required="required" />
-    <input type='text' id='f-text-3' name='fullname' value='Jane Doe' style="display: block; margin: 10pt;" />
-    <button type="submit">Submit</button>
+    <input type='text' id='f-text-2' name='fullname_other' value='This is a very long text value to layout' style="margin: 0pt;" required="required" />
+    <input type='text' id='f-text-3' name='fullname' value='Jane Doe' style="margin: 0pt;" />
+    <input type="submit" value="Submit Form" style="margin: 0pt;" />
+</form>
+A submit form with flex column...
+<form action="http://localhost:8080/submit?id=1234" method="post" style="display: flex; flex-direction: column; position: relative;">
+    <label for="f-text-4">First Name:</label>
+    <input type='text' id='f-text-4' name='firstname' value='This is a very long text value to layout' style="margin: 0pt; height: 40pt;" />
+    <label for="f-text-5">Last Name:</label>
+    <input type='text' id='f-text-5' name='lastname' value='Jane' maxlength="5" style="margin: 0pt; position: absolute; right: 0pt; top:10pt;" />
+    <label>Pronoun (flex row):</label>
+    <div style="display: flex; flex-direction: row;">
+        <input id="rad-1" class="checkbox" type="radio" name="pronoun" value="Mr" checked="checked" />
+        <label for="rad-1" >Mr</label>
+        <input id="rad-2" class="checkbox" type="radio" name="pronoun" value="Missus" />
+        <label for="rad-2">Mrs</label>
+    </div>
+    <label>Allergies:</label>
+    <div style="display: flex; flex-direction: row;">
+        <input id="check-1" class="checkbox" type="checkbox" checked="checked" name="allergy-nuts" value="Nuts" />
+        <label for="check-1">Nuts</label>
+        <input id="check-2" class="checkbox" type="checkbox" name="allergy-gluten" value="Gluten"  />
+        <label for="check-1">Gluten</label>
+    </div>
+    <input type="submit" value="Submit Form" style="margin: 0pt; position: absolute; left: 0px; top: 0px;" />
+</form>
+
+<div style="display: flex; flex-direction: column;">
+    <label style="background-color:lightblue; display: block;" >Dr</label>
+    <label style="position: absolute; top: 0pt; display: block;">Mr</label>
+    <label style="background-color:lightblue; display: block;">Miss</label>
+    <label style="background-color:lightblue; display: block;">Mrs</label>
+</div>
+<form action="http://localhost:8080/submit" method="post">
+    <label for="f-text-10">Signature:</label>
+    <input type="signature" id="f-text-10" name="signature" />
 </form>
 </body></html>

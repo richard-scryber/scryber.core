@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.Styles;
@@ -45,15 +46,6 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
-        [PDFAttribute("size")]
-        public int Size
-        {
-            get;
-            set;
-        }
-        
-
-
         public HTMLInput() : this(HTMLObjectTypes.FormInput)
         {
         }
@@ -66,8 +58,37 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
-            if(this.Size > 0)
-                style.Size.Width = Unit.Ex(this.Size);
+            if (this.FieldType == FormInputFieldType.Button)
+            {
+                if (this.ButtonType == FormButtonFieldType.PushButton)
+                {
+                    style.Background.Color = StandardColors.Silver;
+                    style.Fill.Color = StandardColors.Black;
+                    style.Border.Color = StandardColors.Black;
+                    style.Border.LineStyle = LineType.Solid;
+                    style.Border.Width = 1;
+                }
+                else if (this.ButtonType == FormButtonFieldType.CheckBox ||
+                         this.ButtonType == FormButtonFieldType.Radio)
+                {
+                    style.Margins.Top = Unit.Zero;
+                    style.Margins.Bottom = Unit.Zero;
+                    style.Margins.Left = Unit.Zero;
+                    style.Margins.Right = Unit.Zero;
+                }
+            }
+            else if (this.FieldType == FormInputFieldType.Signature)
+            {
+                style.Size.Width = Unit.Ex(20);
+                style.Size.Height = Unit.Em(4);
+            }
+            else if (this.Size > 0)
+            {
+            }
+            else
+            {
+                style.Size.FullWidth = true;
+            }
             style.Position.DisplayMode = DisplayMode.InlineBlock;
             return style;
         }

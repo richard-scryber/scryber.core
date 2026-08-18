@@ -46,8 +46,11 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         
+        //Shadows FormInputField.Size on purpose - <select size> means "number of visible rows"
+        //(a listbox row count), an entirely different HTML semantic from <input size>'s
+        //"roughly N average character widths" that the base property now exists for.
         [PDFAttribute("size")]
-        public int Size
+        public new int Size
         {
             get;
             set;
@@ -161,11 +164,16 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             
-            this.Width = Unit.Ex(20);
-            
-            if(this.Size > 0)
-                style.Size.Height = Scryber.Drawing.Unit.Em(this.Size);
-            
+            //this.Width = Unit.Ex(20);
+
+            if ((this.Options & FormFieldOptions.Multiselect) == FormFieldOptions.Multiselect)
+            {
+                if (this.Size < 1)
+                    this.Size = 4;
+                
+                style.Size.Height = Scryber.Drawing.Unit.Em(this.Size * 1.2);
+            }
+
             return style;
         }
     }

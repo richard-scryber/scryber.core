@@ -407,12 +407,6 @@ namespace Scryber.PDF.Layout
         /// <param name="forceUpdate"></param>
         private void EnsureAllRunsOnSameLevel(bool forceUpdate = false)
         {
-            {
-                var names = new System.Text.StringBuilder();
-                foreach (var r in this.Runs) { names.Append(r.GetType().Name); names.Append(", "); }
-                System.IO.File.AppendAllText("/tmp/scryber_xobj_debug.log",
-                    $"--- line {this.GetHashCode()} OffsetY={this.OffsetY} runs ({this.Runs.Count}): {names}\n");
-            }
             Unit totalHeight = Unit.Zero;
             Unit maxHeight = Unit.Zero;
             Unit maxDescender = Unit.Zero;
@@ -804,8 +798,6 @@ namespace Scryber.PDF.Layout
                 {
                     Unit offset;
                     var valign = xobjRun.PositionOptions.VAlign ?? (explicitAlign ?? VerticalAlignment.Baseline);
-                    System.IO.File.AppendAllText("/tmp/scryber_xobj_debug.log",
-                        $"xobjRun valign={valign} height={xobjRun.Height} baselineOffset={baselineOffset} totalHeight={totalHeight}\n");
                     switch (valign)
                     {
                         case (VerticalAlignment.Bottom):

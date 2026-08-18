@@ -56,6 +56,15 @@ namespace Scryber.Components
             set;
         }
 
+        /// <summary>
+        /// HTML's "size" attribute - roughly how many average character widths wide a text/password
+        /// field should be, independent of its actual value's length (per HTML spec, unset/0 here
+        /// means no size-driven width). Lives on the base class (not just HTMLInput) so
+        /// LayoutEngineInput can read it without an HTML-specific type check, matching MaxLength.
+        /// </summary>
+        [PDFAttribute("size")]
+        public int Size { get; set; }
+
         public FormInputFieldType FieldType { get; set; }
 
         [PDFAttribute("options")]
@@ -118,10 +127,12 @@ namespace Scryber.Components
                     break;
                 case "submit":
                     this.FieldType = FormInputFieldType.Button;
+                    this.Options |= FormFieldOptions.Pushbutton;
                     this.SubmitBehavior = FormSubmitBehavior.Submit;
                     break;
                 case "reset":
                     this.FieldType = FormInputFieldType.Button;
+                    this.Options |= FormFieldOptions.Pushbutton;
                     this.SubmitBehavior = FormSubmitBehavior.Reset;
                     break;
                 case "button":
@@ -129,6 +140,7 @@ namespace Scryber.Components
                     //<button>, which defaults to submit) - clears any default set by a subclass
                     //constructor (e.g. HTMLButton) before this attribute was parsed.
                     this.FieldType = FormInputFieldType.Button;
+                    this.Options |= FormFieldOptions.Pushbutton;
                     this.SubmitBehavior = FormSubmitBehavior.None;
                     break;
                 case "checkbox":
@@ -299,8 +311,9 @@ namespace Scryber.Components
             style.Position.VAlign = VerticalAlignment.Bottom;
             style.Fill.Color = StandardColors.Black;
             
-            style.Padding.All = 5;
-            style.Margins.All = 5;
+            style.Padding.All = 1;
+            style.Margins.Left = 5;
+            style.Margins.Right = 5;
             if ((this.Options & FormFieldOptions.MultiLine) != FormFieldOptions.MultiLine)
                 style.Text.WrapText = Text.WordWrap.NoWrap;
             

@@ -34,32 +34,34 @@ namespace Scryber.Core.UnitTests.Html
             return obj.GetContents() as PDFDictionary;
         }
 
-        private static PDFDictionary GetSoleWidgetAP(PDFReader reader, out PDFObjectRef nRef, out PDFObjectRef rRef, out PDFObjectRef dRef)
+        /// <summary>
+        /// Returns the sole registered widget's dictionary, plus the /AcroForm dictionary it
+        /// belongs to. Only buttons self-render an /AP for now (the rest rely on the reader
+        /// regenerating their appearance via /NeedAppearances) - so this no longer resolves an
+        /// /AP sub-dictionary at all, just gives callers the two dictionaries to assert against.
+        /// </summary>
+        private static PDFDictionary GetSoleWidget(PDFReader reader, out PDFDictionary acroForm)
         {
             var catalog = GetDictionary(reader, reader.DocumentCatalogRef.Reference);
             catalog.TryGetValue("AcroForm", out var acroFormEntry);
-            var acroForm = GetDictionary(reader, acroFormEntry as PDFObjectRef);
+            acroForm = GetDictionary(reader, acroFormEntry as PDFObjectRef);
             acroForm.TryGetValue("Fields", out var fieldsEntry);
             var fields = fieldsEntry as PDFArray;
             Assert.AreEqual(1, fields.Count);
 
-            var widget = GetDictionary(reader, fields[0] as PDFObjectRef);
-            widget.TryGetValue("AP", out var apEntry);
-            var ap = apEntry as PDFDictionary;
+            return GetDictionary(reader, fields[0] as PDFObjectRef);
+        }
 
-            ap.TryGetValue("N", out var n);
-            ap.TryGetValue("R", out var r);
-            ap.TryGetValue("D", out var d);
-            nRef = n as PDFObjectRef;
-            rRef = r as PDFObjectRef;
-            dRef = d as PDFObjectRef;
-
-            return ap;
+        private static void AssertNeedAppearances(PDFDictionary acroForm)
+        {
+            Assert.IsTrue(acroForm.TryGetValue("NeedAppearances", out var need), "/AcroForm should declare /NeedAppearances");
+            Assert.IsInstanceOfType(need, typeof(PDFBoolean));
+            Assert.IsTrue(((PDFBoolean)need).Value, "Readers must regenerate a non-button field's appearance themselves");
         }
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
-        public void Input_NoHoverActiveCss_SameAppearanceRefForAllStates()
+        public void Input_NoHoverActiveCss_NoAppearanceStream()
         {
             var doc = ParseHtml("<input id='i1' type='text' name='name' value='Jane' />");
 
@@ -68,15 +70,15 @@ namespace Scryber.Core.UnitTests.Html
             stream.Flush();
 
             var reader = PDFReader.Create(stream, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Diagnostic));
-            GetSoleWidgetAP(reader, out var n, out var r, out var d);
+            var widget = GetSoleWidget(reader, out var acroForm);
 
-            Assert.AreEqual(n.Number, r.Number, "No :hover style - /R should reuse the exact /N object");
-            Assert.AreEqual(n.Number, d.Number, "No :active style - /D should reuse the exact /N object");
+            Assert.IsFalse(widget.ContainsKey((PDFName)"AP"), "Only buttons self-render an /AP for now");
+            AssertNeedAppearances(acroForm);
         }
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
-        public void Input_WithHoverCss_DistinctRolloverAppearance()
+        public void Input_WithHoverCss_NoAppearanceStream()
         {
             var doc = ParseHtmlWithStyle(
                 "input:hover { background-color: #ff0000; }",
@@ -87,15 +89,15 @@ namespace Scryber.Core.UnitTests.Html
             stream.Flush();
 
             var reader = PDFReader.Create(stream, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Diagnostic));
-            GetSoleWidgetAP(reader, out var n, out var r, out var d);
+            var widget = GetSoleWidget(reader, out var acroForm);
 
-            Assert.AreNotEqual(n.Number, r.Number, "A matching :hover style should produce a distinct /R appearance");
-            Assert.AreEqual(n.Number, d.Number, "No :active style - /D should still reuse /N");
+            Assert.IsFalse(widget.ContainsKey((PDFName)"AP"), "Only buttons self-render an /AP for now - a matching :hover rule doesn't change that");
+            AssertNeedAppearances(acroForm);
         }
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
-        public void Input_WithActiveCss_DistinctDownAppearance()
+        public void Input_WithActiveCss_NoAppearanceStream()
         {
             var doc = ParseHtmlWithStyle(
                 "input:active { background-color: #0000ff; }",
@@ -106,10 +108,10 @@ namespace Scryber.Core.UnitTests.Html
             stream.Flush();
 
             var reader = PDFReader.Create(stream, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Diagnostic));
-            GetSoleWidgetAP(reader, out var n, out var r, out var d);
+            var widget = GetSoleWidget(reader, out var acroForm);
 
-            Assert.AreEqual(n.Number, r.Number, "No :hover style - /R should still reuse /N");
-            Assert.AreNotEqual(n.Number, d.Number, "A matching :active style should produce a distinct /D appearance");
+            Assert.IsFalse(widget.ContainsKey((PDFName)"AP"), "Only buttons self-render an /AP for now - a matching :active rule doesn't change that");
+            AssertNeedAppearances(acroForm);
         }
 
         [TestMethod()]

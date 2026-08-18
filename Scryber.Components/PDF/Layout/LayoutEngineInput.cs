@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Scryber.Components;
 using Scryber.Styles;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 
 namespace Scryber.PDF.Layout
 {
@@ -41,18 +42,85 @@ namespace Scryber.PDF.Layout
             
             _addedProxyText = false;
 
+            // Everything below except the empty-value case is swapping in a placeholder purely
+            // to drive this component's own width/height measurement - it must not leak out as
+            // the field's real, post-render Value (that would corrupt anything that reads the
+            // component back afterward, e.g. select.Value). The widget's real /V was already
+            // captured by GetFieldEntry during RegisterLayoutArtefacts, which runs before this
+            // method, so restoring the original value here has no effect on the PDF output.
+            string originalValue = this.Field.Value;
+            bool restoreValueAfterLayout = false;
+
             //A signature field is either unsigned (nothing to show - the reader draws its own
             //"click to sign" UI) or signed (a reader-owned concern entirely out of scope here) -
             //either way it should never get placeholder text baked into its appearance.
-            if (string.IsNullOrEmpty(this.Field.Value) && this.Field.FieldType != FormInputFieldType.Signature)
+            if (this.Field.FieldType == FormInputFieldType.Signature)
+            {
+                //Deliberately no-op - do not fall through to the empty-value proxy-text case below.
+            }
+            else if (string.IsNullOrEmpty(this.Field.Value))
             {
                 this.Field.Value = "Proxy Text";
                 _addedProxyText = true;
             }
+            else if (this.Field.ButtonType == FormButtonFieldType.CheckBox || this.Field.ButtonType == FormButtonFieldType.Radio)
+            {
+                //A checkbox/radio's Value is the PDF on-state name (e.g. "yes"/"A"/"B") - already
+                //captured into the widget's OnStateName/AS by GetFieldEntry, before this layout
+                //pass runs, so overwriting it here doesn't lose anything. Left as-is, laying it out
+                //like ordinary text content sizes the box to that string's width rather than the
+                //small square a checkbox/radio should be; swap in a single glyph purely for this
+                //measurement pass so width comes out based on one character, not the on-value text.
+                this.Field.Value = "M";
+                _addedProxyText = true;
+                restoreValueAfterLayout = true;
+            }
+            else if (this.Field.FieldType == FormInputFieldType.Text && this.Field.Size > 0)
+            {
+                //HTML's size= means "roughly N average character widths", independent of the
+                //field's actual value length - a short value in a size=20 field still gets a
+                //20-character-wide box. The real value is already captured into the widget by
+                //GetFieldEntry, before this layout pass runs, so swapping it here for a
+                //Size-length placeholder only affects what our own appearance measures/paints -
+                //and since NeedAppearances is on, a compliant reader regenerates the visible text
+                //from /V anyway, so this placeholder is never what the user actually sees.
+                this.Field.Value = new string('X', this.Field.Size);
+                _addedProxyText = true;
+                restoreValueAfterLayout = true;
+            }
+            else if (this.Field.FieldType == FormInputFieldType.Choice && this.Field is HTMLSelect select)
+            {
+                var longest = this.GetLongestOptionsText(select.Choices);
+
+                if ((this.Field.Options & FormFieldOptions.Multiselect) == FormFieldOptions.Multiselect)
+                {
+                    if (Field.Size < 1)
+                        this.Field.Size = 4;
+
+                    // var multi = new StringBuilder();
+                    // for (var i = 0; i < size; i++)
+                    // {
+                    //     if(multi.Length > 0)
+                    //         multi.Append("V\r\n<br/>");
+                    //     multi.Append(longest);
+                    // }
+                    //
+                    //longest = multi.ToString();
+                }
+                this.Field.Value = longest + "V"; //add space for the dropdown/scroll bar too.
+
+                _addedProxyText = true;
+                restoreValueAfterLayout = true;
+            }
+            else
+            {
+                _addedProxyText = false;
+            }
 
             base.DoLayoutComponent();
 
-            
+            if (restoreValueAfterLayout)
+                this.Field.Value = originalValue;
 
             xObject.Close();
             
@@ -113,6 +181,19 @@ namespace Scryber.PDF.Layout
             }
 
             //this.Field.Widget.XObjectOffset = new Size(this.Line.OffsetX + this.Line.Width - xObject.Width, this.Line.OffsetY);
+        }
+
+        private string GetLongestOptionsText(FormFieldOptionList fieldOptions)
+        {
+            var found = string.Empty;
+            foreach (var option in fieldOptions)
+            {
+                if(!string.IsNullOrEmpty(option.Label) &&  option.Label.Length > found.Length)
+                    found = option.Label;
+                
+            }
+            
+            return found;
         }
 
         protected override void DoLayoutChildren()
@@ -192,16 +273,8 @@ namespace Scryber.PDF.Layout
                 containerRegion = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage,
                     this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
             }
-            
-            
-            
-            //pos.Y = 200;
-            
+
             PDFLayoutXObjectRun begin = this.Line.AddXObjectRun(this, this.Field, containerRegion, pos, this.FullStyle);
-            
-            
-            // System.IO.File.AppendAllText("/tmp/scryber_xobj_debug.log",
-            //     $"CreateAndAddInput field={this.Field.ID} region={containerRegion.GetHashCode()} line={this.Line.GetHashCode()} line.OffsetY={this.Line.OffsetY}\n");
 
             return begin;
         }

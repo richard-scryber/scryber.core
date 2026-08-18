@@ -82,12 +82,13 @@ namespace Scryber.Html.Components
         {
             Style style = base.GetBaseStyle();
 
-            if (this.Rows > 0)
-                style.Size.Height = Unit.Em(this.Rows);
-
-            if (this.Cols > 0)
-                style.Size.Width = Unit.Ex(this.Cols);
-
+            if (this.Rows <= 0)
+                this.Rows = 2;
+            if (this.Cols <= 0)
+                this.Cols = 20;
+            
+            style.Size.Height = Unit.Em(this.Rows * 1.2); 
+            style.Size.Width = Unit.Ex(this.Cols);
             return style;
         }
     }

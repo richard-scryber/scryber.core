@@ -387,20 +387,34 @@ namespace Scryber.PDF.Layout
         /// resolving percentage values against <paramref name="containerWidthPts"/>.
         /// Returns 0 for grow-only items.
         /// </summary>
-        private static double GetItemMinWidth(Component item, double containerWidthPts)
+        private double GetItemMinWidth(Component item, double containerWidthPts)
         {
             // Use the full applied style (includes CSS class rules) so that items that
             // receive their width via a class selector are recognised as having a fixed
             // width for wrap-row breaking — not just items with inline/direct styles.
             var applied = item.GetAppliedStyle();
-            if (applied != null)
+            if (applied == null)
+                return 0;
+
+            // Push applied onto the stack before building the full style, exactly like the
+            // base engine's own per-child layout does - this is what makes BuildFullStyle
+            // resolve em/ex/rem against this item's real cascaded font (and lets any nested
+            // lookups see the right inherited styles) instead of guessing.
+            this.StyleStack.Push(applied);
+            try
             {
+                var fullStyle = this.BuildFullStyle(item);
+
                 if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
-                    return ResolveFlexUnit(applied.Size.Width, containerWidthPts);
+                    return ResolveWidthLikeValue(applied.Size.Width, fullStyle?.Size.Width ?? applied.Size.Width, containerWidthPts);
                 if (applied.IsValueDefined(StyleKeys.FlexBasisKey) && !applied.Flex.BasisAuto)
-                    return ResolveFlexUnit(applied.Flex.Basis, containerWidthPts);
+                    return ResolveWidthLikeValue(applied.Flex.Basis, fullStyle?.Flex.Basis ?? applied.Flex.Basis, containerWidthPts);
+                return 0;
             }
-            return 0;
+            finally
+            {
+                this.StyleStack.Pop();
+            }
         }
 
         /// <summary>
@@ -981,15 +995,27 @@ namespace Scryber.PDF.Layout
         }
 
         /// <summary>
-        /// Resolves a Unit to points. Percentage units are resolved against the flex container
-        /// width so that e.g. width:48% and margin-left:2% on a flex item correctly reflect
-        /// the container size rather than the page block size.
+        /// Resolves a width/basis/margin value to points. % and viewport units are resolved by
+        /// hand against the flex container's own width, because BuildFullStyle's own container
+        /// lookup can't see the flex container yet at this point in layout (its region isn't
+        /// open) and would fall back to the outer page block instead. Every other unit
+        /// (em/ex/rem, absolute) trusts <paramref name="flattened"/> - BuildFullStyle's own
+        /// output - which already resolved it correctly against the item's real cascaded font,
+        /// provided the item's applied style was pushed onto the StyleStack before it ran.
         /// </summary>
-        private static double ResolveFlexUnit(Unit u, double containerWidthPts)
+        private static double ResolveWidthLikeValue(Unit raw, Unit flattened, double containerWidthPts)
         {
-            if (u.IsRelative)
-                return u.ToAbsolute(new Unit(containerWidthPts, PageUnits.Points)).PointsValue;
-            return u.PointsValue;
+            switch (raw.Units)
+            {
+                case PageUnits.Percent:
+                case PageUnits.ViewPortWidth:
+                case PageUnits.ViewPortHeight:
+                case PageUnits.ViewPortMin:
+                case PageUnits.ViewPortMax:
+                    return raw.ToAbsolute(new Unit(containerWidthPts, PageUnits.Points)).PointsValue;
+                default:
+                    return flattened.PointsValue;
+            }
         }
 
         private static List<Component> ListReversed(List<Component> source)
@@ -1044,35 +1070,38 @@ namespace Scryber.PDF.Layout
                         shrink = fullStyle.GetValue(StyleKeys.FlexShrinkKey, 1.0);
                 }
 
-                // Width/basis: use the pre-flatten 'applied' style so that percentage values
-                // are resolved against the flex container width, not the page block width
-                // (BuildFullStyle resolves % using GetParentComponentSize which at this point
-                // in the pipeline returns the page block — the flex container isn't open yet).
+                // Width/basis: % (and viewport units) must resolve against the flex container's
+                // own width, not the page block width BuildFullStyle's own parent-size lookup
+                // would use at this point in the pipeline (the flex container's region isn't
+                // open yet) - so those come from the raw, pre-flatten 'applied' value resolved
+                // by hand. Everything else (em/ex/rem, absolute) is read straight from fullStyle,
+                // which - because 'applied' was pushed onto the StyleStack before BuildFullStyle
+                // ran above - already correctly resolved it against this item's real cascaded font.
                 if (applied != null && applied.IsValueDefined(StyleKeys.SizeWidthKey))
-                    basis = ResolveFlexUnit(applied.Size.Width, containerWidthPts);
+                    basis = ResolveWidthLikeValue(applied.Size.Width, fullStyle?.Size.Width ?? applied.Size.Width, containerWidthPts);
                 else if (applied != null && applied.IsValueDefined(StyleKeys.FlexBasisKey) && !applied.Flex.BasisAuto)
-                    basis = ResolveFlexUnit(applied.Flex.Basis, containerWidthPts);
+                    basis = ResolveWidthLikeValue(applied.Flex.Basis, fullStyle?.Flex.Basis ?? applied.Flex.Basis, containerWidthPts);
                 else if (fullStyle != null)
                 {
                     if (fullStyle.IsValueDefined(StyleKeys.SizeWidthKey))
-                        basis = ResolveFlexUnit(fullStyle.Size.Width, containerWidthPts);
+                        basis = fullStyle.Size.Width.PointsValue;
                     else if (fullStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !fullStyle.Flex.BasisAuto)
-                        basis = ResolveFlexUnit(fullStyle.Flex.Basis, containerWidthPts);
+                        basis = fullStyle.Flex.Basis.PointsValue;
                 }
 
-                // Margins: same treatment — resolve % against the flex container.
+                // Margins: same treatment — % against the flex container, everything else from fullStyle.
                 {
                     double mLeft  = 0;
                     double mRight = 0;
                     if (applied != null && applied.IsValueDefined(StyleKeys.MarginsLeftKey))
-                        mLeft = ResolveFlexUnit(applied.Margins.Left, containerWidthPts);
+                        mLeft = ResolveWidthLikeValue(applied.Margins.Left, fullStyle?.Margins.Left ?? applied.Margins.Left, containerWidthPts);
                     else if (fullStyle != null && fullStyle.IsValueDefined(StyleKeys.MarginsLeftKey))
-                        mLeft = ResolveFlexUnit(fullStyle.Margins.Left, containerWidthPts);
+                        mLeft = fullStyle.Margins.Left.PointsValue;
 
                     if (applied != null && applied.IsValueDefined(StyleKeys.MarginsRightKey))
-                        mRight = ResolveFlexUnit(applied.Margins.Right, containerWidthPts);
+                        mRight = ResolveWidthLikeValue(applied.Margins.Right, fullStyle?.Margins.Right ?? applied.Margins.Right, containerWidthPts);
                     else if (fullStyle != null && fullStyle.IsValueDefined(StyleKeys.MarginsRightKey))
-                        mRight = ResolveFlexUnit(fullStyle.Margins.Right, containerWidthPts);
+                        mRight = fullStyle.Margins.Right.PointsValue;
 
                     marginTotals[i] = mLeft + mRight;
                 }
@@ -1192,6 +1221,45 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutAChild(IComponent comp, Style full)
         {
+
+            //Flex items are always blockified per spec - a child's own inline/inline-block
+            //display (e.g. a <label> or <input>'s UA default) must not let it join the normal
+            //inline flow with its siblings; each flex item is its own block-level box regardless
+            //of what display value it was given. Row mode already sidesteps this via the
+            //column-break-per-item trick in DoLayoutChildren, but column mode has no equivalent,
+            //so inline/inline-block children just ran together on one shared line.
+            if (full.Position.DisplayMode == DisplayMode.Inline || full.Position.DisplayMode == DisplayMode.InlineBlock)
+            {
+                full.Position.DisplayMode = DisplayMode.Block;
+            }
+
+            //Cross-axis stretch (align-items: stretch, the default, unless overridden by this
+            //item's own align-self) only has something to act on when the cross axis is width -
+            //column-direction containers. There's no FullHeight equivalent for row mode's cross
+            //axis, so that side stays a no-op as before. Applies to any item type, not just Panel
+            //descendants - a blockified <label>/<input> is just as much a flex item as a <div>.
+            if (!_isRowMode && comp is Component itemComp)
+            {
+                var itemStyle = itemComp.GetAppliedStyle();
+                var alignSelf = this.FullStyle.Flex.AlignItems;
+                if (itemStyle != null && itemStyle.IsValueDefined(StyleKeys.FlexAlignSelfKey))
+                {
+                    var self = itemStyle.GetValue(StyleKeys.FlexAlignSelfKey, FlexAlignMode.Auto);
+                    if (self != FlexAlignMode.Auto)
+                        alignSelf = self;
+                }
+
+                if (alignSelf == FlexAlignMode.Stretch)
+                {
+                    bool hasExplicitWidth = itemStyle != null
+                        && (itemStyle.IsValueDefined(StyleKeys.SizeWidthKey)
+                            || (itemStyle.IsValueDefined(StyleKeys.FlexBasisKey) && !itemStyle.Flex.BasisAuto));
+
+                    if (!hasExplicitWidth)
+                        full.Size.FullWidth = true;
+                }
+            }
+
             if (_isRowMode && _flexItemContentWidths != null
                 && comp is Component c
                 && _flexItemContentWidths.TryGetValue(c, out double contentW)
