@@ -52,11 +52,18 @@ namespace Scryber.Core.UnitTests.Html
             return GetDictionary(reader, fields[0] as PDFObjectRef);
         }
 
+        /// <summary>
+        /// Several /NeedAppearances policies were compared across readers this session (explicit
+        /// true, explicit false, omitted entirely, and every field self-rendering /AP) - currently
+        /// settled back on explicit true (see PDFAcrobatFormsCollection.OutputToPDF) with no field
+        /// self-rendering /AP at all (see PDFAcrobatFormFieldWidget's writeAP), the baseline from
+        /// before independent per-state button layout existed. Update this alongside that policy.
+        /// </summary>
         private static void AssertNeedAppearances(PDFDictionary acroForm)
         {
             Assert.IsTrue(acroForm.TryGetValue("NeedAppearances", out var need), "/AcroForm should declare /NeedAppearances");
             Assert.IsInstanceOfType(need, typeof(PDFBoolean));
-            Assert.IsTrue(((PDFBoolean)need).Value, "Readers must regenerate a non-button field's appearance themselves");
+            Assert.IsTrue(((PDFBoolean)need).Value);
         }
 
         [TestMethod()]
@@ -116,7 +123,7 @@ namespace Scryber.Core.UnitTests.Html
 
         [TestMethod()]
         [TestCategory("Html-Forms")]
-        public void Input_WithHoverCss_RepaintedStreamContainsStateColour()
+        public void Input_WithHoverCss_NoRepaintedStream()
         {
             var doc = ParseHtmlWithStyle(
                 "input:hover { background-color: #ff0000; }",
@@ -126,12 +133,13 @@ namespace Scryber.Core.UnitTests.Html
             doc.SaveAsPDF(stream);
             stream.Flush();
 
-            stream.Position = 0;
-            using var sr = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1"), false, 4096, leaveOpen: true);
-            var text = sr.ReadToEnd();
+            var reader = PDFReader.Create(stream, new Scryber.Logging.DoNothingTraceLog(TraceRecordLevel.Diagnostic));
+            var widget = GetSoleWidget(reader, out var acroForm);
 
-            // #ff0000 -> full-intensity red fill (1.0000 0.0000 0.0000 rg), matching the state colour.
-            StringAssert.Contains(text, "1.0000 0.0000 0.0000 rg");
+            // Only buttons self-render an /AP (with a real independent repaint per state) for
+            // now - a matching :hover rule on a plain <input> doesn't produce anything to repaint.
+            Assert.IsFalse(widget.ContainsKey((PDFName)"AP"), "Only buttons self-render an /AP for now");
+            AssertNeedAppearances(acroForm);
         }
     }
 }

@@ -56,15 +56,37 @@ namespace Scryber.PDF
 
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Subtype", "Widget");
-            writer.WriteDictionaryStringEntry("T", this.Name);
-            writer.WriteDictionaryNameEntry("V", currentState);
+
+            if (null != this.Parent)
+            {
+                //Grouped under a PDFAcrobatRadioGroupEntry, which already declares /T, /FT, /Ff
+                //and /V once for the whole group - duplicating them here is unnecessary and, for
+                ///V specifically, wrong (the group's /V is the one shared selected value; this
+                //kid's own current state is /AS alone).
+                //
+                //Currently dormant in practice: PDFAnnotationEntry.OutputToPDF caches this widget's
+                //content on its FIRST call, and that first call comes from the page's own /Annots
+                //output (rendered while laying out pages) - which happens before
+                //PDFAcrobatRadioGroupEntry.OutputToPDF (part of the /AcroForm catalog entry,
+                //written only once every page is known) ever gets a chance to set Parent. So this
+                //widget's real /T/FT/Ff/V still get written directly below, every time, until the
+                //group's object number can be reserved earlier than that (a writer-level change -
+                //see PDFWriter.InitializeIndirectObject/XRefTable.Append - deliberately deferred,
+                //not worth the risk for what's currently just a Chrome display quirk).
+                writer.WriteDictionaryObjectRefEntry("Parent", this.Parent);
+            }
+            else
+            {
+                writer.WriteDictionaryStringEntry("T", this.Name);
+                writer.WriteDictionaryNameEntry("V", currentState);
+                writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
+                writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
+            }
 
             if (!string.IsNullOrEmpty(this.DefaultValue))
                 writer.WriteDictionaryStringEntry("DV", this.DefaultValue);
 
-            writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
             writer.WriteDictionaryStringEntry("DA", da);
-            writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
             writer.WriteDictionaryNameEntry("AS", currentState);
 
             if (null != this._page && null != this._page.PageObjectRef)

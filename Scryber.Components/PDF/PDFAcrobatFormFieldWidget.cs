@@ -58,6 +58,24 @@ namespace Scryber.PDF
         protected Layout.PDFLayoutPage _page;
         protected Styles.Style _style;
 
+        /// <summary>
+        /// Whether the reader should regenerate this field's own appearance itself (via the
+        /// document-level /NeedAppearances flag) rather than trust our /AP. Pushbuttons now get
+        /// a complete, independently laid-out appearance for every state (see
+        /// LayoutEngineStatedButton) and readers (Acrobat in particular) were found to ignore or
+        /// mis-render that /AP whenever /NeedAppearances was set - so pushbuttons default to not
+        /// needing it, everything else still does since only pushbuttons self-render fully.
+        /// </summary>
+        public bool NeedsAppearances { get; set; }
+
+        /// <summary>
+        /// Set when this field is grouped under a shared parent (currently only radio-button
+        /// groups, see PDFAcrobatRadioGroupEntry) - the canonical PDF form is for the group to
+        /// declare /T, /FT, /Ff and /V once, with each kid writing /Parent instead of duplicating
+        /// them. Left null for every other field, which keep declaring their own directly.
+        /// </summary>
+        public PDFObjectRef Parent { get; set; }
+
         public PDFAcrobatFormFieldWidget(string name, string value, string defaultValue, FormInputFieldType type, FormFieldOptions options)
         {
             this.Name = name;
@@ -66,6 +84,7 @@ namespace Scryber.PDF
             this.FieldType = type;
             this._states = new Dictionary<FormFieldAppearanceState, Layout.PDFLayoutXObjectRun>();
             this.DefaultValue = defaultValue;
+            this.NeedsAppearances = (options & FormFieldOptions.Pushbutton) != FormFieldOptions.Pushbutton;
         }
 
         /// <summary>
@@ -186,19 +205,19 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndDictionaryEntry();
 
-            //Only buttons self-render an /AP for now - everything else relies on the reader
-            //regenerating its own appearance from /DA + /MK via /NeedAppearances. xObject.OutputToPDF
-            //still runs below for every field regardless (its side effects - Location/Width/Height -
-            //are what /Rect is computed from), it just isn't wired into a real /AP dictionary unless
-            //this is a pushbutton, so non-button fields end up with a harmless unreferenced XObject.
-            bool isPushbutton = (this.FieldOptions & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton;
+            //Comparison variant: back to no /AP at all for anything, even pushbuttons - the
+            //pre-independent-layout baseline, paired with /NeedAppearances=true so every field's
+            //appearance comes entirely from the reader's own /DA+/MK+/Rect synthesis. xObject.
+            //OutputToPDF still runs below (its side effects - Location/Width/Height - are what
+            ///Rect is computed from), it's just never wired into a /AP dictionary here.
+            const bool writeAP = false;
 
             if (this._states.Count > 0)
             {
                 _location = context.Offset;
 
                 Drawing.Rect bounds = Drawing.Rect.Empty;
-                if (isPushbutton)
+                if (writeAP)
                 {
                     writer.BeginDictionaryEntry("AP");
                     writer.BeginDictionary();
@@ -208,15 +227,11 @@ namespace Scryber.PDF
                     xObject = kvp.Value;
                     FormFieldAppearanceState state = kvp.Key;
 
-                    PDFObjectRef oref;
-                    if (this._stateStyles.TryGetValue(state, out var stateStyle))
-                        oref = WriteRepaintedAppearance(context, writer, xObject, stateStyle, state);
-                    else
-                        oref =  xObject.OutputToPDF(context, writer);
+                    PDFObjectRef oref = xObject.OutputToPDF(context, writer);
 
                     if (null != oref)
                     {
-                        
+
                         Size sz = new Drawing.Size(xObject.Width, xObject.Height);
                         if (_size == Size.Empty)
                             _size = sz;
@@ -227,26 +242,23 @@ namespace Scryber.PDF
                             if (_size.Height < sz.Height)
                                 _size.Height = sz.Height;
                         }
-                        if (isPushbutton)
+                        if (writeAP)
                         {
                             var name = GetFieldStateName(kvp.Key);
                             writer.WriteDictionaryObjectRefEntry(name, oref);
                         }
 
                         //We should have all states starting at the same location no matter what.
+                        //Margins are NOT subtracted here - the xObject's own content already
+                        //accounts for them (drawing is inset from the box edge by the margin
+                        //amount), so /Rect must match the xObject's full, unadjusted Width/Height/
+                        //Location exactly - the same values /BBox is written from. Subtracting
+                        //margins again here just made /Rect narrower than /BBox, a mismatch
+                        //Acrobat renders as a missing/blank appearance (Chrome/Preview tolerated it).
                         this._location = new Point(xObject.Location.X, xObject.Location.Y);
-
-                        var pos = this._style.CreatePostionOptions(false);
-                        if (!pos.Margins.IsEmpty && pos.DisplayMode != DisplayMode.Inline)
-                        {
-                            _location.X += pos.Margins.Left;
-                            _location.Y += pos.Margins.Top;
-                            _size.Width -= pos.Margins.Right + pos.Margins.Left;
-                            _size.Height -= pos.Margins.Top + pos.Margins.Bottom;
-                        }
                     }
                 }
-                if (isPushbutton)
+                if (writeAP)
                 {
                     writer.EndDictionary();
                     writer.EndDictionaryEntry();
@@ -287,6 +299,7 @@ namespace Scryber.PDF
             {
                 context.Graphics = g;
                 var rect = new Rect(0, 0, size.Width, size.Height);
+                
                 var borders = stateStyle.CreateBorderPen();
                 var bg = stateStyle.CreateBackgroundBrush();
                 
@@ -383,7 +396,13 @@ namespace Scryber.PDF
 
     
 
-    public class PDFAcrobatFormFieldEntryList : List<PDFAcrobatFormFieldWidget>
+    /// <summary>
+    /// Mixed list of terminal widgets and nested groups (currently only PDFAcrobatRadioGroupEntry)
+    /// within a Form's own /Kids - widened from a flat List&lt;PDFAcrobatFormFieldWidget&gt; so a
+    /// radio group can nest inside a Form's field list the same way a Form itself nests inside the
+    /// AcroForm root's /Fields.
+    /// </summary>
+    public class PDFAcrobatFormFieldEntryList : List<IPDFFormFieldNode>
     {
 
     }

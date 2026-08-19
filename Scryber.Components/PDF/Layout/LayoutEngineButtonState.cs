@@ -18,37 +18,7 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutComponent()
         {
-            //Mirrors what the base engine's own DoLayoutAChild would normally have done before
-            //ever reaching DoLayoutComponent - pushing the field's (here, state-merged) style
-            //onto the stack so children (e.g. the caption text) inherit its colour/font correctly,
-            //since this pass is invoked directly via Layout() rather than that normal path.
-            this.StyleStack.Push(this.FullStyle);
-            try
-            {
-                base.DoLayoutComponent();
-            }
-            finally
-            {
-                this.StyleStack.Pop();
-            }
-        }
-
-        /// <summary>
-        /// Builds an isolated positioned region for this state - registered on the current block
-        /// (BeginNewPositionedRegion requires that), but marked ExcludeFromOutput so the page's own
-        /// render pass skips it entirely. The widget renders it explicitly and separately instead.
-        /// </summary>
-        protected override PDFLayoutXObjectRun CreateAndAddInput(PDFPositionOptions pos)
-        {
-            PDFLayoutBlock containerBlock = this.DocumentLayout.CurrentPage.LastOpenBlock();
-
-            PDFLayoutRegion isolated = containerBlock.BeginNewPositionedRegion(pos, this.DocumentLayout.CurrentPage,
-                this.Component, this.FullStyle, isfloating: false, addAssociatedRun: false);
-            isolated.ExcludeFromOutput = true;
-
-            this.Line = isolated.BeginNewLine();
-
-            return this.Line.AddXObjectRun(this, this.Field, isolated, pos, this.FullStyle);
+            base.DoLayoutComponent();
         }
 
         /// <summary>

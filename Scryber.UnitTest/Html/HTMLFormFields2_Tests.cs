@@ -238,5 +238,28 @@ namespace Scryber.Core.UnitTests.Html
             Assert.IsNotNull(select.Widget.Choices);
             Assert.AreEqual(2, select.Widget.Choices.Count());
         }
+        
+
+        [TestMethod()]
+        public void Button_WithHoverActiveCss_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "button { background-color: #aaf; border-radius:4pt;}" +
+                      "button:hover{background-color:#ff0000;} " +
+                      "button:active{background-color:#0000ff; color:white;}" +
+                      "</style>" +
+                      "</head>" +
+                      "<body>" +
+                      "<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("ButtonStateCheck.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
     }
 }

@@ -24,16 +24,35 @@ namespace Scryber.PDF
         {
             PDFAcrobatFormFieldWidget entry = field.GetFieldEntry(context) as PDFAcrobatFormFieldWidget;
 
-            if (null != entry)
+            if (null == entry)
+                return false;
+
+            if ((entry.FieldOptions & FormFieldOptions.Radio) == FormFieldOptions.Radio)
             {
-                this.Fields.Add(entry);
-                return true;
+                //Every radio sharing a name within this same Form is one group - the canonical
+                //PDF structure the group's own /T/FT/Ff/V declared once, each radio just a /Parent
+                //kid - not this Form's flat /Kids duplicating /T per radio the way it works for
+                //every other (ungrouped) field type.
+                var group = this.Fields.OfType<PDFAcrobatRadioGroupEntry>()
+                    .FirstOrDefault(g => string.Equals(g.Name, entry.Name, StringComparison.Ordinal));
+
+                if (null == group)
+                {
+                    group = new PDFAcrobatRadioGroupEntry(entry.Name, entry.FieldOptions);
+                    this.Fields.Add(group);
+                }
+
+                group.Fields.Add(entry);
             }
             else
-                return false;
+            {
+                this.Fields.Add(entry);
+            }
+
+            return true;
         }
 
-        public IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        public virtual IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             if(this.Fields.Count > 0)
             {

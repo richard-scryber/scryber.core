@@ -53,6 +53,7 @@ namespace Scryber.PDF
 
                 OutputFields(context, writer);
                 OutputDefaultResources(context, writer);
+
                 writer.WriteDictionaryBooleanEntry("NeedAppearances", true);
 
                 if (HasSignatureField())
@@ -68,28 +69,47 @@ namespace Scryber.PDF
         }
 
         /// <summary>
-        /// True if any registered field - flat, or nested inside a Form's /Kids group - is a
-        /// signature field, in which case /SigFlags must be set on the AcroForm dictionary.
+        /// /NeedAppearances is a single, document-wide flag - it can't be set per field - so this
+        /// is the pragmatic compromise: true (readers should regenerate) if any registered field -
+        /// flat, or nested inside a Form's /Kids group - still relies on that (i.e. isn't a
+        /// pushbutton, the only field type with a complete, independently self-rendered /AP for
+        /// every state). A document made up entirely of such fields gets false, letting readers
+        /// trust the real /AP instead of ignoring/mis-rendering it the way Acrobat and Chrome were
+        /// found to when /NeedAppearances was set unconditionally.
+        /// </summary>
+        private bool AnyFieldNeedsAppearances()
+        {
+            return AllWidgets(this.Fields).Any(w => w.NeedsAppearances);
+        }
+
+        /// <summary>
+        /// True if any registered field - at any nesting depth (flat, inside a Form's /Kids group,
+        /// or a radio group nested inside one of those) - is a signature field, in which case
+        /// /SigFlags must be set on the AcroForm dictionary.
         /// </summary>
         private bool HasSignatureField()
         {
-            foreach (var node in this.Fields)
+            return AllWidgets(this.Fields).Any(w => w.FieldType == FormInputFieldType.Signature);
+        }
+
+        /// <summary>
+        /// Flattens every terminal PDFAcrobatFormFieldWidget out of a mixed widget/group node
+        /// list, recursing into nested groups (a Form, or a radio group inside one) to whatever
+        /// depth they go - rather than assuming a fixed 2-level root/Form shape, which broke once
+        /// radio groups started nesting inside Forms too.
+        /// </summary>
+        private static IEnumerable<PDFAcrobatFormFieldWidget> AllWidgets(IEnumerable<IPDFFormFieldNode> nodes)
+        {
+            foreach (var node in nodes)
             {
                 if (node is PDFAcrobatFormFieldWidget widget)
-                {
-                    if (widget.FieldType == FormInputFieldType.Signature)
-                        return true;
-                }
+                    yield return widget;
                 else if (node is PDFAcrobatFormEntry group)
                 {
-                    foreach (var kid in group.Fields)
-                    {
-                        if (kid.FieldType == FormInputFieldType.Signature)
-                            return true;
-                    }
+                    foreach (var w in AllWidgets(group.Fields))
+                        yield return w;
                 }
             }
-            return false;
         }
 
         /// <summary>

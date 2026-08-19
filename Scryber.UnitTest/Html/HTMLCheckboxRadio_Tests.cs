@@ -126,10 +126,27 @@ namespace Scryber.Core.UnitTests.Html
 
             Assert.IsTrue(acroForm.TryGetValue("Fields", out var fieldsEntry));
             var fields = fieldsEntry as PDFArray;
-            Assert.AreEqual(1, fields.Count, "Both radios should share one group node");
+            Assert.AreEqual(1, fields.Count, "One <form> - root /Fields should hold just its own group node");
 
-            var group = GetDictionary(reader, fields[0] as PDFObjectRef);
-            Assert.IsTrue(group.TryGetValue("Kids", out var kidsEntry));
+            var formGroup = GetDictionary(reader, fields[0] as PDFObjectRef);
+            Assert.IsTrue(formGroup.TryGetValue("Kids", out var formKidsEntry));
+            var formKids = formKidsEntry as PDFArray;
+            Assert.AreEqual(1, formKids.Count, "Both radios share one name - the Form's own /Kids should hold just their radio-group node, not each radio directly");
+
+            //The canonical PDF radio-group structure: a parent declaring /T (the shared name),
+            ///FT /Btn, /Ff (the Radio bit) and /V (the selected on-value) once, with each radio
+            //as an anonymous /Kids entry (see PDFAcrobatRadioGroupEntry).
+            var radioGroup = GetDictionary(reader, formKids[0] as PDFObjectRef);
+            radioGroup.TryGetValue("T", out var groupName);
+            Assert.AreEqual("opt", (groupName as PDFString)?.Value);
+            radioGroup.TryGetValue("FT", out var groupFt);
+            Assert.AreEqual("Btn", (groupFt as PDFName)?.Value);
+            radioGroup.TryGetValue("Ff", out var groupFf);
+            Assert.AreEqual(32768L, ((PDFNumber)groupFf).Value, "Radio flag");
+            radioGroup.TryGetValue("V", out var groupV);
+            Assert.AreEqual("B", (groupV as PDFName)?.Value, "The group's /V is the checked radio's on-value");
+
+            Assert.IsTrue(radioGroup.TryGetValue("Kids", out var kidsEntry));
             var kids = kidsEntry as PDFArray;
             Assert.AreEqual(2, kids.Count);
 

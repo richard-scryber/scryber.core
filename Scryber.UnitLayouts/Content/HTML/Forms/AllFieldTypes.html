@@ -55,13 +55,6 @@ Before the form
         <option value='US' >United States long country name</option>
         <option value='FR'>France</option>
     </select>
-<!--    Checkbox:-->
-<!--    <input type='checkbox' id='f-agree' name='agree' value='yes' checked='checked' />-->
-<!--    Radios:-->
-<!--    <input type='radio' id='f-opt-a' name='choice' value='A' />-->
-<!--    <input type='radio' id='f-opt-b' name='choice' value='B' checked='checked' />-->
-<!--    <button id='f-submit' name='go' type='submit'>Save</button>-->
-<!--    <button id='f-reset' name='clear' type='reset'>Clear</button>-->
 </form>
 After the form.<br/>
 A submit form...
@@ -70,7 +63,7 @@ A submit form...
     String:
     <input type='text' id='f-text-2' name='fullname_other' value='This is a very long text value to layout' style="margin: 0pt;" required="required" />
     <input type='text' id='f-text-3' name='fullname' value='Jane Doe' style="margin: 0pt;" />
-    <input type="submit" value="Submit Form" style="margin: 0pt;" />
+    <input class="submit" type="submit" value="Submit Form" style="margin: 0pt;" />
 </form>
 A submit form with flex column...
 <form action="http://localhost:8080/submit?id=1234" method="post" style="display: flex; flex-direction: column; position: relative;">
@@ -92,7 +85,7 @@ A submit form with flex column...
         <input id="check-2" class="checkbox" type="checkbox" name="allergy-gluten" value="Gluten"  />
         <label for="check-1">Gluten</label>
     </div>
-    <input type="submit" value="Submit Form" style="margin: 0pt; position: absolute; left: 0px; top: 0px;" />
+    <input class="submit" type="submit" value="Submit Form" />
 </form>
 
 <div style="display: flex; flex-direction: column;">
