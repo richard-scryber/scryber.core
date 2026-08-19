@@ -43,8 +43,8 @@ namespace Scryber.UnitLayouts
             var template = DocStreams.AssertGetTemplatePath(FormTemplatePath);
             var doc = Document.ParseHtmlDocument(template);
 
-            using var stream = DocStreams.GetOutputStream("HTMLFormAllFields.pdf");
-            doc.RenderOptions.Compression = OutputCompressionType.None;
+            using var stream = DocStreams.GetOutputStream("HTMLFormAllFields_2.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.SaveAsPDF(stream);
             stream.Flush();
 

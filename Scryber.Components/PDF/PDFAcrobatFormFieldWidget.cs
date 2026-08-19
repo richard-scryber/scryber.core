@@ -205,12 +205,13 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndDictionaryEntry();
 
-            //Comparison variant: back to no /AP at all for anything, even pushbuttons - the
-            //pre-independent-layout baseline, paired with /NeedAppearances=true so every field's
-            //appearance comes entirely from the reader's own /DA+/MK+/Rect synthesis. xObject.
-            //OutputToPDF still runs below (its side effects - Location/Width/Height - are what
-            ///Rect is computed from), it's just never wired into a /AP dictionary here.
-            const bool writeAP = false;
+            //No field self-renders a real /AP, pushbuttons included - of the policies compared
+            //(pushbutton /AP + NeedAppearances=false did show real styled buttons everywhere, but
+            //this "nothing self-renders, NeedAppearances=true" combination tested as the most
+            //reliable overall across Preview/Chrome/Acrobat). xObject.OutputToPDF still runs below
+            //regardless (its side effects - Location/Width/Height - are what /Rect is computed
+            //from), it's just never wired into a /AP dictionary here.
+            bool writeAP = false;
 
             if (this._states.Count > 0)
             {
