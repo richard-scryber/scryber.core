@@ -400,10 +400,17 @@ namespace Scryber.PDF
             writer.WriteDictionaryNameEntry("Type", "Action");
             writer.WriteDictionaryNameEntry("S", "SubmitForm");
 
+            //The #FDF suffix tells Acrobat to expect and parse an FDF response (Content-Type
+            //application/vnd.fdf) rather than trying to render whatever the server sends back
+            //as if it were HTML/JSON - without it, Acrobat errors with "Cannot process content
+            //of type ..." on anything except a full replacement PDF. The fragment is client-side
+            //only (never sent to the server), so it's safe to always add.
+            var url = this.Url.Contains("#") ? this.Url : this.Url + "#FDF";
+
             writer.BeginDictionaryEntry("F");
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Type", "Filespec");
-            writer.WriteDictionaryStringEntry("F", this.Url);
+            writer.WriteDictionaryStringEntry("F", url);
             writer.WriteDictionaryNameEntry("FS", "URL");
             writer.EndDictionary();
             writer.EndDictionaryEntry();

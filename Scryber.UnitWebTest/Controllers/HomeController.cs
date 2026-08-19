@@ -106,6 +106,18 @@ public class HomeController : Controller
             Console.WriteLine($"  (raw body, not form-encoded): {rawBody}");
         Console.WriteLine("=================================");
 
+        // Acrobat's SubmitForm response handling only accepts PDF/FDF/XFDF content, and
+        // errors with "Cannot process content of type ..." on anything else - including an
+        // empty body. The #FDF suffix on the submit action's URL (see PDFSubmitFormAction)
+        // tells Acrobat to expect FDF specifically, so respond with a minimal FDF carrying a
+        // /Status message it pops up to the user - the actual field data is already visible
+        // above in the console log, this is purely the acknowledgment.
+        if (Request.Method == HttpMethods.Post)
+        {
+            const string fdf = "%FDF-1.2\n1 0 obj\n<< /FDF << /Status (Form submitted successfully) >> >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF";
+            return Content(fdf, "application/vnd.fdf");
+        }
+
         return Json(new
         {
             method = Request.Method,
