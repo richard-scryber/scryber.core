@@ -53,8 +53,8 @@ namespace Scryber.PDF
 
                 OutputFields(context, writer);
                 OutputDefaultResources(context, writer);
-
-                writer.WriteDictionaryBooleanEntry("NeedAppearances", true);
+                
+                writer.WriteDictionaryBooleanEntry("NeedAppearances", false);
 
                 if (HasSignatureField())
                     writer.WriteDictionaryNumberEntry("SigFlags", 1); //bit 1 = SignaturesExist

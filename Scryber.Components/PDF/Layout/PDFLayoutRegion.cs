@@ -170,6 +170,9 @@ namespace Scryber.PDF.Layout
                     return null;
 
                 PDFLayoutItem last = this.Contents[lastindex];
+                if(last.IsClosed)
+                    return null;
+                
                 return last;
             }
         }

@@ -26,6 +26,11 @@ namespace Scryber.PDF
         
         public int MaxLength { get; set; }
         
+        /// <summary>
+        /// Gets or sets the offset of the field in its parent container.
+        /// </summary>
+        public Point ContainerOffset { get; set; }
+        
 
         /// <summary>
         /// The choices for a Choice (select/combo/list) field, written as the /Opt array.
@@ -111,6 +116,21 @@ namespace Scryber.PDF
             if (null == xObject)
                 return null;
 
+            var parentRenderBounds = Rect.Empty;
+            
+            ComponentArrangement arrangement = null;
+            var owner = xObject.Owner as Component;
+            while (null != owner)
+            {
+                arrangement = owner.GetFirstArrangement();
+                if(null != arrangement)
+                    break;
+                owner = owner.Parent;
+            }
+
+            if (null != arrangement)
+                parentRenderBounds = arrangement.RenderBounds;
+            
             PDFObjectRef root = writer.BeginObject();
 
             var font = this._style.CreateFont();
@@ -178,14 +198,26 @@ namespace Scryber.PDF
                 writer.EndDictionaryEntry();
             }
 
+            //BS - border style. Explicitly zero-width regardless of /MK /BC below - a reader
+            //that regenerates this widget's appearance (NeedAppearances, or just its own default
+            //rendering when we don't write an /AP) draws a border from /MK /BC alone if /BS is
+            //absent, defaulting to a 1pt solid line we never asked for. Our own layout already
+            //draws whatever border the field's CSS specifies as part of the field's own content -
+            //this just stops the reader from drawing a second, uncontrolled one on top of it.
+            writer.BeginDictionaryEntry("BS");
+            writer.BeginDictionary();
+            writer.WriteDictionaryNumberEntry("W", 0);
+            writer.EndDictionary();
+            writer.EndDictionaryEntry();
+
             //MK - appearance dictionary
             writer.BeginDictionaryEntry("MK");
             writer.BeginDictionary();
 
-            if (this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
-            {
-                WriteInputColor(context, writer, "BC", this._style.Border.Color);
-            }
+            // if (this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
+            // {
+            //     WriteInputColor(context, writer, "BC", this._style.Border.Color);
+            // }
             if (this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
             {
                 WriteInputColor(context, writer, "BG", this._style.Background.Color);
@@ -211,13 +243,14 @@ namespace Scryber.PDF
             //reliable overall across Preview/Chrome/Acrobat). xObject.OutputToPDF still runs below
             //regardless (its side effects - Location/Width/Height - are what /Rect is computed
             //from), it's just never wired into a /AP dictionary here.
-            bool writeAP = false;
-
+            bool writeAP = true;
+            Rect? clipRect = null;
+            
             if (this._states.Count > 0)
             {
                 _location = context.Offset;
-
-                Drawing.Rect bounds = Drawing.Rect.Empty;
+                var bounds = Rect.Empty;
+                
                 if (writeAP)
                 {
                     writer.BeginDictionaryEntry("AP");
@@ -227,9 +260,16 @@ namespace Scryber.PDF
                 {
                     xObject = kvp.Value;
                     FormFieldAppearanceState state = kvp.Key;
+                    _location = context.Offset;
+                    var prevXclude = xObject.ChildContainer.ExcludeFromOutput;
+                    
+                    
+                    xObject.ChildContainer.ExcludeFromOutput = false;
 
                     PDFObjectRef oref = xObject.OutputToPDF(context, writer);
 
+                    xObject.ChildContainer.ExcludeFromOutput = prevXclude;
+                    
                     if (null != oref)
                     {
 
@@ -257,6 +297,12 @@ namespace Scryber.PDF
                         //margins again here just made /Rect narrower than /BBox, a mismatch
                         //Acrobat renders as a missing/blank appearance (Chrome/Preview tolerated it).
                         this._location = new Point(xObject.Location.X, xObject.Location.Y);
+
+                        if (xObject.ClipRect.HasValue)
+                        {
+                            bounds = parentRenderBounds;
+                            clipRect = xObject.ClipRect;
+                        }
                     }
                 }
                 if (writeAP)
@@ -264,6 +310,20 @@ namespace Scryber.PDF
                     writer.EndDictionary();
                     writer.EndDictionaryEntry();
                 }
+
+                if (clipRect != null)
+                {
+                    _location.X += bounds.X + clipRect.Value.X;
+                    _location.Y += bounds.Y + clipRect.Value.Y;
+                    _size = clipRect.Value.Size;
+                }
+                else
+                {
+                    _location.X += bounds.Location.X;
+                    _location.Y += bounds.Location.Y;
+                    
+                }
+                
 
                 PDFReal left = context.Graphics.GetXPosition(_location.X);
                 PDFReal top = context.Graphics.GetYPosition(_location.Y);

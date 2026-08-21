@@ -31,7 +31,7 @@ namespace Scryber.PDF
         public string AlternateText { get; set; }
         private IEnumerable<PDFObjectRef> _refs;
 
-        public IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
+        public virtual IEnumerable<PDFObjectRef> OutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
             if (null == _refs)
                 _refs = this.DoOutputToPDF(context, writer);
@@ -41,9 +41,5 @@ namespace Scryber.PDF
         protected abstract IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer);
 
     }
-
-    /// <summary>
-    /// An annotation that links to a component
-    /// </summary>
  
 }

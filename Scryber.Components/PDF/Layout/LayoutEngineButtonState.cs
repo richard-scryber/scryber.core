@@ -1,4 +1,5 @@
 using Scryber.Components;
+using Scryber.Drawing;
 using Scryber.Styles;
 
 namespace Scryber.PDF.Layout
@@ -10,7 +11,7 @@ namespace Scryber.PDF.Layout
     /// state's own /AP entry. Driven directly via Layout(context, style), not the normal
     /// GetEngine/CreateLayoutEngine dispatch, so it never gets picked for a real component.
     /// </summary>
-    public class LayoutEngineButtonState : LayoutEngineInput
+    public class LayoutEngineButtonState : LayoutEngineFormField
     {
         public LayoutEngineButtonState(FormInputField container, IPDFLayoutEngine parent) : base(container, parent)
         {
@@ -32,7 +33,7 @@ namespace Scryber.PDF.Layout
         /// Not a real widget - the base class already captured the result into Result right
         /// after closing xObject, which is all the orchestrating LayoutEngineStatedButton needs.
         /// </summary>
-        protected override void RegisterAppearances(PDFLayoutXObjectRun xObject, PDFPositionOptions pos)
+        protected override void RegisterAppearances(PDFLayoutXObjectRun xObject, PDFPositionOptions pos, Point offset =  default(Point))
         {
         }
     }

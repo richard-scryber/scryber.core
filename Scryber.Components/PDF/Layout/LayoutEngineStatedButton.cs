@@ -22,7 +22,6 @@ namespace Scryber.PDF.Layout
 
         
         public bool IsLayingOutStates { get; private set; }
-        public bool ContinueLayout { get; set; } = true;
         
 
         public LayoutEngineStatedButton(FormInputField field, IPDFLayoutEngine parent) : base(field, parent)
@@ -208,9 +207,6 @@ namespace Scryber.PDF.Layout
             else
                 return this.ParentEngine.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
         }
-
-        public void Dispose()
-        {
-        }
+        
     }
 }

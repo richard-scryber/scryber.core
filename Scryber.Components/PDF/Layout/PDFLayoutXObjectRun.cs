@@ -191,6 +191,16 @@ namespace Scryber.PDF.Layout
                 return false;
         }
 
+        public virtual bool ResetOutputReference()
+        {
+            if (null != this._renderRef)
+            {
+                this._renderRef = null;
+                return true;
+            }
+            return false;
+        }
+
         public void SetOutputSize(Unit? width, Unit? height)
         {
             this._explicitW = width;
@@ -222,6 +232,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         private PDFObjectRef OutputContent(PDFRenderContext context, PDFWriter writer)
         {
+            if(this.ChildContainer.ExcludeFromOutput)
+                return null;
+            
             Point origOffset = context.Offset;
             Size origSpace = context.Space.Clone();
             PDFGraphics prevGraphics = context.Graphics;

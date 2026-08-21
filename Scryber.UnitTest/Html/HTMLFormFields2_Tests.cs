@@ -261,5 +261,106 @@ namespace Scryber.Core.UnitTests.Html
             stream.Flush();
         }
         
+        [TestMethod()]
+        public void Button_WithHoverActiveCssInForm_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
+                      "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body>" +
+                      "<form action=\"https://localhost:7094/Home/Submit\" method=\"post\">" +
+                      "<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
+                      "</form>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("ButtonStateCheck_submit.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void TextBox_CssInForm_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "input {margin: 2pt 0pt; padding: 4pt; border-radius:4pt; display: inline-block; background-color: #eee;}" +
+                      "input.required {border-color: #f00;}" +
+                      "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
+                      "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<form action=\"https://localhost:7094/Home/Submit\" method=\"post\">Above<br/>Before " +
+                      "<input type='text' name='name' value='Hello' /> After<br/>" +
+                      "<input type='text' class='required' name='second' value='Second' /> <span>After Button</span>"  +
+                      "</form>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("TextBox_CssInForm_DistinctAP.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void Select_CssInForm_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "select {margin: 2pt 0pt; padding: 4pt; border-radius:4pt; display: inline-block; background-color: #eee;}" +
+                      "select.required {border-color: #f00;}" +
+                      "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
+                      "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<form action=\"https://localhost:7094/Home/Submit\" method=\"post\">Above<br/>Before " +
+                      "<select name='name' >" +
+                        "<option selected='selected' value='Hello'>Hello</option>" +
+                        "<option value='Second'>Second</option>" +
+                        "<option value='Third'>Third</option>" +
+                      "</select> After<br/>" +
+                      "</form>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Select_CssInForm_DistinctAP.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void TextArea_CssInForm_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "textarea {margin: 2pt 0pt; padding: 4pt; border-radius:4pt; display: inline-block; background-color: #eee;}" +
+                      "textarea.required {border-color: #f00;}" +
+                      "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
+                      "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<form action=\"https://localhost:7094/Home/Submit\" method=\"post\">Above<br/>Before " +
+                      "<textarea rows='3' cols='20' >This is some long\r\n" +
+                      "text in the text area</textarea>" +
+                      " After<br/>" +
+                      "</form>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("TextArea_CssInForm_DistinctAP.pdf");
+            doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
     }
 }
