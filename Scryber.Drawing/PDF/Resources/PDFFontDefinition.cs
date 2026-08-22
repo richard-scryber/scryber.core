@@ -326,6 +326,11 @@ namespace Scryber.PDF.Resources
         /// Returns the PDFFontWidths for this font definition
         /// </summary>
         /// <returns></returns>
+        /// <remarks>
+        /// The non-standard, non-Unicode branch returns this definition's OWN widths instance,
+        /// and definitions are cached process-wide, so the returned object is shared between
+        /// concurrently rendering documents. It must stay free of per-call mutable state.
+        /// </remarks>
         public override PDFFontWidths GetWidths()
         {
 

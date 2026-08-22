@@ -28,6 +28,13 @@ namespace Scryber.PDF.Resources
     /// Represents a standard set of ASCII character widths that will be rendered to the PDF file as a simple array.
     /// </summary>
     /// <remarks>The standard font widths instance does not support composite fonts</remarks>
+    /// <remarks>
+    /// THREAD SAFETY: a single instance is shared process-wide between concurrently rendering
+    /// documents. Non-standard, non-Unicode fonts hand the definition's own instance to every
+    /// document (see FontDefinition.GetWidths), and font definitions are cached for the lifetime
+    /// of the process by the FontFactory. Implementations must therefore hold no per-call mutable
+    /// state - no cached buffers, no accumulators. Keep working state local to the method.
+    /// </remarks>
     public abstract class PDFFontWidths : TypedObject
     {
         #region ivars
@@ -142,8 +149,6 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         public abstract char RegisterGlyph(char c);
 
-        private StringBuilder sb = null;
-
         public virtual string RegisterGlyphs(string chars)
         {
             if (null == chars)
@@ -161,34 +166,34 @@ namespace Scryber.PDF.Resources
         /// <returns></returns>
         public virtual string RegisterGlyphs(string chars, int startindex, int count)
         {
-            if (null == sb)
-                sb = new StringBuilder();
-            else
-                sb.Length = 0;
+            if (null == chars)
+                throw new ArgumentNullException(nameof(chars));
+            if (count <= 0)
+                return string.Empty;
 
-            if (sb.Capacity < count)
-                sb.Capacity = count;
-
-            int end = startindex + count;
-
-            for (int i = startindex; i < end; i++)
+            //All state must stay local. Instances of this class are shared process-wide between
+            //concurrently rendering documents, so a cached buffer here would be a data race.
+            //Written straight into the result string, so this allocates no more than the previous
+            //cached-StringBuilder version did. The state tuple and the static lambda keep it
+            //closure free.
+            return string.Create(count, (widths: this, chars, startindex), static (span, state) =>
             {
-
-                char c = chars[i];
-                c = RegisterGlyph(c);
-                sb.Append(c);
-            }
-            return sb.ToString();
+                for (int i = 0; i < span.Length; i++)
+                {
+                    span[i] = state.widths.RegisterGlyph(state.chars[state.startindex + i]);
+                }
+            });
         }
 
         public virtual void RegisterGlyphs(StringBuilder chars, int startindex, int count)
         {
+            if (null == chars)
+                throw new ArgumentNullException(nameof(chars));
+
             int end = startindex + count;
-            for(int i = startindex; i < end; i++)
+            for (int i = startindex; i < end; i++)
             {
-                char c = chars[i];
-                c = RegisterGlyph(c);
-                sb[i] = c;
+                chars[i] = RegisterGlyph(chars[i]);
             }
         }
     }
