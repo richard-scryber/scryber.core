@@ -16,7 +16,7 @@ namespace Scryber.Components
         private TextLiteral _innerContent;
 
         [PDFAttribute("value")]
-        public string Value
+        public virtual string Value
         {
             get
             {
@@ -63,7 +63,7 @@ namespace Scryber.Components
         /// LayoutEngineInput can read it without an HTML-specific type check, matching MaxLength.
         /// </summary>
         [PDFAttribute("size")]
-        public int Size { get; set; }
+        public virtual int Size { get; set; }
 
         public FormInputFieldType FieldType { get; set; }
 

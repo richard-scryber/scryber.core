@@ -255,10 +255,7 @@ namespace Scryber.PDF.Layout
         protected override void DoLayoutTextComponent(ITextComponent text, Style style)
         {
             var region = this.Context.DocumentLayout.CurrentPage.LastOpenBlock().CurrentRegion;
-            var reader = text.CreateReader(this.Context, this.FullStyle);
-            var builder = GetTextSize(reader);
-
-
+            
             var line = region.CurrentItem as PDFLayoutLine;
             if (null == line)
                 line = region.BeginNewLine();
@@ -280,38 +277,6 @@ namespace Scryber.PDF.Layout
                 }
             }
             line.AddMarkedContentEnd(this, bmc);
-        }
-
-        private StringBuilder GetTextSize(PDFTextReader reader)
-        {
-            StringBuilder builder = new StringBuilder();
-            
-            if(null == reader)
-                return builder;
-            
-            var lines = new List<string>();
-            while (reader.Read())
-            {
-                switch (reader.Value.OpType)
-                {
-                    case PDFTextOpType.TextContent:
-                        builder.Append(reader.Value.ToString());
-                        break;
-                    case PDFTextOpType.LineBreak:
-                        lines.Add(builder.ToString());
-                        builder.Clear();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if(builder.Length > 0)
-                lines.Add(builder.ToString());
-            var textOptions = this.FullStyle.CreateTextOptions();
-            
-            //var width = this.Context.Graphics.MeasureString(builder.ToString(), style.Font).Width;
-
-            return builder;
         }
 
         protected virtual PDFLayoutXObjectRun CreateAndAddInput(PDFPositionOptions pos)
@@ -365,7 +330,8 @@ namespace Scryber.PDF.Layout
         }
 
         /// <summary>
-        /// Returns true if the parent engines have already created a new positioned block for this input, (e.g. display inlineBlock, or position absolute)
+        /// Returns true if the parent engines have already created a new positioned block for this input,
+        /// (e.g. display inlineBlock)
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>

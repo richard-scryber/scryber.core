@@ -4,12 +4,16 @@ using Scryber.Styles;
 using Scryber.Components;
 using Scryber.Drawing;
 using Scryber.PDF;
+using Scryber.PDF.Layout;
 
 namespace Scryber.Html.Components
 {
     [PDFParsableComponent("select")]
     public class HTMLSelect : FormInputField
     {
+        private HTMLOptionList _items;
+        private string _value;
+        
         [PDFAttribute("class")]
         public override string StyleClass { get => base.StyleClass; set => base.StyleClass = value; }
 
@@ -39,6 +43,23 @@ namespace Scryber.Html.Components
             }
         }
 
+        /// <summary>
+        /// Take the value out of writing to the
+        /// </summary>
+        [PDFAttribute("value")]
+        public override string Value
+        {
+            get => _value;
+            set => _value = value;
+        }
+
+        public string SelectedText
+        {
+            get{ return base.Value; }
+            set{ base.Value = value; }
+        }
+
+
         [PDFAttribute("title")]
         public override string OutlineTitle
         {
@@ -46,17 +67,17 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
         
-        //Shadows FormInputField.Size on purpose - <select size> means "number of visible rows"
+        //Overrides FormInputField.Size on purpose - <select size> means "number of visible rows"
         //(a listbox row count), an entirely different HTML semantic from <input size>'s
         //"roughly N average character widths" that the base property now exists for.
         [PDFAttribute("size")]
-        public new int Size
+        public override int Size
         {
             get;
             set;
         }
         
-        private HTMLOptionList _items;
+        
 
         /// <summary>
         /// The &lt;option&gt; children, as the parser's element target for this select - mirrors
@@ -118,6 +139,8 @@ namespace Scryber.Html.Components
             this.Choices = new FormFieldOptionList();
             this.Options |= FormFieldOptions.Combo;
         }
+        
+        
 
         /// <summary>
         /// Harvesting has to wait until OnPreLayout, not OnDataBound - {{#each}}-bound options are
@@ -131,25 +154,40 @@ namespace Scryber.Html.Components
         {
             base.OnPreLayout(context);
 
+            FormFieldOption selected = null;
+            
             foreach (var option in this.Items.ToList())
             {
                 var value = string.IsNullOrEmpty(option.Value) ? option.Label : option.Value;
                 var label = string.IsNullOrEmpty(option.Label) ? value : option.Label;
 
-                this.Choices.Add(new FormFieldOption { Value = value, Label = label, Selected = option.Selected });
+                var ffo = new FormFieldOption { Value = value, Label = label, Selected = option.Selected };
+                this.Choices.Add(ffo);
 
                 //Items.Remove only ever removes a direct child of this select's own InnerContent -
                 //a {{#each}}-bound option instead lives inside a generated TemplateInstance, so it
                 //has to come out of its own actual parent's content, not this select's.
-                if (option.Parent is IContainerComponent parent)
-                    parent.Content.Remove(option);
+
+                if (ffo.Selected)
+                    selected = ffo;
             }
 
             if (string.IsNullOrEmpty(this.Value))
             {
-                var selected = this.Choices.FirstOrDefault(c => c.Selected) ?? this.Choices.FirstOrDefault();
+                selected = this.Choices.FirstOrDefault(c => c.Selected) ?? this.Choices.FirstOrDefault();
+            }
+            
+            //As we have captured the contents as form field options, we can remove the inner content, and then just set the value.
+            if (!this.Multiple.Value)
+            {
+                this.InnerContent.Clear();
+
+                //Will add a literal for the current value.
                 if (null != selected)
+                {
                     this.Value = selected.Value;
+                    this.SelectedText = selected.Label;
+                }
             }
         }
 
@@ -159,22 +197,10 @@ namespace Scryber.Html.Components
             entry.Choices = this.Choices;
             return entry;
         }
-        
-        protected override Style GetBaseStyle()
+
+        protected override IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
-            var style = base.GetBaseStyle();
-            
-            //this.Width = Unit.Ex(20);
-
-            if ((this.Options & FormFieldOptions.Multiselect) == FormFieldOptions.Multiselect)
-            {
-                if (this.Size < 1)
-                    this.Size = 4;
-                
-                style.Size.Height = Scryber.Drawing.Unit.Em(this.Size * 1.2);
-            }
-
-            return style;
+            return new LayoutEngineSelect(this, parent);
         }
     }
 }

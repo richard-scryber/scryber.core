@@ -164,10 +164,53 @@ namespace Scryber.Core.UnitTests.Html
 
             using (var ms = DocStreams.GetOutputStream("HTMLSelect_EachBound.pdf"))
             {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
                 doc.SaveAsPDF(ms);
             }
 
             Assert.AreEqual(3, select.Choices.Count);
+            Assert.AreEqual("UK", select.Choices[0].Value);
+            Assert.AreEqual("United Kingdom", select.Choices[0].Label);
+            Assert.AreEqual("US", select.Choices[1].Value);
+            Assert.AreEqual("FR", select.Choices[2].Value);
+        }
+        
+        [TestMethod()]
+        [TestCategory("Html-Forms")]
+        public void SelectMultiple_OptionsBoundViaEachHelper_AreHarvested()
+        {
+            var src = @"<html><body>
+                <select id='s1' name='country' multiple='multiple' value='{{model.countries[1]}}' size='{{count(model.countries)}}'>
+                {{#each model.countries}}
+                    <option value='{{this.code}}'>{{this.name}}</option>
+                {{/each}}
+                </select>
+                </body></html>";
+
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+            doc.Params["model"] = new
+            {
+                countries = new[]
+                {
+                    new { code = "UK", name = "United Kingdom" },
+                    new { code = "US", name = "United States" },
+                    new { code = "FR", name = "France" },
+                    new { code="DK", name = "Germany"},
+                    new { code="ES", name = "Spain"},
+                    
+                }
+            };
+
+            var select = doc.FindAComponentById("s1") as HTMLSelect;
+            Assert.IsNotNull(select);
+
+            using (var ms = DocStreams.GetOutputStream("HTMLSelectMultiple_EachBound.pdf"))
+            {
+                doc.RenderOptions.Compression = OutputCompressionType.None;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.AreEqual(5, select.Choices.Count);
             Assert.AreEqual("UK", select.Choices[0].Value);
             Assert.AreEqual("United Kingdom", select.Choices[0].Label);
             Assert.AreEqual("US", select.Choices[1].Value);
@@ -266,8 +309,9 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
-                      "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
+                      "button { background-color: #aaf; border-radius:0pt; margin: 5pt} " +
+                      "button:active {background-color:#aa00aa; color: white;; margin: 7pt 3pt 3pt 7pt; } " +
+                      "button:hover {background-color:#0000ff; color: white;; margin: 7pt 3pt 3pt 7pt; } " +
                       "</style>" +
                       "</head>" +
                       "<body>" +
@@ -341,7 +385,7 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "textarea {margin: 2pt 0pt; padding: 4pt; border-radius:4pt; display: inline-block; background-color: #eee;}" +
+                      "textarea {margin: 2pt 0pt; padding: 4pt; border-radius:4pt; display: inline-block; background-color: #eee; font-size:12pt;}" +
                       "textarea.required {border-color: #f00;}" +
                       "button { background-color: #aaf; border-radius:4pt; margin: 5pt}" +
                       "button:hover, button:active {background-color:#0000ff; margin: 7pt 3pt 3pt 7pt; } " +
@@ -353,6 +397,7 @@ namespace Scryber.Core.UnitTests.Html
                       "text in the text area</textarea>" +
                       " After<br/>" +
                       "</form>" +
+                      "<span>After Form</span>" +
                       "</body></html>";
             var doc = Document.ParseHtmlDocument(new StringReader(src));
 

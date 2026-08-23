@@ -87,8 +87,6 @@ namespace Scryber.Html.Components
             if (this.Cols <= 0)
                 this.Cols = 20;
             
-            style.Size.Height = Unit.Em(this.Rows * 1.2); 
-            style.Size.Width = Unit.Ex(this.Cols);
             return style;
         }
     }

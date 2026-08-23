@@ -198,12 +198,7 @@ namespace Scryber.PDF
                 writer.EndDictionaryEntry();
             }
 
-            //BS - border style. Explicitly zero-width regardless of /MK /BC below - a reader
-            //that regenerates this widget's appearance (NeedAppearances, or just its own default
-            //rendering when we don't write an /AP) draws a border from /MK /BC alone if /BS is
-            //absent, defaulting to a 1pt solid line we never asked for. Our own layout already
-            //draws whatever border the field's CSS specifies as part of the field's own content -
-            //this just stops the reader from drawing a second, uncontrolled one on top of it.
+            //BS - border style. Explicitly zero-width, all style in the AP's
             writer.BeginDictionaryEntry("BS");
             writer.BeginDictionary();
             writer.WriteDictionaryNumberEntry("W", 0);
@@ -214,10 +209,7 @@ namespace Scryber.PDF
             writer.BeginDictionaryEntry("MK");
             writer.BeginDictionary();
 
-            // if (this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
-            // {
-            //     WriteInputColor(context, writer, "BC", this._style.Border.Color);
-            // }
+            
             if (this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
             {
                 WriteInputColor(context, writer, "BG", this._style.Background.Color);
@@ -231,7 +223,7 @@ namespace Scryber.PDF
             if ((this.FieldOptions & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton
                 && !string.IsNullOrEmpty(this.Value))
             {
-                writer.WriteDictionaryStringEntry("CA", this.Value);
+                //writer.WriteDictionaryStringEntry("CA", this.Value);
             }
 
             writer.EndDictionary();

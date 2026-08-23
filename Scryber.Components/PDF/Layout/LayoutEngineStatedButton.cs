@@ -31,7 +31,6 @@ namespace Scryber.PDF.Layout
 
         protected override void DoLayoutComponent()
         {
-            
             var context = this.Context;
             var fullstyle = this.FullStyle;
             this.IsLayingOutStates = false;
@@ -44,7 +43,7 @@ namespace Scryber.PDF.Layout
             
 
             PDFLayoutXObjectRun normalXObject;
-            using (var normalEngine = new LayoutEngineInput(_field, this))
+            using (var normalEngine = new LayoutEngineButtonState(_field, this, FormFieldAppearanceState.Normal))
             {
                 normalEngine.Layout(context, fullstyle);
                 this.ContinueLayout = normalEngine.ContinueLayout;
@@ -123,35 +122,10 @@ namespace Scryber.PDF.Layout
             var newRegion = region;
             var decrementAfter = false;
             var closeAfter = false;
-            
-            if (posOptions.PositionMode == PositionMode.Fixed)
-            {
-                newRegion = this.BeginNewAbsoluteRegionForChild(posOptions, this._field, merged);
-                this.Context.PositionDepth += 1;
-                decrementAfter = true;
-                closeAfter = true;
-            }
-            else if (posOptions.PositionMode == PositionMode.Absolute)
-            {
-                newRegion = this.BeginNewRelativeRegionForChild(posOptions, this._field, merged);
-                this.Context.PositionDepth += 1;
-                decrementAfter = true;
-                closeAfter = true;
-            }
-            else if (posOptions.DisplayMode == DisplayMode.InlineBlock)
-            {
-                newRegion = this.BeginNewInlineBlockRegionForChild(posOptions, this._field, merged);
-                closeAfter = true;
-            }
-            else if (posOptions.FloatMode != FloatMode.None)
-            {
-                newRegion = this.BeginNewFloatingRegionForChild(posOptions, this._field, merged);
-                closeAfter = true;
-            }
 
             PDFLayoutXObjectRun stateXObject;
             
-            using (var stateEngine = new LayoutEngineButtonState(_field, this))
+            using (var stateEngine = new LayoutEngineButtonState(_field, this, appearanceState))
             {
                 stateEngine.Layout(this.Context, merged);
                 stateXObject = stateEngine.Result;

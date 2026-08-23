@@ -1,21 +1,28 @@
 using System.Collections.Generic;
+using System.Text;
 using Scryber.Components;
 using Scryber.Drawing;
+using Scryber.Html.Components;
 using Scryber.Styles;
+using Scryber.Text;
 
 namespace Scryber.PDF.Layout;
 
-public class LayoutEngineInput : LayoutEngineFormField
+public class LayoutEngineSelect : LayoutEngineFormField
 {
 
     protected Size InputSize;
+    protected bool IsMultiple;
     protected bool HasText = false;
+    protected HTMLSelect Select;
     
-    public LayoutEngineInput(FormInputField field, IPDFLayoutEngine parent)
-        : base(field, parent)
+    public LayoutEngineSelect(HTMLSelect select, IPDFLayoutEngine parent)
+        : base(select, parent)
     {
+        this.Select = select;
         this.ShouldProxyText = false;
         this.ShouldAddXObject = false; //We will do this for the actual text
+        this.IsMultiple = (select.Options & FormFieldOptions.Multiselect) == FormFieldOptions.Multiselect;
     }
 
     protected override void DoLayoutComponent()
@@ -139,7 +146,7 @@ public class LayoutEngineInput : LayoutEngineFormField
         
         //now remove padding so not added to the input size
         w -= pos.Padding.Left + pos.Padding.Right;
-        w -= pos.Padding.Top + pos.Padding.Bottom;
+        h -= pos.Padding.Top + pos.Padding.Bottom;
 
         //explicitly set the actual width and height.
         pos.Width = w;
@@ -168,10 +175,14 @@ public class LayoutEngineInput : LayoutEngineFormField
     private ICollection<string> GetProxyLines(PDFPositionOptions pos)
     {
         List<string> all = new List<string>();
-        if (this.Field is Html.Components.HTMLTextArea textArea)
+        if (this.IsMultiple)
         {
-            int cols = textArea.Cols <= 0 ? 20 : textArea.Cols;
-            int rows = textArea.Rows <= 0 ? 2 : textArea.Rows;
+            int rows = this.Field.Size;
+            if (rows <= 0)
+                rows = 4;
+            
+            int cols = this.GetLongestOptionString().Length;
+            
             for (var r = 0; r < rows; r++)
             {
                 var content = new string('X', cols - 1);
@@ -192,11 +203,30 @@ public class LayoutEngineInput : LayoutEngineFormField
             };
         }
     }
+
+    private string GetLongestOptionString()
+    {
+        string longest = string.Empty;
+        foreach (var choice in this.Select.Choices)
+        {
+            if(choice.Label.Length > longest.Length)
+                longest = choice.Label;
+        }
+        return longest;
+    }
     
     #endregion
 
+    
+
     protected override void DoLayoutTextComponent(ITextComponent text, Style style)
     {
+        if(text is Whitespace)
+            return;
+        
+        if(null != this.Result)
+            return;
+        
         var pos = this.FullStyle.CreatePostionOptions(true);
         HasText = true;
         //We want to create or XObjectBlock here
@@ -219,12 +249,24 @@ public class LayoutEngineInput : LayoutEngineFormField
         var restore = false;
 
         var literal = text as TextLiteral;
-        if (null != literal)
+        if (this.IsMultiple)
         {
+            // style.Text.PreserveWhitespace = true;
+            // style.Text.WrapText = WordWrap.Word;
+            var entries = this.GetAllEntries();
             chars = literal.Text;
-            literal.Text = string.Empty;
+            literal.Text = entries;
+            literal.ReaderFormat = TextFormat.Plain;
             restore = true;
+
         }
+        // if (null != literal && !this.IsMultiple)
+        // {
+        //     chars = literal.Text;
+        //     
+        //     literal.Text = string.Empty;
+        //     restore = true;
+        // }
         
         base.DoLayoutTextComponent(text, style);
         
@@ -247,6 +289,23 @@ public class LayoutEngineInput : LayoutEngineFormField
         var run = line.AddXObjectRun(this, text, xObjRegion, inline, style);
         xObjRegion.ExcludeFromOutput = true;
         this.Result = run;
+        
+    }
 
+    /// <summary>
+    /// Gets all the label options in a string
+    /// </summary>
+    /// <returns></returns>
+    protected string GetAllEntries(string separator = "\r\n")
+    {
+        var sb = new StringBuilder();
+        
+        foreach (var choice in this.Select.Choices)
+        {
+            if(sb.Length > 0)
+                sb.Append(separator);
+            sb.Append(choice.Label);
+        }
+        return sb.ToString();
     }
 }
