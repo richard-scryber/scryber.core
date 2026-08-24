@@ -420,7 +420,7 @@ namespace Scryber.Core.UnitTests.Html
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
                       "<form>Above<br/>Above 2<br/>" + 
                       //"Before <input type='text' value='Input' size='10' /> Not Selected " +
-                      "Before<input type='checkbox' name='group' value='test' selected='selected' style='margin-left:5pt;' />Selected" +
+                      "Before<input type='checkbox' name='group' value='test' selected='selected' style='margin-left:5pt; margin-right: 5pt;' />Selected" +
                       "<button id='b1' name='go' type='submit'>Save</button>After" +
                       "<input type='radio' name='other' value='not_test' />Not Test" +
                       "<input type='radio' name='other' value='test' />Test" +
