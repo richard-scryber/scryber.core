@@ -109,6 +109,10 @@ namespace Scryber.PDF
 
                 if (xObjectOn.ClipRect.HasValue)
                 {
+                    this._location.X += xObjectOn.ClipRect.Value.X;
+                    this._location.Y += xObjectOn.ClipRect.Value.Y;
+                    this._size.Width = xObjectOn.ClipRect.Value.Width;
+                    this._size.Height = xObjectOn.ClipRect.Value.Height;
                     bounds = parentRenderBounds;
                 }
             }

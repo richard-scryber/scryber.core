@@ -59,6 +59,7 @@ namespace Scryber.Html.Components
         {
             var style = base.GetBaseStyle();
             style.Position.DisplayMode = DisplayMode.InlineBlock;
+            style.Position.VAlign = VerticalAlignment.Bottom;
             
             if (this.FieldType == FormInputFieldType.Button)
             {
@@ -81,17 +82,13 @@ namespace Scryber.Html.Components
                     style.Font.FontFamily = (FontSelector)"zapf dingbats";
                     style.Size.Width = Unit.Em(1);
                     style.Size.Height = Unit.Em(1);
-                    
+                    style.Border.Width = 2;
                     style.Border.Color = StandardColors.Black;
                     style.Border.LineStyle = LineType.Solid;
                     if (this.ButtonType == FormButtonFieldType.Radio)
                     {
-                        style.Border.CornerRadius = Unit.Em(0.5);
-                        style.Border.Width = 2;
-                    }
-                    else
-                    {
-                        style.Border.Width = 1;
+                        style.Padding.Top += 1;
+                        style.Border.CornerRadius = Unit.Em(0.55);
                     }
 
                     style.Font.FontSize = Unit.Percent(75);

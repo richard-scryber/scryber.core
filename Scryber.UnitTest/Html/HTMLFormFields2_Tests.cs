@@ -412,25 +412,25 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "input { background-color: #f99;}" +
-                      "input:active {background-color:#99F; } " +
+                      "input { background-color: #f99; margin:0pt;}" +
+                      //"input:active {background-color:#99F; } " +
                       "</style>" +
                       "</head>" +
                       "<body style='padding: 0pt; margin:10pt;'>" +
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
                       "<form>Above<br/>Above 2<br/>" + 
                       //"Before <input type='text' value='Input' size='10' /> Not Selected " +
-                      "Before <input type='checkbox' name='group' value='test' selected='selected' /> Selected" +
-                      //"<button id='b1' name='go' type='submit'>Save</button> After" +
-                      // "<input type='radio' name='other' value='not_test' /> Not Test" +
-                      // "<input type='radio' name='other' value='test' /> Test" +
+                      "Before<input type='checkbox' name='group' value='test' selected='selected' style='margin-left:5pt;' />Selected" +
+                      "<button id='b1' name='go' type='submit'>Save</button>After" +
+                      "<input type='radio' name='other' value='not_test' />Not Test" +
+                      "<input type='radio' name='other' value='test' />Test" +
                       "</form>" +
                       "<span>After Form</span>" +
                       "</body></html>";
             var doc = Document.ParseHtmlDocument(new StringReader(src));
 
             using var stream = DocStreams.GetOutputStream("Checkbox_CssInForm_DistinctAP.pdf");
-            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.SaveAsPDF(stream);
             stream.Flush();
         }

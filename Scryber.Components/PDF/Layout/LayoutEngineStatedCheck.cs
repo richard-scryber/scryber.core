@@ -116,7 +116,6 @@ namespace Scryber.PDF.Layout
 
             var layoutPage = context.DocumentLayout.CurrentPage;
             
-            
 
             IArtefactCollection annots;
             if (!layoutPage.Artefacts.TryGetCollection(PDFArtefactTypes.Annotations, out annots))
@@ -145,7 +144,19 @@ namespace Scryber.PDF.Layout
             if (null != offXObject)
             {
                 offXObject.Line.Runs.Remove(offXObject);
-                offXObject.Page = layoutPage;
+                offXObject.Page = layoutPage; //need to set this as when removed there is no connection to the current page.
+            }
+            
+            if (pos.Margins.IsEmpty == false)
+            {
+                var vp = new Rect();
+                vp.X = pos.Margins.Left;
+                vp.Width = downXObject.Width + pos.Margins.Left;
+                vp.Height = downXObject.Height;
+
+                downXObject.PositionOptions.ViewPort = vp;
+                offXObject.PositionOptions.ViewPort = vp;
+                location.X += pos.Margins.Left;
             }
 
             _field.Widget.ContainerOffset = location;
