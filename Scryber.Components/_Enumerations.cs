@@ -176,7 +176,7 @@ namespace Scryber
         Multiselect = 2097152,
 
         //Shared between Text and Choice fields
-        DoNotSpellCheck = 4194304
+        DoNotSpellCheck = 4194304,
     }
 
     public enum FormInputFieldType : int
@@ -184,7 +184,8 @@ namespace Scryber
         Text = 0,
         Button,
         Choice,
-        Signature
+        Signature,
+        Hidden
     }
 
     public enum FormButtonFieldType : int
@@ -198,7 +199,9 @@ namespace Scryber
     {
         Normal,
         Over,
-        Down
+        Down,
+        On,
+        Off
     }
 
     public enum DocumentExecMode

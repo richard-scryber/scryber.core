@@ -12,7 +12,6 @@ namespace Scryber.PDF
         public PDFAcrobatFormButtonWidget(string name)
             : base(name, string.Empty, string.Empty, FormInputFieldType.Button, FormFieldOptions.None)
         {
-
         }
     }
 }

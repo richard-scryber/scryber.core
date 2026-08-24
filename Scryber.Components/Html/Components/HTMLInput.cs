@@ -58,6 +58,8 @@ namespace Scryber.Html.Components
         protected override Style GetBaseStyle()
         {
             var style = base.GetBaseStyle();
+            style.Position.DisplayMode = DisplayMode.InlineBlock;
+            
             if (this.FieldType == FormInputFieldType.Button)
             {
                 if (this.ButtonType == FormButtonFieldType.PushButton)
@@ -71,10 +73,30 @@ namespace Scryber.Html.Components
                 else if (this.ButtonType == FormButtonFieldType.CheckBox ||
                          this.ButtonType == FormButtonFieldType.Radio)
                 {
-                    style.Margins.Top = Unit.Zero;
-                    style.Margins.Bottom = Unit.Zero;
-                    style.Margins.Left = Unit.Zero;
-                    style.Margins.Right = Unit.Zero;
+                    this.Size = 1;
+                    style.Margins.Top = 0;
+                    style.Margins.Bottom = 0;
+                    style.Margins.Left = 0;
+                    style.Margins.Right = 0;
+                    style.Font.FontFamily = (FontSelector)"zapf dingbats";
+                    style.Size.Width = Unit.Em(1);
+                    style.Size.Height = Unit.Em(1);
+                    
+                    style.Border.Color = StandardColors.Black;
+                    style.Border.LineStyle = LineType.Solid;
+                    if (this.ButtonType == FormButtonFieldType.Radio)
+                    {
+                        style.Border.CornerRadius = Unit.Em(0.5);
+                        style.Border.Width = 2;
+                    }
+                    else
+                    {
+                        style.Border.Width = 1;
+                    }
+
+                    style.Font.FontSize = Unit.Percent(75);
+                    style.Position.HAlign = HorizontalAlignment.Center;
+                    //style.Position.DisplayMode = DisplayMode.Inline;
                 }
             }
             else if (this.FieldType == FormInputFieldType.Signature)
@@ -89,7 +111,7 @@ namespace Scryber.Html.Components
             {
                 style.Size.FullWidth = true;
             }
-            style.Position.DisplayMode = DisplayMode.InlineBlock;
+            
             return style;
         }
     }

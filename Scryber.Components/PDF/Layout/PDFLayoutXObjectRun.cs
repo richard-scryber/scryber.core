@@ -23,6 +23,12 @@ namespace Scryber.PDF.Layout
         private PDFLayoutPage _page;
         private PDFPositionOptions _position;
 
+        public PDFLayoutPage Page
+        {
+            get { return _page; }
+            set { _page = value; }
+        }
+
         public PDFLayoutXObjectRun(PDFLayoutLine parent, PDFLayoutRegion childContainer, PDFPositionOptions position, IComponent owner) 
             :base(parent, owner as IComponent)
         {

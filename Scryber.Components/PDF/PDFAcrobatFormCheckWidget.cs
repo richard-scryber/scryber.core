@@ -19,6 +19,12 @@ namespace Scryber.PDF
     /// </summary>
     public class PDFAcrobatFormCheckWidget : PDFAcrobatFormFieldWidget
     {
+        protected Drawing.Point _location;
+        protected Drawing.Size _size;
+        protected Layout.PDFLayoutPage _page;
+        protected Styles.Style _style;
+
+        
         public bool IsChecked { get; set; }
 
         /// <summary>
@@ -36,22 +42,88 @@ namespace Scryber.PDF
 
         protected override IEnumerable<PDFObjectRef> DoOutputToPDF(PDFRenderContext context, PDFWriter writer)
         {
-            var xObject = this._states.ContainsKey(FormFieldAppearanceState.Normal) ? this._states[FormFieldAppearanceState.Normal] : null;
-            if (null == xObject)
+            var xObjectOn = this._states.ContainsKey(FormFieldAppearanceState.On) ? this._states[FormFieldAppearanceState.On] : null;
+            var xObjectOff = this._states.ContainsKey(FormFieldAppearanceState.Off) ? this._states[FormFieldAppearanceState.Off] : null;
+            
+            
+            
+            if (null == xObjectOn || null == xObjectOff)
+            {
+                if (context.Conformance == ParserConformanceMode.Strict)
+                    throw new InvalidOperationException(
+                        "The check-box does not have both On and Off Appearances. Cannot render");
+                else
+                {
+                    context.TraceLog.Add(TraceLevel.Error, "Checkbox", "Both On and Off Appearances must be defined. The stated dictionary did not contain both.");
+                }
                 return null;
+            }
+            
+            var parentRenderBounds = Rect.Empty;
+            
+            ComponentArrangement arrangement = null;
+            var owner = xObjectOn.Owner as Component;
+            while (null != owner)
+            {
+                arrangement = owner.GetFirstArrangement();
+                if (null != arrangement)
+                {
+                    _style = arrangement.FullStyle;
+                    break;
+                }
 
-            var size = new Drawing.Size(xObject.Width, xObject.Height);
-            var location = xObject.Location;
-            string onName = string.IsNullOrEmpty(this.OnStateName) ? "on" : this.OnStateName;
+                owner = owner.Parent;
+            }
+            
+
+            string onName = "On";
             string currentState = this.IsChecked ? onName : "Off";
 
-            var offRef = WriteMarkAppearance(context, writer, size, false);
-            var onRef = WriteMarkAppearance(context, writer, size, true, onName);
+            this._location = context.Offset;
+            var bounds = Rect.Empty;
+            Rect? clipRect = null;
+            
+            //render the On state and record sizes.
+            
+            var prevXclude = xObjectOn.ChildContainer.ExcludeFromOutput;
+            
+            xObjectOn.ChildContainer.ExcludeFromOutput = false;
+            var onRef = xObjectOn.OutputToPDF(context, writer);
+            xObjectOn.ChildContainer.ExcludeFromOutput = prevXclude;
+
+            if (null != onRef)
+            {
+                var sz = new Size(xObjectOn.Width, xObjectOn.Height);
+                if (_size == Size.Empty)
+                    _size = sz;
+                else
+                {
+                    if(_size.Width < sz.Width)
+                        _size.Width = sz.Width;
+                    if(_size.Height < sz.Height)
+                        _size.Height = sz.Height;
+                }
+                this._location = new Point(xObjectOn.Location.X, xObjectOn.Location.Y);
+                
+                
+
+                if (xObjectOn.ClipRect.HasValue)
+                {
+                    bounds = parentRenderBounds;
+                }
+            }
+            
+            
+            prevXclude = xObjectOn.ChildContainer.ExcludeFromOutput;
+            
+            xObjectOff.ChildContainer.ExcludeFromOutput = false;
+            var offRef = xObjectOff.OutputToPDF(context, writer);
+            xObjectOff.ChildContainer.ExcludeFromOutput = prevXclude;
 
             PDFObjectRef root = writer.BeginObject();
 
             var font = this._style.CreateFont();
-            var rsrc = ((Document)xObject.Document).GetFontResource(font, true);
+            var rsrc = ((Document)xObjectOn.Document).GetFontResource(font, true);
             string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
 
             writer.BeginDictionary();
@@ -107,19 +179,38 @@ namespace Scryber.PDF
             //AP - nested by state name, rather than the flat N/D/R of other field types
             writer.BeginDictionaryEntry("AP");
             writer.BeginDictionary();
+            
             writer.BeginDictionaryEntry("N");
             writer.BeginDictionary();
             writer.WriteDictionaryObjectRefEntry("Off", offRef);
             writer.WriteDictionaryObjectRefEntry(onName, onRef);
             writer.EndDictionary();
             writer.EndDictionaryEntry();
+            
+            writer.BeginDictionaryEntry("D");
+            writer.BeginDictionary();
+            writer.WriteDictionaryObjectRefEntry("Off", offRef);
+            writer.WriteDictionaryObjectRefEntry(onName, onRef);
             writer.EndDictionary();
             writer.EndDictionaryEntry();
+            
+            writer.BeginDictionaryEntry("R");
+            writer.BeginDictionary();
+            writer.WriteDictionaryObjectRefEntry("Off", offRef);
+            writer.WriteDictionaryObjectRefEntry(onName, onRef);
+            writer.EndDictionary();
+            writer.EndDictionaryEntry();
+            
+            writer.EndDictionary();
+            writer.EndDictionaryEntry();
+            
+            this._location.X += this.ContainerOffset.X;
+            this._location.Y += this.ContainerOffset.Y;
 
-            PDFReal left = context.Graphics.GetXPosition(location.X);
-            PDFReal top = context.Graphics.GetYPosition(location.Y);
-            PDFReal right = left + context.Graphics.GetXOffset(size.Width);
-            PDFReal bottom = top + context.Graphics.GetYOffset(size.Height);
+            PDFReal left = context.Graphics.GetXPosition(_location.X);
+            PDFReal top = context.Graphics.GetYPosition(_location.Y);
+            PDFReal right = left + context.Graphics.GetXOffset(_size.Width);
+            PDFReal bottom = top + context.Graphics.GetYOffset(_size.Height);
 
             writer.BeginDictionaryEntry("Rect");
             writer.WriteArrayRealEntries(true, left.Value, bottom.Value, right.Value, top.Value);
@@ -163,7 +254,16 @@ namespace Scryber.PDF
                     if (this.ButtonType == FormButtonFieldType.Radio)
                         g.FillElipse(brush, insetX, insetY, markWidth, markHeight);
                     else
-                        g.FillRectangle(brush, insetX, insetY, markWidth, markHeight);
+                    {
+                        var path = new GraphicsPath();
+                        path.BeginPath();
+                        path.MoveTo(new Point(insetX, size.Height / 2.0));
+                        path.LineTo(new Point(size.Width / 3.0, markHeight));
+                        path.LineTo(new Point(markWidth, insetY));
+                        path.ClosePath(false);
+                        g.DrawPath(pen, Point.Empty, path);
+                        
+                    }
                 }
             }
 

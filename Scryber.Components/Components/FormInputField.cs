@@ -301,6 +301,12 @@ namespace Scryber.Components
             ///NeedAppearances for anything a reader needs to show beyond Normal).
             if ((this.Options & FormFieldOptions.Pushbutton) == FormFieldOptions.Pushbutton)
                 return new PDF.Layout.LayoutEngineStatedButton(this, parent);
+            else if (this.FieldType == FormInputFieldType.Button && this.ButtonType == FormButtonFieldType.CheckBox)
+                return new LayoutEngineStatedCheck(this, parent);
+            else if (this.FieldType == FormInputFieldType.Button && this.ButtonType == FormButtonFieldType.Radio)
+                return new LayoutEngineStatedCheck(this, parent);
+            else if (this.FieldType == FormInputFieldType.Hidden)
+                ;
 
             return new PDF.Layout.LayoutEngineInput(this, parent);
         }
