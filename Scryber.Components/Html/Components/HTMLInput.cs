@@ -80,19 +80,18 @@ namespace Scryber.Html.Components
                     style.Margins.Left = 0;
                     style.Margins.Right = 0;
                     style.Font.FontFamily = (FontSelector)"zapf dingbats";
-                    style.Size.Width = Unit.Em(1);
-                    style.Size.Height = Unit.Em(1);
+                    style.Size.Width = Unit.Em(0.75);
+                    style.Size.Height = Unit.Em(0.75);
                     style.Border.Width = 2;
                     style.Border.Color = StandardColors.Black;
                     style.Border.LineStyle = LineType.Solid;
+                    style.Font.FontSize = Unit.Percent(50);
+                    style.Position.HAlign = HorizontalAlignment.Center;
+                    style.Text.Leading = Unit.Em(0.75);
                     if (this.ButtonType == FormButtonFieldType.Radio)
                     {
-                        style.Padding.Top += 1;
-                        style.Border.CornerRadius = Unit.Em(0.55);
+                        //style.Padding.Top += 1;
                     }
-
-                    style.Font.FontSize = Unit.Percent(75);
-                    style.Position.HAlign = HorizontalAlignment.Center;
                     //style.Position.DisplayMode = DisplayMode.Inline;
                 }
             }

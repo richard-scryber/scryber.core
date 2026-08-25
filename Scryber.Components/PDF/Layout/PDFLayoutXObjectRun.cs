@@ -347,10 +347,10 @@ namespace Scryber.PDF.Layout
         protected virtual PDFGraphics CreateGraphics(PDFWriter writer, Styles.StyleStack styles, PDFRenderContext context)
         {
             var sz = new Size(this._childContainer.Width, this._childContainer.Height);
-            if(this._position.ViewPort.HasValue)
-            {
-                sz = this._position.ViewPort.Value.Size;
-            }
+            // if(this._position.ViewPort.HasValue)
+            // {
+            //     sz = this._position.ViewPort.Value.Size;
+            // }
             return PDFGraphics.Create(writer, false, this, DrawingOrigin.TopLeft, sz, context);
         }
 

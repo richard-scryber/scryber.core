@@ -412,18 +412,19 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "input { background-color: #f99; margin:0pt;}" +
-                      //"input:active {background-color:#99F; } " +
+                      // "input { background-color: #f99; " +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      //  "input:active {background-color:#00F; color: white; } " +
                       "</style>" +
                       "</head>" +
                       "<body style='padding: 0pt; margin:10pt;'>" +
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
-                      "<form>Above<br/>Above 2<br/>" + 
+                      "<form style=''>Above<br/>Above 2<br/>" + 
                       //"Before <input type='text' value='Input' size='10' /> Not Selected " +
-                      "Before<input type='checkbox' name='group' value='test' selected='selected' style='margin-left:0pt; margin-right: 0pt; margin-top:0pt;' />Selected" +
-                      "<button id='b1' name='go' type='submit'>Save</button>After" +
-                      // "<input type='radio' name='other' value='not_test' />Not Test" +
-                      // "<input type='radio' name='other' value='test' />Test<br/>" +
+                      "Before<input type='checkbox' name='group' value='test' selected='selected' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                       "<input type='radio' name='other' value='not_test' />Not Test" +
+                       "<input type='radio' name='other' value='test' />Test<br/>" +
                       "After line" +
                       "</form>" +
                       "<span>After Form</span>" +

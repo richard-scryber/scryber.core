@@ -215,20 +215,6 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndDictionaryEntry();
             
-            // writer.BeginDictionaryEntry("D");
-            // writer.BeginDictionary();
-            // writer.WriteDictionaryObjectRefEntry("Off", offRef);
-            // writer.WriteDictionaryObjectRefEntry(onName, onRef);
-            // writer.EndDictionary();
-            // writer.EndDictionaryEntry();
-            //
-            // writer.BeginDictionaryEntry("R");
-            // writer.BeginDictionary();
-            // writer.WriteDictionaryObjectRefEntry("Off", offRef);
-            // writer.WriteDictionaryObjectRefEntry(onName, onRef);
-            // writer.EndDictionary();
-            // writer.EndDictionaryEntry();
-            
             writer.EndDictionary();
             writer.EndDictionaryEntry();
             
@@ -258,63 +244,6 @@ namespace Scryber.PDF
             //class's flat /AP appearance objects are never included in its own returned refs.
             return new PDFObjectRef[] { root };
         }
-
-        /// <summary>
-        /// Hand-draws one appearance state (a bordered box, and for the "on" state an inner mark)
-        /// as its own small Form XObject - independent of the layout engine, since this content
-        /// never goes through a normal layout pass.
-        /// </summary>
-        private PDFObjectRef WriteMarkAppearance(PDFRenderContext context, PDFWriter writer, Drawing.Size size, bool isOn, string onName = null)
-        {
-            var oref = writer.BeginObject();
-            writer.BeginStream(oref);
-
-            var markColor = this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey) ? this._style.Border.Color : StandardColors.Black;
-            var borderWidth = this._style.Border.Width;
-
-            using (var g = PDFGraphics.Create(writer, false, this._page, DrawingOrigin.TopLeft, size, context))
-            {
-                var pen = PDFPen.Create(markColor, borderWidth);
-                g.DrawRectangle(pen, 0, 0, size.Width, size.Height);
-
-                if (isOn)
-                {
-                    var brush = new PDFSolidBrush(markColor);
-                    var insetX = size.Width * 0.25;
-                    var insetY = size.Height * 0.25;
-                    var markWidth = size.Width - (insetX * 2);
-                    var markHeight = size.Height - (insetY * 2);
-
-                    if (this.ButtonType == FormButtonFieldType.Radio)
-                        g.FillElipse(brush, insetX, insetY, markWidth, markHeight);
-                    else
-                    {
-                        var path = new GraphicsPath();
-                        path.BeginPath();
-                        path.MoveTo(new Point(insetX, size.Height / 2.0));
-                        path.LineTo(new Point(size.Width / 3.0, markHeight));
-                        path.LineTo(new Point(markWidth, insetY));
-                        path.ClosePath(false);
-                        g.DrawPath(pen, Point.Empty, path);
-                        
-                    }
-                }
-            }
-
-            var len = writer.EndStream();
-            writer.BeginDictionary();
-            writer.WriteDictionaryNameEntry("Type", "XObject");
-            writer.WriteDictionaryNameEntry("Subtype", "Form");
-            writer.BeginDictionaryEntry("BBox");
-            writer.WriteArrayRealEntries(true, 0f, 0f, (float)size.Width.PointsValue, (float)size.Height.PointsValue);
-            writer.EndDictionaryEntry();
-            writer.BeginDictionaryEntry("Length");
-            writer.WriteNumberS(len);
-            writer.EndDictionaryEntry();
-            writer.EndDictionary();
-            writer.EndObject();
-
-            return oref;
-        }
+        
     }
 }

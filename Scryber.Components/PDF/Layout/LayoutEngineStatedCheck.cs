@@ -81,8 +81,27 @@ namespace Scryber.PDF.Layout
                     pos.Height = height + pos.Height.Value;
                     downStyle.Size.Width = pos.Width.Value;
                     downStyle.Size.Height = pos.Height.Value;
+                    
+                    fullstyle.Size.Width = pos.Width.Value;
+                    fullstyle.Size.Height = pos.Height.Value;
+                    var fullPos = fullstyle.CreatePostionOptions(true);
+                    fullPos.Width = pos.Width.Value;
+                    fullPos.Height = pos.Height.Value;
+                    
                 }
 
+            }
+            
+            //set the border radius for the radio buttons (if not explicitly set)
+            if (this._field.ButtonType == FormButtonFieldType.Radio)
+            {
+                var w = downStyle.Size.Width;
+                var h = downStyle.Size.Height;
+                var half = Unit.Min(w, h) / 2.0;
+                if (fullstyle.IsValueDefined(StyleKeys.BorderCornerRadiusKey) == false)
+                    fullstyle.Border.CornerRadius = half;
+                if (downStyle.IsValueDefined(StyleKeys.BorderCornerRadiusKey) == false)
+                    downStyle.Border.CornerRadius = half;
             }
 
             
@@ -110,6 +129,7 @@ namespace Scryber.PDF.Layout
                 location.Y += offsetY;
                 
             }
+            
 
             if (null == downXObject || !this.ContinueLayout)
                 return;
@@ -151,12 +171,14 @@ namespace Scryber.PDF.Layout
             {
                 var vp = new Rect();
                 vp.X = pos.Margins.Left;
+                vp.Y -= pos.Margins.Top;
                 vp.Width = downXObject.Width + pos.Margins.Left;
-                vp.Height = downXObject.Height;
-
+                vp.Height = downXObject.Height - pos.Margins.Top;
+            
                 downXObject.PositionOptions.ViewPort = vp;
                 offXObject.PositionOptions.ViewPort = vp;
                 location.X += pos.Margins.Left;
+                location.Y += pos.Margins.Top;
             }
 
             _field.Widget.ContainerOffset = location;
