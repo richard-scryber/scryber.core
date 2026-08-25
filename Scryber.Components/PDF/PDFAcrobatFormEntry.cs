@@ -43,6 +43,8 @@ namespace Scryber.PDF
                 }
 
                 group.Fields.Add(entry);
+                if (entry is PDFAcrobatFormCheckWidget check)
+                    check.Group = group;
             }
             else
             {

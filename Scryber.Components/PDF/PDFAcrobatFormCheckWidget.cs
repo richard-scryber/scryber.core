@@ -35,6 +35,15 @@ namespace Scryber.PDF
 
         public FormButtonFieldType ButtonType { get; set; }
 
+        /// <summary>
+        /// The radio group this widget belongs to, set by PDFAcrobatFormEntry.RegisterField at
+        /// registration time (always available, well before any rendering) - used to trigger the
+        /// group's own indirect object opening/closing from whichever kid happens to render
+        /// first, so /Parent is resolvable on that kid's very own first (and only, per
+        /// PDFAnnotationEntry's caching) render. Null for a plain checkbox.
+        /// </summary>
+        internal PDFAcrobatRadioGroupEntry Group { get; set; }
+
         public PDFAcrobatFormCheckWidget(string name, string value, string defaultValue, FormInputFieldType type, FormFieldOptions options)
             : base(name, value, defaultValue, type, options)
         {
@@ -76,7 +85,7 @@ namespace Scryber.PDF
             }
             
 
-            string onName = "On";
+            string onName = string.IsNullOrEmpty(this.OnStateName) ?  "On" :  this.OnStateName;
             string currentState = this.IsChecked ? onName : "Off";
 
             this._location = context.Offset;
@@ -124,6 +133,34 @@ namespace Scryber.PDF
             var offRef = xObjectOff.OutputToPDF(context, writer);
             xObjectOff.ChildContainer.ExcludeFromOutput = prevXclude;
 
+            //Every radio (grouped or not - PDFAcrobatFormEntry.RegisterField always routes them
+            //through a PDFAcrobatRadioGroupEntry) is a /Kids entry of that group's own node, which
+            //declares /T, /FT, /Ff and /V once for the whole group - duplicating them here would be
+            //actively wrong, not just redundant: a Kids-array member that declares its own /T
+            //becomes a SEPARATE field in the field-name hierarchy ("groupname.kidname"), not a
+            //plain annotation-kid of the group, which is exactly what broke mutual exclusivity when
+            //this was first attempted - each radio ended up its own independent field.
+            //
+            ///Parent can't just be set by the group ahead of time - PDFAnnotationEntry.OutputToPDF
+            //caches a widget's content on its FIRST call, and that call comes from the page's own
+            ///Annots output (rendered while laying out pages), before PDFAcrobatRadioGroupEntry's
+            //own OutputToPDF (part of the /AcroForm catalog entry, written only once every page is
+            //known) ever runs. So whichever kid is asked to render first triggers the WHOLE group -
+            //opens its indirect object, sets /Parent on every kid immediately, renders every other
+            //kid nested inside it - using the writer's existing nested-indirect-object support (the
+            //same pattern already used to collect and write a nested /Catalog reference), not any
+            //"reserve a number, write content later" writer change. This kid then continues
+            //rendering itself normally (below, still nested inside the still-open group), and
+            //completes the group (writes its /Kids dictionary, closes it) once its own ref is known.
+            bool isGroupedRadio = (this.FieldOptions & FormFieldOptions.Radio) == FormFieldOptions.Radio;
+            bool triggeredGroup = false;
+
+            if (isGroupedRadio && null != this.Group && !this.Group.IsOpen)
+            {
+                triggeredGroup = true;
+                this.Group.BeginFromKid(context, writer, this);
+            }
+
             PDFObjectRef root = writer.BeginObject();
 
             var font = this._style.CreateFont();
@@ -133,23 +170,10 @@ namespace Scryber.PDF
             writer.BeginDictionary();
             writer.WriteDictionaryNameEntry("Subtype", "Widget");
 
-            if (null != this.Parent)
+            if (isGroupedRadio)
             {
-                //Grouped under a PDFAcrobatRadioGroupEntry, which already declares /T, /FT, /Ff
-                //and /V once for the whole group - duplicating them here is unnecessary and, for
-                ///V specifically, wrong (the group's /V is the one shared selected value; this
-                //kid's own current state is /AS alone).
-                //
-                //Currently dormant in practice: PDFAnnotationEntry.OutputToPDF caches this widget's
-                //content on its FIRST call, and that first call comes from the page's own /Annots
-                //output (rendered while laying out pages) - which happens before
-                //PDFAcrobatRadioGroupEntry.OutputToPDF (part of the /AcroForm catalog entry,
-                //written only once every page is known) ever gets a chance to set Parent. So this
-                //widget's real /T/FT/Ff/V still get written directly below, every time, until the
-                //group's object number can be reserved earlier than that (a writer-level change -
-                //see PDFWriter.InitializeIndirectObject/XRefTable.Append - deliberately deferred,
-                //not worth the risk for what's currently just a Chrome display quirk).
-                writer.WriteDictionaryObjectRefEntry("Parent", this.Parent);
+                if (null != this.Parent)
+                    writer.WriteDictionaryObjectRefEntry("Parent", this.Parent);
             }
             else
             {
@@ -191,19 +215,19 @@ namespace Scryber.PDF
             writer.EndDictionary();
             writer.EndDictionaryEntry();
             
-            writer.BeginDictionaryEntry("D");
-            writer.BeginDictionary();
-            writer.WriteDictionaryObjectRefEntry("Off", offRef);
-            writer.WriteDictionaryObjectRefEntry(onName, onRef);
-            writer.EndDictionary();
-            writer.EndDictionaryEntry();
-            
-            writer.BeginDictionaryEntry("R");
-            writer.BeginDictionary();
-            writer.WriteDictionaryObjectRefEntry("Off", offRef);
-            writer.WriteDictionaryObjectRefEntry(onName, onRef);
-            writer.EndDictionary();
-            writer.EndDictionaryEntry();
+            // writer.BeginDictionaryEntry("D");
+            // writer.BeginDictionary();
+            // writer.WriteDictionaryObjectRefEntry("Off", offRef);
+            // writer.WriteDictionaryObjectRefEntry(onName, onRef);
+            // writer.EndDictionary();
+            // writer.EndDictionaryEntry();
+            //
+            // writer.BeginDictionaryEntry("R");
+            // writer.BeginDictionary();
+            // writer.WriteDictionaryObjectRefEntry("Off", offRef);
+            // writer.WriteDictionaryObjectRefEntry(onName, onRef);
+            // writer.EndDictionary();
+            // writer.EndDictionaryEntry();
             
             writer.EndDictionary();
             writer.EndDictionaryEntry();
@@ -222,6 +246,12 @@ namespace Scryber.PDF
 
             writer.EndDictionary();
             writer.EndObject();
+
+            if (triggeredGroup)
+                //My own ref is now known - complete the group's /Kids array (adding it) and
+                //close the group's still-open indirect object, nested around every kid rendered
+                //above.
+                this.Group.CompleteFromKid(root);
 
             //Only the widget's own object goes into /Fields or /Kids - offRef/onRef are
             //referenced solely via this widget's own /AP /N dictionary, the same way the base
