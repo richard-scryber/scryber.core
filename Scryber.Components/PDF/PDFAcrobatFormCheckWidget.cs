@@ -61,10 +61,8 @@ namespace Scryber.PDF
                 if (context.Conformance == ParserConformanceMode.Strict)
                     throw new InvalidOperationException(
                         "The check-box does not have both On and Off Appearances. Cannot render");
-                else
-                {
-                    context.TraceLog.Add(TraceLevel.Error, "Checkbox", "Both On and Off Appearances must be defined. The stated dictionary did not contain both.");
-                }
+
+                context.TraceLog.Add(TraceLevel.Error, "Checkbox", "Both On and Off Appearances must be defined. The stated dictionary did not contain both.");
                 return null;
             }
             

@@ -41,6 +41,7 @@ namespace Scryber.PDF.Layout
             var blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
             var regionForNormal = blockBeforeNormal.CurrentRegion;
             
+            
 
             PDFLayoutXObjectRun normalXObject;
             using (var normalEngine = new LayoutEngineButtonState(_field, this, FormFieldAppearanceState.Normal))

@@ -33,6 +33,90 @@ namespace Scryber.PDF.Layout
             _field = field;
             field.Size = 1;
         }
+        
+        private Unit? _top, _left, _bottom, _right;
+
+        private void StorePositionValues(Style forStyle)
+        {
+            if(forStyle.IsValueDefined(StyleKeys.PositionXKey))
+                _left = forStyle.Position.X;
+            if(forStyle.IsValueDefined(StyleKeys.PositionYKey))
+                _top = forStyle.Position.Y;
+            if(forStyle.IsValueDefined(StyleKeys.PositionBottomKey))
+                _bottom = forStyle.Position.Bottom;
+            if(forStyle.IsValueDefined(StyleKeys.PositionRightKey))
+                _right = forStyle.Position.Right;
+        }
+
+        private void ClearPositionValues(Style forStyle)
+        {
+            forStyle.Position.RemoveBottom();
+            forStyle.Position.RemoveRight();
+            forStyle.Position.RemoveX();
+            forStyle.Position.RemoveY();
+            
+            if(forStyle is StyleFull full)
+                full.ClearFullRefs();
+        }
+
+        private void RestorePositionValues(Style forStyle)
+        {
+            if(_left != null)
+                forStyle.Position.X = _left.Value;
+            if(_top != null)
+                forStyle.Position.Y = _top.Value;
+            if(_bottom != null)
+                forStyle.Position.Bottom = _bottom.Value;
+            if(_right != null)
+                forStyle.Position.Right = _right.Value;
+            
+            if(forStyle is StyleFull full)
+                full.ClearFullRefs();
+        }
+
+        private PDFLayoutLine EnsureAvailableLine(PDFPositionOptions outerPos)
+        {
+            if (outerPos.PositionMode == PositionMode.Static || outerPos.PositionMode == PositionMode.Relative)
+            {
+                if (outerPos.DisplayMode == DisplayMode.Block)
+                {
+                    //We are a standard block, but will be in an xObjectRegion. Close any current line and start a new one
+                    //That will be closed at the end.
+                    
+                    var currentBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                    var currentRegion = currentBlock.CurrentRegion;
+                    if(currentRegion == null)
+                        throw new NullReferenceException("Current region cannot be null.");
+                    if (currentRegion.HasOpenItem && currentRegion.CurrentItem is PDFLayoutLine)
+                    {
+                        currentRegion.CurrentItem.Close();
+                        return currentRegion.BeginNewLine();
+                    }
+                }
+            }
+            return null;
+        }
+
+        private PDFLayoutRegion EnsureAvailableInlineBlock(PDFPositionOptions outerPos)
+        {
+            
+            
+            if (outerPos.DisplayMode != DisplayMode.InlineBlock)
+            {
+                var parent = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                if(null == parent)
+                    throw new NullReferenceException("Parent block cannot be null.");
+                var parentRegion = parent.CurrentRegion;
+                var currentItem = parentRegion.CurrentItem;
+                
+                outerPos.DisplayMode = DisplayMode.InlineBlock;
+                this.FullStyle.Position.DisplayMode = DisplayMode.InlineBlock;
+                
+                return this.BeginNewInlineBlockRegionForChild(outerPos, this._field, this.FullStyle);
+            }
+
+            return null;
+        }
 
         protected override void DoLayoutComponent()
         {
@@ -44,6 +128,13 @@ namespace Scryber.PDF.Layout
                 _field.Value = "l"; //Thick bullet in zapf
             else
                 _field.Value = "4"; //Thick tick mark in zaph
+            
+            var outerPos = this.FullStyle.CreatePostionOptions(false);
+            
+            var createdLine =  this.EnsureAvailableLine(outerPos);
+            var createdRegion = this.EnsureAvailableInlineBlock(outerPos);
+            
+           
             
             var context = this.Context;
             var fullstyle = this.FullStyle;
@@ -61,15 +152,24 @@ namespace Scryber.PDF.Layout
             
             Style stateStyle;
             Style downStyle = fullstyle;
+            
+            
             if (fullstyle.TryGetStyleState(ComponentState.Down, out stateStyle))
             {
-                Style merged = new Style();
+                Style merged = new StyleFull();
                 fullstyle.MergeInto(merged);
                 stateStyle.MergeInto(merged);
                 downStyle = merged;
             }
-
             
+            this.StorePositionValues(fullstyle);
+            this.ClearPositionValues(fullstyle);
+            this.ClearPositionValues(downStyle);
+            
+
+            Unit? top = null;
+            
+
             var pos = downStyle.CreatePostionOptions(true);
             if (pos.Padding.IsEmpty == false)
             {
@@ -118,7 +218,12 @@ namespace Scryber.PDF.Layout
             var location = Point.Empty;
             
             this.CloseAnyLeftoverBlock(blockBeforeNormal);
-            
+
+            if (null != createdRegion)
+            {
+                createdRegion.Close();
+            }
+
             if (pos.DisplayMode == DisplayMode.Inline || pos.DisplayMode == DisplayMode.InlineBlock)
             {
                 //we have closed the positioned block so can now get our y offset again.
@@ -181,8 +286,17 @@ namespace Scryber.PDF.Layout
                 location.Y += pos.Margins.Top;
             }
 
-            _field.Widget.ContainerOffset = location;
+            if (pos.PositionMode != PositionMode.Fixed)
+                _field.Widget.ContainerOffset = location;
+            else
+            {
+                _field.Widget.ContainerOffset = Point.Empty;
+            }
             
+            if(null != createdLine)
+                createdLine.Close();
+            
+            this.RestorePositionValues(fullstyle);
 
             //And release after (just in case)
             this.IsLayingOutStates = false;

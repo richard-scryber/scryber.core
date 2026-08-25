@@ -320,7 +320,7 @@ namespace Scryber.Components
             style.Border.LineStyle = Drawing.LineType.Solid;
             style.Border.Color = Drawing.StandardColors.Black;
             style.Background.Color = StandardColors.White;
-            style.Position.VAlign = VerticalAlignment.Bottom;
+            style.Position.VAlign = VerticalAlignment.Baseline;
             style.Fill.Color = StandardColors.Black;
             
             style.Padding.All = 1;

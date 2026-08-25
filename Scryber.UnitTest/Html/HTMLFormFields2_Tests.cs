@@ -314,9 +314,10 @@ namespace Scryber.Core.UnitTests.Html
                       "button:hover {background-color:#0000ff; color: white;; margin: 7pt 3pt 3pt 7pt; } " +
                       "</style>" +
                       "</head>" +
-                      "<body>" +
-                      "<form action=\"https://localhost:7094/Home/Submit\" method=\"post\">" +
-                      "<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
+                      "<body style='margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      "Before button<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
                       "</form>" +
                       "</body></html>";
             var doc = Document.ParseHtmlDocument(new StringReader(src));
@@ -421,9 +422,9 @@ namespace Scryber.Core.UnitTests.Html
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
                       "<form style=''>Above<br/>Above 2<br/>" + 
                       //"Before <input type='text' value='Input' size='10' /> Not Selected " +
-                      "Before<input type='checkbox' name='group' value='test' selected='selected' />Selected" +
+                      "Before<input type='checkbox' name='group' value='test' checked='checked' />Selected" +
                       //"<button id='b1' name='go' type='submit'>Save</button>After" +
-                       "<input type='radio' name='other' value='not_test' />Not Test" +
+                       "<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
                        "<input type='radio' name='other' value='test' />Test<br/>" +
                       "After line" +
                       "</form>" +
@@ -432,10 +433,159 @@ namespace Scryber.Core.UnitTests.Html
             var doc = Document.ParseHtmlDocument(new StringReader(src));
 
             using var stream = DocStreams.GetOutputStream("Checkbox_CssInForm_DistinctAP.pdf");
-            doc.RenderOptions.Compression = OutputCompressionType.None;
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
             doc.SaveAsPDF(stream);
             stream.Flush();
         }
         
+        [TestMethod()]
+        public void CheckBox_CssInFormInline_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                       "input { background-color: #f99;}" +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      //  "input:active {background-color:#00F; color: white; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      //"Before <input type='text' value='Input' size='10' /> Not Selected " +
+                      "Before<input style='display:inline; margin: 10pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                      "<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
+                      "<input type='radio' name='other' value='test' />Test<br/>" +
+                      "After line" +
+                      "</form>" +
+                      "<span>After Form</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Checkbox_CssInFormInline_DistinctAP.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void CheckBox_CssInFormBlock_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "input { background-color: #f99;}" +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      //  "input:active {background-color:#00F; color: white; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      //"Before <input type='text' value='Input' size='10' /> Not Selected " +
+                      "Before<input style='display:block; margin: 10pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                      "<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
+                      "<input type='radio' name='other' value='test' />Test<br/>" +
+                      "After line" +
+                      "</form>" +
+                      "<span>After Form</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Checkbox_CssInFormBlock_DistinctAP.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void CheckBox_CssInFormRelative_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "input { background-color: #f99;}" +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                        "input:active {background-color:#00F; color: white; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      //"Before <input type='text' value='Input' size='10' /> Not Selected " +
+                      "Before<input style='position:relative; top: -10pt; margin: 0pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                      "<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
+                      "<input type='radio' name='other' value='test' />Test<br/>" +
+                      "After line" +
+                      "</form>" +
+                      "<span>After Form</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Checkbox_CssInFormRelative_DistinctAP.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void CheckBox_CssInFormAbsolute_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "input { background-color: #f99;}" +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      "input:active {background-color:#00F; color: white; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      //"Before <input type='text' value='Input' size='10' /> Not Selected " +
+                      "Before<input style='position:absolute; top: 20pt; left: 30pt; margin: 10pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                      //"<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
+                      //"<input type='radio' name='other' value='test' />Test<br/>" +
+                      "After line" +
+                      "</form>" +
+                      "<span>After Form</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Checkbox_CssInFormAbsolute_DistinctAP.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
+        
+        [TestMethod()]
+        public void CheckBox_CssInFormFixed_DistinctAP()
+        {
+            var src = "<html><head>" +
+                      "<style>" +
+                      "input { background-color: #f99;}" +
+                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      "input:active {background-color:#00F; color: white; } " +
+                      "</style>" +
+                      "</head>" +
+                      "<body style='padding: 0pt; margin:10pt;'>" +
+                      "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
+                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      //"Before <input type='text' value='Input' size='10' /> Not Selected " +
+                      "Before<input style='position:fixed; top: 0pt; left: 0pt; margin: 0pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      //"<button id='b1' name='go' type='submit'>Save</button>After" +
+                      //"<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
+                      //"<input type='radio' name='other' value='test' />Test<br/>" +
+                      "<span style='position:fixed; right: 0pt; top: 10pt;'>After line</span>" +
+                      "</form>" +
+                      "<span>After Form</span>" +
+                      "</body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(src));
+
+            using var stream = DocStreams.GetOutputStream("Checkbox_CssInFormFixed_DistinctAP.pdf");
+            //doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.SaveAsPDF(stream);
+            stream.Flush();
+        }
     }
 }

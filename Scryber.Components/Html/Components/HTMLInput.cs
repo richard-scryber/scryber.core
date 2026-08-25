@@ -75,10 +75,10 @@ namespace Scryber.Html.Components
                          this.ButtonType == FormButtonFieldType.Radio)
                 {
                     this.Size = 1;
-                    style.Margins.Top = 0;
-                    style.Margins.Bottom = 0;
-                    style.Margins.Left = 0;
-                    style.Margins.Right = 0;
+                    style.Margins.Top = 1;
+                    style.Margins.Bottom = 1;
+                    style.Margins.Left = 1;
+                    style.Margins.Right = 1;
                     style.Font.FontFamily = (FontSelector)"zapf dingbats";
                     style.Size.Width = Unit.Em(0.75);
                     style.Size.Height = Unit.Em(0.75);
