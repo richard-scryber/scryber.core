@@ -29,7 +29,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutRegion posRegion = null;
             if (this.AppearanceState != FormFieldAppearanceState.Normal)
             {
-                //For normal we should already have our block set up.
+                //For normal, we should already have our block set up.
                 var pos = this.FullStyle.CreatePostionOptions(true);
                 posRegion = this.BeginNewInlineBlockRegionForChild(pos, this.Field, this.FullStyle);
             }

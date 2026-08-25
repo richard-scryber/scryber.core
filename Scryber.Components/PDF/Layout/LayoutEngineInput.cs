@@ -222,8 +222,8 @@ public class LayoutEngineInput : LayoutEngineFormField
         if (null != literal)
         {
             chars = literal.Text;
-            literal.Text = string.Empty;
-            restore = true;
+            //literal.Text = string.Empty;
+            //restore = true;
         }
         
         base.DoLayoutTextComponent(text, style);

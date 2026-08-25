@@ -79,7 +79,10 @@ namespace Scryber.Html.Components
                     style.Margins.Bottom = 1;
                     style.Margins.Left = 1;
                     style.Margins.Right = 1;
+                    
                     style.Font.FontFamily = (FontSelector)"zapf dingbats";
+                    style.MakeImportant(StyleKeys.FontFaceFamilyKey);
+                    
                     style.Size.Width = Unit.Em(0.75);
                     style.Size.Height = Unit.Em(0.75);
                     style.Border.Width = 2;

@@ -16,23 +16,23 @@ namespace Scryber.PDF.Layout
     /// pass while an outer one's call frame is still "open" corrupts that state (confirmed via a
     /// stack overflow when this was first tried as a LayoutEngineInput subclass override).
     /// </summary>
-    public class LayoutEngineStatedButton : LayoutEngineBase
+    public class LayoutEngineStatedButton : LayoutEngineFieldStatedBase
     {
-        private readonly FormInputField _field;
-
-        
-        public bool IsLayingOutStates { get; private set; }
         
 
         public LayoutEngineStatedButton(FormInputField field, IPDFLayoutEngine parent) : base(field, parent)
         {
-            _field = field;
         }
 
         protected override void DoLayoutComponent()
         {
+            var outerPos = this.FullStyle.CreatePostionOptions(false);
+            var createdLine = this.EnsureAvailableLine(outerPos);
+            var createdRegion = this.EnsureAvailableInlineBlock(outerPos);
+            
             var context = this.Context;
             var fullstyle = this.FullStyle;
+            
             this.IsLayingOutStates = false;
             
             //Normal - a real, in-flow pass via the plain engine, exactly like any other field.
@@ -41,10 +41,53 @@ namespace Scryber.PDF.Layout
             var blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
             var regionForNormal = blockBeforeNormal.CurrentRegion;
             
+            //remember the default positions (top, left, etc.)
+            this.StorePositionValues(fullstyle);
             
-
+            Style normalStyle = fullstyle;
+            Style overStyle;
+            Style downStyle;
+            
             PDFLayoutXObjectRun normalXObject;
-            using (var normalEngine = new LayoutEngineButtonState(_field, this, FormFieldAppearanceState.Normal))
+            PDFLayoutXObjectRun overXObject;
+            PDFLayoutXObjectRun downXObject;
+            
+            Style stateStyle;
+
+            if (fullstyle.TryGetStyleState(ComponentState.Over, out stateStyle))
+            {
+                Style merged = new Style();
+                fullstyle.MergeInto(merged);
+                stateStyle.MergeInto(merged);
+                overStyle = merged;
+            }
+            else
+            {
+                overStyle = null;
+            }
+
+            if (fullstyle.TryGetStyleState(ComponentState.Down, out stateStyle))
+            {
+                Style merged = new Style();
+                fullstyle.MergeInto(merged);
+                stateStyle.MergeInto(merged);
+                downStyle = merged;
+            }
+            else
+            {
+                downStyle = null;
+            }
+            
+            //get rid of any explicit positions, as our XObject will render from 0,0
+            this.ClearPositionValues(normalStyle);
+            this.ClearPositionValues(overStyle);
+            this.ClearPositionValues(downStyle);
+            
+            //TODO: check on padding calculation update as we don't have an explicit size
+
+            
+            
+            using (var normalEngine = new LayoutEngineButtonState(Field, this, FormFieldAppearanceState.Normal))
             {
                 normalEngine.Layout(context, fullstyle);
                 this.ContinueLayout = normalEngine.ContinueLayout;
@@ -52,19 +95,47 @@ namespace Scryber.PDF.Layout
             }
             this.CloseAnyLeftoverBlock(blockBeforeNormal);
 
+            if (null != createdRegion)
+            {
+                createdRegion.Close();
+            }
+            
             if (null == normalXObject || !this.ContinueLayout)
+            {
+                if (this.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new NullReferenceException(
+                        "There was no XObject run returned for the layout of the button " + this.Field.UniqueID);
+                
+                this.Context.TraceLog.Add(TraceLevel.Error, "Form Fields", "There was no XObject run returned for the layout of the button "  + this.Field.UniqueID);
                 return;
+            }
+            
+            var line = normalXObject.Line;
+            var location = Point.Empty;
+            var pos = normalStyle.CreatePostionOptions(true);
+            
+            if (pos.DisplayMode == DisplayMode.Inline || pos.DisplayMode == DisplayMode.InlineBlock)
+            {
+                //we have closed the positioned block so can now get our y offset again.
+                blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
+                regionForNormal = blockBeforeNormal.CurrentRegion;
+                var offsetY = regionForNormal.Height + regionForNormal.OffsetY;
+                location = normalXObject.Location;
+                location.Y += offsetY;
+                
+            }
 
             var layoutPage = context.DocumentLayout.CurrentPage;
 
+            //Register the Annotation entry and set the widget appearance for normal
             IArtefactCollection annots;
             if (!layoutPage.Artefacts.TryGetCollection(PDFArtefactTypes.Annotations, out annots))
             {
                 annots = new PDFAnnotationCollection(PDFArtefactTypes.Annotations);
                 layoutPage.Artefacts.Add(annots);
             }
-            annots.Register(_field.Widget);
-            _field.Widget.SetAppearance(FormFieldAppearanceState.Normal, normalXObject, layoutPage, fullstyle);
+            annots.Register(Field.Widget);
+            Field.Widget.SetAppearance(FormFieldAppearanceState.Normal, normalXObject, layoutPage, normalStyle);
 
             //Set the states flag so we can make sure we don't overflow onto a new region.
             
@@ -72,20 +143,23 @@ namespace Scryber.PDF.Layout
             
             //Down/Over - each only if a matching :hover/:active rule exists, each a fully
             //independent, isolated pass that only starts once the previous one has entirely closed.
-            var downXObject = this.RegisterIndependentState(ComponentState.Down, FormFieldAppearanceState.Down, fullstyle, normalXObject, layoutPage);
-           
-            //take the run out of the layout, so it doen not impact the width
-            if(null != downXObject)
-                downXObject.Line.Runs.Remove(downXObject);
+            downXObject = this.RegisterIndependentState(ComponentState.Down, FormFieldAppearanceState.Down, downStyle, normalXObject, layoutPage);
+
+            overXObject = this.RegisterIndependentState(ComponentState.Over, FormFieldAppearanceState.Over, overStyle, normalXObject, layoutPage);
             
-            var overXObject = this.RegisterIndependentState(ComponentState.Over, FormFieldAppearanceState.Over, fullstyle, normalXObject, layoutPage);
-            
-            //same - no width impact.
-            if(null != overXObject)
-                overXObject.Line.Runs.Remove(overXObject);
+            //pass the location back to the widget.
+            if(pos.PositionMode == PositionMode.Fixed)
+                Field.Widget.ContainerOffset = Point.Empty;
+            else
+            {
+                Field.Widget.ContainerOffset = location;
+            }
             
             //And release after (just in case)
             this.IsLayingOutStates = false;
+            
+            //put back in any explicit locations.
+            this.RestorePositionValues(fullstyle);
         }
 
         /// <summary>
@@ -97,91 +171,48 @@ namespace Scryber.PDF.Layout
         /// independent state layout existed.
         /// </summary>
         private PDFLayoutXObjectRun RegisterIndependentState(ComponentState componentState, FormFieldAppearanceState appearanceState,
-            Style fullstyle, PDFLayoutXObjectRun normalXObject, PDFLayoutPage layoutPage)
+            Style stateStyle, PDFLayoutXObjectRun normalXObject, PDFLayoutPage layoutPage)
         {
-            Style stateStyle;
-            if (!fullstyle.TryGetStyleState(componentState, out stateStyle))
-            {
-                _field.Widget.SetAppearance(appearanceState, normalXObject, layoutPage, fullstyle);
-                return null;
-            }
-
-            Style merged = new Style();
-            fullstyle.MergeInto(merged);
-            stateStyle.MergeInto(merged);
-
-            var blockBefore = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-            if(null == blockBefore)
-                throw new NullReferenceException("There's no current block.");
-            
-            var region = blockBefore.CurrentRegion;
-            
-            if(null == region)
-                throw new NullReferenceException("There's no current region.");
-
-            var posOptions = merged.CreatePostionOptions(true);
-            var newRegion = region;
-            var decrementAfter = false;
-            var closeAfter = false;
-
             PDFLayoutXObjectRun stateXObject;
             
-            using (var stateEngine = new LayoutEngineButtonState(_field, this, appearanceState))
+            if (null != stateStyle)
             {
-                stateEngine.Layout(this.Context, merged);
-                stateXObject = stateEngine.Result;
+
+                var blockBefore = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                if (null == blockBefore)
+                    throw new NullReferenceException("There's no current block.");
+
+                var region = blockBefore.CurrentRegion;
+
+                if (null == region)
+                    throw new NullReferenceException("There's no current region.");
+
+                
+
+                using (var stateEngine = new LayoutEngineButtonState(Field, this, appearanceState))
+                {
+                    stateEngine.Layout(this.Context, stateStyle);
+                    stateXObject = stateEngine.Result;
+                }
+            }
+            else
+            {
+                stateXObject = normalXObject;
             }
 
-            if (closeAfter)
-            {
-                this.CloseAnyLeftoverBlock(blockBefore);
-                newRegion.Close();
-            }
-            
-            if(decrementAfter)
-                this.Context.PositionDepth -= 1;
-            
-            //null style, so alywys outputs xobject
+            //null style, so always outputs xobject
             if (null != stateXObject)
-                _field.Widget.SetAppearance(appearanceState, stateXObject, layoutPage, null);
+            {
+                Field.Widget.SetAppearance(appearanceState, stateXObject, layoutPage, null);
+                stateXObject.Line.Runs.Remove(stateXObject);
+                stateXObject.Page = layoutPage;
+            }
             else
-                _field.Widget.SetAppearance(appearanceState, normalXObject, layoutPage, merged);
+                Field.Widget.SetAppearance(appearanceState, normalXObject, layoutPage, null);
+            
             return stateXObject;
         }
-
-        /// <summary>
-        /// A pass whose field is inline-block/absolute/fixed gets its own wrapping block created
-        /// for it by the layout machinery, positioned on top of whatever was previously the
-        /// current open block/region. Left open, the next pass's own wrapping block gets created
-        /// on top of THAT one instead of back on the original region - accumulating nested
-        /// positioned blocks with each pass, which is what was overflowing the stack. Closing
-        /// whatever got left open (if anything - and only if it's not the block that was already
-        /// open before this pass even started) restores LastOpenBlock() to the original region so
-        /// the next pass's block gets created there again, matching the very first pass's flow.
-        /// </summary>
-        private void CloseAnyLeftoverBlock(PDFLayoutBlock before)
-        {
-            var after = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-            
-            if (after != null && !ReferenceEquals(after, before) && !after.IsClosed)
-                after.Close();
-        }
-
-        public override bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
-        {
-            if (this.IsLayingOutStates)
-                return false;
-            else
-                return this.ParentEngine.MoveToNextPage(initiator, initiatorStyle, depth, ref region, ref block);
-        }
-
-        public override PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(PDFLayoutBlock blockToClose, PDFLayoutRegion joinToRegion)
-        {
-            if (this.IsLayingOutStates)
-                return blockToClose;
-            else
-                return this.ParentEngine.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
-        }
+        
         
     }
 }

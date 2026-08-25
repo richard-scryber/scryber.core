@@ -17,120 +17,35 @@ namespace Scryber.PDF.Layout
     /// pass while an outer one's call frame is still "open" corrupts that state (confirmed via a
     /// stack overflow when this was first tried as a LayoutEngineInput subclass override).
     /// </summary>
-    public class LayoutEngineStatedCheck : LayoutEngineBase
+    public class LayoutEngineStatedCheck : LayoutEngineFieldStatedBase
     {
-        private readonly FormInputField _field;
-
         
-        public bool IsLayingOutStates { get; private set; }
         
 
         public LayoutEngineStatedCheck(FormInputField field, IPDFLayoutEngine parent) : base(field, parent)
         {
-            if(null == field)
-                throw new NullReferenceException("Field cannot be null.");
-            
-            _field = field;
             field.Size = 1;
         }
         
-        private Unit? _top, _left, _bottom, _right;
+        
 
-        private void StorePositionValues(Style forStyle)
-        {
-            if(forStyle.IsValueDefined(StyleKeys.PositionXKey))
-                _left = forStyle.Position.X;
-            if(forStyle.IsValueDefined(StyleKeys.PositionYKey))
-                _top = forStyle.Position.Y;
-            if(forStyle.IsValueDefined(StyleKeys.PositionBottomKey))
-                _bottom = forStyle.Position.Bottom;
-            if(forStyle.IsValueDefined(StyleKeys.PositionRightKey))
-                _right = forStyle.Position.Right;
-        }
+        
 
-        private void ClearPositionValues(Style forStyle)
-        {
-            forStyle.Position.RemoveBottom();
-            forStyle.Position.RemoveRight();
-            forStyle.Position.RemoveX();
-            forStyle.Position.RemoveY();
-            
-            if(forStyle is StyleFull full)
-                full.ClearFullRefs();
-        }
-
-        private void RestorePositionValues(Style forStyle)
-        {
-            if(_left != null)
-                forStyle.Position.X = _left.Value;
-            if(_top != null)
-                forStyle.Position.Y = _top.Value;
-            if(_bottom != null)
-                forStyle.Position.Bottom = _bottom.Value;
-            if(_right != null)
-                forStyle.Position.Right = _right.Value;
-            
-            if(forStyle is StyleFull full)
-                full.ClearFullRefs();
-        }
-
-        private PDFLayoutLine EnsureAvailableLine(PDFPositionOptions outerPos)
-        {
-            if (outerPos.PositionMode == PositionMode.Static || outerPos.PositionMode == PositionMode.Relative)
-            {
-                if (outerPos.DisplayMode == DisplayMode.Block)
-                {
-                    //We are a standard block, but will be in an xObjectRegion. Close any current line and start a new one
-                    //That will be closed at the end.
-                    
-                    var currentBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-                    var currentRegion = currentBlock.CurrentRegion;
-                    if(currentRegion == null)
-                        throw new NullReferenceException("Current region cannot be null.");
-                    if (currentRegion.HasOpenItem && currentRegion.CurrentItem is PDFLayoutLine)
-                    {
-                        currentRegion.CurrentItem.Close();
-                        return currentRegion.BeginNewLine();
-                    }
-                }
-            }
-            return null;
-        }
-
-        private PDFLayoutRegion EnsureAvailableInlineBlock(PDFPositionOptions outerPos)
-        {
-            
-            
-            if (outerPos.DisplayMode != DisplayMode.InlineBlock)
-            {
-                var parent = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-                if(null == parent)
-                    throw new NullReferenceException("Parent block cannot be null.");
-                var parentRegion = parent.CurrentRegion;
-                var currentItem = parentRegion.CurrentItem;
-                
-                outerPos.DisplayMode = DisplayMode.InlineBlock;
-                this.FullStyle.Position.DisplayMode = DisplayMode.InlineBlock;
-                
-                return this.BeginNewInlineBlockRegionForChild(outerPos, this._field, this.FullStyle);
-            }
-
-            return null;
-        }
+        
 
         protected override void DoLayoutComponent()
         {
-            var origValue = this._field.Value;
+            var origValue = this.Field.Value;
             
-            this._field.FontFamily = (FontSelector)"zapf dingbats";
+            this.Field.FontFamily = (FontSelector)"zapf dingbats";
+            this.FullStyle.Font.FontFamily = (FontSelector)"zapf dingbats";
             //We change the value so that this is the character that is rendered.
-            if (this._field.ButtonType == FormButtonFieldType.Radio)
-                _field.Value = "l"; //Thick bullet in zapf
+            if (this.Field.ButtonType == FormButtonFieldType.Radio)
+                Field.Value = "l"; //Thick bullet in zapf
             else
-                _field.Value = "4"; //Thick tick mark in zaph
+                Field.Value = "4"; //Thick tick mark in zaph
             
             var outerPos = this.FullStyle.CreatePostionOptions(false);
-            
             var createdLine =  this.EnsureAvailableLine(outerPos);
             var createdRegion = this.EnsureAvailableInlineBlock(outerPos);
             
@@ -138,7 +53,7 @@ namespace Scryber.PDF.Layout
             
             var context = this.Context;
             var fullstyle = this.FullStyle;
-            var offsetY = Unit.Empty;
+            
             this.IsLayingOutStates = false;
             
             //Normal - a real, in-flow pass via the plain engine, exactly like any other field.
@@ -146,9 +61,6 @@ namespace Scryber.PDF.Layout
             //LastOpenBlock()/CurrentBlock again.
             var blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
             var regionForNormal = blockBeforeNormal.CurrentRegion;
-            var current = regionForNormal.CurrentItem as PDFLayoutLine;
-            if(null != current)
-                offsetY = current.OffsetY;
             
             Style stateStyle;
             Style downStyle = fullstyle;
@@ -167,9 +79,6 @@ namespace Scryber.PDF.Layout
             this.ClearPositionValues(downStyle);
             
 
-            Unit? top = null;
-            
-
             var pos = downStyle.CreatePostionOptions(true);
             if (pos.Padding.IsEmpty == false)
             {
@@ -184,6 +93,9 @@ namespace Scryber.PDF.Layout
                     
                     fullstyle.Size.Width = pos.Width.Value;
                     fullstyle.Size.Height = pos.Height.Value;
+                    
+                    //Belt and Braces - if we are caching in the style, then this will always be the same instance.
+                    //if not then the style key values will be used anyway.
                     var fullPos = fullstyle.CreatePostionOptions(true);
                     fullPos.Width = pos.Width.Value;
                     fullPos.Height = pos.Height.Value;
@@ -193,7 +105,7 @@ namespace Scryber.PDF.Layout
             }
             
             //set the border radius for the radio buttons (if not explicitly set)
-            if (this._field.ButtonType == FormButtonFieldType.Radio)
+            if (this.Field.ButtonType == FormButtonFieldType.Radio)
             {
                 var w = downStyle.Size.Width;
                 var h = downStyle.Size.Height;
@@ -208,7 +120,7 @@ namespace Scryber.PDF.Layout
 
 
             PDFLayoutXObjectRun downXObject;
-            using (var normalEngine = new LayoutEngineCheckState(_field, this, FormFieldAppearanceState.Normal))
+            using (var normalEngine = new LayoutEngineCheckState(Field, this, FormFieldAppearanceState.Normal))
             {
                 normalEngine.Layout(context, downStyle);
                 this.ContinueLayout = normalEngine.ContinueLayout;
@@ -224,20 +136,27 @@ namespace Scryber.PDF.Layout
                 createdRegion.Close();
             }
 
+            if (null == downXObject || !this.ContinueLayout)
+            {
+                if (this.Context.Conformance == ParserConformanceMode.Strict)
+                    throw new NullReferenceException(
+                        "There was no XObject run returned for the layout of the checkbox " + this.Field.UniqueID);
+                
+                this.Context.TraceLog.Add(TraceLevel.Error, "Form Fields", "There was no XObject run returned for the layout of the checkbox "  + this.Field.UniqueID);
+                return;
+            }
+
             if (pos.DisplayMode == DisplayMode.Inline || pos.DisplayMode == DisplayMode.InlineBlock)
             {
                 //we have closed the positioned block so can now get our y offset again.
                 blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
                 regionForNormal = blockBeforeNormal.CurrentRegion;
-                offsetY = regionForNormal.Height + regionForNormal.OffsetY;
+                var offsetY = regionForNormal.Height + regionForNormal.OffsetY;
                 location = downXObject.Location;
                 location.Y += offsetY;
                 
             }
             
-
-            if (null == downXObject || !this.ContinueLayout)
-                return;
 
             var layoutPage = context.DocumentLayout.CurrentPage;
             
@@ -248,8 +167,8 @@ namespace Scryber.PDF.Layout
                 annots = new PDFAnnotationCollection(PDFArtefactTypes.Annotations);
                 layoutPage.Artefacts.Add(annots);
             }
-            annots.Register(_field.Widget);
-            _field.Widget.SetAppearance(FormFieldAppearanceState.On, downXObject, layoutPage, downStyle);
+            annots.Register(Field.Widget);
+            Field.Widget.SetAppearance(FormFieldAppearanceState.On, downXObject, layoutPage, downStyle);
 
             
             
@@ -259,7 +178,7 @@ namespace Scryber.PDF.Layout
             
             this.IsLayingOutStates = true;
             
-            this._field.Value = " ";
+            this.Field.Value = " ";
 
             
             //isolated pass that only starts once the previous one has entirely closed.
@@ -287,10 +206,10 @@ namespace Scryber.PDF.Layout
             }
 
             if (pos.PositionMode != PositionMode.Fixed)
-                _field.Widget.ContainerOffset = location;
+                Field.Widget.ContainerOffset = location;
             else
             {
-                _field.Widget.ContainerOffset = Point.Empty;
+                Field.Widget.ContainerOffset = Point.Empty;
             }
             
             if(null != createdLine)
@@ -300,7 +219,7 @@ namespace Scryber.PDF.Layout
 
             //And release after (just in case)
             this.IsLayingOutStates = false;
-            this._field.Value = origValue;
+            this.Field.Value = origValue;
         }
 
         /// <summary>
@@ -326,66 +245,21 @@ namespace Scryber.PDF.Layout
 
             var posOptions = fullstyle.CreatePostionOptions(true);
             var newRegion = region;
-            var decrementAfter = false;
-            var closeAfter = false;
 
             PDFLayoutXObjectRun stateXObject;
             
-            using (var stateEngine = new LayoutEngineCheckState(_field, this, appearanceState))
+            using (var stateEngine = new LayoutEngineCheckState(Field, this, appearanceState))
             {
                 stateEngine.Layout(this.Context, fullstyle);
                 stateXObject = stateEngine.Result;
             }
-
-            if (closeAfter)
-            {
-                this.CloseAnyLeftoverBlock(blockBefore);
-                newRegion.Close();
-            }
-            
-            if(decrementAfter)
-                this.Context.PositionDepth -= 1;
             
             //null style, so alywys outputs xobject
             if (null != stateXObject)
-                _field.Widget.SetAppearance(appearanceState, stateXObject, layoutPage, null);
+                Field.Widget.SetAppearance(appearanceState, stateXObject, layoutPage, null);
             else
-                _field.Widget.SetAppearance(appearanceState, normalXObject, layoutPage, fullstyle);
+                Field.Widget.SetAppearance(appearanceState, normalXObject, layoutPage, fullstyle);
             return stateXObject;
-        }
-
-        /// <summary>
-        /// A pass whose field is inline-block/absolute/fixed gets its own wrapping block created
-        /// for it by the layout machinery, positioned on top of whatever was previously the
-        /// current open block/region. Left open, the next pass's own wrapping block gets created
-        /// on top of THAT one instead of back on the original region - accumulating nested
-        /// positioned blocks with each pass, which is what was overflowing the stack. Closing
-        /// whatever got left open (if anything - and only if it's not the block that was already
-        /// open before this pass even started) restores LastOpenBlock() to the original region so
-        /// the next pass's block gets created there again, matching the very first pass's flow.
-        /// </summary>
-        private void CloseAnyLeftoverBlock(PDFLayoutBlock before)
-        {
-            var after = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
-            
-            if (after != null && !ReferenceEquals(after, before) && !after.IsClosed)
-                after.Close();
-        }
-
-        public override bool MoveToNextPage(IComponent initiator, Style initiatorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
-        {
-            if (this.IsLayingOutStates)
-                return false;
-            else
-                return this.ParentEngine.MoveToNextPage(initiator, initiatorStyle, depth, ref region, ref block);
-        }
-
-        public override PDFLayoutBlock CloseCurrentBlockAndStartNewInRegion(PDFLayoutBlock blockToClose, PDFLayoutRegion joinToRegion)
-        {
-            if (this.IsLayingOutStates)
-                return blockToClose;
-            else
-                return this.ParentEngine.CloseCurrentBlockAndStartNewInRegion(blockToClose, joinToRegion);
         }
         
     }
