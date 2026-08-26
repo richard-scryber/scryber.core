@@ -890,12 +890,65 @@ namespace Scryber.PDF.Layout
         }
 
         private static bool IsFlexItem(IComponent child)
-            => child is IContainerComponent && child is Component c && c.Visible;
+        {
+            if (!(child is Component c) || !c.Visible)
+                return false;
+
+            //Whitespace-only text nodes are a normal by-product of formatted HTML source (the
+            //newline/indentation between tags becomes its own text child) and, per CSS's
+            //anonymous-box rules, never generate a box of their own - counting them as real flex
+            //items would eat a column/row slot for indentation whitespace alone. Checked via
+            //ITextLiteral (not just TextLiteral) since the two parsers represent this
+            //differently: the lenient HTML parser produces a TextLiteral even for pure
+            //whitespace, while the strict XML parser produces a dedicated Whitespace component -
+            //both implement ITextLiteral's Text property. Any text with actual (non-whitespace)
+            //content still becomes a real, wrapped flex item (see EnsureFlexItemContainer) - e.g.
+            //bare text mixed with elements.
+            if (c is Scryber.ITextLiteral tl && string.IsNullOrWhiteSpace(tl.Text))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Ensures a flex item has a full block-layout-capable box to sit in. Checked
+        /// specifically against Panel, not the broader IContainerComponent - a TableCell or
+        /// FormInputField is a container too, but isn't necessarily a fully-fledged general
+        /// flex-item box (and might bypass flex-item-specific settings if just accepted as-is).
+        /// A non-Panel child - most commonly a raw text node sitting directly in a flex
+        /// container, e.g. &lt;div style="display:flex"&gt;Some text&lt;span&gt;...&lt;/span&gt;&lt;/div&gt;
+        /// - has no block-layout engine of its own at all (TextBase.GetEngine always returns
+        /// LayoutEngineText, regardless of what display mode gets forced onto its style in
+        /// DoLayoutAChild), so it could never work as a flex item directly.
+        ///
+        /// The wrapper is InvisibleFlexContainer (Panel + IInvisibleContainer), not a plain
+        /// Panel - it still gets a real layout box (Panel already implements
+        /// IPDFViewPortComponent, which LayoutEngineBase's child dispatch checks before
+        /// IInvisibleContainer, so DoLayoutViewPortComponent runs and IInvisibleContainer's own
+        /// "don't create a box" layout behaviour never triggers here) but is transparent to
+        /// structural CSS matching (:nth-child/:nth-of-type via Component.PopulateSiblingPosition,
+        /// and any future `>` awareness) since those consult IInvisibleContainer directly,
+        /// independent of layout dispatch. Reparenting the child (this.Contents.Add(child) does
+        /// set child.Parent = wrapper) is real and unavoidable - the transparency comes from
+        /// downstream code recognising IInvisibleContainer, not from avoiding the reparent.
+        /// </summary>
+        private Component EnsureFlexItemContainer(Component child)
+        {
+            if (child is Panel)
+                return child;
+
+            var wrapper = new InvisibleFlexContainer();
+            wrapper.Parent = this.Component as Component;
+            wrapper.Contents.Add(child);
+            return wrapper;
+        }
 
         /// <summary>
         /// Returns the visible flex items from the container's content, sorted by their
         /// 'order' CSS property (lower values first). Items with the same order value
-        /// retain their source order (stable sort via LINQ).
+        /// retain their source order (stable sort via LINQ). Non-Panel children (see
+        /// EnsureFlexItemContainer) come back wrapped - 'order' is read from the original
+        /// child's own applied style first, since the synthetic wrapper has none of its own.
         /// </summary>
         private List<Component> GetOrderedFlexItems()
         {
@@ -912,6 +965,8 @@ namespace Scryber.PDF.Layout
                 var applied = comp.GetAppliedStyle();
                 if (applied != null && applied.IsValueDefined(StyleKeys.FlexOrderKey))
                     order = applied.GetValue(StyleKeys.FlexOrderKey, 0);
+
+                comp = EnsureFlexItemContainer(comp);
                 items.Add((comp, order, src));
                 src++;
             }

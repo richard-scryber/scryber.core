@@ -3175,5 +3175,108 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(4, totalItemsChecked,
                 "All 4 items (across both pages) should have been checked for centering");
         }
+
+        // -----------------------------------------------------------------------
+        // FlexRow — non-Panel children (bare text) become real, wrapped flex items
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_BareTextChild_HtmlParser_BecomesWrappedFlexItem()
+        {
+            // A bare (non-whitespace) text node sitting directly in a flex row - previously
+            // silently dropped from flex-item processing entirely, since IsFlexItem required
+            // IContainerComponent and a text node isn't one. Should now come back wrapped in an
+            // InvisibleFlexContainer and occupy its own column, same as a real element would.
+            var src = "<html><body>" +
+                      "<div style='display:flex; flex-direction:row; width:600pt;'>" +
+                      "<span>Left</span>Middle text<span>Right</span>" +
+                      "</div></body></html>";
+
+            var doc = Document.ParseHtmlDocument(new System.IO.StringReader(src));
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_BareText_Html.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Should find the flex row block");
+            Assert.AreEqual(3, flexBlock.Columns.Length,
+                "span + bare text + span should be 3 columns, not 2 (with the bare text silently dropped)");
+
+            StringAssert.Contains(CollectText(flexBlock.Columns[0]), "Left");
+            StringAssert.Contains(CollectText(flexBlock.Columns[1]), "Middle text");
+            StringAssert.Contains(CollectText(flexBlock.Columns[2]), "Right");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_BareTextChild_XmlParser_BecomesWrappedFlexItem()
+        {
+            // Same as above but through the strict XML parser, which represents insignificant
+            // whitespace as a dedicated Whitespace component rather than a whitespace-only
+            // TextLiteral - both must be excluded from flex-item processing (via ITextLiteral,
+            // which they both implement), while genuine bare text must still come through.
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+  <div style=""display:flex; flex-direction:row; width:600pt;"">
+    <span>Left</span>Middle text<span>Right</span>
+  </div>
+</body>
+</html>";
+
+            using var doc = Document.Parse(new System.IO.StringReader(src),
+                                           ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_BareText_Xml.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Should find the flex row block");
+            Assert.AreEqual(3, flexBlock.Columns.Length,
+                "span + bare text + span should be 3 columns - indentation Whitespace nodes around them must not be counted either");
+
+            StringAssert.Contains(CollectText(flexBlock.Columns[0]), "Left");
+            StringAssert.Contains(CollectText(flexBlock.Columns[1]), "Middle text");
+            StringAssert.Contains(CollectText(flexBlock.Columns[2]), "Right");
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_WhitespaceFormattedSource_OnlyRealElementsCounted()
+        {
+            // Indentation/newlines between real flex children (typical of hand-formatted HTML)
+            // must not each eat their own column - regardless of which parser produced them.
+            var src = "<html><body>\n" +
+                      "    <div style='display:flex; flex-direction:row; width:600pt;'>\n" +
+                      "        <div>One</div>\n" +
+                      "        <div>Two</div>\n" +
+                      "        <div>Three</div>\n" +
+                      "    </div>\n" +
+                      "</body></html>";
+
+            var doc = Document.ParseHtmlDocument(new System.IO.StringReader(src));
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Flex_Whitespace_NotCounted.pdf"))
+            {
+                doc.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                doc.SaveAsPDF(ms);
+            }
+
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock);
+            Assert.AreEqual(3, flexBlock.Columns.Length,
+                "3 real <div> children should be 3 columns - source indentation must not inflate this");
+        }
     }
 }
