@@ -772,15 +772,30 @@ namespace Scryber.Components
         }
 
         /// <summary>
-        /// Scans this component's parent's element children once, populating either the plain
+        /// Scans this component's element siblings once, populating either the plain
         /// (Index/Count) or of-type (OfTypeIndex/OfTypeCount) pair on the cache - optionally
         /// restricted to children sharing this component's ElementName (for the :nth-of-type
-        /// family). Defaults to (1, 1) for a component with no parent container, so a lone/root
-        /// component matches :first-child, :last-child, and :only-child as expected.
+        /// family). Defaults to (1, 1) for a component with no real parent container, so a
+        /// lone/root component matches :first-child, :last-child, and :only-child as expected.
+        ///
+        /// "Element siblings" is not simply this.Parent's direct Content: an IInvisibleContainer
+        /// (e.g. the per-iteration wrapper a {{#each}} produces) doesn't create a real level in
+        /// the field/structural hierarchy - its own content is meant to read as if it were
+        /// spliced directly into whichever real container encloses it, matching the same
+        /// flattening ComponentWrappingList&lt;T&gt;.BuildAllItems already does for typed child
+        /// collections (e.g. HTMLSelect's Choices). So this walks up past any IInvisibleContainer
+        /// ancestors to find the nearest real one, then recursively flattens *that* container's
+        /// entire content (expanding any IInvisibleContainer found at any depth within it, not
+        /// just along the direct path to this component - the hierarchy can nest, e.g. an
+        /// {{#each}} inside an {{#if}}) into one ordered list before counting position in it.
         /// </summary>
         private void PopulateSiblingPosition(SiblingIndexes indexes, bool ofTypeOnly)
         {
-            if (!(this.Parent is IContainerComponent container) || !container.HasContent)
+            Component realParent = this.Parent;
+            while (realParent is IInvisibleContainer)
+                realParent = realParent.Parent;
+
+            if (!(realParent is IContainerComponent container) || !container.HasContent)
             {
                 if (ofTypeOnly)
                 {
@@ -797,18 +812,7 @@ namespace Scryber.Components
 
             int index = 0;
             int total = 0;
-            foreach (var child in container.Content)
-            {
-                if (string.IsNullOrEmpty(child.ElementName))
-                    continue;
-
-                if (ofTypeOnly && !string.Equals(child.ElementName, this.ElementName, StringComparison.Ordinal))
-                    continue;
-
-                total++;
-                if (ReferenceEquals(child, this))
-                    index = total;
-            }
+            CountSiblingContent(container.Content, this, ofTypeOnly, ref index, ref total);
 
             if (ofTypeOnly)
             {
@@ -819,6 +823,46 @@ namespace Scryber.Components
             {
                 indexes.Index = index;
                 indexes.Count = total;
+            }
+        }
+
+        /// <summary>
+        /// Walks <paramref name="content"/>, counting element siblings in place (no intermediate
+        /// list) - descending into any IInvisibleContainer found along the way instead of
+        /// counting it as a single sibling, so an {{#each}}/{{#if}} wrapper's own items count as
+        /// if they were direct entries of the real enclosing container, exactly like
+        /// ComponentWrappingList&lt;T&gt;.BuildAllItems already does for typed collections. Only
+        /// <paramref name="total"/> and (once <paramref name="find"/> is reached) <paramref name="index"/>
+        /// are tracked - never the members themselves - since this can run once per structural
+        /// pseudo-class check against every sibling in a row, not just once per parent.
+        /// </summary>
+        private static void CountSiblingContent(ComponentList content, Component find, bool ofTypeOnly, ref int index, ref int total)
+        {
+            foreach (Component child in content)
+            {
+                if (child is IInvisibleContainer invisible)
+                {
+                    if (invisible.HasContent)
+                        CountSiblingContent(invisible.Content, find, ofTypeOnly, ref index, ref total);
+                    continue;
+                }
+
+                //Matches ComponentWrappingList<T>.BuildAllItems's own filtering - binding
+                //machinery (e.g. {{#each}}'s template prototype) can leave a NoOp-typed node
+                //sitting in the real content alongside the actual generated items, which isn't
+                //a real rendered sibling and must not inflate the count.
+                if (child.Type == ObjectTypes.NoOp)
+                    continue;
+
+                if (string.IsNullOrEmpty(child.ElementName))
+                    continue;
+
+                if (ofTypeOnly && !string.Equals(child.ElementName, find.ElementName, StringComparison.Ordinal))
+                    continue;
+
+                total++;
+                if (ReferenceEquals(child, find))
+                    index = total;
             }
         }
 
