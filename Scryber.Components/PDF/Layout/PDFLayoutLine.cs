@@ -514,7 +514,7 @@ namespace Scryber.PDF.Layout
                          posRun.Region.PositionMode == PositionMode.Static))
                     {
                         //affects the line height, so adjust
-                        itemH = (posRun.Height + 40) + maxDescender;
+                        itemH = posRun.Height + maxDescender;
 
                         if (itemH > maxHeight)
                         {
@@ -524,6 +524,17 @@ namespace Scryber.PDF.Layout
                         maxBaselineComponent = Unit.Max(maxBaselineComponent, posRun.Height);
                         
                     }
+                }
+                else if (run is PDFLayoutInlineBlockRun inlineBlockRun)
+                {
+                    isComplex = true;
+
+                    itemH = inlineBlockRun.Height + maxDescender;
+                    
+                    if (itemH > maxHeight)
+                        maxHeight = itemH;
+                    
+                    maxBaselineComponent = Unit.Max(maxBaselineComponent, inlineBlockRun.Height);
                 }
                 else if (run is PDFTextRunNewLine nl)
                 {

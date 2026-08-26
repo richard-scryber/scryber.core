@@ -248,14 +248,25 @@ namespace Scryber.Components
             if (this.Required)
                 this.Options |= FormFieldOptions.Required;
 
-            if (this.ButtonType == FormButtonFieldType.CheckBox || this.ButtonType == FormButtonFieldType.Radio)
+            if (this.FieldType == FormInputFieldType.Button)
             {
-                var checkWidget = new PDFAcrobatFormCheckWidget(this.Name, this.Value, this.DefaultValue, this.FieldType, this.Options);
-                checkWidget.IsChecked = this.Checked;
-                checkWidget.ButtonType = this.ButtonType;
-                if (!string.IsNullOrEmpty(this.Value))
-                    checkWidget.OnStateName = this.Value;
-                this._fieldEntry = checkWidget;
+                if (this.ButtonType == FormButtonFieldType.CheckBox || this.ButtonType == FormButtonFieldType.Radio)
+                {
+                    var checkWidget = new PDFAcrobatFormCheckWidget(this.Name, this.Value, this.DefaultValue,
+                        this.FieldType, this.Options);
+                    checkWidget.IsChecked = this.Checked;
+                    checkWidget.ButtonType = this.ButtonType;
+                    if (!string.IsNullOrEmpty(this.Value))
+                        checkWidget.OnStateName = this.Value;
+                    this._fieldEntry = checkWidget;
+                }
+                else
+                {
+                    //standard button
+                    var buttonWidget = new PDFAcrobatFormButtonWidget(this.Name, this.Value, this.DefaultValue,
+                        this.FieldType, this.Options);
+                    this._fieldEntry = buttonWidget;
+                }
             }
             else
             {
@@ -306,7 +317,7 @@ namespace Scryber.Components
             else if (this.FieldType == FormInputFieldType.Button && this.ButtonType == FormButtonFieldType.Radio)
                 return new LayoutEngineStatedCheck(this, parent);
             else if (this.FieldType == FormInputFieldType.Hidden)
-                ;
+                ; //TODO: Hidden field for submitting values.
 
             return new PDF.Layout.LayoutEngineInput(this, parent);
         }

@@ -243,6 +243,19 @@ namespace Scryber.PDF.Layout
             if(null == region)
                 throw new NullReferenceException("There's no current region.");
 
+            if (fullstyle.Margins.Left != normalXObject.PositionOptions.Margins.Left
+                || fullstyle.Margins.Top != normalXObject.PositionOptions.Margins.Top
+                || fullstyle.Margins.Right != normalXObject.PositionOptions.Margins.Right
+                || fullstyle.Margins.Bottom != normalXObject.PositionOptions.Margins.Bottom)
+            {
+                this.Context.TraceLog.Add(TraceLevel.Warning, "Form Fields", "Copying margins from normal state to over/down state, as margins must match on buttons for activation rect.");
+                //copy margins from normal style
+                fullstyle.Margins.Left = normalXObject.PositionOptions.Margins.Left;
+                fullstyle.Margins.Top = normalXObject.PositionOptions.Margins.Top;
+                fullstyle.Margins.Right = normalXObject.PositionOptions.Margins.Right;
+                fullstyle.Margins.Bottom = normalXObject.PositionOptions.Margins.Bottom;
+            }
+            
             var posOptions = fullstyle.CreatePostionOptions(true);
             var newRegion = region;
 

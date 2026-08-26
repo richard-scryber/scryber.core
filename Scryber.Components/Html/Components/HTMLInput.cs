@@ -91,11 +91,6 @@ namespace Scryber.Html.Components
                     style.Font.FontSize = Unit.Percent(50);
                     style.Position.HAlign = HorizontalAlignment.Center;
                     style.Text.Leading = Unit.Em(0.75);
-                    if (this.ButtonType == FormButtonFieldType.Radio)
-                    {
-                        //style.Padding.Top += 1;
-                    }
-                    //style.Position.DisplayMode = DisplayMode.Inline;
                 }
             }
             else if (this.FieldType == FormInputFieldType.Signature)

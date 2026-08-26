@@ -27,12 +27,10 @@ namespace Scryber.PDF.Layout
         protected override void DoLayoutComponent()
         {
             PDFLayoutRegion posRegion = null;
-            if (this.AppearanceState != FormFieldAppearanceState.On)
-            {
-                //For normal we should already have our block set up.
-                var pos = this.FullStyle.CreatePostionOptions(true);
-                posRegion = this.BeginNewInlineBlockRegionForChild(pos, this.Field, this.FullStyle);
-            }
+            
+            var pos = this.FullStyle.CreatePostionOptions(true);
+            posRegion = this.BeginNewInlineBlockRegionForChild(pos, this.Field, this.FullStyle);
+            
 
             base.DoLayoutComponent();
 

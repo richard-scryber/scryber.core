@@ -53,7 +53,10 @@ namespace Scryber.PDF.Layout
 
         public string SubType { get; set; }
 
-        public Point Location { get; set; }
+        public Point Location { 
+            get; 
+            set; 
+        }
 
         public PDFPositionOptions PositionOptions { get { return _position; } }
 

@@ -294,7 +294,11 @@ namespace Scryber.Core.UnitTests.Html
                       "</style>" +
                       "</head>" +
                       "<body>" +
-                      "<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
+                      "Line before<br/>" +
+                      "Before Input<input type='checkbox' />Before button" +
+                      "<button id='b1' name='go' type='submit'>Save</button>" +
+                      "After Button<br/>" +
+                      "Under Button" +
                       "</body></html>";
             var doc = Document.ParseHtmlDocument(new StringReader(src));
 
@@ -309,14 +313,14 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "button { background-color: #aaf; border-radius:0pt; margin: 5pt} " +
-                      "button:active {background-color:#aa00aa; color: white;; margin: 7pt 3pt 3pt 7pt; } " +
-                      "button:hover {background-color:#0000ff; color: white;; margin: 7pt 3pt 3pt 7pt; } " +
+                      "button { background-color: #aaf; border-radius:0pt; margin: 0pt 5pt;} " +
+                      "button:active {background-color:#aa00aa; color: white;} " +
+                      "button:hover {background-color:#0000ff; color: white;} " +
                       "</style>" +
                       "</head>" +
                       "<body style='margin:10pt;'>" +
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
-                      "<form style=''>Above<br/>Above 2<br/>" + 
+                      "<form action=\"http://localhost:5188/Home/Submit\" method=\"post\" style=''>Above<br/>Above 2<br/>" +
                       "Before button<button id='b1' name='go' type='submit'>Save</button><span>After Button</span>" +
                       "</form>" +
                       "</body></html>";
@@ -324,6 +328,7 @@ namespace Scryber.Core.UnitTests.Html
 
             using var stream = DocStreams.GetOutputStream("ButtonStateCheck_submit.pdf");
             doc.RenderOptions.Compression = OutputCompressionType.None;
+            doc.AppendTraceLog = true;
             doc.SaveAsPDF(stream);
             stream.Flush();
         }
@@ -503,8 +508,8 @@ namespace Scryber.Core.UnitTests.Html
         {
             var src = "<html><head>" +
                       "<style>" +
-                      "input { background-color: #f99;}" +
-                      //  "margin-left:5pt; margin-right: 5pt; }" +
+                      "input { background-color: #f99;" +
+                        "margin-left:5pt; margin-right: 5pt; }" +
                         "input:active {background-color:#00F; color: white; } " +
                       "</style>" +
                       "</head>" +
@@ -512,7 +517,7 @@ namespace Scryber.Core.UnitTests.Html
                       "<div style='border: solid 1pt lime; padding: 10pt;'>Above the form</div>" +
                       "<form style=''>Above<br/>Above 2<br/>" + 
                       //"Before <input type='text' value='Input' size='10' /> Not Selected " +
-                      "Before<input style='position:relative; top: -10pt; margin: 0pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
+                      "Before<input style='margin: 0pt;' type='checkbox' name='group' value='test' checked='checked' />Selected" +
                       //"<button id='b1' name='go' type='submit'>Save</button>After" +
                       "<input type='radio' name='other' value='not_test' checked='checked' />Not Test" +
                       "<input type='radio' name='other' value='test' />Test<br/>" +

@@ -19,10 +19,6 @@ namespace Scryber.PDF
     /// </summary>
     public class PDFAcrobatFormCheckWidget : PDFAcrobatFormFieldWidget
     {
-        protected Drawing.Point _location;
-        protected Drawing.Size _size;
-        protected Layout.PDFLayoutPage _page;
-        protected Styles.Style _style;
 
         
         public bool IsChecked { get; set; }
@@ -75,7 +71,7 @@ namespace Scryber.PDF
                 arrangement = owner.GetFirstArrangement();
                 if (null != arrangement)
                 {
-                    _style = arrangement.FullStyle;
+                    Style = arrangement.FullStyle;
                     break;
                 }
 
@@ -86,9 +82,7 @@ namespace Scryber.PDF
             string onName = string.IsNullOrEmpty(this.OnStateName) ?  "On" :  this.OnStateName;
             string currentState = this.IsChecked ? onName : "Off";
 
-            this._location = context.Offset;
-            var bounds = Rect.Empty;
-            Rect? clipRect = null;
+            this.Location = context.Offset;
             
             //render the On state and record sizes.
             
@@ -101,26 +95,25 @@ namespace Scryber.PDF
             if (null != onRef)
             {
                 var sz = new Size(xObjectOn.Width, xObjectOn.Height);
-                if (_size == Size.Empty)
-                    _size = sz;
+                if (Size == Size.Empty)
+                    Size = sz;
                 else
                 {
-                    if(_size.Width < sz.Width)
-                        _size.Width = sz.Width;
-                    if(_size.Height < sz.Height)
-                        _size.Height = sz.Height;
+                    if(Size.Width < sz.Width)
+                        Size.Width = sz.Width;
+                    if(Size.Height < sz.Height)
+                        Size.Height = sz.Height;
                 }
-                this._location = new Point(xObjectOn.Location.X, xObjectOn.Location.Y);
+                this.Location = new Point(xObjectOn.Location.X, xObjectOn.Location.Y);
                 
                 
 
                 if (xObjectOn.ClipRect.HasValue)
                 {
-                    this._location.X += xObjectOn.ClipRect.Value.X;
-                    this._location.Y += xObjectOn.ClipRect.Value.Y;
-                    this._size.Width = xObjectOn.ClipRect.Value.Width;
-                    this._size.Height = xObjectOn.ClipRect.Value.Height;
-                    bounds = parentRenderBounds;
+                    this.Location.X += xObjectOn.ClipRect.Value.X;
+                    this.Location.Y += xObjectOn.ClipRect.Value.Y;
+                    this.Size.Width = xObjectOn.ClipRect.Value.Width;
+                    this.Size.Height = xObjectOn.ClipRect.Value.Height;
                 }
             }
             
@@ -138,18 +131,7 @@ namespace Scryber.PDF
             //becomes a SEPARATE field in the field-name hierarchy ("groupname.kidname"), not a
             //plain annotation-kid of the group, which is exactly what broke mutual exclusivity when
             //this was first attempted - each radio ended up its own independent field.
-            //
-            ///Parent can't just be set by the group ahead of time - PDFAnnotationEntry.OutputToPDF
-            //caches a widget's content on its FIRST call, and that call comes from the page's own
-            ///Annots output (rendered while laying out pages), before PDFAcrobatRadioGroupEntry's
-            //own OutputToPDF (part of the /AcroForm catalog entry, written only once every page is
-            //known) ever runs. So whichever kid is asked to render first triggers the WHOLE group -
-            //opens its indirect object, sets /Parent on every kid immediately, renders every other
-            //kid nested inside it - using the writer's existing nested-indirect-object support (the
-            //same pattern already used to collect and write a nested /Catalog reference), not any
-            //"reserve a number, write content later" writer change. This kid then continues
-            //rendering itself normally (below, still nested inside the still-open group), and
-            //completes the group (writes its /Kids dictionary, closes it) once its own ref is known.
+            
             bool isGroupedRadio = (this.FieldOptions & FormFieldOptions.Radio) == FormFieldOptions.Radio;
             bool triggeredGroup = false;
 
@@ -161,75 +143,82 @@ namespace Scryber.PDF
 
             PDFObjectRef root = writer.BeginObject();
 
-            var font = this._style.CreateFont();
-            var rsrc = ((Document)xObjectOn.Document).GetFontResource(font, true);
-            string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
-
-            writer.BeginDictionary();
-            writer.WriteDictionaryNameEntry("Subtype", "Widget");
-
-            if (isGroupedRadio)
+            try
             {
-                if (null != this.Parent)
-                    writer.WriteDictionaryObjectRefEntry("Parent", this.Parent);
+                var font = this.Style.CreateFont();
+                var rsrc = ((Document)xObjectOn.Document).GetFontResource(font, true);
+                string da = rsrc.Name.ToString() + " " + font.Size.ToPoints().Value.ToString() + " Tf";
+
+                writer.BeginDictionary();
+                writer.WriteDictionaryNameEntry("Subtype", "Widget");
+
+                if (isGroupedRadio)
+                {
+                    if (null != this.Parent)
+                        writer.WriteDictionaryObjectRefEntry("Parent", this.Parent);
+                }
+                else
+                {
+                    writer.WriteDictionaryStringEntry("T", this.Name);
+                    writer.WriteDictionaryNameEntry("V", currentState);
+                    writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
+                    writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
+                }
+
+                if (!string.IsNullOrEmpty(this.DefaultValue))
+                    writer.WriteDictionaryStringEntry("DV", this.DefaultValue);
+
+                writer.WriteDictionaryStringEntry("DA", da);
+                writer.WriteDictionaryNameEntry("AS", currentState);
+
+                if (null != this.Page && null != this.Page.PageObjectRef)
+                    writer.WriteDictionaryObjectRefEntry("P", this.Page.PageObjectRef);
+
+                WriteAction(context, writer);
+
+                //MK - appearance dictionary
+                writer.BeginDictionaryEntry("MK");
+                writer.BeginDictionary();
+                if (this.Style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
+                    WriteInputColor(context, writer, "BC", this.Style.Border.Color);
+                if (this.Style.IsValueDefined(Styles.StyleKeys.BgColorKey))
+                    WriteInputColor(context, writer, "BG", this.Style.Background.Color);
+                writer.EndDictionary();
+                writer.EndDictionaryEntry();
+
+                //AP - nested by state name, rather than the flat N/D/R of other field types
+                writer.BeginDictionaryEntry("AP");
+                writer.BeginDictionary();
+
+                writer.BeginDictionaryEntry("N");
+                writer.BeginDictionary();
+                writer.WriteDictionaryObjectRefEntry("Off", offRef);
+                writer.WriteDictionaryObjectRefEntry(onName, onRef);
+                writer.EndDictionary();
+                writer.EndDictionaryEntry();
+
+                writer.EndDictionary();
+                writer.EndDictionaryEntry();
+
+                this.Location.X += this.ContainerOffset.X;
+                this.Location.Y += this.ContainerOffset.Y;
+
+                PDFReal left = context.Graphics.GetXPosition(Location.X);
+                PDFReal top = context.Graphics.GetYPosition(Location.Y);
+                PDFReal right = left + context.Graphics.GetXOffset(Size.Width);
+                PDFReal bottom = top + context.Graphics.GetYOffset(Size.Height);
+
+                writer.BeginDictionaryEntry("Rect");
+                writer.WriteArrayRealEntries(true, left.Value, bottom.Value, right.Value, top.Value);
+                writer.EndDictionaryEntry();
+
+                writer.EndDictionary();
             }
-            else
+            finally
             {
-                writer.WriteDictionaryStringEntry("T", this.Name);
-                writer.WriteDictionaryNameEntry("V", currentState);
-                writer.WriteDictionaryNumberEntry("Ff", (int)this.FieldOptions);
-                writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
+                if (null != root)
+                    writer.EndObject();
             }
-
-            if (!string.IsNullOrEmpty(this.DefaultValue))
-                writer.WriteDictionaryStringEntry("DV", this.DefaultValue);
-
-            writer.WriteDictionaryStringEntry("DA", da);
-            writer.WriteDictionaryNameEntry("AS", currentState);
-
-            if (null != this._page && null != this._page.PageObjectRef)
-                writer.WriteDictionaryObjectRefEntry("P", this._page.PageObjectRef);
-
-            WriteAction(context, writer);
-
-            //MK - appearance dictionary
-            writer.BeginDictionaryEntry("MK");
-            writer.BeginDictionary();
-            if (this._style.IsValueDefined(Styles.StyleKeys.BorderColorKey))
-                WriteInputColor(context, writer, "BC", this._style.Border.Color);
-            if (this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
-                WriteInputColor(context, writer, "BG", this._style.Background.Color);
-            writer.EndDictionary();
-            writer.EndDictionaryEntry();
-
-            //AP - nested by state name, rather than the flat N/D/R of other field types
-            writer.BeginDictionaryEntry("AP");
-            writer.BeginDictionary();
-            
-            writer.BeginDictionaryEntry("N");
-            writer.BeginDictionary();
-            writer.WriteDictionaryObjectRefEntry("Off", offRef);
-            writer.WriteDictionaryObjectRefEntry(onName, onRef);
-            writer.EndDictionary();
-            writer.EndDictionaryEntry();
-            
-            writer.EndDictionary();
-            writer.EndDictionaryEntry();
-            
-            this._location.X += this.ContainerOffset.X;
-            this._location.Y += this.ContainerOffset.Y;
-
-            PDFReal left = context.Graphics.GetXPosition(_location.X);
-            PDFReal top = context.Graphics.GetYPosition(_location.Y);
-            PDFReal right = left + context.Graphics.GetXOffset(_size.Width);
-            PDFReal bottom = top + context.Graphics.GetYOffset(_size.Height);
-
-            writer.BeginDictionaryEntry("Rect");
-            writer.WriteArrayRealEntries(true, left.Value, bottom.Value, right.Value, top.Value);
-            writer.EndDictionaryEntry();
-
-            writer.EndDictionary();
-            writer.EndObject();
 
             if (triggeredGroup)
                 //My own ref is now known - complete the group's /Kids array (adding it) and

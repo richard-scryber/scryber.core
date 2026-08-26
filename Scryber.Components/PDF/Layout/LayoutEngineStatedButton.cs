@@ -29,29 +29,29 @@ namespace Scryber.PDF.Layout
             var outerPos = this.FullStyle.CreatePostionOptions(false);
             var createdLine = this.EnsureAvailableLine(outerPos);
             var createdRegion = this.EnsureAvailableInlineBlock(outerPos);
-            
+
             var context = this.Context;
             var fullstyle = this.FullStyle;
-            
+
             this.IsLayingOutStates = false;
-            
+
             //Normal - a real, in-flow pass via the plain engine, exactly like any other field.
             //Must fully complete (including its own Dispose) before anything else touches
             //LastOpenBlock()/CurrentBlock again.
             var blockBeforeNormal = context.DocumentLayout.CurrentPage.LastOpenBlock();
             var regionForNormal = blockBeforeNormal.CurrentRegion;
-            
+
             //remember the default positions (top, left, etc.)
             this.StorePositionValues(fullstyle);
-            
+
             Style normalStyle = fullstyle;
             Style overStyle;
             Style downStyle;
-            
+
             PDFLayoutXObjectRun normalXObject;
             PDFLayoutXObjectRun overXObject;
             PDFLayoutXObjectRun downXObject;
-            
+
             Style stateStyle;
 
             if (fullstyle.TryGetStyleState(ComponentState.Over, out stateStyle))
@@ -77,43 +77,55 @@ namespace Scryber.PDF.Layout
             {
                 downStyle = null;
             }
-            
+
             //get rid of any explicit positions, as our XObject will render from 0,0
             this.ClearPositionValues(normalStyle);
             this.ClearPositionValues(overStyle);
             this.ClearPositionValues(downStyle);
-            
+
             //TODO: check on padding calculation update as we don't have an explicit size
 
-            
-            
+
+
             using (var normalEngine = new LayoutEngineButtonState(Field, this, FormFieldAppearanceState.Normal))
             {
                 normalEngine.Layout(context, fullstyle);
                 this.ContinueLayout = normalEngine.ContinueLayout;
                 normalXObject = normalEngine.Result;
             }
+
+            //push the button down, so the baselines match.
+            var baselineOffset = Unit.Zero;
+            var textOptions = this.FullStyle.CreateTextOptions();
+            var descender = textOptions.GetDescender();
+            var padd = outerPos.Padding.Bottom;
+            var marg = outerPos.Margins.Bottom;
+            baselineOffset = descender + padd + marg;
+
+            normalXObject.SetOffsetY(baselineOffset);
+
             this.CloseAnyLeftoverBlock(blockBeforeNormal);
 
             if (null != createdRegion)
             {
                 createdRegion.Close();
             }
-            
+
             if (null == normalXObject || !this.ContinueLayout)
             {
                 if (this.Context.Conformance == ParserConformanceMode.Strict)
                     throw new NullReferenceException(
                         "There was no XObject run returned for the layout of the button " + this.Field.UniqueID);
-                
-                this.Context.TraceLog.Add(TraceLevel.Error, "Form Fields", "There was no XObject run returned for the layout of the button "  + this.Field.UniqueID);
+
+                this.Context.TraceLog.Add(TraceLevel.Error, "Form Fields",
+                    "There was no XObject run returned for the layout of the button " + this.Field.UniqueID);
                 return;
             }
-            
+
             var line = normalXObject.Line;
             var location = Point.Empty;
             var pos = normalStyle.CreatePostionOptions(true);
-            
+
             if (pos.DisplayMode == DisplayMode.Inline || pos.DisplayMode == DisplayMode.InlineBlock)
             {
                 //we have closed the positioned block so can now get our y offset again.
@@ -122,7 +134,7 @@ namespace Scryber.PDF.Layout
                 var offsetY = regionForNormal.Height + regionForNormal.OffsetY;
                 location = normalXObject.Location;
                 location.Y += offsetY;
-                
+
             }
 
             var layoutPage = context.DocumentLayout.CurrentPage;
@@ -134,30 +146,63 @@ namespace Scryber.PDF.Layout
                 annots = new PDFAnnotationCollection(PDFArtefactTypes.Annotations);
                 layoutPage.Artefacts.Add(annots);
             }
+
             annots.Register(Field.Widget);
             Field.Widget.SetAppearance(FormFieldAppearanceState.Normal, normalXObject, layoutPage, normalStyle);
 
+
             //Set the states flag so we can make sure we don't overflow onto a new region.
-            
+
             this.IsLayingOutStates = true;
-            
+
             //Down/Over - each only if a matching :hover/:active rule exists, each a fully
             //independent, isolated pass that only starts once the previous one has entirely closed.
-            downXObject = this.RegisterIndependentState(ComponentState.Down, FormFieldAppearanceState.Down, downStyle, normalXObject, layoutPage);
+            downXObject = this.RegisterIndependentState(ComponentState.Down, FormFieldAppearanceState.Down, downStyle,
+                normalXObject, layoutPage);
 
-            overXObject = this.RegisterIndependentState(ComponentState.Over, FormFieldAppearanceState.Over, overStyle, normalXObject, layoutPage);
-            
+            overXObject = this.RegisterIndependentState(ComponentState.Over, FormFieldAppearanceState.Over, overStyle,
+                normalXObject, layoutPage);
+
             //pass the location back to the widget.
-            if(pos.PositionMode == PositionMode.Fixed)
+            if (pos.PositionMode == PositionMode.Fixed)
                 Field.Widget.ContainerOffset = Point.Empty;
             else
             {
                 Field.Widget.ContainerOffset = location;
             }
-            
+
             //And release after (just in case)
             this.IsLayingOutStates = false;
+
+            if (pos.Margins.IsEmpty == false)
+            {
+                var rect = new Rect(
+                    pos.Margins.Left,
+                    pos.Margins.Top,
+                    normalXObject.Width - pos.Margins.Left - pos.Margins.Right,
+                    normalXObject.Height - pos.Margins.Top - pos.Margins.Bottom);
+                //normalXObject.ClipRect = rect;
+            }
+
+            //the baseline offset to be calculated when a line is closed and we align the items.
+            //do this at the end so we get the correct last block, region and run
+            if (outerPos.PositionMode == PositionMode.Static || outerPos.PositionMode == PositionMode.Relative)
+            {
+                if (pos.DisplayMode == DisplayMode.InlineBlock)
+                {
+                    //get the inline block run 
+                    var outerBlock = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
+                    var outerRegion = outerBlock.CurrentRegion;
+                    if (null != outerRegion && null != outerRegion.CurrentItem && (outerRegion.CurrentItem is PDFLayoutLine outerline))
+                    {
+                        var inlineRun = outerline.Runs[outerline.Runs.Count - 1] as PDFLayoutInlineBlockRun;
+                        //if (null != inlineRun)
+                        //    inlineRun.SetOffsetY(baselineOffset);
+                    }
+                }
+            }
             
+
             //put back in any explicit locations.
             this.RestorePositionValues(fullstyle);
         }
@@ -173,10 +218,22 @@ namespace Scryber.PDF.Layout
         private PDFLayoutXObjectRun RegisterIndependentState(ComponentState componentState, FormFieldAppearanceState appearanceState,
             Style stateStyle, PDFLayoutXObjectRun normalXObject, PDFLayoutPage layoutPage)
         {
-            PDFLayoutXObjectRun stateXObject;
+            PDFLayoutXObjectRun stateXObject = null;
             
             if (null != stateStyle)
             {
+                if (stateStyle.Margins.Left != normalXObject.PositionOptions.Margins.Left
+                    || stateStyle.Margins.Top != normalXObject.PositionOptions.Margins.Top
+                    || stateStyle.Margins.Right != normalXObject.PositionOptions.Margins.Right
+                    || stateStyle.Margins.Bottom != normalXObject.PositionOptions.Margins.Bottom)
+                {
+                    this.Context.TraceLog.Add(TraceLevel.Warning, "Form Fields", "Copying margins from normal state to over/down state, as margins must match on buttons for activation rect.");
+                    //copy margins from normal style
+                    stateStyle.Margins.Left = normalXObject.PositionOptions.Margins.Left;
+                    stateStyle.Margins.Top = normalXObject.PositionOptions.Margins.Top;
+                    stateStyle.Margins.Right = normalXObject.PositionOptions.Margins.Right;
+                    stateStyle.Margins.Bottom = normalXObject.PositionOptions.Margins.Bottom;
+                }
 
                 var blockBefore = this.Context.DocumentLayout.CurrentPage.LastOpenBlock();
                 if (null == blockBefore)
@@ -195,10 +252,7 @@ namespace Scryber.PDF.Layout
                     stateXObject = stateEngine.Result;
                 }
             }
-            else
-            {
-                stateXObject = normalXObject;
-            }
+            
 
             //null style, so always outputs xobject
             if (null != stateXObject)

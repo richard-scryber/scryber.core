@@ -58,10 +58,13 @@ namespace Scryber.PDF
         /// </summary>
         protected Dictionary<FormFieldAppearanceState, Styles.Style> _stateStyles = new Dictionary<FormFieldAppearanceState, Styles.Style>();
 
-        protected Drawing.Point _location;
-        protected Drawing.Size _size;
-        protected Layout.PDFLayoutPage _page;
-        protected Styles.Style _style;
+        protected Drawing.Point Location;
+        
+        protected Drawing.Size Size;
+        
+        protected Layout.PDFLayoutPage Page;
+
+        protected Styles.Style Style;
 
         /// <summary>
         /// Whether the reader should regenerate this field's own appearance itself (via the
@@ -101,10 +104,10 @@ namespace Scryber.PDF
         {
             this._states[state] = xObject;
             if (state == FormFieldAppearanceState.Normal)
-                this._style = style;
+                this.Style = style;
             else if (null != stateStyle)
                 this._stateStyles[state] = stateStyle;
-            this._page = page;
+            this.Page = page;
         }
 
         
@@ -133,7 +136,7 @@ namespace Scryber.PDF
             
             PDFObjectRef root = writer.BeginObject();
 
-            var font = this._style.CreateFont();
+            var font = this.Style.CreateFont();
             //GetResource(..., create:true) only works if this exact font was already registered
             //by something else (its create-fallback goes through the never-implemented
             //FontFactory.GetFontDefinition(string) overload) - GetFontResource is the real,
@@ -144,9 +147,9 @@ namespace Scryber.PDF
             //DA is what a reader falls back to whenever it regenerates a field's appearance itself
             //(e.g. after the user edits the value) - without a colour operator here, that
             //regenerated text always comes out default black regardless of the field's CSS colour.
-            if (this._style.IsValueDefined(Styles.StyleKeys.FillColorKey))
+            if (this.Style.IsValueDefined(Styles.StyleKeys.FillColorKey))
             {
-                var color = this._style.Fill.Color;
+                var color = this.Style.Fill.Color;
                 if (color.ColorSpace == ColorSpace.RGB)
                     da += " " + color.Red.ToString() + " " + color.Green.ToString() + " " + color.Blue.ToString() + " rg";
                 else if (color.ColorSpace == ColorSpace.G)
@@ -172,8 +175,8 @@ namespace Scryber.PDF
                 writer.WriteDictionaryNumberEntry("MaxLen", this.MaxLength);
             writer.WriteDictionaryStringEntry("DA", da);
             writer.WriteDictionaryNameEntry("FT", GetFieldTypeName(this.FieldType));
-            if (null != this._page && null != this._page.PageObjectRef)
-                writer.WriteDictionaryObjectRefEntry("P", this._page.PageObjectRef);
+            if (null != this.Page && null != this.Page.PageObjectRef)
+                writer.WriteDictionaryObjectRefEntry("P", this.Page.PageObjectRef);
 
             WriteAction(context, writer);
 
@@ -210,9 +213,9 @@ namespace Scryber.PDF
             writer.BeginDictionary();
 
             
-            if (this._style.IsValueDefined(Styles.StyleKeys.BgColorKey))
+            if (this.Style.IsValueDefined(Styles.StyleKeys.BgColorKey))
             {
-                WriteInputColor(context, writer, "BG", this._style.Background.Color);
+                WriteInputColor(context, writer, "BG", this.Style.Background.Color);
             }
 
             //A pushbutton's visible label comes from /MK /CA (its "caption"), not from /V or
@@ -240,7 +243,7 @@ namespace Scryber.PDF
             
             if (this._states.Count > 0)
             {
-                _location = context.Offset;
+                Location = context.Offset;
                 var bounds = Rect.Empty;
                 
                 if (writeAP)
@@ -252,7 +255,7 @@ namespace Scryber.PDF
                 {
                     xObject = kvp.Value;
                     FormFieldAppearanceState state = kvp.Key;
-                    _location = context.Offset;
+                    Location = context.Offset;
                     var prevXclude = xObject.ChildContainer.ExcludeFromOutput;
                     
                     
@@ -266,14 +269,14 @@ namespace Scryber.PDF
                     {
 
                         Size sz = new Drawing.Size(xObject.Width, xObject.Height);
-                        if (_size == Size.Empty)
-                            _size = sz;
+                        if (Size == Size.Empty)
+                            Size = sz;
                         else
                         {
-                            if (_size.Width < sz.Width)
-                                _size.Width = sz.Width;
-                            if (_size.Height < sz.Height)
-                                _size.Height = sz.Height;
+                            if (Size.Width < sz.Width)
+                                Size.Width = sz.Width;
+                            if (Size.Height < sz.Height)
+                                Size.Height = sz.Height;
                         }
                         if (writeAP)
                         {
@@ -288,7 +291,7 @@ namespace Scryber.PDF
                         //Location exactly - the same values /BBox is written from. Subtracting
                         //margins again here just made /Rect narrower than /BBox, a mismatch
                         //Acrobat renders as a missing/blank appearance (Chrome/Preview tolerated it).
-                        this._location = new Point(xObject.Location.X, xObject.Location.Y);
+                        this.Location = new Point(xObject.Location.X, xObject.Location.Y);
 
                         if (xObject.ClipRect.HasValue)
                         {
@@ -305,22 +308,22 @@ namespace Scryber.PDF
 
                 if (clipRect != null)
                 {
-                    _location.X += bounds.X + clipRect.Value.X;
-                    _location.Y += bounds.Y + clipRect.Value.Y;
-                    _size = clipRect.Value.Size;
+                    Location.X += bounds.X + clipRect.Value.X;
+                    Location.Y += bounds.Y + clipRect.Value.Y;
+                    Size = clipRect.Value.Size;
                 }
                 else
                 {
-                    _location.X += bounds.Location.X;
-                    _location.Y += bounds.Location.Y;
+                    Location.X += bounds.Location.X;
+                    Location.Y += bounds.Location.Y;
                     
                 }
                 
 
-                PDFReal left = context.Graphics.GetXPosition(_location.X);
-                PDFReal top = context.Graphics.GetYPosition(_location.Y);
-                PDFReal right = left + context.Graphics.GetXOffset(_size.Width);
-                PDFReal bottom = top + context.Graphics.GetYOffset(_size.Height);
+                PDFReal left = context.Graphics.GetXPosition(Location.X);
+                PDFReal top = context.Graphics.GetYPosition(Location.Y);
+                PDFReal right = left + context.Graphics.GetXOffset(Size.Width);
+                PDFReal bottom = top + context.Graphics.GetYOffset(Size.Height);
 
                 writer.BeginDictionaryEntry("Rect");
                 writer.WriteArrayRealEntries(true, left.Value, bottom.Value, right.Value, top.Value);
@@ -348,7 +351,7 @@ namespace Scryber.PDF
             var oref = writer.BeginObject();
             writer.BeginStream(oref);
 
-            using (var g = PDFGraphics.Create(writer, false, this._page, DrawingOrigin.TopLeft, size, context))
+            using (var g = PDFGraphics.Create(writer, false, this.Page, DrawingOrigin.TopLeft, size, context))
             {
                 context.Graphics = g;
                 var rect = new Rect(0, 0, size.Width, size.Height);
