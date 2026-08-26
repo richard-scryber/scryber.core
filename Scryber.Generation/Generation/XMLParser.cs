@@ -814,13 +814,30 @@ namespace Scryber.Generation
                         else if (cdef.DefaultElement.ParseType == DeclaredParseType.ArrayElement)
                         {
                             var empty = reader.NodeType == XmlNodeType.Element && reader.IsEmptyElement;
-                            
+
+                            //Capture the child's own identity before parsing it - template-content
+                            //children (e.g. {{#each}}, whose content is captured via
+                            //reader.ReadInnerXml() in ParseTemplateContent) leave the reader
+                            //positioned on whatever follows their own end tag, not on the end tag
+                            //itself, so it can't be identified afterwards by re-reading the
+                            //reader's current position.
+                            string childName = reader.LocalName;
+                            string childNs = reader.NamespaceURI;
+
                             ParserArrayDefinition arry = (ParserArrayDefinition)cdef.DefaultElement;
                             object collection = InitArrayCollection(container, arry);
                             object component = await ParseComponent(reader, false);
 
-                            //Check - if we have parsed inner content and are now not on the end node of the element, then we want to parse the current node, rather than move past it.
-                            if (!empty && reader.NodeType != XmlNodeType.EndElement && reader.LocalName != element)
+                            //If the reader is not sitting on the child's own end tag (matched by
+                            //name AND namespace, not just the outer container's element name -
+                            //comparing against the outer name only broke whenever a template-
+                            //content child was immediately followed by a sibling that happened to
+                            //share the outer container's own tag name, e.g. a <div> immediately
+                            //after {{/each}} inside another <div> - the sibling's start tag was
+                            //mistaken for the child's own end tag and silently skipped), the
+                            //reader has already moved past it - the outer loop needs to process
+                            //whatever it's now on directly, rather than calling Read() again.
+                            if (!empty && !(reader.NodeType == XmlNodeType.EndElement && reader.LocalName == childName && reader.NamespaceURI == childNs))
                                 alreadyMoved = true;
                             
                             if (null != component)

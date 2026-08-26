@@ -1243,11 +1243,105 @@ namespace Scryber.Core.UnitTests.Binding
                     doc.AppendTraceLog = false;
                     doc.SaveAsPDF(output);
                 }
-                
-                
+
+
             }
         }
 
+        // -----------------------------------------------------------------------
+        // {{#each}} content immediately followed by a sibling (no whitespace)
+        // -----------------------------------------------------------------------
+        //
+        // Root cause: {{#each}}...{{/each}} compiles to <hbar:each ...>...</hbar:each>, whose
+        // own content is captured via XmlReader.ReadInnerXml() (ParseTemplateContent in
+        // XMLParser.cs) rather than normal element-by-element parsing - which leaves the reader
+        // positioned on whatever follows </hbar:each>, not on </hbar:each> itself. The caller
+        // (ParseContents' ArrayElement branch) used to detect this by comparing the reader's
+        // current LocalName against the *outer* container's own element name - which broke
+        // specifically when the sibling immediately after {{/each}} happened to share that outer
+        // container's tag name (e.g. a <div> right after {{/each}} inside another <div>): the
+        // sibling's own start tag was mistaken for the each-block's closing tag and silently
+        // skipped by an extra, unneeded reader.Read(). Fixed by comparing against the each-
+        // block's own name/namespace (captured before parsing it), not the outer container's.
+
+        [TestMethod()]
+        public void Each_ImmediatelyFollowedBySameTagSibling_HtmlParser()
+        {
+            var html = "<html><body><div class='wrap'>{{#each model.items}}<p>{{this.name}}</p>{{/each}}<div id='trail'>B</div></div></body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(html));
+            doc.Params["model"] = new { items = new object[] { new { name = "One" } } };
+
+            using (var ms = DocStreams.GetOutputStream("Handlebars_Each_AdjacentSibling_Html.pdf"))
+                doc.SaveAsPDF(ms);
+
+            var trail = doc.FindAComponentById("trail");
+            Assert.IsNotNull(trail, "A <div> immediately after {{/each}} (no whitespace) must still attach to the tree");
+            Assert.IsInstanceOfType(trail, typeof(HTMLDiv));
+        }
+
+        [TestMethod()]
+        public void Each_ImmediatelyFollowedBySameTagSibling_XmlParser()
+        {
+            var src = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+<div class='wrap'>{{#each model.items}}<p>{{this.name}}</p>{{/each}}<div id='trail'>B</div></div>
+</body>
+</html>";
+            using var doc = Document.Parse(new StringReader(src), ParseSourceType.DynamicContent) as Document;
+            Assert.IsNotNull(doc);
+            doc.Params["model"] = new { items = new object[] { new { name = "One" } } };
+
+            using (var ms = DocStreams.GetOutputStream("Handlebars_Each_AdjacentSibling_Xml.pdf"))
+                doc.SaveAsPDF(ms);
+
+            var trail = doc.FindAComponentById("trail");
+            Assert.IsNotNull(trail, "Same fix must apply through the strict XML parser too");
+        }
+
+        [TestMethod()]
+        public void Each_AsLastChild_NoTrailingSibling_StillWorks()
+        {
+            // Regression guard - {{#each}} as the very last child before its container's own
+            // closing tag (the common case used throughout the rest of the test suite) must
+            // keep working exactly as before.
+            var html = "<html><body><div class='wrap' id='wrap'>Before<br/>{{#each model.items}}<p>{{this.name}}</p>{{/each}}</div><span id='after'>After</span></body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(html));
+            doc.Params["model"] = new { items = new object[] { new { name = "One" }, new { name = "Two" } } };
+
+            using (var ms = DocStreams.GetOutputStream("Handlebars_Each_LastChild.pdf"))
+                doc.SaveAsPDF(ms);
+
+            var wrap = doc.FindAComponentById("wrap") as IContainerComponent;
+            Assert.IsNotNull(wrap);
+            Assert.IsTrue(wrap.HasContent);
+
+            var after = doc.FindAComponentById("after");
+            Assert.IsNotNull(after, "The container's own closing tag, and its own following sibling, must still be found correctly");
+        }
+
+        [TestMethod()]
+        public void Each_MultipleAdjacentBlocks_EachFollowedBySameTagSibling()
+        {
+            // Two independent each-blocks in the same document, each immediately followed by a
+            // same-tag sibling - confirms the fix isn't a one-shot/first-occurrence-only patch.
+            var html = "<html><body><div class='wrap'>" +
+                       "{{#each model.a}}<p>{{this.name}}</p>{{/each}}<div id='mid'>Mid</div>" +
+                       "{{#each model.b}}<p>{{this.name}}</p>{{/each}}<div id='trail2'>End</div>" +
+                       "</div></body></html>";
+            var doc = Document.ParseHtmlDocument(new StringReader(html));
+            doc.Params["model"] = new
+            {
+                a = new object[] { new { name = "A1" } },
+                b = new object[] { new { name = "B1" } }
+            };
+
+            using (var ms = DocStreams.GetOutputStream("Handlebars_Each_MultipleAdjacent.pdf"))
+                doc.SaveAsPDF(ms);
+
+            Assert.IsNotNull(doc.FindAComponentById("mid"), "First adjacent sibling should attach");
+            Assert.IsNotNull(doc.FindAComponentById("trail2"), "Second adjacent sibling should attach");
+        }
 
     }
 }
