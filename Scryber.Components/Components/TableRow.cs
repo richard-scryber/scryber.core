@@ -831,6 +831,7 @@ namespace Scryber.Components
         {
             Style style = base.GetBaseStyle();
             style.Overflow.Split = Drawing.OverflowSplit.Never;
+            style.Overflow.Action = OverflowAction.Clip;
             return style;
         }
 

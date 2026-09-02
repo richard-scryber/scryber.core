@@ -2141,5 +2141,55 @@ namespace Scryber.Core.UnitTests.Generation
         #endregion
 
 
+        [TestMethod()]
+        public void ParseHTMLFragmentInCodedDocumnet()
+        {
+            var doc = new Document();
+            var pg = new Page();
+            doc.Pages.Add(pg);
+
+            var above = new Div();
+            pg.Contents.Add(above);
+            above.Contents.Add("Above the dynamic content");
+            
+            var placeholder = new PlaceHolder();
+            pg.Contents.Add(placeholder);
+            
+            var below = new Div();
+            pg.Contents.Add(below);
+            
+            below.Contents.Add("Below the dynamic content");
+
+            //The dynamic content to add
+            var content = "<div class='dynamic'>" +
+                          "<p>A paragraph of text</p>" +
+                          "</div>";
+
+            Component parsed = null;
+            try
+            {
+                //use the ParseHtml method, as happy with non-namespaced, and loose structured content
+                //Ensure the ParseSourceType is Template unless it is full <html> document.
+                parsed =
+                    Document.ParseHtml(string.Empty, new StringReader(content), ParseSourceType.Template) as Component;
+            }
+            catch (Exception ex)
+            {
+                //handle any errors from the contents
+            }
+
+            //check we have valid content, and add it to the placeholder
+            //can also use doc.FindAComponentById("name") rather than keeping a variable
+            if (null != parsed && parsed is Component component)
+                placeholder.Contents.Add(component);
+            
+            //finally output the document
+            using (var ms = DocStreams.GetOutputStream("HTMLFragmentInCodedDocument.pdf"))
+            {
+                doc.SaveAsPDF(ms);
+            }
+
+        }
+
     }
 }

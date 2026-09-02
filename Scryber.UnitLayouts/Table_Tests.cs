@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -2520,11 +2521,85 @@ namespace Scryber.UnitLayouts
             }
         }
 
+
+        //will fill a whole page.
+        private string longContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fermentum eros diam, quis eleifend urna pretium quis. " +
+                                     "Fusce pulvinar lorem tincidunt lacus porttitor dictum. Nullam vel neque dolor. Cras luctus et nisl non tincidunt. " +
+                                     "Praesent consequat nec dui vitae blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. " +
+                                     "Integer placerat, risus eu auctor placerat, purus dui venenatis ante, quis tincidunt libero est non ex. " +
+                                     "Phasellus faucibus blandit imperdiet. Suspendisse placerat facilisis urna sit amet congue. Maecenas id mollis massa. " +
+                                     "Proin venenatis consectetur leo eget mollis.<br/>\n\n" +
+                                     "Cras mi mauris, pretium ut convallis vel, ultrices at nulla. " +
+                                     "Donec venenatis scelerisque metus, non vehicula ipsum varius nec. Vestibulum eu nulla sed orci mattis fermentum iaculis nec elit. " +
+                                     "Donec sit amet nisl purus. Aenean tempus luctus enim, a suscipit massa varius a. " +
+                                     "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. " +
+                                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur fermentum pellentesque neque, a auctor sapien iaculis at. " +
+                                     "Vestibulum vel libero non nulla rutrum porta. Vivamus facilisis egestas metus eget fermentum. " +
+                                     "Vivamus ultricies vestibulum ex, vitae mattis arcu congue eget. Praesent laoreet efficitur rutrum. " +
+                                     "Sed euismod at magna et suscipit. Cras quis venenatis nisi. Suspendisse enim tortor, placerat sed lacinia vulputate, " +
+                                     "fermentum vitae nisl. Vestibulum lacinia orci risus, a mattis ipsum commodo eget.<br/>\n\n" +
+                                     "Morbi malesuada, leo at tristique luctus, neque enim porttitor orci, at pulvinar est quam vitae eros. " +
+                                     "Nulla vitae dolor ligula. Morbi a suscipit urna. Suspendisse sem eros, semper sit amet nibh eget, volutpat hendrerit elit. " +
+                                     "Curabitur et justo justo. In hac habitasse platea dictumst. Mauris pharetra ut sapien sed iaculis. " +
+                                     "Maecenas condimentum eget risus at vestibulum. In hac habitasse platea dictumst. " +
+                                     "Aliquam a odio sed ligula laoreet fringilla id quis arcu. Suspendisse sed arcu ornare, pretium sapien a, consequat risus. " +
+                                     "Sed vitae nisl a quam fringilla dictum. Donec aliquam venenatis elit eget gravida. " +
+                                     "Integer neque ligula, pulvinar in lacus in, accumsan laoreet felis. Integer sodales imperdiet justo non molestie.<br/>\n\n" +
+                                     "Integer vulputate laoreet dolor in euismod. Proin urna quam, pharetra ac mollis ut, laoreet non enim. Suspendisse felis nunc, " +
+                                     "porttitor ac dictum sed, dignissim eu est. Sed ac elit placerat, ultricies eros eu, pharetra justo. " +
+                                     "Nam euismod, nisi nec porta facilisis, risus tortor efficitur sem, vel facilisis neque justo ac arcu. " +
+                                     "Nam non enim ut purus interdum auctor. Proin dui purus, pulvinar suscipit tincidunt ut, facilisis id metus. " +
+                                     "Donec varius augue nec eleifend porta. Mauris hendrerit eleifend urna non consectetur. Nunc sit amet mauris lorem. " +
+                                     "Ut sollicitudin commodo feugiat. Nulla sed enim efficitur, iaculis libero a, egestas elit. Sed in auctor lorem. " +
+                                     "Ut urna augue, consequat id erat ac, faucibus ornare sapien. Sed pharetra placerat purus, ac pharetra turpis vestibulum a. " +
+                                     "Nunc at tellus sed purus volutpat condimentum sed vitae urna.<br/>\n\n" +
+                                     "Mauris nec lobortis lacus. Cras in feugiat nisi, quis blandit leo. Nunc tincidunt, eros id ultricies dignissim, " +
+                                     "enim nisi sodales turpis, rutrum lacinia libero arcu ut massa. Vestibulum fringilla ipsum sed accumsan condimentum. " +
+                                     "Nam ultricies nisl quam, at fermentum dolor porta ac. Proin sed posuere lectus, quis feugiat sem. " +
+                                     "Aenean accumsan eleifend ullamcorper. Suspendisse porttitor elit sit amet sagittis aliquet. Mauris sed semper orci. " +
+                                     "Vivamus sed diam vitae enim vestibulum suscipit ac quis neque. Sed vel tincidunt nisi, sed rutrum lectus. " +
+                                     "Integer eget metus ut est porttitor bibendum nec vitae ligula.\n\nAenean facilisis convallis dui, et fermentum quam pretium vel. " +
+                                     "In diam eros, egestas a tempor quis, pharetra nec ex. Nunc orci augue, egestas ut sem tempus, tempus vehicula ante. " +
+                                     "Aliquam nibh neque, vulputate venenatis pellentesque ut, maximus venenatis orci. " +
+                                     "Nullam efficitur augue nec magna aliquam commodo. Aenean euismod nisi vitae purus iaculis feugiat. " +
+                                     "Pellentesque ornare, urna at molestie dictum, augue nulla egestas mi, non ullamcorper odio purus eget orci. " +
+                                     "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; " +
+                                     "Praesent tristique lorem eu ligula convallis varius. Quisque quis tortor sollicitudin, rhoncus velit nec, dapibus odio. " +
+                                     "Vestibulum quis scelerisque purus. Curabitur posuere, metus ultricies mattis sagittis, metus ante elementum leo, " +
+                                     "sed placerat lacus lectus sit amet nibh. Pellentesque feugiat sapien et ligula aliquam euismod.<br/>\n\n" +
+                                     "Aenean consectetur eros nisl, ut lobortis urna dictum eget. Nam a condimentum nisl, eget tincidunt est. " +
+                                     "Vestibulum suscipit efficitur maximus. Phasellus porttitor ultrices sapien, id molestie magna cursus nec. " +
+                                     "Praesent libero turpis, consequat sed augue vitae, pharetra gravida ante. Donec facilisis arcu non neque blandit, " +
+                                     "sit amet volutpat nunc blandit. Morbi consequat ipsum in dui fermentum molestie. Suspendisse sit amet nisi porta, " +
+                                     "blandit nunc non, pellentesque sem. Nunc rhoncus metus in condimentum facilisis. Pellentesque eget nisi quam. Sed ullamcorper ut orci at vestibulum. Nullam non nulla non ipsum vulputate mollis rhoncus a orci. Nullam sem ipsum, pellentesque id ullamcorper et, gravida lobortis purus.\n\nCras dignissim aliquam elit eget blandit. Nulla auctor viverra nibh, et pharetra mi lacinia quis. Sed ut dignissim tellus, fringilla semper diam. Suspendisse id scelerisque nisl, nec interdum ex. Nulla ac feugiat urna. Fusce velit lorem, convallis in lectus nec, ultricies eleifend neque. Sed vitae urna sem. Maecenas nisl augue, sollicitudin ut lacinia vel, efficitur euismod dolor. Fusce iaculis interdum augue. Donec at nisi non urna placerat varius eget et lectus. Praesent egestas eget risus vel tincidunt.\n\nDuis vel bibendum arcu. Nunc at sem consequat, commodo felis eget, laoreet nibh. Mauris finibus pulvinar mauris quis suscipit. Fusce pretium pellentesque ex. Morbi eu rhoncus neque. Donec aliquet ex imperdiet bibendum imperdiet. Nulla luctus tristique arcu non placerat. Duis a lacus eu urna tempus porttitor quis sed tellus. Suspendisse ultrices risus at massa dictum, eu facilisis dui aliquam. Maecenas elementum accumsan erat, vel lobortis justo molestie ut. Cras ut lorem vitae sapien dictum bibendum a vitae ligula. Suspendisse posuere pharetra lorem quis pretium. Integer at leo ante. Aliquam varius nunc eu felis maximus cursus. Integer tempus orci tincidunt erat consectetur dignissim.\n\nSuspendisse volutpat ligula at porttitor consectetur. In turpis nulla, egestas eu rhoncus quis, vulputate egestas tortor. Vivamus finibus varius malesuada. Duis justo ex, rhoncus eu varius et, commodo non turpis. Fusce ut massa vestibulum, vestibulum justo a, fringilla odio. Donec consectetur varius orci, ac interdum risus convallis non. Nam scelerisque semper pellentesque. Nullam id bibendum nibh. Proin posuere vulputate hendrerit. Sed eleifend sit amet arcu sit amet hendrerit. Vestibulum ullamcorper, nisi maximus pharetra placerat, tellus libero condimentum felis, sit amet imperdiet felis mauris a orci.\n\nSed sit amet sapien ligula. Cras molestie, odio vitae ultrices porttitor, felis ligula condimentum turpis, at porta lectus turpis sit amet lectus. Nulla facilisi. Donec bibendum imperdiet gravida. Nulla facilisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla vel volutpat est, in sodales nulla. Pellentesque sit amet metus tempor, varius erat nec, volutpat lectus. Donec eros nibh, tempus elementum turpis a, accumsan laoreet velit. Nullam massa est, mollis ac sodales vitae, feugiat in tortor. Ut ut accumsan tellus, quis auctor lacus. Etiam magna mauris, mattis iaculis mi sit amet, dignissim pharetra ipsum. Sed eu dui scelerisque, efficitur risus quis, commodo lectus.\n\nPellentesque semper ligula in nisl blandit, vel vulputate erat pretium. Pellentesque eleifend nisl non ex ullamcorper, ut consequat justo finibus. Sed malesuada, enim a tincidunt suscipit, elit nunc faucibus felis, ac dignissim justo risus ut elit. Vestibulum nec varius quam, et maximus ex. Ut mattis augue nisl, eget laoreet leo facilisis vel. Aliquam non euismod ex. Proin luctus bibendum porttitor. Cras eu vestibulum leo, at venenatis lacus. Suspendisse potenti. Donec dignissim lectus vitae massa maximus, non euismod sapien consequat.\n\nSuspendisse congue mattis diam, ut posuere ex iaculis vitae. Donec vel nisi eu massa porttitor sodales ac ut urna. Vivamus turpis turpis, consectetur in tincidunt nec, hendrerit ut turpis. Fusce eu fringilla diam. Nullam luctus fermentum dui vel varius. Fusce non sodales libero, vitae facilisis est. Sed eget porta quam. Vivamus eu vestibulum magna, pretium viverra sem. Aliquam eu tincidunt nunc, eget vulputate dui.\n\nSed viverra commodo nisi, sit amet rhoncus augue. Nunc porttitor gravida ante, eu tempus urna scelerisque eu. Donec quis augue id erat hendrerit egestas. Sed id blandit velit. Etiam sed erat urna. In accumsan aliquam orci vehicula iaculis. Nunc suscipit pretium velit, vitae imperdiet nulla finibus eu. Pellentesque consectetur turpis diam, sit amet dignissim dui feugiat ac. Praesent quis dui ut ex fringilla tristique. Mauris molestie aliquam turpis nec efficitur. Pellentesque imperdiet, massa id commodo pretium, ligula tortor euismod massa, sit amet dapibus urna ligula nec sem. Donec euismod finibus pulvinar.\n\nAliquam a hendrerit urna. Donec in orci consectetur mi feugiat maximus sit amet vel libero. Integer pharetra id tortor vel cursus. Proin dignissim, ligula ac semper feugiat, nulla nisi pretium libero, id tempor turpis tortor vitae ex. Quisque orci tortor, porta et massa eu, vulputate fermentum purus. Donec sed lorem venenatis, ultrices justo ac, dignissim elit. Sed aliquet nisl vel elit cursus, non imperdiet nisl rutrum. Fusce aliquam ex eget nulla varius iaculis. In posuere porta massa quis aliquet. Donec rutrum ligula eros, sit amet sagittis sapien consectetur vel. Morbi sit amet neque nec sapien rutrum iaculis in et turpis. Etiam venenatis imperdiet risus at tempus. Donec et finibus ex. Aliquam nulla enim, ullamcorper sit amet sollicitudin at, vehicula eget metus. Nunc ullamcorper faucibus sapien ac blandit.";
+
         [TestCategory(TestCategoryName)]
         [TestMethod()]
         public void TableOverflowCell()
         {
-            Assert.Inconclusive("Need to add this");
+            var doc = new Document();
+            var page = new Section();
+            doc.Pages.Add(page);
+            page.Style.Font.FontSize = 12;
+            
+            var template = "<table style='width:100%'>" +
+                           "<tr>" +
+                           "<td style='width: 40pt;'>Wide Label</td>" +
+                           "<td style='overflow-y:auto'>" + longContent + "</td>" +
+                           "</tr>" +
+                           "</table>";
+            
+            var parsed = Document.ParseHtml("", new StringReader(template), ParseSourceType.Template) as Component;
+            
+            page.Contents.Add(parsed);
+            
+            using (var ms = DocStreams.GetOutputStream("Tables_OverflowingCell.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            
+            Assert.Inconclusive("To check");
         }
         
         

@@ -115,6 +115,8 @@ namespace Scryber.Core.UnitTests.Imaging
 
         }
         
+        
+        
         [TestMethod()]
         public void LoadPngFromRawData()
         {
