@@ -13,6 +13,7 @@ using Scryber.Expressive.Functions.Statistical;
 using Scryber.Expressive.Functions.Coalesce;
 using Scryber.Expressive.Functions.String;
 using Scryber.Expressive.Functions.CSS;
+using Scryber.Expressive.Functions.Image;
 
 namespace Scryber.Binding
 {
@@ -146,6 +147,9 @@ namespace Scryber.Binding
             _all.Add(new VarFunction());
             _all.Add(new CalcFunction());
             _all.Add(new RGBFunction());
+
+            //image
+            _all.Add(new MetaFunction());
 
             _all.Add(new EvalFunction());
         }

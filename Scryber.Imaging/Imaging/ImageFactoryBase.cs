@@ -222,7 +222,7 @@ namespace Scryber.Imaging
         public static PDFImageDataBase GetImageDataForImage(Image image, string source)
         {
             PDFImageDataBase data;
-            
+
             switch (image)
             {
                 case Image<Argb32> argb32:
@@ -240,6 +240,12 @@ namespace Scryber.Imaging
                 default:
                     throw new NotSupportedException("The image type " + image.GetType().Name + " is not supported");
             }
+
+            //Every format that reaches here has already gone through SixLabors' Image.Load, so
+            //its ExifProfile (if the source file carried one) is already parsed and sitting on
+            //image.Metadata - a single shared hook point for PNG/GIF/TIFF/WebP and JPEG's own
+            //Image.Load fallback path. Silently absent (not an error) when there's no profile.
+            data.ExifMetadata = ImageEXIFExtractor.Extract(image);
 
             return data;
         }

@@ -46,7 +46,8 @@ namespace Scryber.Components
     [PDFRemoteParsableComponent("Document-Ref")]
     [PDFJSConvertor("scryber.studio.design.convertors.pdf_document")]
     public partial class Document : ContainerComponent, IDocument, IPDFViewPortComponent, IRemoteComponent, IStyledComponent,
-                                                      ITemplateParser, IParsedDocument, IControlledComponent, IResourceRequester
+                                                      ITemplateParser, IParsedDocument, IControlledComponent, IResourceRequester,
+                                                      IImageMetadataResolver
     {
         //
         // events
@@ -2865,6 +2866,48 @@ namespace Scryber.Components
                     throw;
             }
         }
+
+        #region IImageMetadataResolver
+
+        /// <summary>
+        /// Backs the meta() expression function - resolves (loading and caching via the same
+        /// path as an &lt;img src="..."&gt; would, so it works whether or not the image is also
+        /// displayed elsewhere in the document) the EXIF metadata for an image by path. Silently
+        /// returns false rather than throwing for a missing file, unsupported format, or an image
+        /// that simply has no EXIF data - meta() failing shouldn't be able to break the rest of
+        /// document generation.
+        /// </summary>
+        bool IImageMetadataResolver.TryGetImageMetadata(string path, out ImageEXIFMap metadata)
+        {
+            metadata = null;
+
+            if (string.IsNullOrEmpty(path))
+                return false;
+
+            try
+            {
+                var xobj = this.LoadImageData(this, path);
+                var imgData = xobj?.ImageData;
+
+                //Path-based loading goes through Document's IResourceRequester/RemoteRequests
+                //machinery (unlike raw-byte loading), which - even with the default Immediate
+                //ExecMode fulfilling it synchronously - wraps the real ImageData in an
+                //ImageDataProxy. ExifMetadata lives on the real, inner image, not the proxy
+                //itself (which never has it set), so it needs one more unwrap.
+                if (imgData is Scryber.Imaging.ImageDataProxy proxy)
+                    imgData = proxy.ImageData;
+
+                metadata = imgData?.ExifMetadata;
+                return null != metadata;
+            }
+            catch (Exception ex)
+            {
+                this.TraceLog.Add(TraceLevel.Warning, "Document", "Could not resolve image metadata for '" + path + "': " + ex.Message);
+                return false;
+            }
+        }
+
+        #endregion
 
 
         //private static readonly Regex whiteSpace = new Regex(@"\s+");

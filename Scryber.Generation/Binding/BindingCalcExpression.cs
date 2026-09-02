@@ -33,9 +33,19 @@ namespace Scryber.Binding
         public void BindComponent(object sender, DataBindEventArgs args)
         {
             if (null == this.ItemValueProvider)
-                this.ItemValueProvider = args.Context.Items.ValueProvider(
+            {
+                var provider = args.Context.Items.ValueProvider(
                     args.Context.CurrentIndex,
                     args.Context.DataStack.HasData ? args.Context.DataStack.Current : null, args.Context.DataStack);
+
+                //Document already implements IImageMetadataResolver - threaded through here (not
+                //referenced directly, Scryber.Expressive can't see Document) so meta() can reach
+                //it via the reserved ImageMetaVars.ResolverVar variable name.
+                if (args.Context.Document is Scryber.Drawing.IImageMetadataResolver resolver)
+                    provider.AddImageMetadataResolver(resolver);
+
+                this.ItemValueProvider = provider;
+            }
 
             object value;
 
@@ -99,6 +109,7 @@ namespace Scryber.Binding
         private DataStack _stack;
         
         private RelativeToAbsoluteDimensionCallback _relativeCallback;
+        private Scryber.Drawing.IImageMetadataResolver _imageMetadataResolver;
 
 
         protected ItemCollection Items { get { return _items; } }
@@ -136,6 +147,11 @@ namespace Scryber.Binding
         public void AddRelativeCallback(RelativeToAbsoluteDimensionCallback callback)
         {
             this._relativeCallback = callback;
+        }
+
+        public void AddImageMetadataResolver(Scryber.Drawing.IImageMetadataResolver resolver)
+        {
+            this._imageMetadataResolver = resolver;
         }
 
         
@@ -185,6 +201,11 @@ namespace Scryber.Binding
             else if (variableName == UnitRelativeVars.RelativeCallbackVar)
             {
                 value = this._relativeCallback;
+                return null != value;
+            }
+            else if (variableName == Scryber.Drawing.ImageMetaVars.ResolverVar)
+            {
+                value = this._imageMetadataResolver;
                 return null != value;
             }
             else if(null != this.Relatives && this.Relatives.TryGetValue(variableName, out value))

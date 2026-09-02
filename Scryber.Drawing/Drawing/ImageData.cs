@@ -78,6 +78,15 @@ namespace Scryber.Drawing
         }
 
         #endregion
+        
+        /// <summary>
+        /// Gets or sets the EXIF Profile Metadata for the image
+        /// </summary>
+        public ImageEXIFMap ExifMetadata 
+        { 
+            get; 
+            set; 
+        }
 
         
         #region public ObjectType Type { get;}

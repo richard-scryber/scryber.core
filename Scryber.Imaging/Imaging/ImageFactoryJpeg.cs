@@ -50,6 +50,7 @@ namespace Scryber.Imaging
                 else
                 {
                     data = new Formatted.PDFImageJpegData(name, headerInfo, rawData);
+                    data.ExifMetadata = TryExtractExif(binary);
                 }
 
                 return data;
@@ -93,6 +94,7 @@ namespace Scryber.Imaging
                 else
                 {
                     data = new Formatted.PDFImageJpegData(path, headerInfo, binary.ToArray());
+                    data.ExifMetadata = TryExtractExif(binary);
                 }
             }
             finally
@@ -177,9 +179,105 @@ namespace Scryber.Imaging
 
         }
 
+        /// <summary>
+        /// Deliberately still a stub - when the very first APP marker identifies as "Exif" (as
+        /// opposed to "JFIF"), ReadJpegHeader returning null here forces the caller to fall
+        /// through to Image.Load, which already picks up EXIF via GetImageDataForImage's own
+        /// hook. TryExtractExif below covers the other case: a JFIF-first file (fast dimension
+        /// path taken, no full decode) that also carries a *later* APP1/Exif segment, which this
+        /// stub never sees since ReadJpegHeader only inspects the first marker.
+        /// </summary>
         private Formatted.PDFImageJpegData.PDFImageJpegMetadata ReadExifHeader(Stream stream, ushort blocklen, long offset)
         {
             return null;
+        }
+
+        private static readonly byte[] ExifIdentifier = { (byte)'E', (byte)'x', (byte)'i', (byte)'f', 0, 0 };
+
+        /// <summary>
+        /// Independently scans the leading marker segments for an APP1/Exif segment, regardless
+        /// of whether the fast JFIF dimension path or the ident check above handled this file -
+        /// so a JFIF-branded JPEG that also carries EXIF (common - many cameras/editors write
+        /// both) doesn't silently lose it just because the fast path took over for dimensions.
+        /// Hands the raw segment bytes straight to SixLabors' ExifProfile(byte[]) constructor,
+        /// which parses the TIFF-structured EXIF data without needing a full image decode.
+        /// </summary>
+        private Scryber.Drawing.ImageEXIFMap TryExtractExif(Stream stream)
+        {
+            if (!stream.CanSeek || !stream.CanRead)
+                return null;
+
+            var pos = stream.Position;
+            try
+            {
+                stream.Position = 0;
+
+                var (soi1, soi2) = stream.ReadDoubleByte();
+                if (soi1 != 0xFF || soi2 != 0xD8)
+                    return null;
+
+                while (stream.Position < stream.Length - 4)
+                {
+                    var (one, two) = stream.ReadDoubleByte();
+                    if (one != 0xFF)
+                        break; //not a marker - stop, we've drifted out of the header region
+
+                    if (two == 0xDA || two == 0xD9)
+                        break; //Start of Scan / End of Image - no more APP markers follow
+
+                    var blocklen = stream.ReadUShort(); //includes the 2 length bytes themselves
+                    var segmentStart = stream.Position;
+
+                    if (two == 0xE1 && blocklen > 2 + ExifIdentifier.Length)
+                    {
+                        var ident = new byte[ExifIdentifier.Length];
+                        if (stream.Read(ident, 0, ident.Length) == ident.Length && IdentifierMatches(ident))
+                        {
+                            var exifLen = blocklen - 2 - ExifIdentifier.Length;
+                            var exifBytes = new byte[exifLen];
+                            var read = stream.Read(exifBytes, 0, exifLen);
+
+                            if (read == exifLen)
+                            {
+                                try
+                                {
+                                    var profile = new SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifProfile(exifBytes);
+                                    return ImageEXIFExtractor.Extract(profile);
+                                }
+                                catch
+                                {
+                                    //Malformed/truncated EXIF segment - not worth failing the
+                                    //whole image load over, just proceed without metadata.
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+
+                    stream.Position = segmentStart + (blocklen - 2);
+                }
+            }
+            catch
+            {
+                //Any stream/parsing issue here should never prevent the image itself loading.
+                return null;
+            }
+            finally
+            {
+                stream.Position = pos;
+            }
+
+            return null;
+        }
+
+        private static bool IdentifierMatches(byte[] ident)
+        {
+            for (int i = 0; i < ExifIdentifier.Length; i++)
+            {
+                if (ident[i] != ExifIdentifier[i])
+                    return false;
+            }
+            return true;
         }
 
         private Formatted.PDFImageJpegData.PDFImageJpegMetadata ReadJFIFHeader(Stream stream, ushort blocklen, long offset)
