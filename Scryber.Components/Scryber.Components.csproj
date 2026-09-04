@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.7.2</PackageVersion>
+    <PackageVersion>9.7.3</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.2
+    <PackageReleaseNotes>9.7.3
+Fixed a display:table container (e.g. a designer-authored figure wrapping an image) silently dropping any loose non table-row/table-cell child from layout, including never registering it as a PDF image resource.
+
+9.7.2
 Fixed :nth-child/:nth-of-type not correctly counting siblings across an IInvisibleContainer wrapper (e.g. {{#each}}-generated content), which previously made every generated item compute itself as an isolated "1 of 1".
 Fixed flex row items requiring a Panel-derived component - non-container children (e.g. bare text nodes) are now wrapped in a new InvisibleFlexContainer so they get a proper block-layout box.
 Fixed an XML/HTML parser bug where an element immediately (no whitespace) after {{/each}} could be silently dropped from the component tree when it shared its outer container's tag name.
@@ -167,12 +170,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.7.2.0</Version>
+    <Version>9.7.3.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.7.2.0</FileVersion>
+    <FileVersion>9.7.3.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
