@@ -701,5 +701,45 @@ namespace Scryber.UnitLayouts
             Assert.IsTrue(text.Contains("Gamma"),
                 "Loose block content directly inside a display:table container must not be dropped from layout");
         }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_Figure_DisplayTable_WrappingImage_IsRegisteredAndRendered()
+        {
+            // The reported real-world bug: a designer-authored <figure style="display:table; width:...">
+            // wrapping a bare <img> (CKEditor's shape for a captioned/sized image). Confirms the image is
+            // not just "not dropped from layout" (covered by the loose-content test above) but actually
+            // gets registered as a real PDF image XObject resource and rendered.
+            const string png1x1 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+            var html = $@"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+  <figure style=""display:table; width:200pt;"">
+    <img src=""data:image/png;base64,{png1x1}"" style=""width:50pt;height:50pt;"" />
+  </figure>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_Figure_DisplayTable_WrappingImage.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+
+            var found = false;
+            foreach (var rsrc in docParsed.SharedResources)
+            {
+                if (rsrc.ResourceType == Scryber.PDF.Resources.PDFResource.XObjectResourceType)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(found, "The image inside the <figure style='display:table'> should be registered as a PDF XObject resource, not silently dropped");
+        }
     }
 }
