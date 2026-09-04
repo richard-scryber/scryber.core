@@ -665,5 +665,41 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(xAlpha, xBeta, 1.0,
                 "Both blocks share the same left edge in normal block flow");
         }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousRow_LooseBlockContent_NotDropped()
+        {
+            // Regression: a plain block-level child (not display:table-row/table-cell) placed
+            // directly inside a display:table container must be wrapped in an anonymous
+            // row+cell by the CSS anonymous-box algorithm, not silently discarded. This is
+            // exactly the shape CKEditor produces for an inline image -
+            // <figure class="image"><img></figure> with ".image { display:table }" and the
+            // img left as a plain display:block child - which was vanishing from layout
+            // entirely (and from the generated PDF's image resources) before this fix.
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body>
+  <div style=""display:table; width:600pt;"">
+    <div>Gamma</div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousRow_LooseBlockContent.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+
+            var text = CollectText(pageRegion);
+            Assert.IsTrue(text.Contains("Gamma"),
+                "Loose block content directly inside a display:table container must not be dropped from layout");
+        }
     }
 }

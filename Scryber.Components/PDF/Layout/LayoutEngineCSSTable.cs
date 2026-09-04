@@ -36,6 +36,12 @@ namespace Scryber.PDF.Layout
             // Walk children with state — if we encounter table-cells that aren't wrapped
             // in a table-row, collect them into an anonymous row (CSS anonymous box algorithm).
             TableRow anonRow = null;
+            // Holds a run of non-row/non-cell children (e.g. a plain <img>) inside anonRow -
+            // these must also be wrapped in an anonymous cell, not discarded, otherwise any
+            // loose content directly inside a display:table element (a CKEditor
+            // <figure class="image"> around a bare <img>, for example) silently vanishes
+            // from layout entirely.
+            TableCell anonRowCell = null;
 
             foreach (var item in ic.Content)
             {
@@ -48,6 +54,7 @@ namespace Scryber.PDF.Layout
                 if (display == DisplayMode.TableRow)
                 {
                     FlushAnonRow(ref anonRow, grid);
+                    anonRowCell = null;
                     grid.Rows.Add(BuildSyntheticRow(comp));
                 }
                 else if (display == DisplayMode.TableCell)
@@ -56,11 +63,20 @@ namespace Scryber.PDF.Layout
                     if (anonRow == null)
                         anonRow = new TableRow();
                     anonRow.Cells.Add(new CSSTableCell(comp, style));
+                    anonRowCell = null; // an explicit cell ends any loose-content run
                 }
                 else
                 {
-                    // Non-table element — flush any pending anonymous row and skip
-                    FlushAnonRow(ref anonRow, grid);
+                    // Non-table element directly inside a display:table container -
+                    // wrap it in an anonymous row + anonymous cell rather than dropping it.
+                    if (anonRow == null)
+                        anonRow = new TableRow();
+                    if (anonRowCell == null)
+                    {
+                        anonRowCell = new AnonymousCell(source);
+                        anonRow.Cells.Add(anonRowCell);
+                    }
+                    anonRowCell.Contents.Add(comp);
                 }
             }
 
@@ -104,7 +120,7 @@ namespace Scryber.PDF.Layout
                 {
                     // Anonymous cell: wrap non-cell content so the table engine can handle it
                     if (anonCell == null)
-                        anonCell = new TableCell();
+                        anonCell = new AnonymousCell(source);
                     anonCell.Contents.Add(cellComp);
                 }
             }
@@ -168,6 +184,41 @@ namespace Scryber.PDF.Layout
             // (padding, border, background, etc.) are visible to the table layout engine.
             public override Style GetAppliedStyle()
                 => _source?.GetAppliedStyle() ?? base.GetAppliedStyle();
+        }
+
+        // -----------------------------------------------------------------------
+        // Anonymous cell — holds loose, non-table-structured children (CSS anonymous
+        // box algorithm) without reparenting them.
+        // -----------------------------------------------------------------------
+
+        /// <summary>
+        /// A synthetic TableCell used to wrap loose content that sits directly inside a
+        /// display:table/table-row element without an explicit table-cell wrapper (e.g. a
+        /// CKEditor "&lt;figure class="image"&gt;&lt;img&gt;&lt;/figure&gt;"). The items added here keep
+        /// their real Parent (the original source container), rather than being reparented
+        /// to this synthetic, never-attached cell - reparenting them would break upward
+        /// lookups such as the resource container used to register image/font artefacts,
+        /// which walk the real component tree, not this layout-only synthetic structure.
+        /// </summary>
+        private sealed class AnonymousCell : TableCell, IContainerComponent
+        {
+            private readonly ComponentList _items;
+
+            public AnonymousCell(Component owner)
+            {
+                _items = new ComponentList(owner, owner.Type);
+            }
+
+            // Base ContainerComponent.HasContent checks its own private backing field (never
+            // set here, since InnerContent is overridden below), so it must be re-implemented
+            // via the interface too - same reasoning as CSSTableCell above.
+            bool IContainerComponent.HasContent => _items.Count > 0;
+
+            ComponentList IContainerComponent.Content => _items;
+
+            public override ComponentList Contents => _items;
+
+            protected override ComponentList InnerContent => _items;
         }
     }
 }
