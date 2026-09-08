@@ -3223,5 +3223,65 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(200.0, gridBlock.TotalBounds.Height.PointsValue, 1.0,
                 "Grid block should expand to the 200pt min-height even though only the row's 50pt content was laid out");
         }
+
+        // ======================================================================
+        // {{#each}} binding — the same class of bug found and fixed in
+        // LayoutEngineCSSTable: a trailing NoOp binding-template marker (the
+        // ForEach component itself, left in the real content collection
+        // alongside its generated items) must not become a spurious extra grid
+        // item/row.
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_CSSParsed_BoundItems_EachHelper()
+        {
+            // Single column so each bound item becomes its own row - makes a stray
+            // item from the trailing ForEach marker trivially visible as an extra row.
+            var html = $@"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style='margin:0; padding:0;'>
+  <div style=""display:grid; grid-template-columns: 1fr; width:600pt; border: 1pt solid #000;"">
+    {{{{#each items}}}}
+    <div style='height:30pt; padding:4pt; border:1pt solid #888;'>{{{{this.name}}}}</div>
+    {{{{/each}}}}
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            var items = new[]
+            {
+                new { name = "First" }, new { name = "Second" }, new { name = "Third" },
+                new { name = "Fourth" }, new { name = "Fifth" }
+            };
+            docParsed.Params["items"] = items;
+
+            using (var ms = DocStreams.GetOutputStream("Grid_CSSParsed_BoundItems_EachHelper.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var gridBlock  = GetGridBlock(pageRegion);
+            Assert.IsNotNull(gridBlock, "Grid block should exist");
+
+            var rows = gridBlock.Columns[0].Contents;
+
+            // 5 bound items, 1 per row (single column). A stray row here means the
+            // trailing ForEach marker was placed as its own grid item.
+            Assert.AreEqual(5, rows.Count,
+                "Grid should have exactly 5 rows for the 5 bound items, with no extra row for the ForEach marker");
+
+            var expected = new[] { "First", "Second", "Third", "Fourth", "Fifth" };
+            for (int i = 0; i < expected.Length; i++)
+            {
+                var rowBlock = rows[i] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock, $"Row {i} block should exist");
+                StringAssert.Contains(CollectText(rowBlock.Columns[0]), expected[i], $"Row {i} text");
+            }
+        }
     }
 }

@@ -891,7 +891,12 @@ namespace Scryber.PDF.Layout
 
         private static bool IsFlexItem(IComponent child)
         {
-            if (!(child is Component c) || !c.Visible)
+            // A {{#each}}/{{#with}}/{{#if}} binding component (ForEach/WithHelper/If/Choose,
+            // all constructed with ObjectTypes.NoOp) is left behind in the real content
+            // collection as a marker sibling alongside the items it generated - it must not
+            // be counted as a spurious extra flex item. Same established check as
+            // Component.CountSiblingContent and ComponentWrappingList.BuildAllItems.
+            if (!(child is Component c) || !c.Visible || c.Type == ObjectTypes.NoOp)
                 return false;
 
             //Whitespace-only text nodes are a normal by-product of formatted HTML source (the
@@ -957,8 +962,34 @@ namespace Scryber.PDF.Layout
 
             var items = new List<(Component comp, int order, int srcIdx)>();
             int src   = 0;
+            AppendFlexItems(container, items, ref src);
+
+            // Stable sort by order value
+            items.Sort((a, b) => a.order != b.order ? a.order.CompareTo(b.order) : a.srcIdx.CompareTo(b.srcIdx));
+
+            var result = new List<Component>(items.Count);
+            foreach (var (comp, _, __) in items)
+                result.Add(comp);
+            return result;
+        }
+
+        // A repeat instance (Scryber.Data.TemplateInstance : ContainerComponent,
+        // IInvisibleContainer) must be recursed into rather than added directly as the flex
+        // item itself - per IInvisibleContainer's own documented contract, its children are
+        // the real items. Adding the wrapper directly (it isn't a Panel, so
+        // EnsureFlexItemContainer would wrap it a second time) would also mean 'order' is
+        // read from the unstyled wrapper instead of the actual repeated element's own style.
+        private void AppendFlexItems(IContainerComponent container, List<(Component comp, int order, int srcIdx)> items, ref int src)
+        {
             foreach (var child in container.Content)
             {
+                if (child is Component c && c.Visible && c.Type != ObjectTypes.NoOp && c is IInvisibleContainer invisible)
+                {
+                    if (invisible.HasContent)
+                        AppendFlexItems(invisible, items, ref src);
+                    continue;
+                }
+
                 if (!IsFlexItem(child)) { src++; continue; }
                 var comp = (Component)child;
                 int order = 0;
@@ -970,14 +1001,6 @@ namespace Scryber.PDF.Layout
                 items.Add((comp, order, src));
                 src++;
             }
-
-            // Stable sort by order value
-            items.Sort((a, b) => a.order != b.order ? a.order.CompareTo(b.order) : a.srcIdx.CompareTo(b.srcIdx));
-
-            var result = new List<Component>(items.Count);
-            foreach (var (comp, _, __) in items)
-                result.Add(comp);
-            return result;
         }
 
         /// <summary>

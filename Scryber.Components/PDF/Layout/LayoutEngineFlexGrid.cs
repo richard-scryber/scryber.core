@@ -758,11 +758,7 @@ namespace Scryber.PDF.Layout
 
             // Collect visible block-level children
             var items = new List<Component>();
-            foreach (var item in ic.Content)
-            {
-                if (item is Component c && c.Visible && c is IContainerComponent)
-                    items.Add(c);
-            }
+            AppendGridItems(ic, items);
 
             if (items.Count == 0)
                 return grid;
@@ -786,6 +782,42 @@ namespace Scryber.PDF.Layout
                 rowTracks.Add(autoRowTrack);
 
             return grid;
+        }
+
+        // Walks ic's children looking for real grid items, mirroring
+        // LayoutEngineCSSTable.AppendRowChildren's own reasoning:
+        //  - A {{#each}}/{{#with}}/{{#if}} binding component (ForEach/WithHelper/If/Choose,
+        //    all constructed with ObjectTypes.NoOp - see Component.CountSiblingContent and
+        //    ComponentWrappingList.BuildAllItems for the same established check elsewhere in
+        //    the codebase) is left behind in the real content collection as a marker sibling
+        //    alongside the items it generated. It must be skipped, not added as a spurious
+        //    extra grid item.
+        //  - A repeat instance (Scryber.Data.TemplateInstance : ContainerComponent,
+        //    IInvisibleContainer) must be recursed into rather than added directly as the
+        //    grid item itself - per IInvisibleContainer's own documented contract, its
+        //    children are the real items. Adding the wrapper directly would not just misplace
+        //    it visually: ResolveGridItemPlacement reads grid-column/grid-row/grid-area from
+        //    the item's OWN applied style, so any explicit placement CSS on the actual
+        //    repeated element would silently be read from the unstyled wrapper instead.
+        private static void AppendGridItems(IContainerComponent ic, List<Component> items)
+        {
+            foreach (var item in ic.Content)
+            {
+                if (!(item is Component c) || !c.Visible || c.Type == ObjectTypes.NoOp)
+                    continue;
+
+                // IInvisibleContainer is checked ahead of IContainerComponent (TemplateInstance
+                // is both) so a repeat instance is recursed into rather than added as one opaque item.
+                if (c is IInvisibleContainer invisible)
+                {
+                    if (invisible.HasContent)
+                        AppendGridItems(invisible, items);
+                }
+                else if (c is IContainerComponent)
+                {
+                    items.Add(c);
+                }
+            }
         }
 
         // -----------------------------------------------------------------------

@@ -3278,5 +3278,55 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(3, flexBlock.Columns.Length,
                 "3 real <div> children should be 3 columns - source indentation must not inflate this");
         }
+
+        // -----------------------------------------------------------------------
+        // {{#each}} binding — same class of bug found in LayoutEngineCSSTable and
+        // LayoutEngineFlexGrid: a trailing NoOp binding-template marker (the ForEach
+        // component itself, left in the real content collection alongside its
+        // generated items) must not become a spurious extra flex item.
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void FlexRow_CSSParsed_BoundItems_EachHelper()
+        {
+            var html = $@"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style='margin:0; padding:0;'>
+  <div style=""display:flex; flex-direction:row; width:600pt;"">
+    {{{{#each items}}}}
+    <div style='padding:4pt; border:1pt solid #888;'>{{{{this.name}}}}</div>
+    {{{{/each}}}}
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            var items = new[]
+            {
+                new { name = "First" }, new { name = "Second" }, new { name = "Third" },
+                new { name = "Fourth" }, new { name = "Fifth" }
+            };
+            docParsed.Params["items"] = items;
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("FlexRow_CSSParsed_BoundItems_EachHelper.pdf"))
+            {
+                docParsed.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout should complete");
+            var flexBlock = FindFlexBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(flexBlock, "Flex block should exist");
+
+            Assert.AreEqual(5, flexBlock.Columns.Length,
+                "Flex row should have exactly 5 columns for the 5 bound items, with no extra column for the ForEach marker");
+
+            var expected = new[] { "First", "Second", "Third", "Fourth", "Fifth" };
+            for (int i = 0; i < expected.Length; i++)
+                StringAssert.Contains(CollectText(flexBlock.Columns[i]), expected[i], $"Column {i} text");
+        }
     }
 }
