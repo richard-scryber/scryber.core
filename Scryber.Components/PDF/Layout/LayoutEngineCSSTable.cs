@@ -43,6 +43,24 @@ namespace Scryber.PDF.Layout
             // from layout entirely.
             TableCell anonRowCell = null;
 
+            AppendRowChildren(ic, source, grid, ref anonRow, ref anonRowCell);
+
+            FlushAnonRow(ref anonRow, grid);
+            return grid;
+        }
+
+        // Walks ic's children looking for table-rows/table-cells to add to grid, exactly as
+        // BuildSyntheticTable's own loop used to do inline - split out so it can recurse into
+        // an IInvisibleContainer child (e.g. a {{#each}}/{{#with}} repeat instance sitting
+        // directly inside a display:table element) and treat *its* children as if they were
+        // direct children of the table, per IInvisibleContainer's own documented contract
+        // ("it's children are laid out directly in the engine as if the components contents
+        // were part of the parent collection"). Without this, a repeated table-row nested one
+        // level inside the repeat component was invisible to the direct-child scan here and
+        // got swallowed whole into an anonymous cell instead - laid out in isolation, with no
+        // shared column widths with the table's other rows.
+        private static void AppendRowChildren(IContainerComponent ic, Component source, TableGrid grid, ref TableRow anonRow, ref TableCell anonRowCell)
+        {
             foreach (var item in ic.Content)
             {
                 if (!(item is Component comp) || !comp.Visible || comp is Whitespace)
@@ -65,6 +83,10 @@ namespace Scryber.PDF.Layout
                     anonRow.Cells.Add(new CSSTableCell(comp, style));
                     anonRowCell = null; // an explicit cell ends any loose-content run
                 }
+                else if (comp is IInvisibleContainer invisible && invisible.HasContent)
+                {
+                    AppendRowChildren(invisible, source, grid, ref anonRow, ref anonRowCell);
+                }
                 else
                 {
                     // Non-table element directly inside a display:table container -
@@ -79,9 +101,6 @@ namespace Scryber.PDF.Layout
                     anonRowCell.Contents.Add(comp);
                 }
             }
-
-            FlushAnonRow(ref anonRow, grid);
-            return grid;
         }
 
         private static void FlushAnonRow(ref TableRow anonRow, TableGrid grid)
@@ -103,6 +122,17 @@ namespace Scryber.PDF.Layout
             // Walk children; any non-table-cell visible content is wrapped in an anonymous cell.
             TableCell anonCell = null;
 
+            AppendCellChildren(ic, source, row, ref anonCell);
+
+            FlushAnonCell(ref anonCell, row);
+            return row;
+        }
+
+        // Mirrors AppendRowChildren's own reasoning, one level down: a table-cell nested one
+        // level inside an IInvisibleContainer child of a table-row (e.g. a {{#with}} around a
+        // single cell) is treated as if it were a direct child of the row.
+        private static void AppendCellChildren(IContainerComponent ic, Component source, TableRow row, ref TableCell anonCell)
+        {
             foreach (var item in ic.Content)
             {
                 if (!(item is Component cellComp) || !cellComp.Visible || cellComp is Whitespace)
@@ -116,6 +146,10 @@ namespace Scryber.PDF.Layout
                     FlushAnonCell(ref anonCell, row);
                     row.Cells.Add(new CSSTableCell(cellComp, style));
                 }
+                else if (cellComp is IInvisibleContainer invisible && invisible.HasContent)
+                {
+                    AppendCellChildren(invisible, source, row, ref anonCell);
+                }
                 else
                 {
                     // Anonymous cell: wrap non-cell content so the table engine can handle it
@@ -124,9 +158,6 @@ namespace Scryber.PDF.Layout
                     anonCell.Contents.Add(cellComp);
                 }
             }
-
-            FlushAnonCell(ref anonCell, row);
-            return row;
         }
 
         private static void FlushAnonCell(ref TableCell anonCell, TableRow row)

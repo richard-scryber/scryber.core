@@ -24,6 +24,19 @@ namespace Scryber.UnitLayouts
             _layout = args.Context.GetLayout<PDFLayoutDocument>();
         }
 
+        /// <summary>
+        /// A bare stand-in for what a {{#each}}/{{#with}} repeat instance compiles to
+        /// (Scryber.Data.TemplateInstance : ContainerComponent, IInvisibleContainer) -
+        /// deliberately just a ContainerComponent, not also a Panel/IPDFViewPortComponent
+        /// (unlike InvisibleFlexContainer, which is a Panel and takes a different layout
+        /// dispatch path per its own doc comment), so it matches the real shape of the
+        /// reported bug rather than a different existing use of the same interface.
+        /// </summary>
+        private class TestInvisibleContainer : ContainerComponent, IInvisibleContainer
+        {
+            public TestInvisibleContainer() : base(ObjectTypes.Template) { }
+        }
+
         // -----------------------------------------------------------------------
         // Helpers
         // -----------------------------------------------------------------------
@@ -740,6 +753,77 @@ namespace Scryber.UnitLayouts
                 }
             }
             Assert.IsTrue(found, "The image inside the <figure style='display:table'> should be registered as a PDF XObject resource, not silently dropped");
+        }
+
+        // -----------------------------------------------------------------------
+        // A table-row nested one level inside an IInvisibleContainer (the shape a
+        // {{#each}}/{{#with}} repeat instance produces around its own children -
+        // per IInvisibleContainer's own contract, its children should be laid out
+        // as if they were direct children of the table).
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_RowNestedInInvisibleContainer_JoinsSharedColumnGrid()
+        {
+            var doc   = CreateDoc(out var pg);
+            var table = CreateCSSTable(pg);
+
+            // Header row - a direct child of the table, as normal.
+            var headerRow = AddRow(table);
+            AddCell(headerRow, height: 40, label: "SKU");
+            AddCell(headerRow, height: 40, label: "Note");
+
+            // Data row wrapped in an IInvisibleContainer, standing in for a
+            // {{#each}}/{{#with}} repeat instance sitting directly inside the
+            // display:table container - the row itself is one level deeper than
+            // a direct child of the table.
+            var wrapper = new TestInvisibleContainer();
+            table.Contents.Add(wrapper);
+
+            var dataRow = new Panel();
+            dataRow.Style.Position.DisplayMode = DisplayMode.TableRow;
+            ((IContainerComponent)wrapper).Content.Add(dataRow);
+            AddCell(dataRow, height: 40, label: "One");
+            AddCell(dataRow, height: 40, label: "static note");
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_RowNestedInInvisibleContainer.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout);
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+
+            var tableRegion = tableBlock.Columns[0];
+            Assert.AreEqual(2, tableRegion.Contents.Count, "The table should have two row blocks - the wrapper must not swallow the nested row into a single anonymous cell");
+
+            var headerRowBlock = tableRegion.Contents[0] as PDFLayoutBlock;
+            var dataRowBlock   = tableRegion.Contents[1] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRowBlock, "Header row block should exist");
+            Assert.IsNotNull(dataRowBlock, "Data row block (nested in the invisible container) should exist");
+
+            // Without the fix, the nested row is swallowed whole into one anonymous
+            // cell, so this would be 1, not 2.
+            Assert.AreEqual(2, dataRowBlock.Columns.Length, "The nested row should still produce 2 real cells, not get collapsed into a single anonymous cell");
+
+            // Both rows are part of the same shared column grid, so corresponding
+            // columns should line up with the same width and x-position.
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(headerRowBlock.Columns[i].TotalBounds.Width.PointsValue,
+                    dataRowBlock.Columns[i].TotalBounds.Width.PointsValue, 1.0,
+                    $"Column {i} should have the same width in both rows");
+                Assert.AreEqual(headerRowBlock.Columns[i].TotalBounds.X.PointsValue,
+                    dataRowBlock.Columns[i].TotalBounds.X.PointsValue, 1.0,
+                    $"Column {i} should start at the same x-position in both rows");
+            }
+
+            StringAssert.Contains(CollectText(dataRowBlock.Columns[0]), "One", "Cell 0 text");
+            StringAssert.Contains(CollectText(dataRowBlock.Columns[1]), "static note", "Cell 1 text");
         }
     }
 }
