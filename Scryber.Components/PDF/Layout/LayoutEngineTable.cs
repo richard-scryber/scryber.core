@@ -2084,6 +2084,47 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        // -----------------------------------------------------------------------
+        // Shared by LayoutEngineCSSTable and LayoutEngineFlexGrid - both wrap loose
+        // content into a TableCell-derived container (AnonymousCell / GridCell
+        // respectively) as that content's sole contents. A display:inline-block child
+        // - authored instead of the correct display:table-cell for a CSS table, or
+        // simply as an ordinary grid item's own display value - currently renders with
+        // its content missing once placed as the sole content of a TableCell-derived
+        // container. Being the ONLY content there, inline vs block makes no visual
+        // difference, so rather than leave it silently blank we're lenient and flip it
+        // to block, which those containers render correctly.
+        //
+        // GetAppliedStyle() lazily computes and caches its result (Component.
+        // _appliedStyle) - setting the component's own local .Style property after
+        // that cache is already populated (as it will be by the time either engine's
+        // synthetic-structure building runs, well after the earlier Style Resolution
+        // pipeline stage) has no effect on what later reads of GetAppliedStyle()
+        // return. So instead of setting comp.Style, this overrides the display value
+        // directly on the SAME cached Style instance the caller already retrieved via
+        // GetAppliedStyle().
+        //
+        // StyleBase.SetValue(key, value) itself does NOT invalidate StyleFull's own
+        // secondary caches (_pos/_text/_pgsize/_borders, populated the first time
+        // something calls DoCreatePositionOptions/DoCreateTextOptions/etc. on this
+        // exact instance) - it only mutates/adds the raw StyleValue entry. If position
+        // options for this component had already been requested by anything earlier in
+        // the pipeline (a width/measurement pre-pass, for instance), a stale
+        // PDFPositionOptions with the old InlineBlock-derived DisplayMode would
+        // otherwise survive this override untouched. StyleFull.ClearFullRefs() is the
+        // public reset for exactly those caches, so it's called unconditionally after
+        // the raw value is set - a no-op if nothing had cached yet (confirmed the
+        // common case: Component.GetAppliedStyle() normally returns a plain,
+        // uncached Style, not a StyleFull - StyleFull is built later, by the
+        // StyleStack, during actual layout), but correctness-critical if something had.
+        protected static void NormalizeLooseInlineBlockDisplay(Style appliedStyle, DisplayMode display)
+        {
+            if (display == DisplayMode.InlineBlock)
+            {
+                appliedStyle.SetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                (appliedStyle as StyleFull)?.ClearFullRefs();
+            }
+        }
 
     }
 }

@@ -91,6 +91,7 @@ namespace Scryber.PDF.Layout
                 {
                     // Non-table element directly inside a display:table container -
                     // wrap it in an anonymous row + anonymous cell rather than dropping it.
+                    NormalizeLooseInlineBlockDisplay(style, display);
                     if (anonRow == null)
                         anonRow = new TableRow();
                     if (anonRowCell == null)
@@ -129,6 +130,10 @@ namespace Scryber.PDF.Layout
                 anonRow = null;
             }
         }
+
+        // NormalizeLooseInlineBlockDisplay (used just above, twice) is defined on the shared
+        // LayoutEngineTable base - see its doc comment there for the full reasoning
+        // (LayoutEngineFlexGrid's GridCell needs the exact same leniency).
 
         private static bool IsEmptyCellContent(TableCell cell)
         {
@@ -188,6 +193,7 @@ namespace Scryber.PDF.Layout
                 else
                 {
                     // Anonymous cell: wrap non-cell content so the table engine can handle it
+                    NormalizeLooseInlineBlockDisplay(style, display);
                     if (anonCell == null)
                         anonCell = new AnonymousCell(source);
                     anonCell.Contents.Add(cellComp);

@@ -995,5 +995,105 @@ namespace Scryber.UnitLayouts
                 StringAssert.Contains(CollectText(rowBlock.Columns[2]), expectedRows[i].Item3, $"Bound row {i} second child cell");
             }
         }
+
+        // -----------------------------------------------------------------------
+        // display's CSS3 two-value support must not disturb an existing single-
+        // keyword value (including a hyphenated one like table-cell) when it's
+        // followed by further declarations in the same style attribute - the
+        // parser must stop reading additional "display" tokens at the ';'
+        // boundary rather than accidentally consuming the next property's name.
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_SingleKeywordDisplay_FollowedByOtherDeclarations_StillParsesAndApplies()
+        {
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style='padding:20pt'>
+  <div style=""display:table; border: solid 2px green;"">
+    <div style=""display:table-row;"">
+        <div style='display:table-cell; padding:6pt; border: solid 1px blue;'>Alpha</div>
+        <div style='display:table-cell; padding:6pt; border: solid 1px red;'>Beta</div>
+    </div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_SingleKeywordDisplay_FollowedByOtherDeclarations.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "display:table-cell (followed by padding/border) should still be recognised and produce a table cell");
+
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(rowBlock, "Row block should exist");
+            Assert.AreEqual(2, rowBlock.Columns.Length, "Two table-cells should still produce 2 columns");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Alpha", "Cell 0 text");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Beta", "Cell 1 text");
+
+            // padding:6pt after display: in the same declaration must still have been parsed -
+            // if the display parser had over-consumed into the next token, the cell would
+            // collapse to its unpadded content width instead.
+            var cell0Width = rowBlock.Columns[0].TotalBounds.Width.PointsValue;
+            Assert.IsTrue(cell0Width > 20, "Cell 0 should be wider than its bare text - padding declared after display must still apply");
+        }
+
+        // -----------------------------------------------------------------------
+        // Loose display:inline-block content sitting directly inside a display:table-row
+        // (i.e. authored instead of the correct display:table-cell) - currently renders
+        // with the anonymous cell's content missing entirely. Reproduction first.
+        // -----------------------------------------------------------------------
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_InlineBlockLooseInTableRow_TreatedAsBlock()
+        {
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style='padding:20pt'>
+  <div style=""display:table; border: solid 2px green;"">
+    <div style=""display:table-row;"">
+        <div style='display:table-cell; padding:6pt; border: solid 1px blue;'>Alpha</div>
+        <div style='display:inline-block; width:80pt; padding:6pt; border: solid 1px red;'>Beta</div>
+    </div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_InlineBlockLooseInTableRow_TreatedAsBlock.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+
+            var rowBlock = tableBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(rowBlock, "Row block should exist");
+            Assert.AreEqual(2, rowBlock.Columns.Length,
+                "The table-cell and the loose inline-block sibling should still produce 2 columns");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Alpha", "Cell 0 (real table-cell) text");
+
+            // Authored instead of display:table-cell - being the only content in an anonymous
+            // cell, whether it's inline or block makes no visual difference, so we're lenient
+            // and treat it as block rather than leaving it silently blank.
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Beta",
+                "Cell 1 (loose inline-block, treated leniently as block) text should render");
+        }
     }
 }

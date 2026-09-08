@@ -3283,5 +3283,46 @@ namespace Scryber.UnitLayouts
                 StringAssert.Contains(CollectText(rowBlock.Columns[0]), expected[i], $"Row {i} text");
             }
         }
+
+        // ======================================================================
+        // display:inline-block grid item - GridCell : TableCell wraps the item's
+        // content the same way LayoutEngineCSSTable's AnonymousCell does, so it's
+        // worth checking whether it hits the same "content goes missing" issue.
+        // ======================================================================
+
+        [TestCategory(TestCategory), TestMethod()]
+        public void Grid_InlineBlockItem_TreatedAsBlock()
+        {
+            var html = @"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<body style='margin:0; padding:0;'>
+  <div style=""display:grid; grid-template-columns: 1fr 1fr; width:600pt; border: 1pt solid #000;"">
+    <div style='display:inline-block; padding:6pt; border:1pt solid #888;'>Alpha</div>
+    <div style='padding:6pt; border:1pt solid #888;'>Beta</div>
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            PDFLayoutDocument layout = null;
+            using (var ms = DocStreams.GetOutputStream("Grid_InlineBlockItem_TreatedAsBlock.pdf"))
+            {
+                docParsed.LayoutComplete += (s, e) => layout = e.Context.GetLayout<PDFLayoutDocument>();
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "Layout should complete");
+            var gridBlock = GetGridBlock(layout.AllPages[0].ContentBlock.Columns[0]);
+            Assert.IsNotNull(gridBlock, "Grid block should exist");
+
+            var rowBlock = GetRowBlock(gridBlock, 0);
+            Assert.IsNotNull(rowBlock, "Row block should exist");
+            Assert.AreEqual(2, rowBlock.Columns.Length, "2 items should produce 2 columns");
+
+            StringAssert.Contains(CollectText(rowBlock.Columns[0]), "Alpha",
+                "Grid item authored with display:inline-block should still render its text");
+            StringAssert.Contains(CollectText(rowBlock.Columns[1]), "Beta", "Plain grid item text");
+        }
     }
 }

@@ -815,6 +815,15 @@ namespace Scryber.PDF.Layout
                 }
                 else if (c is IContainerComponent)
                 {
+                    // GridCell : TableCell wraps this item as its sole content the same way
+                    // LayoutEngineCSSTable's AnonymousCell does - display:inline-block (however
+                    // it was authored, not just as a mistaken table-cell stand-in) needs the
+                    // same leniency. See NormalizeLooseInlineBlockDisplay's doc comment on the
+                    // shared LayoutEngineTable base.
+                    var itemStyle = c.GetAppliedStyle();
+                    var itemDisplay = itemStyle.GetValue(StyleKeys.PositionDisplayKey, DisplayMode.Block);
+                    NormalizeLooseInlineBlockDisplay(itemStyle, itemDisplay);
+
                     items.Add(c);
                 }
             }
