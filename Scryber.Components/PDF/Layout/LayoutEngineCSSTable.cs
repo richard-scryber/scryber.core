@@ -63,7 +63,7 @@ namespace Scryber.PDF.Layout
         {
             foreach (var item in ic.Content)
             {
-                if (!(item is Component comp) || !comp.Visible || comp is Whitespace)
+                if (!(item is Component comp) || !comp.Visible || comp is Whitespace  || comp is BindingTemplateComponent)
                     continue;
 
                 var style   = comp.GetAppliedStyle();
@@ -107,9 +107,44 @@ namespace Scryber.PDF.Layout
         {
             if (anonRow != null && anonRow.Cells.Count > 0)
             {
+                if (anonRow.Cells.Count == 1)
+                {
+                    var cell = anonRow.Cells[0];
+                    if (cell.Contents.Count == 0 || IsEmptyCellContent(cell))
+                    {
+                        //our anonRow only contains an invisible container, whitespace or is empty
+                        anonRow = null;
+                        return;
+                    }
+                }
+                else //we have more than one cell, let's check the last one and remove if 'empty'
+                {
+                    var cell = anonRow.Cells[anonRow.Cells.Count - 1];
+                    if (cell.Contents.Count == 0 || IsEmptyCellContent(cell))
+                        anonRow.Cells.Remove(cell);
+                    //leave it in as the row should be added.
+                }
+
                 grid.Rows.Add(anonRow);
                 anonRow = null;
             }
+        }
+
+        private static bool IsEmptyCellContent(TableCell cell)
+        {
+            if (cell.Contents.Count == 0)
+                return true;
+            else if (cell.Contents.Count == 1)
+            {
+                var content = cell.Contents[0];
+                if(content is Whitespace)
+                    return true;
+                else if(content is IInvisibleContainer)
+                    return true;
+                else if(content is BindingTemplateComponent)
+                    return true;
+            }
+            return false;
         }
 
         private static TableRow BuildSyntheticRow(Component source)
@@ -135,7 +170,7 @@ namespace Scryber.PDF.Layout
         {
             foreach (var item in ic.Content)
             {
-                if (!(item is Component cellComp) || !cellComp.Visible || cellComp is Whitespace)
+                if (!(item is Component cellComp) || !cellComp.Visible || cellComp is Whitespace || cellComp is BindingTemplateComponent)
                     continue;
 
                 var style   = cellComp.GetAppliedStyle();

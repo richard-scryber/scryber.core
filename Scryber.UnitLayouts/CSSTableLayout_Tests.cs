@@ -825,5 +825,175 @@ namespace Scryber.UnitLayouts
             StringAssert.Contains(CollectText(dataRowBlock.Columns[0]), "One", "Cell 0 text");
             StringAssert.Contains(CollectText(dataRowBlock.Columns[1]), "static note", "Cell 1 text");
         }
+        
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousTable_CSSParsed_BoundRows()
+        {
+            // Binding test for the display:table with a header row and multiple item rows
+            var html = $@"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+    <style>
+        .td {{ border: solid 1px blue;  }}
+    </style>
+</head>
+<body style='padding:20pt'>
+  <div style=""display:table; border: solid 2px green; margin-bottom: 5pt"">
+    <div style=""display:table-row; padding:4pt;"">
+        <div style='display:table-cell;' >Head 1</div>
+        <div style='display:table-cell;' >Head 2</div>
+    </div>
+    {{{{#each items}}}}
+    <div style=""display:table-row; padding:4pt;"">
+        <div class='td' style='display:table-cell;' >{{{{this.name}}}}</div>
+        <div class='td' style='display:table-cell;' >{{{{this.value}}}}</div>
+    </div>
+    {{{{/each}}}}
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            var items = new [] {
+                new { name = "First", value = "1" },
+                new { name = "Second", value = "2" },
+                new { name = "Third", value = "3" },
+                new { name = "Fourth", value = "4" },
+                new { name = "Fifth", value = "5" }
+            };
+
+            docParsed.Params["items"] = items;
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousTable_CSSParsed_BoundRows.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+
+            var tableRegion = tableBlock.Columns[0];
+
+            // 1 header row + 5 bound item rows. If the trailing ForEach binding-template
+            // marker isn't skipped, it shows up here as a 7th, spurious empty row.
+            Assert.AreEqual(6, tableRegion.Contents.Count,
+                "Table should have 1 header row + 5 bound item rows, and no extra row for the ForEach marker");
+
+            var headerRow = tableRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist");
+            Assert.AreEqual(2, headerRow.Columns.Length, "Header row should have 2 cells");
+            StringAssert.Contains(CollectText(headerRow.Columns[0]), "Head 1", "Header cell 0 text");
+            StringAssert.Contains(CollectText(headerRow.Columns[1]), "Head 2", "Header cell 1 text");
+
+            var expectedRows = new[]
+            {
+                ("First", "1"), ("Second", "2"), ("Third", "3"), ("Fourth", "4"), ("Fifth", "5")
+            };
+
+            for (int i = 0; i < expectedRows.Length; i++)
+            {
+                var rowBlock = tableRegion.Contents[i + 1] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock, $"Bound row {i} block should exist");
+                Assert.AreEqual(2, rowBlock.Columns.Length,
+                    $"Bound row {i} should have exactly 2 cells, not an extra empty cell from the ForEach marker");
+                StringAssert.Contains(CollectText(rowBlock.Columns[0]), expectedRows[i].Item1, $"Bound row {i} name cell");
+                StringAssert.Contains(CollectText(rowBlock.Columns[1]), expectedRows[i].Item2, $"Bound row {i} value cell");
+            }
+        }
+
+        [TestCategory(TestCategory)]
+        [TestMethod()]
+        public void CSSTable_AnonymousTable_CSSParsed_BoundRowsAndCells()
+        {
+            // Binding test for the display:table with a header row and multiple item rows
+            var html = $@"<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+    <style>
+        .td {{ border: solid 1px blue;  }}
+    </style>
+</head>
+<body style='padding:20pt'>
+  <div style=""display:table; border: solid 2px green; margin-bottom: 5pt"">
+    <div style=""display:table-row; padding:4pt;"">
+        <div style='display:table-cell;' >Head 1</div>
+        <div style='display:table-cell;' >Head Child 1</div>
+        <div style='display:table-cell;' >Head Child 2</div>
+    </div>
+    {{{{#each items}}}}
+    <div style=""display:table-row; padding:4pt;"">
+        <div class='td' style='display:table-cell;' >{{{{this.outerName}}}}</div>
+        {{{{#each children}}}}
+        <div class='td' style='display:table-cell;' >{{{{this.innername}}}}</div>
+        {{{{/each}}}}
+    </div>
+    {{{{/each}}}}
+  </div>
+</body>
+</html>";
+
+            using var docParsed = Document.ParseDocument(new System.IO.StringReader(html),
+                Scryber.ParseSourceType.DynamicContent);
+
+            var items = new [] {
+                new { outerName = "First", children = new [] { new {innername = "First Child 1"}, new {innername = "Second Child 1"} } },
+                new { outerName = "Second", children = new [] { new {innername = "First Child 2"}, new {innername = "Second Child 2"} }},
+                new { outerName = "Third", children = new [] { new {innername = "First Child 3"}, new {innername = "Second Child 3"} } },
+                new { outerName = "Fourth", children = new [] { new {innername = "First Child 4"}, new {innername = "Second Child 4"} } },
+                new { outerName = "Fifth", children = new [] { new {innername = "First Child 5"}, new {innername = "Second Child 5"} } }
+            };
+
+            docParsed.Params["items"] = items;
+
+            using (var ms = DocStreams.GetOutputStream("CSSTable_AnonymousTable_CSSParsed_BoundRowsAndCells.pdf"))
+            {
+                docParsed.LayoutComplete += Doc_LayoutComplete;
+                docParsed.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(_layout, "Layout should complete");
+            var pageRegion = _layout.AllPages[0].ContentBlock.Columns[0];
+            var tableBlock = GetTableBlock(pageRegion);
+            Assert.IsNotNull(tableBlock, "Table block should exist");
+
+            var tableRegion = tableBlock.Columns[0];
+
+            // 1 header row + 5 bound item rows. If the trailing ForEach binding-template
+            // marker (outer OR inner) isn't skipped, it shows up as a spurious row and/or
+            // a spurious 4th cell on each bound row.
+            Assert.AreEqual(6, tableRegion.Contents.Count,
+                "Table should have 1 header row + 5 bound item rows, and no extra row for the outer ForEach marker");
+
+            var headerRow = tableRegion.Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(headerRow, "Header row block should exist");
+            Assert.AreEqual(3, headerRow.Columns.Length, "Header row should have 3 cells");
+            StringAssert.Contains(CollectText(headerRow.Columns[0]), "Head 1", "Header cell 0 text");
+            StringAssert.Contains(CollectText(headerRow.Columns[1]), "Head Child 1", "Header cell 1 text");
+            StringAssert.Contains(CollectText(headerRow.Columns[2]), "Head Child 2", "Header cell 2 text");
+
+            var expectedRows = new[]
+            {
+                ("First",  "First Child 1",  "Second Child 1"),
+                ("Second", "First Child 2",  "Second Child 2"),
+                ("Third",  "First Child 3",  "Second Child 3"),
+                ("Fourth", "First Child 4",  "Second Child 4"),
+                ("Fifth",  "First Child 5",  "Second Child 5"),
+            };
+
+            for (int i = 0; i < expectedRows.Length; i++)
+            {
+                var rowBlock = tableRegion.Contents[i + 1] as PDFLayoutBlock;
+                Assert.IsNotNull(rowBlock, $"Bound row {i} block should exist");
+                Assert.AreEqual(3, rowBlock.Columns.Length,
+                    $"Bound row {i} should have exactly 3 cells (outerName + 2 children), not an extra empty cell from the inner ForEach marker");
+                StringAssert.Contains(CollectText(rowBlock.Columns[0]), expectedRows[i].Item1, $"Bound row {i} outerName cell");
+                StringAssert.Contains(CollectText(rowBlock.Columns[1]), expectedRows[i].Item2, $"Bound row {i} first child cell");
+                StringAssert.Contains(CollectText(rowBlock.Columns[2]), expectedRows[i].Item3, $"Bound row {i} second child cell");
+            }
+        }
     }
 }
