@@ -190,6 +190,200 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
 
         #endregion
 
+        #region Display Parser — CSS3 two-value syntax ("<display-outside> <display-inside>")
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlow_SetsInline()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flow");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Inline, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlow_SetsBlock()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flow");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlowRoot_SetsInlineBlock()
+        {
+            // The CSS3 two-value equivalent of the legacy single keyword "inline-block".
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flow-root");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.InlineBlock, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlowRoot_SetsBlock()
+        {
+            // No distinct "establishes a new block formatting context" mode - nearest
+            // supported equivalent is plain Block.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flow-root");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Block, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockFlex_SetsFlexBox()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineFlex_SetsFlexBox()
+        {
+            // Strict CSS3 equivalent is "inline-flex", which we don't model as a distinct
+            // mode - resolves leniently to the same FlexBox mode as "block flex".
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline flex");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockGrid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineGrid_SetsFlexGrid()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline grid");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexGrid, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_BlockTable_SetsTable()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block table");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_InlineTable_SetsTable()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline table");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.Table, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_CaseInsensitive_ParsesCorrectly()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "BLOCK FLEX");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.FlexBox, style.Position.DisplayMode);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_UnrecognisedPairing_ReturnsFalse()
+        {
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "block table-cell");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_TwoValue_ReversedOrder_ReturnsFalse()
+        {
+            // Only the spec's own "<display-outside> <display-inside>" order is recognised.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "flex block");
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void Display_InlineBlock_FollowedByOtherDeclaration_StillSetsInlineBlock()
+        {
+            // Reader boundary check: a hyphenated single-keyword value like "inline-block"
+            // followed by another declaration in the same style attribute must not be
+            // affected by the two-value lookahead - the second ReadNextValue() call has to
+            // stop at the ';' rather than trying to pull "width" in as a second display word.
+            var parser = new CSSDisplayParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "inline-block; width:80pt");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(DisplayMode.InlineBlock, style.Position.DisplayMode);
+        }
+
+        #endregion
+
         #region Opacity Parser Tests
 
         [TestMethod()]
