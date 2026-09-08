@@ -14,6 +14,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
       <PackageReference Include="Microsoft.Extensions.Logging" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+      <PackageReference Include="Scryber.Core.OpenType" />
     </ItemGroup>
 
     <ItemGroup>
