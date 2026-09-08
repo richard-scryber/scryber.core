@@ -191,6 +191,9 @@ namespace Scryber.Styles.Parsing
                     result = Color.TryParse(part, out color);
                 else if (part.StartsWith("rgba(", StringComparison.InvariantCultureIgnoreCase))
                     result = Color.TryParseRGBA(part, out color, out opacity);
+                else if (part.StartsWith("hsl(", StringComparison.InvariantCultureIgnoreCase) ||
+                         part.StartsWith("hsla(", StringComparison.InvariantCultureIgnoreCase))
+                    result = Color.TryParseHSL(part, out color, out opacity);
             }
             return result;
         }

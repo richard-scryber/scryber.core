@@ -103,6 +103,33 @@ namespace Scryber.Core.UnitTests.Html.CSSParsers
         [TestMethod()]
         [TestCategory("CSS")]
         [TestCategory("CSS-Parsers")]
+        public void BackgroundColor_HslColor_SetsColor()
+        {
+            var parser = new CSSBackgroundColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "hsl(0, 100%, 50%)");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(255, 0, 0), style.Background.Color);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
+        public void BackgroundColor_HslaColor_SetsColorAndOpacity()
+        {
+            var parser = new CSSBackgroundColorParser();
+            var style = CreateStyle();
+            var result = ParseValue(parser, style, "hsla(0, 100%, 50%, 0.7)");
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(Color.FromRGB(255, 0, 0), style.Background.Color);
+            Assert.AreEqual(0.7, style.Background.Opacity, 0.001);
+        }
+
+        [TestMethod()]
+        [TestCategory("CSS")]
+        [TestCategory("CSS-Parsers")]
         public void BackgroundColor_Transparent_SetsTransparent()
         {
             var parser = new CSSBackgroundColorParser();

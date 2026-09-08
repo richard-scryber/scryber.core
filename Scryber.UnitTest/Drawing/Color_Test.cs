@@ -232,6 +232,55 @@ namespace Scryber.Core.UnitTests.Drawing
         }
 
         /// <summary>
+        ///A test for TryParseHSL
+        ///</summary>
+        [TestMethod()]
+        [TestCategory("Drawing Structures")]
+        public void TryParseHSL_Test()
+        {
+            Color actual;
+            double? opacity;
+
+            // pure red
+            Assert.IsTrue(Color.TryParseHSL("hsl(0, 100%, 50%)", out actual, out opacity));
+            Assert.AreEqual(new Color(255, 0, 0), actual);
+            Assert.IsNull(opacity);
+
+            // pure green
+            Assert.IsTrue(Color.TryParseHSL("hsl(120, 100%, 50%)", out actual, out opacity));
+            Assert.AreEqual(new Color(0, 255, 0), actual);
+
+            // pure blue
+            Assert.IsTrue(Color.TryParseHSL("hsl(240, 100%, 50%)", out actual, out opacity));
+            Assert.AreEqual(new Color(0, 0, 255), actual);
+
+            // white (any hue, 0 saturation, full lightness)
+            Assert.IsTrue(Color.TryParseHSL("hsl(0, 0%, 100%)", out actual, out opacity));
+            Assert.AreEqual(new Color(255, 255, 255), actual);
+
+            // black
+            Assert.IsTrue(Color.TryParseHSL("hsl(0, 0%, 0%)", out actual, out opacity));
+            Assert.AreEqual(new Color(0, 0, 0), actual);
+
+            // grey - 50% lightness, 0 saturation
+            Assert.IsTrue(Color.TryParseHSL("hsl(0, 0%, 50%)", out actual, out opacity));
+            Assert.AreEqual(new Color(128, 128, 128), actual);
+
+            // hsla with an alpha component
+            Assert.IsTrue(Color.TryParseHSL("hsla(0, 100%, 50%, 0.5)", out actual, out opacity));
+            Assert.AreEqual(new Color(255, 0, 0), actual);
+            Assert.AreEqual(0.5, opacity.Value, 0.001);
+
+            // a hue outside 0-360 should wrap around rather than fail
+            Assert.IsTrue(Color.TryParseHSL("hsl(480, 100%, 50%)", out actual, out opacity));
+            Assert.AreEqual(new Color(0, 255, 0), actual);
+
+            // invalid values should fail cleanly, not throw
+            Assert.IsFalse(Color.TryParseHSL("hsl(not, a, colour)", out actual, out opacity));
+            Assert.IsFalse(Color.TryParseHSL("rgb(255, 0, 0)", out actual, out opacity));
+        }
+
+        /// <summary>
         ///A test for ToString
         ///</summary>
         [TestMethod()]

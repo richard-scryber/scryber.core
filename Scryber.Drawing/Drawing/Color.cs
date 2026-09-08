@@ -712,7 +712,121 @@ namespace Scryber.Drawing
         }
         
         #endregion
-        
+
+        #region TryParseHSL(value, out color, out opacity)
+
+        /// <summary>
+        /// Creates a new PDFColor from the provided string hsl(Hue,Saturation%,Lightness%) or hsla(Hue,Saturation%,Lightness%,Alpha)
+        /// </summary>
+        /// <param name="value">The string to parse</param>
+        /// <returns>A new instance of the PDF Color</returns>
+        public static bool TryParseHSL(string value, out Color color, out double? opacity)
+        {
+            color = StandardColors.Transparent;
+            opacity = null;
+
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            bool isAlpha;
+            if (value.StartsWith("hsla(", StringComparison.InvariantCultureIgnoreCase))
+                isAlpha = true;
+            else if (value.StartsWith("hsl(", StringComparison.InvariantCultureIgnoreCase))
+                isAlpha = false;
+            else
+                return false;
+
+            string s = value.Trim().Substring(0, value.IndexOf("(")).ToUpper();
+            value = value.Substring(s.Length + 1);
+            int close = value.IndexOf(")");
+            if (close < 0 || close >= value.Length)
+                return false;
+
+            value = value.Substring(0, close); //remove closing bracket
+
+            string[] vals = value.Split(',');
+            if (vals.Length < 3)
+                return false;
+
+            string hue = vals[0].Trim();
+            if (hue.EndsWith("deg", StringComparison.InvariantCultureIgnoreCase))
+                hue = hue.Substring(0, hue.Length - 3);
+
+            string sat = vals[1].Trim();
+            if (sat.EndsWith("%"))
+                sat = sat.Substring(0, sat.Length - 1);
+
+            string lightness = vals[2].Trim();
+            if (lightness.EndsWith("%"))
+                lightness = lightness.Substring(0, lightness.Length - 1);
+
+            double h, sPct, lPct;
+            if (!double.TryParse(hue, NumberStyles.Any, CultureInfo.InvariantCulture, out h))
+                return false;
+            if (!double.TryParse(sat, NumberStyles.Any, CultureInfo.InvariantCulture, out sPct))
+                return false;
+            if (!double.TryParse(lightness, NumberStyles.Any, CultureInfo.InvariantCulture, out lPct))
+                return false;
+
+            if (isAlpha)
+            {
+                if (vals.Length < 4)
+                    return false;
+
+                double op;
+                if (double.TryParse(vals[3], NumberStyles.Any, CultureInfo.InvariantCulture, out op) && op >= 0.0 && op <= 1.0)
+                {
+                    opacity = op;
+                }
+                else
+                    return false;
+            }
+
+            byte r, g, b;
+            HSLToRGB(h, sPct / 100.0, lPct / 100.0, out r, out g, out b);
+
+            color = new Color(ColorSpace.RGB, r, g, b, 0);
+            return true;
+        }
+
+        /// <summary>
+        /// Converts a Hue (0-360, wraps outside that range), Saturation (0.0-1.0) and Lightness (0.0-1.0)
+        /// to the equivalent RGB byte components, using the standard CSS HSL-to-RGB conversion.
+        /// </summary>
+        private static void HSLToRGB(double h, double s, double l, out byte r, out byte g, out byte b)
+        {
+            h = h % 360.0;
+            if (h < 0)
+                h += 360.0;
+            h = h / 360.0;
+
+            if (s <= 0.0)
+            {
+                byte gray = (byte)Math.Round(l * 255.0);
+                r = gray; g = gray; b = gray;
+                return;
+            }
+
+            double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            double p = 2 * l - q;
+
+            r = (byte)Math.Round(HueToRGBComponent(p, q, h + (1.0 / 3.0)) * 255.0);
+            g = (byte)Math.Round(HueToRGBComponent(p, q, h) * 255.0);
+            b = (byte)Math.Round(HueToRGBComponent(p, q, h - (1.0 / 3.0)) * 255.0);
+        }
+
+        private static double HueToRGBComponent(double p, double q, double t)
+        {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
+            if (t < 1.0 / 2.0) return q;
+            if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
+            return p;
+        }
+
+        #endregion
+
 
         private const float ByteToFloatFactor = (1.0F / 255.0F);
 
