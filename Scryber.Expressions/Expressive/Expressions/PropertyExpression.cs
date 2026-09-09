@@ -79,12 +79,31 @@ namespace Scryber.Expressive.Expressions
         {
             if (parent is IDictionary dict)
             {
-                if(dict.Contains(name))
-                    return dict[name];
+                if (dict.Contains(name))
+                    return NormalizeDictionaryValue(dict[name]);
                 //fall back to the default implementation if not found
             }
-            
+
             return GetPropertyValue(parent, name, context.IsCaseInsensitiveParsingEnabled);
+        }
+
+        // A plain IDictionary (e.g. Dictionary<string,object> built by a host
+        // application from deserialized JSON) is returned above without going
+        // through GetPropertyValue's JObject/JsonElement handling below - so a
+        // JToken/JsonElement stored as one of its values would otherwise reach
+        // callers (and functions like double()/string()) unwrapped, unlike the
+        // exact same JSON value reached via nested property access. Apply the
+        // same normalization here so a dictionary's own values behave
+        // identically to a JObject/JsonElement's properties.
+        private static object NormalizeDictionaryValue(object value)
+        {
+            if (value is Newtonsoft.Json.Linq.JToken jtoken)
+                return GetJTokenValue(jtoken);
+#if NET6_0_OR_GREATER
+            if (value is JsonElement jelement)
+                return GetJsonElementValue(jelement);
+#endif
+            return value;
         }
         
         public static object GetPropertyValue(object parent, string name, bool caseInSensitive)
