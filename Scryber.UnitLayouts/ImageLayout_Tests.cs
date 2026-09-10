@@ -2923,5 +2923,91 @@ namespace Scryber.UnitLayouts
             AssertAreApproxEqual(60, caseAfter.Width.PointsValue, "Width should be the explicit 60pt style value (style before attrs)");
             AssertAreApproxEqual(30, caseAfter.Height.PointsValue, "Height should be derived from the 300x150 (2:1) intrinsic ratio (style before attrs)");
         }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void AspectRatio_03_FigureConstrainedWidth_NoMaxWidth_OverflowsProportionally()
+        {
+            // An <img> with no width/height CSS of its own (only an explicit aspect-ratio), inside a
+            // <figure> that constrains width via a percentage - but with no max-width/height reset of
+            // any kind. This is a reported-bug repro that turned out to demonstrate CORRECT, spec-accurate
+            // behaviour once actually traced through: a plain HTML width/height-attributed <img> with no
+            // responsive-image CSS genuinely does overflow its container in real browsers too - nothing
+            // shrinks it automatically. The image renders at its full literal attribute size (602x614px),
+            // correctly proportioned to the declared 602:614 aspect-ratio, and simply overflows the
+            // figure's own (correctly-sized) box - which is what reads as "clipped" when the figure clips
+            // its overflow, not as a wrongly-derived height. See the max-width sibling test below for the
+            // fix this session actually made: max-width/max-height were being silently ignored whenever
+            // an image carried both width and height HTML attributes, which is the real, confirmed bug.
+            var path = AssertGetContentFile("Images/AspectRatio_03_FigureConstrainedWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Images_AspectRatio_03_FigureConstrainedWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var figureBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(figureBlock, "Figure should produce a layout block");
+
+            var line = figureBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line, "Figure should contain a content line with the image run");
+            var imgRun = line.Runs.OfType<Scryber.PDF.Layout.PDFLayoutComponentRun>().FirstOrDefault();
+            Assert.IsNotNull(imgRun, "Expected an image component run inside the figure");
+
+            // 602px / 614px at the standard 96dpi HTML-attribute-pixel conversion (72/96 pt-per-px).
+            double expectedWidth = 602.0 * 72.0 / 96.0;
+            double expectedHeight = 614.0 * 72.0 / 96.0;
+
+            AssertAreApproxEqual(expectedWidth, imgRun.Width.PointsValue,
+                "With no max-width, the image should render at its full literal attribute size and overflow the figure");
+            AssertAreApproxEqual(expectedHeight, imgRun.Height.PointsValue,
+                "Height should match the literal attribute size too - width and height stay proportioned to each other (602:614) even though neither was actually constrained");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void AspectRatio_04_FigureConstrainedWidth_MaxWidthPercent_ShrinksAndKeepsAspectRatio()
+        {
+            // Same shape as AspectRatio_03, but with max-width:100% added - the standard "responsive
+            // image" reset most editors/CSS frameworks apply. Confirms the actual fix: previously
+            // max-width/max-height were completely inert whenever an <img> carried both width and height
+            // HTML attributes (GetRequiredSizeForLayout's "both have a value" branch never consulted them
+            // at all), which is every image from a typical CMS/editor - so this max-width:100% would have
+            // been silently ignored before the fix, identical to AspectRatio_03's overflowing result.
+            var path = AssertGetContentFile("Images/AspectRatio_04_FigureConstrainedWidth_MaxWidth");
+
+            var doc = Document.ParseDocument(path);
+
+            using (var ms = DocStreams.GetOutputStream("Images_AspectRatio_04_FigureConstrainedWidth_MaxWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsNotNull(layout, "The layout was not saved from the event");
+
+            var figureBlock = layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(figureBlock, "Figure should produce a layout block");
+
+            var line = figureBlock.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(line, "Figure should contain a content line with the image run");
+            var imgRun = line.Runs.OfType<Scryber.PDF.Layout.PDFLayoutComponentRun>().FirstOrDefault();
+            Assert.IsNotNull(imgRun, "Expected an image component run inside the figure");
+
+            // <figure style="width: 22.34%"> inside a 600pt page => figure content width = 600 * 0.2234 = 134.04pt.
+            // max-width:100% on the img resolves against that same 134.04pt, clamping width down to it.
+            double expectedWidth = 600.0 * 0.2234;
+            double expectedHeight = expectedWidth / (602.0 / 614.0);
+
+            AssertAreApproxEqual(expectedWidth, imgRun.Width.PointsValue,
+                "max-width:100% should now clamp the image down to the figure's 22.34% width");
+            AssertAreApproxEqual(expectedHeight, imgRun.Height.PointsValue,
+                "Height should be re-derived from the aspect-ratio (602/614) against the clamped width, not left at the literal 614px attribute value");
+        }
     }
 }

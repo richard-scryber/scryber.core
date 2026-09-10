@@ -243,6 +243,51 @@ namespace Scryber.Components
             {
                 w = pos.Width.Value;
                 h = pos.Height.Value;
+
+                // Both dimensions "have a value" here not just when an author explicitly styled
+                // both (where max/min clamping genuinely shouldn't apply - CSS lets explicit
+                // width+height override everything), but also for the HTML5 width/height
+                // attribute UA-default fallback (HTMLImage.OnInitialized forces both literally
+                // whenever neither is styled directly on the img, e.g. only aspect-ratio was set
+                // and the real constraint lives on an ancestor like a <figure>). That fallback
+                // must not silently defeat max-width/max-height/min-width/min-height, or those
+                // properties become inert on any image carrying both width/height attributes -
+                // effectively all of them. When a max/min clamp actually changes one dimension,
+                // the other is re-derived from aspect-ratio (or the natural ratio as a fallback)
+                // rather than kept at its own literal value, so the image stays proportioned
+                // instead of distorting - mirroring the else-if branches just below.
+                if (pos.MaximumWidth.HasValue && w > pos.MaximumWidth.Value)
+                {
+                    w = pos.MaximumWidth.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        h = w / pos.AspectRatio.Value;
+                    else
+                        h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                }
+                if (pos.MaximumHeight.HasValue && h > pos.MaximumHeight.Value)
+                {
+                    h = pos.MaximumHeight.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        w = h * pos.AspectRatio.Value;
+                    else
+                        w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
+                if (pos.MinimumWidth.HasValue && w < pos.MinimumWidth.Value)
+                {
+                    w = pos.MinimumWidth.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        h = w / pos.AspectRatio.Value;
+                    else
+                        h = naturalSize.Height * (w.PointsValue / naturalSize.Width.PointsValue);
+                }
+                if (pos.MinimumHeight.HasValue && h < pos.MinimumHeight.Value)
+                {
+                    h = pos.MinimumHeight.Value;
+                    if (pos.AspectRatio.HasValue && pos.AspectRatio.Value > 0)
+                        w = h * pos.AspectRatio.Value;
+                    else
+                        w = naturalSize.Width * (h.PointsValue / naturalSize.Height.PointsValue);
+                }
             }
             else if(pos.Width.HasValue)
             {
