@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.7.4.3</PackageVersion>
+    <PackageVersion>9.7.4.4</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.4.3
+    <PackageReleaseNotes>9.7.4.4
+Fixed a colspan cell's nested content (paragraphs, text) being squeezed into its starting column's width instead of the full spanned width - the cell's outer box was already sized correctly, but content layout took a stale single-column width at face value.
+Removed Overflow.Split = Never from &lt;figure&gt;, which forced any figure content (not just an image+caption pair) to be treated as an unsplittable block and crashed when a wrapped table was too tall to fit on one page.
+
+9.7.4.3
 Fixed a colspan cell silently losing the width of any &lt;col&gt;/&lt;colgroup&gt; column that is never singly occupied by a cell in any row (e.g. a 3-column percentage colgroup where every row crosses the middle column with a colspan) - that column's width is now resolved through the normal style pipeline, so percent/em/rem/viewport units, calc() and var() all work correctly.
 
 9.7.4.2
@@ -184,12 +188,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.7.4.3</Version>
+    <Version>9.7.4.4</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.7.4.3</FileVersion>
+    <FileVersion>9.7.4.4</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
