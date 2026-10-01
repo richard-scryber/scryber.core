@@ -1145,6 +1145,27 @@ namespace Scryber.PDF.Layout
             return null;
         }
 
+        /// <summary>
+        /// Finds the real, still document-attached col/colgroup component covering the given column
+        /// index - unlike GetMatchingColumnStyle, which only returns a throwaway scratch copy of its
+        /// style values. Needed wherever the column's width (or any other property) must go through the
+        /// real style-resolution pipeline (GetAppliedStyle/BuildColumnFullStyle) for correct CSS cascade,
+        /// inheritance and variable (calc()/var()) scope, rather than just the flat values
+        /// ApplyStyleToColumnCell copies across.
+        /// </summary>
+        private HTMLColBase GetMatchingColumnComponent(int columnIndex)
+        {
+            var defs = this.GetColumnDefinitions();
+            foreach (var def in defs)
+            {
+                var found = def.GetMatchingColumnComponent(columnIndex);
+                if (found != null)
+                    return found;
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region private void AdjustRowspanCellHeights()
@@ -1240,6 +1261,35 @@ namespace Scryber.PDF.Layout
             Unit root = Font.DefaultFontSize;
 
             return this.Context.StyleStack.GetFullStyle(cell, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
+        }
+
+        #endregion
+
+        #region protected virtual Style BuildColumnFullStyle(HTMLColBase col, PDFTextRenderOptions tablefont)
+
+        /// <summary>
+        /// Builds the full (flattened) style for a &lt;col&gt;/&lt;colgroup&gt; column definition, using
+        /// exactly the same resolution path as BuildRowFullStyle/BuildCellFullStyle - so percentage, em,
+        /// rem, viewport units, calc() and var() all resolve the same way they would for any other styled
+        /// component, rather than hand-rolling a second, partial implementation of relative-unit handling
+        /// for just this one case.
+        /// NOTE: The column's own applied style should be on the style stack before this method is
+        /// called (see BuildCellFullStyle's identical note), so that it can be inherited from.
+        /// </summary>
+        /// <param name="col">The real, still document-attached col/colgroup component - not a scratch
+        /// copy of its style - so CSS cascade, inheritance and variable scope resolve correctly.</param>
+        /// <param name="tablefont">The font options used for em/rem/ex percentage calculations.</param>
+        protected virtual Style BuildColumnFullStyle(HTMLColBase col, PDFTextRenderOptions tablefont)
+        {
+            var page = this.DocumentLayout.CurrentPage;
+
+            Size pageSize = page.Size.Size;
+
+            Size fontSize = new Size(tablefont.GetZeroCharWidth(), tablefont.GetSize());
+
+            Unit root = Font.DefaultFontSize;
+
+            return this.Context.StyleStack.GetFullStyle(col, pageSize, new ParentComponentSizer(this.GetTableContainerSize), fontSize, root);
         }
 
         #endregion
@@ -1673,6 +1723,49 @@ namespace Scryber.PDF.Layout
                     {
                         CellReference cref = _tblRef.AllCells[v, h];
                         cref.TotalHeight = maxh;
+                    }
+                }
+            }
+
+            // A column that is never covered by a standalone (ColumnSpan == 1) content cell - e.g. because
+            // every row's cell crossing it is part of a colspan - never has its width captured by the loop
+            // above, even when a <col>/<colgroup> explicitly defines one: GetMaxCellWidthForColumn (used
+            // later by PushConsistentCellWidths as the non-explicit fallback) only measures actual
+            // single-column content cells too, so such a column collapses to zero width, and every colspan
+            // cell crossing it silently loses that column's contribution. Fall back to the matching column
+            // definition's own width for any column still unresolved at this point.
+            //
+            // Resolved via the real style-resolution pipeline (GetAppliedStyle + BuildColumnFullStyle,
+            // exactly as BuildRowFullStyle/BuildCellFullStyle do for a row/cell) rather than hand-rolling
+            // relative-unit handling here - this gets percent/em/rem/viewport units, calc() and var() all
+            // resolved the same way they would be for any other styled component, for free. It reads the
+            // real, still document-attached <col> component (GetMatchingColumnComponent), not the scratch
+            // copy GetMatchingColumnStyle returns - GetFullStyle needs the component on the live style
+            // stack to inherit from, and a disconnected scratch component has no ancestor chain or
+            // variable scope for var() to resolve against.
+            if (columncount > 0)
+            {
+                var tableFontOptions = this.FullStyle.CreateTextOptions();
+
+                for (int h = 0; h < columncount; h++)
+                {
+                    if (widths[h].Explicit)
+                        continue;
+
+                    HTMLColBase colComponent = this.GetMatchingColumnComponent(h);
+                    if (null == colComponent)
+                        continue;
+
+                    Style colApplied = colComponent.GetAppliedStyle();
+                    this.StyleStack.Push(colApplied);
+                    Style colFull = this.BuildColumnFullStyle(colComponent, tableFontOptions);
+                    this.StyleStack.Pop();
+
+                    var colPos = colFull.CreatePostionOptions(this.Context.PositionDepth > 0);
+                    if (colPos.Width.HasValue && colPos.Width.Value > Unit.Zero)
+                    {
+                        widths[h].Size = colPos.Width.Value;
+                        widths[h].Explicit = true;
                     }
                 }
             }

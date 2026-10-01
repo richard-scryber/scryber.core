@@ -117,6 +117,22 @@ public class HTMLColBase : VisualComponent
             return false;
     }
 
+    /// <summary>
+    /// Finds the real &lt;col&gt;/&lt;colgroup&gt; component (not a scratch copy of its style) that
+    /// covers the given column index - delegating to a matching child &lt;col&gt; the same way
+    /// ApplyStyleToColumnCell does (see HTMLColGroup's override). Returning the live component, still
+    /// attached to the document tree, lets a caller pull its real GetAppliedStyle()/full style - with
+    /// correct CSS cascade, inheritance and variable scope (calc()/var() included) - rather than only
+    /// the flat set of style values ApplyStyleToColumnCell copies onto a throwaway IStyledComponent.
+    /// </summary>
+    public virtual HTMLColBase GetMatchingColumnComponent(int colindex)
+    {
+        if (this.ColumnOffset < 0)
+            throw new InvalidOperationException("The column offset has not been set.");
+
+        return this.IsMatchingColumn(colindex) ? this : null;
+    }
+
     protected virtual void DoApplyStyleToCell(IStyledComponent component)
     {
         var style = component.Style;
@@ -198,13 +214,34 @@ public class HTMLColGroup : HTMLColBase
                     if(col.ApplyStyleToColumnCell(colindex, component))
                         return true;
                 }
-                
+
             }
             return false;
         }
         else
         {
             return base.ApplyStyleToColumnCell(colindex, component);
+        }
+    }
+
+    public override HTMLColBase GetMatchingColumnComponent(int colindex)
+    {
+        if (this.Span < 0 && this.ColumnOffset >= 0)
+        {
+            if (this.HasColumns)
+            {
+                foreach (var col in this.Columns)
+                {
+                    var found = col.GetMatchingColumnComponent(colindex);
+                    if (found != null)
+                        return found;
+                }
+            }
+            return null;
+        }
+        else
+        {
+            return base.GetMatchingColumnComponent(colindex);
         }
     }
 }

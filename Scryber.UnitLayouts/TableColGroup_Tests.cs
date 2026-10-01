@@ -748,6 +748,292 @@ namespace Scryber.UnitLayouts
 
         [TestCategory(TestCategoryName)]
         [TestMethod()]
+        public void XHtml_PercentColGroup_ColSpanCellOverANeverSinglyOccupiedColumn_UsesFullSpannedWidth()
+        {
+            // Regression test: a column that is NEVER occupied by a standalone (colspan=1) cell in any
+            // row - because every row's cell crossing it is part of a colspan - previously had its
+            // percentage <col> width silently dropped. CalcExplicitSizes only ever picked up a column's
+            // width from an actual colspan=1 content cell sitting in it; GetMaxCellWidthForColumn (the
+            // fallback used by PushConsistentCellWidths) has the same restriction, so such a column
+            // collapsed to zero width and every colspan cell crossing it lost that column's contribution
+            // entirely - exactly the real-world shape reported against a CKEditor-style 3-column percentage
+            // colgroup (13.38% / 20.91% / 65.71%) with colspan=2 and colspan=3 "full width" form rows,
+            // where column 1 is never singly occupied by any row.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 400pt; margin: 10pt; }
+        table { width: 480pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width:13.38%;' />
+        <col style='width:20.91%;' />
+        <col style='width:65.71%;' />
+    </colgroup>
+    <tr>
+        <td>Full Name:</td>
+        <td colspan='2'>Value</td>
+    </tr>
+    <tr>
+        <td colspan='3'>Full width row</td>
+    </tr>
+    <tr>
+        <td colspan='2'>Another value</td>
+        <td>Single cell</td>
+    </tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_Percent_ColSpan_Current.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            Assert.IsNotNull(tblBlock, "Table block should exist");
+            Assert.AreEqual(480.0, tblBlock.Width.PointsValue, 0.5, "Table should still be its explicit 480pt width");
+
+            var row0 = GetRowBlock(tblBlock, 0);
+            var row1 = GetRowBlock(tblBlock, 1);
+            var row2 = GetRowBlock(tblBlock, 2);
+
+            var nameCell = GetCellBlock(row0, 0);
+            var valueCell = GetCellBlock(row0, 1);
+            var fullWidthCell = GetCellBlock(row1, 0);
+            var anotherValueCell = GetCellBlock(row2, 0);
+            var singleCell = GetCellBlock(row2, 2);
+
+            Assert.AreEqual(480.0 * 0.1338, nameCell.Width.PointsValue, 0.5, "Column 0 should take its width from the matching 13.38% <col>");
+            Assert.AreEqual(480.0 * (0.2091 + 0.6571), valueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 1+2) should total column 1's 20.91% plus column 2's 65.71%, not just column 2's share");
+            Assert.AreEqual(480.0, fullWidthCell.Width.PointsValue, 0.5,
+                "The colspan=3 cell should span the full table width, including the never-singly-occupied column 1");
+            Assert.AreEqual(480.0 * (0.1338 + 0.2091), anotherValueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 0+1) should total column 0's 13.38% plus column 1's 20.91%");
+            Assert.AreEqual(480.0 * 0.6571, singleCell.Width.PointsValue, 0.5, "Column 2 should take its width from the matching 65.71% <col>");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_EmColGroup_ColSpanCellOverANeverSinglyOccupiedColumn_ResolvesAgainstFontSizeNotContainerWidth()
+        {
+            // Same never-singly-occupied-column shape as the percentage test above, but with an em-based
+            // <col> width on the always-spanned column. Em/rem/ex/viewport units need a different
+            // reference (font size, root font size, page size) than percent (container width) - this
+            // exercises the Unit.FlattenHorizontalValue fallback path rather than a simple percent divide.
+            // At 10pt body font-size, 5em = 50pt - nowhere near the (480pt) container width a naive
+            // percent-style calculation would have produced.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 400pt; margin: 10pt; }
+        table { width: 480pt; margin: 0; padding: 0; border-collapse: collapse; font-size: 10pt; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width:100pt;' />
+        <col style='width:5em;' />
+        <col style='width:330pt;' />
+    </colgroup>
+    <tr>
+        <td>Full Name:</td>
+        <td colspan='2'>Value</td>
+    </tr>
+    <tr>
+        <td colspan='2'>Another value</td>
+        <td>Single cell</td>
+    </tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_Em_ColSpan_Current.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            var row0 = GetRowBlock(tblBlock, 0);
+            var row1 = GetRowBlock(tblBlock, 1);
+
+            var valueCell = GetCellBlock(row0, 1);
+            var anotherValueCell = GetCellBlock(row1, 0);
+            var singleCell = GetCellBlock(row1, 2);
+
+            Assert.AreEqual(50.0, 5 * 10.0, 0.0, "Sanity: 5em at 10pt font-size is 50pt");
+            Assert.AreEqual(100.0 + 50.0, anotherValueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 0+1) should total column 0's 100pt plus column 1's 5em (50pt at 10pt font-size)");
+            Assert.AreEqual(50.0 + 330.0, valueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 1+2) should total column 1's 5em (50pt) plus column 2's 330pt");
+            Assert.AreEqual(330.0, singleCell.Width.PointsValue, 0.5, "Column 2 should take its own 330pt width");
+
+            // If the fallback had flattened the <col>'s relative width in place (mutating the shared
+            // StyleValue via Style.Flatten()/SetValue(), rather than just reading it), the live <col>
+            // component's own style would now hold an absolute point value baked from this one layout's
+            // container width, instead of the original 5em the author wrote - corrupting it for any later
+            // reuse (re-layout, a second SaveAsPDF, another consumer walking the component tree, etc).
+            var colGroup = FindFirstDescendant<Scryber.Html.Components.HTMLColGroup>((IContainerComponent)doc);
+            Assert.IsNotNull(colGroup, "Should find the parsed colgroup");
+            var emCol = colGroup.Columns[1];
+            StyleValue<Unit> rawWidth;
+            Assert.IsTrue(emCol.Style.TryGetValue(StyleKeys.SizeWidthKey, out rawWidth), "The <col> should still have its own width style value");
+            Assert.AreEqual(PageUnits.EMHeight, rawWidth.Value(emCol.Style).Units,
+                "The <col>'s own width must remain in its original 'em' unit after layout, not be flattened in place to an absolute value");
+            Assert.AreEqual(5.0, rawWidth.Value(emCol.Style).Value, 0.0001,
+                "The <col>'s own width value must remain 5 (em), not be overwritten with a computed absolute point value");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_CalcColGroup_ColSpanCellOverANeverSinglyOccupiedColumn_ResolvesCalcExpression()
+        {
+            // Same never-singly-occupied-column shape, but with a calc() expression on the always-spanned
+            // column's width. Resolving via the real style pipeline (GetAppliedStyle + BuildColumnFullStyle)
+            // gets calc() support for free, rather than needing its own special-cased handling.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 400pt; margin: 10pt; }
+        table { width: 480pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width:100pt;' />
+        <col style='width:calc(50% - 20pt);' />
+        <col style='width:280pt;' />
+    </colgroup>
+    <tr>
+        <td>Full Name:</td>
+        <td colspan='2'>Value</td>
+    </tr>
+    <tr>
+        <td colspan='2'>Another value</td>
+        <td>Single cell</td>
+    </tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_Calc_ColSpan_Current.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            var row0 = GetRowBlock(tblBlock, 0);
+            var row1 = GetRowBlock(tblBlock, 1);
+
+            var valueCell = GetCellBlock(row0, 1);
+            var anotherValueCell = GetCellBlock(row1, 0);
+
+            // calc(50% - 20pt) against the 480pt table = 240 - 20 = 220pt
+            Assert.AreEqual(100.0 + 220.0, anotherValueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 0+1) should total column 0's 100pt plus column 1's calc(50% - 20pt) = 220pt");
+            Assert.AreEqual(220.0 + 280.0, valueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 1+2) should total column 1's calc(50% - 20pt) = 220pt plus column 2's 280pt");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_VarColGroup_ColSpanCellOverANeverSinglyOccupiedColumn_ResolvesCssVariable()
+        {
+            // Same shape again, but the always-spanned column's width comes from a var() CSS custom
+            // property rather than a literal value - also resolved for free via the real style pipeline.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 400pt; margin: 10pt; }
+        :root { --col-b-width: 150pt; }
+        table { width: 480pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 0; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width:100pt;' />
+        <col style='width:var(--col-b-width);' />
+        <col style='width:230pt;' />
+    </colgroup>
+    <tr>
+        <td>Full Name:</td>
+        <td colspan='2'>Value</td>
+    </tr>
+    <tr>
+        <td colspan='2'>Another value</td>
+        <td>Single cell</td>
+    </tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_Var_ColSpan_Current.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            var row0 = GetRowBlock(tblBlock, 0);
+            var row1 = GetRowBlock(tblBlock, 1);
+
+            var valueCell = GetCellBlock(row0, 1);
+            var anotherValueCell = GetCellBlock(row1, 0);
+
+            Assert.AreEqual(100.0 + 150.0, anotherValueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 0+1) should total column 0's 100pt plus column 1's var(--col-b-width) = 150pt");
+            Assert.AreEqual(150.0 + 230.0, valueCell.Width.PointsValue, 0.5,
+                "The colspan=2 cell (columns 1+2) should total column 1's var(--col-b-width) = 150pt plus column 2's 230pt");
+        }
+
+        private static T FindFirstDescendant<T>(IContainerComponent container) where T : class
+        {
+            if (container == null || !container.HasContent)
+                return null;
+
+            foreach (var item in container.Content)
+            {
+                if (item is T match)
+                    return match;
+
+                if (item is IContainerComponent child)
+                {
+                    var found = FindFirstDescendant<T>(child);
+                    if (found != null)
+                        return found;
+                }
+            }
+            return null;
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
         public void XHtml_TableWithColGroupBackgroundColor_AppliesColumnBackgroundToCells()
         {
             string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
