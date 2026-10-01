@@ -963,6 +963,20 @@ namespace Scryber.PDF.Layout
                         {
                             var blank = new Style();
                             colStyle.Style.MergeInto(blank);
+
+                            // GetMatchingColumnStyle only ever resolves the cell's STARTING column - for a
+                            // colspan > 1 cell, that one column's width is not the cell's own rendered
+                            // width (the sum of every column it spans, computed separately in
+                            // DoLayoutRowCells/_widths and applied directly to the cell's layout region).
+                            // Merging it in anyway would narrow the cell's full style to a single column's
+                            // share; DoLayoutACell then takes that bogus "explicit width" at face value and
+                            // forces the cell's own CONTENT layout to it, even though the cell's outer box
+                            // is correctly sized to the full span - the box looks right, but any wrapped
+                            // text/nested content inside is squeezed into one column's width. Drop it here
+                            // so only a genuine author-set width on the cell/td itself can win.
+                            if (cell.CellColumnSpan > 1)
+                                blank.RemoveValue(StyleKeys.SizeWidthKey);
+
                             cellapplied.MergeInto(blank);
                             cellapplied = blank;
                         }

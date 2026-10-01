@@ -1012,6 +1012,135 @@ namespace Scryber.UnitLayouts
                 "The colspan=2 cell (columns 1+2) should total column 1's var(--col-b-width) = 150pt plus column 2's 230pt");
         }
 
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_ColSpanCellWithColGroup_NestedContentUsesFullSpannedWidth_NotStartingColumnWidth()
+        {
+            // Regression test for a second, deeper bug behind the same real-world report as the
+            // never-singly-occupied-column tests above: GetMatchingColumnStyle only ever resolves a
+            // cell's STARTING column - for a colspan > 1 cell, merging that one column's width onto the
+            // cell's own style (BuildStyles) gave it a bogus "explicit width" (one column's share, not the
+            // full span). DoLayoutACell then took that at face value and forced the cell's own CONTENT
+            // layout (nested paragraphs/text) to it - even though the cell's outer box was already
+            // correctly sized to the full span by the separate _widths[]/DoLayoutRowCells geometry. The
+            // box looked right; wrapped text inside was squeezed into one column's width.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 800pt; margin: 20pt; }
+        table { width: 560pt; margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 4pt; border: 1pt solid black; }
+        p { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+<table>
+    <colgroup>
+        <col style='width:13.38%;' />
+        <col style='width:20.91%;' />
+        <col style='width:65.71%;' />
+    </colgroup>
+    <tr><td>Full Name:</td><td colspan='2'>&#160;</td></tr>
+    <tr><td colspan='3'>
+        <p>I have read the terms and conditions associated with this memorial bench scheme and in signing this application, agree to be bound by these terms.</p>
+    </td></tr>
+</table>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("ColGroup_ColSpan_NestedContentWidth.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            var tblBlock = GetTableBlock(layout);
+            var row1 = GetRowBlock(tblBlock, 1);
+            var cell = GetCellBlock(row1, 0);
+
+            Assert.AreEqual(560.0, cell.Width.PointsValue, 0.5, "The colspan=3 cell's outer box should be the full 560pt table width");
+
+            var paragraph = cell.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(paragraph, "The cell should contain a nested paragraph block");
+
+            // 560pt cell width - 2x4pt padding = 552pt. Column 0 alone (the bug) would be ~75pt.
+            Assert.AreEqual(552.0, paragraph.Width.PointsValue, 0.5,
+                "The nested paragraph's content width should be the full spanned cell width minus padding, not column 0's share alone");
+
+            var firstLine = paragraph.Columns[0].Contents[0] as PDFLayoutLine;
+            Assert.IsNotNull(firstLine, "The paragraph should contain at least one line");
+            Assert.IsTrue(firstLine.Width.PointsValue > 300.0,
+                "The first line should wrap at close to the full spanned width, not be squeezed into column 0's ~75pt share");
+        }
+
+        [TestCategory(TestCategoryName)]
+        [TestMethod()]
+        public void XHtml_FigureWrappedTable_TooTallForOnePage_SplitsAcrossPagesInsteadOfThrowing()
+        {
+            // Regression test: HTMLFigure used to set Overflow.Split = OverflowSplit.Never on every
+            // <figure> (added so an image and its caption wouldn't be separated across a page break).
+            // That also applied to a <figure>-wrapped table - forcing Scryber to treat the whole figure
+            // as one atomic, unsplittable block. When the table was too tall to fit in the remaining page
+            // space, the "move this whole block to the next page" path threw
+            // PDFLayoutException/InvalidOperationException ("the current item in this container has not
+            // been closed") instead of just letting the table split normally like any other table does.
+            string xhtml = @"<?xml version='1.0' encoding='utf-8'?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <style>
+        @page { size: 600pt 400pt; margin: 20pt; }
+        table { margin: 0; padding: 0; border-collapse: collapse; }
+        td { margin: 0; padding: 4pt; border: 1pt solid black; }
+    </style>
+</head>
+<body>
+<figure class='table' style='width:100%;'>
+<table>
+    <colgroup>
+        <col style='width:30%;' />
+        <col style='width:70%;' />
+    </colgroup>
+    <tbody>
+        <tr><td>Row 1</td><td>Value 1</td></tr>
+        <tr><td>Row 2</td><td>Value 2</td></tr>
+        <tr><td>Row 3</td><td>Value 3</td></tr>
+        <tr><td>Row 4</td><td>Value 4</td></tr>
+        <tr><td>Row 5</td><td>Value 5</td></tr>
+        <tr><td>Row 6</td><td>Value 6</td></tr>
+        <tr><td>Row 7</td><td>Value 7</td></tr>
+        <tr><td>Row 8</td><td>Value 8</td></tr>
+        <tr><td>Row 9</td><td>Value 9</td></tr>
+        <tr><td>Row 10</td><td>Value 10</td></tr>
+        <tr><td>Row 11</td><td>Value 11</td></tr>
+        <tr><td>Row 12</td><td>Value 12</td></tr>
+        <tr><td>Row 13</td><td>Value 13</td></tr>
+        <tr><td>Row 14</td><td>Value 14</td></tr>
+        <tr><td>Row 15</td><td>Value 15</td></tr>
+        <tr><td>Row 16</td><td>Value 16</td></tr>
+        <tr><td>Row 17</td><td>Value 17</td></tr>
+        <tr><td>Row 18</td><td>Value 18</td></tr>
+        <tr><td>Row 19</td><td>Value 19</td></tr>
+        <tr><td>Row 20</td><td>Value 20</td></tr>
+    </tbody>
+</table>
+</figure>
+</body>
+</html>";
+
+            Document doc = ParseXhtml(xhtml);
+
+            using (var ms = DocStreams.GetOutputStream("Figure_TableSplitAcrossPages.pdf"))
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+
+            Assert.IsTrue(layout.AllPages.Count > 1, "A table too tall to fit in a <figure> on one page should split across pages, not throw");
+        }
+
         private static T FindFirstDescendant<T>(IContainerComponent container) where T : class
         {
             if (container == null || !container.HasContent)
