@@ -94,6 +94,7 @@ namespace Scryber.Styles.Parsing
         protected bool AttachExpressionBindingHandler<AttrT>(Style style, StyleKey<AttrT> key, string value, StyleValueConvertor<AttrT> convert)
         {
             StyleValueExpression<AttrT> expression = new StyleValueExpression<AttrT>(key, value, convert);
+            expression.ValidateExpression();
             style.DataBinding += expression.BindValue;
 
             if (style.IsValueDefined(key))

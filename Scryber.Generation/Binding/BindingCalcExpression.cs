@@ -49,10 +49,9 @@ namespace Scryber.Binding
 
             object value;
 
+            //TryEvaluate has already logged (or thrown) if the expression could not be evaluated, so the property is just left unset.
             if (this.TryEvaluate(this.ItemValueProvider, sender, args.Context, out value))
                 this.SetPropertyValue(sender, value, Expression.ToString(), BoundTo, args.Context);
-            else
-                args.Context.TraceLog.Add(TraceLevel.Warning, "Expression Binding", "The expression '" + this.OriginalExpression + "' for '" + sender.ToString() + "' on property '" + this.BoundTo.Name + "' could not be evaluated ");
 
         }
 
@@ -77,7 +76,19 @@ namespace Scryber.Binding
                 string message = "The expression " + this.Expression.ToString() + " failed for '" + owner.ToString() + "' with id " + id;
                 result = false;
 
-                if (context.Conformance == ParserConformanceMode.Lax)
+                if (Scryber.Expressive.Exceptions.ExpressionErrors.IsSyntaxError(ex))
+                {
+                    //The expression itself is invalid (even if only found at evaluation) - raised in strict AND lax mode.
+                    //A PDFDataException is used so Component.DataBind does not consume it in lax mode.
+                    throw new Scryber.PDFDataException(message, ex);
+                }
+                else if (Scryber.Expressive.Exceptions.NullRootVariableException.IsCausedBy(ex))
+                {
+                    //The root variable (e.g. 'model') has not been set or is null - always logged as an error,
+                    //in strict or lax mode, and the property is left unset.
+                    context.TraceLog.Add(TraceLevel.Error, "Data Binding", message + ": " + ex.Message);
+                }
+                else if (context.Conformance == ParserConformanceMode.Lax)
                     context.TraceLog.Add(TraceLevel.Warning, "Data Binding", message + ": " + ex.Message);
                 else
                     throw new Scryber.PDFBindException(message, ex);

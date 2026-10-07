@@ -63,6 +63,15 @@ namespace Scryber.Expressive.Expressions
                 {
                     return null;
                 }
+                else if (null == lhsResult)
+                {
+                    //A null root variable (e.g. 'model' in model.missing.value) is reported.
+                    //A null part way along the path (e.g. 'missing') is not an error - the result is just null.
+                    if (IsRootExpression(this.leftHandSide))
+                        throw new NullRootVariableException(rhs);
+
+                    return null;
+                }
                 else
                 {
                     return DoGetMyValue(lhsResult, rhs, this.Context);
@@ -74,6 +83,15 @@ namespace Scryber.Expressive.Expressions
             }
         }
 
+
+        private static bool IsRootExpression(IExpression expression)
+        {
+            return expression is VariableExpression
+                   || expression is CurrentDataExpression
+                   || expression is ParentDataExpression
+                   || expression is SelfVariableExpression
+                   || expression is ParentVariableExpression;
+        }
 
         private object DoGetMyValue(object parent, string name, ExpressionContext context)
         {

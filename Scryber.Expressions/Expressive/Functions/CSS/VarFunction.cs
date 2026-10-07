@@ -34,7 +34,17 @@ namespace Scryber.Expressive.Functions.CSS
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, -1, 1);
-            object value = parameters[0].Evaluate(variables);
+            object value;
+
+            try
+            {
+                value = parameters[0].Evaluate(variables);
+            }
+            catch (Scryber.Expressive.Exceptions.NullRootVariableException) when (parameters.Length > 1)
+            {
+                //The root variable is not set, but we have a default so use it.
+                value = null;
+            }
 
             //Allow the pass through of an optional second parameter with a fallback value
 

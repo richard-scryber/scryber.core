@@ -3462,7 +3462,7 @@ namespace Scryber.Components
                 loadtype, log, monitor, controller);
         }
 
-        public static ParserSettings CreateParserSettings(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Strict, object controller = null)
+        public static ParserSettings CreateParserSettings(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Lax, object controller = null)
         {
             ReferenceChecker checker = new ReferenceChecker(templatePath);
             return CreateParserSettings(checker.Resolver, mode, controller);
@@ -3480,7 +3480,7 @@ namespace Scryber.Components
             return DoCreateParserSettings(resolver, null, conformance, loadtype, log, perfmon, controller);
         }
         
-        public static ParserSettings CreateParserSettingsAsync(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Strict, object controller = null)
+        public static ParserSettings CreateParserSettingsAsync(string templatePath = "", ParserConformanceMode mode =  ParserConformanceMode.Lax, object controller = null)
         {
             ReferenceChecker checker = new ReferenceChecker(templatePath);
             return CreateParserSettingsAsync(checker.ResolverAsync, mode, controller);

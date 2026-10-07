@@ -2305,10 +2305,10 @@
                     },
                     "examples": [
                         { "text": "string(date(), 'dd MMM yyyy HH:mm:ss')", "expr": "string(date(), 'dd MMM yyyy HH:mm:ss')" },
-                        { "text": "monthof(date())", "expr": "monthofyear(date())" },
-                        { "text": "monthof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "monthofyear(date('2024-01-01', 'yyyy-MM-dd'))" },
-                        { "text": "monthof(date('2024-12-01', 'yyyy-MM-dd'))", "expr": "monthofyear(date('2024-12-01', 'yyyy-MM-dd'))" },
-                        { "text": "monthof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "monthofyear(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" }
+                        { "text": "monthof(date())", "expr": "monthof(date())" },
+                        { "text": "monthof(date('2024-01-01', 'yyyy-MM-dd'))", "expr": "monthof(date('2024-01-01', 'yyyy-MM-dd'))" },
+                        { "text": "monthof(date('2024-12-01', 'yyyy-MM-dd'))", "expr": "monthof(date('2024-12-01', 'yyyy-MM-dd'))" },
+                        { "text": "monthof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))", "expr": "monthof(date(model.date, 'dd MMMM yyyy hh:mm:ss'))" }
                     ]
                 }, {
                     "id": "secondof",

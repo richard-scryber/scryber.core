@@ -1830,7 +1830,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
 
                 literal = second.Cells[2].Contents[0] as TextLiteral;
-                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
+                Assert.AreEqual("1. ", literal.Text, "The calculated value on the second row should have the index and an empty value for the missing object");
             }
 
 
@@ -1961,7 +1961,7 @@ namespace Scryber.Core.UnitTests.Binding
                 Assert.AreEqual("0. Deep deep down", literal.Text, "The calculated value on the first row was not correct");
 
                 literal = second.Cells[2].Contents[0] as TextLiteral;
-                Assert.IsTrue(string.IsNullOrEmpty(literal.Text), "The calculated value on the second row was not null or empty");
+                Assert.AreEqual("1. ", literal.Text, "The calculated value on the second row should have the index and an empty value for the missing object");
             }
 
 

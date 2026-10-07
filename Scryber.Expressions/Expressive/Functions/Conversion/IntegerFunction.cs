@@ -37,4 +37,15 @@ namespace Scryber.Expressive.Functions.Conversion
 
         #endregion
     }
+
+    /// <summary>
+    /// Just a short name for integer, matching long, double and bool - int(value)
+    /// </summary>
+    public class IntFunction : IntegerFunction
+    {
+        public override string Name => "Int";
+
+        public IntFunction() : base()
+        { }
+    }
 }

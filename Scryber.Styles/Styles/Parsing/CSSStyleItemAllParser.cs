@@ -107,6 +107,7 @@ namespace Scryber.Styles.Parsing
         protected void AttachVariableBindingExpression(Style style, string variable, string value, ContextBase context)
         {
             StyleVariableExpression expression = new StyleVariableExpression(variable, value);
+            expression.ValidateExpression();
             style.DataBinding += expression.BindValue;
             
             style.AddVariable(expression);

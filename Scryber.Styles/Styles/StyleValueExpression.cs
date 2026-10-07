@@ -26,6 +26,8 @@ namespace Scryber.Styles
         private Expressive.IVariableProvider _variableProvider;
         private StyleValueConvertor<T> _convertor;
         private bool _flattened = false;
+        private Scryber.Logging.TraceLog _log;
+        private bool _nullRootLogged = false;
 
         //
         // properties
@@ -113,6 +115,22 @@ namespace Scryber.Styles
         // base class overrides
         //
 
+
+        /// <summary>
+        /// Compiles the expression (without evaluating it) so an invalid expression is raised when the css is parsed.
+        /// </summary>
+        public void ValidateExpression()
+        {
+            try
+            {
+                this.CreateExpression();
+            }
+            catch (Exception ex)
+            {
+                throw new Scryber.Styles.Parsing.CSSExpressionParseException("The css expression '" + this._expressionString + "' is not valid: " + ex.Message, ex);
+            }
+        }
+
         #region public override T Value(StyleBase forStyle)
 
         /// <summary>
@@ -166,6 +184,8 @@ namespace Scryber.Styles
 
             var context = args.Context;
 
+            this._log = context.TraceLog;
+            this._nullRootLogged = false;
             this._expression = CreateExpression();
             this._variableProvider = context.Items.ValueProvider(context.CurrentIndex,
                                             context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack);
@@ -262,7 +282,25 @@ namespace Scryber.Styles
             if (forStyle is Style style && style.HasVariables)
                 provider = new StyleChainedVariableProvider(style.Variables, provider, style);
 
-            object value = _expression.Evaluate(provider);
+            object value;
+
+            try
+            {
+                value = _expression.Evaluate(provider);
+            }
+            catch (Exception ex) when (Scryber.Expressive.Exceptions.NullRootVariableException.IsCausedBy(ex))
+            {
+                //The root variable (e.g. 'model') has not been set or is null, and there was no default.
+                //Always logged as an error (strict or lax) - the value is left as the base (unset) value.
+                if (!this._nullRootLogged)
+                {
+                    this._nullRootLogged = true;
+                    if (null != this._log)
+                        this._log.Add(Scryber.TraceLevel.Error, "Style Binding", "The style expression '" + this._expressionString + "' for '" + this.Key + "' could not be evaluated: " + ex.Message);
+                }
+                return base.Value(forStyle);
+            }
+
             T result;
 
             if (null != _convertor)

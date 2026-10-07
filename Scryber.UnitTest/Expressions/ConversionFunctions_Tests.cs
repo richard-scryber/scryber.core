@@ -192,6 +192,16 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
+        public void Int_IsShortNameForInteger()
+        {
+            Assert.AreEqual(42, EvaluateExpression<int>("int('42')"));
+            Assert.AreEqual(-100, EvaluateExpression<int>("int('-100')"));
+            Assert.AreEqual(4, EvaluateExpression<int>("int(3.6)"), "int should round in the same way as integer");
+        }
+
+        [TestMethod()]
+        [TestCategory("Expressions")]
+        [TestCategory("Conversion")]
         public void Integer_NegativeString_ReturnsNegativeInteger()
         {
             var result = EvaluateExpression<int>("integer('-100')");

@@ -352,21 +352,21 @@ Functions are organized into 8 categories:
 - `indexOf(str, search)` - Find position
 - `padLeft(str, length, char)`, `padRight(str, length, char)` - Padding
 - `split(str, delimiter)` - Split into array
-- `regexIsMatch(str, pattern)`, `regexMatches(str, pattern)`, `regexReplace(str, pattern, replacement)` - Regex operations
+- `isMatch(str, pattern)`, `matches(str, pattern)`, `swap(str, pattern, replacement)` - Regex operations
 
 **Mathematical Functions** (21 functions):
 - `abs()`, `ceiling()`, `floor()`, `round()`, `truncate()` - Rounding
 - `sqrt()`, `pow()`, `exp()`, `log()`, `log10()` - Power and logarithms
 - `sign()` - Sign determination
 - `sin()`, `cos()`, `tan()`, `asin()`, `acos()`, `atan()` - Trigonometry
-- `degrees()`, `radians()` - Angle conversion
+- `deg()`, `rad()` - Angle conversion
 - `pi()`, `e()` - Constants
 - `random()` - Random number generation
 
 **Date/Time Functions** (19 functions):
 - **Add functions** (6): `addDays()`, `addMonths()`, `addYears()`, `addHours()`, `addMinutes()`, `addSeconds()`, `addMilliseconds()`
 - **Between functions** (4): `daysBetween()`, `hoursBetween()`, `minutesBetween()`, `secondsBetween()`
-- **Extract functions** (9): `yearOf()`, `monthOfYear()`, `dayOfMonth()`, `dayOfWeek()`, `dayOfYear()`, `hourOf()`, `minuteOf()`, `secondOf()`, `millisecondOf()`
+- **Extract functions** (9): `yearOf()`, `monthOf()`, `dayOfMonth()`, `dayOfWeek()`, `dayOfYear()`, `hourOf()`, `minuteOf()`, `secondOf()`, `millisecondOf()`
 
 **Logical Functions** (3 functions):
 - `if(condition, trueValue, falseValue)` - Inline conditional (ternary)

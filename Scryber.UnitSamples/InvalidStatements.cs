@@ -78,7 +78,7 @@ public class InvalidStatements : SampleBase
     }
     
     [TestMethod]
-    public void InvalidInside_Logged()
+    public void InvalidInside_Lax_StillThrows()
     {
         var path = GetTemplatePath("Invalid", "InvalidInside.html");
         bool error = false;
@@ -88,12 +88,13 @@ public class InvalidStatements : SampleBase
         {
             using var doc = Document.ParseDocument(path);
 
-            //Any errors will be consumed and processing continues.
-            //But the logs will appear at the end of the output document.
+            //An expression with invalid syntax inside a template (here an #if) is parsed when it is bound.
+            //Invalid syntax is invalid completely, so it is raised in lax mode as well as strict.
+            doc.ConformanceMode = ParserConformanceMode.Lax;
             doc.AppendTraceLog = true;
             doc.Params["model"] = new { ShowSection = true, ShowText = false };
             
-            using var ms = DocStreams.GetOutputStream("InvalidTemplates_InvalidInside_Logged.pdf");
+            using var ms = DocStreams.GetOutputStream("InvalidTemplates_InvalidInside_Lax.pdf");
             doc.SaveAsPDF(ms);
             
             
@@ -104,9 +105,9 @@ public class InvalidStatements : SampleBase
             exception = ex;
         }
         
-        Assert.IsFalse(error, "Error found");
-        Assert.IsNull(exception, "Exception found");
-        Assert.IsTrue(parsed, "Document should have been parsed");
+        Assert.IsTrue(error, "No error found");
+        Assert.IsNotNull(exception, "No exception found");
+        Assert.IsTrue(parsed, "Document should have been parsed, as the error is only found when binding the template");
 
     }
     

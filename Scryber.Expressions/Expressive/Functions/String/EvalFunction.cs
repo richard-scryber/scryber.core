@@ -48,7 +48,7 @@ namespace Scryber.Expressive.Functions.String
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("The expression '" + exprString + "' could not be compiled into a valid expression", ex);
+                    throw new Exceptions.DynamicExpressionException("The expression '" + exprString + "' could not be compiled into a valid expression", ex);
                 }
 
                 _last = expr;
@@ -56,7 +56,15 @@ namespace Scryber.Expressive.Functions.String
             }
 
 
-            return _last.Evaluate(variables);
+            try
+            {
+                return _last.Evaluate(variables);
+            }
+            catch (Exceptions.ExpressiveException ex) when (Exceptions.ExpressionErrors.IsSyntaxError(ex))
+            {
+                //The expression is data, so not a syntax error in the template.
+                throw new Exceptions.DynamicExpressionException("The expression '" + exprString + "' could not be evaluated: " + ex.Message, ex);
+            }
             
             
         }
