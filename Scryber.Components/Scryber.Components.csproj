@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.7.4.4</PackageVersion>
+    <PackageVersion>9.7.5</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.4.4
+    <PackageReleaseNotes>9.7.5
+Consistent error handling in strict and lax mode - invalid syntax is invalid completely, missing data is not a syntax error.
+Invalid expression syntax now always throws, in strict and lax: an expression that is incomplete when evaluated (e.g. model.items[0), a function with the wrong number of parameters, and an invalid expression inside a repeating or conditional template ({{#each}}, {{#if}}). Lax previously logged these and carried on.
+A root variable that is not set (or is null) logs a single error in both modes (strict previously threw). A null part way along, or at the end of, a path (e.g. model.missing.value where missing or value is null) is silent and just results in null.
+CSS var() and calc() follow the same rules: var(model.x, default) uses the default when there is no value, and invalid css expressions are validated and raised when the css is parsed.
+Document.CreateParserSettings() and CreateParserSettingsAsync() now default to Lax, matching Document.ParseDocument().
+Added int() as a short name for integer(). Corrected the function documentation to the registered names monthOf, deg, rad, isMatch, matches and swap.
+
+9.7.4.4
 Fixed a colspan cell's nested content (paragraphs, text) being squeezed into its starting column's width instead of the full spanned width - the cell's outer box was already sized correctly, but content layout took a stale single-column width at face value.
 Removed Overflow.Split = Never from &lt;figure&gt;, which forced any figure content (not just an image+caption pair) to be treated as an unsplittable block and crashed when a wrapped table was too tall to fit on one page.
 
@@ -188,12 +196,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.7.4.4</Version>
+    <Version>9.7.5</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.7.4.4</FileVersion>
+    <FileVersion>9.7.5</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
