@@ -18,6 +18,7 @@ namespace Scryber
     {
         private Stack<object> stack = new Stack<object>();
         private Stack<IDataSource> sources = new Stack<IDataSource>();
+        private Stack<bool> collections = new Stack<bool>();
         
         /// <summary>
         /// Returns true if there is at least one object on the data stack
@@ -61,6 +62,45 @@ namespace Scryber
 
             this.stack.Push(data);
             this.sources.Push(source);
+            this.collections.Push(false);
+        }
+
+        /// <summary>
+        /// Pushes a collection that is about to be enumerated onto the data stack (e.g. for an each loop).
+        /// The items from the collection are then pushed above it, but it is not considered
+        /// a context in its own right when finding the parent of the current item.
+        /// </summary>
+        public void PushCollection(object data, IDataSource source)
+        {
+            this.stack.Push(data);
+            this.sources.Push(source);
+            this.collections.Push(true);
+        }
+
+        /// <summary>
+        /// Finds the data in the context outside the current one (the '../' reference), without changing the stack.
+        /// If the current item came from an enumerated collection, the collection itself is skipped.
+        /// </summary>
+        /// <param name="parent">Set to the parent data</param>
+        /// <returns>True if there is a parent context, otherwise false</returns>
+        public bool TryGetParent(out object parent)
+        {
+            parent = null;
+            if (this.stack.Count < 2)
+                return false;
+
+            var data = this.stack.ToArray(); //top first
+            var colls = this.collections.ToArray();
+            var index = 1;
+
+            if (colls[index] && colls.Length > 2)
+                index++; //skip the enumerated collection frame
+
+            if (colls[index])
+                return false; //only the collection remains, so there is no outer context
+
+            parent = data[index];
+            return true;
         }
 
         /// <summary>
@@ -72,6 +112,7 @@ namespace Scryber
             if(this.HasData == false)
                 throw new InvalidOperationException(CommonErrors.NoDataContextOnTheStack);
             this.sources.Pop();
+            this.collections.Pop();
             return this.stack.Pop();
         }
 
@@ -79,8 +120,10 @@ namespace Scryber
         public virtual DataStack Clone()
         {
             DataStack clone = this.MemberwiseClone() as DataStack;
-            clone.sources = new Stack<IDataSource>(this.sources);
-            clone.stack = new Stack<object>(this.stack);
+            //Copy the stacks in the correct order, as the enumerable constructor reverses them
+            clone.sources = new Stack<IDataSource>(this.sources.Reverse());
+            clone.stack = new Stack<object>(this.stack.Reverse());
+            clone.collections = new Stack<bool>(this.collections.Reverse());
             return clone;
         }
 

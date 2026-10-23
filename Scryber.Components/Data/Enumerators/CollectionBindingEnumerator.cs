@@ -3,6 +3,14 @@ using System.Collections;
 
 namespace Scryber.Data.Enumerators;
 
+/// <summary>
+/// Marks an enumerator whose Current item is only valid until the next call to MoveNext (e.g. an XPath iterator),
+/// so the binding enumerator cannot read ahead to identify the last item.
+/// </summary>
+public interface INoReadAheadEnumerator
+{
+}
+
 public class CollectionBindingEnumerator : IBindingEnumerator
 {
     protected IEnumerable Content;
@@ -16,6 +24,13 @@ public class CollectionBindingEnumerator : IBindingEnumerator
     public int CurrentIndex { get; private set; }
 
     public int OriginalIndex { get; private set; }
+
+    private bool _originalIsLast;
+    
+    //The enumerator is read one item ahead, so we know if the current item is the last.
+    private bool _hasNext;
+    private object _next;
+    private bool _started;
 
 
     private bool _dataIsPushed;
@@ -41,6 +56,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
         this.CurrentIndex = -1;
         this.DataContext = context ?? throw new ArgumentNullException(nameof(context));
         this.OriginalIndex = context.CurrentIndex;
+        this._originalIsLast = context.CurrentIsLast;
 
         this.UpdateCurrentIndex = updateIndex;
         this.UpdateContextData = updateContextData;
@@ -63,17 +79,45 @@ public class CollectionBindingEnumerator : IBindingEnumerator
         if (null == Enumerator)
             throw new NullReferenceException("The enumeratable instance did not return an enumerator");
 
-        var result = this.Enumerator.MoveNext();
+        bool result;
+        object inner = null;
+
+        if (this.UpdateCurrentIndex && false == (this.Enumerator is INoReadAheadEnumerator))
+        {
+            //Read ahead one item, so we know if the current one is the last.
+            if (false == this._started)
+            {
+                this._started = true;
+                this._hasNext = this.Enumerator.MoveNext();
+                if (this._hasNext)
+                    this._next = this.Enumerator.Current;
+            }
+
+            result = this._hasNext;
+            if (result)
+            {
+                inner = this._next;
+                this._hasNext = this.Enumerator.MoveNext();
+                this._next = this._hasNext ? this.Enumerator.Current : null;
+            }
+        }
+        else
+        {
+            result = this.Enumerator.MoveNext();
+            if (result)
+                inner = this.Enumerator.Current;
+        }
+
         this.CurrentIndex++;
 
         if (result)
         {
-            var inner = this.Enumerator.Current;
             this._current = inner;
 
             if (this.UpdateCurrentIndex)
             {
                 this.DataContext.CurrentIndex = this.CurrentIndex;
+                this.DataContext.CurrentIsLast = (this.Enumerator is INoReadAheadEnumerator) ? false : !this._hasNext;
             }
 
             if (this.UpdateContextData)
@@ -116,7 +160,11 @@ public class CollectionBindingEnumerator : IBindingEnumerator
         }
 
         this.CurrentIndex = -1;
+        this._started = false;
+        this._hasNext = false;
+        this._next = null;
         this.DataContext.CurrentIndex = this.OriginalIndex;
+        this.DataContext.CurrentIsLast = this._originalIsLast;
     }
 
     protected virtual void Dispose(bool diposing)

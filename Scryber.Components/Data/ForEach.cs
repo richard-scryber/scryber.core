@@ -236,7 +236,7 @@ namespace Scryber.Data
 
             if (hasdata)
             {
-                context.DataStack.Push(data, dataSource);
+                context.DataStack.PushCollection(data, dataSource);
             }
             
             base.DoDataBind(context, includeChildren);
@@ -344,7 +344,7 @@ namespace Scryber.Data
 
         #region private class XPathDefaultIterator : IEnumerator
 
-        private class XPathDefaultEnumerator : IEnumerator
+        private class XPathDefaultEnumerator : IEnumerator, Scryber.Data.Enumerators.INoReadAheadEnumerator
         {
             private System.Xml.XPath.XPathNodeIterator _inner;
             private bool _isReset;
@@ -377,7 +377,7 @@ namespace Scryber.Data
 
         #endregion
 
-        #region private class XPathRangeEnumerator : IEnumerator
+        #region private class XPathRangeEnumerator : IEnumerator, Scryber.Data.Enumerators.INoReadAheadEnumerator
 
         /// <summary>
         /// Implements enumerating over a range (with an optional step)

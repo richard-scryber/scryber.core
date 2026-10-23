@@ -36,7 +36,8 @@ namespace Scryber.Binding
             {
                 var provider = args.Context.Items.ValueProvider(
                     args.Context.CurrentIndex,
-                    args.Context.DataStack.HasData ? args.Context.DataStack.Current : null, args.Context.DataStack);
+                    args.Context.DataStack.HasData ? args.Context.DataStack.Current : null, args.Context.DataStack,
+                    args.Context.CurrentIsLast);
 
                 //Document already implements IImageMetadataResolver - threaded through here (not
                 //referenced directly, Scryber.Expressive can't see Document) so meta() can reach
@@ -104,9 +105,9 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata, DataStack stack)
+        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata, DataStack stack, bool isLast = false)
         {
-            return new ItemVariableProvider(items, index, currentdata, stack);
+            return new ItemVariableProvider(items, index, currentdata, stack, isLast);
         }
     }
 
@@ -116,6 +117,7 @@ namespace Scryber.Binding
         private ItemCollection _items;
         private object _currentData;
         private int _currentIndex;
+        private bool _isLast;
         private RelativeDimensions _relatives;
         private DataStack _stack;
         
@@ -140,8 +142,9 @@ namespace Scryber.Binding
             get { return this._relativeCallback; }
         }
 
-        public ItemVariableProvider(ItemCollection items, int index, object currentData, DataStack stack)
+        public ItemVariableProvider(ItemCollection items, int index, object currentData, DataStack stack, bool isLast = false)
         {
+            _isLast = isLast;
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
             _items = items;
@@ -174,6 +177,11 @@ namespace Scryber.Binding
                 value = this.CurrentIndex;
                 return null != value;
             }
+            else if (variableName == AtLastFunction.CurrentLastVariableName)
+            {
+                value = this._isLast;
+                return true;
+            }
             else if(variableName == CurrentDataExpression.CurrentDataVariableName)
             {
                 value = this.CurrentData;
@@ -184,23 +192,8 @@ namespace Scryber.Binding
             {
                 if (this.DataStack.HasData)
                 {
-                    var currSource = this.DataStack.Source;
-                    var curr = this.DataStack.Current;
-
-                    this.DataStack.Pop();
-                    object parent = null;
-                    if (this.DataStack.HasData)
-                    {
-
-                        parent = this.DataStack.Current;
-                    }
-                    else
-                        parent = null;
-
-                    this.DataStack.Push(curr, currSource);
-
+                    this.DataStack.TryGetParent(out var parent);
                     value = parent;
-                    
                     return true;
                 }
                 else

@@ -288,10 +288,20 @@ namespace Scryber.Expressive.Tokenisation
             
             if (expression[start] == '@')
             {
-                //Explicit check for @index special notation.
-                if (expression.Length >= 6 && expression.Substring(start, 6) == "@index")
+                //Explicit check for @index, @first and @last special notation.
+                if (expression.Length >= start + 6 && expression.Substring(start, 6) == "@index")
                 {
                     length = 6;
+                    return true;
+                }
+                else if (expression.Length >= start + 6 && expression.Substring(start, 6) == "@first")
+                {
+                    length = 6;
+                    return true;
+                }
+                else if (expression.Length >= start + 5 && expression.Substring(start, 5) == "@last")
+                {
+                    length = 5;
                     return true;
                 }
             }
@@ -449,6 +459,16 @@ namespace Scryber.Expressive.Tokenisation
                     length = 6;
                     result = true;
                 }
+                else if (name.Equals("@first", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@last", this.Context.ParsingStringComparison))
+                {
+                    length = 5;
+                    result = true;
+                }
             }
             else
             {
@@ -495,6 +515,16 @@ namespace Scryber.Expressive.Tokenisation
                 else if (name.Equals("@index", this.Context.ParsingStringComparison))
                 {
                     length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@first", this.Context.ParsingStringComparison))
+                {
+                    length = 6;
+                    result = true;
+                }
+                else if (name.Equals("@last", this.Context.ParsingStringComparison))
+                {
+                    length = 5;
                     result = true;
                 }
             }

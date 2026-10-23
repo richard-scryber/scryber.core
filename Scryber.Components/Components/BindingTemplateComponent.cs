@@ -193,6 +193,7 @@ namespace Scryber.Components
             
             int oldindex = context.CurrentIndex;
             string oldkey = context.CurrentKey;
+            bool oldlast = context.CurrentIsLast;
             
             try
             {
@@ -206,6 +207,7 @@ namespace Scryber.Components
             {
                 context.CurrentIndex = oldindex;
                 context.CurrentKey = oldkey;
+                context.CurrentIsLast = oldlast;
             }
         }
 

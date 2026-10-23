@@ -41,6 +41,7 @@ namespace Scryber.Core.UnitTests.Generation
     [TestClass]
     public class PanelContent_Tests
     {
+        public static string TextOf(byte[] pdf) { return Text(pdf); }
         private static string Text(byte[] pdf)
         {
             //text is hex encoded in the content stream (after inflating)

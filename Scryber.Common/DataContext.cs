@@ -61,6 +61,15 @@ namespace Scryber
 
         #endregion
 
+        #region public bool CurrentIsLast {get;set;}
+
+        /// <summary>
+        /// Gets or sets the flag that identifies the current data-binding item is the last in the collection (the @last expression)
+        /// </summary>
+        public bool CurrentIsLast { get; set; }
+
+        #endregion
+
         #region public string CurrentKey {get; set;}
         
         private string _currentKey;

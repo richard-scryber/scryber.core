@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Scryber.Binding;
 using Scryber.Expressive;
 using Scryber.Options;
@@ -53,7 +53,7 @@ namespace Scryber.Styles
             
             var context = args.Context;
             this._expression = CreateExpression();
-            this._variableProvider = context.Items.ValueProvider(context.CurrentIndex, context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack);
+            this._variableProvider = context.Items.ValueProvider(context.CurrentIndex, context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack, context.CurrentIsLast);
             this._expression.BindExpression(this._variableProvider);
             
             object value;

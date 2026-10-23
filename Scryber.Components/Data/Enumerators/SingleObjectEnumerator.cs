@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Scryber.Data.Enumerators;
 
@@ -16,6 +16,8 @@ public class SingleObjectEnumerator : IBindingEnumerator
     public int OriginalIndex { get; private set; }
 
     public string OriginalKey { get; private set; }
+
+    private bool _originalIsLast;
 
     public object Current
     {
@@ -38,6 +40,7 @@ public class SingleObjectEnumerator : IBindingEnumerator
         this.DataContext = context;
         this.OriginalIndex = context.CurrentIndex;
         this.OriginalKey = context.CurrentKey;
+        this._originalIsLast = context.CurrentIsLast;
         
         this.UpdateCurrentIndex = updateIndex;
         this.UpdateContextData = updateContextData;
@@ -64,6 +67,7 @@ public class SingleObjectEnumerator : IBindingEnumerator
             if (this.UpdateCurrentIndex)
             {
                 this.DataContext.CurrentIndex = 0;
+                this.DataContext.CurrentIsLast = true;
             }
             set = true;
         }
@@ -97,6 +101,7 @@ public class SingleObjectEnumerator : IBindingEnumerator
 
         this.CurrentIndex = -1;
         this.DataContext.CurrentIndex = this.OriginalIndex;
+        this.DataContext.CurrentIsLast = this._originalIsLast;
 
     }
 
