@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 
 namespace Scryber.Data.Enumerators;
@@ -97,6 +97,18 @@ public class CollectionBindingEnumerator : IBindingEnumerator
             this.Enumerator.Reset();
         }
 
+        this.ResetBindingState();
+    }
+
+    /// <summary>
+    /// Restores the data stack and index without resetting the inner enumerator,
+    /// as many enumerators (e.g. Linq iterators) do not support Reset, and it is not needed on disposal.
+    /// </summary>
+    private void ResetBindingState()
+    {
+        if (null == this.DataContext)
+            return;
+
         if (this._dataIsPushed)
         {
             this.DataContext.DataStack.Pop();
@@ -111,7 +123,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
     {
         if (diposing)
         {
-            this.Reset();
+            this.ResetBindingState();
             this.Enumerator = null;
             this.DataContext = null;
         }

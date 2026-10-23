@@ -263,7 +263,8 @@ namespace Scryber.Components
                     added += number;
                 }
 
-                enumerator.Reset();
+                //The enumerator restores the data stack and context on disposal.
+                //We don't call Reset here, as not all enumerables support it (e.g. Linq iterators)
             }
 
             // if (CanEnumerate(data))
