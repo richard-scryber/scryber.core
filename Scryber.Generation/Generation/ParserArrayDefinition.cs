@@ -68,6 +68,7 @@ namespace Scryber.Generation
                 if (null == _add)
                 {
                     MethodInfo[] all = this.PropertyInfo.PropertyType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+                    MethodInfo assignable = null;
                     foreach (MethodInfo one in all)
                     {
                         if (one.Name == "Add")
@@ -78,8 +79,17 @@ namespace Scryber.Generation
                                 _add = one;
                                 break;
                             }
+                            else if (param.Length == 1 && null == assignable && param[0].ParameterType.IsAssignableFrom(this.ContentType))
+                            {
+                                //e.g. a collection of Panels where the Add method accepts the Component base type
+                                assignable = one;
+                            }
                         }
                     }
+
+                    if (null == _add)
+                        _add = assignable;
+
                     if (null == _add)
                         throw new NullReferenceException(String.Format(Errors.NoAddMethodFoundOnCollection, this.ValueType, this.ContentType));
                 }
