@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -36,6 +36,14 @@ namespace Scryber.Drawing
                 : base(familyName, style, weight, font, null)
             {
                 
+            }
+
+            /// <summary>
+            /// Creates a reference to a font in a typeface, overriding the weight and style the file declares itself
+            /// </summary>
+            internal LinkedFontReference(string familyName, FontStyle style, int weight, IFontInfo info, ITypefaceInfo typeface)
+                : base(familyName, style, weight, info, typeface)
+            {
             }
 
             internal void Append(LinkedFontReference reference)
@@ -275,6 +283,17 @@ namespace Scryber.Drawing
                 return fontReference;
             }
 
+            public FontReference Add(IFontInfo font, ITypefaceInfo typeface, FontStyle style, int weight)
+            {
+                LinkedFontReference fontReference = new LinkedFontReference(this.FamilyName, style, weight, font, typeface);
+                if (null == this.Styles)
+                    this.Styles = new LinkedStyleReference(this.FamilyName, style);
+
+                this.Styles.Add(fontReference);
+
+                return fontReference;
+            }
+
             public FontReference Add(int fontWeight, FontStyle style, ITypefaceFont font)
             {
                 LinkedFontReference fontReference = new LinkedFontReference(this.FamilyName, style, fontWeight, font);
@@ -348,6 +367,19 @@ namespace Scryber.Drawing
                         return null;
 
                 }
+            }
+
+            public FontReference AddFont(ITypefaceInfo info, IFontInfo font, string familyName, FontStyle style, int weight)
+            {
+                FamilyReference family;
+                familyName = familyName ?? font.FamilyName;
+
+                if (!_families.TryGetValue(familyName, out family))
+                {
+                    family = new FamilyReference(familyName);
+                    _families.Add(familyName, family);
+                }
+                return family.Add(font, info, style, weight);
             }
 
             public int FillAllFamilies(List<String> familyNames)
@@ -688,14 +720,22 @@ namespace Scryber.Drawing
 
                     if (null != info && string.IsNullOrEmpty(info.ErrorMessage) && info.FontCount > 0)
                     {
+                        //If the registration declares a weight or style, then it is used for the (single) font in the file,
+                        //rather than the one the file declares itself.
+                        var overrideStyle = !string.IsNullOrEmpty(known.Style) || known.Weight > 0;
+                        
                         foreach (var font in info.Fonts)
                         {
                             var family = known.Family ?? font.FamilyName;
-                            
-                                
-                            custom.AddFont(info, font, family);
 
-
+                            if (overrideStyle && info.FontCount == 1)
+                            {
+                                var style = string.IsNullOrEmpty(known.Style) ? GetStyleFromFont(font) : ParseRegisteredStyle(known.Style);
+                                var weight = known.Weight > 0 ? known.Weight : (int)font.FontWeight;
+                                custom.AddFont(info, font, family, style, weight);
+                            }
+                            else
+                                custom.AddFont(info, font, family);
                         }
                         //custom.AddTypefaceFonts(info);
                     }
@@ -940,6 +980,16 @@ namespace Scryber.Drawing
         
         #endregion
         
+        private static FontStyle ParseRegisteredStyle(string style)
+        {
+            if (string.Equals(style, "italic", StringComparison.OrdinalIgnoreCase))
+                return FontStyle.Italic;
+            else if (string.Equals(style, "oblique", StringComparison.OrdinalIgnoreCase))
+                return FontStyle.Oblique;
+            else
+                return FontStyle.Regular;
+        }
+
         #region private static FontStyle GetStyleFromFont(IFontInfo font)
         
         private static FontStyle GetStyleFromFont(IFontInfo font)
