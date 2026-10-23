@@ -750,6 +750,54 @@ namespace Scryber.Generation
                     }
                 }
             }
+
+            EnsurePanelDefaultContent(parsertype, defn, all);
+        }
+
+        /// <summary>
+        /// Classes derived from Panel (e.g. custom components) that do not declare any default element
+        /// are given the Panel Contents as the default, so child content in the template is not dropped.
+        /// Panel itself does not declare it, as many derived classes declare their own default elements.
+        /// </summary>
+        private static void EnsurePanelDefaultContent(Type parsertype, ParserClassDefinition defn, PropertyInfo[] all)
+        {
+            if (null != defn.DefaultElement || !IsPanelType(parsertype))
+                return;
+
+            foreach (var pi in all)
+            {
+                if (pi.Name == "Contents" && pi.CanRead && typeof(IComponentList).IsAssignableFrom(pi.PropertyType))
+                {
+                    //The type of the items in the list is the generic argument of the ICollection<T> it implements
+                    Type itemType = null;
+                    foreach (var face in pi.PropertyType.GetInterfaces())
+                    {
+                        if (face.IsGenericType && face.GetGenericTypeDefinition() == typeof(ICollection<>))
+                        {
+                            itemType = face.GetGenericArguments()[0];
+                            break;
+                        }
+                    }
+
+                    if (null == itemType)
+                        return;
+
+                    defn.DefaultElement = new ParserArrayDefinition(string.Empty, string.Empty, itemType, pi);
+                    return;
+                }
+            }
+        }
+
+        private static bool IsPanelType(Type type)
+        {
+            //Scryber.Components is not referenced from here, so the Panel is checked by name.
+            while (null != type)
+            {
+                if (type.FullName == "Scryber.Components.Panel")
+                    return true;
+                type = type.BaseType;
+            }
+            return false;
         }
 
         #endregion
