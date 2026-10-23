@@ -4028,6 +4028,61 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public static Document ParseDocument(reader or stream, path, type, ParserSettings)
+
+        private static Document AssertParsedIsDocument(IComponent parsed)
+        {
+            if (!(parsed is Document))
+                throw new InvalidCastException(String.Format(Errors.CannotConvertObjectToType, parsed.GetType(), typeof(Document)));
+
+            return parsed as Document;
+        }
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the xml or xhtml content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseDocument(System.IO.TextReader reader, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = Parse(path, reader, type, settings.Resolver, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="Stream"/> with the xml or xhtml content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseDocument(System.IO.Stream stream, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = Parse(path, stream, type, settings.Resolver, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+
+        #endregion
+
         #region public static Document ParseDocument(System.Xml.XmlReader reader, string path, ParseSourceType type)
 
         /// <summary>
@@ -4183,6 +4238,53 @@ namespace Scryber.Components
 
             return doc;
         }
+
+        #endregion
+
+        #region public static Document ParseHtmlDocument(reader or stream, path, type, ParserSettings)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the html5 content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.TextReader reader, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = ParseHtml(path, reader, type, settings.Resolver, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="Stream"/> with the html5 content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static Document ParseHtmlDocument(System.IO.Stream stream, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = ParseHtml(path, stream, type, settings.Resolver, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
 
         #endregion
 
@@ -4467,6 +4569,53 @@ namespace Scryber.Components
 
         #endregion
 
+        #region public static async Task<Document> ParseDocumentAsync(reader or stream, path, type, ParserSettings)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the xml or xhtml content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = await ParseAsync(path, reader, type, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="Stream"/> with the xml or xhtml content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = await ParseAsync(path, stream, type, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+
+        #endregion
+
         #region public static async Task<Document> ParseDocumentAsync(System.Xml.XmlReader reader, string path, ParseSourceType type)
 
         /// <summary>
@@ -4625,6 +4774,53 @@ namespace Scryber.Components
         
         #endregion
         
+        #region public static async Task<Document> ParseHtmlDocumentAsync(reader or stream, path, type, ParserSettings)
+
+        /// <summary>
+        /// Parses a <see cref="TextReader"/> with the html5 content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="reader">The text reader to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(System.IO.TextReader reader, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = await ParseHtmlAsync(path, reader, type, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="Stream"/> with the html5 content into a new <see cref="Document"/> instance, using the explicit <see cref="ParserSettings"/> provided
+        /// (conformance mode, logging, culture, controller, resolver, etc.) rather than the defaults. Any processing instructions in the content are still applied over the settings.
+        /// </summary>
+        /// <param name="stream">The stream to read the content from, positioned at the start of the content to be parsed.</param>
+        /// <param name="path">The file path, url, or resource path originally used to read the content from, that can then be used for relative content</param>
+        /// <param name="type">The <see cref="ParseSourceType"/> as an indicator of where the content is sourced from to assist with loading any external resources.</param>
+        /// <param name="settings">The settings to use when parsing the content, for example from <see cref="CreateParserSettings(string, ParserConformanceMode, object)"/></param>
+        /// <returns>A complete parsed document, ready for any changes and saving with <see cref="SaveAsPDF(Stream)" /> or one of its overloads</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the settings are null</exception>
+        /// <exception cref="PDFParserException">Thrown if the content could not be parsed (invalid content)</exception>
+        /// <exception cref="InvalidCastException">Thrown if the parsed content was not a document type</exception>
+        public static async Task<Document> ParseHtmlDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type, ParserSettings settings)
+        {
+            if (null == settings)
+                throw new ArgumentNullException(nameof(settings));
+
+            IComponent parsed = await ParseHtmlAsync(path, stream, type, settings);
+            return AssertParsedIsDocument(parsed);
+        }
+
+
+        #endregion
+
         #region public static async Task<Document> ParseHtmlDocumentAsync(System.IO.Stream stream, string path, ParseSourceType type)
         
         /// <summary>

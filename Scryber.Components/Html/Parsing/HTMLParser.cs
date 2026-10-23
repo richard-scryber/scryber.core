@@ -470,7 +470,7 @@ namespace Scryber.Html.Parsing
                     if (node.NodeType == HtmlNodeType.Element)
                         break; //we are starting the actual document - so go no further
 
-                    else if (node.NodeType == HtmlNodeType.Comment && node.InnerHtml.StartsWith("<?scryber"))
+                    else if (node.NodeType == HtmlNodeType.Comment && (node.InnerHtml.StartsWith("<?scryber") || node.InnerHtml.StartsWith("<?paperwork")))
                         processing = node.InnerHtml;
                 }
             }

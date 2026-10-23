@@ -373,6 +373,66 @@ namespace Scryber.Core.UnitTests.Configuration
 
         }
 
+        [TestMethod]
+        public void CustomPathImageFactory_DecodesRequestedStream_Test()
+        {
+            //A requestor loads the content for a custom path, and the registered plain handler decodes it
+            var pngFile = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.png");
+            var bytes = File.ReadAllBytes(pngFile);
+
+            var html = @"<html xmlns='http://www.w3.org/1999/xhtml' ><body style='padding:20pt;' >
+<img src='db://products/42' alt='From the database' style='width:100pt' />
+</body></html>";
+
+            var handler = new DatabaseImageFactory();
+            var requests = 0;
+
+            using (var sr = new System.IO.StringReader(html))
+            using (var doc = Document.ParseDocument(sr, ParseSourceType.DynamicContent))
+            {
+                doc.ConformanceMode = ParserConformanceMode.Strict;
+                doc.ImageFactories.Insert(0, new ImageFactoryCustom(new Regex("^db://"), "Database", true, handler));
+                doc.RemoteFileRegistered += (s, a) =>
+                {
+                    if (!a.Request.FilePath.StartsWith("db://"))
+                        return;
+                    requests++;
+                    using (var ms = new MemoryStream(bytes))
+                        a.Request.Callback(a.Request.Owner, a.Request, ms);
+                };
+
+                using (var stream = DocStreams.GetOutputStream("CustomPathImageFactory.pdf"))
+                {
+                    doc.SaveAsPDF(stream);
+                }
+
+                Assert.AreEqual(1, requests, "The request was not raised once");
+                Assert.AreEqual(1, handler.DecodeCount, "The handler did not decode the requested image");
+                Assert.AreEqual(bytes.Length, handler.LastLength, "The handler did not get the content");
+                Assert.IsTrue(doc.SharedResources.Any(r => r is Scryber.PDF.Resources.PDFImageXObject), "The image was not added to the document");
+            }
+        }
+
+        public class DatabaseImageFactory : IPDFImageDataFactory
+        {
+            public bool ShouldCache { get { return false; } }
+            public int DecodeCount { get; private set; }
+            public int LastLength { get; private set; }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, byte[] data, MimeType type)
+            {
+                DecodeCount++;
+                LastLength = data.Length;
+                using (var ms = new MemoryStream(data))
+                    return ImageReader.Create().ReadStream(document.GetIncrementID(owner.Type) + "db_png", ms, false);
+            }
+
+            public ImageData LoadImageData(IDocument document, IComponent owner, string path)
+            {
+                throw new NotSupportedException("The content is supplied by the requestor");
+            }
+        }
+
         public void EnsureDataImageFactory(Document doc)
         {
             var factories = doc.ImageFactories;
