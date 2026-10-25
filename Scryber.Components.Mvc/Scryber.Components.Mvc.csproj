@@ -4,7 +4,7 @@
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.8.0-beta</PackageVersion>
+    <PackageVersion>9.8.0-beta.1</PackageVersion>
     <Version>9.8.0.0</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents. 
@@ -19,7 +19,10 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
       <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta
+    <PackageReleaseNotes>9.8.0-beta.1
+Fixes the package dependencies - 9.6.0.14-beta to 9.8.0-beta listed a dependency on Scryber.Common, which is not a package (it is included in Scryber.Core), so the package could not be restored. It now depends only on Scryber.Core.
+
+9.8.0-beta
 Updates the Scryber.Core dependency to 9.8.0-beta - see Scryber.Core release notes (text-transform, @first/@last/@key loop variables and dictionary iteration, gradient var() support, Fonts:Register weight and style, ../ in each loops).
 
 9.7.5
@@ -206,7 +209,8 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
     <PackageReference Include="Scryber.Core" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseScryberProjRef)' == 'True'">
-    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" />
+    <!-- Scryber.Common is not a package, it is bundled in Scryber.Core, so it must not become a dependency of this package -->
+    <ProjectReference Include="..\Scryber.Common\Scryber.Common.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Scryber.Components\Scryber.Components.csproj" />
   </ItemGroup>
       
