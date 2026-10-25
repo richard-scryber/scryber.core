@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.7.5</PackageVersion>
+    <PackageVersion>9.8.0-beta</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,21 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.7.5
+    <PackageReleaseNotes>9.8.0-beta
+New: text-transform css property (none, uppercase, lowercase, capitalize) - inherited, and usable with expressions.
+New: @first and @last loop variables alongside @index, usable in output, {{#if}}, if() and css expressions. @last is correct for arrays, lists, dictionaries and Linq iterators.
+New: @key loop variable - the key or property name when iterating a dictionary or json object, or the index for a collection. It is restored after each (nested) loop.
+Changed: {{#each}} over a Dictionary, a Newtonsoft JObject or a System.Text.Json object now iterates the entries (as in Handlebars) rather than binding the object once. The template element and ForEach component still bind an object once.
+Fixed: ../ inside {{#each}} now refers to the outer item (or {{#with}} object) rather than the collection being enumerated. It is a single level only.
+Fixed: {{#each}} over a non-resettable enumerable (e.g. a Linq Select) threw 'Specified method is not supported' in strict mode.
+Fixed: var() and calc() inside linear-gradient() and radial-gradient() dropped the gradient, and the background shorthand now accepts gradients.
+Fixed: Fonts:Register entries now apply their Weight and Style, rather than the weight and style of the font file.
+Fixed: the HTML5 parser now accepts the paperwork processing instruction as well as scryber. Added Document.ParseDocument and ParseHtmlDocument overloads (and async) that take ParserSettings.
+Fixed: configured image factory handlers (ImageFactoryCustom) can now decode streams supplied by a requestor on a custom path.
+Fixed: parsed collections accept an Add method of a base type (e.g. [PDFArray(typeof(Panel))] on a ComponentList), and components derived from Panel keep their child content.
+Obsolete: the HtmlFragment component.
+
+9.7.5
 Consistent error handling in strict and lax mode - invalid syntax is invalid completely, missing data is not a syntax error.
 Invalid expression syntax now always throws, in strict and lax: an expression that is incomplete when evaluated (e.g. model.items[0), a function with the wrong number of parameters, and an invalid expression inside a repeating or conditional template ({{#each}}, {{#if}}). Lax previously logged these and carried on.
 A root variable that is not set (or is null) logs a single error in both modes (strict previously threw). A null part way along, or at the end of, a path (e.g. model.missing.value where missing or value is null) is silent and just results in null.
@@ -196,12 +210,12 @@ Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
 This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.7.5</Version>
+    <Version>9.8.0.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>9.7.5</FileVersion>
+    <FileVersion>9.8.0.0</FileVersion>
     <RepositoryType>Git</RepositoryType>
     <Configurations>Release;Debug</Configurations>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
