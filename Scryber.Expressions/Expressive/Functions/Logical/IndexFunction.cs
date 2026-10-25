@@ -82,4 +82,25 @@ namespace Scryber.Expressive.Functions.Relational
                 return false;
         }
     }
+
+    /// <summary>
+    /// The key (or property name) of the current item when binding over a dictionary or object, or the index when binding over a collection (@key)
+    /// </summary>
+    public class AtKeyFunction : FunctionBase
+    {
+        public const string CurrentKeyVariableName = "[CurrentKey]";
+
+        public override string Name { get { return "@Key"; } }
+
+        public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
+        {
+            this.ValidateParameterCount(parameters, 0, 0);
+
+            object value;
+            if (variables.TryGetValue(CurrentKeyVariableName, out value) && value is string key)
+                return key;
+            else
+                return string.Empty;
+        }
+    }
 }

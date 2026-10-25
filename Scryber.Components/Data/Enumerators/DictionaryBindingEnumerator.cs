@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using Scryber.Styles;
 
@@ -22,6 +22,11 @@ public class DictionaryBindingEnumerator : IBindingEnumerator
     public int OriginalIndex { get; private set; }
 
     public string OriginalKey { get; private set; }
+
+    private bool _originalIsLast;
+    private bool _started;
+    private bool _hasNext;
+    private object _nextKey;
 
     private bool _dataIsPushed;
     private object _current;
@@ -47,6 +52,7 @@ public class DictionaryBindingEnumerator : IBindingEnumerator
         this.DataContext = context;
         this.OriginalIndex = context.CurrentIndex;
         this.OriginalKey = context.CurrentKey;
+        this._originalIsLast = context.CurrentIsLast;
         
         this.UpdateCurrentIndex = updateIndex;
         this.UpdateContextData = updateContextData;
@@ -75,16 +81,32 @@ public class DictionaryBindingEnumerator : IBindingEnumerator
         
         
         
-        var result = this.KeyEnumerator.MoveNext();
+        //Read ahead one key, so we know if the current item is the last.
+        if (false == this._started)
+        {
+            this._started = true;
+            this._hasNext = this.KeyEnumerator.MoveNext();
+            this._nextKey = this._hasNext ? this.KeyEnumerator.Current : null;
+        }
+
+        var result = this._hasNext;
+        object key = null;
+
+        if (result)
+        {
+            key = this._nextKey;
+            this._hasNext = this.KeyEnumerator.MoveNext();
+            this._nextKey = this._hasNext ? this.KeyEnumerator.Current : null;
+        }
+
         this.CurrentIndex++;
         
         if (result)
         {
-            
-            var key = KeyEnumerator.Current;
-
             if (null == key)
                 throw new ArgumentNullException(nameof(key));
+
+            this.CurrentKey = key;
 
             var inner = this.Content[key];
             this._current = inner;
@@ -92,7 +114,8 @@ public class DictionaryBindingEnumerator : IBindingEnumerator
             if (this.UpdateCurrentIndex)
             {
                 this.DataContext.CurrentIndex = this.CurrentIndex;
-                this.DataContext.CurrentKey = this.CurrentKey.ToString();
+                this.DataContext.CurrentKey = Convert.ToString(key, System.Globalization.CultureInfo.InvariantCulture);
+                this.DataContext.CurrentIsLast = !this._hasNext;
             }
 
             if (this.UpdateContextData)
@@ -123,9 +146,13 @@ public class DictionaryBindingEnumerator : IBindingEnumerator
 
         this.CurrentIndex = -1;
         this.CurrentKey = string.Empty;
+        this._started = false;
+        this._hasNext = false;
+        this._nextKey = null;
 
         this.DataContext.CurrentIndex = this.OriginalIndex;
         this.DataContext.CurrentKey = this.OriginalKey;
+        this.DataContext.CurrentIsLast = this._originalIsLast;
     }
 
 

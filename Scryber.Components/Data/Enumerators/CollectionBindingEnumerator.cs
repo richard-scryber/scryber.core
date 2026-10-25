@@ -26,6 +26,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
     public int OriginalIndex { get; private set; }
 
     private bool _originalIsLast;
+    private string _originalKey;
     
     //The enumerator is read one item ahead, so we know if the current item is the last.
     private bool _hasNext;
@@ -57,6 +58,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
         this.DataContext = context ?? throw new ArgumentNullException(nameof(context));
         this.OriginalIndex = context.CurrentIndex;
         this._originalIsLast = context.CurrentIsLast;
+        this._originalKey = context.CurrentKey;
 
         this.UpdateCurrentIndex = updateIndex;
         this.UpdateContextData = updateContextData;
@@ -117,6 +119,8 @@ public class CollectionBindingEnumerator : IBindingEnumerator
             if (this.UpdateCurrentIndex)
             {
                 this.DataContext.CurrentIndex = this.CurrentIndex;
+                //For a collection the key is the index (as in Handlebars)
+                this.DataContext.CurrentKey = this.CurrentIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 this.DataContext.CurrentIsLast = (this.Enumerator is INoReadAheadEnumerator) ? false : !this._hasNext;
             }
 
@@ -165,6 +169,7 @@ public class CollectionBindingEnumerator : IBindingEnumerator
         this._next = null;
         this.DataContext.CurrentIndex = this.OriginalIndex;
         this.DataContext.CurrentIsLast = this._originalIsLast;
+        this.DataContext.CurrentKey = this._originalKey;
     }
 
     protected virtual void Dispose(bool diposing)

@@ -188,7 +188,7 @@ namespace Scryber.Styles
             this._nullRootLogged = false;
             this._expression = CreateExpression();
             this._variableProvider = context.Items.ValueProvider(context.CurrentIndex,
-                                            context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack, context.CurrentIsLast);
+                                            context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack, context.CurrentIsLast, context.CurrentKey);
 
             this._expression.BindExpression(this._variableProvider);
             //Execute once to make sure we are all set up - although css variables may not be there.

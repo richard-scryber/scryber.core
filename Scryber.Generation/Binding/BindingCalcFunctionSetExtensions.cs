@@ -98,6 +98,7 @@ namespace Scryber.Binding
             _all.Add(new AtIndexFunction());
             _all.Add(new AtFirstFunction());
             _all.Add(new AtLastFunction());
+            _all.Add(new AtKeyFunction());
             _all.Add(new IfErrorFunction());
 
             // Relational

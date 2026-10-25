@@ -304,6 +304,11 @@ namespace Scryber.Expressive.Tokenisation
                     length = 5;
                     return true;
                 }
+                else if (expression.Length >= start + 4 && expression.Substring(start, 4) == "@key")
+                {
+                    length = 4;
+                    return true;
+                }
             }
             
             while (index < expression.Length)
@@ -469,6 +474,11 @@ namespace Scryber.Expressive.Tokenisation
                     length = 5;
                     result = true;
                 }
+                else if (name.Equals("@key", this.Context.ParsingStringComparison))
+                {
+                    length = 4;
+                    result = true;
+                }
             }
             else
             {
@@ -525,6 +535,11 @@ namespace Scryber.Expressive.Tokenisation
                 else if (name.Equals("@last", this.Context.ParsingStringComparison))
                 {
                     length = 5;
+                    result = true;
+                }
+                else if (name.Equals("@key", this.Context.ParsingStringComparison))
+                {
+                    length = 4;
                     result = true;
                 }
             }

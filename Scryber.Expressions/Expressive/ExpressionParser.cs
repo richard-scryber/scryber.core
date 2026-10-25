@@ -388,6 +388,10 @@ namespace Scryber.Expressive
             {
                 constant = new FunctionExpression("@last", lastFunc, this.context, Array.Empty<IExpression>());
             }
+            else if (currentToken.Equals("@key", this.context.ParsingStringComparison) && this.context.TryGetFunction("@key", out var keyFunc))
+            {
+                constant = new FunctionExpression("@key", keyFunc, this.context, Array.Empty<IExpression>());
+            }
             else
             {
                 constant = null;

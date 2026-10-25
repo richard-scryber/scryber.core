@@ -37,7 +37,7 @@ namespace Scryber.Binding
                 var provider = args.Context.Items.ValueProvider(
                     args.Context.CurrentIndex,
                     args.Context.DataStack.HasData ? args.Context.DataStack.Current : null, args.Context.DataStack,
-                    args.Context.CurrentIsLast);
+                    args.Context.CurrentIsLast, args.Context.CurrentKey);
 
                 //Document already implements IImageMetadataResolver - threaded through here (not
                 //referenced directly, Scryber.Expressive can't see Document) so meta() can reach
@@ -105,9 +105,9 @@ namespace Scryber.Binding
     public static class PDFItemCollectionExtensions
     {
 
-        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata, DataStack stack, bool isLast = false)
+        public static ItemVariableProvider ValueProvider(this ItemCollection items, int index, object currentdata, DataStack stack, bool isLast = false, string key = null)
         {
-            return new ItemVariableProvider(items, index, currentdata, stack, isLast);
+            return new ItemVariableProvider(items, index, currentdata, stack, isLast, key);
         }
     }
 
@@ -118,6 +118,7 @@ namespace Scryber.Binding
         private object _currentData;
         private int _currentIndex;
         private bool _isLast;
+        private string _key;
         private RelativeDimensions _relatives;
         private DataStack _stack;
         
@@ -142,9 +143,10 @@ namespace Scryber.Binding
             get { return this._relativeCallback; }
         }
 
-        public ItemVariableProvider(ItemCollection items, int index, object currentData, DataStack stack, bool isLast = false)
+        public ItemVariableProvider(ItemCollection items, int index, object currentData, DataStack stack, bool isLast = false, string key = null)
         {
             _isLast = isLast;
+            _key = key;
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
             _items = items;
@@ -176,6 +178,11 @@ namespace Scryber.Binding
             {
                 value = this.CurrentIndex;
                 return null != value;
+            }
+            else if (variableName == AtKeyFunction.CurrentKeyVariableName)
+            {
+                value = this._key ?? string.Empty;
+                return true;
             }
             else if (variableName == AtLastFunction.CurrentLastVariableName)
             {

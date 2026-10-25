@@ -53,7 +53,7 @@ namespace Scryber.Styles
             
             var context = args.Context;
             this._expression = CreateExpression();
-            this._variableProvider = context.Items.ValueProvider(context.CurrentIndex, context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack, context.CurrentIsLast);
+            this._variableProvider = context.Items.ValueProvider(context.CurrentIndex, context.DataStack.HasData ? context.DataStack.Current : null, context.DataStack, context.CurrentIsLast, context.CurrentKey);
             this._expression.BindExpression(this._variableProvider);
             
             object value;
