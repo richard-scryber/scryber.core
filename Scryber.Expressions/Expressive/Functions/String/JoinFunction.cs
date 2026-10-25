@@ -26,6 +26,23 @@ namespace Scryber.Expressive.Functions.String
             StringBuilder sb = new StringBuilder();
             string separator = null;
 
+            //The documented signature is join(collection, separator), the original is join(separator, item, item...)
+            //so if there are 2 parameters and the first is a collection (not a string), and the second is not, then swap them.
+            if (parameters.Length == 2)
+            {
+                var first = parameters[0].Evaluate(variables);
+                if (null != first && !(first is string) && Helpers.Collections.TryIsCollection(first, out _))
+                {
+                    var second = parameters[1].Evaluate(variables);
+                    if (second is string || null == second)
+                    {
+                        separator = (second ?? "").ToString();
+                        Evaluate(separator, sb, first, variables, context);
+                        return sb.ToString();
+                    }
+                }
+            }
+
             foreach (var p in parameters)
             {
                 if (null == separator)

@@ -111,6 +111,7 @@ namespace Scryber.Binding
             //coalesce
             _all.Add(new CollectFunction());
             _all.Add(new ReverseFunction());
+            _all.Add(new KeysFunction());
             _all.Add(new EachFunction());
             _all.Add(new EachOfFunction());
             _all.Add(new SortByFunction());
