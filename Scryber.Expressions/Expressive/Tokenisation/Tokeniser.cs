@@ -350,13 +350,14 @@ namespace Scryber.Expressive.Tokenisation
             var name = expression.Substring(start, length);
 
 
+            //A name directly after a '.' is always a property (e.g. model.e or .pi), never one of the constants.
             ExecFunction func;
-            int constLen;
+            int constLen = 0;
             if (this.Context.TryGetFunction(name, out func) && expression.Length > (start + length) && (expression[start + length] == '('))
             {
                 this.AddNewToken(start, length, name, ExpressionTokenType.Function);
             }
-            else if (this.IsConstant(name, out constLen))
+            else if (false == (start > 0 && (expression[start - 1] == '.' || (start > 2 && expression[start - 1] == '/' && expression[start - 2] == '.' && expression[start - 3] == '.'))) && this.IsConstant(name, out constLen))
             {
                 this.AddNewToken(start, constLen, name, ExpressionTokenType.Constant);
             }

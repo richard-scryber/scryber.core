@@ -25,7 +25,7 @@ namespace Scryber.Expressive.Functions.Coalesce
             this.ValidateParameterCount(parameters, 2, 2);
 
             IExpression each = parameters[0];
-            IExpression check = parameters[1];
+            IExpression check = Helpers.Lookups.Resolve(parameters[1], context);
 
             object value = each.Evaluate(variables);
             ArrayList matched = new ResultList();

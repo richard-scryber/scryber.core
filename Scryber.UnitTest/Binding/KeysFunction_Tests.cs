@@ -122,10 +122,12 @@ namespace Scryber.Core.UnitTests.Binding
         [TestMethod]
         public void Keys_ExpandoObject()
         {
-            dynamic expando = new System.Dynamic.ExpandoObject();
-            expando.one = 1;
-            expando.two = 2;
-            CollectionAssert.AreEqual(new[] { "one", "two" }, Scryber.Expressive.Functions.Coalesce.KeysFunction.GetKeys((object)expando));
+            IDictionary<string, object> expando = new System.Dynamic.ExpandoObject();
+            expando["one"] = 1;
+            expando["two"] = 2;
+            CollectionAssert.AreEqual(new[] { "one", "two" }, Scryber.Expressive.Functions.Coalesce.KeysFunction.GetKeys(expando));
+            Assert.AreEqual("one,two ", Render("<p>{{join(keys(model.ex), ',')}}</p>", new { ex = expando }));
+            Assert.AreEqual("12 ", Render("<p>{{model.ex.one}}</p><p>{{model.ex.two}}</p>", new { ex = expando }));
         }
 
         [TestMethod]

@@ -25,7 +25,7 @@ namespace Scryber.Expressive.Functions.Relational
 	        this.ValidateParameterCount(parameters, 2, 2);
 
 	        object value;
-	        IExpression lookup = parameters[1];
+	        IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
 	        IExpression each = parameters[0];
 
@@ -79,7 +79,7 @@ namespace Scryber.Expressive.Functions.Relational
 			this.ValidateParameterCount(parameters, 2, 2);
 
 			object value;
-			IExpression lookup = parameters[1];
+			IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
 			IExpression each = parameters[0];
 

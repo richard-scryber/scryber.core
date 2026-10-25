@@ -27,7 +27,7 @@ namespace Scryber.Expressive.Functions.Coalesce
             object value;
             
             IExpression each = parameters[0];
-            IExpression lookup = parameters[1];
+            IExpression lookup = Helpers.Lookups.Resolve(parameters[1], context);
 
             bool ascending = true;
 
