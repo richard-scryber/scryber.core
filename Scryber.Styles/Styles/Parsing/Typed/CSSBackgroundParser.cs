@@ -25,7 +25,18 @@ namespace Scryber.Styles.Parsing.Typed
             while (reader.ReadNextValue())
             {
                 count++;
-                if (IsExpression(reader.CurrentTextValue))
+                if (CSSUrlStyleParser.IsGradient(reader.CurrentTextValue, out var gradient))
+                {
+                    //linear-gradient, radial-gradient etc. are background images
+                    if (CSSUrlStyleParser.TryGetGradientExpression(gradient, out var gradientExpression))
+                    {
+                        if (!this.AttachExpressionBindingHandler(onStyle, StyleKeys.BgImgSrcKey, gradientExpression, DoConvertBackgroundImage))
+                            failed++;
+                    }
+                    else
+                        onStyle.Background.ImageSource = gradient;
+                }
+                else if (IsExpression(reader.CurrentTextValue))
                 {
                     if (count == 1)
                     {
