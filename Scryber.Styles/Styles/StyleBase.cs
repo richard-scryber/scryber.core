@@ -1512,6 +1512,10 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))
                 options.TextDecoration = decor.Value(this);
 
+            StyleValue<Text.TextTransform> transform;
+            if (this.TryGetValue(StyleKeys.TextTransformKey, out transform))
+                options.TextTransform = transform.Value(this);
+
             StyleValue<bool> frombase;
             if (this.TryGetValue(StyleKeys.TextPositionFromBaseline, out frombase))
                 options.DrawTextFromTop = !frombase.Value(this);

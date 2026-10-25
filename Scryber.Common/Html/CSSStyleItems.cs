@@ -114,6 +114,7 @@ namespace Scryber.Html
         public const string TextDecoration = "text-decoration";
         public const string TextDecorationLine = "text-decoration-line";
         public const string LetterSpacing = "letter-spacing";
+        public const string TextTransform = "text-transform";
         public const string Hyphenation = "hyphens";
         public const string HyphenateLimitChars = "hyphenate-limit-chars";
         public const string HyphenateLimitLength = "hyphens-limit-chars-length";

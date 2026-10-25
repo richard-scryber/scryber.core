@@ -242,6 +242,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.LetterSpacing, new CSSLetterSpacingParser());
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
             all.Add(CSSStyleItems.Hyphenation, new CSSHyphensParser());
+            all.Add(CSSStyleItems.TextTransform, new CSSTextTransformParser());
             all.Add(CSSStyleItems.HyphenateLimitChars, new CSSHyphenateLimitsParser());
             all.Add(CSSStyleItems.HyphenateLimitLength, new CSSHyphenateMinLengthParser());
             all.Add(CSSStyleItems.HyphenationMinBefore, new CSSHyphensMinBeforeParser());

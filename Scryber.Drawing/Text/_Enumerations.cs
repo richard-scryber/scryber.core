@@ -51,6 +51,17 @@ namespace Scryber.Text
         Auto
     }
 
+    /// <summary>
+    /// The case transformation applied to text when it is laid out
+    /// </summary>
+    public enum TextTransform
+    {
+        None,
+        Uppercase,
+        Lowercase,
+        Capitalize
+    }
+
     [Flags()]
     public enum TextDecoration
     {

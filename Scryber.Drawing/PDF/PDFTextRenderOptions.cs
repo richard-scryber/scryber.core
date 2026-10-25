@@ -302,6 +302,15 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public TextTransform TextTransform {get;set;}
+
+        /// <summary>
+        /// Gets or sets the case transformation (text-transform) applied to the text as it is laid out
+        /// </summary>
+        public Scryber.Text.TextTransform TextTransform { get; set; } = Scryber.Text.TextTransform.None;
+
+        #endregion
+
         #region public bool DrawTextFromTop {get;set;}
         
         private bool _drawFromTop = true;

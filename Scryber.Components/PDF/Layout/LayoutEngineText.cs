@@ -308,6 +308,7 @@ namespace Scryber.PDF.Layout
 
             Unit lastwidth = Unit.Zero;
             int index = 0;
+            this._atWordStart = this.IsAtWordStartOnCurrentLine();
             while (this.Reader.Read())
             {
                 switch (this.Reader.OpType)
@@ -323,6 +324,7 @@ namespace Scryber.PDF.Layout
 
                     case PDFTextOpType.TextContent:
                         string chars = (this.Reader.Value as PDFTextDrawOp).Characters;
+                        chars = this.ApplyTextTransform(chars);
                         if (index == 0)
                             chars = OptionallyRemoveWhiteSpaceInLayout(chars);
                         if (!string.IsNullOrEmpty(chars))
@@ -651,6 +653,65 @@ namespace Scryber.PDF.Layout
         #endregion
 
         public static char[] WhiteSpaceChars = new char[] { ' ', '\r', '\n', '\t', '\x00a0', '\x0085' };
+
+        //Tracks if the previous character was whitespace across text operations, for capitalizing words.
+        private bool _atWordStart = true;
+
+        /// <summary>
+        /// Applies the text-transform of the text options to the characters. 
+        /// </summary>
+        private string ApplyTextTransform(string chars)
+        {
+            if (string.IsNullOrEmpty(chars))
+                return chars;
+
+            switch (this.TextRenderOptions.TextTransform)
+            {
+                case Scryber.Text.TextTransform.Uppercase:
+                    return chars.ToUpperInvariant();
+
+                case Scryber.Text.TextTransform.Lowercase:
+                    return chars.ToLowerInvariant();
+
+                case Scryber.Text.TextTransform.Capitalize:
+                    var builder = new System.Text.StringBuilder(chars.Length);
+                    foreach (var c in chars)
+                    {
+                        if (char.IsWhiteSpace(c))
+                        {
+                            this._atWordStart = true;
+                            builder.Append(c);
+                        }
+                        else if (this._atWordStart)
+                        {
+                            builder.Append(char.ToUpperInvariant(c));
+                            this._atWordStart = false;
+                        }
+                        else
+                            builder.Append(c);
+                    }
+                    return builder.ToString();
+
+                default:
+                    return chars;
+            }
+        }
+
+        /// <summary>
+        /// Checks the previous text on the current line, so a word continues across inline elements (e.g. for capitalize)
+        /// </summary>
+        private bool IsAtWordStartOnCurrentLine()
+        {
+            if (this.TextRenderOptions.TextTransform != Scryber.Text.TextTransform.Capitalize || null == this.CurrentLine)
+                return true;
+
+            for (var i = this.CurrentLine.Runs.Count - 1; i >= 0; i--)
+            {
+                if (this.CurrentLine.Runs[i] is PDFTextRunCharacter chars && !string.IsNullOrEmpty(chars.Characters))
+                    return char.IsWhiteSpace(chars.Characters[chars.Characters.Length - 1]);
+            }
+            return true;
+        }
 
         private string OptionallyRemoveWhiteSpaceInLayout(string chars)
         {
