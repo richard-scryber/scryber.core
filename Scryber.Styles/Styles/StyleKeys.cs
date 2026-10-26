@@ -523,6 +523,13 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Scryber.Text.TextTransform> TextTransformKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextTransform>((ObjectType)"ttrn", TextItemKey);
 
+        public static readonly StyleKey<Color> TextDecorationColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"dcol", TextItemKey);
+
+        public static readonly StyleKey<Scryber.Text.TextDecorationStyle> TextDecorationStyleKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecorationStyle>((ObjectType)"dsty", TextItemKey);
+
+        public static readonly StyleKey<Unit> TextDecorationThicknessKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"dthk", TextItemKey
+                                                               , new StyleKeyFlattenFontValue());
+
         public static readonly StyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((ObjectType)"decr", TextItemKey);
 
         public static readonly StyleKey<bool> TextPositionFromBaseline = StyleKey.InternalCreateStyleValueKey<bool>((ObjectType)"tbse", TextItemKey);

@@ -311,6 +311,25 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public Color? DecorationColor + DecorationStyle + DecorationThickness
+
+        /// <summary>
+        /// Gets or sets the color of any text decoration lines. If not set, the fill of the text is used.
+        /// </summary>
+        public Color? DecorationColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the style of any text decoration lines (solid, double, dotted, dashed or wavy)
+        /// </summary>
+        public Scryber.Text.TextDecorationStyle DecorationStyle { get; set; } = Scryber.Text.TextDecorationStyle.Solid;
+
+        /// <summary>
+        /// Gets or sets the thickness of any text decoration lines. If not set, it is based on the font size.
+        /// </summary>
+        public Unit? DecorationThickness { get; set; }
+
+        #endregion
+
         #region public bool DrawTextFromTop {get;set;}
         
         private bool _drawFromTop = true;

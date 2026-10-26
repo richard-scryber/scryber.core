@@ -71,6 +71,18 @@ namespace Scryber.Text
         StrikeThrough = 4,
     }
 
+    /// <summary>
+    /// The style of line drawn for a text decoration (text-decoration-style)
+    /// </summary>
+    public enum TextDecorationStyle
+    {
+        Solid,
+        Double,
+        Dotted,
+        Dashed,
+        Wavy
+    }
+
     public enum TextRenderMode
     {
         Fill = 0,

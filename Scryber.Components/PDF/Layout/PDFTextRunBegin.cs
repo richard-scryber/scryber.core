@@ -1186,13 +1186,25 @@ namespace Scryber.PDF.Layout
         public static double UnderlineOffsetFactor = 6.0;
         public static double StrikeThroughOffset = 0.4;
 
+        /// <summary>
+        /// Gets the thickness for the decoration lines, which is either explicitly set, or based on the font size.
+        /// </summary>
+        private Unit GetDecorationThickness()
+        {
+            if (this.TextRenderOptions.DecorationThickness.HasValue && !this.TextRenderOptions.DecorationThickness.Value.IsRelative
+                && this.TextRenderOptions.DecorationThickness.Value > Unit.Zero)
+                return this.TextRenderOptions.DecorationThickness.Value;
+
+            return this.TextRenderOptions.Font.Size / ThicknessFactor;
+        }
+
         public void RenderUnderlines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
 
             Unit offsetV = this.TextRenderOptions.GetAscent() / UnderlineOffsetFactor;
-            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
+            Unit linethickness = this.GetDecorationThickness();
 
-            this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
+            this.RenderTextDecoration(end, context, writer, offsetV, linethickness, 1);
         }
 
         public void RenderStrikeThrough(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
@@ -1201,19 +1213,78 @@ namespace Scryber.PDF.Layout
             Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue * StrikeThroughOffset,
                 PageUnits.Points);
 
-            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
-            this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
+            Unit linethickness = this.GetDecorationThickness();
+            this.RenderTextDecoration(end, context, writer, offsetV, linethickness, 0);
         }
 
         public void RenderOverLines(PDFTextRunEnd end, PDFRenderContext context, PDFWriter writer)
         {
             Unit offsetV = new Unit(-this.TextRenderOptions.GetAscent().PointsValue, PageUnits.Points);
-            Unit linethickness = this.TextRenderOptions.Font.Size / ThicknessFactor;
-            this.RenderTextDecoration(end, context, writer, offsetV, linethickness);
+            Unit linethickness = this.GetDecorationThickness();
+            this.RenderTextDecoration(end, context, writer, offsetV, linethickness, -1);
+        }
+
+        /// <summary>
+        /// Draws a decoration line between the points in the style of the text options (solid, double, dotted, dashed or wavy).
+        /// </summary>
+        /// <param name="direction">1 for below the offset (underline), -1 for above (overline), 0 for around it (strike through). Used for the second line of a double.</param>
+        private void DrawDecorationLine(PDFRenderContext context, Point start, Point end, Unit thickness, int direction)
+        {
+            switch (this.TextRenderOptions.DecorationStyle)
+            {
+                case Text.TextDecorationStyle.Double:
+                    {
+                        double gap = thickness.PointsValue * 1.0;
+                        double first = direction == 0 ? -gap : 0.0;
+                        double second = direction == 0 ? gap : (2.0 * gap * direction);
+                        context.Graphics.DrawLine(start.X, start.Y + new Unit(first, PageUnits.Points), end.X, end.Y + new Unit(first, PageUnits.Points));
+                        context.Graphics.DrawLine(start.X, start.Y + new Unit(second, PageUnits.Points), end.X, end.Y + new Unit(second, PageUnits.Points));
+                        break;
+                    }
+                case Text.TextDecorationStyle.Wavy:
+                    {
+                        context.Graphics.DrawWavyLine(start, end, thickness * 1.5, thickness * 6);
+                        break;
+                    }
+                default:
+                    //solid, and the dots and dashes (which are set on the pen)
+                    context.Graphics.DrawLine(start, end);
+                    break;
+            }
+        }
+
+        private PDFPen CreateDecorationPen(Unit thickness)
+        {
+            var opts = this.TextRenderOptions;
+
+            PDFPen pen;
+            if (opts.DecorationColor.HasValue)
+            {
+                pen = PDFPen.Create(opts.DecorationColor.Value, thickness);
+                if (opts.FillBrush is PDFSolidBrush solid)
+                    pen.Opacity = solid.Opacity;
+            }
+            else
+                pen = PDFPen.Create(opts.FillBrush, thickness);
+
+            if (opts.DecorationStyle == Text.TextDecorationStyle.Dotted || opts.DecorationStyle == Text.TextDecorationStyle.Dashed)
+            {
+                var t = Math.Max(1.0, thickness.PointsValue);
+                int[] pattern;
+                if (opts.DecorationStyle == Text.TextDecorationStyle.Dotted)
+                    pattern = new[] { (int)Math.Round(t), (int)Math.Round(t * 2) };
+                else
+                    pattern = new[] { (int)Math.Round(t * 3), (int)Math.Round(t * 2) };
+
+                if (pen is PDFSolidPen solidPen)
+                    pen = new PDFDashPen(new Dash(pattern, 0), solidPen.Color, thickness) { Opacity = pen.Opacity };
+            }
+
+            return pen;
         }
 
         protected virtual void RenderTextDecoration(PDFTextRunEnd endRun, PDFRenderContext context, PDFWriter writer,
-            Unit vOffset, Unit linethickness)
+            Unit vOffset, Unit linethickness, int direction)
         {
             if (context.ShouldLogDebug)
                 context.TraceLog.Begin(TraceLevel.Debug, "Text Decoration", "Starting to render text decorations");
@@ -1227,7 +1298,7 @@ namespace Scryber.PDF.Layout
                 return;
             }
             
-            PDFPen pen = PDFPen.Create(brush, linethickness);
+            PDFPen pen = this.CreateDecorationPen(linethickness);
 
             context.Graphics.SaveGraphicsState();
             pen.SetUpGraphics(context.Graphics, this.TotalBounds);
@@ -1260,7 +1331,7 @@ namespace Scryber.PDF.Layout
                             Point start = new Point(linestart.X + linewidth, linestart.Y);
                             Point end = new Point(linestart.X + linewidth + chars.Width + chars.ExtraSpace,
                                 linestart.Y);
-                            context.Graphics.DrawLine(start, end);
+                            this.DrawDecorationLine(context, start, end, linethickness, direction);
                             if (context.ShouldLogDebug)
                                 context.TraceLog.Add(TraceLevel.Debug, "Text Decoration",
                                     "Drawn line from " + start + " to " + end);
@@ -1292,7 +1363,7 @@ namespace Scryber.PDF.Layout
                             PDFTextRunProxy chars = (PDFTextRunProxy)run;
                             Point start = new Point(linestart.X + linewidth, linestart.Y);
                             Point end = new Point(linestart.X + linewidth + chars.Width, linestart.Y);
-                            context.Graphics.DrawLine(start, end);
+                            this.DrawDecorationLine(context, start, end, linethickness, direction);
                             if (context.ShouldLogDebug)
                                 context.TraceLog.Add(TraceLevel.Debug, "Text Decoration",
                                     "Drawn line from " + start + " to " + end);

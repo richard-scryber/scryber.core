@@ -113,6 +113,9 @@ namespace Scryber.Html
 
         public const string TextDecoration = "text-decoration";
         public const string TextDecorationLine = "text-decoration-line";
+        public const string TextDecorationColor = "text-decoration-color";
+        public const string TextDecorationStyle = "text-decoration-style";
+        public const string TextDecorationThickness = "text-decoration-thickness";
         public const string LetterSpacing = "letter-spacing";
         public const string TextTransform = "text-transform";
         public const string TextIndent = "text-indent";

@@ -43,6 +43,19 @@ namespace Scryber.Styles.Parsing.Typed
                     final |= decor;
                     result &= true;
                 }
+                else if (CSSTextDecorationStyleParser.TryParseStyle(val, out var decorStyle))
+                {
+                    //the shorthand can also have a style, color and thickness
+                    onStyle.SetValue(StyleKeys.TextDecorationStyleKey, decorStyle);
+                }
+                else if (CSSTextDecorationColorParser.TrySetColor(onStyle, val))
+                {
+                    result &= true;
+                }
+                else if (CSSTextDecorationThicknessParser.TrySetThickness(onStyle, val))
+                {
+                    result &= true;
+                }
                 else
                 {
                     result = false; //not for any

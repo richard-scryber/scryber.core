@@ -1586,6 +1586,18 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))
                 options.TextDecoration = decor.Value(this);
 
+            StyleValue<Color> decorColor;
+            if (this.TryGetValue(StyleKeys.TextDecorationColorKey, out decorColor))
+                options.DecorationColor = decorColor.Value(this);
+
+            StyleValue<Text.TextDecorationStyle> decorStyle;
+            if (this.TryGetValue(StyleKeys.TextDecorationStyleKey, out decorStyle))
+                options.DecorationStyle = decorStyle.Value(this);
+
+            StyleValue<Unit> decorThickness;
+            if (this.TryGetValue(StyleKeys.TextDecorationThicknessKey, out decorThickness))
+                options.DecorationThickness = decorThickness.Value(this);
+
             StyleValue<Text.TextTransform> transform;
             if (this.TryGetValue(StyleKeys.TextTransformKey, out transform))
                 options.TextTransform = transform.Value(this);

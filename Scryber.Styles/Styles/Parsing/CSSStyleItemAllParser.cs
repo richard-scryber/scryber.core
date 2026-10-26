@@ -239,6 +239,9 @@ namespace Scryber.Styles.Parsing
 
             all.Add(CSSStyleItems.TextDecoration, new CSSTextDecorationParser());
             all.Add(CSSStyleItems.TextDecorationLine, new CSSTextDecorationParser());
+            all.Add(CSSStyleItems.TextDecorationColor, new CSSTextDecorationColorParser());
+            all.Add(CSSStyleItems.TextDecorationStyle, new CSSTextDecorationStyleParser());
+            all.Add(CSSStyleItems.TextDecorationThickness, new CSSTextDecorationThicknessParser());
             all.Add(CSSStyleItems.LetterSpacing, new CSSLetterSpacingParser());
             all.Add(CSSStyleItems.WordSpacing, new CSSWordSpacingParser());
             all.Add(CSSStyleItems.Hyphenation, new CSSHyphensParser());
