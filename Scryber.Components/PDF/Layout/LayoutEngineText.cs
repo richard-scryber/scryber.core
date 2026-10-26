@@ -24,6 +24,7 @@ using Scryber.Styles;
 using Scryber.Text;
 using Scryber.PDF.Resources;
 using Scryber.Drawing;
+using Scryber.PDF.Graphics;
 using Scryber.Components;
 
 namespace Scryber.PDF.Layout
@@ -381,9 +382,13 @@ namespace Scryber.PDF.Layout
                 inset = line.Width;
             else if (this.TextRenderOptions.FirstLineInset.HasValue && (this.Position.DisplayMode != DisplayMode.Inline || started))
             {
-                inset += this.TextRenderOptions.FirstLineInset.Value;
+                //A negative (hanging) indent is only for the first line, so text that starts after a line break begins at the edge
+                bool afterLineBreak = started && line.Region.Contents.Count > 1;
+                if (this.TextRenderOptions.FirstLineInset.Value > Unit.Zero || !afterLineBreak)
+                    inset += this.TextRenderOptions.FirstLineInset.Value;
 
-                if (inset > 0)
+                //A negative inset also needs the spacer, so the following lines are offset back to the edge of the content
+                if (inset != Unit.Zero)
                 {
                     PDFTextRunSpacer spacer = new PDFTextRunSpacer(inset, 1, line, null, null);
                     line.AddRun(spacer);
@@ -553,7 +558,11 @@ namespace Scryber.PDF.Layout
 
             Unit inset;
             if (hardReturn)
+            {
                 inset = this.TextRenderOptions.GetFirstLineInset();
+                if (inset < Unit.Zero) //a negative (hanging) indent is only for the first line, so the line after a return starts at the edge
+                    inset = Unit.Zero;
+            }
             else
                 inset = Unit.Zero;
 
@@ -756,6 +765,77 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        #region text-overflow
+
+        //The width used when measuring text that does not wrap (as in the graphics measuring)
+        private const double UnboundedLineWidth = 500000;
+
+        /// <summary>
+        /// Returns true if the text does not wrap, there is overflow text (e.g. an ellipsis), and the block this is in hides its overflow (overflow: hidden or clip)
+        /// </summary>
+        private bool ShouldReplaceOverflowedText()
+        {
+            if (string.IsNullOrEmpty(this.TextRenderOptions.OverflowText) || this.TextRenderOptions.WrapText != WordWrap.NoWrap)
+                return false;
+
+            var block = this.CurrentLine.Region.GetParentBlock();
+            return null != block && (block.Position.OverflowAction == OverflowAction.Clip || block.Position.OverflowAction == OverflowAction.Truncate);
+        }
+
+        /// <summary>
+        /// If the characters are wider than the space available on the line, then they are shortened and the overflow text added instead.
+        /// Returns false if they fit (or there is not a known width), so should be laid out as normal.
+        /// </summary>
+        private bool TryAddCharactersWithOverflowText(string chars, out Unit width)
+        {
+            width = Unit.Zero;
+
+            PDFLayoutLine line = this.CurrentLine;
+            Unit availW = line.AvailableWidth;
+            Unit availH = line.Region.AvailableHeight;
+            Unit lineheight = this.TextRenderOptions.GetLineHeight();
+
+            if (availH < lineheight)
+                availH = lineheight;
+
+            //an unbounded line (e.g. an inline block without a width) cannot overflow
+            if (availW.PointsValue <= 0 || availW.PointsValue >= UnboundedLineWidth / 2)
+                return false;
+
+            var measured = this.MeasureString(availH, availW, chars, 0, out int allFitted, out char? appendChar);
+            if (measured.Width <= availW)
+                return false;
+
+            var overflow = this.TextRenderOptions.OverflowText;
+            var overflowWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), overflow, 0, out int overflowFitted, out char? overflowAppend).Width;
+
+            string final;
+            if (overflowWidth > availW)
+            {
+                //not even the overflow text will fit
+                return true; //nothing is added
+            }
+
+            //measure how many characters fit in the space less the overflow text, allowing a split at any character
+            var options = this.TextRenderOptions.Clone();
+            options.WrapText = WordWrap.Character;
+            options.HyphenationStrategy = new PDFHyphenationStrategy(null, null, 1, 1, 1);
+
+            var target = availW - overflowWidth;
+            int fitted = 0;
+            if (target > Unit.Zero)
+                this.Context.Graphics.MeasureString(chars, 0, new Size(target, availH), options, out fitted, out char? ignored);
+
+            final = fitted > 0 ? chars.Substring(0, fitted).TrimEnd() + overflow : overflow;
+
+            var finalWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), final, 0, out int finalFitted, out char? finalAppend).Width;
+            this.AddCharactersToCurrentLine(new Size(finalWidth, lineheight), final);
+            width = finalWidth;
+            return true;
+        }
+
+        #endregion
+
         #region protected virtual PDFUnit AddCharacters(string chars)
 
         /// <summary>
@@ -764,7 +844,10 @@ namespace Scryber.PDF.Layout
         protected virtual Unit AddCharacters(string chars)
         {
             this.AssertCurrentLine();
-           
+
+            //Text that does not wrap, in a block that clips, can have the end replaced with an ellipsis (text-overflow)
+            if (this.ShouldReplaceOverflowedText() && this.TryAddCharactersWithOverflowText(chars, out Unit overflowWidth))
+                return overflowWidth;
 
             Unit lineheight = this.TextRenderOptions.GetLineHeight();
             int offset = 0;

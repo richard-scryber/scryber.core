@@ -120,6 +120,10 @@ namespace Scryber.Html
         public const string TextTransform = "text-transform";
         public const string TextIndent = "text-indent";
         public const string BoxSizing = "box-sizing";
+        public const string WordBreak = "word-break";
+        public const string OverflowWrap = "overflow-wrap";
+        public const string WordWrapAlias = "word-wrap";
+        public const string TextOverflow = "text-overflow";
         public const string BoxShadow = "box-shadow";
         public const string TextShadow = "text-shadow";
         public const string Outline = "outline";

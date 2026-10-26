@@ -539,6 +539,13 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<BoxShadow[]> TextShadowKey = StyleKey.InternalCreateStyleValueKey<BoxShadow[]>((ObjectType)"tshd", TextItemKey);
 
+        public static readonly StyleKey<Scryber.Text.WordBreak> TextWordBreakKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordBreak>((ObjectType)"wbrk", TextItemKey);
+
+        public static readonly StyleKey<Scryber.Text.OverflowWrap> TextOverflowWrapKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.OverflowWrap>((ObjectType)"owrp", TextItemKey);
+
+        //The text to show when text is clipped (e.g. an ellipsis), on the inherited text item key so the text inside the clipped block uses it.
+        public static readonly StyleKey<string> TextOverflowTextKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"tovf", TextItemKey);
+
         public static readonly StyleKey<Scryber.Text.TextTransform> TextTransformKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextTransform>((ObjectType)"ttrn", TextItemKey);
 
         public static readonly StyleKey<Color> TextDecorationColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"dcol", TextItemKey);

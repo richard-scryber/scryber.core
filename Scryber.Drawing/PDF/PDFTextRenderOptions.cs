@@ -311,6 +311,15 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public string OverflowText {get;set;}
+
+        /// <summary>
+        /// Gets or sets the text (e.g. an ellipsis) that replaces the end of a line of text that does not wrap and is clipped by its block (text-overflow).
+        /// </summary>
+        public string OverflowText { get; set; }
+
+        #endregion
+
         #region public BoxShadow[] Shadows {get;set;}
 
         /// <summary>

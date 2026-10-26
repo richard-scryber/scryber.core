@@ -78,6 +78,49 @@ namespace Scryber.Core.UnitTests.Html.CSSParsing
             }
         }
 
+        private static System.Collections.Generic.List<double> LineXs(string body)
+        {
+            var src = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>@page{size:300pt 300pt;margin:60pt} body{font-size:12pt}</style></head><body>" + body + "</body></html>";
+            using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+            {
+                var ms = new MemoryStream();
+                doc.SaveAsPDF(ms);
+                var xs = new System.Collections.Generic.List<double>();
+                foreach (Match m in Regex.Matches(PdfContent.Decompressed(ms.ToArray()), @"([\-0-9\.]+)\s+([\-0-9\.]+)\s+Td"))
+                    xs.Add(double.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture));
+                return xs;
+            }
+        }
+
+        [TestMethod]
+        public void TextIndent_Negative_OnlyFirstLine_NextLineOffsetBack()
+        {
+            var xs = LineXs("<p style='text-indent: -30pt'>First line of a long paragraph that wraps over several lines of the box here.</p>");
+            Assert.IsTrue(xs.Count > 2, "The text should wrap");
+            Assert.AreEqual(30.0, xs[0], 0.01, "The first line hangs 30pt out of the 60pt page margin");
+            Assert.AreEqual(30.0, xs[1], 0.01, "The next line (only) is offset back by the inset");
+            Assert.AreEqual(0.0, xs[2], 0.01, "Later lines follow with no further offset");
+        }
+
+        [TestMethod]
+        public void TextIndent_Negative_LineAfterHardReturn_AtTheEdge()
+        {
+            var xs = LineXs("<p style='text-indent: -30pt'>Hard one<br/>Second after return<br/>Third</p>");
+            Assert.AreEqual(3, xs.Count);
+            Assert.AreEqual(30.0, xs[0], 0.01);
+            Assert.AreEqual(60.0, xs[1], 0.01);
+            Assert.AreEqual(60.0, xs[2], 0.01);
+        }
+
+        [TestMethod]
+        public void TextIndent_Positive_WrappedLinesReturnToTheEdge()
+        {
+            var xs = LineXs("<p style='text-indent: 30pt'>First line of a long paragraph that wraps over several lines of the box here.</p>");
+            Assert.AreEqual(90.0, xs[0], 0.01);
+            Assert.AreEqual(-30.0, xs[1], 0.01);
+            Assert.AreEqual(0.0, xs[2], 0.01);
+        }
+
         [TestMethod]
         public void TextIndent_None_Zero()
         {
