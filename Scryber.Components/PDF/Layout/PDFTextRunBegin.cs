@@ -481,9 +481,9 @@ namespace Scryber.PDF.Layout
 
             var arrangemnt = GetTextArrangement(context, writer);
             
-            RenderRunForPaintOrder(boxorder.First, bounds, arrangemnt, context, writer);
-            RenderRunForPaintOrder(boxorder.Second, bounds, arrangemnt, context, writer);
-            RenderRunForPaintOrder(boxorder.Third, bounds, arrangemnt, context, writer);
+            RenderRunForPaintOrder(boxorder.First, bounds, arrangemnt, context, writer, cursor);
+            RenderRunForPaintOrder(boxorder.Second, bounds, arrangemnt, context, writer, cursor);
+            RenderRunForPaintOrder(boxorder.Third, bounds, arrangemnt, context, writer, cursor);
 
             context.Graphics.MoveTextCursor(cursor, true);
             this.StartTextCursor = cursor;
@@ -494,7 +494,7 @@ namespace Scryber.PDF.Layout
             return null;
         }
 
-        private void RenderRunForPaintOrder(PaintOrders order, Rect bounds, ComponentMultiArrangement arrangement, PDFRenderContext context, PDFWriter writer)
+        private void RenderRunForPaintOrder(PaintOrders order, Rect bounds, ComponentMultiArrangement arrangement, PDFRenderContext context, PDFWriter writer, Size cursor)
         {
 
             if (order == PaintOrders.Fill)
@@ -505,6 +505,9 @@ namespace Scryber.PDF.Layout
             }
             else if (order == PaintOrders.Markers)
             {
+                //shadows are drawn behind the text, in their own text objects
+                if (null != this.TextRenderOptions.Shadows && this.TextRenderOptions.FillBrush != null)
+                    this.RenderTextShadows(context, writer, bounds, arrangement, cursor);
 
                 context.Graphics.SaveGraphicsState();
                 context.Graphics.BeginText();
@@ -524,6 +527,87 @@ namespace Scryber.PDF.Layout
 
                 if (this.ShouldRenderBorder(context))
                     this.RenderTextBorder(context, writer, arrangement);
+            }
+        }
+
+        /// <summary>
+        /// Draws the text-shadow(s) of the run, by drawing the text again in each shadow color and offset (and with blur, a ring of copies).
+        /// The first shadow is on top, so they are drawn in reverse.
+        /// </summary>
+        private void RenderTextShadows(PDFRenderContext context, PDFWriter writer, Rect bounds, ComponentMultiArrangement arrangement, Size cursor)
+        {
+            var shadows = this.TextRenderOptions.Shadows;
+            var textColor = Scryber.Drawing.StandardColors.Black;
+            if (this.TextRenderOptions.FillBrush is PDFSolidBrush solidText)
+                textColor = solidText.Color;
+
+            //The runs to draw again (the text, new lines and spacers between this run and its end)
+            var runs = new List<PDFLayoutRun>();
+            bool inside = false;
+            foreach (PDFLayoutLine line in this.Lines)
+            {
+                foreach (PDFLayoutRun run in line.Runs)
+                {
+                    if (run == this)
+                        inside = true;
+                    else if (run is PDFTextRunEnd end && end.Start == this)
+                    {
+                        inside = false;
+                        break;
+                    }
+                    else if (inside && (run is PDFTextRunCharacter || run is PDFTextRunNewLine || run is PDFTextRunSpacer || run is PDFTextRunProxy))
+                        runs.Add(run);
+                }
+                if (!inside && runs.Count > 0)
+                    break;
+            }
+
+            if (runs.Count == 0)
+                return;
+
+            if (null != arrangement)
+                bounds.Size = arrangement.RenderBounds.Size;
+
+            for (int i = shadows.Length - 1; i >= 0; i--)
+            {
+                var shadow = shadows[i];
+                var color = shadow.Color ?? textColor;
+
+                //a ring of copies around the shadow position for a blur
+                double blur = shadow.Blur.PointsValue;
+                int copies = blur > 0 ? 9 : 1;
+                double opacity = Math.Min(1.0, Math.Max(0.0, shadow.Opacity));
+                double copyOpacity = copies == 1 ? opacity : 1.0 - Math.Pow(1.0 - opacity, 1.0 / copies);
+
+                for (int c = 0; c < copies; c++)
+                {
+                    double dx = shadow.OffsetX.PointsValue;
+                    double dy = shadow.OffsetY.PointsValue;
+
+                    //the first is the center, the others are around it
+                    if (c > 0)
+                    {
+                        double angle = (Math.PI * 2.0 * (c - 1)) / (copies - 1);
+                        dx += Math.Cos(angle) * blur / 2.0;
+                        dy += Math.Sin(angle) * blur / 2.0;
+                    }
+
+                    var options = this.TextRenderOptions.Clone();
+                    options.FillBrush = new PDFSolidBrush(color, copyOpacity);
+                    options.Stroke = null;
+                    options.Shadows = null;
+
+                    context.Graphics.SaveGraphicsState();
+                    context.Graphics.BeginText();
+                    context.Graphics.SetTextRenderOptions(options, bounds);
+                    context.Graphics.MoveTextCursor(new Size(cursor.Width + new Unit(dx, PageUnits.Points), cursor.Height + new Unit(dy, PageUnits.Points)), true);
+
+                    foreach (var run in runs)
+                        run.OutputToPDF(context, writer);
+
+                    context.Graphics.EndText();
+                    context.Graphics.RestoreGraphicsState();
+                }
             }
         }
 

@@ -1586,6 +1586,14 @@ namespace Scryber.Styles
             if (this.TryGetValue(StyleKeys.TextDecorationKey, out decor))
                 options.TextDecoration = decor.Value(this);
 
+            StyleValue<BoxShadow[]> textShadows;
+            if (this.TryGetValue(StyleKeys.TextShadowKey, out textShadows))
+            {
+                var found = textShadows.Value(this);
+                if (null != found && found.Length > 0)
+                    options.Shadows = found;
+            }
+
             StyleValue<Color> decorColor;
             if (this.TryGetValue(StyleKeys.TextDecorationColorKey, out decorColor))
                 options.DecorationColor = decorColor.Value(this);

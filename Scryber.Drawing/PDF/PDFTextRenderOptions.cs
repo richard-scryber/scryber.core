@@ -311,6 +311,15 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public BoxShadow[] Shadows {get;set;}
+
+        /// <summary>
+        /// Gets or sets any shadows (text-shadow) to draw behind the text.
+        /// </summary>
+        public BoxShadow[] Shadows { get; set; }
+
+        #endregion
+
         #region public Color? DecorationColor + DecorationStyle + DecorationThickness
 
         /// <summary>
