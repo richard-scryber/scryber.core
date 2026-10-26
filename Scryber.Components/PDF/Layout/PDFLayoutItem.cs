@@ -455,6 +455,71 @@ namespace Scryber.PDF.Layout
 
         #endregion
 
+        /// <summary>
+        /// Draws the css box-shadows for this item, behind it. They do not take up any space. Inset shadows are not drawn.
+        /// </summary>
+        protected void OutputBoxShadows(PDFRenderContext context, Rect borderRect, PDFPenBorders border, Style fullStyle)
+        {
+            var shadows = fullStyle.GetValue(StyleKeys.BorderBoxShadowKey, (BoxShadow[])null);
+            if (null == shadows || shadows.Length == 0)
+                return;
+
+            Unit tl = Unit.Zero, tr = Unit.Zero, bl = Unit.Zero, br = Unit.Zero;
+            if (null != border)
+            {
+                tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+            }
+
+            Color current = StandardColors.Black;
+            if (fullStyle.CreateFillBrush() is PDFSolidBrush fill)
+                current = fill.Color;
+
+            //The first shadow is on top, so draw them in reverse
+            for (int i = shadows.Length - 1; i >= 0; i--)
+            {
+                var shadow = shadows[i];
+                if (shadow.Inset)
+                    continue;
+
+                var color = shadow.Color ?? current;
+                context.Graphics.DrawBoxShadow(borderRect, tl, tr, bl, br, shadow.OffsetX, shadow.OffsetY, shadow.Blur, shadow.Spread, color, shadow.Opacity);
+            }
+        }
+
+        /// <summary>
+        /// Draws the css outline for this item (outside the border, with an optional offset). It does not take up any space.
+        /// </summary>
+        protected void OutputOutline(PDFRenderContext context, Rect borderRect, PDFPenBorders border, Style fullStyle)
+        {
+            var pen = fullStyle.CreateOutlinePen(out Unit offset);
+            if (null == pen)
+                return;
+
+            //The borders are drawn centered on the edge of the border rect, so the outline starts after half of the widest border.
+            double borderHalf = 0.0;
+            if (null != border)
+            {
+                foreach (var side in new[] { border.LeftPen, border.RightPen, border.TopPen, border.BottomPen, border.AllPen })
+                {
+                    if (null != side && side.LineStyle != LineType.None)
+                        borderHalf = Math.Max(borderHalf, side.Width.PointsValue / 2.0);
+                }
+            }
+
+            //The outline stroke is centered on its rectangle, so half the outline width is added.
+            double inflate = borderHalf + offset.PointsValue + (pen.Width.PointsValue / 2.0);
+            var rect = new Rect(borderRect.X - inflate, borderRect.Y - inflate,
+                borderRect.Width + (inflate * 2), borderRect.Height + (inflate * 2));
+
+            if (rect.Width <= Unit.Zero || rect.Height <= Unit.Zero)
+                return;
+
+            context.Graphics.DrawRectangle(pen, rect, Sides.Top | Sides.Right | Sides.Bottom | Sides.Left);
+        }
+
         #region protected void OutputBorder(PDFBackgroundStyle bg, PDFBorderStyle border, PDFRenderContext context, PDFRect rect)
 
         /// <summary>

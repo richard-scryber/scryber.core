@@ -238,6 +238,9 @@ namespace Scryber.PDF.Layout
                 Rect borderRect = this.BorderRect;
                 borderRect = borderRect.Offset(context.Offset.X + this.TotalBounds.X, context.Offset.Y + this.TotalBounds.Y);
                 
+                //Shadows are behind the background
+                this.OutputBoxShadows(context, borderRect, border, this.FullStyle);
+
                 if (null != background)
             this.OutputBackground(background, border, context, borderRect);
 
@@ -297,6 +300,9 @@ namespace Scryber.PDF.Layout
                 {
                     this.OutputBorder(background, border, context, borderRect);
                 }
+
+                //The outline is outside the border and over the content
+                this.OutputOutline(context, borderRect, border, this.FullStyle);
 
                 if (context.ShouldLogDebug)
                     context.TraceLog.End(TraceLevel.Verbose, "Layout Item", "Completed the rendering the referenced component " + this.Owner + " and arrangement set to border rect " + borderRect);

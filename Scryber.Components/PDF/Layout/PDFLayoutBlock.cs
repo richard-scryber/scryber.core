@@ -1626,7 +1626,7 @@ namespace Scryber.PDF.Layout
                 }
 
                 //The outline is drawn last, outside the border and over any content
-                this.OutputOutline(context, borderRect, border);
+                this.OutputOutline(context, borderRect, border, this.FullStyle);
                 
                 if (null != component)
                 {
@@ -1702,71 +1702,6 @@ namespace Scryber.PDF.Layout
             return oref;
         }
 
-        /// <summary>
-        /// Draws the css box-shadows for this block, behind it. They do not take up any space. Inset shadows are not drawn.
-        /// </summary>
-        private void OutputBoxShadows(PDFRenderContext context, Rect borderRect, PDFPenBorders border)
-        {
-            var shadows = this.FullStyle.GetValue(StyleKeys.BorderBoxShadowKey, (BoxShadow[])null);
-            if (null == shadows || shadows.Length == 0)
-                return;
-
-            Unit tl = Unit.Zero, tr = Unit.Zero, bl = Unit.Zero, br = Unit.Zero;
-            if (null != border)
-            {
-                tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
-                tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
-                bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
-                br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
-            }
-
-            Color current = StandardColors.Black;
-            if (this.FullStyle.CreateFillBrush() is PDFSolidBrush fill)
-                current = fill.Color;
-
-            //The first shadow is on top, so draw them in reverse
-            for (int i = shadows.Length - 1; i >= 0; i--)
-            {
-                var shadow = shadows[i];
-                if (shadow.Inset)
-                    continue;
-
-                var color = shadow.Color ?? current;
-                context.Graphics.DrawBoxShadow(borderRect, tl, tr, bl, br, shadow.OffsetX, shadow.OffsetY, shadow.Blur, shadow.Spread, color, shadow.Opacity);
-            }
-        }
-
-        /// <summary>
-        /// Draws the css outline for this block (outside the border, with an optional offset). It does not take up any space.
-        /// </summary>
-        private void OutputOutline(PDFRenderContext context, Rect borderRect, PDFPenBorders border)
-        {
-            var pen = this.FullStyle.CreateOutlinePen(out Unit offset);
-            if (null == pen)
-                return;
-
-            //The borders are drawn centered on the edge of the border rect, so the outline starts after half of the widest border.
-            double borderHalf = 0.0;
-            if (null != border)
-            {
-                foreach (var side in new[] { border.LeftPen, border.RightPen, border.TopPen, border.BottomPen, border.AllPen })
-                {
-                    if (null != side && side.LineStyle != LineType.None)
-                        borderHalf = Math.Max(borderHalf, side.Width.PointsValue / 2.0);
-                }
-            }
-
-            //The outline stroke is centered on its rectangle, so half the outline width is added.
-            double inflate = borderHalf + offset.PointsValue + (pen.Width.PointsValue / 2.0);
-            var rect = new Rect(borderRect.X - inflate, borderRect.Y - inflate,
-                borderRect.Width + (inflate * 2), borderRect.Height + (inflate * 2));
-
-            if (rect.Width <= Unit.Zero || rect.Height <= Unit.Zero)
-                return;
-
-            context.Graphics.DrawRectangle(pen, rect, Sides.Top | Sides.Right | Sides.Bottom | Sides.Left);
-        }
-
         private PDFObjectRef OutputContentForPaintOrder(PaintOrders paintType, PDFBrush background, PDFPenBorders border, Rect borderRect, Rect contentRect, PDFRenderContext context, PDFWriter writer)
         {
             PDFObjectRef oRef = null;
@@ -1774,7 +1709,7 @@ namespace Scryber.PDF.Layout
             if (paintType == PaintOrders.Fill)
             {
                 //Shadows are drawn behind the background
-                this.OutputBoxShadows(context, borderRect, border);
+                this.OutputBoxShadows(context, borderRect, border, this.FullStyle);
 
                 if (null != background)
                 {

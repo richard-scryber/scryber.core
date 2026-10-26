@@ -202,5 +202,27 @@ namespace Scryber.Core.UnitTests.Html.CSSParsing
             var background = pdf.IndexOf("0.0000 1.0000 0.0000 rg", StringComparison.Ordinal);
             Assert.IsTrue(shadow > 0 && background > shadow, "The shadow is behind the background");
         }
+
+        [TestMethod]
+        public void Image_HasAShadow_InlineAndBlock()
+        {
+            var png = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.png").Replace("\\", "/");
+            foreach (var display in new[] { "", "display:block;", "display:inline-block;" })
+            {
+                var src = "<html xmlns='http://www.w3.org/1999/xhtml'><body style='margin:0;padding:0'><img src='" + png + "' style='margin:20pt;width:100pt;height:50pt;" + display + "box-shadow: 4pt 4pt 0 red' /></body></html>";
+                using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+                {
+                    doc.RenderOptions.Compression = Scryber.OutputCompressionType.None;
+                    var ms = new MemoryStream();
+                    doc.SaveAsPDF(ms);
+                    var pdf = System.Text.Encoding.Latin1.GetString(ms.ToArray());
+                    var imageAt = pdf.IndexOf(" Do", StringComparison.Ordinal);
+                    var shadowAt = pdf.IndexOf("1.0000 0.0000 0.0000 rg", StringComparison.Ordinal);
+                    Assert.IsTrue(shadowAt > 0, "The shadow is drawn for display '" + display + "'");
+                    Assert.IsTrue(shadowAt < imageAt, "The shadow is behind the image for display '" + display + "'");
+                    Assert.IsTrue(pdf.Contains("W* n"), "The shadow is clipped around the image");
+                }
+            }
+        }
     }
 }

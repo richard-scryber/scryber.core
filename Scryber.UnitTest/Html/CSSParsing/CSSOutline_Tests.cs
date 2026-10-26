@@ -188,5 +188,26 @@ namespace Scryber.Core.UnitTests.Html.CSSParsing
         {
             Assert.IsNull(Outline(Render("outline: 4pt wibble red")));
         }
+
+        [TestMethod]
+        public void Image_HasAnOutline_InlineAndBlock()
+        {
+            var png = DocStreams.AssertGetTemplatePath("HTML/Images/Toroid24.png").Replace("\\", "/");
+            foreach (var display in new[] { "", "display:block;" })
+            {
+                var src = "<html xmlns='http://www.w3.org/1999/xhtml'><body style='margin:0;padding:0'><img src='" + png + "' style='margin:20pt;width:100pt;height:50pt;" + display + "outline: 3pt solid blue' /></body></html>";
+                using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+                {
+                    doc.RenderOptions.Compression = Scryber.OutputCompressionType.None;
+                    var ms = new MemoryStream();
+                    doc.SaveAsPDF(ms);
+                    var pdf = System.Text.Encoding.Latin1.GetString(ms.ToArray());
+                    var imageAt = pdf.IndexOf(" Do", StringComparison.Ordinal);
+                    var outlineAt = pdf.IndexOf("0.0000 0.0000 1.0000 RG", StringComparison.Ordinal);
+                    Assert.IsTrue(outlineAt > 0, "The outline is drawn for display '" + display + "'");
+                    Assert.IsTrue(outlineAt > imageAt, "The outline is over the image for display '" + display + "'");
+                }
+            }
+        }
     }
 }
