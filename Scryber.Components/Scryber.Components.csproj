@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.3</PackageVersion>
+    <PackageVersion>9.8.0-beta.4</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.3
+    <PackageReleaseNotes>9.8.0-beta.4
+Fixed: visibility: collapse on a table row (or thead, tbody, tfoot) removes the rows and their space, as display: none does. On other elements it is the same as hidden.
+Fixed: border-collapse and border-spacing are inherited as in css, so they can be set on a container or the body. Added the table cellspacing attribute (a number is pixels), overridden by any css border-spacing.
+Fixed: box-shadow and outline are drawn for images (inline and block), they were only drawn for blocks and tables.
+
+9.8.0-beta.3
 New css: text-decoration-color, text-decoration-style (solid, double, dotted, dashed, wavy) and text-decoration-thickness, also in the text-decoration shorthand; outline, outline-color, outline-style, outline-width and outline-offset; box-shadow (offset, blur, spread, colour, multiple, rounded corners); text-shadow.
 Fixed: an inline image (or other drawn component) with a margin was drawn at its size plus the margins, over the margin area. It is now drawn at its own size inside the margin.
 New: sortBy(values) and sortBy(values, 'desc') sort plain values such as the result of keys().
