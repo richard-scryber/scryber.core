@@ -181,10 +181,58 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void Clip_IsTheDefault_NoEllipsis()
+        public void Hidden_NoWrap_CutsBackToTheLastWordThatFits()
         {
-            Assert.AreEqual(LongText, Lines(Layout(Clipped + "text-overflow: clip", LongText))[0]);
-            Assert.AreEqual(LongText, Lines(Layout(Clipped, LongText))[0]);
+            var widths = new List<double>();
+            var lines = Lines(Layout(Clipped, LongText), widths);
+            Assert.AreEqual(1, lines.Count);
+            Assert.IsFalse(lines[0].Contains("\u2026"));
+            Assert.IsTrue(lines[0].Length < LongText.Length, "The text is cut: " + lines[0]);
+            Assert.AreEqual(lines[0].Trim(), lines[0], "No trailing space");
+            Assert.IsTrue(LongText.StartsWith(lines[0]), "It is the start of the text");
+            Assert.AreEqual(' ', LongText[lines[0].Length], "It is cut at the end of a word: " + lines[0]);
+            Assert.IsTrue(widths[0] <= 80.01, "It fits in the box: " + widths[0]);
+        }
+
+        [TestMethod]
+        public void TextOverflowClip_WithHidden_IsTheSameAsHidden()
+        {
+            Assert.AreEqual(string.Join("|", Lines(Layout(Clipped, LongText))), string.Join("|", Lines(Layout(Clipped + "text-overflow: clip", LongText))));
+        }
+
+        [TestMethod]
+        public void Hidden_NoWrap_ShortText_IsNotChanged()
+        {
+            Assert.AreEqual("Short", Lines(Layout(Clipped, "Short"))[0]);
+        }
+
+        [TestMethod]
+        public void Hidden_NoWrap_FirstWordTooLong_IsCutAtTheCharacter()
+        {
+            var widths = new List<double>();
+            var lines = Lines(Layout(Clipped, "supercalifragilisticexpialidocious and more"), widths);
+            Assert.AreEqual(1, lines.Count);
+            Assert.IsTrue(lines[0].Length > 5 && lines[0].Length < "supercalifragilisticexpialidocious".Length, lines[0]);
+            Assert.IsTrue("supercalifragilisticexpialidocious".StartsWith(lines[0]));
+            Assert.IsFalse(lines[0].Contains("-"), "No hyphen");
+            Assert.IsTrue(widths[0] <= 80.01 && widths[0] > 60, "Width: " + widths[0]);
+        }
+
+        [TestMethod]
+        public void Hidden_NoWrap_InSpans_StopsAtTheEdge()
+        {
+            var widths = new List<double>();
+            var lines = Lines(Layout(Clipped, "Start <b>and a long bold part</b> then more text after"), widths);
+            var text = string.Join("", lines);
+            Assert.IsTrue(text.StartsWith("Start "), text);
+            Assert.IsFalse(text.Contains("after"), text);
+            Assert.IsTrue(widths.Sum() <= 80.01, "Total width: " + widths.Sum());
+        }
+
+        [TestMethod]
+        public void Clip_NoWrap_IsNotCutInTheLayout()
+        {
+            Assert.AreEqual(LongText, Lines(Layout("overflow: clip; white-space: nowrap", LongText))[0], "overflow: clip is a clipping rectangle");
         }
 
         [TestMethod]
@@ -192,6 +240,8 @@ namespace Scryber.UnitLayouts
         {
             var lines = Lines(Layout("white-space: nowrap; text-overflow: ellipsis", LongText));
             Assert.AreEqual(LongText, lines[0], "The overflow is visible, so there is nothing clipped to replace");
+            lines = Lines(Layout("overflow: visible; white-space: nowrap", LongText));
+            Assert.AreEqual(LongText, lines[0]);
         }
 
         [TestMethod]
@@ -240,8 +290,9 @@ namespace Scryber.UnitLayouts
         [TestMethod]
         public void Ellipsis_Invalid_IsIgnored()
         {
-            Assert.AreEqual(LongText, Lines(Layout(Clipped + "text-overflow: dots", LongText))[0]);
-            Assert.AreEqual(LongText, Lines(Layout(Clipped + "text-overflow: ellipsis ellipsis", LongText))[0], "Two values are not supported");
+            var plain = string.Join("|", Lines(Layout(Clipped, LongText)));
+            Assert.AreEqual(plain, string.Join("|", Lines(Layout(Clipped + "text-overflow: dots", LongText))));
+            Assert.AreEqual(plain, string.Join("|", Lines(Layout(Clipped + "text-overflow: ellipsis ellipsis", LongText))), "Two values are not supported");
         }
 
         [TestMethod]

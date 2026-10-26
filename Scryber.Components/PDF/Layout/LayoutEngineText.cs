@@ -771,15 +771,24 @@ namespace Scryber.PDF.Layout
         private const double UnboundedLineWidth = 500000;
 
         /// <summary>
-        /// Returns true if the text does not wrap, there is overflow text (e.g. an ellipsis), and the block this is in hides its overflow (overflow: hidden or clip)
+        /// Returns true if the text does not wrap and needs to be cut to fit the line. That is if there is overflow text (e.g. an ellipsis)
+        /// and the block hides its overflow (overflow: hidden or clip), or the block truncates its overflow (overflow: hidden),
+        /// where the text is cut back to the last word that fits, as lines that overflow vertically are removed.
         /// </summary>
         private bool ShouldReplaceOverflowedText()
         {
-            if (string.IsNullOrEmpty(this.TextRenderOptions.OverflowText) || this.TextRenderOptions.WrapText != WordWrap.NoWrap)
+            if (this.TextRenderOptions.WrapText != WordWrap.NoWrap)
                 return false;
 
             var block = this.CurrentLine.Region.GetParentBlock();
-            return null != block && (block.Position.OverflowAction == OverflowAction.Clip || block.Position.OverflowAction == OverflowAction.Truncate);
+            if (null == block)
+                return false;
+
+            var action = block.Position.OverflowAction;
+            if (string.IsNullOrEmpty(this.TextRenderOptions.OverflowText))
+                return action == OverflowAction.Truncate;
+            else
+                return action == OverflowAction.Clip || action == OverflowAction.Truncate;
         }
 
         /// <summary>
@@ -807,6 +816,10 @@ namespace Scryber.PDF.Layout
                 return false;
 
             var overflow = this.TextRenderOptions.OverflowText;
+
+            if (string.IsNullOrEmpty(overflow))
+                return this.AddCharactersToLastFittingWord(chars, availW, availH, lineheight, out width);
+
             var overflowWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), overflow, 0, out int overflowFitted, out char? overflowAppend).Width;
 
             string final;
@@ -831,6 +844,31 @@ namespace Scryber.PDF.Layout
             var finalWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), final, 0, out int finalFitted, out char? finalAppend).Width;
             this.AddCharactersToCurrentLine(new Size(finalWidth, lineheight), final);
             width = finalWidth;
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the characters up to the last word that fits on the line, dropping the rest (as for overflow: hidden).
+        /// If the first word is wider than the line, it is cut at the last character that fits, as a wrapping line would be.
+        /// </summary>
+        private bool AddCharactersToLastFittingWord(string chars, Unit availW, Unit availH, Unit lineheight, out Unit width)
+        {
+            var options = this.TextRenderOptions.Clone();
+            options.WrapText = WordWrap.Word;
+            options.HyphenationStrategy = null;
+
+            int fitted = 0;
+            this.Context.Graphics.MeasureString(chars, 0, new Size(availW, availH), options, out fitted, out char? ignored);
+
+            var final = fitted > 0 ? chars.Substring(0, fitted).TrimEnd() : string.Empty;
+            width = Unit.Zero;
+
+            if (final.Length > 0)
+            {
+                var finalWidth = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), final, 0, out int finalFitted, out char? finalAppend).Width;
+                this.AddCharactersToCurrentLine(new Size(finalWidth, lineheight), final);
+                width = finalWidth;
+            }
             return true;
         }
 
