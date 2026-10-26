@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.4</PackageVersion>
+    <PackageVersion>9.8.0-beta.5</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.4
+    <PackageReleaseNotes>9.8.0-beta.5
+New css: word-break (break-all fills each line, breaking a word at any character with no hyphen), overflow-wrap and word-wrap (accepted, long words are always broken), and text-overflow (ellipsis, clip or a string, for non-wrapping text in a block with overflow hidden or clip).
+Fixed: a negative text-indent is a hanging indent. The first line only starts out, and the following lines (and any text after a line break) start at the edge of the content.
+
+9.8.0-beta.4
 Fixed: visibility: collapse on a table row (or thead, tbody, tfoot) removes the rows and their space, as display: none does. On other elements it is the same as hidden.
 Fixed: border-collapse and border-spacing are inherited as in css, so they can be set on a container or the body. Added the table cellspacing attribute (a number is pixels), overridden by any css border-spacing.
 Fixed: box-shadow and outline are drawn for images (inline and block), they were only drawn for blocks and tables.
