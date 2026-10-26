@@ -1624,6 +1624,9 @@ namespace Scryber.PDF.Layout
                     
                     this.ReleaseClipping(context);
                 }
+
+                //The outline is drawn last, outside the border and over any content
+                this.OutputOutline(context, borderRect, border);
                 
                 if (null != component)
                 {
@@ -1697,6 +1700,37 @@ namespace Scryber.PDF.Layout
             }
 
             return oref;
+        }
+
+        /// <summary>
+        /// Draws the css outline for this block (outside the border, with an optional offset). It does not take up any space.
+        /// </summary>
+        private void OutputOutline(PDFRenderContext context, Rect borderRect, PDFPenBorders border)
+        {
+            var pen = this.FullStyle.CreateOutlinePen(out Unit offset);
+            if (null == pen)
+                return;
+
+            //The borders are drawn centered on the edge of the border rect, so the outline starts after half of the widest border.
+            double borderHalf = 0.0;
+            if (null != border)
+            {
+                foreach (var side in new[] { border.LeftPen, border.RightPen, border.TopPen, border.BottomPen, border.AllPen })
+                {
+                    if (null != side && side.LineStyle != LineType.None)
+                        borderHalf = Math.Max(borderHalf, side.Width.PointsValue / 2.0);
+                }
+            }
+
+            //The outline stroke is centered on its rectangle, so half the outline width is added.
+            double inflate = borderHalf + offset.PointsValue + (pen.Width.PointsValue / 2.0);
+            var rect = new Rect(borderRect.X - inflate, borderRect.Y - inflate,
+                borderRect.Width + (inflate * 2), borderRect.Height + (inflate * 2));
+
+            if (rect.Width <= Unit.Zero || rect.Height <= Unit.Zero)
+                return;
+
+            context.Graphics.DrawRectangle(pen, rect, Sides.Top | Sides.Right | Sides.Bottom | Sides.Left);
         }
 
         private PDFObjectRef OutputContentForPaintOrder(PaintOrders paintType, PDFBrush background, PDFPenBorders border, Rect borderRect, Rect contentRect, PDFRenderContext context, PDFWriter writer)

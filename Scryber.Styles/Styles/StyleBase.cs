@@ -1720,6 +1720,47 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region protected internal virtual PDFPen DoCreateOutlinePen(out Unit offset)
+
+        /// <summary>
+        /// Creates the pen for the css outline, and the distance to draw it from the border edge. Returns null if there is no outline.
+        /// </summary>
+        protected internal virtual PDFPen DoCreateOutlinePen(out Unit offset)
+        {
+            offset = Unit.Zero;
+
+            if (!this.TryGetValue(StyleKeys.BorderOutlineStyleKey, out StyleValue<LineType> lineValue) || lineValue.Value(this) == LineType.None)
+                return null;
+
+            Unit width = this.TryGetValue(StyleKeys.BorderOutlineWidthKey, out StyleValue<Unit> widthValue) ? widthValue.Value(this) : Unit.Px(3);
+            if (width <= Unit.Zero)
+                return null;
+
+            if (this.TryGetValue(StyleKeys.BorderOutlineOffsetKey, out StyleValue<Unit> offsetValue))
+                offset = offsetValue.Value(this);
+
+            Color color;
+            if (this.TryGetValue(StyleKeys.BorderOutlineColorKey, out StyleValue<Color> colorValue))
+                color = colorValue.Value(this);
+            else if (this.DoCreateFillBrush() is PDFSolidBrush fill)
+                color = fill.Color;
+            else
+                color = StandardColors.Black;
+
+            if (color.IsTransparent)
+                return null;
+
+            PDFPen pen;
+            if (lineValue.Value(this) == LineType.Dash && this.TryGetValue(StyleKeys.BorderOutlineDashKey, out StyleValue<Dash> dash))
+                pen = new PDFDashPen(dash.Value(this), color, width);
+            else
+                pen = new PDFSolidPen(color, width);
+
+            return pen;
+        }
+
+        #endregion
+
         #region protected internal virtual PDFPenBorders DoCreatePenBorders()
         
         protected internal virtual PDFPenBorders DoCreatePenBorders()

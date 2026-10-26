@@ -92,6 +92,20 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> BorderBottomRightRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"brrd", BorderItemKey
                                                                 , new StyleKeyFlattenHorizontalValue());
 
+        //The css outline (drawn outside the border, not the pdf document outline)
+
+        public static readonly StyleKey<Color> BorderOutlineColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"ocol", BorderItemKey);
+
+        public static readonly StyleKey<LineType> BorderOutlineStyleKey = StyleKey.InternalCreateStyleValueKey<LineType>((ObjectType)"osty", BorderItemKey);
+
+        public static readonly StyleKey<Dash> BorderOutlineDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"odsh", BorderItemKey);
+
+        public static readonly StyleKey<Unit> BorderOutlineWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"owid", BorderItemKey
+                                                               , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> BorderOutlineOffsetKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ooff", BorderItemKey
+                                                               , new StyleKeyFlattenHorizontalValue());
+
         public static readonly StyleKey<Dash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemKey);
 
         public static readonly StyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", BorderItemKey);

@@ -1263,6 +1263,18 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region public PDFPen CreateOutlinePen(out Unit offset)
+
+        /// <summary>
+        /// Creates the pen for the css outline of this style, and the offset from the border edge to draw it at. Returns null if there is no outline.
+        /// </summary>
+        public PDFPen CreateOutlinePen(out Unit offset)
+        {
+            return this.DoCreateOutlinePen(out offset);
+        }
+
+        #endregion
+
         #region public PDFBrush CreateBackgroundBrush()
 
         /// <summary>
