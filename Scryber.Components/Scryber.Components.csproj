@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta</PackageVersion>
+    <PackageVersion>9.8.0-beta.2</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta
+    <PackageReleaseNotes>9.8.0-beta.2
+New: keys() function - the keys of a dictionary or the property names of an object, as an array that can be counted, sorted and enumerated.
+New css: text-indent; box-sizing (content-box is the opt-in, the default already includes the padding in the width); border-collapse and border-spacing for tables; object-fit and object-position for raster images; visibility (hidden content keeps its space but is not drawn).
+Fixed: collection functions (sortBy, sumOf, averageOf, minOf, maxOf, countOf, eachOf, selectWhere, firstWhere) accept a quoted property name ('price', 'owner.city') as well as .price.
+Fixed: a property named e, pi, true, false or null after '.' or '../' (e.g. model.e) is read as the property, not the constant.
+Fixed: join() accepts join(collection, separator) as well as join(separator, items...).
+
+9.8.0-beta
 New: text-transform css property (none, uppercase, lowercase, capitalize) - inherited, and usable with expressions.
 New: @first and @last loop variables alongside @index, usable in output, {{#if}}, if() and css expressions. @last is correct for arrays, lists, dictionaries and Linq iterators.
 New: @key loop variable - the key or property name when iterating a dictionary or json object, or the index for a collection. It is restored after each (nested) loop.
