@@ -518,6 +518,9 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Scryber.Text.WordHyphenation> TextWordHyphenation = StyleKey.InternalCreateStyleValueKey<Scryber.Text.WordHyphenation>((ObjectType)"hyph", TextItemKey);
 
+        //Visibility is inherited, so shares the inherited text item key
+        public static readonly StyleKey<Visibility> TextVisibilityKey = StyleKey.InternalCreateStyleValueKey<Visibility>((ObjectType)"vsby", TextItemKey);
+
         public static readonly StyleKey<Scryber.Text.TextTransform> TextTransformKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextTransform>((ObjectType)"ttrn", TextItemKey);
 
         public static readonly StyleKey<Scryber.Text.TextDecoration> TextDecorationKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextDecoration>((ObjectType)"decr", TextItemKey);

@@ -193,6 +193,10 @@ namespace Scryber.Components
             if (full.Position.DisplayMode == DisplayMode.Invisible)
                 return null;
 
+            //Hidden images are laid out, but not drawn
+            if (full.GetValue(StyleKeys.TextVisibilityKey, Visibility.Visible) != Visibility.Visible)
+                return null;
+
             PDFImageXObject img = this.GetImageObject(context, full);
             if (img != null)
             {

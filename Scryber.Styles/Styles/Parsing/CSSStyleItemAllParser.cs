@@ -245,6 +245,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.TextTransform, new CSSTextTransformParser());
             all.Add(CSSStyleItems.TextIndent, new CSSTextIndentParser());
             all.Add(CSSStyleItems.BoxSizing, new CSSBoxSizingParser());
+            all.Add(CSSStyleItems.Visibility, new CSSVisibilityParser());
             all.Add(CSSStyleItems.ObjectFit, new CSSObjectFitParser());
             all.Add(CSSStyleItems.ObjectPosition, new CSSObjectPositionParser());
             all.Add(CSSStyleItems.BorderCollapse, new CSSBorderCollapseParser());

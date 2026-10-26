@@ -117,6 +117,7 @@ namespace Scryber.Html
         public const string TextTransform = "text-transform";
         public const string TextIndent = "text-indent";
         public const string BoxSizing = "box-sizing";
+        public const string Visibility = "visibility";
         public const string ObjectFit = "object-fit";
         public const string ObjectPosition = "object-position";
         public const string BorderCollapse = "border-collapse";

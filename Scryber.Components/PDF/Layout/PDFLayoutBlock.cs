@@ -1848,6 +1848,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         protected virtual bool ShouldOutput(PDFRenderContext context)
         {
+            if (this.Position.Visibility == Visibility.Hidden || this.Position.Visibility == Visibility.None)
+                return false;
+
             if (this.Owner != null && this.Owner is ICanvas)
                 return true;
             

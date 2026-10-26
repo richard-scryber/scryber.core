@@ -1046,6 +1046,11 @@ namespace Scryber.Styles
                 options.XObjectRender = false;
             }
 
+            if (this.TryGetValue(StyleKeys.TextVisibilityKey, out StyleValue<Visibility> vis))
+                options.Visibility = vis.Value(this);
+            else
+                options.Visibility = Visibility.Visible;
+
             StyleValue<int> zidx;
             if (this.TryGetValue(StyleKeys.PositionZIndexKey, out zidx))
                 options.ZIndex = zidx.Value(this);
@@ -1482,6 +1487,13 @@ namespace Scryber.Styles
             options.Font = this.DoCreateFont(false);
             options.FillBrush = this.DoCreateFillBrush();
             options.Stroke = this.DoCreateStrokePen();
+
+            //Hidden text still takes up the space, but is not painted (the no-op text render mode)
+            if (this.TryGetValue(StyleKeys.TextVisibilityKey, out StyleValue<Visibility> textVis) && textVis.Value(this) == Visibility.Hidden)
+            {
+                options.FillBrush = null;
+                options.Stroke = null;
+            }
             
             //If we are inline positioned - then add any padding, background and border
             if (this.TryGetValue(StyleKeys.PositionDisplayKey, out StyleValue<DisplayMode> mode) && mode.Value(this) == DisplayMode.Inline)
