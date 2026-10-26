@@ -248,6 +248,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.TextTransform, new CSSTextTransformParser());
             all.Add(CSSStyleItems.TextIndent, new CSSTextIndentParser());
             all.Add(CSSStyleItems.BoxSizing, new CSSBoxSizingParser());
+            all.Add(CSSStyleItems.BoxShadow, new CSSBoxShadowParser());
+            all.Add(CSSStyleItems.TextShadow, new CSSTextShadowParser());
             all.Add(CSSStyleItems.Outline, new CSSOutlineParser());
             all.Add(CSSStyleItems.OutlineColor, new CSSOutlineColorParser());
             all.Add(CSSStyleItems.OutlineStyle, new CSSOutlineStyleParser());

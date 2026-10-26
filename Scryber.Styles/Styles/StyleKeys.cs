@@ -106,6 +106,8 @@ namespace Scryber.Styles
         public static readonly StyleKey<Unit> BorderOutlineOffsetKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"ooff", BorderItemKey
                                                                , new StyleKeyFlattenHorizontalValue());
 
+        public static readonly StyleKey<BoxShadow[]> BorderBoxShadowKey = StyleKey.InternalCreateStyleValueKey<BoxShadow[]>((ObjectType)"bshd", BorderItemKey);
+
         public static readonly StyleKey<Dash> BorderDashKey = StyleKey.InternalCreateStyleValueKey<Dash>((ObjectType)"dash", BorderItemKey);
 
         public static readonly StyleKey<LineCaps> BorderEndingKey = StyleKey.InternalCreateStyleValueKey<LineCaps>((ObjectType)"endg", BorderItemKey);
@@ -534,6 +536,8 @@ namespace Scryber.Styles
 
         //Visibility is inherited, so shares the inherited text item key
         public static readonly StyleKey<Visibility> TextVisibilityKey = StyleKey.InternalCreateStyleValueKey<Visibility>((ObjectType)"vsby", TextItemKey);
+
+        public static readonly StyleKey<BoxShadow[]> TextShadowKey = StyleKey.InternalCreateStyleValueKey<BoxShadow[]>((ObjectType)"tshd", TextItemKey);
 
         public static readonly StyleKey<Scryber.Text.TextTransform> TextTransformKey = StyleKey.InternalCreateStyleValueKey<Scryber.Text.TextTransform>((ObjectType)"ttrn", TextItemKey);
 

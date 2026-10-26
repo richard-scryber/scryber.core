@@ -287,6 +287,11 @@ namespace Scryber.PDF
         GraphSetClip,
 
         /// <summary>
+        /// W* - sets the clipping path to the intersection of the current clipping path and a draw path, using the even-odd rule (so overlapping subpaths are excluded) : (path operations) W*
+        /// </summary>
+        GraphSetClipEvenOdd,
+
+        /// <summary>
         /// n - No Operation does not paint the last defined path.
         /// </summary>
         GraphNoOp,

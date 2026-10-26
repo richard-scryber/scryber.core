@@ -1199,6 +1199,9 @@ namespace Scryber.PDF
                 case PDFOpCode.GraphSetClip:
                     s = "W";
                     break;
+                case PDFOpCode.GraphSetClipEvenOdd:
+                    s = "W*";
+                    break;
                 default:
                     break;
             }

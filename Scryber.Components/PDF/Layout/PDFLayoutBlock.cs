@@ -1703,6 +1703,40 @@ namespace Scryber.PDF.Layout
         }
 
         /// <summary>
+        /// Draws the css box-shadows for this block, behind it. They do not take up any space. Inset shadows are not drawn.
+        /// </summary>
+        private void OutputBoxShadows(PDFRenderContext context, Rect borderRect, PDFPenBorders border)
+        {
+            var shadows = this.FullStyle.GetValue(StyleKeys.BorderBoxShadowKey, (BoxShadow[])null);
+            if (null == shadows || shadows.Length == 0)
+                return;
+
+            Unit tl = Unit.Zero, tr = Unit.Zero, bl = Unit.Zero, br = Unit.Zero;
+            if (null != border)
+            {
+                tl = border.TopLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                tr = border.TopRightRadius ?? border.CornerRadius ?? Unit.Zero;
+                bl = border.BottomLeftRadius ?? border.CornerRadius ?? Unit.Zero;
+                br = border.BottomRightRadius ?? border.CornerRadius ?? Unit.Zero;
+            }
+
+            Color current = StandardColors.Black;
+            if (this.FullStyle.CreateFillBrush() is PDFSolidBrush fill)
+                current = fill.Color;
+
+            //The first shadow is on top, so draw them in reverse
+            for (int i = shadows.Length - 1; i >= 0; i--)
+            {
+                var shadow = shadows[i];
+                if (shadow.Inset)
+                    continue;
+
+                var color = shadow.Color ?? current;
+                context.Graphics.DrawBoxShadow(borderRect, tl, tr, bl, br, shadow.OffsetX, shadow.OffsetY, shadow.Blur, shadow.Spread, color, shadow.Opacity);
+            }
+        }
+
+        /// <summary>
         /// Draws the css outline for this block (outside the border, with an optional offset). It does not take up any space.
         /// </summary>
         private void OutputOutline(PDFRenderContext context, Rect borderRect, PDFPenBorders border)
@@ -1739,6 +1773,8 @@ namespace Scryber.PDF.Layout
 
             if (paintType == PaintOrders.Fill)
             {
+                //Shadows are drawn behind the background
+                this.OutputBoxShadows(context, borderRect, border);
 
                 if (null != background)
                 {

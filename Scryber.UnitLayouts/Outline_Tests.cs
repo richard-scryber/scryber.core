@@ -53,5 +53,17 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(plainBottom, Find("b").TotalBounds.Y.PointsValue, 0.01, "The next block is in the same place");
             Assert.AreEqual(plainWidth, Find("a").TotalBounds.Width.PointsValue, 0.01, "The outlined block is the same size");
         }
+
+        [TestMethod]
+        public void BoxShadow_TakesNoSpace()
+        {
+            Layout("");
+            var plainBottom = Find("b").TotalBounds.Y.PointsValue;
+            var plainWidth = Find("a").TotalBounds.Width.PointsValue;
+
+            Layout("box-shadow: 10pt 10pt 8pt 4pt rgba(0,0,0,0.5)");
+            Assert.AreEqual(plainBottom, Find("b").TotalBounds.Y.PointsValue, 0.01, "The next block is in the same place");
+            Assert.AreEqual(plainWidth, Find("a").TotalBounds.Width.PointsValue, 0.01, "The shadowed block is the same size");
+        }
     }
 }
