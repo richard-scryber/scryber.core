@@ -207,6 +207,24 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.PaddingInlineStart, new CSSPaddingInlineStartParser());
             all.Add(CSSStyleItems.PaddingInlineEnd, new CSSPaddingInlineEndParser());
 
+            all.Add(CSSStyleItems.MarginBlockAll, new CSSUnitSidesParser(CSSStyleItems.MarginBlockAll, false, StyleKeys.MarginsTopKey, StyleKeys.MarginsBottomKey));
+            all.Add(CSSStyleItems.MarginBlockStart, new CSSThicknessKeyParser(CSSStyleItems.MarginBlockStart, StyleKeys.MarginsTopKey));
+            all.Add(CSSStyleItems.MarginBlockEnd, new CSSThicknessKeyParser(CSSStyleItems.MarginBlockEnd, StyleKeys.MarginsBottomKey));
+            all.Add(CSSStyleItems.PaddingBlockAll, new CSSUnitSidesParser(CSSStyleItems.PaddingBlockAll, false, StyleKeys.PaddingTopKey, StyleKeys.PaddingBottomKey));
+            all.Add(CSSStyleItems.PaddingBlockStart, new CSSThicknessKeyParser(CSSStyleItems.PaddingBlockStart, StyleKeys.PaddingTopKey));
+            all.Add(CSSStyleItems.PaddingBlockEnd, new CSSThicknessKeyParser(CSSStyleItems.PaddingBlockEnd, StyleKeys.PaddingBottomKey));
+
+            all.Add(CSSStyleItems.Inset, new CSSUnitSidesParser(CSSStyleItems.Inset, true, StyleKeys.PositionYKey, StyleKeys.PositionRightKey, StyleKeys.PositionBottomKey, StyleKeys.PositionXKey));
+            all.Add(CSSStyleItems.InsetBlock, new CSSUnitSidesParser(CSSStyleItems.InsetBlock, true, StyleKeys.PositionYKey, StyleKeys.PositionBottomKey));
+            all.Add(CSSStyleItems.InsetBlockStart, new CSSUnitStyleParser(CSSStyleItems.InsetBlockStart, StyleKeys.PositionYKey));
+            all.Add(CSSStyleItems.InsetBlockEnd, new CSSUnitStyleParser(CSSStyleItems.InsetBlockEnd, StyleKeys.PositionBottomKey));
+            all.Add(CSSStyleItems.InsetInline, new CSSUnitSidesParser(CSSStyleItems.InsetInline, true, StyleKeys.PositionXKey, StyleKeys.PositionRightKey));
+            all.Add(CSSStyleItems.InsetInlineStart, new CSSUnitStyleParser(CSSStyleItems.InsetInlineStart, StyleKeys.PositionXKey));
+            all.Add(CSSStyleItems.InsetInlineEnd, new CSSUnitStyleParser(CSSStyleItems.InsetInlineEnd, StyleKeys.PositionRightKey));
+
+            foreach (var ignored in new[] { CSSStyleItems.Cursor, CSSStyleItems.PointerEvents, CSSStyleItems.WillChange, CSSStyleItems.ScrollBehavior, CSSStyleItems.UserSelect, CSSStyleItems.Transition, CSSStyleItems.Animation })
+                all.Add(ignored, new CSSIgnoredValueParser(ignored));
+
             all.Add(CSSStyleItems.Opacity, new CSSOpacityParser());
 
             all.Add(CSSStyleItems.Columns, new CSSColumnsParser());

@@ -91,6 +91,30 @@ namespace Scryber.Html
         public const string ColumnRuleWidth = "column-rule-width";
         public const string ColumnRuleStyle = "column-rule-style";
 
+        public const string MarginBlockAll = "margin-block";
+        public const string MarginBlockStart = "margin-block-start";
+        public const string MarginBlockEnd = "margin-block-end";
+        public const string PaddingBlockAll = "padding-block";
+        public const string PaddingBlockStart = "padding-block-start";
+        public const string PaddingBlockEnd = "padding-block-end";
+
+        public const string Inset = "inset";
+        public const string InsetBlock = "inset-block";
+        public const string InsetBlockStart = "inset-block-start";
+        public const string InsetBlockEnd = "inset-block-end";
+        public const string InsetInline = "inset-inline";
+        public const string InsetInlineStart = "inset-inline-start";
+        public const string InsetInlineEnd = "inset-inline-end";
+
+        //Properties that are accepted, but have no meaning in a PDF
+        public const string Cursor = "cursor";
+        public const string PointerEvents = "pointer-events";
+        public const string WillChange = "will-change";
+        public const string ScrollBehavior = "scroll-behavior";
+        public const string UserSelect = "user-select";
+        public const string Transition = "transition";
+        public const string Animation = "animation";
+
         public const string Left = "left";
         public const string Top = "top";
         public const string Right = "right";
