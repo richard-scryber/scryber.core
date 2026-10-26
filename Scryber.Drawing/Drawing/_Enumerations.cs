@@ -106,6 +106,54 @@ namespace Scryber.Drawing
     }
 
     /// <summary>
+    /// Defines how an image is fitted into the box it is displayed in (object-fit).
+    /// </summary>
+    public enum ObjectFit
+    {
+        Fill,
+        Contain,
+        Cover,
+        None,
+        ScaleDown
+    }
+
+    /// <summary>
+    /// A position on one axis for an object within its box (object-position) - either a percentage of the free space, or an absolute offset.
+    /// </summary>
+    public struct ObjectPosition
+    {
+        public bool IsPercent { get; }
+        public double Percent { get; }
+        public Unit Offset { get; }
+
+        public ObjectPosition(double percent)
+        {
+            IsPercent = true;
+            Percent = percent;
+            Offset = Unit.Zero;
+        }
+
+        public ObjectPosition(Unit offset)
+        {
+            IsPercent = false;
+            Percent = 0;
+            Offset = offset;
+        }
+
+        /// <summary>
+        /// Gets the distance from the start of the box, for the free space (box size minus the object size) available.
+        /// </summary>
+        public double GetOffset(double freeSpace)
+        {
+            return IsPercent ? freeSpace * (Percent / 100.0) : Offset.PointsValue;
+        }
+
+        public static readonly ObjectPosition Start = new ObjectPosition(0);
+        public static readonly ObjectPosition Center = new ObjectPosition(50);
+        public static readonly ObjectPosition End = new ObjectPosition(100);
+    }
+
+    /// <summary>
     /// Defines how the borders of table cells are drawn. Separate (default) each cell has its own borders, Collapse the borders between cells are shared.
     /// </summary>
     public enum BorderCollapse

@@ -429,6 +429,13 @@ namespace Scryber.Styles
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);
 
+        public static readonly StyleKey<ObjectFit> SizeObjectFitKey = StyleKey.InternalCreateStyleValueKey<ObjectFit>((ObjectType)"ofit", SizeItemKey);
+
+        //The object position is a percent (of the free space) or an absolute length, so is not flattened.
+        public static readonly StyleKey<ObjectPosition> SizeObjectPositionXKey = StyleKey.InternalCreateStyleValueKey<ObjectPosition>((ObjectType)"opsx", SizeItemKey);
+
+        public static readonly StyleKey<ObjectPosition> SizeObjectPositionYKey = StyleKey.InternalCreateStyleValueKey<ObjectPosition>((ObjectType)"opsy", SizeItemKey);
+
         public static readonly StyleKey<BoxSizing> SizeBoxSizingKey = StyleKey.InternalCreateStyleValueKey<BoxSizing>((ObjectType)"bxsz", SizeItemKey);
 
         public static readonly StyleKey<Unit> SizeWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", SizeItemKey

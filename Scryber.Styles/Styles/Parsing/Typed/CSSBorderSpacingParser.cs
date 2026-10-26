@@ -38,7 +38,7 @@ namespace Scryber.Styles.Parsing.Typed
             if (IsExpression(value))
                 return AttachExpressionBindingHandler(onStyle, key, value, this.DoConvertUnit);
 
-            if (this.DoConvertUnit(onStyle, value, out var parsed) && !Unit.IsAutoValue(parsed))
+            if (this.DoConvertUnit(onStyle, value, out var parsed) && (parsed.IsRelative || !Unit.IsAutoValue(parsed)))
             {
                 onStyle.SetValue(key, parsed);
                 return true;

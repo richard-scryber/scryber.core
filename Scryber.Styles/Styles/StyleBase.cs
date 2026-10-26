@@ -986,7 +986,7 @@ namespace Scryber.Styles
                 return size;
 
             var value = size.Value;
-            if (Unit.IsAutoValue(value) || value.IsRelative)
+            if (value.IsRelative || Unit.IsAutoValue(value))
                 return size;
 
             return value + extra;

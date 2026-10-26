@@ -230,6 +230,15 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
+        public void Spacing_RelativeUnits_AreResolved()
+        {
+            Layout(CellBorders + ".t { border-spacing: 1em; }", "<div style='font-size: 10pt'>" + Grid + "</div>");
+            var a = Find("a").FullStyle.CreateMarginsThickness();
+            Assert.AreEqual(10.0, a.Left.PointsValue, 0.01);
+            Assert.AreEqual(5.0, a.Right.PointsValue, 0.01);
+        }
+
+        [TestMethod]
         public void Spacing_IsIgnoredWhenCollapsed()
         {
             Layout(CellBorders + ".t { border-collapse: collapse; border-spacing: 10pt; }", Grid);

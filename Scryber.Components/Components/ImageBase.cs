@@ -204,6 +204,14 @@ namespace Scryber.Components
 
                 Rect? clipRect = img.GetClippingRect(context.Offset, context.Space, context);
 
+                //Raster images can be fitted into the box, rather than stretched to fill it.
+                if (img.ImageData is ImageRasterData && full.TryGetValue(StyleKeys.SizeObjectFitKey, out StyleValue<ObjectFit> fitValue))
+                {
+                    var fit = fitValue.Value(full);
+                    if (fit != ObjectFit.Fill)
+                        this.ApplyObjectFit(img, full, fit, ref pos, ref imgsize, ref clipRect);
+                }
+
                 graphics.SaveGraphicsState();
 
                 StyleValue<double> op;
@@ -228,6 +236,62 @@ namespace Scryber.Components
             }
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Adjusts the position, size and clipping of a raster image, for the object-fit and object-position of the style.
+        /// The box is the position and size passed in.
+        /// </summary>
+        protected virtual void ApplyObjectFit(PDFImageXObject img, Style full, ObjectFit fit, ref Point pos, ref Size size, ref Rect? clip)
+        {
+            var natural = img.GetImageSize();
+            double nw = natural.Width.PointsValue;
+            double nh = natural.Height.PointsValue;
+            double bw = size.Width.PointsValue;
+            double bh = size.Height.PointsValue;
+
+            if (nw <= 0 || nh <= 0 || bw <= 0 || bh <= 0)
+                return;
+
+            double scale;
+            switch (fit)
+            {
+                case ObjectFit.Contain:
+                    scale = Math.Min(bw / nw, bh / nh);
+                    break;
+                case ObjectFit.Cover:
+                    scale = Math.Max(bw / nw, bh / nh);
+                    break;
+                case ObjectFit.ScaleDown:
+                    scale = Math.Min(1.0, Math.Min(bw / nw, bh / nh));
+                    break;
+                default: //None
+                    scale = 1.0;
+                    break;
+            }
+
+            double sw = nw * scale;
+            double sh = nh * scale;
+
+            double offsetX = GetObjectOffset(full, StyleKeys.SizeObjectPositionXKey, bw - sw);
+            double offsetY = GetObjectOffset(full, StyleKeys.SizeObjectPositionYKey, bh - sh);
+
+            var box = new Rect(pos, size);
+
+            //clip anything that is outside the box
+            if (sw > bw + 0.001 || sh > bh + 0.001)
+                clip = box;
+
+            pos = new Point(pos.X + new Unit(offsetX, PageUnits.Points), pos.Y + new Unit(offsetY, PageUnits.Points));
+            size = new Size(new Unit(sw, PageUnits.Points), new Unit(sh, PageUnits.Points));
+        }
+
+        private static double GetObjectOffset(Style full, StyleKey<ObjectPosition> key, double freeSpace)
+        {
+            if (full.TryGetValue(key, out StyleValue<ObjectPosition> found))
+                return found.Value(full).GetOffset(freeSpace);
+            else
+                return freeSpace / 2.0; //default of 50%
         }
 
         public Size GetRequiredSizeForLayout(Size available, LayoutContext context, Style appliedstyle)
