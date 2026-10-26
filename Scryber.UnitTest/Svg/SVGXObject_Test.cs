@@ -177,7 +177,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents
-            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
+            var bounds = new Rect(35, 155, Unit.Px(150), Unit.Px(150));
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
@@ -239,7 +239,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents and padding
-            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
+            var bounds = new Rect(35, 155, Unit.Px(150), Unit.Px(150));
             Assert.AreEqual(bounds, arrange.RenderBounds);
             
             img = doc.FindAComponentById("referenced2");
@@ -248,7 +248,7 @@ namespace Scryber.Core.UnitTests.Svg
             arrange = img.GetFirstArrangement();
             Assert.IsNotNull(arrange);
             
-            bounds = new Rect(70, 342.5, Unit.Px(200) + 10, Unit.Px(200) + 10);
+            bounds = new Rect(75, 347.5, Unit.Px(200), Unit.Px(200));
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
 
@@ -316,7 +316,7 @@ namespace Scryber.Core.UnitTests.Svg
             Assert.IsNotNull(arrange);
 
             //Includes offset of other contents and padding
-            var bounds = new Rect(30, 150, Unit.Px(150) + 10, Unit.Px(150) + 10);
+            var bounds = new Rect(35, 155, Unit.Px(150), Unit.Px(150));
             Assert.AreEqual(bounds, arrange.RenderBounds);
         }
         
@@ -424,7 +424,7 @@ namespace Scryber.Core.UnitTests.Svg
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 80);
             var expectedScale = new Size(0.4, 0.4);
-            var expectedBounds = new Rect(20, 60, Unit.Px(400) + 10, Unit.Px(80) + 10);
+            var expectedBounds = new Rect(25, 65, Unit.Px(400), Unit.Px(80));
 
             DoAssertWideImage("xMinYMidWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
 
@@ -479,8 +479,8 @@ namespace Scryber.Core.UnitTests.Svg
             expectedScale = new Size(0.5, 0.5);
 
             expectedBounds.Y += 58 + 20 + 60 + 10; //banner, title, prev image (80px = 60pt), margin
-            expectedBounds.Width = Unit.Px(100) + 10;
-            expectedBounds.Height = Unit.Px(250) + 10;
+            expectedBounds.Width = Unit.Px(100);
+            expectedBounds.Height = Unit.Px(250);
 
             DoAssertTallImage("xMidYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
 
@@ -559,7 +559,7 @@ namespace Scryber.Core.UnitTests.Svg
             //Includes offset of other contents and padding
             var expectedOffset = new Point(0, 400);
             var expectedScale = new Size(2.0, 2.0);
-            var expectedBounds = new Rect(20, 20 + 20 + 20, Unit.Px(400) + 10, Unit.Px(80) + 10);
+            var expectedBounds = new Rect(25, 20 + 20 + 20 + 5, Unit.Px(400), Unit.Px(80));
 
             DoAssertWideImage("xMinYMinWide",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
 
@@ -614,8 +614,8 @@ namespace Scryber.Core.UnitTests.Svg
             expectedScale = new Size(1.25, 1.25);
 
             expectedBounds.Y += 58 + 20 + 60 + 10; //banner, title, prev image (80px = 60pt), margin
-            expectedBounds.Width = Unit.Px(100) + 10;
-            expectedBounds.Height = Unit.Px(250) + 10;
+            expectedBounds.Width = Unit.Px(100);
+            expectedBounds.Height = Unit.Px(250);
 
             DoAssertTallImage("xMinYMinTall",svg, imgX, expectedOffset, expectedScale, expectedBounds, context);
             

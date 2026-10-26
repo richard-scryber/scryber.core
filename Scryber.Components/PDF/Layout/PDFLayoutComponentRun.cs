@@ -251,7 +251,7 @@ namespace Scryber.PDF.Layout
                 context.Offset = loc;
                 context.Space = size;
 
-                if (opts.DisplayMode != DisplayMode.Inline && opts.Margins.IsEmpty == false)
+                if (opts.Margins.IsEmpty == false)
                 {
                     loc = loc.Offset(opts.Margins.Left, opts.Margins.Top);
                     size = size.Subtract(opts.Margins);

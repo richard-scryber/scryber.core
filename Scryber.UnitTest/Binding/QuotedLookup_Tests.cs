@@ -89,6 +89,26 @@ namespace Scryber.Core.UnitTests.Binding
         }
 
         [TestMethod]
+        public void SortBy_PlainValues_NoProperty()
+        {
+            var model = new { names = new[] { "pear", "apple", "fig" }, nums = new[] { 3, 1, 2 }, d = new System.Collections.Generic.Dictionary<string, int> { { "c", 1 }, { "a", 2 }, { "b", 3 } } };
+            Assert.AreEqual("apple, fig, pear ", Render("<p>{{join(sortBy(model.names), ', ')}}</p>", model));
+            Assert.AreEqual("pear, fig, apple ", Render("<p>{{join(sortBy(model.names, 'desc'), ', ')}}</p>", model));
+            Assert.AreEqual("apple, fig, pear ", Render("<p>{{join(sortBy(model.names, 'asc'), ', ')}}</p>", model));
+            Assert.AreEqual("123 ", Render("{{#each sortBy(model.nums)}}<p>{{this}}</p>{{/each}}", model));
+            Assert.AreEqual("a,b,c ", Render("<p>{{join(sortBy(keys(model.d)), ',')}}</p>", model));
+        }
+
+        [TestMethod]
+        public void SortBy_DuplicateKeys_AreAllKept_InTheirOriginalOrder()
+        {
+            var model = new { items = new[] { new { name = "x", group = 2 }, new { name = "y", group = 1 }, new { name = "z", group = 2 }, new { name = "w", group = 1 } } };
+            Assert.AreEqual("ywxz ", Render("{{#each sortBy(model.items, 'group')}}<p>{{this.name}}</p>{{/each}}", model));
+            Assert.AreEqual("xzyw ", Render("{{#each sortBy(model.items, .group, 'desc')}}<p>{{this.name}}</p>{{/each}}", model));
+            Assert.AreEqual("aab ", Render("{{#each sortBy(model.values)}}<p>{{this}}</p>{{/each}}", new { values = new[] { "b", "a", "a" } }));
+        }
+
+        [TestMethod]
         public void DotName_StillWorks()
         {
             Assert.AreEqual("6 ", Render("<p>{{sumOf(model.items, .price)}}</p>", Model));
