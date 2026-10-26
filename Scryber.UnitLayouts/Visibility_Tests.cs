@@ -161,5 +161,55 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(visibleWidth, Find("b").TotalBounds.X.PointsValue, 0.01);
             Assert.AreEqual("Two", PaintedText(hidden));
         }
+
+        private const string Rows = "<table id='t'><tr id='r1'><td>One</td></tr><tr id='r2' {0}><td>Two</td></tr><tr id='r3'><td id='c3'>Three</td></tr></table>";
+
+        [TestMethod]
+        public void Collapse_TableRow_IsRemovedWithItsSpace()
+        {
+            Render("", string.Format(Rows, ""));
+            var fullHeight = Find("t").TotalBounds.Height.PointsValue;
+            var thirdTop = Find("r3").TotalBounds.Y.PointsValue;
+
+            var pdf = Render("", string.Format(Rows, "style='visibility:collapse'"));
+            Assert.AreEqual("OneThree", PaintedText(pdf), "The collapsed row is not drawn");
+            Assert.IsTrue(Find("t").TotalBounds.Height.PointsValue < fullHeight - 5.0, "The table is shorter");
+            Assert.IsTrue(Find("r3").TotalBounds.Y.PointsValue < thirdTop - 5.0, "The next row moves up");
+            Assert.IsNull(Find("r2"), "The row is not laid out");
+        }
+
+        [TestMethod]
+        public void Hidden_TableRow_KeepsItsSpace()
+        {
+            Render("", string.Format(Rows, ""));
+            var fullHeight = Find("t").TotalBounds.Height.PointsValue;
+
+            var pdf = Render("", string.Format(Rows, "style='visibility:hidden'"));
+            Assert.AreEqual("OneThree", PaintedText(pdf));
+            Assert.AreEqual(fullHeight, Find("t").TotalBounds.Height.PointsValue, 0.01);
+        }
+
+        [TestMethod]
+        public void Collapse_RowGroup_RemovesItsRows()
+        {
+            var body = "<table id='t'><thead><tr><td>Head</td></tr></thead><tbody style='visibility:collapse'><tr><td>Body one</td></tr><tr><td>Body two</td></tr></tbody><tfoot><tr><td>Foot</td></tr></tfoot></table>";
+            var pdf = Render("", body);
+            Assert.AreEqual("HeadFoot", PaintedText(pdf));
+        }
+
+        [TestMethod]
+        public void Collapse_AllRows_DoesNotFail()
+        {
+            var pdf = Render("", "<table id='t'><tr style='visibility:collapse'><td>One</td></tr></table><p>After</p>");
+            Assert.AreEqual("After", PaintedText(pdf));
+        }
+
+        [TestMethod]
+        public void Collapse_OutsideATable_IsHidden_KeepingTheSpace()
+        {
+            var pdf = Render("", "<div id='a' style='height:40pt;visibility:collapse'>Gone</div><div id='b' style='height:20pt'>Here</div>");
+            Assert.AreEqual("Here", PaintedText(pdf));
+            Assert.AreEqual(40.0, Find("b").TotalBounds.Y.PointsValue, 0.01, "The space is kept");
+        }
     }
 }

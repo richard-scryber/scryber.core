@@ -261,5 +261,62 @@ namespace Scryber.UnitLayouts
             Layout(CellBorders + ".t { border-spacing: 10pt; }", Grid);
             Assert.AreEqual(300.0, Find("t").TotalBounds.Width.PointsValue, 0.5);
         }
+
+        [TestMethod]
+        public void Spacing_IsInherited_FromAContainer()
+        {
+            Layout(CellBorders + ".wrap { border-spacing: 10pt; }", "<div class='wrap'>" + Grid + "</div>");
+            var a = Find("a").FullStyle.CreateMarginsThickness();
+            Assert.AreEqual(10.0, a.Left.PointsValue, 0.01);
+            Assert.AreEqual(5.0, a.Right.PointsValue, 0.01);
+        }
+
+        [TestMethod]
+        public void Spacing_IsInherited_FromTheBody()
+        {
+            var html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" + CellBorders + "</style></head><body style='margin:0;padding:0;border-spacing:6pt'>" + Grid + "</body></html>";
+            using (var doc = Document.ParseDocument(new System.IO.StringReader(html), ParseSourceType.DynamicContent))
+            using (var ms = new System.IO.MemoryStream())
+            {
+                doc.LayoutComplete += Doc_LayoutComplete;
+                doc.SaveAsPDF(ms);
+            }
+            var a = Find("a").FullStyle.CreateMarginsThickness();
+            Assert.AreEqual(6.0, a.Left.PointsValue, 0.01);
+        }
+
+        [TestMethod]
+        public void Collapse_IsInherited_ByANestedTable()
+        {
+            var nested = "<table id='outer' class='t'><tr><td>Outer<table id='inner'><tr><td id='x'>X</td><td id='y'>Y</td></tr></table></td></tr></table>";
+            Layout(CellBorders + "table { border-collapse: collapse; }", nested);
+            Assert.AreEqual(0.0, Side("y", Sides.Left), 0.01, "The nested cells are collapsed");
+        }
+
+        [TestMethod]
+        public void CellSpacing_Attribute_IsPixels()
+        {
+            Layout(CellBorders, "<table id='t' class='t' cellspacing='8'><tr><td id='a'>A</td><td id='b'>B</td></tr></table>");
+            var a = Find("a").FullStyle.CreateMarginsThickness();
+            //8px is 6pt
+            Assert.AreEqual(6.0, a.Left.PointsValue, 0.01);
+            Assert.AreEqual(3.0, a.Right.PointsValue, 0.01);
+        }
+
+        [TestMethod]
+        public void CellSpacing_Attribute_IsOverriddenByCss()
+        {
+            Layout(CellBorders + ".t { border-spacing: 10pt; }", "<table id='t' class='t' cellspacing='20'><tr><td id='a'>A</td><td id='b'>B</td></tr></table>");
+            Assert.AreEqual(10.0, Find("a").FullStyle.CreateMarginsThickness().Left.PointsValue, 0.01);
+        }
+
+        [TestMethod]
+        public void CellSpacing_Attribute_InvalidOrZero_IsIgnored()
+        {
+            Layout(CellBorders, "<table id='t' class='t' cellspacing='wide'><tr><td id='a'>A</td></tr></table>");
+            Assert.AreEqual(0.0, Find("a").FullStyle.CreateMarginsThickness().Left.PointsValue, 0.01);
+            Layout(CellBorders, "<table id='t' class='t' cellspacing='0'><tr><td id='a'>A</td></tr></table>");
+            Assert.AreEqual(0.0, Find("a").FullStyle.CreateMarginsThickness().Left.PointsValue, 0.01);
+        }
     }
 }

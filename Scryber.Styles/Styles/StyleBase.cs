@@ -1489,7 +1489,7 @@ namespace Scryber.Styles
             options.Stroke = this.DoCreateStrokePen();
 
             //Hidden text still takes up the space, but is not painted (the no-op text render mode)
-            if (this.TryGetValue(StyleKeys.TextVisibilityKey, out StyleValue<Visibility> textVis) && textVis.Value(this) == Visibility.Hidden)
+            if (this.TryGetValue(StyleKeys.TextVisibilityKey, out StyleValue<Visibility> textVis) && textVis.Value(this) != Visibility.Visible)
             {
                 options.FillBrush = null;
                 options.Stroke = null;

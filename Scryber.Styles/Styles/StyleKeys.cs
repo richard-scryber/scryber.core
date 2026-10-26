@@ -700,12 +700,13 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<int> TableCellRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"rows", TableItemKey);
 
-        public static readonly StyleKey<BorderCollapse> TableBorderCollapseKey = StyleKey.InternalCreateStyleValueKey<BorderCollapse>((ObjectType)"bcol", TableItemKey);
+        //border-collapse and border-spacing are inherited in css, so are on the inherited text item key.
+        public static readonly StyleKey<BorderCollapse> TableBorderCollapseKey = StyleKey.InternalCreateStyleValueKey<BorderCollapse>((ObjectType)"bcol", TextItemKey);
 
-        public static readonly StyleKey<Unit> TableBorderSpacingHorizontalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bsph", TableItemKey
+        public static readonly StyleKey<Unit> TableBorderSpacingHorizontalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bsph", TextItemKey
                                                                , new StyleKeyFlattenHorizontalValue());
 
-        public static readonly StyleKey<Unit> TableBorderSpacingVerticalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bspv", TableItemKey
+        public static readonly StyleKey<Unit> TableBorderSpacingVerticalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bspv", TextItemKey
                                                                , new StyleKeyFlattenVerticalValue());
 
         public static readonly StyleKey<TableRowRepeat> TableRowRepeatKey = StyleKey.InternalCreateStyleValueKey<TableRowRepeat>((ObjectType)"rowr", TableItemKey);

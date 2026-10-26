@@ -899,6 +899,14 @@ namespace Scryber.PDF.Layout
                     continue;
                 }
 
+                //A collapsed row is removed from the table (and its space), as with display none.
+                if (rowfull.GetValue(StyleKeys.TextVisibilityKey, Visibility.Visible) == Visibility.Collapse)
+                {
+                    this.StyleStack.Pop();
+                    row.Visible = false;
+                    continue;
+                }
+
                 rowapplieds.Add(rowapplied);
                 rowfulls.Add(rowfull);
 

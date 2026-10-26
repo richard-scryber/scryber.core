@@ -799,7 +799,11 @@ namespace Scryber.Drawing
         /// <summary>
         /// The item is not visible, but still takes up any required space.
         /// </summary>
-        Hidden
+        Hidden,
+        /// <summary>
+        /// For a table row (or group of rows) it is removed, with its space, as with display none. For any other item it is the same as hidden.
+        /// </summary>
+        Collapse
     }
 
     public enum Corner

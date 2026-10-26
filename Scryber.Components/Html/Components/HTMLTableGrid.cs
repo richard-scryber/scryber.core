@@ -47,6 +47,44 @@ namespace Scryber.Html.Components
             set => base.OutlineTitle = value;
         }
 
+        private string _cellSpacing;
+
+        /// <summary>
+        /// The html cellspacing attribute - the space between the cells in pixels (or any css length). 
+        /// It is the same as border-spacing, but any css border-spacing will override it.
+        /// </summary>
+        [PDFAttribute("cellspacing")]
+        public string CellSpacing
+        {
+            get { return _cellSpacing; }
+            set { _cellSpacing = value; }
+        }
+
+        protected override Style GetBaseStyle()
+        {
+            var style = base.GetBaseStyle();
+
+            if (!string.IsNullOrWhiteSpace(_cellSpacing))
+            {
+                var text = _cellSpacing.Trim();
+                Scryber.Drawing.Unit spacing;
+
+                //A plain number is in pixels
+                if (double.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number))
+                    spacing = Scryber.Drawing.Unit.Px(number);
+                else if (!Scryber.Drawing.Unit.TryParse(text, out spacing))
+                    return style;
+
+                if (spacing.IsRelative || spacing > Scryber.Drawing.Unit.Zero)
+                {
+                    style.SetValue(StyleKeys.TableBorderSpacingHorizontalKey, spacing);
+                    style.SetValue(StyleKeys.TableBorderSpacingVerticalKey, spacing);
+                }
+            }
+
+            return style;
+        }
+
         public HTMLTableGrid()
             : this(HTMLObjectTypes.Table)
         {

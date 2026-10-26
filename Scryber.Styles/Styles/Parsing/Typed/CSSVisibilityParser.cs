@@ -5,7 +5,7 @@ using Scryber.Html;
 namespace Scryber.Styles.Parsing.Typed
 {
     /// <summary>
-    /// Parses the visibility css property - visible (default) or hidden (collapse is treated as hidden). 
+    /// Parses the visibility css property - visible (default), hidden, or collapse (a table row is removed, anything else is hidden). 
     /// Hidden content still takes up its space in the layout, but is not drawn.
     /// </summary>
     public class CSSVisibilityParser : CSSStyleValueParser
@@ -58,8 +58,10 @@ namespace Scryber.Styles.Parsing.Typed
                     visibility = Visibility.Visible;
                     return true;
                 case "hidden":
-                case "collapse":
                     visibility = Visibility.Hidden;
+                    return true;
+                case "collapse":
+                    visibility = Visibility.Collapse;
                     return true;
                 default:
                     visibility = Visibility.Visible;
