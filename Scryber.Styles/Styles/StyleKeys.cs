@@ -665,6 +665,14 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<int> TableCellRowSpanKey = StyleKey.InternalCreateStyleValueKey<int>((ObjectType)"rows", TableItemKey);
 
+        public static readonly StyleKey<BorderCollapse> TableBorderCollapseKey = StyleKey.InternalCreateStyleValueKey<BorderCollapse>((ObjectType)"bcol", TableItemKey);
+
+        public static readonly StyleKey<Unit> TableBorderSpacingHorizontalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bsph", TableItemKey
+                                                               , new StyleKeyFlattenHorizontalValue());
+
+        public static readonly StyleKey<Unit> TableBorderSpacingVerticalKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"bspv", TableItemKey
+                                                               , new StyleKeyFlattenVerticalValue());
+
         public static readonly StyleKey<TableRowRepeat> TableRowRepeatKey = StyleKey.InternalCreateStyleValueKey<TableRowRepeat>((ObjectType)"rowr", TableItemKey);
 
         //Badge

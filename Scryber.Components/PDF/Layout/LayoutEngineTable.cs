@@ -139,6 +139,7 @@ namespace Scryber.PDF.Layout
 
                 int rowcount, columncount;
                 this.BuildStyles(out rowcount, out columncount);
+                this.ApplyTableBorderModel(rowcount, columncount);
 
                 if (this.Context.ShouldLogDebug)
                     this.Context.TraceLog.Add(TraceLevel.Debug, TableEngineLogCategory, "Styles Built with " + rowcount + " rows, and " + columncount + " columns");

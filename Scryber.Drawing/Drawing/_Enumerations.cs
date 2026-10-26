@@ -106,6 +106,15 @@ namespace Scryber.Drawing
     }
 
     /// <summary>
+    /// Defines how the borders of table cells are drawn. Separate (default) each cell has its own borders, Collapse the borders between cells are shared.
+    /// </summary>
+    public enum BorderCollapse
+    {
+        Separate,
+        Collapse
+    }
+
+    /// <summary>
     /// Defines if the width and height of a box include the padding and border (BorderBox) or are the content only (ContentBox)
     /// </summary>
     public enum BoxSizing

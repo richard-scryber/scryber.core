@@ -977,7 +977,7 @@ namespace Scryber.Styles
             if (null == pen && (borders.AllSides & side) == side)
                 pen = borders.AllPen;
 
-            return null == pen ? Unit.Zero : pen.Width;
+            return (null == pen || pen.LineStyle == LineType.None) ? Unit.Zero : pen.Width;
         }
 
         private static Unit? AddToSize(Unit? size, Unit extra)
@@ -2714,6 +2714,18 @@ namespace Scryber.Styles
             }
             else
                 return defaultValue;
+        }
+
+        /// <summary>
+        /// Sets a value on the style with the specific priority, always replacing the existing value with a new instance 
+        /// (the existing value is never modified, as it can be shared with other styles).
+        /// </summary>
+        public static void SetPriorityValue<T>(this StyleBase stylebase, StyleKey<T> key, T value, int priority)
+        {
+            stylebase.RemoveValue(key);
+            var replacement = new StyleValue<T>(key, value);
+            replacement.Priority = priority;
+            stylebase.AddValue(replacement);
         }
 
         public static void SetValue<T>(this StyleBase stylebase, StyleKey<T> key, T value)
