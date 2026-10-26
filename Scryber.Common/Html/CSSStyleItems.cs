@@ -116,6 +116,7 @@ namespace Scryber.Html
         public const string LetterSpacing = "letter-spacing";
         public const string TextTransform = "text-transform";
         public const string TextIndent = "text-indent";
+        public const string BoxSizing = "box-sizing";
         public const string Hyphenation = "hyphens";
         public const string HyphenateLimitChars = "hyphenate-limit-chars";
         public const string HyphenateLimitLength = "hyphens-limit-chars-length";

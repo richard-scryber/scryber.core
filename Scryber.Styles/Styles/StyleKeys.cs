@@ -429,6 +429,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey SizeItemKey = StyleKey.InternalCreateStyleItemKey(ObjectTypes.StyleSize, NOT_INHERITED);
 
+        public static readonly StyleKey<BoxSizing> SizeBoxSizingKey = StyleKey.InternalCreateStyleValueKey<BoxSizing>((ObjectType)"bxsz", SizeItemKey);
+
         public static readonly StyleKey<Unit> SizeWidthKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"widt", SizeItemKey
                                                                , new StyleKeyFlattenHorizontalValue());
 

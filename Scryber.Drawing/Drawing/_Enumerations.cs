@@ -105,6 +105,15 @@ namespace Scryber.Drawing
         Right = 8
     }
 
+    /// <summary>
+    /// Defines if the width and height of a box include the padding and border (BorderBox) or are the content only (ContentBox)
+    /// </summary>
+    public enum BoxSizing
+    {
+        ContentBox,
+        BorderBox
+    }
+
     public enum LineType
     {
         None,

@@ -939,6 +939,61 @@ namespace Scryber.Styles
 
         #endregion
 
+        #region private void DoApplyContentBoxSizing(PDFPositionOptions options)
+
+        /// <summary>
+        /// By default (as in border-box) the width and height of a box include the padding, and the border is drawn inside the box.
+        /// For an explicit content-box, the padding and border are added to the sizes, so the width and height are the content only.
+        /// </summary>
+        private void DoApplyContentBoxSizing(PDFPositionOptions options)
+        {
+            var padding = this.DoCreatePaddingThickness();
+            var borders = this.DoCreatePenBorders();
+
+            Unit left = padding.Left, right = padding.Right, top = padding.Top, bottom = padding.Bottom;
+
+            if (null != borders)
+            {
+                left += GetBorderSideWidth(borders, borders.LeftPen, Sides.Left);
+                right += GetBorderSideWidth(borders, borders.RightPen, Sides.Right);
+                top += GetBorderSideWidth(borders, borders.TopPen, Sides.Top);
+                bottom += GetBorderSideWidth(borders, borders.BottomPen, Sides.Bottom);
+            }
+
+            var horizontal = left + right;
+            var vertical = top + bottom;
+
+            options.Width = AddToSize(options.Width, horizontal);
+            options.MinimumWidth = AddToSize(options.MinimumWidth, horizontal);
+            options.MaximumWidth = AddToSize(options.MaximumWidth, horizontal);
+            options.Height = AddToSize(options.Height, vertical);
+            options.MinimumHeight = AddToSize(options.MinimumHeight, vertical);
+            options.MaximumHeight = AddToSize(options.MaximumHeight, vertical);
+        }
+
+        private static Unit GetBorderSideWidth(PDFPenBorders borders, PDFPen sidePen, Sides side)
+        {
+            var pen = sidePen;
+            if (null == pen && (borders.AllSides & side) == side)
+                pen = borders.AllPen;
+
+            return null == pen ? Unit.Zero : pen.Width;
+        }
+
+        private static Unit? AddToSize(Unit? size, Unit extra)
+        {
+            if (!size.HasValue || extra == Unit.Zero)
+                return size;
+
+            var value = size.Value;
+            if (Unit.IsAutoValue(value) || value.IsRelative)
+                return size;
+
+            return value + extra;
+        }
+
+        #endregion
+
         #region internal protected virtual PDFPositionOptions DoCreatePositionOptions(bool isInPositioned)
 
         /// <summary>
@@ -1108,6 +1163,13 @@ namespace Scryber.Styles
                 options.AspectRatio = aspectRatio.Value(this);
             else
                 options.AspectRatio = null;
+
+            // Box sizing - the default (border-box) has the width and height including the padding.
+            // An explicit content-box has them as the content only.
+            if (this.TryGetValue(StyleKeys.SizeBoxSizingKey, out StyleValue<BoxSizing> sizing) && sizing.Value(this) == BoxSizing.ContentBox)
+            {
+                this.DoApplyContentBoxSizing(options);
+            }
 
             //viewport
 
