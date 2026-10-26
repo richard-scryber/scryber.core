@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.2</PackageVersion>
+    <PackageVersion>9.8.0-beta.3</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.2
+    <PackageReleaseNotes>9.8.0-beta.3
+New css: text-decoration-color, text-decoration-style (solid, double, dotted, dashed, wavy) and text-decoration-thickness, also in the text-decoration shorthand; outline, outline-color, outline-style, outline-width and outline-offset; box-shadow (offset, blur, spread, colour, multiple, rounded corners); text-shadow.
+Fixed: an inline image (or other drawn component) with a margin was drawn at its size plus the margins, over the margin area. It is now drawn at its own size inside the margin.
+New: sortBy(values) and sortBy(values, 'desc') sort plain values such as the result of keys().
+Fixed: sortBy with items that have the same sort value threw an error. They are now kept in their original order.
+
+9.8.0-beta.2
 New: keys() function - the keys of a dictionary or the property names of an object, as an array that can be counted, sorted and enumerated.
 New css: text-indent; box-sizing (content-box is the opt-in, the default already includes the padding in the width); border-collapse and border-spacing for tables; object-fit and object-position for raster images; visibility (hidden content keeps its space but is not drawn).
 Fixed: collection functions (sortBy, sumOf, averageOf, minOf, maxOf, countOf, eachOf, selectWhere, firstWhere) accept a quoted property name ('price', 'owner.city') as well as .price.
