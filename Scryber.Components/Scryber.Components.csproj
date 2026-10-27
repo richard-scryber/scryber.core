@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.6</PackageVersion>
+    <PackageVersion>9.8.0-beta.7</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.6
+    <PackageReleaseNotes>9.8.0-beta.7
+Fixed: flex items without a width, flex-basis or flex-grow are the width of their content (measured by a layout that is discarded - counters, ::before/::after, names, outlines and page breaks are not affected). They had no width, so next to a growing item they disappeared.
+Changed: a flex row of only content width items is packed at the start (as css) rather than split into equal columns.
+
+9.8.0-beta.6
 New css: margin-block, padding-block (and -start, -end), inset, inset-block and inset-inline (and -start, -end). cursor, pointer-events, will-change, scroll-behavior, user-select, transition and animation are accepted and ignored.
 Changed: overflow: hidden on text that does not wrap cuts the text back to the last whole word that fits (overflow: clip is still a clipping rectangle).
 Fixed: the items in a flex row stretch to the height of the row (align-items: stretch, the default), unless they have a height or align-self/align-items says otherwise.
