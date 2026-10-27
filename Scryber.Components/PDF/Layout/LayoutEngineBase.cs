@@ -220,14 +220,16 @@ namespace Scryber.PDF.Layout
             {
 #if COUNTERS_AND_PSEUDOCONTENT
 
-                //counter updates for visible components before
+                //counter updates for visible components before (but not when only measuring the layout)
+                bool updateCounters = !context.IsMeasuring;
                 Style before;
-                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.Before, out before))
+                if (updateCounters && fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.Before, out before))
                     this.EnsureCounterUpdatesForStyle(before);
 
                 //counter updates for visible components on element
 
-                this.EnsureCounterUpdatesForStyle(fullstyle);
+                if (updateCounters)
+                    this.EnsureCounterUpdatesForStyle(fullstyle);
 
 
                 this.DoLayoutComponent();
@@ -235,7 +237,7 @@ namespace Scryber.PDF.Layout
                 //counter updates for visible components after
 
                 Style after;
-                if (fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.After, out after))
+                if (updateCounters && fullstyle.HasStates && fullstyle.TryGetStyleState(ComponentState.After, out after))
                     this.EnsureCounterUpdatesForStyle(after);
 
 #else
@@ -773,7 +775,8 @@ namespace Scryber.PDF.Layout
                 
             }
 
-            PDFArtefactRegistrationSet artefacts = comp.RegisterLayoutArtefacts(this.Context, full);
+            //names and outlines are not registered when only measuring the layout
+            PDFArtefactRegistrationSet artefacts = this.Context.IsMeasuring ? null : comp.RegisterLayoutArtefacts(this.Context, full);
 
             //perform the actual layout of the component with the full style
             this.DoLayoutAChild(comp, full);
@@ -2160,9 +2163,9 @@ namespace Scryber.PDF.Layout
                 var origRegion = containerRegion;
                 var origBlock = containerBlock;
 
-                if (position.OverflowAction == OverflowAction.Clip || this.IsLastInClippedBlock(containerRegion))
+                if (position.OverflowAction == OverflowAction.Clip || this.IsLastInClippedBlock(containerRegion) || this.Context.IsMeasuring)
                 {
-                    //We are ok to continue in a clipped block.
+                    //We are ok to continue in a clipped block, or when only measuring (as the layout is discarded).
                 }
                 else if (this.MoveToNextRegion(required, ref containerRegion, ref containerBlock, out newPageOrRegion))
                 {
@@ -2250,7 +2253,7 @@ namespace Scryber.PDF.Layout
 
         protected virtual void DoLayoutPageBreak(Component pgbreak, Style style, BreakContentType type)
         {
-            if(pgbreak == null || pgbreak.Visible == false)
+            if(pgbreak == null || pgbreak.Visible == false || this.Context.IsMeasuring)
                 return;
 
             switch (type)
@@ -2283,7 +2286,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style">The full style of the page break</param>
         protected virtual void DoLayoutPageBreak(Component pgbreak, Style style)
         {
-            if (pgbreak.Visible == false)
+            if (pgbreak.Visible == false || this.Context.IsMeasuring)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -2351,7 +2354,7 @@ namespace Scryber.PDF.Layout
         /// <param name="style"></param>
         protected virtual void DoLayoutColumnBreak(Component colbreak, Style style)
         {
-            if (colbreak.Visible == false)
+            if (colbreak.Visible == false || this.Context.IsMeasuring)
                 return;
 
             PDFLayoutBlock block = this.DocumentLayout.CurrentPage.LastOpenBlock();
@@ -2842,6 +2845,12 @@ namespace Scryber.PDF.Layout
         /// <returns>True is we can move to another page.</returns>
         internal protected virtual bool MoveToNextRegion(Unit requiredHeight, ref PDFLayoutRegion region, ref PDFLayoutBlock block, out bool newPage)
         {
+            //A measuring layout is discarded, so it must never move on to another region or page
+            if (this.Context.IsMeasuring)
+            {
+                newPage = false;
+                return false;
+            }
 
             using (IDisposable record = Context.PerformanceMonitor.Record(PerformanceMonitorType.Content_Overflow, this.Component.UniqueID))
             {
@@ -3177,6 +3186,9 @@ namespace Scryber.PDF.Layout
         /// <returns></returns>
         public virtual bool MoveToNextPage(IComponent initiator, Style inititorStyle, Stack<PDFLayoutBlock> depth, ref PDFLayoutRegion region, ref PDFLayoutBlock block)
         {
+            if (this.Context.IsMeasuring)
+                return false;
+
             return this.ParentEngine.MoveToNextPage(initiator, inititorStyle, depth, ref region, ref block);
         }
 

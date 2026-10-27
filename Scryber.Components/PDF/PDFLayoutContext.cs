@@ -59,6 +59,24 @@ namespace Scryber.PDF
 
         
 
+        #region public int MeasuringDepth {get;set;} + IsMeasuring {get;}
+
+        /// <summary>
+        /// Gets or sets the depth of any measuring layout. When measuring (e.g. the content width of a flex item), components
+        /// are laid out and the result is then discarded, so counters, artefacts (names and outlines) and page or column breaks are not applied.
+        /// </summary>
+        public int MeasuringDepth { get; set; }
+
+        /// <summary>
+        /// Returns true if the current layout is only measuring, and will be discarded.
+        /// </summary>
+        public bool IsMeasuring
+        {
+            get { return this.MeasuringDepth > 0; }
+        }
+
+        #endregion
+
         public PDFLayoutContext(Style style, ItemCollection items, TraceLog log, PerformanceMonitor perfmon, IDocument document)
             : base(style, items, log, perfmon, document, OutputFormat.PDF)
         {

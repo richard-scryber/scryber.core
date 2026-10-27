@@ -282,7 +282,7 @@ namespace Scryber.PDF.Layout
                 if (null == _countedRows)
                     _countedRows = new HashSet<TableRow>();
 
-                if (_countedRows.Add(row))
+                if (!this.Context.IsMeasuring && _countedRows.Add(row))
                     this.EnsureCounterUpdatesForStyle(rowStyle);
             }
                            
@@ -291,7 +291,7 @@ namespace Scryber.PDF.Layout
 
 
             PDFArtefactRegistrationSet artefacts = null;
-            if (!repeating)
+            if (!repeating && !this.Context.IsMeasuring)
                 artefacts = row.RegisterLayoutArtefacts(this.Context, rowStyle);
 
 
@@ -763,7 +763,7 @@ namespace Scryber.PDF.Layout
 
             Scryber.Styles.Style full = cref.FullStyle;
 
-            PDFArtefactRegistrationSet artefacts = cell.RegisterLayoutArtefacts(this.Context, full);
+            PDFArtefactRegistrationSet artefacts = this.Context.IsMeasuring ? null : cell.RegisterLayoutArtefacts(this.Context, full);
 
             //Call the base implementation to actually layout the cell.
             this.DoLayoutACell(cref, cell, full, colindex, rowindex, repeating);

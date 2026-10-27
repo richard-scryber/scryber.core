@@ -362,7 +362,7 @@ namespace Scryber.PDF.Layout
 
 
 
-            PDFArtefactRegistrationSet artefacts = entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
+            PDFArtefactRegistrationSet artefacts = this.Context.IsMeasuring ? null : entry.ListItem.RegisterLayoutArtefacts(this.Context, full);
 
             PDFPositionOptions itemopts = full.CreatePostionOptions(this.Context.PositionDepth > 0);
 

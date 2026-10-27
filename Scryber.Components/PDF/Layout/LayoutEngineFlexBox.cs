@@ -42,6 +42,13 @@ namespace Scryber.PDF.Layout
         // Null if the container does not have an explicit height.
         private double? _stretchItemHeight;
 
+        // The content widths (pts, excluding margins) of the flex items with an automatic basis (no width, flex-basis
+        // or flex-grow), measured by laying them out before the row. Null if there are none.
+        private Dictionary<Component, double> _measuredItemWidths;
+
+        // The items being laid out in the measuring pass, one below another. Null when not measuring.
+        private List<Component> _measuringItems;
+
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             var flex      = this.FullStyle.Flex;
@@ -127,12 +134,16 @@ namespace Scryber.PDF.Layout
                         containerW -= (position.Padding.Left + position.Padding.Right).PointsValue;
                 }
 
+                // Items with an automatic basis are the width of their content, so lay them out once to measure them.
+                _measuredItemWidths = MeasureAutoBasisItems(position, containerW);
+
                 // Check for wrap mode
                 var wrapMode = flex.Wrap;
                 if (wrapMode == FlexWrap.Wrap || wrapMode == FlexWrap.WrapReverse)
                 {
                     LayoutWrapRows(position, flex, flex.AlignItems, flex.JustifyContent, containerW, colGap);
                     _orderedItems = null;
+                    _measuredItemWidths = null;
                     return;
                 }
 
@@ -215,6 +226,7 @@ namespace Scryber.PDF.Layout
                 }
 
                 _orderedItems = null;
+                _measuredItemWidths = null;
             }
         }
 
@@ -369,7 +381,12 @@ namespace Scryber.PDF.Layout
 
             var minWidths = new List<double>(items.Count);
             foreach (var child in items)
-                minWidths.Add(GetItemMinWidth(child, containerW));
+            {
+                double minW = GetItemMinWidth(child, containerW);
+                if (minW <= 0 && _measuredItemWidths != null && _measuredItemWidths.TryGetValue(child, out double measuredW))
+                    minW = measuredW;
+                minWidths.Add(minW);
+            }
 
             int    rowStart  = 0;
             double rowFixedW = minWidths[0];
@@ -421,6 +438,18 @@ namespace Scryber.PDF.Layout
         /// </summary>
         protected override void DoLayoutChildren(ComponentList children)
         {
+            if (null != _measuringItems)
+            {
+                // Measuring: each item is laid out one below the other, and shrinks to the width of its content.
+                foreach (var item in _measuringItems)
+                {
+                    this.DoLayoutAChild(item);
+                    if (this.DocumentLayout.CurrentPage.IsClosed || this.DocumentLayout.CurrentPage.CurrentBlock == null)
+                        break;
+                }
+                return;
+            }
+
             if (!_isRowMode)
             {
                 if (!_reverseItems)
@@ -654,6 +683,203 @@ namespace Scryber.PDF.Layout
                         break;
                     }
                 }
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // Measuring the items with an automatic basis
+        // -----------------------------------------------------------------------
+
+        /// <summary>
+        /// Returns true if the item does not have a width, flex-basis or flex-grow - so its basis is the width of its content.
+        /// </summary>
+        private static bool IsAutoBasisItem(Component item)
+        {
+            var applied = item.GetAppliedStyle();
+            if (null == applied)
+                return true;
+
+            if (applied.IsValueDefined(StyleKeys.SizeWidthKey))
+            {
+                var width = applied.Size.Width;
+                if (width.IsRelative || !Unit.IsAutoValue(width))
+                    return false;
+            }
+
+            if (applied.IsValueDefined(StyleKeys.FlexBasisKey) && !applied.Flex.BasisAuto)
+                return false;
+
+            if (applied.IsValueDefined(StyleKeys.FlexGrowKey) && applied.GetValue(StyleKeys.FlexGrowKey, 0.0) > 0)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Lays out the items with an automatic basis, one below the other, in a block that is then discarded, and returns
+        /// the width of each (excluding margins). Counters, names, outlines and page breaks are not applied while measuring,
+        /// any ::before and ::after content that is added is removed, and the block cannot overflow onto a new page.
+        /// </summary>
+        private Dictionary<Component, double> MeasureAutoBasisItems(PDFPositionOptions position, double containerW)
+        {
+            if (null == _orderedItems || containerW <= 0)
+                return null;
+
+            List<Component> auto = null;
+            foreach (var item in _orderedItems)
+            {
+                if (IsAutoBasisItem(item))
+                {
+                    if (null == auto)
+                        auto = new List<Component>();
+                    auto.Add(item);
+                }
+            }
+
+            if (null == auto)
+                return null;
+
+            var page = this.DocumentLayout.CurrentPage;
+            var parentBlock = page.LastOpenBlock();
+            var parentRegion = parentBlock?.CurrentRegion;
+            if (null == parentRegion)
+                return null;
+
+            int priorCount = parentRegion.Contents.Count;
+            var usedBefore = parentRegion.UsedSize;
+            var childLists = SnapshotChildLists(this.Component);
+            var positioned = SnapshotPositionedRegions(parentBlock);
+
+            var measurePosition = position.Clone();
+            measurePosition.OverflowAction = OverflowAction.Visible;
+            //a large height, so the items always fit (it is not limited by the space left on the page)
+            measurePosition.Height = new Unit(MeasuringHeight, PageUnits.Points);
+            measurePosition.MinimumHeight = null;
+            measurePosition.MaximumHeight = null;
+
+            this.Context.MeasuringDepth++;
+            _measuringItems = auto;
+            try
+            {
+                base.DoLayoutBlockComponent(measurePosition, new PDFColumnOptions() { ColumnCount = 1, AlleyWidth = Unit.Zero });
+            }
+            finally
+            {
+                _measuringItems = null;
+                this.Context.MeasuringDepth--;
+                this.ContinueLayout = true;
+            }
+
+            Dictionary<Component, double> widths = null;
+
+            if (this.DocumentLayout.CurrentPage == page && parentRegion.Contents.Count > priorCount)
+            {
+                if (parentRegion.Contents[priorCount] is PDFLayoutBlock measured)
+                    widths = ReadMeasuredWidths(measured, auto);
+
+                while (parentRegion.Contents.Count > priorCount)
+                    parentRegion.Contents.RemoveAt(parentRegion.Contents.Count - 1);
+
+                parentRegion.UsedSize = usedBefore;
+            }
+
+            RestorePositionedRegions(positioned);
+            RestoreChildLists(childLists);
+
+            return widths;
+        }
+
+        private const double MeasuredWidthAllowance = 0.5;
+        private const double MeasuringHeight = 100000.0;
+
+        private static Dictionary<Component, double> ReadMeasuredWidths(PDFLayoutBlock measured, List<Component> items)
+        {
+            var widths = new Dictionary<Component, double>(items.Count);
+            if (null == measured.Columns || measured.Columns.Length == 0)
+                return widths;
+
+            foreach (var content in measured.Columns[0].Contents)
+            {
+                if (content is PDFLayoutBlock block && block.Owner is Component owner && items.Contains(owner))
+                {
+                    double width = block.TotalBounds.Width.PointsValue;
+                    if (null != block.Position)
+                        width -= (block.Position.Margins.Left + block.Position.Margins.Right).PointsValue;
+
+                    //a small allowance, so the rounding of the column widths can never make the content wrap
+                    if (width > 0)
+                        widths[owner] = width + MeasuredWidthAllowance;
+                }
+            }
+            return widths;
+        }
+
+        /// <summary>
+        /// Takes a copy of the child list of the component and all its descendants, so that any content added in a
+        /// measuring layout (::before and ::after) can be removed afterwards.
+        /// </summary>
+        private static List<(IContainerComponent container, HashSet<Component> children)> SnapshotChildLists(IComponent root)
+        {
+            var all = new List<(IContainerComponent, HashSet<Component>)>();
+            AddChildLists(root, all);
+            return all;
+        }
+
+        private static void AddChildLists(IComponent comp, List<(IContainerComponent, HashSet<Component>)> all)
+        {
+            if (comp is IContainerComponent container && container.HasContent)
+            {
+                var children = new HashSet<Component>();
+                foreach (Component child in container.Content)
+                    children.Add(child);
+                all.Add((container, children));
+
+                foreach (Component child in container.Content)
+                    AddChildLists(child, all);
+            }
+        }
+
+        private static void RestoreChildLists(List<(IContainerComponent container, HashSet<Component> children)> all)
+        {
+            foreach (var (container, children) in all)
+            {
+                if (container.Content.Count == children.Count)
+                    continue;
+
+                for (int i = container.Content.Count - 1; i >= 0; i--)
+                {
+                    if (!children.Contains(container.Content[i]))
+                        container.Content.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Positioned (absolute) content is added to an open block, which may be outside the measuring block,
+        /// so the number of positioned regions on each open block is recorded, so any extra can be removed.
+        /// </summary>
+        private static List<(PDFLayoutBlock block, int count)> SnapshotPositionedRegions(PDFLayoutBlock from)
+        {
+            var all = new List<(PDFLayoutBlock, int)>();
+            var block = from;
+            while (null != block)
+            {
+                all.Add((block, block.HasPositionedRegions ? block.PositionedRegions.Count : 0));
+                block = block.Parent as PDFLayoutBlock;
+            }
+            return all;
+        }
+
+        private static void RestorePositionedRegions(List<(PDFLayoutBlock block, int count)> all)
+        {
+            foreach (var (block, count) in all)
+            {
+                if (!block.HasPositionedRegions)
+                    continue;
+
+                var regions = block.PositionedRegions;
+                while (regions.Count > count)
+                    regions.RemoveAt(regions.Count - 1);
             }
         }
 
@@ -1174,6 +1400,10 @@ namespace Scryber.PDF.Layout
                         basis = ResolveFlexUnit(fullStyle.Flex.Basis, containerWidthPts);
                 }
 
+                // An automatic basis (no width, flex-basis or grow) is the measured width of the content
+                if (basis <= 0 && grow <= 0 && _measuredItemWidths != null && _measuredItemWidths.TryGetValue(child, out double measured))
+                    basis = measured;
+
                 // Margins: same treatment — resolve % against the flex container.
                 {
                     double mLeft  = 0;
@@ -1334,6 +1564,14 @@ namespace Scryber.PDF.Layout
         protected override void DoLayoutAChild(IComponent comp, Style full)
         {
             BlockifyInlineFlexItem(comp, full);
+
+            if (null != _measuringItems && comp is Component measuring && _measuringItems.Contains(measuring))
+            {
+                // shrink to the content, rather than fill the width
+                full.Size.FullWidth = false;
+                if (full.IsValueDefined(StyleKeys.SizeWidthKey))
+                    full.RemoveValue(StyleKeys.SizeWidthKey);
+            }
 
             if (_isRowMode && _stretchItemHeight.HasValue && comp is Component stretchItem)
                 ApplyStretchHeight(stretchItem, full, _stretchItemHeight.Value);

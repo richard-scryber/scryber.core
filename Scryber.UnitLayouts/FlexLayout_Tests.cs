@@ -429,17 +429,17 @@ namespace Scryber.UnitLayouts
         }
 
         // -----------------------------------------------------------------------
-        // FlexRow — default grow=1 when not explicitly set
+        // FlexRow — no grow or width, so the items are the width of their content (as css)
         // -----------------------------------------------------------------------
 
         [TestCategory(TestCategory)]
         [TestMethod()]
-        public void FlexRow_DefaultGrow_EqualColumns()
+        public void FlexRow_NoGrowOrWidth_ContentWidthColumns()
         {
             var doc   = CreateDoc(out var pg);
             var panel = CreateFlexContainer(pg);
 
-            // Add children without explicitly setting grow (default = 1)
+            // Add children without setting grow (the css default is 0) or a width
             var child0 = new Panel();
             child0.Height = 50;
             child0.Style.Padding.All = 4;
@@ -466,11 +466,14 @@ namespace Scryber.UnitLayouts
 
             var panelBlock = _layout.AllPages[0].ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
             Assert.IsNotNull(panelBlock);
-            Assert.AreEqual(2, panelBlock.Columns.Length, "Two children without grow should still produce 2 equal columns");
+            Assert.AreEqual(2, panelBlock.Columns.Length, "Two children without grow should still produce 2 columns");
 
-            double expected = PageW / 2.0;
-            Assert.AreEqual(expected, panelBlock.Columns[0].TotalBounds.Width.PointsValue, 0.5, "Column 0 equal width");
-            Assert.AreEqual(expected, panelBlock.Columns[1].TotalBounds.Width.PointsValue, 0.5, "Column 1 equal width");
+            //Each column is the width of its content (the text, padding and border), packed at the start of the row
+            double col0 = panelBlock.Columns[0].TotalBounds.Width.PointsValue;
+            double col1 = panelBlock.Columns[1].TotalBounds.Width.PointsValue;
+            Assert.IsTrue(col0 > 40 && col0 < 150, "Column 0 is the content width: " + col0);
+            Assert.IsTrue(col1 > 40 && col1 < 150, "Column 1 is the content width: " + col1);
+            Assert.AreEqual(col0, panelBlock.Columns[1].TotalBounds.X.PointsValue, 0.5, "Column 1 follows column 0");
 
             StringAssert.Contains(CollectText(panelBlock.Columns[0]), "Default A", "Column 0 text");
             StringAssert.Contains(CollectText(panelBlock.Columns[1]), "Default B", "Column 1 text");

@@ -196,7 +196,7 @@ namespace Scryber.PDF.Layout
             bool canfitvertical = req <= vspace;
 
 
-            if (!canfitvertical && containerRegion.Contents.Count > 1)
+            if (!canfitvertical && containerRegion.Contents.Count > 1 && !this.Context.IsMeasuring)
             {
                 
                 PDFLayoutRegion prev = containerRegion;
