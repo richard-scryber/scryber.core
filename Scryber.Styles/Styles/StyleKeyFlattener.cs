@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Scryber.Drawing;
 
 namespace Scryber.Styles
@@ -334,6 +334,37 @@ namespace Scryber.Styles
                     all.SetValue(dim);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Flattens a value relative to the font size of the style itself (e.g. letter-spacing: -0.04em), rather than the inherited font size.
+    /// </summary>
+    public class StyleKeyFlattenOwnFontValue : StyleKeyFlattenFontValue
+    {
+        public override void SetFlattenedValue(Style onStyle, StyleKey<Unit> key, Size page, Size container, Size font, Unit rootFont)
+        {
+            base.SetFlattenedValue(onStyle, key, page, container, GetOwnFontSize(onStyle, page, container, font, rootFont), rootFont);
+        }
+
+        /// <summary>
+        /// Returns the font size of the style, flattened against the inherited font size if it is relative.
+        /// The width (used for ex and ch) keeps the same proportion to the height.
+        /// </summary>
+        public static Size GetOwnFontSize(Style onStyle, Size page, Size container, Size font, Unit rootFont)
+        {
+            if (!onStyle.TryGetValue(StyleKeys.FontSizeKey, out StyleValue<Unit> size))
+                return font;
+
+            var own = size.Value(onStyle);
+            if (own.IsRelative)
+                own = StyleKeyFlattenUnitValue.FlattenFontValue(own, page, container, font, rootFont);
+
+            if (own.PointsValue <= 0 || font.Height.PointsValue <= 0)
+                return font;
+
+            var factor = own.PointsValue / font.Height.PointsValue;
+            return new Size(font.Width.PointsValue * factor, own.PointsValue);
         }
     }
 

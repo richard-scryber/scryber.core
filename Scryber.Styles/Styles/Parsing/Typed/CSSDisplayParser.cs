@@ -44,9 +44,18 @@ namespace Scryber.Styles.Parsing.Typed
                         result = false;
                     }
                 }
+                else if (TryGetInlineInsideDisplayEnum(value, out var inside))
+                {
+                    //inline-flex etc. sit on the line as an inline-block, with the contents laid out as a flex, grid or table.
+                    this.SetValue(onStyle, DisplayMode.InlineBlock);
+                    onStyle.SetValue(StyleKeys.PositionDisplayInsideKey, inside);
+                    result = true;
+                }
                 else if (TryGetDisplayEnum(value, out display))
                 {
                     this.SetValue(onStyle, display);
+                    //replaces any inline-flex etc. from a less specific rule
+                    onStyle.SetValue(StyleKeys.PositionDisplayInsideKey, DisplayMode.Block);
                     result = true;
                 }
                 else
@@ -118,6 +127,28 @@ namespace Scryber.Styles.Parsing.Typed
                     display = DisplayMode.Block;
                     return false;
 
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the value is inline-flex, inline-grid or inline-table, with the display of the contents.
+        /// </summary>
+        public static bool TryGetInlineInsideDisplayEnum(string value, out DisplayMode inside)
+        {
+            switch (value.ToLower())
+            {
+                case ("inline-flex"):
+                    inside = DisplayMode.FlexBox;
+                    return true;
+                case ("inline-grid"):
+                    inside = DisplayMode.FlexGrid;
+                    return true;
+                case ("inline-table"):
+                    inside = DisplayMode.Table;
+                    return true;
+                default:
+                    inside = DisplayMode.Block;
+                    return false;
             }
         }
 

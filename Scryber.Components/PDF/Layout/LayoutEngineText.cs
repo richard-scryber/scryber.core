@@ -969,6 +969,27 @@ namespace Scryber.PDF.Layout
                     if(char.IsWhiteSpace(chars, 0))
                         chars = chars.TrimStart();
                 }
+                else if (ShouldKeepWordWhole(chars, offset, fitted, appendChar)) //a word longer than the line overflows it
+                {
+                    zeros.Reset();
+
+                    int end = offset + fitted;
+                    while (end < chars.Length && !char.IsWhiteSpace(chars, end))
+                        end++;
+
+                    string word = chars.Substring(offset, end - offset);
+                    measured = this.MeasureString(availH, new Unit(UnboundedLineWidth, PageUnits.Points), word, 0, out int wordFitted, out char? wordAppend);
+                    required = new Size(measured.Width, lineheight);
+
+                    this.AddCharactersToCurrentLine(required, word);
+                    offset = end;
+
+                    while (offset < chars.Length && char.IsWhiteSpace(chars, offset))
+                        offset++;
+
+                    if (offset < chars.Length)
+                        this.AddSoftReturn(measured.Width);
+                }
                 else //partial fit
                 {
                     zeros.Reset();
@@ -1080,6 +1101,28 @@ namespace Scryber.PDF.Layout
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns true if the fitted characters would break the first word on an empty line, and the word should
+        /// instead be kept whole and overflow the line - as overflow-wrap is normal and the text does not break on characters or hyphenate.
+        /// </summary>
+        private bool ShouldKeepWordWhole(string chars, int start, int count, char? appendChar)
+        {
+            if (appendChar.HasValue || count <= 0 || start + count >= chars.Length)
+                return false;
+
+            var wrap = this.TextRenderOptions.OverflowWrap;
+            if (wrap.HasValue && wrap.Value != OverflowWrap.Normal)
+                return false;
+
+            if (!CanSplitOnWordsOnly())
+                return false;
+
+            if (char.IsWhiteSpace(chars, start + count) || char.IsWhiteSpace(chars, start + count - 1) || chars[start + count - 1] == '-')
+                return false;
+
+            return IsEmptyLine();
+        }
 
         #region private bool IsBrokenInWord(string chars, int start, int count)
 

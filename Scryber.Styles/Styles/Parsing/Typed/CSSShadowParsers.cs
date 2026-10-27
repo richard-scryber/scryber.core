@@ -42,8 +42,9 @@ namespace Scryber.Styles.Parsing.Typed
 
             var value = all.ToString().Trim();
 
-            if (IsExpression(value))
-                return AttachExpressionBindingHandler(onStyle, _key, value, DoConvertShadows);
+            //var() or calc() anywhere in the value e.g. 9pt 9pt 0 var(--accent)
+            if (TryGetEmbeddedExpression(value, out var expression))
+                return AttachExpressionBindingHandler(onStyle, _key, expression, DoConvertShadows);
 
             if (TryParseShadows(value, _isBox, out var shadows))
             {

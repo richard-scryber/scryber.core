@@ -120,6 +120,73 @@ namespace Scryber.Styles.Parsing
                 return false;
         }
 
+        /// <summary>
+        /// If the value contains var() or calc() functions within other text (e.g. 9pt 9pt 0 var(--accent)),
+        /// then builds a concat expression that will evaluate those functions within the rest of the text.
+        /// </summary>
+        public static bool TryGetEmbeddedExpression(string value, out string expression)
+        {
+            expression = null;
+
+            if (string.IsNullOrEmpty(value) || (value.IndexOf("var(", StringComparison.Ordinal) < 0 && value.IndexOf("calc(", StringComparison.Ordinal) < 0))
+                return false;
+
+            var parts = new System.Collections.Generic.List<string>();
+            var literal = new System.Text.StringBuilder();
+            int i = 0;
+
+            while (i < value.Length)
+            {
+                bool isFunction = (string.CompareOrdinal(value, i, "var(", 0, 4) == 0) || (string.CompareOrdinal(value, i, "calc(", 0, 5) == 0);
+
+                //Make sure it is a whole function name e.g. not 'somevar('
+                if (isFunction && i > 0 && (char.IsLetterOrDigit(value[i - 1]) || value[i - 1] == '-' || value[i - 1] == '_'))
+                    isFunction = false;
+
+                if (!isFunction)
+                {
+                    literal.Append(value[i]);
+                    i++;
+                    continue;
+                }
+
+                //find the matching close of the function
+                int depth = 0;
+                int end = -1;
+                for (int j = value.IndexOf('(', i); j < value.Length; j++)
+                {
+                    if (value[j] == '(')
+                        depth++;
+                    else if (value[j] == ')')
+                    {
+                        depth--;
+                        if (depth == 0)
+                        {
+                            end = j;
+                            break;
+                        }
+                    }
+                }
+
+                if (end < 0)
+                    return false; //unbalanced so let the normal handling report it
+
+                if (literal.Length > 0)
+                {
+                    parts.Add("'" + literal.ToString().Replace("\\", "\\\\").Replace("'", "\\'") + "'");
+                    literal.Clear();
+                }
+                parts.Add(value.Substring(i, end - i + 1));
+                i = end + 1;
+            }
+
+            if (literal.Length > 0)
+                parts.Add("'" + literal.ToString().Replace("\\", "\\\\").Replace("'", "\\'") + "'");
+
+            expression = "concat(" + string.Join(", ", parts) + ")";
+            return true;
+        }
+
         #endregion
 
         #region protected bool IsColor(string part)

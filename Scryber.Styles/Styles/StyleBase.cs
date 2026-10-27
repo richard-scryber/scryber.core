@@ -1564,13 +1564,23 @@ namespace Scryber.Styles
                 }
             }
 
-            //word-break: break-all can break a word at any character, without adding hyphens
+            if (this.TryGetValue(StyleKeys.TextOverflowWrapKey, out StyleValue<Text.OverflowWrap> overflowWrap))
+                options.OverflowWrap = overflowWrap.Value(this);
+
             if (options.WrapText != Text.WordWrap.NoWrap
-                && this.TryGetValue(StyleKeys.TextWordBreakKey, out StyleValue<Text.WordBreak> wordBreak)
-                && wordBreak.Value(this) == Text.WordBreak.BreakAll)
+                && this.TryGetValue(StyleKeys.TextWordBreakKey, out StyleValue<Text.WordBreak> wordBreak))
             {
-                options.WrapText = Text.WordWrap.Character;
-                options.HyphenationStrategy = new PDFHyphenationStrategy(null, null, 1, 1, 1);
+                var breakValue = wordBreak.Value(this);
+
+                //word-break: break-all can break a word at any character, without adding hyphens
+                if (breakValue == Text.WordBreak.BreakAll)
+                {
+                    options.WrapText = Text.WordWrap.Character;
+                    options.HyphenationStrategy = new PDFHyphenationStrategy(null, null, 1, 1, 1);
+                }
+                //the deprecated word-break: break-word is overflow-wrap: anywhere
+                else if (breakValue == Text.WordBreak.BreakWord)
+                    options.OverflowWrap = Text.OverflowWrap.Anywhere;
             }
 
             if (this.TryGetValue(StyleKeys.TextOverflowTextKey, out StyleValue<string> overflowText))

@@ -145,6 +145,11 @@ namespace Scryber.Components
         protected virtual IPDFLayoutEngine CreateLayoutEngine(IPDFLayoutEngine parent, PDFLayoutContext context, Style style)
         {
             var display = style.GetValue(StyleKeys.PositionDisplayKey, Drawing.DisplayMode.Block);
+
+            //inline-flex, inline-grid and inline-table lay out their contents as a flex, grid or table
+            if (display == Drawing.DisplayMode.InlineBlock)
+                display = style.GetValue(StyleKeys.PositionDisplayInsideKey, display);
+
             return display switch
             {
                 Drawing.DisplayMode.FlexBox  => new PDF.Layout.LayoutEngineFlexBox(this, parent, style),

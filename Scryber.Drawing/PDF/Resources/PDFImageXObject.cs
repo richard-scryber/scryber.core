@@ -122,14 +122,11 @@ namespace Scryber.PDF.Resources
         {
             Size size = Size.Empty;
 
-            if (this.Registered && String.IsNullOrEmpty(this.Source) == false)
-            {
-                if (this.ImageData == null)
-                {
-                    throw new NullReferenceException("The Image resource '" + this.Name + "' does not have any ImageData assigned");
-                }
+            //the size of loaded data is known, even before the image is registered on a page (e.g. when measuring)
+            if (null != this.ImageData)
                 size = this.ImageData.GetSize();
-            }
+            else if (this.Registered && String.IsNullOrEmpty(this.Source) == false)
+                throw new NullReferenceException("The Image resource '" + this.Name + "' does not have any ImageData assigned");
 
             return size;
         }

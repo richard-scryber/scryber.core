@@ -1551,7 +1551,14 @@ namespace Scryber.PDF.Layout
             if (positioning == PositionMode.Absolute || positioning == PositionMode.Fixed)
                 return;
 
-            if (mode == DisplayMode.Inline || mode == DisplayMode.InlineBlock)
+            if (mode == DisplayMode.InlineBlock && full.TryGetValue(StyleKeys.PositionDisplayInsideKey, out StyleValue<DisplayMode> inside)
+                && inside.Value(full) != DisplayMode.Block)
+            {
+                //inline-flex, inline-grid and inline-table become flex, grid and table
+                position.DisplayMode = inside.Value(full);
+                return;
+            }
+            else if (mode == DisplayMode.Inline || mode == DisplayMode.InlineBlock)
                 position.DisplayMode = DisplayMode.Block;
             else if (mode != DisplayMode.Block)
                 return;

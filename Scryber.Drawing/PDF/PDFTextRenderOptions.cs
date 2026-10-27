@@ -320,6 +320,15 @@ namespace Scryber.PDF
 
         #endregion
 
+        #region public OverflowWrap? OverflowWrap {get;set;}
+
+        /// <summary>
+        /// Gets or sets if a word that is longer than a whole line can be broken (overflow-wrap). When normal (or not set), the word is kept whole and overflows the line.
+        /// </summary>
+        public Scryber.Text.OverflowWrap? OverflowWrap { get; set; }
+
+        #endregion
+
         #region public BoxShadow[] Shadows {get;set;}
 
         /// <summary>

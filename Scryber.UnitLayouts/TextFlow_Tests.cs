@@ -85,11 +85,14 @@ namespace Scryber.UnitLayouts
         // word-break
 
         [TestMethod]
-        public void WordBreak_Default_BreaksOnlyTheWordsTooLongForALine()
+        public void WordBreak_Default_LongWordIsOnItsOwnLine_AndOverflows()
         {
-            var lines = Lines(Layout("", Long));
+            var widths = new List<double>();
+            var lines = Lines(Layout("", Long), widths);
             Assert.AreEqual("short", lines[0].Trim());
-            Assert.IsTrue(lines[1].StartsWith("supercalifragili"), "The long word starts its own line: " + lines[1]);
+            Assert.AreEqual("supercalifragilisticexpialidocious", lines[1].Trim(), "The long word is kept whole on its own line");
+            Assert.IsTrue(widths[1] > 80, "The word is wider than the box");
+            Assert.IsTrue(lines[2].StartsWith("end"));
         }
 
         [TestMethod]
@@ -110,11 +113,19 @@ namespace Scryber.UnitLayouts
         }
 
         [TestMethod]
-        public void WordBreak_NormalKeepAllBreakWord_AreTheDefault()
+        public void WordBreak_NormalKeepAll_AreTheDefault()
         {
             var expected = string.Join("|", Lines(Layout("", Long)));
-            foreach (var value in new[] { "normal", "keep-all", "break-word" })
+            foreach (var value in new[] { "normal", "keep-all" })
                 Assert.AreEqual(expected, string.Join("|", Lines(Layout("word-break: " + value, Long))), value);
+        }
+
+        [TestMethod]
+        public void WordBreak_BreakWord_BreaksTheLongWord()
+        {
+            var lines = Lines(Layout("word-break: break-word", Long));
+            Assert.AreEqual("short", lines[0].Trim());
+            Assert.IsTrue(lines[1].StartsWith("supercalifragili") && lines[1].Trim() != "supercalifragilisticexpialidocious", "The long word is broken: " + lines[1]);
         }
 
         [TestMethod]
@@ -148,11 +159,38 @@ namespace Scryber.UnitLayouts
         // overflow-wrap, word-wrap
 
         [TestMethod]
-        public void OverflowWrap_AndWordWrap_AreAccepted_AndLongWordsStillBreak()
+        public void OverflowWrap_Normal_IsTheDefault()
         {
             var expected = string.Join("|", Lines(Layout("", Long)));
-            foreach (var style in new[] { "overflow-wrap: break-word", "overflow-wrap: anywhere", "overflow-wrap: normal", "word-wrap: break-word", "word-wrap: normal" })
+            foreach (var style in new[] { "overflow-wrap: normal", "word-wrap: normal" })
                 Assert.AreEqual(expected, string.Join("|", Lines(Layout(style, Long))), style);
+        }
+
+        [TestMethod]
+        public void OverflowWrap_BreakWord_BreaksTheLongWord()
+        {
+            foreach (var style in new[] { "overflow-wrap: break-word", "overflow-wrap: anywhere", "word-wrap: break-word" })
+            {
+                var widths = new List<double>();
+                var lines = Lines(Layout(style, Long), widths);
+                Assert.AreEqual("short", lines[0].Trim(), style);
+                Assert.IsTrue(lines[1].StartsWith("supercalifragili") && lines[1].Trim() != "supercalifragilisticexpialidocious", style + " breaks the word: " + lines[1]);
+                Assert.IsTrue(widths[1] <= 80, style + " fits the box");
+            }
+        }
+
+        [TestMethod]
+        public void OverflowWrap_IsInherited()
+        {
+            var lines = Lines(Layout("overflow-wrap: break-word", "<span>" + Long + "</span>"));
+            Assert.AreNotEqual("supercalifragilisticexpialidocious", lines[1].Trim());
+        }
+
+        [TestMethod]
+        public void LongWord_WithHyphens_IsStillHyphenated()
+        {
+            var lines = Lines(Layout("hyphens: auto", Long));
+            Assert.IsTrue(lines.Any(l => l.TrimEnd().EndsWith("-")), "Hyphenated: " + string.Join("|", lines));
         }
 
         // text-overflow

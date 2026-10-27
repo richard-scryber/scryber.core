@@ -57,8 +57,18 @@ namespace Scryber.Drawing
             return coords;
         }
 
+        /// <summary>
+        /// If any of the color stops are lengths (e.g. 112pt), then these are the original stops
+        /// to be resolved once the length of the gradient line is known.
+        /// </summary>
+        private string[] _lengthStops;
+        private int _lengthStopIndex;
+
         public override PDFGradientFunction GetGradientFunction(Point offset, Size size)
         {
+            if (null != _lengthStops)
+                ResolveLengthStops(offset, size);
+
             var func = base.GetGradientFunction(offset, size) ;
             
             if(this.MinDomain.HasValue)
@@ -438,10 +448,43 @@ namespace Scryber.Drawing
                 EnsureDistances(colors);
             
             linear = new GradientLinearDescriptor() { Angle = angle, Colors = new List<GradientColor>(colors) };
+
+            foreach (var color in colors)
+            {
+                if (color.Length.HasValue)
+                {
+                    linear._lengthStops = all;
+                    linear._lengthStopIndex = colorStopIndex;
+                    break;
+                }
+            }
             return true;
         }
 
-        internal static bool ParseGradientColors(string[] all, int startIndex, out List<GradientColor> colors, out bool hasAtleastOneDistance, bool padStart, bool padEnd)
+        /// <summary>
+        /// Re-parses the color stops with the length of the gradient line for the bounds,
+        /// so any length stops (e.g. 112pt) become a proportion of that line.
+        /// </summary>
+        private void ResolveLengthStops(Point offset, Size size)
+        {
+            var bounds = new Rect(Point.Empty, new Size(Math.Abs(size.Width.PointsValue), Math.Abs(size.Height.PointsValue)));
+            if (!CalculateOptimumCoords(bounds, this.Angle, out var p1, out var p2))
+                return;
+
+            var length = GetLength(p1, p2).PointsValue;
+            if (length <= 0)
+                return;
+
+            if (!ParseGradientColors(_lengthStops, _lengthStopIndex, out var colors, out var hasAtleastOneDistance, padStart: true, padEnd: true, lengthBasis: length))
+                return;
+
+            if (hasAtleastOneDistance)
+                EnsureDistances(colors);
+
+            this.Colors = colors;
+        }
+
+        internal static bool ParseGradientColors(string[] all, int startIndex, out List<GradientColor> colors, out bool hasAtleastOneDistance, bool padStart, bool padEnd, double? lengthBasis = null)
         {
             colors = new List<GradientColor>(all.Length - startIndex);
             hasAtleastOneDistance = false;
@@ -449,7 +492,7 @@ namespace Scryber.Drawing
             for (int i = startIndex; i < all.Length; i++)
             {
                 GradientColor parsed;
-                if (GradientColor.TryParse(all[i], out parsed))
+                if (GradientColor.TryParse(all[i], lengthBasis, out parsed))
                 {
                     if (i == startIndex &&
                         parsed.Distance > 0) // first and offset from zero - so add an initial stop for padding. 
@@ -601,6 +644,18 @@ namespace Scryber.Drawing
             if (lastDistanceIndex > -1 && lastDistanceIndex < colors.Count - 1)
             {
                 //Fill the last ones
+            }
+
+            //a stop before a previous stop is at the previous stop - a hard change in color
+            double max = 0;
+            for (int i = 0; i < colors.Count; i++)
+            {
+                if (!colors[i].Distance.HasValue)
+                    continue;
+                if (colors[i].Distance.Value < max)
+                    colors[i].Distance = max;
+                else
+                    max = colors[i].Distance.Value;
             }
         }
 

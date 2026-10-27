@@ -361,6 +361,11 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<DisplayMode> PositionDisplayKey = StyleKey.InternalCreateStyleValueKey<DisplayMode>((ObjectType)"disp", PositionItemKey);
 
+        /// <summary>
+        /// The layout of the contents of an inline-block (display: inline-flex, inline-grid or inline-table), when it is not the same as a block.
+        /// </summary>
+        public static readonly StyleKey<DisplayMode> PositionDisplayInsideKey = StyleKey.InternalCreateStyleValueKey<DisplayMode>((ObjectType)"disi", PositionItemKey);
+
         //SVG - specific x, y, r, rx, ry, cx, cy.
         // The width and height style keys are from standard as per spec - need to check with the drawing ops for this.
 
@@ -521,10 +526,10 @@ namespace Scryber.Styles
         public static readonly StyleKey<string> TextNumberFormatKey = StyleKey.InternalCreateStyleValueKey<string>((ObjectType)"numf", TextItemKey);
 
         public static readonly StyleKey<Unit> TextWordSpacingKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"wspc", TextItemKey
-                                                                ,new StyleKeyFlattenFontValue());
+                                                                ,new StyleKeyFlattenOwnFontValue());
 
         public static readonly StyleKey<Unit> TextCharSpacingKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"cspc", TextItemKey
-                                                                ,new StyleKeyFlattenFontValue());
+                                                                ,new StyleKeyFlattenOwnFontValue());
 
         public static readonly StyleKey<double> TextHorizontalScaling = StyleKey.InternalCreateStyleValueKey<double>((ObjectType)"thsc", TextItemKey);
 
