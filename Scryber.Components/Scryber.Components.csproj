@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.5</PackageVersion>
+    <PackageVersion>9.8.0-beta.6</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.5
+    <PackageReleaseNotes>9.8.0-beta.6
+New css: margin-block, padding-block (and -start, -end), inset, inset-block and inset-inline (and -start, -end). cursor, pointer-events, will-change, scroll-behavior, user-select, transition and animation are accepted and ignored.
+Changed: overflow: hidden on text that does not wrap cuts the text back to the last whole word that fits (overflow: clip is still a clipping rectangle).
+Fixed: the items in a flex row stretch to the height of the row (align-items: stretch, the default), unless they have a height or align-self/align-items says otherwise.
+Fixed: inline flex items (span) are blockified - width, margins, filling the column, stacking in a column and align-items centring now work.
+Fixed: a percentage border-radius is of the width of the box (not the container) and radii are limited so they are never larger than a side - 50% on a square is a circle, not a star.
+Fixed: counter-increment and counter-reset on table rows (tr) are updated once per row.
+
+9.8.0-beta.5
 New css: word-break (break-all fills each line, breaking a word at any character with no hyphen), overflow-wrap and word-wrap (accepted, long words are always broken), and text-overflow (ellipsis, clip or a string, for non-wrapping text in a block with overflow hidden or clip).
 Fixed: a negative text-indent is a hanging indent. The first line only starts out, and the following lines (and any text after a line break) start at the edge of the content.
 
