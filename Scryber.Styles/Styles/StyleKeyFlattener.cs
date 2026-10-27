@@ -224,6 +224,53 @@ namespace Scryber.Styles
         }
     }
     
+    /// <summary>
+    /// Flattens a corner radius. A percentage is of the width of the box the radius is for, as in css,
+    /// so it uses the explicit width of the style if there is one, otherwise the width of the container.
+    /// The radius is also limited when it is drawn, so it can never be larger than the box.
+    /// </summary>
+    public class StyleKeyFlattenCornerRadiusValue : StyleKeyFlattenValue<Unit>
+    {
+        public StyleKeyFlattenCornerRadiusValue() : base(PreferredFlattenDimension.Width)
+        {
+
+        }
+
+        public override Unit FlattenValue(Unit relative, Size page, Size container, Size font, Unit rootFont)
+        {
+            return StyleKeyFlattenUnitValue.FlattenHorizontalValue(relative, page, container, font, rootFont);
+        }
+
+        public override void SetFlattenedValue(Style onStyle, StyleKey<Unit> key, Size page, Size container, Size font, Unit rootFont)
+        {
+            StyleValue<Unit> all;
+            if (onStyle.TryGetValue(key, out all))
+            {
+                Unit dim = all.Value(onStyle);
+                if (dim.IsRelative)
+                {
+                    Size basis = container;
+
+                    if (dim.Units == PageUnits.Percent && onStyle.TryGetValue(StyleKeys.SizeWidthKey, out StyleValue<Unit> width))
+                    {
+                        Unit own = width.Value(onStyle);
+                        if (own.IsRelative)
+                            own = StyleKeyFlattenUnitValue.FlattenHorizontalValue(own, page, container, font, rootFont);
+
+                        if (!own.IsRelative && !Unit.IsAutoValue(own) && own.PointsValue > 0)
+                            basis = new Size(own, container.Height);
+                    }
+
+                    all.SetValue(StyleKeyFlattenUnitValue.FlattenHorizontalValue(dim, page, basis, font, rootFont));
+                }
+                else
+                {
+                    all.SetValue(dim);
+                }
+            }
+        }
+    }
+
     public class StyleKeyFlattenVerticalValue : StyleKeyFlattenValue<Unit>
     {
 

@@ -238,6 +238,8 @@ namespace Scryber.PDF.Layout
 
 
 
+        private HashSet<TableRow> _countedRows;
+
         #region private PDFUnit DoLayoutTableRow(PDFTableRow row, int index)
 
         /// <summary>
@@ -273,6 +275,15 @@ namespace Scryber.PDF.Layout
             {
                 rowRef = rowRef.Clone();
                 this.AllCells.CurrentGrid.HeaderRows.Add(rowRef);
+            }
+            else
+            {
+                //Counters on the row (counter-increment and counter-reset) are only updated once for the row, even if it is laid out again
+                if (null == _countedRows)
+                    _countedRows = new HashSet<TableRow>();
+
+                if (_countedRows.Add(row))
+                    this.EnsureCounterUpdatesForStyle(rowStyle);
             }
                            
 

@@ -78,19 +78,19 @@ namespace Scryber.Styles
         public static readonly StyleKey<Color> BorderColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"colr", BorderItemKey);
 
         public static readonly StyleKey<Unit> BorderCornerRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"crad", BorderItemKey
-                                                                , new StyleKeyFlattenHorizontalValue());
+                                                                , new StyleKeyFlattenCornerRadiusValue());
 
         public static readonly StyleKey<Unit> BorderTopLeftRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"tlrd", BorderItemKey
-                                                                , new StyleKeyFlattenHorizontalValue());
+                                                                , new StyleKeyFlattenCornerRadiusValue());
 
         public static readonly StyleKey<Unit> BorderTopRightRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"trrd", BorderItemKey
-                                                                , new StyleKeyFlattenHorizontalValue());
+                                                                , new StyleKeyFlattenCornerRadiusValue());
 
         public static readonly StyleKey<Unit> BorderBottomLeftRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"blrd", BorderItemKey
-                                                                , new StyleKeyFlattenHorizontalValue());
+                                                                , new StyleKeyFlattenCornerRadiusValue());
 
         public static readonly StyleKey<Unit> BorderBottomRightRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"brrd", BorderItemKey
-                                                                , new StyleKeyFlattenHorizontalValue());
+                                                                , new StyleKeyFlattenCornerRadiusValue());
 
         //The css outline (drawn outside the border, not the pdf document outline)
 

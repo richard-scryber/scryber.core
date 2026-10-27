@@ -297,6 +297,31 @@ namespace Scryber.PDF.Graphics
 
         #endregion
 
+        /// <summary>
+        /// Reduces the corner radii, as css does, so that the adjacent radii on any side are never longer than that side.
+        /// </summary>
+        private static void LimitCornerRadii(Unit width, Unit height, ref Unit topLeft, ref Unit topRight, ref Unit bottomLeft, ref Unit bottomRight)
+        {
+            double w = Math.Abs(width.PointsValue);
+            double h = Math.Abs(height.PointsValue);
+            double factor = 1.0;
+
+            double tl = topLeft.PointsValue, tr = topRight.PointsValue, bl = bottomLeft.PointsValue, br = bottomRight.PointsValue;
+
+            if (tl + tr > w && tl + tr > 0) factor = Math.Min(factor, w / (tl + tr));
+            if (bl + br > w && bl + br > 0) factor = Math.Min(factor, w / (bl + br));
+            if (tl + bl > h && tl + bl > 0) factor = Math.Min(factor, h / (tl + bl));
+            if (tr + br > h && tr + br > 0) factor = Math.Min(factor, h / (tr + br));
+
+            if (factor < 1.0)
+            {
+                topLeft = new Unit(tl * factor, PageUnits.Points);
+                topRight = new Unit(tr * factor, PageUnits.Points);
+                bottomLeft = new Unit(bl * factor, PageUnits.Points);
+                bottomRight = new Unit(br * factor, PageUnits.Points);
+            }
+        }
+
         private void DoOutputRoundRectangle(Unit x, Unit y, Unit width, Unit height, Unit cornerRadius)
         {
             this.DoOutputRoundRectangle(x, y, width, height, cornerRadius, cornerRadius, cornerRadius, cornerRadius);
@@ -304,6 +329,7 @@ namespace Scryber.PDF.Graphics
 
         private void DoOutputRoundRectangle(Unit x, Unit y, Unit width, Unit height, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
             this.RenderMoveTo(x, y + height - bottomLeft);
             //left vertical
             this.RenderLineTo(x, y + topLeft);
@@ -346,6 +372,7 @@ namespace Scryber.PDF.Graphics
 
         private void DoOutputRoundRectangleWithSidesFill(Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
             //position cursor at left bottom
             if ((sides & Sides.Left) > 0 && (sides & Sides.Bottom) > 0)
             {
@@ -425,6 +452,7 @@ namespace Scryber.PDF.Graphics
 
         private void DoOutputRoundRectangleWithSidesPath(Unit x, Unit y, Unit width, Unit height, Sides sides, Unit topLeft, Unit topRight, Unit bottomLeft, Unit bottomRight)
         {
+            LimitCornerRadii(width, height, ref topLeft, ref topRight, ref bottomLeft, ref bottomRight);
             bool requiresmove = false;
 
             if ((sides & Sides.Left) > 0)

@@ -37,6 +37,11 @@ namespace Scryber.PDF.Layout
         // so re-applying % against the column's available width would shrink the item further.
         private Dictionary<Component, double> _flexItemContentWidths;
 
+        // The explicit content height (pts) of a row container, so items that stretch (the default align-items)
+        // can be laid out at that height, and anything positioned inside them (e.g. with bottom) is placed correctly.
+        // Null if the container does not have an explicit height.
+        private double? _stretchItemHeight;
+
         protected override void DoLayoutBlockComponent(PDFPositionOptions position, PDFColumnOptions columnOptions)
         {
             var flex      = this.FullStyle.Flex;
@@ -169,7 +174,9 @@ namespace Scryber.PDF.Layout
 
                 _isRowMode    = true;
                 _reverseItems = reverse;
+                _stretchItemHeight = position.Height.HasValue ? containerH : null;
                 base.DoLayoutBlockComponent(position, rowCols);
+                _stretchItemHeight = null;
                 _isRowMode    = false;
                 _reverseItems = false;
                 _flexItemContentWidths = null;
@@ -195,6 +202,8 @@ namespace Scryber.PDF.Layout
                     // Build per-column align values: each item's align-self overrides align-items.
                     var items = reverse ? ListReversed(_orderedItems) : _orderedItems;
                     var perColAlign = BuildPerColAlign(items, alignItems, 0, items.Count);
+
+                    ApplyStretch(flexBlock, items, 0, perColAlign, containerH);
 
                     if (alignItems != FlexAlignMode.Stretch && alignItems != FlexAlignMode.FlexStart)
                         ApplyAlignItems(flexBlock, perColAlign, containerH);
@@ -328,6 +337,8 @@ namespace Scryber.PDF.Layout
                         var sliceStart   = reverse ? (_orderedItems.Count - rowEnd) : rowStart;
                         var sliceEnd     = reverse ? (_orderedItems.Count - rowStart) : rowEnd;
                         var perColAlign  = BuildPerColAlign(rowItems, align, sliceStart, sliceEnd);
+
+                        ApplyStretch(flexBlock, rowItems, sliceStart, perColAlign, null);
 
                         if (align != FlexAlignMode.Stretch && align != FlexAlignMode.FlexStart)
                             ApplyAlignItems(flexBlock, perColAlign);
@@ -564,6 +575,86 @@ namespace Scryber.PDF.Layout
             foreach (var a in perColAlign)
                 if (a != containerAlign) return true;
             return false;
+        }
+
+        /// <summary>
+        /// Returns true if the flex item stretches in the cross axis: its align-self (or the container's align-items) is stretch
+        /// and it does not have an explicit height of its own.
+        /// </summary>
+        private static bool StretchesInCrossAxis(Component item, FlexAlignMode align)
+        {
+            if (align != FlexAlignMode.Stretch)
+                return false;
+
+            var applied = item.GetAppliedStyle();
+            return applied == null || !applied.IsValueDefined(StyleKeys.SizeHeightKey);
+        }
+
+        /// <summary>
+        /// Sets the height of an item that stretches, to that of the row container (less the item margins), before it is laid out.
+        /// </summary>
+        private void ApplyStretchHeight(Component item, Style full, double containerHeight)
+        {
+            var align = this.FullStyle.Flex.AlignItems;
+            var applied = item.GetAppliedStyle();
+            if (applied != null && applied.IsValueDefined(StyleKeys.FlexAlignSelfKey))
+            {
+                var self = applied.GetValue(StyleKeys.FlexAlignSelfKey, FlexAlignMode.Auto);
+                if (self != FlexAlignMode.Auto)
+                    align = self;
+            }
+
+            if (!StretchesInCrossAxis(item, align))
+                return;
+
+            var options = full.CreatePostionOptions(false);
+            if (options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+                return;
+
+            double height = containerHeight - (options.Margins.Top + options.Margins.Bottom).PointsValue;
+            if (height > 0)
+                full.Size.Height = new Unit(height, PageUnits.Points);
+        }
+
+        /// <summary>
+        /// After the row is laid out, the items that stretch have their box increased to the height of the row
+        /// (the tallest item, or the explicit container height) so any background or border fills the row.
+        /// </summary>
+        private static void ApplyStretch(PDFLayoutBlock flexBlock, List<Component> items, int start, FlexAlignMode[] perColAlign, double? containerH)
+        {
+            int colCount = flexBlock.Columns.Length;
+            if (colCount < 1 || perColAlign == null) return;
+
+            double maxH = 0;
+            for (int i = 0; i < colCount; i++)
+            {
+                double h = FirstChildHeight(flexBlock.Columns[i]);
+                if (h > maxH) maxH = h;
+            }
+
+            double refH = (containerH.HasValue && containerH.Value > maxH) ? containerH.Value : maxH;
+            if (refH <= 0) return;
+
+            for (int i = 0; i < colCount && i < perColAlign.Length; i++)
+            {
+                int itemIndex = start + i;
+                if (itemIndex < 0 || itemIndex >= items.Count || !StretchesInCrossAxis(items[itemIndex], perColAlign[i]))
+                    continue;
+
+                foreach (var content in flexBlock.Columns[i].Contents)
+                {
+                    if (content is PDFLayoutBlock child)
+                    {
+                        if (child.TotalBounds.Height.PointsValue < refH - 0.5)
+                        {
+                            var bounds = child.TotalBounds;
+                            bounds.Height = new Unit(refH, PageUnits.Points);
+                            child.TotalBounds = bounds;
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
         private static double FirstChildHeight(PDFLayoutRegion col)
@@ -1213,8 +1304,40 @@ namespace Scryber.PDF.Layout
             _flexItemContentWidths[items[idx]] = contentWidthPts;
         }
 
+        /// <summary>
+        /// The children of a flex container are blockified in css, so an inline element such as a span has the width, height, margins and
+        /// alignment of a block, and in a column stacks with its siblings rather than flowing on the same line.
+        /// Elements that are positioned (absolute or fixed) are not flex items, so are left alone.
+        /// </summary>
+        private static void BlockifyInlineFlexItem(IComponent comp, Style full)
+        {
+            if (!(comp is Panel) || comp is InvisibleFlexContainer || null == full)
+                return;
+
+            var position = full.Position;
+            var mode = position.DisplayMode;
+
+            var positioning = position.PositionMode;
+            if (positioning == PositionMode.Absolute || positioning == PositionMode.Fixed)
+                return;
+
+            if (mode == DisplayMode.Inline || mode == DisplayMode.InlineBlock)
+                position.DisplayMode = DisplayMode.Block;
+            else if (mode != DisplayMode.Block)
+                return;
+
+            //Unlike a div, a span does not fill the width of its container by default, but as a block flex item (without an explicit width) it must.
+            if (comp is SpanBase)
+                full.Size.FullWidth = true;
+        }
+
         protected override void DoLayoutAChild(IComponent comp, Style full)
         {
+            BlockifyInlineFlexItem(comp, full);
+
+            if (_isRowMode && _stretchItemHeight.HasValue && comp is Component stretchItem)
+                ApplyStretchHeight(stretchItem, full, _stretchItemHeight.Value);
+
             if (_isRowMode && _flexItemContentWidths != null
                 && comp is Component c
                 && _flexItemContentWidths.TryGetValue(c, out double contentW)
