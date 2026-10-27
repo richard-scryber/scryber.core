@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.7</PackageVersion>
+    <PackageVersion>9.8.0-beta.8</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.7
+    <PackageReleaseNotes>9.8.0-beta.8
+Fixed: linear-gradient color stops can be a length (e.g. var(--accent) 112pt), so two colors at the same position are a hard stop; rgb() stops with a position keep their color.
+Fixed: box-shadow with a var() in the value (e.g. 9pt 9pt 0 var(--accent)) is drawn.
+Fixed: an image with only a height in a flex header or continuation-header is shown on the first page the header is used.
+Fixed: letter-spacing and word-spacing in em are of the element's own font size, not the inherited one.
+New: display inline-flex, inline-grid and inline-table - an inline block with flex, grid or table content.
+Changed: a word that is longer than the line is kept whole and overflows (as a browser). Use overflow-wrap: break-word to break it.
+
+9.8.0-beta.7
 Fixed: flex items without a width, flex-basis or flex-grow are the width of their content (measured by a layout that is discarded - counters, ::before/::after, names, outlines and page breaks are not affected). They had no width, so next to a growing item they disappeared.
 Changed: a flex row of only content width items is packed at the start (as css) rather than split into equal columns.
 

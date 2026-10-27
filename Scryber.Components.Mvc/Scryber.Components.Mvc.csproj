@@ -4,7 +4,7 @@
     <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>Scryber.Core.Mvc</PackageId>
-    <PackageVersion>9.8.0-beta.7</PackageVersion>
+    <PackageVersion>9.8.0-beta.8</PackageVersion>
     <Version>9.8.0.0</Version>
     <Authors>richard@paperworkday.com</Authors>
     <Description>The Mvc extensions for the Scryber.Core PDF creation engine - change the way you make documents. 
@@ -19,7 +19,10 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
       <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.7
+    <PackageReleaseNotes>9.8.0-beta.8
+Updates the Scryber.Core dependency to 9.8.0-beta.8 - see Scryber.Core release notes (gradient length stops, box-shadow var(), images in flex headers, em spacing, inline-flex, long words overflow).
+
+9.8.0-beta.7
 Updates the Scryber.Core dependency to 9.8.0-beta.7 - see Scryber.Core release notes (content width flex items).
 
 9.8.0-beta.6
