@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.8</PackageVersion>
+    <PackageVersion>9.8.0-beta.9</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.8
+    <PackageReleaseNotes>9.8.0-beta.9
+Fixed: a gradient that cannot be drawn (e.g. a stop with 2 positions) is not drawn and the background-color is kept, with a warning in the trace log, rather than failing the document with No boundaries were provided.
+Fixed: transparent in a gradient is drawn as black, with a warning in the trace log, rather than failing the document with Cannot convert colorspace None to RGB.
+Fixed: the line height in the font shorthand (e.g. font: 10.5pt/1.65 sans-serif) is read as a css number, not in the language of the machine or browser.
+Fixed: numbers held as text (e.g. json or field values) are read the same as numbers in the expression, in calculations, functions and comparisons, whatever the language of the machine or browser. Numbers and dates written out as text still use that language.
+Fixed: decimal values in transform, svg transform and orient, and picture sizes are read as css numbers.
+
+9.8.0-beta.8
 Fixed: linear-gradient color stops can be a length (e.g. var(--accent) 112pt), so two colors at the same position are a hard stop; rgb() stops with a position keep their color.
 Fixed: box-shadow with a var() in the value (e.g. 9pt 9pt 0 var(--accent)) is drawn.
 Fixed: an image with only a height in a flex header or continuation-header is shown on the first page the header is used.
