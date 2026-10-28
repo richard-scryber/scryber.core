@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.9</PackageVersion>
+    <PackageVersion>9.8.0-beta.10</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,16 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.9
+    <PackageReleaseNotes>9.8.0-beta.10
+Fixed: flex items without a width that hold a block, a flex column or a flex row are the width of their content (they were the full width of the row, so justify-content had no space to share and items overlapped, wrapped or ran off the page). An empty flex item has no width.
+Fixed: justify-content takes the flex container's own margins from its width, and the gaps are part of the space used, so the last item is on the right edge.
+Fixed: position: absolute with a left and a right but no width is stretched between them. A max-width still limits it.
+Fixed: counter-increment on a display: grid or display: table element is counted.
+New: a trace log warning when a counter-increment finds no counter-reset on the element or a containing element.
+Changed: the background shorthand sets all the background values (any not given are back to their defaults), reads none, position and size (center / cover), accepts and ignores scroll, fixed and the box keywords, draws a color under an image, and is ignored as a whole if any part cannot be read.
+New: box-decoration-break (and -webkit-box-decoration-break) - clone (the default, a full border on each part of a split block) or slice (the border is cut at the break).
+
+9.8.0-beta.9
 Fixed: a gradient that cannot be drawn (e.g. a stop with 2 positions) is not drawn and the background-color is kept, with a warning in the trace log, rather than failing the document with No boundaries were provided.
 Fixed: transparent in a gradient is drawn as black, with a warning in the trace log, rather than failing the document with Cannot convert colorspace None to RGB.
 Fixed: the line height in the font shorthand (e.g. font: 10.5pt/1.65 sans-serif) is read as a css number, not in the language of the machine or browser.
