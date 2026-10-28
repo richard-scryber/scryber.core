@@ -61,7 +61,11 @@ namespace Scryber.PDF.Layout
 
             PDFPositionOptions pos = this.FullStyle.CreatePostionOptions(this.Context.PositionDepth > 0);
             PDFColumnOptions columns = this.FullStyle.CreateColumnOptions();
-            
+
+            //when measuring the content width (e.g. of a flex item) blocks without a width are the width of their content, rather than filling the space.
+            if (this.Context.IsMeasuring && !pos.Width.HasValue)
+                pos.FillWidth = false;
+
             if (pos.DisplayMode != Drawing.DisplayMode.Inline)
             {
                 this.DoLayoutBlockComponent(pos, columns);

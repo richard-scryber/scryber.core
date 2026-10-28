@@ -130,6 +130,9 @@ namespace Scryber.PDF.Layout
                     containerW = openBlock?.CurrentRegion?.TotalBounds.Width.PointsValue
                               ?? openBlock?.AvailableBounds.Width.PointsValue
                               ?? 0;
+                    //the region is the space in the parent, so the container's own margins are outside it.
+                    if (!position.Margins.IsEmpty)
+                        containerW -= (position.Margins.Left + position.Margins.Right).PointsValue;
                     if (!position.Padding.IsEmpty)
                         containerW -= (position.Padding.Left + position.Padding.Right).PointsValue;
                 }
@@ -168,6 +171,26 @@ namespace Scryber.PDF.Layout
 
                 _flexItemContentWidths = null; // clear before computing for this row
                 var widths = ComputeColumnWidths(childCount, containerW, colGap.PointsValue);
+
+                // When measuring the content width (e.g. of an outer flex item), a row without a width is the width of its items, rather than the space.
+                if (this.Context.IsMeasuring && !position.Width.HasValue && !position.FillWidth && null != widths.Widths && childCount > 0)
+                {
+                    double gaps = colGap.PointsValue * (childCount - 1);
+                    double used = gaps;
+                    foreach (var fraction in widths.Widths)
+                        used += fraction * Math.Max(0, containerW - gaps);
+
+                    if (used < containerW - MeasuredWidthAllowance)
+                    {
+                        containerW = used;
+                        var rowW = used;
+                        if (!position.Padding.IsEmpty)
+                            rowW += (position.Padding.Left + position.Padding.Right).PointsValue;
+                        position.Width = new Unit(rowW, PageUnits.Points);
+                        widths = ComputeColumnWidths(childCount, containerW, colGap.PointsValue);
+                    }
+                }
+
                 if (reverse) widths = ReverseWidths(widths);
 
                 var rowCols = new PDFColumnOptions()
@@ -806,8 +829,9 @@ namespace Scryber.PDF.Layout
                     if (null != block.Position)
                         width -= (block.Position.Margins.Left + block.Position.Margins.Right).PointsValue;
 
-                    //a small allowance, so the rounding of the column widths can never make the content wrap
-                    if (width > 0)
+                    //a small allowance, so the rounding of the column widths can never make the content wrap.
+                    //An empty item is no width (rather than sharing the space that is left).
+                    if (width >= 0)
                         widths[owner] = width + MeasuredWidthAllowance;
                 }
             }
@@ -1117,9 +1141,10 @@ namespace Scryber.PDF.Layout
             // TotalBounds.Width includes padding, which would make leftover too large and
             // push the rightmost item outside the container by the padding amount.
             double containerW = contentW > 0 ? contentW : flexBlock.TotalBounds.Width.PointsValue;
-            double totalColW  = 0;
-            for (int i = 0; i < colCount; i++)
-                totalColW += flexBlock.Columns[i].TotalBounds.Width.PointsValue;
+            // The space used by the items and the gaps between them, from the start of the first to the end of the last.
+            var firstCol = flexBlock.Columns[0].TotalBounds;
+            var lastCol = flexBlock.Columns[colCount - 1].TotalBounds;
+            double totalColW = (lastCol.X + lastCol.Width).PointsValue - firstCol.X.PointsValue;
 
             // ShrinkToFit widens a single column to fill the block so the column width
             // equals the container width and leftover would be zero.  Use the first

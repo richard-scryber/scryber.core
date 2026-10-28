@@ -96,6 +96,17 @@ namespace Scryber.Drawing
     }
 
 
+    /// <summary>
+    /// How the border of a block is drawn where the block is split across pages or columns (box-decoration-break)
+    /// </summary>
+    public enum BoxDecorationBreak
+    {
+        /// <summary>Each part has the full border (the default)</summary>
+        Clone,
+        /// <summary>The border is cut where the block is split - no top border on a continuation, and no bottom border where it continues</summary>
+        Slice
+    }
+
     [Flags()]
     public enum Sides
     {

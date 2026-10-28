@@ -418,7 +418,9 @@ namespace Scryber.Styles
 
         protected virtual string EnsureCSSImage(DataContext context, string source, string type)
         {
-            
+            //no image (e.g. background-image: none), so there is nothing to map or load.
+            if (string.IsNullOrEmpty(source))
+                return source;
 
             if(IsGradientImageSrc(source, out var desc))
             {
@@ -1165,6 +1167,11 @@ namespace Scryber.Styles
             }
             else
                 options.MaximumHeight = null;
+
+            //an absolute or fixed block with a left and a right, but no width, is stretched between them (as css).
+            if ((options.PositionMode == PositionMode.Absolute || options.PositionMode == PositionMode.Fixed)
+                && options.X.HasValue && options.Right.HasValue && !options.Width.HasValue)
+                options.FillWidth = true;
 
             // AspectRatio
             StyleValue<double> aspectRatio;

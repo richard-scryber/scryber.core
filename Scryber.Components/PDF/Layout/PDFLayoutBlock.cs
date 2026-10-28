@@ -325,6 +325,60 @@ namespace Scryber.PDF.Layout
 
         
 
+        #region private PDFPenBorders ApplyDecorationBreak(PDFPenBorders border)
+
+        /// <summary>
+        /// With box-decoration-break: slice the border is cut where the block is split, so a continuation has no top border
+        /// (or top corners) and a block that continues has no bottom border (or bottom corners). With clone (the default) each part has the full border.
+        /// </summary>
+        /// <returns>The border to draw - a copy if it is cut, as the original can be shared with the other parts</returns>
+        private PDFPenBorders ApplyDecorationBreak(PDFPenBorders border)
+        {
+            if (null == border || this.FullStyle.GetValue(StyleKeys.BorderDecorationBreakKey, BoxDecorationBreak.Clone) != BoxDecorationBreak.Slice)
+                return border;
+
+            bool cutTop = this.BlockRepeatIndex > 0;
+            bool cutBottom = this.IsContinued;
+
+            if (!cutTop && !cutBottom)
+                return border;
+
+            var cut = new PDFPenBorders()
+            {
+                AllPen = border.AllPen,
+                AllSides = border.AllSides,
+                LeftPen = border.LeftPen,
+                TopPen = border.TopPen,
+                RightPen = border.RightPen,
+                BottomPen = border.BottomPen,
+                CornerRadius = border.CornerRadius,
+                TopLeftRadius = border.TopLeftRadius,
+                TopRightRadius = border.TopRightRadius,
+                BottomLeftRadius = border.BottomLeftRadius,
+                BottomRightRadius = border.BottomRightRadius
+            };
+
+            if (cutTop)
+            {
+                cut.AllSides &= ~Sides.Top;
+                cut.TopPen = null;
+                cut.TopLeftRadius = Unit.Zero;
+                cut.TopRightRadius = Unit.Zero;
+            }
+
+            if (cutBottom)
+            {
+                cut.AllSides &= ~Sides.Bottom;
+                cut.BottomPen = null;
+                cut.BottomLeftRadius = Unit.Zero;
+                cut.BottomRightRadius = Unit.Zero;
+            }
+
+            return cut;
+        }
+
+        #endregion
+
         #region public int BlockRepeatIndex { get; set; }
 
         /// <summary>
@@ -333,6 +387,15 @@ namespace Scryber.PDF.Layout
         /// <remarks>PanelLayoutEngine uses this to count the number 
         /// of individual blocks generated for each panel</remarks>
         public int BlockRepeatIndex { get; set; }
+
+        #endregion
+
+        #region public bool IsContinued { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flag to indicate if the content of this block continues in another block (on the next page or column).
+        /// </summary>
+        public bool IsContinued { get; set; }
 
         #endregion
 
@@ -1319,6 +1382,10 @@ namespace Scryber.PDF.Layout
                     {
                         space.X += pos.X.Value;
                         space.Width -= pos.X.Value;
+
+                        //with a left and a right, the space is between them.
+                        if (pos.Right.HasValue)
+                            space.Width -= pos.Right.Value;
                     }
                 }
                 else if (pos.Right.HasValue)
@@ -1573,6 +1640,7 @@ namespace Scryber.PDF.Layout
                 
                 //Get the border to draw
                 PDFPenBorders border = this.FullStyle.CreateBorderPen();
+                border = this.ApplyDecorationBreak(border);
                 //Get the background brush
                 PDFBrush background = this.FullStyle.CreateBackgroundBrush();
                 

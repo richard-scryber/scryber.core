@@ -77,6 +77,8 @@ namespace Scryber.Styles
 
         public static readonly StyleKey<Color> BorderColorKey = StyleKey.InternalCreateStyleValueKey<Color>((ObjectType)"colr", BorderItemKey);
 
+        public static readonly StyleKey<BoxDecorationBreak> BorderDecorationBreakKey = StyleKey.InternalCreateStyleValueKey<BoxDecorationBreak>((ObjectType)"bdbr", BorderItemKey);
+
         public static readonly StyleKey<Unit> BorderCornerRadiusKey = StyleKey.InternalCreateRelativeStyleValueKey<Unit>((ObjectType)"crad", BorderItemKey
                                                                 , new StyleKeyFlattenCornerRadiusValue());
 

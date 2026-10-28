@@ -341,5 +341,143 @@ namespace Scryber.Core.UnitTests.Html.CSSParsing
 
             Assert.AreEqual(english, dutch);
         }
+
+        private static string RenderText(string css, string body)
+        {
+            var src = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>@page{size:400pt 300pt;margin:0} body{margin:0} " + css + "</style></head>" +
+                      "<body>" + body + "</body></html>";
+            using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+            {
+                var ms = new MemoryStream();
+                doc.SaveAsPDF(ms);
+                return Scryber.Core.UnitTests.Generation.PanelContent_Tests.TextOf(ms.ToArray());
+            }
+        }
+
+        private const string CounterCss = ".list{counter-reset:ev} .item{counter-increment:ev} .fig::before{content:'FIG ' counter(ev)} ";
+
+        [TestMethod]
+        public void CSSBrowserParity_22_CounterIncrement_OnAGridItem_IsCounted()
+        {
+            var text = RenderText(CounterCss + ".item{display:grid;grid-template-columns:50pt 1fr}",
+                "<div class='list'><div class='item'><div>photo</div><div><span class='fig'></span></div></div>" +
+                "<div class='item'><div>photo</div><div><span class='fig'></span></div></div></div>");
+
+            StringAssert.Contains(text, "FIG 1");
+            StringAssert.Contains(text, "FIG 2");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_23_CounterIncrement_OnATableItem_IsCounted()
+        {
+            var text = RenderText(CounterCss + ".item{display:table} .row{display:table-row} .cell{display:table-cell}",
+                "<div class='list'><div class='item'><div class='row'><div class='cell'><span class='fig'></span></div></div></div>" +
+                "<div class='item'><div class='row'><div class='cell'><span class='fig'></span></div></div></div></div>");
+
+            StringAssert.Contains(text, "FIG 1");
+            StringAssert.Contains(text, "FIG 2");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_24_CounterIncrement_WithoutAReset_LogsAWarning()
+        {
+            RenderWithLog(".item{counter-increment:missing}", "<div class='item' id='first'>no reset</div>", out var log);
+
+            Assert.IsTrue(HasWarning(log, "The counter 'missing' in the counter-increment of 'div.item#first' was not found"));
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_25_CounterIncrement_WithAReset_DoesNotLogAWarning()
+        {
+            RenderWithLog(CounterCss, "<div class='list'><div class='item'><span class='fig'></span></div></div>", out var log);
+
+            Assert.IsFalse(HasWarning(log, "counter-increment"));
+        }
+
+        private const string BgBody = "<div class='a b' style='height:40pt'>Text</div>";
+
+        [TestMethod]
+        public void CSSBrowserParity_26_Background_None_ClearsAnEarlierBackground()
+        {
+            var cleared = Render(".a{background-color:#cccccc} .a.b{background:none}", BgBody);
+            var none = Render("", BgBody);
+
+            Assert.AreEqual(none, cleared, "No background is drawn");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_27_Background_Color_ClearsAnEarlierImage()
+        {
+            var shorthand = Render(".a{background-image:linear-gradient(red, blue)} .a.b{background:#eeeeee}", BgBody);
+            var colorOnly = Render(".a{background-color:#eeeeee}", BgBody);
+
+            Assert.AreEqual(colorOnly, shorthand, "The gradient is reset by the shorthand");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_28_Background_InvalidValue_IsIgnored()
+        {
+            var invalid = Render(".a{background:#ff0000} .a.b{background:#0000ff fuzzy}", BgBody);
+            var red = Render(".a{background:#ff0000}", BgBody);
+
+            Assert.AreEqual(red, invalid, "The invalid declaration does not change the earlier background");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_29_Background_PositionSizeAndBoxes_AreAccepted()
+        {
+            foreach (var value in new[] { "#eeeeee no-repeat center / cover", "#eeeeee left top/100pt auto", "#eeeeee 10pt 20pt / contain scroll padding-box" })
+            {
+                var shorthand = RenderWithLog(".a.b{background:" + value + "}", BgBody, out var log);
+
+                Assert.IsFalse(HasWarning(log, "could not be set"), "The value is read: " + value);
+                Assert.AreEqual(Render(".a.b{background-color:#eeeeee}", BgBody), shorthand, "The color is drawn: " + value);
+            }
+        }
+
+        //20 lines of text in a bordered block, split over 2 pages of 300pt - 288pt on the first and 96pt on the second
+        private static readonly string SplitBody = "<div class='b'>" + string.Concat(System.Linq.Enumerable.Repeat("<p style='margin:0'>A line of text</p>", 20)) + "</div>";
+        private const string SplitCss = ".b{border:2pt solid #ff0000} ";
+
+        private const string FullFirst = "0.00  300.00  400.00  -288.00 re S";
+        private const string FullSecond = "0.00  300.00  400.00  -96.00 re S";
+        //top, right and left - no bottom where it continues
+        private const string SliceFirst = "0.00  300.00 m  400.00  300.00 l  400.00  12.00 l  0.00  12.00 m  0.00  300.00 l S";
+        //right, bottom and left - no top on the continuation
+        private const string SliceSecond = "400.00  300.00 m  400.00  204.00 l  0.00  204.00 l  0.00  300.00 l S";
+
+        [TestMethod]
+        public void CSSBrowserParity_30_BoxDecorationBreak_Clone_IsTheDefault()
+        {
+            var unset = Render(SplitCss, SplitBody);
+
+            StringAssert.Contains(unset, FullFirst, "The full border on the first page");
+            StringAssert.Contains(unset, FullSecond, "The full border again on the second page");
+            Assert.AreEqual(Render(SplitCss + ".b{box-decoration-break:clone}", SplitBody), unset);
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_31_BoxDecorationBreak_Slice_CutsTheBorderWhereItIsSplit()
+        {
+            var slice = Render(SplitCss + ".b{box-decoration-break:slice}", SplitBody);
+
+            StringAssert.Contains(slice, SliceFirst, "No bottom border on the first page");
+            StringAssert.Contains(slice, SliceSecond, "No top border on the second page");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_32_BoxDecorationBreak_WebkitName_IsTheSame()
+        {
+            Assert.AreEqual(Render(SplitCss + ".b{box-decoration-break:slice}", SplitBody),
+                            Render(SplitCss + ".b{-webkit-box-decoration-break:slice}", SplitBody));
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_33_BoxDecorationBreak_Slice_OnOnePage_IsTheFullBorder()
+        {
+            const string body = "<div class='b'><p style='margin:0'>A line of text</p></div>";
+
+            Assert.AreEqual(Render(SplitCss, body), Render(SplitCss + ".b{box-decoration-break:slice}", body));
+        }
     }
 }

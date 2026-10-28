@@ -53,6 +53,14 @@ namespace Scryber.PDF.Layout
         protected IContainerComponent Container { get; set; }
         protected Style ContainerStyle { get; set; }
 
+        /// <summary>
+        /// Counters are on the grid container, not the synthetic table that lays it out.
+        /// </summary>
+        protected override Component CounterComponent
+        {
+            get { return (this.Container as Component) ?? base.CounterComponent; }
+        }
+
         // -----------------------------------------------------------------------
         // Constructor
         // -----------------------------------------------------------------------

@@ -378,6 +378,19 @@ namespace Scryber.PDF.Layout
         //
         
         
+        #region protected virtual Component CounterComponent {get;}
+
+        /// <summary>
+        /// Gets the component that counters are reset, incremented and read on. Normally this is the component being laid out,
+        /// but an engine that lays out a component as a synthetic one (e.g. a grid as a table) returns the original component.
+        /// </summary>
+        protected virtual Component CounterComponent
+        {
+            get { return this.Component; }
+        }
+
+        #endregion
+
         #region protected virtual void EnsureCounterUpdatesForStyle(Style style)
 
         /// <summary>
@@ -394,7 +407,7 @@ namespace Scryber.PDF.Layout
                 var val = reset.Value(style);
                 while (null != val)
                 {
-                    this.ResetACounter(val, this.Component);
+                    this.ResetACounter(val, this.CounterComponent);
                     val = val.Next;
                 }
             }
@@ -404,10 +417,27 @@ namespace Scryber.PDF.Layout
                 var val = increment.Value(style);
                 while (null != val)
                 {
-                    this.IncrementACounter(val, this.Component);
+                    if (!this.IncrementACounter(val, this.CounterComponent))
+                        this.Context.TraceLog.Add(TraceLevel.Warning, LOG_CATEGORY, "The counter '" + val.Name + "' in the counter-increment of " + DescribeForLog(this.CounterComponent) + " was not found on the element or any of its parents, so it was not counted. Add a counter-reset for '" + val.Name + "' to a containing element.");
                     val = val.Next;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns a short description of the component for the trace log e.g. div.ev-item#first
+        /// </summary>
+        private static string DescribeForLog(Component component)
+        {
+            var name = string.IsNullOrEmpty(component.ElementName) ? component.Type.ToString() : component.ElementName;
+
+            if (component is IStyledComponent styled && !string.IsNullOrEmpty(styled.StyleClass))
+                name += "." + styled.StyleClass.Trim().Replace(" ", ".");
+
+            if (!string.IsNullOrEmpty(component.ID))
+                name += "#" + component.ID;
+
+            return "'" + name + "'";
         }
 
         #endregion
@@ -636,7 +666,7 @@ namespace Scryber.PDF.Layout
 
                 case ContentDescriptorType.Counter:
                     var counterDesc = content as ContentCounterDescriptor;
-                    var counterValue = counterDesc.GetContent(this.Component);
+                    var counterValue = counterDesc.GetContent(this.CounterComponent);
                     if (!string.IsNullOrEmpty(counterValue))
                     {
                         text = new TextLiteral(counterValue);
@@ -646,7 +676,7 @@ namespace Scryber.PDF.Layout
                     break;
                 case ContentDescriptorType.Counters:
                     var countersDesc = content as ContentCountersDescriptor;
-                    var countersValue = countersDesc.GetContent(this.Component);
+                    var countersValue = countersDesc.GetContent(this.CounterComponent);
                     if (!string.IsNullOrEmpty(countersValue))
                     {
                         text = new TextLiteral(countersValue);
@@ -3168,6 +3198,7 @@ namespace Scryber.PDF.Layout
             PDFLayoutBlock block = ((PDFLayoutBlock)joinToRegion.Parent).BeginNewBlock(this.Component, this, this.FullStyle, position.DisplayMode);
             block.InitRegions(total, position, options, this.Context);
             block.BlockRepeatIndex = repeatindex;
+            blockToClose.IsContinued = true;
             this.CurrentBlock = block;
 
             return block;

@@ -15,11 +15,22 @@ namespace Scryber.PDF.Layout
     {
         
         protected Style ContainerStyle { get; set; }
+
+        protected ContainerComponent Container { get; set; }
         
         public LayoutEngineCSSTable(ContainerComponent container, IPDFLayoutEngine parent, Style style)
             : base(BuildSyntheticTable(container), parent)
         {
             ContainerStyle = style;
+            Container = container;
+        }
+
+        /// <summary>
+        /// Counters are on the table container, not the synthetic table that lays it out.
+        /// </summary>
+        protected override Component CounterComponent
+        {
+            get { return this.Container ?? base.CounterComponent; }
         }
 
         // -----------------------------------------------------------------------

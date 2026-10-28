@@ -268,6 +268,8 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.BoxSizing, new CSSBoxSizingParser());
             all.Add(CSSStyleItems.WordBreak, new CSSWordBreakParser());
             all.Add(CSSStyleItems.OverflowWrap, new CSSOverflowWrapParser(CSSStyleItems.OverflowWrap));
+            all.Add(CSSStyleItems.BoxDecorationBreak, new CSSBoxDecorationBreakParser(CSSStyleItems.BoxDecorationBreak));
+            all.Add(CSSStyleItems.BoxDecorationBreakWebkit, new CSSBoxDecorationBreakParser(CSSStyleItems.BoxDecorationBreakWebkit));
             all.Add(CSSStyleItems.WordWrapAlias, new CSSOverflowWrapParser(CSSStyleItems.WordWrapAlias));
             all.Add(CSSStyleItems.TextOverflow, new CSSTextOverflowParser());
             all.Add(CSSStyleItems.BoxShadow, new CSSBoxShadowParser());
