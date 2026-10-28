@@ -24,7 +24,7 @@ namespace Scryber.Expressive.Functions.Mathematical
             {
                 return Math.Ceiling((decimal)value);
             }
-            return Math.Ceiling(Convert.ToDouble(value));
+            return Math.Ceiling(Convert.ToDouble(value, context.DecimalCurrentCulture));
         }
 
         #endregion

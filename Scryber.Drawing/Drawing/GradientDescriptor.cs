@@ -59,6 +59,33 @@ namespace Scryber.Drawing
         // .ctor
         //
 
+        /// <summary>
+        /// Returns true if this gradient has the 2 or more colors it needs to be drawn.
+        /// </summary>
+        public bool CanRender
+        {
+            get { return null != this.Colors && this.Colors.Count > 1; }
+        }
+
+        /// <summary>
+        /// Returns true if any of the colors in this gradient are transparent, and will be drawn as black
+        /// </summary>
+        public bool HasTransparentColors
+        {
+            get
+            {
+                if (null == this.Colors)
+                    return false;
+
+                foreach (var color in this.Colors)
+                {
+                    if (color.Color.IsTransparent)
+                        return true;
+                }
+                return false;
+            }
+        }
+
         public GradientDescriptor(GradientType type)
         {
             this.GradientType = type;
@@ -77,6 +104,18 @@ namespace Scryber.Drawing
         /// <returns></returns>
         public virtual PDFGradientFunction GetGradientFunction(Point offset, Size size)
         {
+            //a pdf gradient function cannot be transparent, so transparent is black.
+            foreach (var color in this.Colors)
+            {
+                if (color.Color.IsTransparent)
+                    color.Color = StandardColors.Black;
+            }
+
+            //and must have 2 colors, but we should never be asked for a function without them.
+            if (this.Colors.Count == 0)
+                return new PDFGradientFunction2(StandardColors.Black, StandardColors.Black);
+            else if (this.Colors.Count == 1)
+                return new PDFGradientFunction2(this.Colors[0].Color, this.Colors[0].Color);
 
             //if our first value is offset from the start put one in of
             //the same colour at 0 offset

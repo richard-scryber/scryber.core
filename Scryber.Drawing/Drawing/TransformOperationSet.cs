@@ -310,7 +310,7 @@ namespace Scryber.Drawing
 
             for (var i = 0; i < all.Length; i++)
             {
-                if (double.TryParse(all[i], out var d))
+                if (double.TryParse(all[i], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d))
                     parsed[i] = d;
                 else
                 {
@@ -436,10 +436,10 @@ namespace Scryber.Drawing
                     yS = yS.Substring(0, yS.Length -1);
                 }
 
-                if (!double.TryParse(xS, out x))
+                if (!double.TryParse(xS, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out x))
                     return null;
 
-                if (!double.TryParse(yS, out y))
+                if (!double.TryParse(yS, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out y))
                     return null;
             }
             else
@@ -452,7 +452,7 @@ namespace Scryber.Drawing
                 }
                 
 
-                if (!double.TryParse(values, out x))
+                if (!double.TryParse(values, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out x))
                     return null;
 
                 if (yOnly)
@@ -504,7 +504,7 @@ namespace Scryber.Drawing
             if (value.EndsWith(DegreesIdentifier))
             {
                 value = value.Substring(0, value.Length - DegreesIdentifier.Length);
-                if (!double.TryParse(value, out radians))
+                if (!double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out radians))
                     return false;
                 else
                 {
@@ -515,7 +515,7 @@ namespace Scryber.Drawing
             else if (value.EndsWith(TurnsIdentifier))
             {
                 value = value.Substring(0, value.Length - TurnsIdentifier.Length);
-                if (!double.TryParse(value, out radians))
+                if (!double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out radians))
                     return false;
                 else
                 {
@@ -530,7 +530,7 @@ namespace Scryber.Drawing
                     value = value.Substring(0, value.Length - RadiansIdentifier.Length);
                 }
 
-                if (!double.TryParse(value, out radians))
+                if (!double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out radians))
                     return false;
                 else
                 {

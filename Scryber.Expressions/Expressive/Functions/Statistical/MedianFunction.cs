@@ -38,13 +38,13 @@ namespace Scryber.Expressive.Functions.Statistical
                         }
                         else
                         {
-                            decimalValues.Add(Convert.ToDecimal(innerValue));
+                            decimalValues.Add(Convert.ToDecimal(innerValue, context.DecimalCurrentCulture));
                         }
                     }
                 }
                 else
                 {
-                    decimalValues.Add(Convert.ToDecimal(value));
+                    decimalValues.Add(Convert.ToDecimal(value, context.DecimalCurrentCulture));
                 }
             }
 

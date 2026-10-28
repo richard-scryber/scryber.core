@@ -78,7 +78,7 @@ namespace Scryber.Html.Components
 						{
 							var mult = str.Substring(last, str.Length - (last + 1));
 
-							if (double.TryParse(mult, out double parsed) && parsed > max)
+							if (double.TryParse(mult, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double parsed) && parsed > max)
 							{
 								max = parsed;
 								found = str.Substring(0, last).Trim();

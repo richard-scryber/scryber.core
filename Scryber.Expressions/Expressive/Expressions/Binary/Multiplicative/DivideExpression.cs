@@ -41,7 +41,8 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
             }
             else if (value is string s)
             {
-                if (Double.TryParse(s, out double d))
+                //numbers are always read in the invariant culture, the same as numbers in the expression itself.
+                if (Double.TryParse(s, System.Globalization.NumberStyles.Float | System.Globalization.NumberStyles.AllowThousands, System.Globalization.CultureInfo.InvariantCulture, out double d))
                     return d;
                 else if (Unit.TryParse(s, out unit))
                 {
@@ -51,7 +52,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
                     return unit.PointsValue;
                 }
             }
-            return Convert.ToDouble(value);
+            return Convert.ToDouble(value, System.Globalization.CultureInfo.InvariantCulture);
 
         }
         private static bool IsReal(object value)

@@ -112,7 +112,7 @@ namespace Scryber.Expressive.Helpers
                 else if (b is IConvertible conv2)
                     bstr = conv2.ToString(context.CurrentCulture);
                 else
-                    bstr = (string)Convert.ChangeType(a, TypeCode.String, context.CurrentCulture);
+                    bstr = (string)Convert.ChangeType(b, TypeCode.String, context.CurrentCulture);
                 
                 return string.Compare(astr, bstr, context.EqualityStringComparison);
             }
@@ -137,6 +137,31 @@ namespace Scryber.Expressive.Helpers
             }
 
             return a;
+        }
+
+        /// <summary>
+        /// Numbers are always converted in the culture for numbers (the same as numbers in the expression itself),
+        /// and everything else in the current culture.
+        /// </summary>
+        private static IFormatProvider GetConversionCulture(Type toType, ExpressionContext context)
+        {
+            switch (Type.GetTypeCode(toType))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    return context.DecimalCurrentCulture;
+                default:
+                    return context.CurrentCulture;
+            }
         }
 
         private static int Compare(object lhs, object rhs, Type mostPreciseType, ExpressionContext context)
@@ -170,11 +195,11 @@ namespace Scryber.Expressive.Helpers
             {
                 if (lhsType == mostPreciseType)
                 {
-                    rhs = Convert.ChangeType(rhs, mostPreciseType, context.CurrentCulture);
+                    rhs = Convert.ChangeType(rhs, mostPreciseType, GetConversionCulture(mostPreciseType, context));
                 }
                 else
                 {
-                    lhs = Convert.ChangeType(lhs, mostPreciseType, context.CurrentCulture);
+                    lhs = Convert.ChangeType(lhs, mostPreciseType, GetConversionCulture(mostPreciseType, context));
                 }
 
                 return Comparer<object>.Default.Compare(lhs, rhs);
@@ -189,7 +214,7 @@ namespace Scryber.Expressive.Helpers
             // Attempt to convert the RHS to match the LHS.
             try
             {
-                return Comparer<object>.Default.Compare(lhs, Convert.ChangeType(rhs, lhsType, context.CurrentCulture));
+                return Comparer<object>.Default.Compare(lhs, Convert.ChangeType(rhs, lhsType, GetConversionCulture(lhsType, context)));
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception)
@@ -201,7 +226,7 @@ namespace Scryber.Expressive.Helpers
             // Attempt to convert the LHS to match the RHS.
             try
             {
-                return Comparer<object>.Default.Compare(lhs, Convert.ChangeType(rhs, lhsType, context.CurrentCulture));
+                return Comparer<object>.Default.Compare(Convert.ChangeType(lhs, rhsType, GetConversionCulture(rhsType, context)), rhs);
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception)

@@ -427,7 +427,7 @@ namespace Scryber.Styles
             {
                 deg = deg.Substring(0, deg.Length - 3);
                 float value;
-                if (float.TryParse(deg, out value))
+                if (float.TryParse(deg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value))
                 {
                     if (negative)
                         return -((float)(Math.PI / 180.0) * value);

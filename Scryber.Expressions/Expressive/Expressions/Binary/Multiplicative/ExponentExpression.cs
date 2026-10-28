@@ -18,7 +18,7 @@ namespace Scryber.Expressive.Expressions.Binary.Multiplicative
 
         protected override object EvaluateImpl(object lhsResult, IExpression rightHandSide, IDictionary<string, object> variables) =>
             EvaluateAggregates(lhsResult, rightHandSide, variables, (l, r, vars) =>
-                Math.Pow(Convert.ToDouble(l), Convert.ToDouble(r)));
+                Math.Pow(Convert.ToDouble(l, this.Context.DecimalCurrentCulture), Convert.ToDouble(r, this.Context.DecimalCurrentCulture)));
 
         #endregion
     }

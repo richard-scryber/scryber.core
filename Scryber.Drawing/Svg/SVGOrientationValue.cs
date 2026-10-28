@@ -32,7 +32,7 @@ namespace Scryber.Svg
                 return new AdornmentOrientationValue() { IsReverseAtStart = false, HasAngle = false, AngleRadians = 0.0 };
             else if (value == "auto-start-reverse")
                 return new AdornmentOrientationValue() { IsReverseAtStart = true, HasAngle = false, AngleRadians = 0.0 };
-            else if (double.TryParse(value, out var angleDeg))
+            else if (double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var angleDeg))
                 return new AdornmentOrientationValue()
                     { IsReverseAtStart = false, HasAngle = true, AngleRadians = (angleDeg * (Math.PI / 180.0)) };
             else

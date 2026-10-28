@@ -44,7 +44,7 @@ namespace Scryber.Expressive.Functions.Statistical
                 count += increment;
             }
 
-            return Convert.ToDouble(result) / count;
+            return Convert.ToDouble(result, context.DecimalCurrentCulture) / count;
         }
 
         #endregion

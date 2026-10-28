@@ -106,7 +106,7 @@ namespace Scryber.Styles.Parsing.Typed
                 part = reader.CurrentTextValue.Substring(reader.CurrentTextValue.IndexOf('/') + 1);
 
                 //if we have a simple double value then it is relative leading based on font size.
-                if (double.TryParse(part, out relativeLeading))
+                if (ParseDouble(part, out relativeLeading))
                     onStyle.Text.Leading = onStyle.Font.FontSize * relativeLeading;
                 else if (ParseCSSUnit(part, out lineheight))
                     onStyle.Text.Leading = lineheight;

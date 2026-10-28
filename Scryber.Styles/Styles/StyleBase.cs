@@ -422,6 +422,10 @@ namespace Scryber.Styles
 
             if(IsGradientImageSrc(source, out var desc))
             {
+                if (null == desc || !desc.CanRender)
+                    context.TraceLog.Add(TraceLevel.Warning, "Styles", "The " + type + " gradient '" + source + "' could not be read, or has less than 2 colors, so it will not be drawn");
+                else if (desc.HasTransparentColors)
+                    context.TraceLog.Add(TraceLevel.Warning, "Styles", "The " + type + " gradient '" + source + "' has transparent colors, which are drawn as black, as gradients cannot be transparent");
                 return source;
             }
             else if (IsDataImage(source))
@@ -2387,8 +2391,10 @@ namespace Scryber.Styles
                 GradientDescriptor found;
                 if(this.IsGradientImageSrc(imgsrc.Value(this), out found))
                 {
-                    if (found == null)
-                        brush = null;
+                    if (found == null || !found.CanRender)
+                    {
+                        //a gradient that cannot be drawn is ignored (as css), so we keep the background color.
+                    }
                     else if (found.GradientType == GradientType.Linear)
                         brush = new PDFGradientLinearBrush((GradientLinearDescriptor)found);
                     else if (found.GradientType == GradientType.Radial)

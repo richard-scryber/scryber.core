@@ -20,7 +20,7 @@ namespace Scryber.Expressive.Functions.Date
             if (dateObject is null || millisecondsObject is null) { return null; }
 
             var date = Convert.ToDateTime(dateObject, context.CurrentCulture);
-            var milliseconds = Convert.ToDouble(millisecondsObject, context.CurrentCulture);
+            var milliseconds = Convert.ToDouble(millisecondsObject, context.DecimalCurrentCulture);
 
             return date.AddMilliseconds(milliseconds);
         }

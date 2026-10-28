@@ -29,12 +29,12 @@ namespace Scryber.Expressive.Functions.Statistical
                     foreach (var item in enumerable)
                     {
                         var inner = Comparison.ExtractAnyJsonValue(item);
-                        values.Add(Convert.ToDecimal(inner));
+                        values.Add(Convert.ToDecimal(inner, context.DecimalCurrentCulture));
                     }
                 }
                 else
                 {
-                    values.Add(Convert.ToDecimal(value));
+                    values.Add(Convert.ToDecimal(value, context.DecimalCurrentCulture));
                 }
             }
 

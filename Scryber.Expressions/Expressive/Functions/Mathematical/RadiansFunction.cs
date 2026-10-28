@@ -15,7 +15,7 @@ namespace Scryber.Expressive.Functions.Mathematical
         public override object Evaluate(IExpression[] parameters, IDictionary<string, object> variables, ExpressionContext context)
         {
             this.ValidateParameterCount(parameters, 1, 1);
-            var d = Convert.ToDouble(parameters[0].Evaluate(variables));
+            var d = Convert.ToDouble(parameters[0].Evaluate(variables), context.DecimalCurrentCulture);
             d = d * Factor;
             return d;
         }

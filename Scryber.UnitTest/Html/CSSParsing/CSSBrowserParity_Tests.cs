@@ -202,5 +202,144 @@ namespace Scryber.Core.UnitTests.Html.CSSParsing
 
             Assert.AreEqual(block, content);
         }
+
+        // gradients that cannot be drawn
+
+        private static string RenderWithLog(string css, string body, out Scryber.Logging.CollectorTraceLog log)
+        {
+            var src = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>@page{size:400pt 300pt;margin:0} body{margin:0} " + css + "</style></head>" +
+                      "<body>" + body + "</body></html>";
+            using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+            {
+                log = new Scryber.Logging.CollectorTraceLog(TraceRecordLevel.Warnings, "test", true);
+                ((IParsedDocument)doc).SetTraceLog(log);
+
+                var ms = new MemoryStream();
+                doc.SaveAsPDF(ms);
+                return Regex.Replace(PdfContent.Decompressed(ms.ToArray()), @"/[a-z]+_frsc(\d+)", "/font$1");
+            }
+        }
+
+        private static bool HasWarning(Scryber.Logging.CollectorTraceLog log, string contains)
+        {
+            foreach (var entry in log)
+            {
+                if (entry.Level == TraceLevel.Warning && entry.Message.Contains(contains))
+                    return true;
+            }
+            return false;
+        }
+
+        private const string GradientBody = "<div class='g' style='height:40pt;background-color:#1B3350'>Text</div>";
+
+        [TestMethod]
+        public void CSSBrowserParity_15_Gradient_ThatCannotBeRead_IsNotDrawn_AndLogsAWarning()
+        {
+            //2 positions on a stop are not supported, so this gradient has no colors
+            var withGradient = RenderWithLog(".g{background-image: repeating-radial-gradient(ellipse 120% 400% at 92% 0%, transparent 0 10.5pt, rgba(255,255,255,.09) 10.5pt 11.25pt)}",
+                                             GradientBody, out var log);
+            var colorOnly = RenderWithLog("", GradientBody, out _);
+
+            Assert.AreEqual(colorOnly, withGradient, "The background color is drawn, without the gradient");
+            Assert.IsTrue(HasWarning(log, "could not be read"), "A warning is logged");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_16_Gradient_WithOneColor_IsNotDrawn()
+        {
+            var withGradient = RenderWithLog(".g{background-image: linear-gradient(red)}", GradientBody, out var log);
+            var colorOnly = RenderWithLog("", GradientBody, out _);
+
+            Assert.AreEqual(colorOnly, withGradient);
+            Assert.IsTrue(HasWarning(log, "could not be read"));
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_17_Gradient_TransparentColor_IsBlack_AndLogsAWarning()
+        {
+            var pdf = "";
+            RenderWithLog(".g{background-image: radial-gradient(circle, transparent 0%, red 50%)}", GradientBody, out var log);
+            Assert.IsTrue(HasWarning(log, "drawn as black"), "A warning is logged");
+
+            var src = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>.g{height:40pt;background-image: radial-gradient(circle, transparent 0%, red 50%)}</style></head><body><div class='g'></div></body></html>";
+            using (var doc = Document.ParseDocument(new StringReader(src), ParseSourceType.DynamicContent))
+            {
+                var ms = new MemoryStream();
+                doc.SaveAsPDF(ms);
+                pdf = System.Text.Encoding.Latin1.GetString(ms.ToArray());
+            }
+            StringAssert.Contains(pdf, "/C0 [ 0.0000 0.0000 0.0000] /C1 [ 1.0000 0.0000 0.0000]", "The transparent color is black");
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_18_Gradient_RepeatingWithTransparentStops_IsDrawn()
+        {
+            var colorOnly = RenderWithLog("", GradientBody, out _);
+            var withGradient = RenderWithLog(".g{background-image: repeating-radial-gradient(ellipse at 92% 0%, transparent 0%, transparent 10%, red 10%, red 12%)}",
+                                             GradientBody, out var log);
+
+            Assert.AreNotEqual(colorOnly, withGradient, "The gradient is drawn");
+            Assert.IsTrue(HasWarning(log, "drawn as black"));
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_19_FontShorthand_LineHeight_IsNotReadInTheCurrentCulture()
+        {
+            const string css = "p{font: 10pt/1.5 Helvetica}";
+            const string body = "<p>First line of text that is long enough to wrap onto a second line within the page width</p>";
+
+            var current = System.Globalization.CultureInfo.CurrentCulture;
+            string english, dutch;
+            try
+            {
+                System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-GB");
+                english = Render(css, body);
+
+                //'.' is the group separator in nl-BE, so 1.5 would be read as 15
+                System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("nl-BE");
+                dutch = Render(css, body);
+            }
+            finally
+            {
+                System.Globalization.CultureInfo.CurrentCulture = current;
+            }
+
+            Assert.AreEqual(english, dutch, "The line height is the same whatever the culture");
+        }
+
+        private static string RenderInCulture(string culture, string css, string body)
+        {
+            var current = System.Globalization.CultureInfo.CurrentCulture;
+            try
+            {
+                System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+                return Render(css, body);
+            }
+            finally
+            {
+                System.Globalization.CultureInfo.CurrentCulture = current;
+            }
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_20_Transform_IsNotReadInTheCurrentCulture()
+        {
+            const string css = ".t{position:absolute;left:50pt;top:50pt;width:40pt;height:20pt;background-color:red;transform: rotate(12.5deg) translate(10.5pt, 4.5pt)}";
+            const string body = "<div class='t'></div>";
+
+            Assert.AreEqual(RenderInCulture("en-GB", css, body), RenderInCulture("nl-BE", css, body));
+        }
+
+        [TestMethod]
+        public void CSSBrowserParity_21_SvgTransform_IsNotReadInTheCurrentCulture()
+        {
+            const string body = "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><rect x='20' y='20' width='40' height='20' fill='red' transform='rotate(12.5deg)' /></svg>";
+
+            //the svg canvas resource names are random
+            var english = Regex.Replace(RenderInCulture("en-GB", "", body), @"/[a-z]+_canv(\d+)", "/canv$1");
+            var dutch = Regex.Replace(RenderInCulture("nl-BE", "", body), @"/[a-z]+_canv(\d+)", "/canv$1");
+
+            Assert.AreEqual(english, dutch);
+        }
     }
 }

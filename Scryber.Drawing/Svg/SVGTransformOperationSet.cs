@@ -125,7 +125,7 @@ namespace Scryber.Svg
             {
                 values = values.Substring(0, values.Length - 3);
                 
-                if (!double.TryParse(values, out radians))
+                if (!double.TryParse(values, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out radians))
                     return false;
                 
                 
@@ -133,7 +133,7 @@ namespace Scryber.Svg
             else if (values.EndsWith("turn"))
             {
                 values = values.Substring(0, values.Length - 4);
-                var turns = double.Parse(values);
+                var turns = double.Parse(values, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
                 var deg = 360 * turns;
                 radians = deg * DegressToRadians;
             }
@@ -142,7 +142,7 @@ namespace Scryber.Svg
                 if (values.EndsWith("deg"))
                     values = values.Substring(0, values.Length - 3);
 
-                if (!double.TryParse(values, out var deg))
+                if (!double.TryParse(values, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var deg))
                     return false;
                 
                 radians = deg * DegressToRadians;

@@ -22,7 +22,7 @@ namespace Scryber.Expressive.Functions.Conversion
             else if (objectToConvert is DateTime dt)
                 return (double)dt.Ticks / TimeSpan.TicksPerMillisecond; 
 
-            return Convert.ToDouble(objectToConvert, context.CurrentCulture);
+            return Convert.ToDouble(objectToConvert, context.DecimalCurrentCulture);
         }
 
         #endregion

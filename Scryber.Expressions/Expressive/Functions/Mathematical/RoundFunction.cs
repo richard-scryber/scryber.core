@@ -16,11 +16,11 @@ namespace Scryber.Expressive.Functions.Mathematical
             double result;
             if (parameters.Length == 1)
             {
-                result = Math.Round(Convert.ToDouble(parameters[0].Evaluate(variables)));
+                result = Math.Round(Convert.ToDouble(parameters[0].Evaluate(variables), context.DecimalCurrentCulture));
             }
             else
             {
-                result = Math.Round(Convert.ToDouble(parameters[0].Evaluate(variables)), Convert.ToInt32(parameters[1].Evaluate(variables)));
+                result = Math.Round(Convert.ToDouble(parameters[0].Evaluate(variables), context.DecimalCurrentCulture), Convert.ToInt32(parameters[1].Evaluate(variables)));
             }
 
             return result;

@@ -19,7 +19,8 @@ namespace Scryber.Expressive.Helpers
             }
             else if (s is String || s is char)
             {
-                if (Decimal.TryParse(s.ToString(), out Decimal result))
+                //numbers are always read in the invariant culture, the same as numbers in the expression itself.
+                if (Decimal.TryParse(s.ToString(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out Decimal result))
                     return result;
                 else if (Unit.TryParse(s.ToString(), out unit))
                 {

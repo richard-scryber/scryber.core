@@ -51,7 +51,7 @@ namespace Scryber.Expressive.Functions.CSS
             }
             else
             {
-                rd = (int)Math.Round(Convert.ToDouble(r));
+                rd = (int)Math.Round(Convert.ToDouble(r, context.DecimalCurrentCulture));
             }
             
             if (g is Unit gr )
@@ -65,7 +65,7 @@ namespace Scryber.Expressive.Functions.CSS
             }
             else
             {
-                gd = (int)Math.Round(Convert.ToDouble(g));
+                gd = (int)Math.Round(Convert.ToDouble(g, context.DecimalCurrentCulture));
             }
             
             if (b is Unit br )
@@ -79,7 +79,7 @@ namespace Scryber.Expressive.Functions.CSS
             }
             else
             {
-                bd = (int)Math.Round(Convert.ToDouble(b));
+                bd = (int)Math.Round(Convert.ToDouble(b, context.DecimalCurrentCulture));
             }
 
 

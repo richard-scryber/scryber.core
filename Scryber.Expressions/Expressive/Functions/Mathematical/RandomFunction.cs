@@ -29,16 +29,16 @@ namespace Scryber.Expressive.Functions.Mathematical
             else if (min is double || max is double)
             {
                 var value = random.NextDouble();
-                var typedMin = Convert.ToDouble(min);
-                var scale = Convert.ToDouble(max) - typedMin;
+                var typedMin = Convert.ToDouble(min, context.DecimalCurrentCulture);
+                var scale = Convert.ToDouble(max, context.DecimalCurrentCulture) - typedMin;
 
                 return typedMin + (scale * value);
             }
             else if(min is decimal || max is decimal)
             {
                 var value = random.NextDouble();
-                var typedMin = Convert.ToDouble(min);
-                var scale = Convert.ToDouble(max) - typedMin;
+                var typedMin = Convert.ToDouble(min, context.DecimalCurrentCulture);
+                var scale = Convert.ToDouble(max, context.DecimalCurrentCulture) - typedMin;
 
                 return typedMin + (scale * value);
             }

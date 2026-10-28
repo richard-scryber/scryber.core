@@ -14,7 +14,7 @@ namespace Scryber.Expressive.Functions.Mathematical
         {
             this.ValidateParameterCount(parameters, 1, 1);
 
-            return Math.Log10(Convert.ToDouble(parameters[0].Evaluate(variables)));
+            return Math.Log10(Convert.ToDouble(parameters[0].Evaluate(variables), context.DecimalCurrentCulture));
         }
 
         #endregion
