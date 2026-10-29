@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.11</PackageVersion>
+    <PackageVersion>9.8.0-beta.12</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.11
+    <PackageReleaseNotes>9.8.0-beta.12
+Fixed: a secured (encrypted) document failed in the browser (Blazor WASM), as MD5 is not available there - the PDF security handler now uses its own managed MD5 on every platform.
+
+9.8.0-beta.11
 Fixed: allowing modifications (document assembly) in a secured document also allowed high quality printing, and cleared a reserved permission bit.
 Fixed: allowing forms in a secured document also allowed annotations.
 Fixed: a document password longer than 32 characters failed the document - only the first 32 characters are used, as in the PDF specification. A password with characters outside Latin-1 is a clear error.
