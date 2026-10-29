@@ -242,17 +242,20 @@ namespace Scryber.PDF.Secure
                     if (passwordPointer != IntPtr.Zero)
                         System.Runtime.InteropServices.Marshal.ZeroFreeBSTR(passwordPointer);
                 }
-                for (int i = 0; i < passwordChars.Length; i++)
+                //only the first 32 characters of a password are used
+                try
                 {
-                    padded[i] = (byte)passwordChars[i];
+                    return ConvertToPaddedBytes(passwordChars);
                 }
-                ZeroArray(passwordChars);
+                finally
+                {
+                    ZeroArray(passwordChars);
+                }
             }
 
-            int start = str == null ? 0 : str.Length;
-            for (int count = start, offset = 0; count < PaddedPasswordStringLength; count++, offset++)
+            for (int count = 0; count < PaddedPasswordStringLength; count++)
             {
-                padded[count] = _padding[offset];
+                padded[count] = _padding[count];
             }
             return padded;
         }
@@ -285,13 +288,13 @@ namespace Scryber.PDF.Secure
                         break;
                     int c = chars[i];
                     if (c > 255)
-                        throw new ArgumentOutOfRangeException("chars");
+                        throw new ArgumentOutOfRangeException("chars", "A document password can only use the characters of the Latin-1 character set");
                     padded[i] = (byte)c;
                 }
 
             }
 
-            int start = chars == null ? 0 : chars.Length;
+            int start = chars == null ? 0 : Math.Min(chars.Length, PaddedPasswordStringLength);
             for (int count = start, offset = 0; count < PaddedPasswordStringLength; count++, offset++)
             {
                 padded[count] = _padding[offset];
