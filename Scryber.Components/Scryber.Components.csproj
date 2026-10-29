@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.10</PackageVersion>
+    <PackageVersion>9.8.0-beta.11</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.10
+    <PackageReleaseNotes>9.8.0-beta.11
+Fixed: allowing modifications (document assembly) in a secured document also allowed high quality printing, and cleared a reserved permission bit.
+Fixed: allowing forms in a secured document also allowed annotations.
+Fixed: a document password longer than 32 characters failed the document - only the first 32 characters are used, as in the PDF specification. A password with characters outside Latin-1 is a clear error.
+
+9.8.0-beta.10
 Fixed: flex items without a width that hold a block, a flex column or a flex row are the width of their content (they were the full width of the row, so justify-content had no space to share and items overlapped, wrapped or ran off the page). An empty flex item has no width.
 Fixed: justify-content takes the flex container's own margins from its width, and the gaps are part of the space used, so the last item is on the right edge.
 Fixed: position: absolute with a left and a right but no width is stretched between them. A max-width still limits it.
