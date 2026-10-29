@@ -96,8 +96,6 @@ namespace Scryber.PDF.Secure
 
         #region private byte[] MD5(byte[] data)
 
-        private System.Security.Cryptography.MD5 _md5;
-
         /// <summary>
         /// MD5 hashes the input data and returns the result
         /// </summary>
@@ -105,9 +103,7 @@ namespace Scryber.PDF.Secure
         /// <returns></returns>
         private byte[] MD5(byte[] data)
         {
-            if (null == _md5)
-                _md5 = System.Security.Cryptography.MD5.Create();
-            return _md5.ComputeHash(data);
+            return MD5Managed.ComputeHash(data);
         }
 
         #endregion
