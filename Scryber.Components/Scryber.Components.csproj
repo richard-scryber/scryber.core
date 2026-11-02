@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0-beta.12</PackageVersion>
+    <PackageVersion>9.8.0</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
@@ -14,7 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0-beta.12
+    <PackageReleaseNotes>9.8.0
+The 9.8 release: everything in the 9.8.0 betas below, including document permissions and passwords, encryption in the browser (Blazor WASM), and the CSS layout additions.
+
+9.8.0-beta.12
 Fixed: a secured (encrypted) document failed in the browser (Blazor WASM), as MD5 is not available there - the PDF security handler now uses its own managed MD5 on every platform.
 
 9.8.0-beta.11
