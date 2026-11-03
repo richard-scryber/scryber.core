@@ -1,4 +1,7 @@
-![Scryber.Core: the open-source rendering engine for Paperwork.Core](https://raw.githubusercontent.com/richard-scryber/scryber.core/master/.github/images/banner-light.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/.github/images/banner-dark.png">
+  <img alt="Scryber.Core: the open-source rendering engine for Paperwork.Core" src="https://raw.githubusercontent.com/richard-scryber/scryber.core/master/.github/images/banner-light.png">
+</picture>
 
 <p align="center">
   <a href="https://github.com/paperwork-collective/Paperwork.Core">Core</a> |
