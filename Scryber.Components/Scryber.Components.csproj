@@ -6,16 +6,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Scryber.snk</AssemblyOriginatorKeyFile>
     <PackageId>Scryber.Core</PackageId>
-    <PackageVersion>9.8.0</PackageVersion>
+    <PackageVersion>9.8.2</PackageVersion>
     <Authors>richard@paperworkday.com</Authors>
     <Copyright>Richard Hewitson 2026</Copyright>
     <License>LICENSE.md</License>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
     <Owners>richard@scryber.co.uk</Owners>
     <PackageProjectUrl>https://github.com/richard-scryber/scryber.core</PackageProjectUrl>
-    <PackageReleaseNotes>9.8.0
-The 9.8 release: everything in the 9.8.0 betas below, including document permissions and passwords, encryption in the browser (Blazor WASM), and the CSS layout additions.
+    <PackageReleaseNotes>9.8.2
+The package description and NuGet readme now introduce Paperwork.Core as the successor to Scryber.Core, with Scryber.Core as its engine - still maintained and supported. No code changes from 9.8.1.
+
+9.8.1
+The 9.8.1 release: everything in the 9.8.0 betas below, including document permissions and passwords, encryption in the browser (Blazor WASM), and the CSS layout additions.
 
 9.8.0-beta.12
 Fixed: a secured (encrypted) document failed in the browser (Blazor WASM), as MD5 is not available there - the PDF security handler now uses its own managed MD5 on every platform.
@@ -270,16 +273,17 @@ Completely updated version for .NET 9.0 with support for html, css, svg and bind
 NOTE: If upgrading, PLEASE CHECK THE OUTPUT of your documents before releasing.
 
 See: https://paperwork.help/changelog/scryber_core.html for a full break down.</PackageReleaseNotes>
-    <Summary>The scryber core engine for easy creation of beautiful, dynamic, PDF documents using html templates, css support and model injection in dotnet 10, 9, and 8</Summary>
+    <Summary>The open-source PDF rendering engine behind Paperwork.Core: HTML templates with CSS and SVG, bound to your data, into PDF documents on .NET 10, 9 and 8 and in Blazor WASM. Paperwork.Core is its successor.</Summary>
     <PackageTags>Scryber; PDF; dotnet core; HTML, HTML2PDF; dotnet 10;</PackageTags>
     <Title>Scryber</Title>
-    <Description>Scryber is an advanced PDF generation engine based around HTML templates with CSS styles and SVG drawing. It includes full flowing pages, dynamic template binding on your object model and referenced external files, images, css and fonts. 
-Easily create documents from your Apps, MVC sites, or Javascipt ajax calls.
+    <Description>Scryber.Core is the open-source PDF rendering engine behind Paperwork.Core. It turns HTML templates with CSS styles and SVG drawing, bound to your data, into PDF documents - with flowing pages, data binding, and referenced images, stylesheets and fonts - on .NET and in Blazor WASM.
 
-This framework is built entirely in .NET supporting Blazor WASM and is released under the LGPL licence so you can use to it in commercial applications.</Description>
+Paperwork.Core is its successor and the recommended package for new projects. It adds a fluent builder, dependency injection and code configuration on top of this same engine, and your templates carry straight across.
+
+Scryber.Core still works as it always has, and will continue to be maintained and supported. It is released under the LGPL licence, so you can use it in commercial applications.</Description>
     <PackOnBuild>false</PackOnBuild>
     <RootNamespace>Scryber</RootNamespace>
-    <Version>9.8.0.0</Version>
+    <Version>9.8.2.0</Version>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>PaperworkLogoTransparent.png</PackageIcon>
     <RepositoryUrl>https://github.com/richard-scryber/scryber.core</RepositoryUrl>
@@ -387,7 +391,7 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
   </ItemGroup>
     
   <ItemGroup>
-    <None Include="../README.md" Pack="true" PackagePath="\">
+    <None Include="../README.nuget.md" Pack="true" PackagePath="\">
         <IncludeInPackage>true</IncludeInPackage>
     </None>
       <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">

@@ -8,6 +8,7 @@
     <File Path="LICENSE.md" />
     <File Path="PaperworkLogoTransparent.png" />
     <File Path="README.md" />
+    <File Path="README.nuget.md" />
   </Folder>
   <Folder Name="/Testing/">
     <Project Path="Scryber.UnitConsoleTest/Scryber.UnitConsoleTest.csproj">
