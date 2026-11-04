@@ -258,9 +258,6 @@ See: https://scrybercore.readthedocs.io/en/latest/version_history.html for a ful
       <None Include="../README.md" Pack="true" PackagePath="\">
           <IncludeInPackage>true</IncludeInPackage>
       </None>
-      <None Include="readme.txt" pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
-    </None>
       <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
           <IncludeInPackage>true</IncludeInPackage>
       </None>
