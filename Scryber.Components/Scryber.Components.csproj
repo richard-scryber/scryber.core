@@ -393,9 +393,6 @@ This framework is built entirely in .NET supporting Blazor WASM and is released 
       <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
           <IncludeInPackage>true</IncludeInPackage>
       </None>
-    <None Include="readme.txt" Pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
-    </None>
     <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
