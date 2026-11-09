@@ -1300,12 +1300,8 @@ namespace Scryber.PDF.Layout
                 {
                     this.UpdateInlineBlockPosition(positioned as PDFLayoutPositionedRegion, options);
                 }
-                
-                //If we are relative and we some transformations to apply
-                if (options.HasTransformation)
-                {
-                    ApplyRelativeTransformations(positioned, options);
-                }
+
+                //Any transformation does not change the space used - it is applied around the block when it is rendered.
                 
                 
             }
@@ -1894,109 +1890,6 @@ namespace Scryber.PDF.Layout
                     return false;
                 }
             }
-        }
-
-        #endregion
-
-        #region protected virtual void ApplyRelativeTransformations(PDFLayoutRegion positioned, PDFPositionOptions pos)
-
-        /// <summary>
-        /// Takes into account any transformations on a relatively positioned elements adjusting the size of the region 
-        /// containing the component after the transformation has been applied.
-        /// </summary>
-        /// <param name="positioned"></param>
-        /// <param name="pos"></param>
-        protected virtual void ApplyRelativeTransformations(PDFLayoutRegion positioned, PDFPositionOptions pos)
-        {
-            if (null == pos)
-                throw new ArgumentNullException("pos");
-
-            if (null == positioned)
-                throw new ArgumentNullException("positioned");
-
-            if (pos.PositionMode == PositionMode.Static)
-                throw new ArgumentOutOfRangeException("pos.PositionMode", "Can only be Relative or Absolute");
-
-            //Get the block that sits in the positioned region
-            if (positioned.Contents == null || positioned.Contents.Count != 1)
-            {
-                if (this.Context.Conformance == ParserConformanceMode.Strict)
-                    throw new InvalidOperationException(Errors.CanOnlyTransformBlockComponents);
-                else
-                {
-                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, Errors.CanOnlyTransformBlockComponents);
-                    return;
-                }
-            }
-
-            PDFLayoutBlock relBlock = positioned.Contents[0] as PDFLayoutBlock;
-            if (null == relBlock)
-            {
-                if (this.Context.Conformance == ParserConformanceMode.Strict)
-                    throw new InvalidOperationException(Errors.CanOnlyTransformBlockComponents);
-                else
-                {
-                    Context.TraceLog.Add(TraceLevel.Error, LOG_CATEGORY, Errors.CanOnlyTransformBlockComponents);
-                    return;
-                }
-            }
-
-            this.Context.TraceLog.Add(TraceLevel.Verbose, LOG_CATEGORY, "Applying the Transformation matrix " + pos.Transformations.ToString() + " to the bounds for block " + relBlock.ToString());
-
-            //We need to adjust the size of the positioned region so it contains the transformed black as much as possible.
-
-            Scryber.Drawing.TransformOperationSet transform = pos.Transformations;
-            Rect bounds = new Rect(Point.Empty, relBlock.TotalBounds.Size); //relBlock.TotalBounds;
-
-            
-            var matrix = transform.GetTransformationMatrix(Context.Graphics.ContainerSize, pos.TransformationOrigin);
-            var transformed = matrix.TransformBounds(bounds);
-
-            Unit xpos = transformed.X;
-            Unit ypos = transformed.Y;
-
-            Unit height = transformed.Height;
-            Unit width = transformed.Width;
-
-            Unit xshift = Unit.Zero;
-            Unit yshift = Unit.Zero;
-
-            //move the position to zero and the shift to x - so any transforms will happen at the origin
-
-            xshift = new Unit(-xpos.PointsValue, PageUnits.Points);
-            xpos = 0;
-            
-
-            if (pos.X.HasValue)
-            {
-                //We have an explict x so we need to make sure we have that in the shift.
-                //and our total width is increased by this.
-
-                xshift += pos.X.Value;
-                width += pos.X.Value;
-            }
-
-            //move the position to zero and the shift to y
-             yshift = new Unit(-ypos.PointsValue, PageUnits.Points);
-            ypos = 0;
-            
-
-            if (pos.Y.HasValue)
-            {
-                //again if we have a y value add this.
-                yshift += pos.Y.Value;
-                height += pos.Y.Value;
-            }
-
-            //Set the transformed offset of the block to xshift and yshift (which will be applied in the block rendering.
-            relBlock.TransformedOffset = new Point(xshift, yshift);
-
-            //declare the used size as width and height (inc. and explicit positioning)
-            positioned.UsedSize = new Size(width, height);
-
-            //and total bounds is also width and height with a zero, zero x and y
-            positioned.TotalBounds = new Rect(xpos, ypos, width, height);
-
         }
 
         #endregion

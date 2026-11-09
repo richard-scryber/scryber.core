@@ -1604,13 +1604,15 @@ namespace Scryber.PDF.Layout
             {
                 context.FullStyle = this.FullStyle;
 
+                //a relative block is moved first, then any transformation is around its moved position
+                if (this.Position.PositionMode == PositionMode.Relative)
+                {
+                    this.UpdateOffsetForRelativeBlock(context, writer);
+                }
+
                 if (this.Position.HasTransformation)
                 {
                     hasTransform = this.SetupBlockTransformation(context, writer);
-                }
-                else if (this.Position.PositionMode == PositionMode.Relative)
-                {
-                    this.UpdateOffsetForRelativeBlock(context, writer);
                 }
                 
                 Rect total = this.TotalBounds;
@@ -2104,21 +2106,10 @@ namespace Scryber.PDF.Layout
                 //     posOffsetY = ((float)this.Position.Y.Value.PointsValue);
                 // }
 
-                var origin = this.Position.TransformationOrigin;
-                if (origin == null)
-                {
-                    var centreX = context.Offset.X;
-                    var centreY = context.Offset.Y;
-                    centreX += this.TotalBounds.Width / 2;
-                    centreY += this.TotalBounds.Height / 2;
-                    
-                    origin = new TransformOrigin(centreX, centreY);
-                }
-                else
-                {
-                    origin.HorizontalOrigin += context.Offset.X;
-                    origin.VerticalOrigin += context.Offset.Y;
-                }
+                //the transformation is around the origin within the border box of this block on the page,
+                //the centre by default. A new origin, so the position's own origin is not changed.
+                var borderBox = this.TotalBounds.Offset(context.Offset).Inset(this.Position.Margins);
+                var origin = TransformOrigin.GetOriginWithin(this.Position.TransformationOrigin, borderBox);
 
                 var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
                 var pageBounds = this.TotalBounds.Offset(context.Offset);

@@ -225,6 +225,7 @@ namespace Scryber.Html
         public const string DominantBaselineType = "dominant-baseline";
 
         public const string Transform = "transform";
+        public const string TransformOrigin = "transform-origin";
         public const string Content = "content";
 
         public const string CounterReset = "counter-reset";

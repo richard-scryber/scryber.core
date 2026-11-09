@@ -17,7 +17,13 @@ namespace Scryber.Drawing
         public Unit HorizontalOrigin { get; set; }
         
         public Unit VerticalOrigin { get; set; }
-        
+
+        /// <summary>
+        /// Gets the origin as it was before it was flattened, or null if this has not been flattened.
+        /// Percentages of a component's own box are only known when it is laid out.
+        /// </summary>
+        public TransformOrigin Unflattened { get; private set; }
+
 
         public TransformOrigin(Unit hOrigin, Unit vOrigin)
         {
@@ -28,6 +34,7 @@ namespace Scryber.Drawing
         public TransformOrigin CloneAndFlatten(Size pageSize, Size containerSize, Size font, Unit rootFont)
         {
             var clone = (TransformOrigin)this.MemberwiseClone();
+            clone.Unflattened = this.Unflattened ?? this;
             if (clone.HorizontalOrigin.IsRelative)
             {
                 clone.HorizontalOrigin = Unit.FlattenHorizontalValue(clone.HorizontalOrigin, pageSize, containerSize, font, rootFont);
@@ -38,6 +45,40 @@ namespace Scryber.Drawing
                 clone.VerticalOrigin = Unit.FlattenVerticalValue(clone.VerticalOrigin, pageSize, containerSize, font, rootFont);
             }
             return clone;
+        }
+
+        /// <summary>
+        /// Returns a new origin as a point on the page within the box (e.g. the border box of a component),
+        /// where percentages are of the box size. If there is no origin, then the centre of the box is returned.
+        /// </summary>
+        /// <param name="origin">The (optional) origin to place in the box</param>
+        /// <param name="box">The box on the page</param>
+        public static TransformOrigin GetOriginWithin(TransformOrigin origin, Rect box)
+        {
+            Unit h, v;
+            if (null == origin)
+            {
+                h = Center;
+                v = Center;
+            }
+            else
+            {
+                h = GetOriginValueWithin(origin.HorizontalOrigin, origin.Unflattened?.HorizontalOrigin);
+                v = GetOriginValueWithin(origin.VerticalOrigin, origin.Unflattened?.VerticalOrigin);
+            }
+
+            var x = box.X + (h.Units == PageUnits.Percent ? box.Width * (h.Value / 100.0) : h);
+            var y = box.Y + (v.Units == PageUnits.Percent ? box.Height * (v.Value / 100.0) : v);
+            return new TransformOrigin(x, y);
+        }
+
+        private static Unit GetOriginValueWithin(Unit value, Unit? unflattened)
+        {
+            //a percentage was flattened against the container, but it is of the component's own box
+            if (unflattened.HasValue && unflattened.Value.Units == PageUnits.Percent)
+                return unflattened.Value;
+            else
+                return value;
         }
 
         public Unit GetHorizontalOffset(Size container, DrawingOrigin origin)

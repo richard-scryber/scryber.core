@@ -335,6 +335,7 @@ namespace Scryber.Styles.Parsing
             all.Add(CSSStyleItems.Fill, new CSSFillParser());
 
             all.Add(CSSStyleItems.Transform, new CSSTransformParser());
+            all.Add(CSSStyleItems.TransformOrigin, new CSSTransformOriginParser());
             all.Add(CSSStyleItems.Content, new CSSContentParser());
 
             all.Add(CSSStyleItems.CounterReset, new CSSCounterResetParser());

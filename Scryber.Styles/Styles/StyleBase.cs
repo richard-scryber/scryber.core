@@ -1349,10 +1349,12 @@ namespace Scryber.Styles
                     transforms = null; //identity will do nothing
                 
 
-                //otherwise make sure we are positioned as absolute or relative.
-                else if (options.PositionMode != PositionMode.Absolute || options.PositionMode != PositionMode.Fixed)
+                //otherwise make sure we are positioned - a transform does not change the layout,
+                //so a static block is relative and keeps its space, and any other position is kept.
+                else
                 {
-                    options.PositionMode = PositionMode.Absolute;
+                    if (options.PositionMode == PositionMode.Static)
+                        options.PositionMode = PositionMode.Relative;
 
                     var origin = this.GetValue(StyleKeys.TransformOriginKey, null);
                     if (null != origin)

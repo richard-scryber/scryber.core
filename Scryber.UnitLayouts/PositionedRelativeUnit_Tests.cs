@@ -236,14 +236,12 @@ namespace Scryber.UnitLayouts
             var pg = layout.AllPages[0];
             Assert.AreEqual(1, pg.ContentBlock.Columns.Length);
             Assert.AreEqual(1, pg.ContentBlock.Columns[0].Contents.Count);
-            var line = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutLine;
-            Assert.IsNotNull(line);
-            Assert.AreEqual(1, line.Runs.Count);
-            var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
-            Assert.IsNotNull(posRun);
 
-            var posRegion = pg.ContentBlock.PositionedRegions[0] as PDFLayoutRegion;
-            Assert.AreEqual(posRun.Region, posRegion);
+            //a transform does not change the layout, so the relative block stays in the flow
+            var block = pg.ContentBlock.Columns[0].Contents[0] as PDFLayoutBlock;
+            Assert.IsNotNull(block);
+            Assert.AreEqual(PositionMode.Relative, block.Position.PositionMode);
+            Assert.IsTrue(block.Position.HasTransformation);
 
             var rel = doc.FindAComponentById("relative") as Div;
             Assert.IsNotNull(rel);
@@ -258,11 +256,6 @@ namespace Scryber.UnitLayouts
             Assert.AreEqual(160, bounds.RenderBounds.Height);
             Assert.AreEqual(300, bounds.RenderBounds.Width);
 
-            var block = posRegion.Contents[0] as PDFLayoutBlock;
-            
-
-            Assert.IsNotNull(block);
-
             Assert.AreEqual(600 * 0.5, block.Width);
             Assert.AreEqual(800 * 0.2, block.Height);
 
@@ -274,8 +267,6 @@ namespace Scryber.UnitLayouts
             expected[4] = 300;
             expected[5] = 400;
 
-            Assert.IsTrue(block.HasTransformedOffset);
-            
             Assert.Inconclusive("Need to recalculate the render bounds based on the transform matrix");
             
             #else
