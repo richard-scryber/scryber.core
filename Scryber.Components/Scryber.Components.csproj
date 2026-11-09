@@ -397,9 +397,6 @@ Scryber.Core still works as it always has, and will continue to be maintained an
       <None Include="../PaperworkLogoTransparent.png" Pack="true" PackagePath="\">
           <IncludeInPackage>true</IncludeInPackage>
       </None>
-    <None Include="readme.txt" Pack="true">
-      <IncludeInPackage>true</IncludeInPackage>
-    </None>
     <None Include="LICENSE.md" Pack="true" PackagePath="$(PackageLicenseFile)">
       <IncludeInPackage>true</IncludeInPackage>
     </None>
