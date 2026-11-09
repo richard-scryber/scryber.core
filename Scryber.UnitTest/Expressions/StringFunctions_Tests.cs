@@ -124,10 +124,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("String")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Substring_StartIndexOutOfRange_ThrowsException()
         {
-            EvaluateExpression<string>("substring('test', 10, 2)");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<string>("substring('test', 10, 2)"));
         }
 
         #endregion

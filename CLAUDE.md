@@ -1557,15 +1557,18 @@ dotnet build Scryber.Core.sln -c Debug
 ### Testing
 ```bash
 # Run all tests
-dotnet test Scryber.Core.sln
+dotnet test --solution Scryber.Core.slnx
 
 # Run specific test project
-dotnet test Scryber.UnitTest/Scryber.UnitTests.csproj
-dotnet test Scryber.UnitSamples/Scryber.UnitSamples.csproj
-dotnet test Scryber.UnitLayouts/Scryber.UnitLayouts.csproj
+dotnet test --project Scryber.UnitTest/Scryber.UnitTests.csproj
+dotnet test --project Scryber.UnitSamples/Scryber.UnitSamples.csproj
+dotnet test --project Scryber.UnitLayouts/Scryber.UnitLayouts.csproj
 
 # Run a single test
-dotnet test --filter "FullyQualifiedName~TestMethodName"
+dotnet test --project Scryber.UnitTest/Scryber.UnitTests.csproj --filter "FullyQualifiedName~TestMethodName"
+
+# Code coverage (Microsoft.Testing.Extensions.CodeCoverage) and TRX report
+dotnet test --solution Scryber.Core.slnx --coverage --coverage-output-format cobertura --report-trx
 ```
 
 ### Packaging

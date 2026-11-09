@@ -87,7 +87,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -186,7 +186,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -285,7 +285,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -388,7 +388,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -492,7 +492,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -593,7 +593,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -704,7 +704,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -816,7 +816,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -929,7 +929,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1042,7 +1042,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1153,7 +1153,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1268,7 +1268,7 @@ namespace Scryber.UnitLayouts
             Assert.IsNotNull(ws);
             Assert.IsNotNull(posRun);
 
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1376,7 +1376,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1510,7 +1510,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1654,7 +1654,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1798,7 +1798,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -1933,7 +1933,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -2050,7 +2050,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[0] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             
@@ -2158,7 +2158,7 @@ namespace Scryber.UnitLayouts
             var posRun = line.Runs[3] as PDFLayoutPositionedRegionRun;
             Assert.IsNotNull(posRun);
             
-            Assert.ReferenceEquals(posRun.Region, nest.PositionedRegions[0]);
+            Assert.AreSame(posRun.Region, nest.PositionedRegions[0]);
             var posReg = nest.PositionedRegions[0];
 
             

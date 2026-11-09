@@ -3086,8 +3086,9 @@ namespace Scryber.UnitLayouts
             {
                 if (item is PDFLayoutBlock b)
                 {
+                    itemsCol0++;
                     Assert.AreEqual(expectedX, b.TotalBounds.X.PointsValue, 1.0,
-                        $"Item {++itemsCol0} in parent-col 0 should be centred at X={expectedX}");
+                        $"Item {itemsCol0} in parent-col 0 should be centred at X={expectedX}");
                 }
             }
             Assert.IsTrue(itemsCol0 >= 1, "At least one item should be in parent column 0");
@@ -3102,8 +3103,9 @@ namespace Scryber.UnitLayouts
             {
                 if (item is PDFLayoutBlock b)
                 {
+                    itemsCol1++;
                     Assert.AreEqual(expectedX, b.TotalBounds.X.PointsValue, 1.0,
-                        $"Item {++itemsCol1} in parent-col 1 should be centred at X={expectedX}");
+                        $"Item {itemsCol1} in parent-col 1 should be centred at X={expectedX}");
                 }
             }
             Assert.IsTrue(itemsCol1 >= 1, "At least one item should have overflowed to parent column 1");

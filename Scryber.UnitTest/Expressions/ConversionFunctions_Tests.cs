@@ -248,10 +248,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Integer_InvalidString_ThrowsException()
         {
-            EvaluateExpression<int>("integer('not-a-number')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<int>("integer('not-a-number')"));
         }
 
         #endregion
@@ -298,10 +297,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Long_InvalidString_ThrowsException()
         {
-            EvaluateExpression<long>("long('invalid')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<long>("long('invalid')"));
         }
 
         #endregion
@@ -357,10 +355,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Double_InvalidString_ThrowsException()
         {
-            EvaluateExpression<double>("double('not-a-number')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<double>("double('not-a-number')"));
         }
 
         #endregion
@@ -417,10 +414,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Decimal_InvalidString_ThrowsException()
         {
-            EvaluateExpression<decimal>("decimal('invalid')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<decimal>("decimal('invalid')"));
         }
 
         #endregion
@@ -519,10 +515,9 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Date_InvalidString_ThrowsException()
         {
-            EvaluateExpression<DateTime>("date('not-a-date')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<DateTime>("date('not-a-date')"));
         }
 
         [TestMethod()]
@@ -688,11 +683,10 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Conversion")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Date_WithInvalidFormat_ThrowsException()
         {
             // Invalid date string for the specified format
-            EvaluateExpression<DateTime>("date('2024-01-15', 'MM/dd/yyyy')");
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<DateTime>("date('2024-01-15', 'MM/dd/yyyy')"));
         }
 
         [TestMethod()]

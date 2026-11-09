@@ -313,27 +313,25 @@ namespace Scryber.Core.UnitTests.Expressions
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Logical")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Index_OutOfRange_ThrowsException()
         {
             var vars = new Dictionary<string, object>
             {
                 { "arr", new[] { 1, 2, 3 } }
             };
-            EvaluateExpression<int>("arr[10]", vars);
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<int>("arr[10]", vars));
         }
 
         [TestMethod()]
         [TestCategory("Expressions")]
         [TestCategory("Logical")]
-        [ExpectedException(typeof(Expressive.Exceptions.ExpressiveException))]
         public void Index_NegativeIndex_ThrowsException()
         {
             var vars = new Dictionary<string, object>
             {
                 { "arr", new[] { 1, 2, 3 } }
             };
-            EvaluateExpression<int>("arr[-1]", vars);
+            Assert.ThrowsExactly<Expressive.Exceptions.ExpressiveException>(() => EvaluateExpression<int>("arr[-1]", vars));
         }
         
         [TestMethod()]

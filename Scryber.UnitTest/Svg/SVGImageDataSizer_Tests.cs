@@ -502,22 +502,20 @@ namespace Scryber.Core.UnitTests.Svg
 
         [TestMethod]
         [Description("width='50%' without viewBox → throws InvalidOperationException")]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Size_PercentWidth_NoViewBox_Throws()
         {
             var canvas = MakeCanvas(width: Unit.Percent(50));
             var sizer = MakeSizer(canvas);
-            _ = sizer.GetLayoutSize(); // must throw
+            Assert.ThrowsExactly<InvalidOperationException>(() => sizer.GetLayoutSize());
         }
 
         [TestMethod]
         [Description("height='50%' without viewBox → throws InvalidOperationException")]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Size_PercentHeight_NoViewBox_Throws()
         {
             var canvas = MakeCanvas(height: Unit.Percent(50));
             var sizer = MakeSizer(canvas);
-            _ = sizer.GetLayoutSize(); // must throw
+            Assert.ThrowsExactly<InvalidOperationException>(() => sizer.GetLayoutSize());
         }
     }
 }
