@@ -332,9 +332,10 @@ public class SVGMarker : SVGAdorner, IStyledComponent, ICloneable, IResourceCont
         var origin = new TransformOrigin(0,  graphics.ContainerSize.Height );
 
         
-        transform.AppendOperation(new TransformRotateOperation(info.AngleRadians));
+        //moved to the location on the page, then rotated (a translate after the rotate would be along the rotated axes)
         transform.AppendOperation(new TransformTranslateOperation(info.Location.X,
             info.Location.Y - graphics.ContainerSize.Height));
+        transform.AppendOperation(new TransformRotateOperation(info.AngleRadians));
         
         var matrix = transform.GetTransformationMatrix(graphics.ContainerSize, origin);
         

@@ -119,7 +119,28 @@ namespace Scryber.Core.UnitTests.Html
             AssertOrigin(block, box.X + (box.Width / 2), box.Y + (box.Height / 2), message);
         }
 
-        private const string BlockBody = "<p id='before'>Before</p><div id='box' class='box' style='width:200pt;height:40pt;{0}'>Rotated block</div><p id='after'>After</p>";
+        /// <summary>
+        /// Checks the matrix used to render the block maps points on the page in the same way as the expected matrix
+        /// </summary>
+        private static void AssertSameMatrix(PDFLayoutBlock expected, PDFLayoutBlock actual, string message)
+        {
+#if DEBUG
+            Assert.IsNotNull(expected.RenderMatrix, "There is no expected render matrix - " + message);
+            Assert.IsNotNull(actual.RenderMatrix, "There is no render matrix for the block - " + message);
+
+            foreach (var pt in new[] { new Point(0, 0), new Point(100, 0), new Point(0, 100), new Point(250, 400) })
+            {
+                var e = expected.RenderMatrix.TransformPoint(pt);
+                var a = actual.RenderMatrix.TransformPoint(pt);
+                Assert.AreEqual(Math.Round(e.X.PointsValue, 2), Math.Round(a.X.PointsValue, 2), "The x of " + pt + " - " + message);
+                Assert.AreEqual(Math.Round(e.Y.PointsValue, 2), Math.Round(a.Y.PointsValue, 2), "The y of " + pt + " - " + message);
+            }
+#else
+            Assert.Inconclusive("The render matrix is only captured in the debug configuration");
+#endif
+        }
+
+        private const string BlockBody ="<p id='before'>Before</p><div id='box' class='box' style='width:200pt;height:40pt;{0}'>Rotated block</div><p id='after'>After</p>";
 
         [TestMethod]
         public void TransformFlow_01_Block_KeepsItsSpaceInTheFlow()
@@ -240,6 +261,66 @@ namespace Scryber.Core.UnitTests.Html
             Assert.AreEqual(plain.Bounds("cell").X, rotated.Bounds("cell").X);
 
             AssertCentre(block, plain.Bounds("label"), "the label in the cell");
+        }
+
+        [TestMethod]
+        public void TransformFlow_09_TranslatePercentages_AreOfTheBoxOfTheComponent()
+        {
+            //the box is 200pt x 40pt, so -50% -50% is -100pt -20pt (not half of the page width)
+            var transforms = new[]
+            {
+                ("translate(-50%, -50%)", "translate(-100pt, -20pt)"),
+                ("translateX(25%)", "translateX(50pt)"),
+                ("translateY(100%)", "translateY(40pt)"),
+                ("translate(-50%, -50%) rotate(-45deg)", "translate(-100pt, -20pt) rotate(-45deg)"),
+                ("rotate(30deg) translate(50%, 10pt)", "rotate(30deg) translate(100pt, 10pt)"),
+                ("scale(2) translate(10%, 50%) rotate(10deg)", "scale(2) translate(20pt, 20pt) rotate(10deg)"),
+            };
+
+            foreach (var (percent, points) in transforms)
+            {
+                var expected = Generate(string.Format(BlockBody, "transform:" + points + ";")).Block("box");
+                var actual = Generate(string.Format(BlockBody, "transform:" + percent + ";")).Block("box");
+                AssertSameMatrix(expected, actual, percent);
+            }
+        }
+
+        [TestMethod]
+        public void TransformFlow_11_Translate_AfterAnotherOperation_IsAlongTheTransformedAxes()
+        {
+            //as css, each operation is within the ones before it, so a translate after a rotate (or skew or scale)
+            //moves along the rotated axes - rotating 90deg turns the x axis down the page.
+            var same = new[]
+            {
+                ("rotate(90deg) translate(50pt, 0)", "translate(0, 50pt) rotate(90deg)"),
+                ("rotate(-90deg) translate(50pt, 10pt)", "translate(10pt, -50pt) rotate(-90deg)"),
+                ("scale(2) translate(10pt, 20pt)", "translate(20pt, 40pt) scale(2)"),
+                ("rotate(180deg) translate(25%, 0)", "translate(-50pt, 0) rotate(180deg)"),
+            };
+
+            foreach (var (one, two) in same)
+            {
+                var expected = Generate(string.Format(BlockBody, "transform:" + two + ";")).Block("box");
+                var actual = Generate(string.Format(BlockBody, "transform:" + one + ";")).Block("box");
+                AssertSameMatrix(expected, actual, one + " is the same as " + two);
+            }
+        }
+
+        [TestMethod]
+        public void TransformFlow_10_TranslatePercentages_InASharedStyle_AreOfEachComponent()
+        {
+            //the same class on 2 boxes of a different size - each is moved by half its own width
+            const string body = "<style>.moved{ transform: rotate(10deg) translate(50%, 0); }</style>" +
+                                "<div id='wide' class='box moved' style='width:200pt;height:40pt'>Wide</div>" +
+                                "<div id='narrow' class='box moved' style='width:100pt;height:40pt'>Narrow</div>";
+            const string expectedBody = "<div id='wide' class='box' style='width:200pt;height:40pt;transform: rotate(10deg) translate(100pt, 0)'>Wide</div>" +
+                                        "<div id='narrow' class='box' style='width:100pt;height:40pt;transform: rotate(10deg) translate(50pt, 0)'>Narrow</div>";
+
+            var actual = Generate(body);
+            var expected = Generate(expectedBody);
+
+            AssertSameMatrix(expected.Block("wide"), actual.Block("wide"), "the wide box");
+            AssertSameMatrix(expected.Block("narrow"), actual.Block("narrow"), "the narrow box");
         }
     }
 }

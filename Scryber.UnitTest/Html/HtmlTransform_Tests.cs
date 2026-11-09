@@ -987,7 +987,8 @@ namespace Scryber.Core.UnitTests.Html
             };
             var transform3 = new
             {
-                matrix = new double[] { 1,-0.8390996311772799,-0.36397023426620234,1,333.62876769608386,23.90996311772801 },
+                //the translate is after the skew, so along the skewed axes (as css)
+                matrix = new double[] { 1,-0.8390996311772799,-0.36397023426620234,1,355.466981752056,-60 },
                 offset = new double[] { 100, 200 }
             };
             

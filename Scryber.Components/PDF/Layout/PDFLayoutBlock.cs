@@ -2111,6 +2111,8 @@ namespace Scryber.PDF.Layout
                 var borderBox = this.TotalBounds.Offset(context.Offset).Inset(this.Position.Margins);
                 var origin = TransformOrigin.GetOriginWithin(this.Position.TransformationOrigin, borderBox);
 
+                //translate percentages are of the border box too
+                full = full.CloneForBox(borderBox.Size);
                 var matrix = full.GetTransformationMatrix(context.Graphics.ContainerSize, origin);
                 var pageBounds = this.TotalBounds.Offset(context.Offset);
                 var transformedBounds = matrix.TransformBounds(pageBounds);

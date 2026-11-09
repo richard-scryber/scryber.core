@@ -58,6 +58,20 @@ namespace Scryber.Drawing
             return clone;
         }
 
+        /// <summary>
+        /// Returns a clone of this set, where any values relative to the component's own box
+        /// (e.g. css translate percentages) are of the box size.
+        /// </summary>
+        /// <param name="box">The size of the component's box (the border box for html)</param>
+        public TransformOperationSet CloneForBox(Size box)
+        {
+            TransformOperationSet clone = (TransformOperationSet)this.MemberwiseClone();
+            if (null != this.Root)
+                clone.Root = this.Root.CloneValuesForBox(box);
+
+            return clone;
+        }
+
         public Scryber.PDF.Graphics.PDFTransformationMatrix GetTransformationMatrix(Size containerSize, TransformOrigin origin)
         {
             Matrix2D matrix = Matrix2D.Identity;

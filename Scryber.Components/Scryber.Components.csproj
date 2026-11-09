@@ -17,6 +17,9 @@
     <PackageReleaseNotes>Next release (not yet versioned)
 Breaking change: a css transform no longer changes the layout. A transformed element keeps its place and space in the flow (it was taken out as position: absolute, and its space was resized to the transformed bounds), and is drawn transformed around the centre of its own border box. Before, the centre was worked out from the wrong place, so a rotated element (e.g. rotate(-90deg)) was drawn away from where it should be. A relative element is moved by its left and top, then transformed around its moved centre. An absolute or fixed element stays absolute or fixed.
 New: the transform-origin css property, with keywords (left, center, right, top, bottom), lengths and percentages. Percentages are of the element's own border box.
+Breaking change: translate() percentages are of the element's own border box (they were of the containing block), so translate(-50%, -50%) centres an element on its position.
+Breaking change: a translate after another operation is along the transformed axes, as css (e.g. rotate(90deg) translate(50pt, 0) moves 50pt down the page). It was always along the page axes. This is the same for an svg transform attribute.
+Fixed: flattening a transform with more than one operation changed the shared style rather than the copy, so elements with the same class could use the values of another element.
 
 9.8.2
 The package description and NuGet readme now introduce Paperwork.Core as the successor to Scryber.Core, with Scryber.Core as its engine - still maintained and supported. No code changes from 9.8.1.

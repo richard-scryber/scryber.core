@@ -90,13 +90,36 @@ namespace Scryber.Drawing
         public TransformOperation CloneValuesAndFlatten(Size page, Size container, Size font, Unit rootFont)
         {
             var clone = this.CloneAndFlatten(page, container, font, rootFont);
+            //the following operations are flattened onto the clone, the original (e.g. in a shared style) is not changed.
             if (null != this.NextOp)
-                this.NextOp = this.NextOp.CloneValuesAndFlatten(page, container, font, rootFont);
+                clone.NextOp = this.NextOp.CloneValuesAndFlatten(page, container, font, rootFont);
 
             return clone;
         }
 
         protected abstract TransformOperation CloneAndFlatten(Size page, Size container, Size font, Unit rootFont);
+
+        /// <summary>
+        /// Returns a clone of this and the following operations, where any values that are relative to the
+        /// component's own box (e.g. css translate percentages) are of the box size.
+        /// </summary>
+        public TransformOperation CloneValuesForBox(Size box)
+        {
+            var clone = this.CloneForBox(box);
+            if (null != this.NextOp)
+                clone.NextOp = this.NextOp.CloneValuesForBox(box);
+
+            return clone;
+        }
+
+        /// <summary>
+        /// Returns a clone of just this operation with any values relative to the component's own box (of the box size).
+        /// By default there are none, so a simple copy is returned.
+        /// </summary>
+        protected virtual TransformOperation CloneForBox(Size box)
+        {
+            return (TransformOperation)this.MemberwiseClone();
+        }
     }
 
     public class TransformRotateOperation : TransformOperation
@@ -147,13 +170,43 @@ namespace Scryber.Drawing
             this.YOffset = y;
         }
 
+        /// <summary>
+        /// The x offset before it was flattened, if it was a percentage, as css percentages are of the component's own box.
+        /// </summary>
+        public Unit? XPercentage { get; private set; }
+
+        /// <summary>
+        /// The y offset before it was flattened, if it was a percentage, as css percentages are of the component's own box.
+        /// </summary>
+        public Unit? YPercentage { get; private set; }
+
         protected override TransformOperation CloneAndFlatten(Size page, Size container, Size font, Unit rootFont)
         {
             var clone = (TransformTranslateOperation)this.MemberwiseClone();
             if (XOffset.IsRelative)
+            {
+                if (XOffset.Units == PageUnits.Percent)
+                    clone.XPercentage = XOffset;
                 clone.XOffset = Unit.FlattenHorizontalValue(this.XOffset, page, container, font, rootFont);
+            }
+
             if (YOffset.IsRelative)
+            {
+                if (YOffset.Units == PageUnits.Percent)
+                    clone.YPercentage = YOffset;
                 clone.YOffset = Unit.FlattenVerticalValue(this.YOffset, page, container, font, rootFont);
+            }
+
+            return clone;
+        }
+
+        protected override TransformOperation CloneForBox(Size box)
+        {
+            var clone = (TransformTranslateOperation)this.MemberwiseClone();
+            if (XPercentage.HasValue)
+                clone.XOffset = box.Width * (XPercentage.Value.Value / 100.0);
+            if (YPercentage.HasValue)
+                clone.YOffset = box.Height * (YPercentage.Value.Value / 100.0);
 
             return clone;
         }
@@ -162,14 +215,16 @@ namespace Scryber.Drawing
         {
             Matrix2D translate = Matrix2D.Identity;
             double x, y;
-            
+
             x = this.XOffset.PointsValue;
 
             y = (origin == DrawingOrigin.BottomLeft) ? 0 - this.YOffset.PointsValue : this.YOffset.PointsValue;
-            
-            matrix.Translate(x,y);
-            //matrix = Matrix2D.Multiply(matrix, translate);
-            
+
+            //multiplied (as rotate, scale and skew are), so a translation after another operation
+            //is along the transformed axes, e.g. rotate(30deg) translate(50pt, 0) moves along the 30 degree line.
+            translate.Translate(x, y);
+            matrix = Matrix2D.Multiply(matrix, translate);
+
             return base.DoGetMatrix(matrix, origin);
         }
 
